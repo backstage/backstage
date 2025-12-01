@@ -38,22 +38,27 @@ import {
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { catalogGraphTranslationRef } from '../../translation';
 import { Direction, EntityNode } from '../../lib/types';
+import classNames from 'classnames';
 
 /** @public */
 export type CatalogGraphCardClassKey = 'card' | 'graph';
 
-const useStyles = makeStyles<Theme, { height: number | undefined }>(
+const useStyles = makeStyles<Theme, { height?: number }>(
   {
     card: ({ height }) => ({
       display: 'flex',
       flexDirection: 'column',
-      maxHeight: height,
-      minHeight: height,
+      ...(height && {
+        height,
+        maxHeight: height,
+        minHeight: height,
+      }),
     }),
-    graph: {
-      flex: 1,
+    graph: ({ height }) => ({
+      flex: height ? '0 0 auto' : 1,
       minHeight: 0,
-    },
+      ...(height && { height }),
+    }),
   },
   { name: 'PluginCatalogGraphCatalogGraphCard' },
 );
@@ -142,7 +147,7 @@ export const CatalogGraphCard = (
         {...props}
         rootEntityNames={rootEntityNames || entityName}
         onNodeClick={onNodeClick || defaultOnNodeClick}
-        className={className || classes.graph}
+        className={classNames(classes.graph, className)}
         maxDepth={maxDepth}
         unidirectional={unidirectional}
         mergeRelations={mergeRelations}

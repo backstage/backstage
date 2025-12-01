@@ -16,14 +16,11 @@
 
 import { useEffect } from 'react';
 import { act, screen, waitFor } from '@testing-library/react';
-import {
-  mockApis,
-  TestApiProvider,
-  withLogCollector,
-} from '@backstage/test-utils';
+import { TestApiProvider, withLogCollector } from '@backstage/test-utils';
 import { ExtensionBoundary } from './ExtensionBoundary';
 import { coreExtensionData, createExtension } from '../wiring';
-import { analyticsApiRef, useAnalytics } from '@backstage/core-plugin-api';
+import { analyticsApiRef } from '../apis/definitions/AnalyticsApi';
+import { useAnalytics } from '../analytics';
 import { createRouteRef } from '../routing';
 import {
   createExtensionTester,
@@ -93,7 +90,7 @@ describe('ExtensionBoundary', () => {
   it('should wrap children with analytics context', async () => {
     const action = 'render';
     const subject = 'analytics';
-    const analyticsApiMock = mockApis.analytics();
+    const analyticsApiMock = { captureEvent: jest.fn() };
 
     const AnalyticsComponent = () => {
       const analytics = useAnalytics();
@@ -134,7 +131,7 @@ describe('ExtensionBoundary', () => {
       });
       return null;
     };
-    const analyticsApiMock = mockApis.analytics();
+    const analyticsApiMock = { captureEvent: jest.fn() };
 
     await act(async () => {
       renderInTestApp(

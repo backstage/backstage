@@ -32,6 +32,7 @@ const knownErrors = new Set([
   'NotModifiedError',
   'NotImplementedError',
   'ResponseError',
+  'ServiceUnavailableError',
 ]);
 
 // Extracts the cause error, if the provided error is `ResponseError` or

@@ -18,6 +18,8 @@ import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import Chip from '@material-ui/core/Chip';
 import type { V1ConfigMap } from '@kubernetes/client-node';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { kubernetesReactTranslationRef } from '../../translation';
 
 export const ConfigmapsDrawer = ({
   configmap,
@@ -26,6 +28,7 @@ export const ConfigmapsDrawer = ({
   configmap: V1ConfigMap;
   expanded?: boolean;
 }) => {
+  const { t } = useTranslationRef(kubernetesReactTranslationRef);
   const namespace = configmap.metadata?.namespace;
   return (
     <KubernetesStructuredMetadataTableDrawer
@@ -55,7 +58,10 @@ export const ConfigmapsDrawer = ({
         </Grid>
         {namespace && (
           <Grid item>
-            <Chip size="small" label={`namespace: ${namespace}`} />
+            <Chip
+              size="small"
+              label={t('namespace.labelWithValue', { namespace })}
+            />
           </Grid>
         )}
       </Grid>

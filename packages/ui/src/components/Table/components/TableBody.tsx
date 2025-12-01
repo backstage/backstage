@@ -19,15 +19,13 @@ import {
   type TableBodyProps,
 } from 'react-aria-components';
 import { useStyles } from '../../../hooks/useStyles';
+import { TableDefinition } from '../definition';
 import styles from '../Table.module.css';
 import clsx from 'clsx';
 
 /** @public */
 export const TableBody = <T extends object>(props: TableBodyProps<T>) => {
-  const { classNames, cleanedProps } = useStyles<'Table', TableBodyProps<T>>(
-    'Table',
-    props,
-  );
+  const { classNames, cleanedProps } = useStyles(TableDefinition, props);
 
   return (
     <ReactAriaTableBody

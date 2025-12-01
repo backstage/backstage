@@ -92,6 +92,7 @@ export type EntityRelationsGraphProps = {
   renderEdge?: DependencyGraphTypes.RenderEdgeFunction<EntityEdge>;
   curve?: 'curveStepBefore' | 'curveMonotoneX';
   showArrowHeads?: boolean;
+  allowFullscreen?: boolean;
 };
 
 /**
@@ -118,6 +119,7 @@ export const EntityRelationsGraph = (props: EntityRelationsGraphProps) => {
     renderEdge,
     curve,
     showArrowHeads,
+    allowFullscreen,
   } = props;
 
   const theme = useTheme();
@@ -169,6 +171,7 @@ export const EntityRelationsGraph = (props: EntityRelationsGraphProps) => {
           zoom={zoom}
           curve={curve}
           showArrowHeads={showArrowHeads}
+          allowFullscreen={allowFullscreen}
         />
       )}
     </div>

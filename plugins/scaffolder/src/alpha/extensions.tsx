@@ -15,10 +15,6 @@
  */
 
 import {
-  compatWrapper,
-  convertLegacyRouteRef,
-} from '@backstage/core-compat-api';
-import {
   ApiBlueprint,
   createExtensionInput,
   discoveryApiRef,
@@ -45,21 +41,19 @@ export const scaffolderPage = PageBlueprint.makeWithOverrides({
       i.get(FormFieldBlueprint.dataRefs.formFieldLoader),
     );
     return originalFactory({
-      routeRef: convertLegacyRouteRef(rootRouteRef),
+      routeRef: rootRouteRef,
       path: '/create',
       loader: () =>
-        import('../components/Router/Router').then(m =>
-          compatWrapper(
-            <m.InternalRouter formFieldLoaders={formFieldLoaders} />,
-          ),
-        ),
+        import('../components/Router/Router').then(m => (
+          <m.InternalRouter formFieldLoaders={formFieldLoaders} />
+        )),
     });
   },
 });
 
 export const scaffolderNavItem = NavItemBlueprint.make({
   params: {
-    routeRef: convertLegacyRouteRef(rootRouteRef),
+    routeRef: rootRouteRef,
     title: 'Create...',
     icon: CreateComponentIcon,
   },

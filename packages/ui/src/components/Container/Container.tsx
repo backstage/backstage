@@ -18,13 +18,14 @@ import { forwardRef } from 'react';
 import { ContainerProps } from './types';
 import clsx from 'clsx';
 import { useStyles } from '../../hooks/useStyles';
+import { ContainerDefinition } from './definition';
 import styles from './Container.module.css';
 
 /** @public */
 export const Container = forwardRef<HTMLDivElement, ContainerProps>(
   (props, ref) => {
     const { classNames, utilityClasses, style, cleanedProps } = useStyles(
-      'Container',
+      ContainerDefinition,
       props,
     );
 

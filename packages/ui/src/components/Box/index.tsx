@@ -14,4 +14,5 @@
  * limitations under the License.
  */
 export { Box } from './Box';
+export { BoxDefinition } from './definition';
 export type * from './types';

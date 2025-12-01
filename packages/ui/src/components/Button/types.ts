@@ -33,4 +33,5 @@ export interface ButtonProps extends RAButtonProps {
   iconStart?: ReactElement;
   iconEnd?: ReactElement;
   children?: ReactNode;
+  loading?: boolean;
 }

@@ -71,6 +71,31 @@ export const myPlugin = createBackendPlugin({
 });
 ```
 
+### Error Handling
+
+When errors are thrown from MCP actions, the backend will handle and surface error message for any error from `@backstage/errors`. Unknown errors will be handled by `@modelcontextprotocol/sdk`'s default error handling, which may result in a generic `500 Server Error` being returned. As a result, we recommend using errors from `@backstage/errors` when applicable.
+
+See https://backstage.io/docs/reference/errors/ for a full list of supported errors.
+
+When writing MCP tools, use the appropriate error from `@backstage/errors` when applicable:
+
+```ts
+action: async ({ input }) => {
+  // ... get current user and some resource
+
+  if (!resource) {
+    throw new NotFoundError(`Resource ${input.id} not found`);
+  }
+
+  // Check if the user has permissions to access/use the resource
+  if (!hasPermission(user, resource)) {
+    throw new NotAllowedError(
+      `user does not have sufficient permissions for ${resource}`,
+    );
+  }
+};
+```
+
 ### Authentication Configuration
 
 By default, the Backstage backend requires authentication for all requests.

@@ -17,22 +17,22 @@
 import {
   TableHeader as ReactAriaTableHeader,
   type TableHeaderProps,
-  Checkbox,
+  Collection,
+  useTableOptions,
 } from 'react-aria-components';
-import { Collection, useTableOptions } from 'react-aria-components';
+import { Checkbox } from '../../Checkbox';
 import { Column } from './Column';
 import { useStyles } from '../../../hooks/useStyles';
+import { TableDefinition } from '../definition';
 import styles from '../Table.module.css';
 import clsx from 'clsx';
+import { Flex } from '../../Flex';
 
 /** @public */
 export const TableHeader = <T extends object>(props: TableHeaderProps<T>) => {
-  let { selectionBehavior, selectionMode, allowsDragging } = useTableOptions();
+  let { selectionBehavior, selectionMode } = useTableOptions();
 
-  const { classNames, cleanedProps } = useStyles<'Table', TableHeaderProps<T>>(
-    'Table',
-    props,
-  );
+  const { classNames, cleanedProps } = useStyles(TableDefinition, props);
   const { columns, children, ...rest } = cleanedProps;
 
   return (
@@ -40,11 +40,21 @@ export const TableHeader = <T extends object>(props: TableHeaderProps<T>) => {
       className={clsx(classNames.header, styles[classNames.header])}
       {...rest}
     >
-      {/* Add extra columns for drag and drop and selection. */}
-      {allowsDragging && <Column />}
-      {selectionBehavior === 'toggle' && (
-        <Column>
-          {selectionMode === 'multiple' && <Checkbox slot="selection" />}
+      {selectionBehavior === 'toggle' && selectionMode === 'multiple' && (
+        <Column
+          width={40}
+          minWidth={40}
+          maxWidth={40}
+          className={clsx(
+            classNames.headSelection,
+            styles[classNames.headSelection],
+          )}
+        >
+          <Flex justify="center" align="center">
+            <Checkbox slot="selection">
+              <></>
+            </Checkbox>
+          </Flex>
         </Column>
       )}
       <Collection items={columns}>{children}</Collection>

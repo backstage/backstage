@@ -18,6 +18,7 @@ import type { HeaderProps } from './types';
 import { HeaderToolbar } from './HeaderToolbar';
 import { Tabs, TabList, Tab } from '../Tabs';
 import { useStyles } from '../../hooks/useStyles';
+import { HeaderDefinition } from './definition';
 import { type NavigateOptions } from 'react-router-dom';
 import styles from './Header.module.css';
 import clsx from 'clsx';
@@ -34,7 +35,7 @@ declare module 'react-aria-components' {
  * @public
  */
 export const Header = (props: HeaderProps) => {
-  const { classNames, cleanedProps } = useStyles('Header', props);
+  const { classNames, cleanedProps } = useStyles(HeaderDefinition, props);
   const {
     className,
     tabs,

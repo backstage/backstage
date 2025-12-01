@@ -37,6 +37,8 @@ import { unstable_ClassNameGenerator as ClassNameGenerator } from '@mui/material
 export interface UnifiedThemeProviderProps {
   children: ReactNode;
   theme: UnifiedTheme;
+  /** Optional override for the value written to the `data-theme-name` attribute. */
+  themeName?: string;
 }
 
 /**
@@ -66,15 +68,14 @@ import { useApplyThemeAttributes } from './useApplyThemeAttributes';
 export function UnifiedThemeProvider(
   props: UnifiedThemeProviderProps,
 ): JSX.Element {
-  const { children, theme } = props;
+  const { children, theme, themeName } = props;
 
   const v4Theme = theme.getTheme('v4') as Mui4Theme;
   const v5Theme = theme.getTheme('v5') as Mui5Theme;
 
-  useApplyThemeAttributes(
-    v4Theme ? v4Theme.palette.type : v5Theme?.palette.mode,
-    'backstage',
-  );
+  const themeMode = v4Theme ? v4Theme.palette.type : v5Theme?.palette.mode;
+
+  useApplyThemeAttributes(themeMode, themeName ?? 'backstage');
 
   let result = children as JSX.Element;
 

@@ -17,6 +17,7 @@
 import { forwardRef } from 'react';
 import clsx from 'clsx';
 import { useStyles } from '../../hooks/useStyles';
+import { CardDefinition } from './definition';
 import type {
   CardProps,
   CardHeaderProps,
@@ -31,7 +32,7 @@ import styles from './Card.module.css';
  * @public
  */
 export const Card = forwardRef<HTMLDivElement, CardProps>((props, ref) => {
-  const { classNames, cleanedProps } = useStyles('Card', props);
+  const { classNames, cleanedProps } = useStyles(CardDefinition, props);
   const { className, ...rest } = cleanedProps;
 
   return (
@@ -50,7 +51,7 @@ export const Card = forwardRef<HTMLDivElement, CardProps>((props, ref) => {
  */
 export const CardHeader = forwardRef<HTMLDivElement, CardHeaderProps>(
   (props, ref) => {
-    const { classNames, cleanedProps } = useStyles('Card', props);
+    const { classNames, cleanedProps } = useStyles(CardDefinition, props);
     const { className, ...rest } = cleanedProps;
 
     return (
@@ -74,7 +75,7 @@ export const CardHeader = forwardRef<HTMLDivElement, CardHeaderProps>(
  */
 export const CardBody = forwardRef<HTMLDivElement, CardBodyProps>(
   (props, ref) => {
-    const { classNames, cleanedProps } = useStyles('Card', props);
+    const { classNames, cleanedProps } = useStyles(CardDefinition, props);
     const { className, ...rest } = cleanedProps;
 
     return (
@@ -94,7 +95,7 @@ export const CardBody = forwardRef<HTMLDivElement, CardBodyProps>(
  */
 export const CardFooter = forwardRef<HTMLDivElement, CardFooterProps>(
   (props, ref) => {
-    const { classNames, cleanedProps } = useStyles('Card', props);
+    const { classNames, cleanedProps } = useStyles(CardDefinition, props);
     const { className, ...rest } = cleanedProps;
 
     return (

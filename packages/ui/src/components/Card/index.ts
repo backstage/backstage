@@ -15,6 +15,7 @@
  */
 
 export { Card, CardHeader, CardBody, CardFooter } from './Card';
+export { CardDefinition } from './definition';
 
 export type {
   CardProps,

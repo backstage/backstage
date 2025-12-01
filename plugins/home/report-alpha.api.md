@@ -9,9 +9,9 @@ import { ApiFactory } from '@backstage/frontend-plugin-api';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionBlueprintParams } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
-import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
 import { JSX as JSX_2 } from 'react';
+import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { TranslationRef } from '@backstage/frontend-plugin-api';
@@ -23,7 +23,7 @@ const _default: OverridableFrontendPlugin<
   },
   {},
   {
-    'api:home/visits': ExtensionDefinition<{
+    'api:home/visits': OverridableExtensionDefinition<{
       kind: 'api';
       name: 'visits';
       config: {};
@@ -38,7 +38,7 @@ const _default: OverridableFrontendPlugin<
         params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
-    'app-root-element:home/visit-listener': ExtensionDefinition<{
+    'app-root-element:home/visit-listener': OverridableExtensionDefinition<{
       kind: 'app-root-element';
       name: 'visit-listener';
       config: {};
@@ -49,7 +49,7 @@ const _default: OverridableFrontendPlugin<
         element: JSX.Element;
       };
     }>;
-    'page:home': ExtensionDefinition<{
+    'page:home': OverridableExtensionDefinition<{
       config: {
         path: string | undefined;
       };

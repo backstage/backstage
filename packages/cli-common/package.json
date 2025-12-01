@@ -1,6 +1,6 @@
 {
   "name": "@backstage/cli-common",
-  "version": "0.1.15",
+  "version": "0.1.16-next.0",
   "description": "Common functionality used by cli, backend, and create-app",
   "backstage": {
     "role": "node-library"
@@ -33,6 +33,10 @@
     "postpack": "backstage-cli package postpack",
     "start": "backstage-cli package start",
     "test": "backstage-cli package test"
+  },
+  "dependencies": {
+    "global-agent": "^3.0.0",
+    "undici": "^7.2.3"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",

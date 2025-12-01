@@ -14,4 +14,5 @@
  * limitations under the License.
  */
 export { Flex } from './Flex';
+export { FlexDefinition } from './definition';
 export type { FlexProps } from './types';

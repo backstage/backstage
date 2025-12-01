@@ -6,6 +6,7 @@
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionBlueprint } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
+import { JSX as JSX_2 } from 'react';
 import { ListItemProps } from '@material-ui/core/ListItem';
 import { SearchDocument } from '@backstage/plugin-search-common';
 import { SearchResult } from '@backstage/plugin-search-common';
@@ -15,6 +16,7 @@ import { TranslationRef } from '@backstage/core-plugin-api/alpha';
 export type BaseSearchResultListItemProps<T = {}> = T & {
   rank?: number;
   result?: SearchDocument;
+  icon?: JSX_2.Element;
 } & Omit<ListItemProps, 'button'>;
 
 // @alpha (undocumented)
@@ -51,7 +53,7 @@ export interface SearchFilterBlueprintParams {
 // @alpha (undocumented)
 export type SearchFilterExtensionComponent = (
   props: SearchFilterExtensionComponentProps,
-) => JSX.Element;
+) => JSX_2.Element;
 
 // @alpha (undocumented)
 export type SearchFilterExtensionComponentProps = {
@@ -66,7 +68,7 @@ export const SearchFilterResultTypeBlueprint: ExtensionBlueprint<{
     {
       value: string;
       name: string;
-      icon: JSX.Element;
+      icon: JSX_2;
     },
     'search.filters.result-types.type',
     {}
@@ -79,7 +81,7 @@ export const SearchFilterResultTypeBlueprint: ExtensionBlueprint<{
       {
         value: string;
         name: string;
-        icon: JSX.Element;
+        icon: JSX_2;
       },
       'search.filters.result-types.type',
       {}
@@ -117,7 +119,7 @@ export type SearchResultItemExtensionComponent = <
   P extends BaseSearchResultListItemProps,
 >(
   props: P,
-) => JSX.Element | null;
+) => JSX_2.Element | null;
 
 // @alpha (undocumented)
 export type SearchResultItemExtensionPredicate = (
@@ -132,6 +134,7 @@ export const SearchResultListItemBlueprint: ExtensionBlueprint<{
     {
       predicate?: SearchResultItemExtensionPredicate;
       component: SearchResultItemExtensionComponent;
+      icon?: JSX_2.Element;
     },
     'search.search-result-list-item.item',
     {}
@@ -148,6 +151,7 @@ export const SearchResultListItemBlueprint: ExtensionBlueprint<{
       {
         predicate?: SearchResultItemExtensionPredicate;
         component: SearchResultItemExtensionComponent;
+        icon?: JSX_2.Element;
       },
       'search.search-result-list-item.item',
       {}
@@ -162,6 +166,7 @@ export interface SearchResultListItemBlueprintParams {
       noTrack?: boolean;
     };
   }) => Promise<SearchResultItemExtensionComponent>;
+  icon?: JSX_2.Element;
   predicate?: SearchResultItemExtensionPredicate;
 }
 

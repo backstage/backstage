@@ -69,17 +69,23 @@ Once the release has been published edit the newly created release in the [GitHu
 **This emergency release process is intended only for the Backstage
 maintainers.**
 
-Given one or more PRs towards master that we want to create a patch release for, run the following script from the repo root:
+Given one or more PRs towards master that we want to create a patch release for, add them to the patch release queue by running the following command for each PR:
 
 ```bash
-./scripts/patch-release-for-pr.js <pr-number> <pr-number-2> ...
+yarn patch-pr <pr-number> <description>
 ```
 
-Wait until the script has finished executing, at the end of the output you will find a link of the format `https://github.com/backstage/backstage/pull/new/patch-release-pr-...`. Open this link in your browser to create a PR for the patch release. Finish the sentence "This release fixes an issue where..." and create the PR.
+This creates a patch file in the `.patches/` directory (e.g., `.patches/pr-12345.txt`) containing the description of the fix. The [sync_patch-release.yml](https://github.com/backstage/backstage/blob/master/.github/workflows/sync_patch-release.yml) workflow will automatically detect these patch files and create or update a "Patch Release" PR.
 
-Once the PR has been approved and merged, the patch release will be automatically created. The patch release is complete when a notification has been posted to Discord in the `#announcements` channel. Keep an eye on "Deploy Packages" workflow and re-trigger if it fails. It is safe to re-trigger any part of this workflow, including the release step.
+The workflow will:
 
-If the above process fails, you can fall back to the manual process documented below.
+- Automatically create a patch release PR if one doesn't exist
+- Update the existing PR if patch files are added, modified, or removed
+- Close and delete the PR branch if all patch files are removed
+
+Once the "Patch Release" PR has been approved and merged, the patch release will be automatically created. The patch files will be automatically removed from the master branch after the patch release is merged. From here the patch release process is the same as the usual release process, starting with the notification in the `#maintainers` channel on Discord.
+
+If the above process fails, you can fall back to the manual process documented below, or run the `./scripts/patch-release-for-pr.js <pr-number> <pr-number-2> ...` script to manually create a patch release PR.
 
 ### Old Process
 

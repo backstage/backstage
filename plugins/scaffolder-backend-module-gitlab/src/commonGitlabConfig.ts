@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/* We want to maintain the same information as an enum, so we disable the redeclaration warning */
+/* eslint-disable @typescript-eslint/no-redeclare */
 
 import { z } from 'zod';
 
@@ -35,11 +37,26 @@ export const commonGitlabConfigExample = {
  *
  * @public
  */
-export enum IssueType {
-  ISSUE = 'issue',
-  INCIDENT = 'incident',
-  TEST = 'test_case',
-  TASK = 'task',
+export const IssueType = {
+  ISSUE: 'issue',
+  INCIDENT: 'incident',
+  TEST: 'test_case',
+  TASK: 'task',
+} as const;
+
+/**
+ * @public
+ */
+export type IssueType = (typeof IssueType)[keyof typeof IssueType];
+
+/**
+ * @public
+ */
+export namespace IssueType {
+  export type ISSUE = typeof IssueType.ISSUE;
+  export type INCIDENT = typeof IssueType.INCIDENT;
+  export type TEST = typeof IssueType.TEST;
+  export type TASK = typeof IssueType.TASK;
 }
 
 /**
@@ -47,7 +64,21 @@ export enum IssueType {
  *
  * @public
  */
-export enum IssueStateEvent {
-  CLOSE = 'close',
-  REOPEN = 'reopen',
+export const IssueStateEvent = {
+  CLOSE: 'close',
+  REOPEN: 'reopen',
+} as const;
+
+/**
+ * @public
+ */
+export type IssueStateEvent =
+  (typeof IssueStateEvent)[keyof typeof IssueStateEvent];
+
+/**
+ * @public
+ */
+export namespace IssueStateEvent {
+  export type CLOSE = typeof IssueStateEvent.CLOSE;
+  export type REOPEN = typeof IssueStateEvent.REOPEN;
 }

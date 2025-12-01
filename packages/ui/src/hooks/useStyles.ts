@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 import { useBreakpoint, breakpoints } from './useBreakpoint';
-import { componentDefinitions } from '../utils/componentDefinitions';
-import type { ComponentDefinitionName, ComponentClassNames } from '../types';
+import type { ComponentDefinition } from '../types';
 import { utilityClassMap } from '../utils/utilityClassMap';
 
 /**
@@ -55,26 +54,25 @@ function resolveResponsiveValue(
 
 /**
  * React hook to get class names and data attributes for a component with responsive support
- * @param componentName - The name of the component
+ * @param componentDefinition - The component's definition object
  * @param props - All component props
  * @returns Object with classNames, dataAttributes, utilityClasses, style, and cleanedProps
  */
 export function useStyles<
-  T extends ComponentDefinitionName,
+  T extends ComponentDefinition,
   P extends Record<string, any> = Record<string, any>,
 >(
-  componentName: T,
+  componentDefinition: T,
   props: P = {} as P,
 ): {
-  classNames: ComponentClassNames<T>;
+  classNames: T['classNames'];
   dataAttributes: Record<string, string>;
   utilityClasses: string;
   style: React.CSSProperties;
   cleanedProps: P;
 } {
   const { breakpoint } = useBreakpoint();
-  const componentDefinition = componentDefinitions[componentName];
-  const classNames = componentDefinition.classNames as ComponentClassNames<T>;
+  const classNames = componentDefinition.classNames;
   const utilityPropNames =
     ('utilityProps' in componentDefinition
       ? componentDefinition.utilityProps

@@ -460,5 +460,6 @@ export interface UnifiedThemeProviderProps {
   children: ReactNode;
   // (undocumented)
   theme: UnifiedTheme;
+  themeName?: string;
 }
 ```

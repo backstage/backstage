@@ -113,11 +113,26 @@ export type DefaultRelationsInclude = {
 };
 
 // @public
-export enum Direction {
-  BOTTOM_TOP = 'BT',
-  LEFT_RIGHT = 'LR',
-  RIGHT_LEFT = 'RL',
-  TOP_BOTTOM = 'TB',
+export const Direction: {
+  readonly TOP_BOTTOM: 'TB';
+  readonly BOTTOM_TOP: 'BT';
+  readonly LEFT_RIGHT: 'LR';
+  readonly RIGHT_LEFT: 'RL';
+};
+
+// @public (undocumented)
+export type Direction = (typeof Direction)[keyof typeof Direction];
+
+// @public (undocumented)
+export namespace Direction {
+  // (undocumented)
+  export type BOTTOM_TOP = typeof Direction.BOTTOM_TOP;
+  // (undocumented)
+  export type LEFT_RIGHT = typeof Direction.LEFT_RIGHT;
+  // (undocumented)
+  export type RIGHT_LEFT = typeof Direction.RIGHT_LEFT;
+  // (undocumented)
+  export type TOP_BOTTOM = typeof Direction.TOP_BOTTOM;
 }
 
 // @public
@@ -182,6 +197,7 @@ export type EntityRelationsGraphProps = {
   renderEdge?: DependencyGraphTypes.RenderEdgeFunction<EntityEdge>;
   curve?: 'curveStepBefore' | 'curveMonotoneX';
   showArrowHeads?: boolean;
+  allowFullscreen?: boolean;
 };
 
 // @public

@@ -1,5 +1,53 @@
 # @backstage/backend-plugin-api
 
+## 1.5.1-next.0
+
+### Patch Changes
+
+- d9759a1: **BREAKING ALPHA**: The old `instanceMetadataService` has been removed from alpha. Please switch over to using the stable `coreServices.rootInstanceMetadata` and related types instead, available from `@backstage/backend-plugin-api`.
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.10-next.0
+  - @backstage/cli-common@0.1.16-next.0
+  - @backstage/plugin-permission-node@0.10.7-next.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-permission-common@0.9.3
+
+## 1.5.0
+
+### Minor Changes
+
+- a17d9df: Promote `instanceMetadata` service to main entrypoint.
+- 62fc2de: Explicitly mark `coreServices.rootInstanceMetadata` as a root service.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.3
+  - @backstage/plugin-auth-node@0.6.9
+  - @backstage/config@1.3.6
+  - @backstage/plugin-permission-node@0.10.6
+
+## 1.5.0-next.2
+
+### Minor Changes
+
+- 62fc2de: Explicitly mark `coreServices.rootInstanceMetadata` as a root service.
+
+## 1.5.0-next.1
+
+### Minor Changes
+
+- a17d9df: Promote `instanceMetadata` service to main entrypoint.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.3-next.1
+  - @backstage/plugin-auth-node@0.6.9-next.1
+  - @backstage/plugin-permission-node@0.10.6-next.1
+
 ## 1.4.5-next.0
 
 ### Patch Changes

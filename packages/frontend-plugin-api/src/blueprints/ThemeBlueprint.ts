@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { AppTheme } from '@backstage/core-plugin-api';
+import { AppTheme } from '../apis/definitions/AppThemeApi';
 import { createExtensionBlueprint, createExtensionDataRef } from '../wiring';
 
 const themeDataRef = createExtensionDataRef<AppTheme>().with({

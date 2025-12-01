@@ -15,13 +15,14 @@
  */
 
 import { useStyles } from '../../hooks/useStyles';
+import { SkeletonDefinition } from './definition';
 import { SkeletonProps } from './types';
 import styles from './Skeleton.module.css';
 import clsx from 'clsx';
 
 /** @public */
 export const Skeleton = (props: SkeletonProps) => {
-  const { classNames, cleanedProps } = useStyles('Skeleton', {
+  const { classNames, cleanedProps } = useStyles(SkeletonDefinition, {
     width: 80,
     height: 24,
     rounded: false,

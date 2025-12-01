@@ -13,27 +13,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { DiscoveryService, LoggerService } from '@backstage/backend-plugin-api';
-import { InstanceMetadataService } from '@backstage/backend-plugin-api/alpha';
+import {
+  DiscoveryService,
+  RootInstanceMetadataService,
+  LoggerService,
+} from '@backstage/backend-plugin-api';
 import { Request, Response, NextFunction } from 'express';
 import { createProxyMiddleware } from 'http-proxy-middleware';
 import { context } from '@opentelemetry/api';
 import { getRPCMetadata } from '@opentelemetry/core';
 
-export function createRouter({
+const MAX_HOPS = 3;
+const HOPS_HEADER = 'backstage-gateway-hops';
+
+export async function createRouter({
   discovery,
   instanceMeta,
+  logger,
 }: {
   discovery: DiscoveryService;
-  instanceMeta: InstanceMetadataService;
+  instanceMeta: RootInstanceMetadataService;
   logger: LoggerService;
 }) {
-  const localPluginIds = new Set(
-    instanceMeta
-      .getInstalledFeatures()
-      .filter(f => f.type === 'plugin')
-      .map(f => f.pluginId),
-  );
+  const plugins = await instanceMeta.getInstalledPlugins();
+  const localPluginIds = new Set(plugins.map(f => f.pluginId));
 
   const proxy = createProxyMiddleware({
     changeOrigin: true,
@@ -42,6 +45,12 @@ export function createRouter({
       return discovery.getBaseUrl(pluginId);
     },
     on: {
+      proxyReq(proxyReq, req: Request<{ pluginId: string }>) {
+        const currentHops =
+          Math.max(parseInt(req.headers[HOPS_HEADER] as string, 10), 0) || 0;
+
+        proxyReq.setHeader(HOPS_HEADER, currentHops + 1);
+      },
       proxyRes(proxyRes, _req, res) {
         // https://github.com/chimurai/http-proxy-middleware/discussions/765
         proxyRes.on('close', () => {
@@ -60,6 +69,20 @@ export function createRouter({
   ) {
     if (localPluginIds.has(req.params.pluginId)) {
       next();
+      return;
+    }
+
+    const currentHops = parseInt(req.headers[HOPS_HEADER] as string, 10) || 0;
+    if (currentHops >= MAX_HOPS) {
+      logger.warn(
+        `Proxy loop detected for plugin '${req.params.pluginId}': request exceeded maximum hop count (${currentHops})`,
+      );
+      res.status(508).json({
+        error: {
+          name: 'LoopDetectedError',
+          message: `Maximum proxy hop count exceeded (${currentHops})`,
+        },
+      });
       return;
     }
 

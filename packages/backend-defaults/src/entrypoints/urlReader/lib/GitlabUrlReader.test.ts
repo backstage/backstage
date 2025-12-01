@@ -670,6 +670,17 @@ describe('GitlabUrlReader', () => {
       );
     });
 
+    it('works when there are multiple globs', async () => {
+      const result = await gitlabProcessor.search(
+        'https://gitlab.com/backstage/mock/tree/main/**/docs/**/index.*',
+      );
+      expect(result.etag).toBe('sha123abc');
+      expect(result.files.length).toBe(1);
+      expect(result.files[0].url).toBe(
+        'https://gitlab.com/backstage/mock/tree/main/docs/index.md',
+      );
+    });
+
     it('works for the naive case', async () => {
       const result = await gitlabProcessor.search(
         'https://gitlab.com/backstage/mock/tree/main/**/index.*',

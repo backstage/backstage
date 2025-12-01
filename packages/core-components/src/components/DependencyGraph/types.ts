@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/* We want to maintain the same information as an enum, so we disable the redeclaration warning */
+/* eslint-disable @typescript-eslint/no-redeclare */
 
 /**
  * Types used to customize and provide data to {@link DependencyGraph}
@@ -134,23 +136,38 @@ export namespace DependencyGraphTypes {
    *
    * @public
    */
-  export enum Direction {
+  export const Direction = {
     /**
      * Top to Bottom
      */
-    TOP_BOTTOM = 'TB',
+    TOP_BOTTOM: 'TB',
     /**
      * Bottom to Top
      */
-    BOTTOM_TOP = 'BT',
+    BOTTOM_TOP: 'BT',
     /**
      * Left to Right
      */
-    LEFT_RIGHT = 'LR',
+    LEFT_RIGHT: 'LR',
     /**
      * Right to Left
      */
-    RIGHT_LEFT = 'RL',
+    RIGHT_LEFT: 'RL',
+  } as const;
+
+  /**
+   * @public
+   */
+  export type Direction = (typeof Direction)[keyof typeof Direction];
+
+  /**
+   * @public
+   */
+  export namespace Direction {
+    export type TOP_BOTTOM = typeof Direction.TOP_BOTTOM;
+    export type BOTTOM_TOP = typeof Direction.BOTTOM_TOP;
+    export type LEFT_RIGHT = typeof Direction.LEFT_RIGHT;
+    export type RIGHT_LEFT = typeof Direction.RIGHT_LEFT;
   }
 
   /**
@@ -158,23 +175,38 @@ export namespace DependencyGraphTypes {
    *
    * @public
    */
-  export enum Alignment {
+  export const Alignment = {
     /**
      * Up Left
      */
-    UP_LEFT = 'UL',
+    UP_LEFT: 'UL',
     /**
      * Up Right
      */
-    UP_RIGHT = 'UR',
+    UP_RIGHT: 'UR',
     /**
      * Down Left
      */
-    DOWN_LEFT = 'DL',
+    DOWN_LEFT: 'DL',
     /**
      * Down Right
      */
-    DOWN_RIGHT = 'DR',
+    DOWN_RIGHT: 'DR',
+  } as const;
+
+  /**
+   * @public
+   */
+  export type Alignment = (typeof Alignment)[keyof typeof Alignment];
+
+  /**
+   * @public
+   */
+  export namespace Alignment {
+    export type UP_LEFT = typeof Alignment.UP_LEFT;
+    export type UP_RIGHT = typeof Alignment.UP_RIGHT;
+    export type DOWN_LEFT = typeof Alignment.DOWN_LEFT;
+    export type DOWN_RIGHT = typeof Alignment.DOWN_RIGHT;
   }
 
   /**
@@ -182,15 +214,15 @@ export namespace DependencyGraphTypes {
    *
    * @public
    */
-  export enum Ranker {
+  export const Ranker = {
     /**
      * {@link https://en.wikipedia.org/wiki/Network_simplex_algorithm | Network Simplex} algorithm
      */
-    NETWORK_SIMPLEX = 'network-simplex',
+    NETWORK_SIMPLEX: 'network-simplex',
     /**
      * Tight Tree algorithm
      */
-    TIGHT_TREE = 'tight-tree',
+    TIGHT_TREE: 'tight-tree',
     /**
      * Longest path algorithm
      *
@@ -198,7 +230,21 @@ export namespace DependencyGraphTypes {
      *
      * Simplest and fastest
      */
-    LONGEST_PATH = 'longest-path',
+    LONGEST_PATH: 'longest-path',
+  } as const;
+
+  /**
+   * @public
+   */
+  export type Ranker = (typeof Ranker)[keyof typeof Ranker];
+
+  /**
+   * @public
+   */
+  export namespace Ranker {
+    export type NETWORK_SIMPLEX = typeof Ranker.NETWORK_SIMPLEX;
+    export type TIGHT_TREE = typeof Ranker.TIGHT_TREE;
+    export type LONGEST_PATH = typeof Ranker.LONGEST_PATH;
   }
 
   /**
@@ -206,9 +252,24 @@ export namespace DependencyGraphTypes {
    *
    * @public
    */
-  export enum LabelPosition {
-    LEFT = 'l',
-    RIGHT = 'r',
-    CENTER = 'c',
+  export const LabelPosition = {
+    LEFT: 'l',
+    RIGHT: 'r',
+    CENTER: 'c',
+  } as const;
+
+  /**
+   * @public
+   */
+  export type LabelPosition =
+    (typeof LabelPosition)[keyof typeof LabelPosition];
+
+  /**
+   * @public
+   */
+  export namespace LabelPosition {
+    export type LEFT = typeof LabelPosition.LEFT;
+    export type RIGHT = typeof LabelPosition.RIGHT;
+    export type CENTER = typeof LabelPosition.CENTER;
   }
 }

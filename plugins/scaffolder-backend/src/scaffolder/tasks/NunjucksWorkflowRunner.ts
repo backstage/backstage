@@ -51,6 +51,7 @@ import { createConditionAuthorizer } from '@backstage/plugin-permission-node';
 import { actionExecutePermission } from '@backstage/plugin-scaffolder-common/alpha';
 import {
   TaskContext,
+  TaskSecrets,
   TemplateAction,
   TemplateFilter,
   TemplateGlobal,
@@ -64,6 +65,8 @@ import {
   CheckpointContext,
   CheckpointState,
 } from '@backstage/plugin-scaffolder-node/alpha';
+import { Config } from '@backstage/config';
+import { resolveDefaultEnvironment } from '../../lib/defaultEnvironment';
 
 type NunjucksWorkflowRunnerOptions = {
   workingDirectory: string;
@@ -74,10 +77,12 @@ type NunjucksWorkflowRunnerOptions = {
   additionalTemplateFilters?: Record<string, TemplateFilter>;
   additionalTemplateGlobals?: Record<string, TemplateGlobal>;
   permissions?: PermissionsService;
+  config?: Config;
 };
 
 type TemplateContext = {
   parameters: JsonObject;
+  environment: JsonObject;
   EXPERIMENTAL_recovery?: TaskRecovery;
   steps: {
     [stepName: string]: { output: { [outputName: string]: JsonValue } };
@@ -103,10 +108,12 @@ const createStepLogger = ({
   task,
   step,
   rootLogger,
+  redactions,
 }: {
   task: TaskContext;
   step: TaskStep;
   rootLogger: LoggerService;
+  redactions?: Record<string, string>;
 }) => {
   const taskLogger = WinstonLogger.create({
     level: process.env.LOG_LEVEL || 'info',
@@ -117,7 +124,7 @@ const createStepLogger = ({
     transports: [new BackstageLoggerTransport(rootLogger, task, step.id)],
   });
 
-  taskLogger.addRedactions(Object.values(task.secrets ?? {}));
+  taskLogger.addRedactions(Object.values(redactions ?? {}));
 
   return { taskLogger };
 };
@@ -129,6 +136,10 @@ const isActionAuthorized = createConditionAuthorizer(
 export class NunjucksWorkflowRunner implements WorkflowRunner {
   private readonly defaultTemplateFilters: Record<string, TemplateFilter>;
   private readonly options: NunjucksWorkflowRunnerOptions;
+  private environment: {
+    parameters: JsonObject;
+    secrets?: Record<string, string>;
+  } = { parameters: {}, secrets: {} };
 
   constructor(options: NunjucksWorkflowRunnerOptions) {
     this.options = options;
@@ -140,6 +151,24 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
   }
 
   private readonly tracker = scaffoldingTracker();
+
+  async getEnvironmentConfig(): Promise<{
+    parameters: JsonObject;
+    secrets?: TaskSecrets;
+  }> {
+    if (this.options.config) {
+      const defaultEnvironment = resolveDefaultEnvironment(this.options.config);
+      return {
+        parameters: defaultEnvironment.parameters,
+        secrets: defaultEnvironment.secrets,
+      };
+    }
+
+    return {
+      parameters: {},
+      secrets: {},
+    };
+  }
 
   private isSingleTemplateString(input: string) {
     const { parser, nodes } = nunjucks as unknown as {
@@ -254,11 +283,22 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
         task,
         step,
         rootLogger: this.options.logger,
+        redactions: {
+          ...task.secrets,
+          ...this.environment?.secrets,
+        },
       });
 
       if (task.isDryRun) {
         const redactedSecrets = Object.fromEntries(
           Object.entries(task.secrets ?? {}).map(secret => [secret[0], '***']),
+        );
+
+        const redactedEnvironmentSecrets = Object.fromEntries(
+          Object.entries(this.environment?.secrets ?? {}).map(secret => [
+            secret[0],
+            '***',
+          ]),
         );
         const debugInput =
           (step.input &&
@@ -266,6 +306,10 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
               step.input,
               {
                 ...context,
+                environment: {
+                  parameters: this.environment?.parameters || {},
+                  secrets: redactedEnvironmentSecrets,
+                },
                 secrets: redactedSecrets,
               },
               renderTemplate,
@@ -300,7 +344,14 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
         step.each &&
         this.render(
           step.each,
-          { ...context, secrets: task.secrets ?? {} },
+          {
+            ...context,
+            environment: {
+              parameters: this.environment?.parameters || {},
+              secrets: this.environment?.secrets ?? {},
+            },
+            secrets: task?.secrets ?? {},
+          },
           renderTemplate,
         );
 
@@ -322,7 +373,15 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
         input: step.input
           ? this.render(
               step.input,
-              { ...context, secrets: task.secrets ?? {}, ...i },
+              {
+                ...context,
+                environment: {
+                  parameters: this.environment?.parameters ?? {},
+                  secrets: this.environment?.secrets ?? {},
+                },
+                secrets: task.secrets ?? {},
+                ...i,
+              },
               renderTemplate,
             )
           : {},
@@ -485,6 +544,8 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
     const { additionalTemplateFilters, additionalTemplateGlobals } =
       this.options;
 
+    this.environment = await this.getEnvironmentConfig();
+
     const renderTemplate = await SecureTemplater.loadRenderer({
       templateFilters: {
         ...this.defaultTemplateFilters,
@@ -501,6 +562,10 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
 
       const context: TemplateContext = {
         parameters: task.spec.parameters,
+        environment: {
+          parameters: this.environment?.parameters || {},
+          secrets: {},
+        },
         steps: {},
         user: task.spec.user,
         context: {

@@ -1,5 +1,11 @@
 # @backstage/cli-common
 
+## 0.1.16-next.0
+
+### Patch Changes
+
+- c8c2329: Add proxy configuration from env-vars to create-app tasks
+
 ## 0.1.15
 
 ### Patch Changes

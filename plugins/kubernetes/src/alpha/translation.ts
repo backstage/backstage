@@ -25,6 +25,14 @@ export const kubernetesTranslationRef = createTranslationRef({
         message:
           "To view Kubernetes objects, contact your portal administrator to give you the 'kubernetes.clusters.read' and 'kubernetes.resources.read' permission.",
       },
+      title: 'Your Clusters',
+      emptyState: {
+        title: 'No Kubernetes resources',
+        description: 'No resources on any known clusters for {{entityName}}',
+      },
+    },
+    entityContent: {
+      title: 'Kubernetes',
     },
   },
 });

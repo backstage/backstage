@@ -21,7 +21,7 @@ import {
   useEffect,
   lazy as reactLazy,
 } from 'react';
-import { AnalyticsContext, useAnalytics } from '@backstage/core-plugin-api';
+import { AnalyticsContext, useAnalytics } from '../analytics';
 import { ErrorBoundary } from './ErrorBoundary';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { routableExtensionRenderedEvent } from '../../../core-plugin-api/src/analytics/Tracker';

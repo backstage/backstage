@@ -176,7 +176,10 @@ export class SignalClient implements SignalApi {
     };
 
     this.ws.onerror = () => {
-      this.reconnect();
+      if (this.ws) {
+        this.ws.close();
+      }
+      this.ws = null;
     };
 
     this.ws.onclose = (ev: CloseEvent) => {

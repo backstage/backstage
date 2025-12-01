@@ -18,6 +18,7 @@ import clsx from 'clsx';
 import { Text, ButtonIcon, Select } from '../..';
 import type { TablePaginationProps } from './types';
 import { useStyles } from '../../hooks/useStyles';
+import { TablePaginationDefinition } from './definition';
 import styles from './TablePagination.module.css';
 import { RiArrowLeftSLine, RiArrowRightSLine } from '@remixicon/react';
 
@@ -27,7 +28,7 @@ import { RiArrowLeftSLine, RiArrowRightSLine } from '@remixicon/react';
  * @public
  */
 export function TablePagination(props: TablePaginationProps) {
-  const { classNames, cleanedProps } = useStyles('TablePagination', {
+  const { classNames, cleanedProps } = useStyles(TablePaginationDefinition, {
     showPageSizeOptions: true,
     ...props,
   });

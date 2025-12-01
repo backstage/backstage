@@ -15,6 +15,7 @@
  */
 
 import { useStyles } from '../../hooks/useStyles';
+import { VisuallyHiddenDefinition } from './definition';
 import { VisuallyHiddenProps } from './types';
 import styles from './VisuallyHidden.module.css';
 import clsx from 'clsx';
@@ -29,7 +30,10 @@ import clsx from 'clsx';
  * @public
  */
 export const VisuallyHidden = (props: VisuallyHiddenProps) => {
-  const { classNames, cleanedProps } = useStyles('VisuallyHidden', props);
+  const { classNames, cleanedProps } = useStyles(
+    VisuallyHiddenDefinition,
+    props,
+  );
   const { className, ...rest } = cleanedProps;
 
   return (

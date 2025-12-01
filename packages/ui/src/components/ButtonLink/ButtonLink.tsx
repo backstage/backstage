@@ -20,6 +20,8 @@ import { Link as RALink, RouterProvider } from 'react-aria-components';
 import { useNavigate, useHref } from 'react-router-dom';
 import type { ButtonLinkProps } from './types';
 import { useStyles } from '../../hooks/useStyles';
+import { ButtonDefinition } from '../Button/definition';
+import { ButtonLinkDefinition } from './definition';
 import { isExternalLink } from '../../utils/isExternalLink';
 import stylesButton from '../Button/Button.module.css';
 
@@ -28,60 +30,55 @@ export const ButtonLink = forwardRef(
   (props: ButtonLinkProps, ref: Ref<HTMLAnchorElement>) => {
     const navigate = useNavigate();
 
-    const { classNames, dataAttributes, cleanedProps } = useStyles('Button', {
-      size: 'small',
-      variant: 'primary',
-      ...props,
-    });
+    const { classNames, dataAttributes, cleanedProps } = useStyles(
+      ButtonDefinition,
+      {
+        size: 'small',
+        variant: 'primary',
+        ...props,
+      },
+    );
 
-    const { classNames: classNamesButtonLink } = useStyles('ButtonLink');
+    const { classNames: classNamesButtonLink } =
+      useStyles(ButtonLinkDefinition);
 
     const { children, className, iconStart, iconEnd, href, ...rest } =
       cleanedProps;
 
     const isExternal = isExternalLink(href);
 
-    // If it's an external link, render RALink without RouterProvider
-    if (isExternal) {
-      return (
-        <RALink
-          className={clsx(
-            classNames.root,
-            classNamesButtonLink.root,
-            stylesButton[classNames.root],
-            className,
-          )}
-          ref={ref}
-          {...dataAttributes}
-          href={href}
-          {...rest}
+    const linkButton = (
+      <RALink
+        className={clsx(
+          classNames.root,
+          classNamesButtonLink.root,
+          stylesButton[classNames.root],
+          className,
+        )}
+        ref={ref}
+        {...dataAttributes}
+        href={href}
+        {...rest}
+      >
+        <span
+          className={clsx(classNames.content, stylesButton[classNames.content])}
         >
           {iconStart}
           {children}
           {iconEnd}
-        </RALink>
-      );
+        </span>
+      </RALink>
+    );
+
+    // If it's an external link, render RALink without RouterProvider
+    if (isExternal) {
+      return linkButton;
     }
 
     // For internal links, use RouterProvider
     return (
       <RouterProvider navigate={navigate} useHref={useHref}>
-        <RALink
-          className={clsx(
-            classNames.root,
-            classNamesButtonLink.root,
-            stylesButton[classNames.root],
-            className,
-          )}
-          ref={ref}
-          {...dataAttributes}
-          href={href}
-          {...rest}
-        >
-          {iconStart}
-          {children}
-          {iconEnd}
-        </RALink>
+        {linkButton}
       </RouterProvider>
     );
   },

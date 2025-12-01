@@ -21,6 +21,8 @@ import { renderCondition } from '../../utils/pod';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import Chip from '@material-ui/core/Chip';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { kubernetesReactTranslationRef } from '../../translation';
 
 export const DeploymentDrawer = ({
   deployment,
@@ -29,6 +31,7 @@ export const DeploymentDrawer = ({
   deployment: V1Deployment;
   expanded?: boolean;
 }) => {
+  const { t } = useTranslationRef(kubernetesReactTranslationRef);
   const namespace = deployment.metadata?.namespace;
   return (
     <KubernetesStructuredMetadataTableDrawer
@@ -71,7 +74,10 @@ export const DeploymentDrawer = ({
         </Grid>
         {namespace && (
           <Grid item>
-            <Chip size="small" label={`namespace: ${namespace}`} />
+            <Chip
+              size="small"
+              label={t('namespace.labelWithValue', { namespace })}
+            />
           </Grid>
         )}
       </Grid>

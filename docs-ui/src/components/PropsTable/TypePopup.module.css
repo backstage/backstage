@@ -25,7 +25,7 @@
   border: 1px solid var(--border);
   box-shadow: 0 8px 20px rgba(0 0 0 / 0.1);
   border-radius: 6px;
-  background: var(--panel);
+  background: var(--bg);
   color: var(--primary);
   outline: none;
   /* max-width: 400px; */
@@ -43,7 +43,7 @@
 
 .arrow svg {
   display: block;
-  fill: var(--panel);
+  fill: var(--bg);
   stroke: var(--border);
   stroke-width: 1px;
   transform: rotate(180deg);

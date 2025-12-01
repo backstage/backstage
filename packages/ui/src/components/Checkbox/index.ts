@@ -14,4 +14,5 @@
  * limitations under the License.
  */
 export { Checkbox } from './Checkbox';
+export { CheckboxDefinition } from './definition';
 export type { CheckboxProps } from './types';

@@ -210,6 +210,8 @@ catalog:
         filters: # optional filters
           branch: 'develop' # optional string
           repository: '.*' # optional Regex
+        pageSizes:
+          repositories: 25
       wildcardProviderId:
         organization: 'new-org' # string
         catalogPath: '/groups/**/*.yaml' # this will search all folders for files that end in .yaml
@@ -308,6 +310,10 @@ If you do so, `default` will be used as provider ID.
     The amount of time that should pass before the first invocation happens.
   - **`scope`** _(optional)_:
     `'global'` or `'local'`. Sets the scope of concurrency control.
+- **`pageSizes`** _(optional)_:
+  Configure page sizes for GitHub GraphQL API queries. This can help prevent `RESOURCE_LIMITS_EXCEEDED` errors.
+  - **`repositories`** _(optional)_:
+    Number of repositories to fetch per page. Defaults to `25`. Reduce this value if hitting API resource limits.
 
 ## GitHub API Rate Limits
 

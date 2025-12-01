@@ -42,6 +42,7 @@ import {
   TabProps as AriaTabProps,
 } from 'react-aria-components';
 import { useStyles } from '../../hooks/useStyles';
+import { TabsDefinition } from './definition';
 import styles from './Tabs.module.css';
 import clsx from 'clsx';
 
@@ -84,7 +85,7 @@ const isTabActive = (
  * @public
  */
 export const Tabs = (props: TabsProps) => {
-  const { classNames, cleanedProps } = useStyles('Tabs', props);
+  const { classNames, cleanedProps } = useStyles(TabsDefinition, props);
   const { className, children, ...rest } = cleanedProps;
   const tabsRef = useRef<HTMLDivElement>(null);
   const tabRefs = useRef<Map<string, HTMLDivElement>>(new Map());
@@ -168,7 +169,7 @@ export const Tabs = (props: TabsProps) => {
  * @public
  */
 export const TabList = (props: TabListProps) => {
-  const { classNames, cleanedProps } = useStyles('Tabs', props);
+  const { classNames, cleanedProps } = useStyles(TabsDefinition, props);
   const { className, children, ...rest } = cleanedProps;
   const { setHoveredKey, tabRefs, tabsRef, hoveredKey, prevHoveredKey } =
     useTabsContext();
@@ -219,7 +220,7 @@ export const TabList = (props: TabListProps) => {
  * @public
  */
 export const Tab = (props: TabProps) => {
-  const { classNames, cleanedProps } = useStyles('Tabs', props);
+  const { classNames, cleanedProps } = useStyles(TabsDefinition, props);
   const {
     className,
     href,
@@ -249,7 +250,7 @@ export const Tab = (props: TabProps) => {
  * @public
  */
 export const TabPanel = (props: TabPanelProps) => {
-  const { classNames, cleanedProps } = useStyles('Tabs', props);
+  const { classNames, cleanedProps } = useStyles(TabsDefinition, props);
   const { className, children, ...rest } = cleanedProps;
 
   return (

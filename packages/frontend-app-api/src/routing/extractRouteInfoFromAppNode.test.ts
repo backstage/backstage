@@ -636,7 +636,7 @@ describe('discovery', () => {
           },
         ),
       ).toThrow(
-        /Refused to resolve alias 'other.root' for RouteRef{created at 'at .*extractRouteInfoFromAppNode\.test\.ts:\d+:\d+'} as it points to a different plugin, the expected plugin is 'test' but the alias points to 'other'/,
+        /Refused to resolve alias 'other.root' for routeRef{id=undefined,at='.*extractRouteInfoFromAppNode\.test\.ts:\d+:\d+'} as it points to a different plugin, the expected plugin is 'test' but the alias points to 'other'/,
       );
     });
 
@@ -662,7 +662,7 @@ describe('discovery', () => {
           },
         ),
       ).toThrow(
-        /Alias loop detected for RouteRef{created at 'at .*extractRouteInfoFromAppNode\.test\.ts:\d+:\d+'}/,
+        /Alias loop detected for routeRef{id=undefined,at='.*extractRouteInfoFromAppNode\.test\.ts:\d+:\d+'}/,
       );
     });
   });

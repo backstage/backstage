@@ -26,6 +26,7 @@ import { TokenIssuer } from '../identity/types';
 import { UserInfoDatabase } from '../database/UserInfoDatabase';
 import { OidcDatabase } from '../database/OidcDatabase';
 import { json } from 'express';
+import { readDcrTokenExpiration } from './readTokenExpiration.ts';
 
 export class OidcRouter {
   private readonly oidc: OidcService;
@@ -346,12 +347,15 @@ export class OidcRouter {
           });
         }
 
+        const expiresIn = readDcrTokenExpiration(this.config);
+
         try {
           const result = await this.oidc.exchangeCodeForToken({
             code,
             redirectUri,
             codeVerifier,
             grantType,
+            expiresIn,
           });
 
           return res.json({

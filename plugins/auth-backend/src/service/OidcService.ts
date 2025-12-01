@@ -17,8 +17,8 @@ import { AuthService, RootConfigService } from '@backstage/backend-plugin-api';
 import { TokenIssuer } from '../identity/types';
 import { UserInfoDatabase } from '../database/UserInfoDatabase';
 import {
-  InputError,
   AuthenticationError,
+  InputError,
   NotFoundError,
 } from '@backstage/errors';
 import { decodeJwt } from 'jose';
@@ -347,8 +347,9 @@ export class OidcService {
     redirectUri: string;
     codeVerifier?: string;
     grantType: string;
+    expiresIn: number;
   }) {
-    const { code, redirectUri, codeVerifier, grantType } = params;
+    const { code, redirectUri, codeVerifier, grantType, expiresIn } = params;
 
     if (grantType !== 'authorization_code') {
       throw new InputError('Unsupported grant type');
@@ -417,7 +418,7 @@ export class OidcService {
     return {
       accessToken: token,
       tokenType: 'Bearer',
-      expiresIn: 3600,
+      expiresIn: expiresIn,
       idToken: token,
       scope: session.scope || 'openid',
     };

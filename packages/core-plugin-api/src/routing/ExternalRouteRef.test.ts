@@ -16,6 +16,7 @@
 
 import { AnyParams, ExternalRouteRef } from './types';
 import { createExternalRouteRef } from './ExternalRouteRef';
+import { RouteResolutionApi, RouteFunc } from '@backstage/frontend-plugin-api';
 
 describe('ExternalRouteRef', () => {
   it('should be created', () => {
@@ -24,7 +25,9 @@ describe('ExternalRouteRef', () => {
     });
     expect(routeRef.params).toEqual([]);
     expect(routeRef.optional).toBe(false);
-    expect(String(routeRef)).toBe('routeRef{type=external,id=my-route-ref}');
+    expect(String(routeRef)).toMatch(
+      /^routeRef\{type=external,id=my-route-ref\}$/,
+    );
   });
 
   it('should be created as optional', () => {
@@ -108,5 +111,49 @@ describe('ExternalRouteRef', () => {
 
     // To avoid complains about missing expectations and unused vars
     expect([_1, _2, _3, _4, _5, _6].join('')).toEqual(expect.any(String));
+  });
+
+  describe('with new frontend system', () => {
+    const routeResolutionApi = { resolve: jest.fn() } as RouteResolutionApi;
+
+    function expectType<T>(): <U>(
+      v: U,
+    ) => [T, U] extends [U, T] ? { ok(): void } : { invalid: U } {
+      return () => ({ ok() {} } as any);
+    }
+
+    it('should resolve routes correctly', () => {
+      expectType<RouteFunc<undefined> | undefined>()(
+        routeResolutionApi.resolve(createExternalRouteRef({ id: '1' })),
+      ).ok();
+      expectType<RouteFunc<undefined> | undefined>()(
+        routeResolutionApi.resolve(
+          createExternalRouteRef({ id: '1', optional: true }),
+        ),
+      ).ok();
+      expectType<RouteFunc<undefined> | undefined>()(
+        routeResolutionApi.resolve(
+          createExternalRouteRef({ id: '1', optional: false }),
+        ),
+      ).ok();
+
+      expectType<RouteFunc<{ x: string }> | undefined>()(
+        routeResolutionApi.resolve(
+          createExternalRouteRef({ id: '1', params: ['x'] }),
+        ),
+      ).ok();
+      expectType<RouteFunc<{ x: string }> | undefined>()(
+        routeResolutionApi.resolve(
+          createExternalRouteRef({ id: '1', params: ['x'], optional: true }),
+        ),
+      ).ok();
+      expectType<RouteFunc<{ x: string }> | undefined>()(
+        routeResolutionApi.resolve(
+          createExternalRouteRef({ id: '1', params: ['x'], optional: false }),
+        ),
+      ).ok();
+
+      expect(1).toBe(1);
+    });
   });
 });

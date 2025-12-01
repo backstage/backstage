@@ -18,11 +18,12 @@ import { forwardRef } from 'react';
 import clsx from 'clsx';
 import type { GridItemProps, GridProps } from './types';
 import { useStyles } from '../../hooks/useStyles';
+import { GridDefinition, GridItemDefinition } from './definition';
 import styles from './Grid.module.css';
 
 const GridRoot = forwardRef<HTMLDivElement, GridProps>((props, ref) => {
   const { classNames, utilityClasses, style, cleanedProps } = useStyles(
-    'Grid',
+    GridDefinition,
     { columns: 'auto', gap: '4', ...props },
   );
 
@@ -45,7 +46,7 @@ const GridRoot = forwardRef<HTMLDivElement, GridProps>((props, ref) => {
 
 const GridItem = forwardRef<HTMLDivElement, GridItemProps>((props, ref) => {
   const { classNames, utilityClasses, style, cleanedProps } = useStyles(
-    'GridItem',
+    GridItemDefinition,
     props,
   );
 

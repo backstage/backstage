@@ -22,11 +22,12 @@ import {
 import clsx from 'clsx';
 import styles from './FieldError.module.css';
 import { useStyles } from '../../hooks/useStyles';
+import { FieldErrorDefinition } from './definition';
 
 /** @public */
 export const FieldError = forwardRef<HTMLDivElement, FieldErrorProps>(
   (props: FieldErrorProps, ref) => {
-    const { classNames, cleanedProps } = useStyles('FieldError', props);
+    const { classNames, cleanedProps } = useStyles(FieldErrorDefinition, props);
     const { className, ...rest } = cleanedProps;
 
     return (

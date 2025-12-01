@@ -19,11 +19,12 @@ import { BoxProps } from './types';
 import clsx from 'clsx';
 import { useStyles } from '../../hooks/useStyles';
 import styles from './Box.module.css';
+import { BoxDefinition } from './definition';
 
 /** @public */
 export const Box = forwardRef<HTMLDivElement, BoxProps>((props, ref) => {
   const { classNames, utilityClasses, style, cleanedProps } = useStyles(
-    'Box',
+    BoxDefinition,
     props,
   );
 
