@@ -20,7 +20,8 @@ import { LoggerService } from '@backstage/backend-plugin-api';
 export class OidcError extends CustomErrorBase {
   name = 'OidcError';
 
-  readonly body: { error: string; error_description: string };
+  readonly error: string;
+  readonly errorDescription: string;
   readonly statusCode: number;
 
   constructor(
@@ -31,10 +32,8 @@ export class OidcError extends CustomErrorBase {
   ) {
     super(`${errorCode}, ${errorDescription}`, cause);
     this.statusCode = statusCode;
-    this.body = {
-      error: errorCode,
-      error_description: errorDescription,
-    };
+    this.error = errorCode;
+    this.errorDescription = errorDescription;
   }
 
   static fromError(error: unknown): OidcError {
@@ -64,22 +63,30 @@ export class OidcError extends CustomErrorBase {
 
   static middleware(
     logger: LoggerService,
-  ): (err: unknown, _req: Request, res: Response, next: NextFunction) => void {
+  ): (err: unknown, _req: Request, res: Response, _next: NextFunction) => void {
     return (
       err: unknown,
       _req: Request,
       res: Response,
-      next: NextFunction,
+      _next: NextFunction,
     ): void => {
-      if (err instanceof OidcError) {
-        logger[err.statusCode >= 500 ? 'error' : 'info'](
-          `OIDC Request failed with status ${err.statusCode}: ${err.body.error} - ${err.body.error_description}`,
-          err.cause,
-        );
-        res.status(err.statusCode).json(err.body);
-        return;
+      const oidcError = OidcError.fromError(err);
+      let logLevel: 'error' | 'warn' | 'info';
+      if (oidcError.statusCode >= 500) {
+        logLevel = 'error';
+      } else if (oidcError.statusCode >= 400) {
+        logLevel = 'warn';
+      } else {
+        logLevel = 'info';
       }
-      next(err);
+      logger[logLevel](
+        `OIDC error: ${oidcError.error} - ${oidcError.errorDescription}`,
+        oidcError.cause,
+      );
+      res.status(oidcError.statusCode).json({
+        error: oidcError.error,
+        error_description: oidcError.errorDescription,
+      });
     };
   }
 }

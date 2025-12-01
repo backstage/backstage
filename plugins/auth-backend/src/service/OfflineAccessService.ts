@@ -95,9 +95,10 @@ export class OfflineAccessService {
    */
   async refreshAccessToken(options: {
     refreshToken: string;
+    clientId: string;
     tokenIssuer: TokenIssuer;
   }): Promise<{ accessToken: string; refreshToken: string }> {
-    const { refreshToken, tokenIssuer } = options;
+    const { refreshToken, clientId, tokenIssuer } = options;
 
     // Extract session ID from token
     let sessionId: string;
@@ -118,6 +119,12 @@ export class OfflineAccessService {
     if (this.#offlineSessionDb.isSessionExpired(session)) {
       await this.#offlineSessionDb.deleteSession(sessionId);
       throw new AuthenticationError('Refresh token expired');
+    }
+
+    // Verify client_id matches the session's client_id
+    // Refresh tokens should always have an oidcClientId set
+    if (session.oidcClientId === null || session.oidcClientId !== clientId) {
+      throw new AuthenticationError('Invalid client_id for refresh token');
     }
 
     // Verify token hash
@@ -165,9 +172,21 @@ export class OfflineAccessService {
   /**
    * Revoke a refresh token
    */
-  async revokeRefreshToken(refreshToken: string): Promise<void> {
+  async revokeRefreshToken(
+    refreshToken: string,
+    options?: { clientId?: string },
+  ): Promise<void> {
     try {
       const sessionId = getRefreshTokenId(refreshToken);
+      const session = await this.#offlineSessionDb.getSessionById(sessionId);
+
+      // If clientId is provided, verify it matches the session's client_id
+      if (options?.clientId && session) {
+        if (session.oidcClientId !== options.clientId) {
+          throw new AuthenticationError('Invalid client_id for refresh token');
+        }
+      }
+
       await this.#offlineSessionDb.deleteSession(sessionId);
       this.#logger.debug(`Revoked refresh token with session ${sessionId}`);
     } catch (error) {

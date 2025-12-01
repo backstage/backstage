@@ -132,6 +132,10 @@ describe('OidcService', () => {
             'client_secret_basic',
             'client_secret_post',
           ],
+          revocation_endpoint_auth_methods_supported: [
+            'client_secret_post',
+            'client_secret_basic',
+          ],
           claims_supported: ['sub', 'ent'],
           grant_types_supported: ['authorization_code', 'refresh_token'],
           authorization_endpoint: 'http://mock-base-url/v1/authorize',
@@ -706,6 +710,10 @@ describe('OidcService', () => {
           redirectUri: 'https://example.com/callback',
           grantType: 'authorization_code',
           expiresIn: 3600,
+          clientCredentials: {
+            clientId: client.clientId,
+            clientSecret: client.clientSecret,
+          },
         });
 
         expect(tokenResult).toEqual({
@@ -746,6 +754,10 @@ describe('OidcService', () => {
           redirectUri: 'https://example.com/callback',
           grantType: 'authorization_code',
           expiresIn: 6000,
+          clientCredentials: {
+            clientId: client.clientId,
+            clientSecret: client.clientSecret,
+          },
         });
 
         expect(tokenResult).toEqual({
@@ -766,6 +778,10 @@ describe('OidcService', () => {
             redirectUri: 'https://example.com/callback',
             grantType: 'client_credentials',
             expiresIn: 3600,
+            clientCredentials: {
+              clientId: 'test-client',
+              clientSecret: 'test-secret',
+            },
           }),
         ).rejects.toThrow('Unsupported grant type');
       });
@@ -807,6 +823,10 @@ describe('OidcService', () => {
           grantType: 'authorization_code',
           codeVerifier,
           expiresIn: 3600,
+          clientCredentials: {
+            clientId: client.clientId,
+            clientSecret: client.clientSecret,
+          },
         });
 
         expect(tokenResult.accessToken).toBe(mockToken);
@@ -843,6 +863,10 @@ describe('OidcService', () => {
             grantType: 'authorization_code',
             codeVerifier: 'invalid-verifier',
             expiresIn: 3600,
+            clientCredentials: {
+              clientId: client.clientId,
+              clientSecret: client.clientSecret,
+            },
           }),
         ).rejects.toThrow('Invalid code verifier');
       });
@@ -878,6 +902,10 @@ describe('OidcService', () => {
           redirectUri: 'https://example.com/callback',
           grantType: 'authorization_code',
           expiresIn: 3600,
+          clientCredentials: {
+            clientId: client.clientId,
+            clientSecret: client.clientSecret,
+          },
         });
 
         expect(tokenResult.accessToken).toBe(mockToken);
@@ -914,6 +942,10 @@ describe('OidcService', () => {
           redirectUri: 'https://example.com/callback',
           grantType: 'authorization_code',
           expiresIn: 3600,
+          clientCredentials: {
+            clientId: client.clientId,
+            clientSecret: client.clientSecret,
+          },
         });
 
         expect(tokenResult.accessToken).toBe(mockToken);
@@ -953,6 +985,10 @@ describe('OidcService', () => {
           redirectUri: 'https://example.com/callback',
           grantType: 'authorization_code',
           expiresIn: 3600,
+          clientCredentials: {
+            clientId: client.clientId,
+            clientSecret: client.clientSecret,
+          },
         });
 
         // Wait a moment to ensure we're not hitting timing issues with second-precision timestamps
@@ -960,6 +996,10 @@ describe('OidcService', () => {
 
         const refreshResult = await service.refreshAccessToken({
           refreshToken: tokenResult.refreshToken!,
+          clientCredentials: {
+            clientId: client.clientId,
+            clientSecret: client.clientSecret,
+          },
         });
 
         expect(refreshResult.accessToken).toBe(mockNewToken);
@@ -972,9 +1012,18 @@ describe('OidcService', () => {
       it('should reject invalid refresh token', async () => {
         const { service } = await createOidcService(databaseId);
 
+        const client = await service.registerClient({
+          clientName: 'Test Client',
+          redirectUris: ['https://example.com/callback'],
+        });
+
         await expect(
           service.refreshAccessToken({
             refreshToken: 'invalid-refresh-token',
+            clientCredentials: {
+              clientId: client.clientId,
+              clientSecret: client.clientSecret,
+            },
           }),
         ).rejects.toThrow('Invalid refresh token format');
       });
@@ -1008,6 +1057,10 @@ describe('OidcService', () => {
           redirectUri: 'https://example.com/callback',
           grantType: 'authorization_code',
           expiresIn: 3600,
+          clientCredentials: {
+            clientId: client.clientId,
+            clientSecret: client.clientSecret,
+          },
         });
 
         // Get session ID from token and mark as expired by updating created_at
@@ -1023,6 +1076,10 @@ describe('OidcService', () => {
         await expect(
           service.refreshAccessToken({
             refreshToken: tokenResult.refreshToken!,
+            clientCredentials: {
+              clientId: client.clientId,
+              clientSecret: client.clientSecret,
+            },
           }),
         ).rejects.toThrow('Refresh token expired');
       });
