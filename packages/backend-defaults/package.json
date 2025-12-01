@@ -161,7 +161,7 @@
     "cookie": "^0.7.0",
     "cors": "^2.8.5",
     "cron": "^3.0.0",
-    "express": "^4.17.1",
+    "express": "^4.22.0",
     "express-promise-router": "^4.1.0",
     "express-rate-limit": "^7.5.0",
     "fs-extra": "^11.2.0",
