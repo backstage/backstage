@@ -406,7 +406,16 @@ export interface CellProfileProps extends CellProps_2 {
 }
 
 // @public (undocumented)
-export interface CellProps extends CellProps_2 {
+export interface CellProps extends CellProps_2 {}
+
+// @public (undocumented)
+export const CellText: {
+  (props: CellTextProps): JSX_2.Element;
+  displayName: string;
+};
+
+// @public (undocumented)
+export interface CellTextProps extends CellProps_2 {
   // (undocumented)
   color?: TextColors;
   // (undocumented)
@@ -864,10 +873,14 @@ export const LinkDefinition: {
 // @public (undocumented)
 export interface LinkProps extends LinkProps_2 {
   // (undocumented)
+  children?: ReactNode;
+  // (undocumented)
   color?:
     | TextColors
     | TextColorStatus
     | Partial<Record<Breakpoint, TextColors | TextColorStatus>>;
+  // (undocumented)
+  title?: string;
   // (undocumented)
   truncate?: boolean;
   // (undocumented)

@@ -21,6 +21,7 @@
     width: 100%;
     caption-side: bottom;
     border-collapse: collapse;
+    table-layout: fixed;
   }
 
   .bui-TableHeader {
@@ -109,6 +110,10 @@
   .bui-TableCell {
     padding: var(--bui-space-3);
     font-size: var(--bui-font-size-3);
+    font-family: var(--bui-font-regular);
+    font-weight: var(--bui-font-weight-regular);
+    min-width: 0;
+    overflow: hidden;
   }
 
   .bui-TableCellSelection {
@@ -116,10 +121,13 @@
   }
 
   .bui-TableCellContentWrapper {
-    display: inline-flex;
+    display: flex;
     flex-direction: row;
     align-items: center;
     gap: var(--bui-space-2);
+    min-width: 0;
+    width: 100%;
+    max-width: 100%;
   }
 
   .bui-TableCellIcon,
@@ -133,6 +141,15 @@
     display: flex;
     flex-direction: column;
     gap: var(--bui-space-0_5);
+    min-width: 0;
+    flex: 1;
+    overflow: hidden;
+    max-width: 100%;
+  }
+
+  .bui-TableCellContent > * {
+    min-width: 0;
+    max-width: 100%;
   }
 
   .bui-TableCellProfile {
