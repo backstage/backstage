@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import { forwardRef } from 'react';
-import { Link as AriaLink, RouterProvider } from 'react-aria-components';
+import { forwardRef, useRef } from 'react';
+import { useLink } from 'react-aria';
+import { RouterProvider } from 'react-aria-components';
 import clsx from 'clsx';
 import { useStyles } from '../../hooks/useStyles';
 import { LinkDefinition } from './definition';
@@ -37,29 +38,57 @@ export const Link = forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
     },
   );
 
-  const { className, href, ...restProps } = cleanedProps;
+  const {
+    className,
+    href,
+    title,
+    children,
+    onPress,
+    variant,
+    weight,
+    color,
+    truncate,
+    slot,
+    ...restProps
+  } = cleanedProps;
 
   const isExternal = isExternalLink(href);
+  const internalRef = useRef<HTMLAnchorElement>(null);
+  const linkRef = (ref || internalRef) as React.RefObject<HTMLAnchorElement>;
 
-  const component = (
-    <AriaLink
-      ref={ref}
-      className={clsx(classNames.root, styles[classNames.root], className)}
-      href={href}
-      {...dataAttributes}
-      {...restProps}
-    />
+  // Use useLink hook to get link props
+  const { linkProps } = useLink(
+    {
+      href,
+      onPress,
+      ...restProps,
+    },
+    linkRef,
   );
 
-  // If it's an external link, render AriaLink without RouterProvider
+  const anchorElement = (
+    <a
+      {...linkProps}
+      {...dataAttributes}
+      {...(restProps as React.AnchorHTMLAttributes<HTMLAnchorElement>)}
+      ref={linkRef}
+      href={href}
+      title={title}
+      className={clsx(classNames.root, styles[classNames.root], className)}
+    >
+      {children}
+    </a>
+  );
+
+  // If it's an external link, render without RouterProvider
   if (isExternal) {
-    return component;
+    return anchorElement;
   }
 
   // For internal links, use RouterProvider
   return (
     <RouterProvider navigate={navigate} useHref={useHref}>
-      {component}
+      {anchorElement}
     </RouterProvider>
   );
 });
