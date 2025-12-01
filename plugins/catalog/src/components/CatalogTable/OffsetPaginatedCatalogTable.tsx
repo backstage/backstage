@@ -15,14 +15,9 @@
  */
 
 import { useState, useEffect, useMemo, useCallback, ReactNode } from 'react';
-import useDebounce from 'react-use/lib/useDebounce';
 import type { SortDescriptor } from 'react-aria-components';
+import { useEntityList } from '@backstage/plugin-catalog-react';
 import {
-  useEntityList,
-  EntityTextFilter,
-} from '@backstage/plugin-catalog-react';
-import {
-  Flex,
   Table,
   TableHeader,
   TableBody,
@@ -31,12 +26,12 @@ import {
   Column,
   TablePagination,
   useTable,
-  SearchField,
   Box,
 } from '@backstage/ui';
 import { TableColumn } from '@backstage/core-components';
 import { CatalogTableRow } from './types';
 import { renderCell } from './renderCell';
+import { CatalogTableHeader } from './CatalogTableHeader';
 
 /**
  * Helper function to extract value from object using dot-notation path
@@ -79,15 +74,7 @@ export function OffsetPaginatedCatalogTable(
     emptyContent,
     isLoading,
   } = props;
-  const {
-    setLimit,
-    setOffset,
-    limit,
-    totalItems,
-    offset,
-    updateFilters,
-    queryParameters: { text: textParameter },
-  } = useEntityList();
+  const { setLimit, setOffset, limit, totalItems, offset } = useEntityList();
 
   // TODO: Figure out why this is needed
   // We need to make sure that the offset is working with the URL
@@ -215,54 +202,9 @@ export function OffsetPaginatedCatalogTable(
     isRowHeader: index === firstVisibleColumnIndex,
   }));
 
-  // Search state management
-  const queryParamTextFilter = useMemo(
-    () => [textParameter].flat()[0],
-    [textParameter],
-  );
-
-  const [search, setSearch] = useState(queryParamTextFilter ?? '');
-
-  useDebounce(
-    () => {
-      updateFilters({
-        text: search.length ? new EntityTextFilter(search) : undefined,
-      });
-    },
-    250,
-    [search, updateFilters],
-  );
-
-  useEffect(() => {
-    if (queryParamTextFilter) {
-      setSearch(queryParamTextFilter);
-    }
-  }, [queryParamTextFilter]);
-
   return (
     <>
-      <Flex justify="between" align="center" mb="4">
-        <Flex direction="column" gap="0">
-          {title && (
-            <Text variant="title-small" as="h2">
-              {title}
-            </Text>
-          )}
-          {subtitle && (
-            <Text variant="body-medium" color="secondary">
-              {subtitle}
-            </Text>
-          )}
-        </Flex>
-        <Box style={{ maxWidth: '300px', width: '100%' }}>
-          <SearchField
-            aria-label="Search"
-            placeholder="Search"
-            value={search}
-            onChange={setSearch}
-          />
-        </Box>
-      </Flex>
+      <CatalogTableHeader title={title} subtitle={subtitle} />
       <Table
         sortDescriptor={sortDescriptor || undefined}
         onSortChange={handleSortChange}
