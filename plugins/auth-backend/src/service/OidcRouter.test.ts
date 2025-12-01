@@ -35,8 +35,6 @@ import { AuthDatabase } from '../database/AuthDatabase';
 import { OidcService } from '../service/OidcService';
 import { TokenIssuer } from '../identity/types';
 
-jest.setTimeout(60_000);
-
 describe('OidcRouter', () => {
   const MOCK_USER_TOKEN = 'mock-user-token';
   const MOCK_USER_ENTITY_REF = 'user:default/test-user';
