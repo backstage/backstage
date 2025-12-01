@@ -103,7 +103,7 @@
     "express": "^4.17.1",
     "fs-extra": "^11.2.0",
     "git-url-parse": "^15.0.0",
-    "glob": "^7.1.7",
+    "glob": "^10.5.0",
     "global-agent": "^3.0.0",
     "globby": "^11.1.0",
     "handlebars": "^4.7.3",
