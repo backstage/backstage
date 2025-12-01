@@ -23,7 +23,6 @@ import {
 } from '@backstage/catalog-model';
 import {
   CodeSnippet,
-  Table,
   TableColumn,
   TableProps,
   WarningPanel,
@@ -37,7 +36,7 @@ import {
 import { visuallyHidden } from '@mui/utils';
 import { capitalize } from 'lodash';
 import pluralize from 'pluralize';
-import { ReactNode, useMemo } from 'react';
+import { ReactNode, useMemo, useState } from 'react';
 import { columnFactories } from './columns';
 import { CatalogTableColumnsFunc, CatalogTableRow } from './types';
 import { OffsetPaginatedCatalogTable } from './OffsetPaginatedCatalogTable';
@@ -48,6 +47,7 @@ import { catalogTranslationRef } from '../../alpha';
 import { FavoriteToggleIcon } from '@backstage/core-components';
 import { Text } from '@backstage/ui';
 import { RiEdit2Line, RiExternalLinkLine } from '@remixicon/react';
+import { CatalogTableBase } from './CatalogTableBase';
 
 /**
  * Props for {@link CatalogTable}.
@@ -113,6 +113,11 @@ export const CatalogTable = (props: CatalogTableProps) => {
     [columns, entityListContext],
   );
   const { t } = useTranslationRef(catalogTranslationRef);
+
+  // Client-side pagination state - must be declared before any conditional returns
+  const pageSize = 20;
+  const [currentPage, setCurrentPage] = useState(0);
+  const [currentPageSize, setCurrentPageSize] = useState(pageSize);
 
   if (error) {
     return (
@@ -234,24 +239,29 @@ export const CatalogTable = (props: CatalogTableProps) => {
   }
 
   const rows = entities.sort(refCompare).map(toEntityRow);
-  const pageSize = 20;
-  const showPagination = rows.length > pageSize;
 
   return (
-    <Table<CatalogTableRow>
-      isLoading={loading}
+    <CatalogTableBase
       columns={tableColumns}
-      options={{
-        paging: showPagination,
-        pageSize: pageSize,
-        pageSizeOptions: [20, 50, 100],
-        ...options,
-      }}
-      title={title}
       data={rows}
-      actions={actions}
+      title={title}
       subtitle={subtitle}
       emptyContent={emptyContent}
+      isLoading={loading}
+      pagination={{
+        mode: 'client',
+        pageSize: currentPageSize,
+        rowCount: rows.length,
+        offset: currentPage * currentPageSize,
+        onOffsetChange: (newOffset: number) => {
+          setCurrentPage(Math.floor(newOffset / currentPageSize));
+        },
+        onPageSizeChange: (newPageSize: number) => {
+          setCurrentPageSize(newPageSize);
+          setCurrentPage(0);
+        },
+      }}
+      showPagination={rows.length > pageSize}
     />
   );
 };

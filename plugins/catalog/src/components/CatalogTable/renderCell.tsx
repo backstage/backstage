@@ -18,24 +18,7 @@ import { Cell, CellText, TagGroup, Tag } from '@backstage/ui';
 import { EntityRefLink, EntityRefLinks } from '@backstage/plugin-catalog-react';
 import { TableColumn } from '@backstage/core-components';
 import { CatalogTableRow } from './types';
-
-/**
- * Helper function to extract value from object using dot-notation path
- */
-function extractValueByField(data: any, field: string): any | undefined {
-  if (!field) return undefined;
-  const path = field.split('.');
-  let value = data[path[0]];
-
-  for (let i = 1; i < path.length; ++i) {
-    if (value === undefined || value === null) {
-      return value;
-    }
-    value = value[path[i]];
-  }
-
-  return value;
-}
+import { extractValueByField } from './utils';
 
 /**
  * Renders the appropriate cell component based on the column field
