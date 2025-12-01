@@ -14,14 +14,20 @@
  * limitations under the License.
  */
 
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { InputError } from '@backstage/errors';
 import {
   GitLabIntegration,
   ScmIntegrationRegistry,
 } from '@backstage/integration';
-import { Gitlab, GroupSchema } from '@gitbeaker/rest';
+import { Gitlab, GroupSchema, RepositoryTreeSchema } from '@gitbeaker/rest';
 import { z } from 'zod';
 import commonGitlabConfig from './commonGitlabConfig';
+
+import { SerializedFile } from '@backstage/plugin-scaffolder-node';
+
+import { createHash } from 'crypto';
+import path from 'path';
 
 export const parseRepoHost = (repoUrl: string): string => {
   let parsed;
@@ -183,4 +189,48 @@ export async function checkEpicScope(
   } catch (error: any) {
     throw new InputError(`Could not find epic scope: ${error.message}`);
   }
+}
+
+function computeSha256(file: SerializedFile): string {
+  const hash = createHash('sha256');
+  hash.update(file.content);
+  return hash.digest('hex');
+}
+
+export async function getFileAction(
+  fileInfo: { file: SerializedFile; targetPath?: string },
+  target: { repoID: string; branch: string },
+  api: InstanceType<typeof Gitlab>,
+  logger: LoggerService,
+  remoteFiles: RepositoryTreeSchema[],
+  defaultCommitAction:
+    | 'create'
+    | 'delete'
+    | 'update'
+    | 'skip'
+    | 'auto' = 'auto',
+): Promise<'create' | 'delete' | 'update' | 'skip'> {
+  if (defaultCommitAction === 'auto') {
+    const filePath = path.join(fileInfo.targetPath ?? '', fileInfo.file.path);
+
+    if (remoteFiles?.some(remoteFile => remoteFile.path === filePath)) {
+      try {
+        const targetFile = await api.RepositoryFiles.show(
+          target.repoID,
+          filePath,
+          target.branch,
+        );
+        if (computeSha256(fileInfo.file) === targetFile.content_sha256) {
+          return 'skip';
+        }
+      } catch (error) {
+        logger.warn(
+          `Unable to retrieve detailed information for remote file ${filePath}`,
+        );
+      }
+      return 'update';
+    }
+    return 'create';
+  }
+  return defaultCommitAction;
 }
