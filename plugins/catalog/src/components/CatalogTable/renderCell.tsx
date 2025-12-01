@@ -37,36 +37,11 @@ export function renderCell(
 
   // Name column - EntityRefLink
   if (column.field === 'resolved.entityRef') {
-    // Replicate the formatContent logic from columns.tsx:
-    // entity.metadata?.title || humanizeEntityRef(entity, { defaultKind })
-    // This ensures we match the exact formatting behavior of the old column format
-
-    // Try to extract defaultKind from the column's render function if it exists
-    // The old column format stores defaultKind in the render function's closure
-    // Otherwise, fall back to 'Component' (matching old format's default)
-    let defaultKind: string = 'Component';
-
-    if (column.render) {
-      // The render function receives the item and uses defaultKind from its closure
-      // We can't directly extract it, but we can infer from the entity's kind
-      // or use the entity's kind as a fallback
-      const entityKind = item.entity.kind?.toLowerCase();
-      // Use entity kind if it's a common kind, otherwise use Component
-      if (
-        entityKind &&
-        [
-          'component',
-          'user',
-          'system',
-          'group',
-          'domain',
-          'location',
-          'template',
-        ].includes(entityKind)
-      ) {
-        defaultKind = item.entity.kind;
-      }
-    }
+    // The old column format uses filters.kind?.value as defaultKind (see defaultCatalogTableColumnsFunc.tsx)
+    // Since we can't access the filter context here, we use the entity's kind as defaultKind
+    // This ensures that if the entity kind matches the defaultKind, the kind prefix is omitted
+    // (e.g., "api:default/hello-world" with defaultKind="api" shows as "hello-world")
+    const defaultKind = item.entity.kind || 'Component';
 
     // EntityRefLink uses EntityDisplayName internally, which handles:
     // - metadata.title vs humanizeEntityRef logic via useEntityPresentation
