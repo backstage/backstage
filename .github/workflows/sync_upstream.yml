@@ -40,12 +40,37 @@ jobs:
           git fetch upstream --tags --force
 
       - name: Sync master branch
+        id: sync_branch
         run: |
           git checkout master
-          git merge upstream/master --ff-only || {
-            echo "::warning::Unable to fast-forward merge. Manual intervention may be required."
-            exit 1
-          }
+          
+          # Try fast-forward merge first
+          if git merge upstream/master --ff-only 2>/dev/null; then
+            echo "sync_type=fast-forward" >> $GITHUB_OUTPUT
+            echo "Fast-forward merge successful"
+          else
+            # Check if we're already up to date
+            if git merge-base --is-ancestor upstream/master HEAD; then
+              echo "sync_type=up-to-date" >> $GITHUB_OUTPUT
+              echo "Already up to date with upstream"
+            # Check if upstream is ahead (we can merge without conflicts)
+            elif git merge-base --is-ancestor HEAD upstream/master; then
+              echo "sync_type=reset" >> $GITHUB_OUTPUT
+              echo "Local branch is behind, resetting to upstream..."
+              git reset --hard upstream/master
+            else
+              # Branches have diverged - attempt merge
+              echo "sync_type=merge" >> $GITHUB_OUTPUT
+              echo "Branches have diverged, attempting merge..."
+              if git merge upstream/master --no-edit; then
+                echo "Merge successful"
+              else
+                echo "::error::Merge conflict detected. Manual intervention required."
+                git merge --abort
+                exit 1
+              fi
+            fi
+          fi
 
       - name: Push changes
         continue-on-error: true
@@ -56,37 +81,20 @@ jobs:
 
       - name: Report tag sync status
         run: |
-          if grep -q "remote rejected" push_output.txt; then
+          SYNC_TYPE="${{ steps.sync_branch.outputs.sync_type }}"
+          
+          if grep -q "remote rejected" push_output.txt 2>/dev/null; then
             echo "::warning::Some tags could not be synced due to permissions (workflow files in tags require 'workflows' permission)"
             echo "### :warning: Partial sync completed" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
-            echo "**Synced branches:** master ✅" >> $GITHUB_STEP_SUMMARY
+            echo "**Synced branches:** master ✅ (${SYNC_TYPE})" >> $GITHUB_STEP_SUMMARY
             echo "**Tags synced:** Partial (some tags skipped due to workflow file permissions)" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
             echo "Tags containing workflow files require a Personal Access Token with 'workflows' scope." >> $GITHUB_STEP_SUMMARY
           else
             echo "### :white_check_mark: Fork sync completed successfully" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
-            echo "**Synced branches:** master ✅" >> $GITHUB_STEP_SUMMARY
-            echo "**Tags synced:** All upstream tags ✅" >> $GITHUB_STEP_SUMMARY
-          fi
-          echo "**Timestamp:** $(date -u)" >> $GITHUB_STEP_SUMMARY
-          rm -f push_output.txt
-
-      - name: Report tag sync status
-        run: |
-          if grep -q "remote rejected" push_output.txt; then
-            echo "::warning::Some tags could not be synced due to permissions (workflow files in tags require 'workflows' permission)"
-            echo "### :warning: Partial sync completed" >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
-            echo "**Synced branches:** master ✅" >> $GITHUB_STEP_SUMMARY
-            echo "**Tags synced:** Partial (some tags skipped due to workflow file permissions)" >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
-            echo "Tags containing workflow files require a Personal Access Token with 'workflows' scope." >> $GITHUB_STEP_SUMMARY
-          else
-            echo "### :white_check_mark: Fork sync completed successfully" >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
-            echo "**Synced branches:** master ✅" >> $GITHUB_STEP_SUMMARY
+            echo "**Synced branches:** master ✅ (${SYNC_TYPE})" >> $GITHUB_STEP_SUMMARY
             echo "**Tags synced:** All upstream tags ✅" >> $GITHUB_STEP_SUMMARY
           fi
           echo "**Timestamp:** $(date -u)" >> $GITHUB_STEP_SUMMARY
