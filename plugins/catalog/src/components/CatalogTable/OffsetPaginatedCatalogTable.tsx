@@ -28,22 +28,15 @@ import {
   TableBody,
   Row,
   Text,
-  Cell,
   Column,
   TablePagination,
   useTable,
   SearchField,
   Box,
-  CellText,
 } from '@backstage/ui';
-import {
-  EntityRefLinkCell,
-  EntityRefLinksCell,
-  TagsCell,
-  DescriptionCell,
-} from './cells';
 import { TableColumn } from '@backstage/core-components';
 import { CatalogTableRow } from './types';
+import { renderCell } from './renderCell';
 
 /**
  * Helper function to extract value from object using dot-notation path
@@ -299,123 +292,7 @@ export function OffsetPaginatedCatalogTable(
           {item => {
             return (
               <Row id={item.resolved.entityRef} columns={columnsWithRowHeader}>
-                {column => {
-                  const cellId = column.field || String(column.title);
-                  const cellValue = column.field
-                    ? extractValueByField(item, column.field)
-                    : null;
-
-                  // Use column.render if available, otherwise determine cell type by field
-                  if (column.render) {
-                    const renderedContent = column.render(item, 'row');
-
-                    // Check field to determine which cell component to use
-                    if (column.field === 'resolved.entityRef') {
-                      // Name column - EntityRefLink
-                      return (
-                        <EntityRefLinkCell
-                          id={cellId}
-                          hidden={column.hidden}
-                          entityRef={item.entity}
-                          defaultKind={
-                            (column as any).defaultKind || 'Component'
-                          }
-                        />
-                      );
-                    } else if (
-                      column.field === 'resolved.partOfSystemRelationTitle'
-                    ) {
-                      // System column - EntityRefLinks
-                      return (
-                        <EntityRefLinksCell
-                          id={cellId}
-                          hidden={column.hidden}
-                          entityRefs={item.resolved.partOfSystemRelations || []}
-                          defaultKind="system"
-                        />
-                      );
-                    } else if (
-                      column.field === 'resolved.ownedByRelationsTitle'
-                    ) {
-                      // Owner column - EntityRefLinks
-                      return (
-                        <EntityRefLinksCell
-                          id={cellId}
-                          hidden={column.hidden}
-                          entityRefs={item.resolved.ownedByRelations || []}
-                          defaultKind="group"
-                        />
-                      );
-                    } else if (column.field === 'entity.metadata.tags') {
-                      // Tags column
-                      return (
-                        <TagsCell
-                          id={cellId}
-                          hidden={column.hidden}
-                          tags={item.entity.metadata.tags}
-                        />
-                      );
-                    } else if (column.field === 'entity.metadata.description') {
-                      // Description column
-                      return (
-                        <DescriptionCell
-                          id={cellId}
-                          hidden={column.hidden}
-                          text={item.entity.metadata.description}
-                        />
-                      );
-                    } else if (
-                      column.field === 'entity.spec.targets' ||
-                      column.field === 'entity.spec.target'
-                    ) {
-                      // Targets column - use DescriptionCell for comma-separated list
-                      let targets: string[] = [];
-                      if (
-                        item.entity?.spec?.targets &&
-                        Array.isArray(item.entity.spec.targets)
-                      ) {
-                        targets = item.entity.spec.targets as string[];
-                      } else if (item.entity?.spec?.target) {
-                        targets = [item.entity.spec.target as string];
-                      }
-                      return (
-                        <DescriptionCell
-                          id={cellId}
-                          hidden={column.hidden}
-                          text={targets.join(', ')}
-                        />
-                      );
-                    }
-                    // Fallback: render the content directly
-                    return (
-                      <Cell
-                        id={cellId}
-                        className="bui-TableCell"
-                        hidden={column.hidden}
-                      >
-                        <div className="bui-TableCellContentWrapper">
-                          <div className="bui-TableCellContent">
-                            {renderedContent}
-                          </div>
-                        </div>
-                      </Cell>
-                    );
-                  }
-
-                  // No render function - use simple string value
-                  const cellTitle =
-                    cellValue !== undefined && cellValue !== null
-                      ? String(cellValue)
-                      : '';
-
-                  return (
-                    <CellText
-                      id={cellId}
-                      title={cellTitle}
-                      hidden={column.hidden}
-                    />
-                  );
-                }}
+                {column => renderCell(item, column)}
               </Row>
             );
           }}
