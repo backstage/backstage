@@ -2,4 +2,4 @@
 '@backstage/plugin-notifications-backend-module-slack': patch
 ---
 
-The rate limit is now a config variable
+The throttle limit and interval is now a config variable
