@@ -1,0 +1,1 @@
+import{$}from"./useObjectRef-B3Awy2p2.js";import{r as l}from"./iframe-B07WZXM3.js";function i(e,r,c,t){let a=$(c),f=c==null;l.useEffect(()=>{if(f||!e.current)return;let n=e.current;return n.addEventListener(r,a,t),()=>{n.removeEventListener(r,a,t)}},[e,r,t,f,a])}export{i as $};
