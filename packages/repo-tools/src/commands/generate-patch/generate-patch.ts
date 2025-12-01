@@ -98,7 +98,9 @@ export default async (
     throw new Error(`Could not find package ${packageArg} in source repo`);
   }
 
-  const tmpDir = await fs.mkdtemp(os.tmpdir());
+  const tmpDir = await fs.mkdtemp(
+    joinPath(os.tmpdir(), 'backstage-repo-tools-generate-patch-'),
+  );
   const ctx: PatchContext = {
     sourceRepo,
     targetRepo,
