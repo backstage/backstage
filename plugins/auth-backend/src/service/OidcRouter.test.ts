@@ -51,8 +51,6 @@ const mockFetchCimdMetadata =
     typeof CimdClient.fetchCimdMetadata
   >;
 
-jest.setTimeout(60_000);
-
 describe('OidcRouter', () => {
   const MOCK_USER_TOKEN = 'mock-user-token';
   const MOCK_USER_ENTITY_REF = 'user:default/test-user';
