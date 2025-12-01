@@ -38,6 +38,17 @@ const req =
     : __non_webpack_require__;
 
 /**
+ * Exported for test mocking. Jest 30's module resolver has issues with
+ * nested node_modules, requiring tests to use an alternative resolution strategy.
+ * @internal
+ */
+export const internal = {
+  resolvePackagePath(name: string, options?: { paths: string[] }): string {
+    return req.resolve(name, options);
+  },
+};
+
+/**
  * This collects all known config schemas across all dependencies of the app.
  */
 export async function collectConfigSchemas(
@@ -62,11 +73,9 @@ export async function collectConfigSchemas(
       const { name, parentPath } = item;
 
       try {
-        pkgPath = req.resolve(
+        pkgPath = internal.resolvePackagePath(
           `${name}/package.json`,
-          parentPath && {
-            paths: [parentPath],
-          },
+          parentPath ? { paths: [parentPath] } : undefined,
         );
       } catch {
         // We can somewhat safely ignore packages that don't export package.json,
