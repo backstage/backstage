@@ -149,7 +149,8 @@ notifications:
         broadcastChannels: # Optional, if you wish to support broadcast notifications.
           - C12345678
         username: 'Backstage Bot' # Optional, defaults to the name of the Slack App.
-        rateLimit: 40 # Optional, number of messages per minute. Defaults to 10.
+        concurrencyLimit: 20 # Optional, number of messages allowed per interval. Defaults to 10.
+        throttleInterval: 1m # Optional, ISO 8601 duration (or ms value). Defaults to 1 minute.
 ```
 
 Multiple instances can be added in the `slack` array, allowing you to have multiple configurations if you need to send
