@@ -46,7 +46,7 @@
     "@backstage/cli": "workspace:^",
     "@backstage/plugin-auth-backend": "workspace:^",
     "cookie-parser": "^1.4.6",
-    "express": "^4.18.2",
+    "express": "^5.0.0",
     "express-session": "^1.17.3",
     "jose": "^5.0.0",
     "msw": "^1.3.0",

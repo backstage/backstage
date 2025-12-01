@@ -61,7 +61,7 @@
     "@backstage/types": "workspace:^",
     "@types/express": "^4.17.6",
     "content-type": "^1.0.5",
-    "express": "^4.17.1",
+    "express": "^5.0.0",
     "express-promise-router": "^4.1.0",
     "knex": "^3.0.0"
   },

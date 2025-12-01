@@ -100,7 +100,7 @@
     "eslint-plugin-react-hooks": "^5.0.0",
     "eslint-plugin-unused-imports": "^4.1.4",
     "eslint-rspack-plugin": "^4.2.1",
-    "express": "^4.17.1",
+    "express": "^5.0.0",
     "fs-extra": "^11.2.0",
     "git-url-parse": "^15.0.0",
     "glob": "^7.1.7",

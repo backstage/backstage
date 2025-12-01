@@ -68,7 +68,7 @@
     "@backstage/plugin-catalog-node": "workspace:^",
     "@backstage/plugin-techdocs-node": "workspace:^",
     "@backstage/types": "workspace:^",
-    "express": "^4.17.1",
+    "express": "^5.0.0",
     "express-promise-router": "^4.1.0",
     "fs-extra": "^11.2.0",
     "knex": "^3.0.0",

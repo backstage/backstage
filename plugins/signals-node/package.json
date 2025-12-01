@@ -42,7 +42,7 @@
     "@backstage/plugin-auth-node": "workspace:^",
     "@backstage/plugin-events-node": "workspace:^",
     "@backstage/types": "workspace:^",
-    "express": "^4.17.1",
+    "express": "^5.0.0",
     "uuid": "^11.0.0",
     "ws": "^8.18.0"
   },
