@@ -1551,6 +1551,9 @@ export function TrendLine(
 export function UnstarredIcon(props: IconComponentProps): JSX_2.Element;
 
 // @public
+export function useAppTitle(): string;
+
+// @public
 export function useContent(): {
   focusContent: () => void;
   contentRef: MutableRefObject<HTMLElement | null> | undefined;
