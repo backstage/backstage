@@ -53,6 +53,8 @@ const tokenRequestBodySchema = z.object({
   redirect_uri: z.string().url().optional(),
   code_verifier: z.string().optional(),
   refresh_token: z.string().optional(),
+  client_id: z.string().optional(),
+  client_secret: z.string().optional(),
 });
 
 const registerRequestBodySchema = z.object({
@@ -79,14 +81,11 @@ function validateRequest<T>(schema: z.ZodSchema<T>, data: unknown): T {
   return parseResult.data;
 }
 
-async function authenticateClient(
+function extractClientCredentials(
   req: { headers: { authorization?: string } },
-  oidc: OidcService,
-  _logger: LoggerService,
-  _errorContext: string,
   bodyClientId?: string,
   bodyClientSecret?: string,
-): Promise<{ clientId: string; clientSecret: string }> {
+): { clientId: string; clientSecret: string } {
   let clientId: string | undefined;
   let clientSecret: string | undefined;
 
@@ -117,18 +116,6 @@ async function authenticateClient(
       'Client authentication required',
       401,
     );
-  }
-
-  try {
-    const ok = await oidc.verifyClientCredentials({
-      clientId,
-      clientSecret,
-    });
-    if (!ok) {
-      throw new OidcError('invalid_client', 'Invalid client credentials', 401);
-    }
-  } catch (e) {
-    throw OidcError.fromError(e);
   }
 
   return { clientId, clientSecret };
@@ -266,23 +253,19 @@ export class OidcRouter {
           );
 
           return res.redirect(authSessionRedirectUrl.toString());
-        } catch (error) {
-          if (error instanceof OidcError) {
-            const errorParams = new URLSearchParams();
-            errorParams.append('error', error.body.error);
-            errorParams.append(
-              'error_description',
-              error.body.error_description,
-            );
-            if (state) {
-              errorParams.append('state', state);
-            }
+        } catch (error: unknown) {
+          const oidcError = OidcError.fromError(error);
 
-            const redirectUrl = new URL(redirectUri);
-            redirectUrl.search = errorParams.toString();
-            return res.redirect(redirectUrl.toString());
+          const errorParams = new URLSearchParams();
+          errorParams.append('error', oidcError.error);
+          errorParams.append('error_description', oidcError.errorDescription);
+          if (state) {
+            errorParams.append('state', state);
           }
-          throw error;
+
+          const redirectUrl = new URL(redirectUri);
+          redirectUrl.search = errorParams.toString();
+          return res.redirect(redirectUrl.toString());
         }
       });
 
@@ -291,20 +274,16 @@ export class OidcRouter {
       router.get('/v1/sessions/:sessionId', async (req, res) => {
         const { sessionId } = validateRequest(sessionIdParamSchema, req.params);
 
-        try {
-          const session = await this.oidc.getAuthorizationSession({
-            sessionId,
-          });
+        const session = await this.oidc.getAuthorizationSession({
+          sessionId,
+        });
 
-          return res.json({
-            id: session.id,
-            clientName: session.clientName,
-            scope: session.scope,
-            redirectUri: session.redirectUri,
-          });
-        } catch (error) {
-          throw OidcError.fromError(error);
-        }
+        return res.json({
+          id: session.id,
+          clientName: session.clientName,
+          scope: session.scope,
+          redirectUri: session.redirectUri,
+        });
       });
 
       // Authorization Session approval endpoint
@@ -312,30 +291,26 @@ export class OidcRouter {
       router.post('/v1/sessions/:sessionId/approve', async (req, res) => {
         const { sessionId } = validateRequest(sessionIdParamSchema, req.params);
 
-        try {
-          const httpCredentials = await this.httpAuth.credentials(req);
+        const httpCredentials = await this.httpAuth.credentials(req);
 
-          if (!this.auth.isPrincipal(httpCredentials, 'user')) {
-            throw new OidcError(
-              'access_denied',
-              'Authentication required',
-              403,
-            );
-          }
-
-          const { userEntityRef } = httpCredentials.principal;
-
-          const result = await this.oidc.approveAuthorizationSession({
-            sessionId,
-            userEntityRef,
-          });
-
-          return res.json({
-            redirectUrl: result.redirectUrl,
-          });
-        } catch (error) {
-          throw OidcError.fromError(error);
+        if (!this.auth.isPrincipal(httpCredentials, 'user')) {
+          throw new OidcError(
+            'access_denied',
+            'User authentication required',
+            403,
+          );
         }
+
+        const { userEntityRef } = httpCredentials.principal;
+
+        const result = await this.oidc.approveAuthorizationSession({
+          sessionId,
+          userEntityRef,
+        });
+
+        return res.json({
+          redirectUrl: result.redirectUrl,
+        });
       });
 
       // Authorization Session rejection endpoint
@@ -346,36 +321,37 @@ export class OidcRouter {
         const httpCredentials = await this.httpAuth.credentials(req);
 
         if (!this.auth.isPrincipal(httpCredentials, 'user')) {
-          throw new OidcError('access_denied', 'Authentication required', 403);
+          throw new OidcError(
+            'access_denied',
+            'User authentication required',
+            403,
+          );
         }
 
         const { userEntityRef } = httpCredentials.principal;
-        try {
-          const session = await this.oidc.getAuthorizationSession({
-            sessionId,
-          });
 
-          await this.oidc.rejectAuthorizationSession({
-            sessionId,
-            userEntityRef,
-          });
+        const session = await this.oidc.getAuthorizationSession({
+          sessionId,
+        });
 
-          const errorParams = new URLSearchParams();
-          errorParams.append('error', 'access_denied');
-          errorParams.append('error_description', 'User denied the request');
-          if (session.state) {
-            errorParams.append('state', session.state);
-          }
+        await this.oidc.rejectAuthorizationSession({
+          sessionId,
+          userEntityRef,
+        });
 
-          const redirectUrl = new URL(session.redirectUri);
-          redirectUrl.search = errorParams.toString();
-
-          return res.json({
-            redirectUrl: redirectUrl.toString(),
-          });
-        } catch (error) {
-          throw OidcError.fromError(error);
+        const errorParams = new URLSearchParams();
+        errorParams.append('error', 'access_denied');
+        errorParams.append('error_description', 'User denied the request');
+        if (session.state) {
+          errorParams.append('state', session.state);
         }
+
+        const redirectUrl = new URL(session.redirectUri);
+        redirectUrl.search = errorParams.toString();
+
+        return res.json({
+          redirectUrl: redirectUrl.toString(),
+        });
       });
 
       // Token endpoint
@@ -389,80 +365,80 @@ export class OidcRouter {
           redirect_uri: redirectUri,
           code_verifier: codeVerifier,
           refresh_token: refreshToken,
+          client_id: bodyClientId,
+          client_secret: bodyClientSecret,
         } = validateRequest(tokenRequestBodySchema, req.body);
 
         const expiresIn = readDcrTokenExpiration(this.config);
 
-        try {
-          // Handle authorization_code grant type
-          if (grantType === 'authorization_code') {
-            if (!code || !redirectUri) {
-              throw new OidcError(
-                'invalid_request',
-                'Missing code or redirect_uri parameters for authorization_code grant',
-                400,
-              );
-            }
-
-            const result = await this.oidc.exchangeCodeForToken({
-              code,
-              redirectUri,
-              codeVerifier,
-              grantType,
-              expiresIn,
-            });
-
-            return res.json({
-              access_token: result.accessToken,
-              token_type: result.tokenType,
-              expires_in: result.expiresIn,
-              id_token: result.idToken,
-              scope: result.scope,
-              ...(result.refreshToken && {
-                refresh_token: result.refreshToken,
-              }),
-            });
-          }
-
-          // Handle refresh_token grant type
-          if (grantType === 'refresh_token') {
-            if (!refreshToken) {
-              throw new OidcError(
-                'invalid_request',
-                'Missing refresh_token parameter for refresh_token grant',
-                400,
-              );
-            }
-
-            // Client authentication required for refresh_token grant (client_secret_basic)
-            await authenticateClient(
-              req,
-              this.oidc,
-              this.logger,
-              'Failed to refresh token',
+        // Handle authorization_code grant type
+        if (grantType === 'authorization_code') {
+          if (!code || !redirectUri) {
+            throw new OidcError(
+              'invalid_request',
+              'Missing code or redirect_uri parameters for authorization_code grant',
+              400,
             );
-
-            const result = await this.oidc.refreshAccessToken({
-              refreshToken,
-            });
-
-            return res.json({
-              access_token: result.accessToken,
-              token_type: result.tokenType,
-              expires_in: result.expiresIn,
-              refresh_token: result.refreshToken,
-            });
           }
 
-          // Unsupported grant type
-          throw new OidcError(
-            'unsupported_grant_type',
-            `Grant type ${grantType} is not supported`,
-            400,
-          );
-        } catch (error) {
-          throw OidcError.fromError(error);
+          const result = await this.oidc.exchangeCodeForToken({
+            code,
+            redirectUri,
+            codeVerifier,
+            grantType,
+            expiresIn,
+            clientCredentials: extractClientCredentials(
+              req,
+              bodyClientId,
+              bodyClientSecret,
+            ),
+          });
+
+          return res.json({
+            access_token: result.accessToken,
+            token_type: result.tokenType,
+            expires_in: result.expiresIn,
+            id_token: result.idToken,
+            scope: result.scope,
+            ...(result.refreshToken && {
+              refresh_token: result.refreshToken,
+            }),
+          });
         }
+
+        // Handle refresh_token grant type
+        if (grantType === 'refresh_token') {
+          if (!refreshToken) {
+            throw new OidcError(
+              'invalid_request',
+              'Missing refresh_token parameter for refresh_token grant',
+              400,
+            );
+          }
+
+          const result = await this.oidc.refreshAccessToken({
+            refreshToken,
+            clientCredentials: extractClientCredentials(
+              req,
+              bodyClientId,
+              bodyClientSecret,
+            ),
+          });
+
+          return res.json({
+            access_token: result.accessToken,
+            token_type: result.tokenType,
+            expires_in: result.expiresIn,
+            refresh_token: result.refreshToken,
+          });
+        }
+
+        // Unsupported grant type
+        throw new OidcError(
+          'unsupported_grant_type',
+          `Grant type ${grantType} is not supported`,
+          400,
+        );
       });
     }
 
@@ -479,65 +455,47 @@ export class OidcRouter {
           scope,
         } = validateRequest(registerRequestBodySchema, req.body);
 
-        try {
-          const client = await this.oidc.registerClient({
-            clientName: clientName ?? 'Backstage CLI',
-            redirectUris,
-            responseTypes,
-            grantTypes,
-            scope,
-          });
+        const client = await this.oidc.registerClient({
+          clientName: clientName ?? 'Backstage CLI',
+          redirectUris,
+          responseTypes,
+          grantTypes,
+          scope,
+        });
 
-          return res.status(201).json({
-            client_id: client.clientId,
-            redirect_uris: client.redirectUris,
-            client_secret: client.clientSecret,
-          });
-        } catch (e) {
-          throw OidcError.fromError(e);
-        }
+        return res.status(201).json({
+          client_id: client.clientId,
+          redirect_uris: client.redirectUris,
+          client_secret: client.clientSecret,
+        });
       });
 
       // Token Revocation endpoint (RFC 7009-like)
       // Allows clients to revoke refresh tokens
       router.post('/v1/revoke', async (req, res) => {
-        try {
-          const {
+        const {
+          token,
+          client_id: bodyClientId,
+          client_secret: bodyClientSecret,
+        } = validateRequest(revokeRequestBodySchema, req.body ?? {});
+
+        await this.oidc
+          .revokeRefreshToken({
             token,
-            token_type_hint: tokenTypeHint,
-            client_id: bodyClientId,
-            client_secret: bodyClientSecret,
-          } = validateRequest(revokeRequestBodySchema, req.body ?? {});
-
-          // Only refresh_token revocation is supported currently
-          if (tokenTypeHint && tokenTypeHint !== 'refresh_token') {
-            // Hint is optional; ignore unsupported hints per RFC 7009
-          }
-
-          // Client authentication: client_secret_basic or client_secret_post
-          await authenticateClient(
-            req,
-            this.oidc,
-            this.logger,
-            'Failed to revoke token',
-            bodyClientId,
-            bodyClientSecret,
-          );
-
-          // Revoke refresh token if offline access is enabled
-          try {
-            await this.oidc.revokeRefreshToken(token);
-          } catch (e) {
+            clientCredentials: extractClientCredentials(
+              req,
+              bodyClientId,
+              bodyClientSecret,
+            ),
+          })
+          .catch(e => {
             // RFC 7009: The authorization server responds with HTTP status code 200
             // even if the client submitted an invalid token
             this.logger.debug('Failed to revoke token', e);
-          }
+          });
 
-          // Successful (or no-op) revocation
-          return res.status(200).send('');
-        } catch (e) {
-          throw OidcError.fromError(e);
-        }
+        // Successful (or no-op) revocation
+        return res.status(200).send('');
       });
     }
 
