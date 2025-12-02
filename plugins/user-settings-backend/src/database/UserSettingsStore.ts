@@ -15,15 +15,13 @@
  */
 
 import { JsonValue } from '@backstage/types';
+import { IUserSettingEntity } from './entities/UserSettingEntity';
 
 /**
  * A single setting in a bucket
  */
-export type UserSetting = {
-  bucket: string;
-  key: string;
-  value: JsonValue;
-};
+export interface UserSetting
+  extends Omit<IUserSettingEntity, 'userEntityRef'> {}
 
 /**
  * Store definition for the user settings.

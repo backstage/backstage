@@ -7,6 +7,7 @@ import { AuthorizePermissionRequest } from '@backstage/plugin-permission-common'
 import { AuthorizePermissionResponse } from '@backstage/plugin-permission-common';
 import { Config } from '@backstage/config';
 import { Duration } from 'luxon';
+import { EntitySchema } from '@mikro-orm/core';
 import { EvaluatorRequestOptions } from '@backstage/plugin-permission-common';
 import type { Handler } from 'express';
 import { HumanDuration } from '@backstage/types';
@@ -14,6 +15,7 @@ import { isChildPath } from '@backstage/cli-common';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { Knex } from 'knex';
+import { MikroORM } from '@mikro-orm/core';
 import { Permission } from '@backstage/plugin-permission-common';
 import { PermissionAttributes } from '@backstage/plugin-permission-common';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
@@ -237,6 +239,7 @@ export namespace coreServices {
     'root',
     'singleton'
   >;
+  const mikroOrm: ServiceRef<MikroOrmService, 'plugin', 'singleton'>;
 }
 
 // @public
@@ -466,6 +469,11 @@ export interface LoggerService {
   info(message: string, meta?: Error | JsonObject): void;
   // (undocumented)
   warn(message: string, meta?: Error | JsonObject): void;
+}
+
+// @public
+export interface MikroOrmService {
+  init(entities: EntitySchema[]): Promise<MikroORM>;
 }
 
 // @public

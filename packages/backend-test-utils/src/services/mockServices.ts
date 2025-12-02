@@ -21,6 +21,7 @@ import { HostDiscovery } from '@backstage/backend-defaults/discovery';
 import { httpRouterServiceFactory } from '@backstage/backend-defaults/httpRouter';
 import { lifecycleServiceFactory } from '@backstage/backend-defaults/lifecycle';
 import { loggerServiceFactory } from '@backstage/backend-defaults/logger';
+import { mikroOrmServiceFactory } from '@backstage/backend-defaults/mikroOrm';
 import { permissionsServiceFactory } from '@backstage/backend-defaults/permissions';
 import { permissionsRegistryServiceFactory } from '@backstage/backend-defaults/permissionsRegistry';
 import { rootHealthServiceFactory } from '@backstage/backend-defaults/rootHealth';
@@ -34,6 +35,7 @@ import {
   DatabaseService,
   DiscoveryService,
   HttpAuthService,
+  MikroOrmService,
   RootInstanceMetadataService,
   PermissionsService,
   RootConfigService,
@@ -49,6 +51,7 @@ import { ConfigReader } from '@backstage/config';
 import { EventsService, eventsServiceRef } from '@backstage/plugin-events-node';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { JsonObject } from '@backstage/types';
+import { MikroORM } from '@mikro-orm/core';
 import { Knex } from 'knex';
 import { MockAuthService } from './MockAuthService';
 import { MockHttpAuthService } from './MockHttpAuthService';
@@ -451,6 +454,42 @@ export namespace mockServices {
     export const mock = simpleMock(coreServices.logger, () =>
       createLoggerMock(),
     );
+  }
+
+  /**
+   * Creates a mock implementation of the
+   * {@link @backstage/backend-plugin-api#coreServices.mikroOrm}. Just returns
+   * the given `orm` instance.
+   */
+  export function mikroOrm(options: { orm: MikroORM }): MikroOrmService {
+    return {
+      init: async () => options.orm,
+    };
+  }
+  export namespace mikroOrm {
+    /**
+     * Creates a mock factory for the
+     * {@link @backstage/backend-plugin-api#coreServices.mikroOrm}. Just returns
+     * the given `orm` instance if you supply one. Otherwise, it
+     * returns the regular default MikroORM factory which reads config settings.
+     */
+    export const factory = (options?: { orm: MikroORM }) =>
+      options
+        ? createServiceFactory({
+            service: coreServices.mikroOrm,
+            deps: {},
+            factory: () => mikroOrm(options),
+          })
+        : mikroOrmServiceFactory;
+
+    /**
+     * Creates a mock of the
+     * {@link @backstage/backend-plugin-api#coreServices.mikroOrm}, optionally
+     * with some given method implementations.
+     */
+    export const mock = simpleMock(coreServices.mikroOrm, () => ({
+      init: jest.fn(),
+    }));
   }
 
   /**

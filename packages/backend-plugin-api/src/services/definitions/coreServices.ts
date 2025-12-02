@@ -289,4 +289,13 @@ export namespace coreServices {
     id: 'core.rootInstanceMetadata',
     scope: 'root',
   });
+
+  /**
+   * Access to MikroORM.
+   *
+   * @public
+   */
+  export const mikroOrm = createServiceRef<
+    import('./MikroOrmService').MikroOrmService
+  >({ id: 'core.mikroOrm' });
 }
