@@ -146,36 +146,33 @@ export const createGitlabRepoPushAction = (options: {
         }
       }
 
-      const actions: CommitAction[] = (
-        (
-          await (async () => {
-            const results = [];
-            for (const file of fileContents) {
-              const action = await getFileAction(
-                { file, targetPath },
-                { repoID, branch: branchName },
-                api,
-                ctx.logger,
-                remoteFiles,
-                ctx.input.commitAction,
-              );
-              results.push({ file, action });
-            }
-            return results;
-          })()
-        ).filter(o => o.action !== 'skip') as {
-          file: SerializedFile;
-          action: CommitAction['action'];
-        }[]
-      ).map(({ file, action }) => ({
-        action,
-        filePath: targetPath
-          ? path.posix.join(targetPath, file.path)
-          : file.path,
-        encoding: 'base64',
-        content: file.content.toString('base64'),
-        execute_filemode: file.executable,
-      }));
+      const fileActionMap: {
+        file: SerializedFile;
+        action: 'create' | 'delete' | 'update' | 'skip';
+      }[] = [];
+      for (const file of fileContents) {
+        const action = await getFileAction(
+          { file, targetPath },
+          { repoID, branch: branchName },
+          api,
+          ctx.logger,
+          remoteFiles,
+          ctx.input.commitAction,
+        );
+        fileActionMap.push({ file, action });
+      }
+
+      const actions: CommitAction[] = fileActionMap
+        .filter(o => o.action !== 'skip')
+        .map(({ file, action }) => ({
+          action: action as CommitAction['action'],
+          filePath: targetPath
+            ? path.posix.join(targetPath, file.path)
+            : file.path,
+          encoding: 'base64',
+          content: file.content.toString('base64'),
+          execute_filemode: file.executable,
+        }));
 
       const branchExists = await ctx.checkpoint({
         key: `branch.exists.${repoID}.${branchName}`,
