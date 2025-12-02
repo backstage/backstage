@@ -10466,28 +10466,28 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@lezer/common@npm:^1.0.0, @lezer/common@npm:^1.1.0":
-  version: 1.1.0
-  resolution: "@lezer/common@npm:1.1.0"
-  checksum: 10/cabe34758bb41c6c7e38aaabdc8a6f51469b1307ed9b5760dd1fc7777d77a012e3e3f37c970a91319c10cc5e4d355db5c0e5515cc9392b9d0b833a66a8cc4120
+"@lezer/common@npm:^1.0.0, @lezer/common@npm:^1.1.0, @lezer/common@npm:^1.3.0":
+  version: 1.4.0
+  resolution: "@lezer/common@npm:1.4.0"
+  checksum: 10/8d0626835b8567115923772619d887c212c1e965e0ae2a230e3ae8e6734e0ded3bf4ca3a1eb4aa0af6a7f0cbb4892fa04de399916192fd98a99db8bf0f18da63
   languageName: node
   linkType: hard
 
 "@lezer/highlight@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "@lezer/highlight@npm:1.0.0"
+  version: 1.2.3
+  resolution: "@lezer/highlight@npm:1.2.3"
   dependencies:
-    "@lezer/common": "npm:^1.0.0"
-  checksum: 10/ed362dd4c27218bd941807f14ee691f1ad73613f96041538f5d2cc06521490a346a74044f32da573c1c6529bea2f5c190064c4bca92918732cb580c298880947
+    "@lezer/common": "npm:^1.3.0"
+  checksum: 10/8f787d464f8a036f117a0b23e73ac034d224a57d72501c6559089098a28f127c9e495b90ac7d132acc86199e0b64d4c038f75f9293a37c7c61add52fa1acdb4e
   languageName: node
   linkType: hard
 
 "@lezer/lr@npm:^1.0.0":
-  version: 1.0.0
-  resolution: "@lezer/lr@npm:1.0.0"
+  version: 1.4.4
+  resolution: "@lezer/lr@npm:1.4.4"
   dependencies:
     "@lezer/common": "npm:^1.0.0"
-  checksum: 10/c1c60beef143008b5fbc64a6713be7656b51c858b83f9199cdafb439fc4028f35544990dd7b1fc3d89a518eecb10c90f5f3bdf6804f0a4429dfddb9210275add
+  checksum: 10/3485153107863075fc9c813977dd1a26b43114624e440e33c9e906d5afc6ec6b236b19439196b5baf7dd2d4c34f10642aa280250758ed3d60de5cad54590b1f2
   languageName: node
   linkType: hard
 
