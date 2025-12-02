@@ -34,13 +34,13 @@ export const optimization = (
     minimize: !isDev,
     minimizer: [
       new MinifyPlugin({
-        target: 'ES2022',
+        target: 'ES2023',
         format: 'iife',
         exclude: 'remoteEntry.js',
       }),
       // Avoid iife wrapping of module federation remote entry as it breaks the variable assignment
       new MinifyPlugin({
-        target: 'ES2022',
+        target: 'ES2023',
         format: undefined,
         include: 'remoteEntry.js',
       }),
