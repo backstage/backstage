@@ -22,18 +22,12 @@ import killTree from 'tree-kill';
 import { resolve as resolvePath, join as joinPath } from 'path';
 import path from 'path';
 
-import {
-  spawnPiped,
-  runPlain,
-  waitFor,
-  waitForExit,
-  print,
-} from '../lib/helpers';
+import { waitFor, print } from '../lib/helpers';
 
 import mysql from 'mysql2/promise';
 import pgtools from 'pgtools';
 
-import { findPaths } from '@backstage/cli-common';
+import { findPaths, runOutput, run } from '@backstage/cli-common';
 import { OptionValues } from 'commander';
 
 // eslint-disable-next-line no-restricted-syntax
@@ -46,7 +40,7 @@ const templatePackagePaths = [
   'packages/create-app/templates/default-app/packages/backend/package.json.hbs',
 ];
 
-export async function run(opts: OptionValues) {
+export async function runCommand(opts: OptionValues) {
   const rootDir = await fs.mkdtemp(resolvePath(os.tmpdir(), 'backstage-e2e-'));
   print(`CLI E2E test root: ${rootDir}\n`);
 
@@ -67,7 +61,7 @@ export async function run(opts: OptionValues) {
   await createPlugin({ appDir, pluginId, select: 'backend-plugin' });
 
   print(`Running 'yarn test:e2e' in newly created app with new plugin`);
-  await runPlain(['yarn', 'test:e2e'], {
+  await runOutput(['yarn', 'test:e2e'], {
     cwd: appDir,
     env: { ...process.env, CI: undefined },
   });
@@ -75,13 +69,13 @@ export async function run(opts: OptionValues) {
   await switchToReact17(appDir);
 
   print(`Running 'yarn install' to install React 17`);
-  await runPlain(['yarn', 'install'], { cwd: appDir });
+  await runOutput(['yarn', 'install'], { cwd: appDir });
 
   print(`Running 'yarn tsc' with React 17`);
-  await runPlain(['yarn', 'tsc'], { cwd: appDir });
+  await runOutput(['yarn', 'tsc'], { cwd: appDir });
 
   print(`Running 'yarn test:e2e' with React 17`);
-  await runPlain(['yarn', 'test:e2e'], {
+  await runOutput(['yarn', 'test:e2e'], {
     cwd: appDir,
     env: { ...process.env, CI: undefined },
   });
@@ -190,7 +184,7 @@ async function buildDistWorkspace(workspaceName: string, rootDir: string) {
   appendDeps(require('@backstage/create-app/package.json'));
 
   print(`Preparing workspace`);
-  await runPlain([
+  await runOutput([
     'yarn',
     'backstage-cli',
     'build-workspace',
@@ -209,7 +203,7 @@ async function buildDistWorkspace(workspaceName: string, rootDir: string) {
   }
 
   print('Installing workspace dependencies');
-  await runPlain(['yarn', 'workspaces', 'focus', '--all', '--production'], {
+  await runOutput(['yarn', 'workspaces', 'focus', '--all', '--production'], {
     cwd: workspaceDir,
   });
 
@@ -257,7 +251,7 @@ async function createApp(
   workspaceDir: string,
   rootDir: string,
 ) {
-  const child = spawnPiped(
+  const child = run(
     [
       'node',
       resolvePath(workspaceDir, 'packages/create-app/bin/backstage-create-app'),
@@ -265,6 +259,7 @@ async function createApp(
     ],
     {
       cwd: rootDir,
+      stdio: ['pipe', 'pipe', 'pipe'],
     },
   );
 
@@ -278,7 +273,7 @@ async function createApp(
     child.stdin?.write(`${appName}\n`);
 
     print('Waiting for app create script to be done');
-    await waitForExit(child);
+    await child.waitForExit();
 
     const appDir = resolvePath(rootDir, appName);
 
@@ -318,7 +313,7 @@ async function createApp(
       'test:all',
     ]) {
       print(`Running 'yarn ${cmd}' in newly created app`);
-      await runPlain(['yarn', cmd], { cwd: appDir });
+      await runOutput(['yarn', cmd], { cwd: appDir });
     }
 
     return appDir;
@@ -378,10 +373,11 @@ async function createPlugin(options: {
   select: string;
 }) {
   const { appDir, pluginId, select } = options;
-  const child = spawnPiped(
+  const child = run(
     ['yarn', 'new', '--select', select, '--option', `pluginId=${pluginId}`],
     {
       cwd: appDir,
+      stdio: ['pipe', 'pipe', 'pipe'],
     },
   );
 
@@ -392,7 +388,7 @@ async function createPlugin(options: {
     });
 
     print('Waiting for plugin create script to be done');
-    await waitForExit(child);
+    await child.waitForExit();
 
     const pluginDir = resolvePath(
       appDir,
@@ -401,11 +397,11 @@ async function createPlugin(options: {
     );
 
     print(`Running 'yarn tsc' in root for newly created plugin`);
-    await runPlain(['yarn', 'tsc'], { cwd: appDir });
+    await runOutput(['yarn', 'tsc'], { cwd: appDir });
 
     for (const cmd of [['lint'], ['test', '--no-watch']]) {
       print(`Running 'yarn ${cmd.join(' ')}' in newly created plugin`);
-      await runPlain(['yarn', ...cmd], { cwd: pluginDir });
+      await runOutput(['yarn', ...cmd], { cwd: pluginDir });
     }
   } finally {
     child.kill();
@@ -494,7 +490,7 @@ async function dropClientDatabases(client: string) {
  * Start serving the newly created backend and make sure that all db migrations works correctly
  */
 async function testBackendStart(appDir: string, ...args: string[]) {
-  const child = spawnPiped(['yarn', 'workspace', 'backend', 'start', ...args], {
+  const child = run(['yarn', 'workspace', 'backend', 'start', ...args], {
     cwd: appDir,
     // Windows does not like piping stdin here, the child process will hang when requiring the 'process' module
     stdio: ['ignore', 'pipe', 'pipe'],
@@ -586,7 +582,7 @@ async function testBackendStart(appDir: string, ...args: string[]) {
   }
 
   try {
-    await waitForExit(child);
+    await child.waitForExit();
   } catch (error) {
     if (!successful) {
       throw new Error(`Backend failed to startup: ${stderr}`);

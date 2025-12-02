@@ -15,7 +15,7 @@
  */
 import fs from 'fs-extra';
 import { Command } from 'commander';
-import * as runObj from '../../../../lib/run';
+import * as runObj from '@backstage/cli-common';
 import bump, { bumpBackstageJsonVersion, createVersionFinder } from './bump';
 import { registerMswTestHooks, withLogCollector } from '@backstage/test-utils';
 import { YarnInfoInspectData } from '../../../../lib/versioning/packages';
@@ -60,21 +60,22 @@ jest.mock('ora', () => ({
 }));
 
 let mockDir: MockDirectory;
-jest.mock('@backstage/cli-common', () => ({
-  ...jest.requireActual('@backstage/cli-common'),
-  findPaths: () => ({
-    resolveTargetRoot(filename: string) {
-      return mockDir.resolve(filename);
-    },
-    get targetDir() {
-      return mockDir.path;
-    },
-  }),
-}));
-
-jest.mock('../../../../lib/run', () => {
+jest.mock('@backstage/cli-common', () => {
+  const actual = jest.requireActual('@backstage/cli-common');
   return {
-    run: jest.fn(),
+    ...actual,
+    findPaths: () => ({
+      resolveTargetRoot(filename: string) {
+        return mockDir.resolve(filename);
+      },
+      get targetDir() {
+        return mockDir.path;
+      },
+    }),
+    run: jest.fn().mockReturnValue({
+      exitCode: null,
+      waitForExit: jest.fn().mockResolvedValue(undefined),
+    }),
   };
 });
 
@@ -184,7 +185,10 @@ describe('bump', () => {
       },
     });
 
-    jest.spyOn(runObj, 'run').mockResolvedValue(undefined);
+    jest.spyOn(runObj, 'run').mockReturnValue({
+      exitCode: null,
+      waitForExit: jest.fn().mockResolvedValue(undefined),
+    } as any);
     worker.use(
       rest.get(
         'https://versions.backstage.io/v1/tags/main/manifest.json',
@@ -222,8 +226,7 @@ describe('bump', () => {
 
     expect(runObj.run).toHaveBeenCalledTimes(1);
     expect(runObj.run).toHaveBeenCalledWith(
-      'yarn',
-      ['install'],
+      ['yarn', 'install'],
       expect.any(Object),
     );
 
@@ -277,7 +280,10 @@ describe('bump', () => {
       },
     });
 
-    jest.spyOn(runObj, 'run').mockResolvedValue(undefined);
+    jest.spyOn(runObj, 'run').mockReturnValue({
+      exitCode: null,
+      waitForExit: jest.fn().mockResolvedValue(undefined),
+    } as any);
     worker.use(
       rest.get(
         'https://versions.backstage.io/v1/tags/main/manifest.json',
@@ -318,8 +324,7 @@ describe('bump', () => {
     expect(mockFetchPackageInfo).toHaveBeenCalledWith('@backstage/theme');
 
     expect(runObj.run).not.toHaveBeenCalledWith(
-      'yarn',
-      ['install'],
+      ['yarn', 'install'],
       expect.any(Object),
     );
 
@@ -373,7 +378,10 @@ describe('bump', () => {
       },
     });
 
-    jest.spyOn(runObj, 'run').mockResolvedValue(undefined);
+    jest.spyOn(runObj, 'run').mockReturnValue({
+      exitCode: null,
+      waitForExit: jest.fn().mockResolvedValue(undefined),
+    } as any);
     worker.use(
       rest.get(
         'https://versions.backstage.io/v1/tags/main/manifest.json',
@@ -421,8 +429,7 @@ describe('bump', () => {
 
     expect(runObj.run).toHaveBeenCalledTimes(1);
     expect(runObj.run).toHaveBeenCalledWith(
-      'yarn',
-      ['install'],
+      ['yarn', 'install'],
       expect.any(Object),
     );
 
@@ -477,7 +484,10 @@ describe('bump', () => {
       },
     });
 
-    jest.spyOn(runObj, 'run').mockResolvedValue(undefined);
+    jest.spyOn(runObj, 'run').mockReturnValue({
+      exitCode: null,
+      waitForExit: jest.fn().mockResolvedValue(undefined),
+    } as any);
     worker.use(
       rest.get(
         'https://versions.backstage.io/v1/tags/main/manifest.json',
@@ -526,14 +536,14 @@ describe('bump', () => {
     expect(mockFetchPackageInfo).toHaveBeenCalledWith('@backstage/core');
 
     expect(runObj.run).toHaveBeenCalledTimes(2);
-    expect(runObj.run).toHaveBeenCalledWith('yarn', [
+    expect(runObj.run).toHaveBeenCalledWith([
+      'yarn',
       'plugin',
       'import',
       'https://versions.backstage.io/v1/releases/0.0.1/yarn-plugin',
     ]);
     expect(runObj.run).toHaveBeenCalledWith(
-      'yarn',
-      ['install'],
+      ['yarn', 'install'],
       expect.any(Object),
     );
 
@@ -587,7 +597,10 @@ describe('bump', () => {
       },
     });
 
-    jest.spyOn(runObj, 'run').mockResolvedValue(undefined);
+    jest.spyOn(runObj, 'run').mockReturnValue({
+      exitCode: null,
+      waitForExit: jest.fn().mockResolvedValue(undefined),
+    } as any);
     worker.use(
       rest.get(
         'https://versions.backstage.io/v1/releases/999.0.1/manifest.json',
@@ -656,7 +669,10 @@ describe('bump', () => {
       },
     });
 
-    jest.spyOn(runObj, 'run').mockResolvedValue(undefined);
+    jest.spyOn(runObj, 'run').mockReturnValue({
+      exitCode: null,
+      waitForExit: jest.fn().mockResolvedValue(undefined),
+    } as any);
     worker.use(
       rest.get(
         'https://versions.backstage.io/v1/tags/main/manifest.json',
@@ -763,7 +779,10 @@ describe('bump', () => {
       },
     });
 
-    jest.spyOn(runObj, 'run').mockResolvedValue(undefined);
+    jest.spyOn(runObj, 'run').mockReturnValue({
+      exitCode: null,
+      waitForExit: jest.fn().mockResolvedValue(undefined),
+    } as any);
     worker.use(
       rest.get(
         'https://versions.backstage.io/v1/tags/main/manifest.json',
@@ -813,8 +832,7 @@ describe('bump', () => {
 
     expect(runObj.run).toHaveBeenCalledTimes(1);
     expect(runObj.run).toHaveBeenCalledWith(
-      'yarn',
-      ['install'],
+      ['yarn', 'install'],
       expect.any(Object),
     );
 
@@ -873,7 +891,10 @@ describe('bump', () => {
     });
 
     mockFetchPackageInfo.mockRejectedValue(new NotFoundError('Nope'));
-    jest.spyOn(runObj, 'run').mockResolvedValue(undefined);
+    jest.spyOn(runObj, 'run').mockReturnValue({
+      exitCode: null,
+      waitForExit: jest.fn().mockResolvedValue(undefined),
+    } as any);
     worker.use(
       rest.get(
         'https://versions.backstage.io/v1/tags/main/manifest.json',
@@ -1094,7 +1115,10 @@ describe('environment variables', () => {
       },
     });
 
-    jest.spyOn(runObj, 'run').mockResolvedValue(undefined);
+    jest.spyOn(runObj, 'run').mockReturnValue({
+      exitCode: null,
+      waitForExit: jest.fn().mockResolvedValue(undefined),
+    } as any);
     worker.use(
       rest.get(
         'https://custom.example.com/v1/tags/main/manifest.json',
@@ -1131,8 +1155,7 @@ describe('environment variables', () => {
 
     expect(runObj.run).toHaveBeenCalledTimes(1);
     expect(runObj.run).toHaveBeenCalledWith(
-      'yarn',
-      ['install'],
+      ['yarn', 'install'],
       expect.any(Object),
     );
 
@@ -1186,7 +1209,10 @@ describe('environment variables', () => {
       },
     });
 
-    jest.spyOn(runObj, 'run').mockResolvedValue(undefined);
+    jest.spyOn(runObj, 'run').mockReturnValue({
+      exitCode: null,
+      waitForExit: jest.fn().mockResolvedValue(undefined),
+    } as any);
 
     const { log: logs } = await withLogCollector(['log', 'warn'], async () => {
       await bump({ pattern: null, release: 'main' } as unknown as Command);
@@ -1215,8 +1241,7 @@ describe('environment variables', () => {
 
     expect(runObj.run).toHaveBeenCalledTimes(1);
     expect(runObj.run).toHaveBeenCalledWith(
-      'yarn',
-      ['install'],
+      ['yarn', 'install'],
       expect.any(Object),
     );
 
@@ -1253,7 +1278,10 @@ describe('environment variables', () => {
       },
     });
 
-    jest.spyOn(runObj, 'run').mockResolvedValue(undefined);
+    jest.spyOn(runObj, 'run').mockReturnValue({
+      exitCode: null,
+      waitForExit: jest.fn().mockResolvedValue(undefined),
+    } as any);
     worker.use(
       rest.get(
         'https://custom.example.com/v1/tags/main/manifest.json',
@@ -1291,14 +1319,14 @@ describe('environment variables', () => {
     ]);
 
     expect(runObj.run).toHaveBeenCalledTimes(2);
-    expect(runObj.run).toHaveBeenCalledWith('yarn', [
+    expect(runObj.run).toHaveBeenCalledWith([
+      'yarn',
       'plugin',
       'import',
       'https://custom.example.com/v1/releases/1.5.0/yarn-plugin',
     ]);
     expect(runObj.run).toHaveBeenCalledWith(
-      'yarn',
-      ['install'],
+      ['yarn', 'install'],
       expect.any(Object),
     );
   });

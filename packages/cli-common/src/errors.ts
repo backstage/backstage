@@ -14,13 +14,21 @@
  * limitations under the License.
  */
 
-import { Command } from 'commander';
-import { runCommand } from './runCommand';
+import { CustomErrorBase } from '@backstage/errors';
 
-export function registerCommands(program: Command) {
-  program
-    .command('run')
-    .option('--keep', 'Do not remove the temporary dir after tests complete')
-    .description('Run e2e tests')
-    .action(runCommand);
+/**
+ * Error thrown when a child process exits with a non-zero code.
+ * @public
+ */
+export class ExitCodeError extends CustomErrorBase {
+  readonly code: number;
+
+  constructor(code: number, command?: string) {
+    super(
+      command
+        ? `Command '${command}' exited with code ${code}`
+        : `Child exited with code ${code}`,
+    );
+    this.code = code;
+  }
 }

@@ -14,13 +14,7 @@
  * limitations under the License.
  */
 
-import { Command } from 'commander';
-import { runCommand } from './runCommand';
+import { findPaths } from '@backstage/cli-common';
 
-export function registerCommands(program: Command) {
-  program
-    .command('run')
-    .option('--keep', 'Do not remove the temporary dir after tests complete')
-    .description('Run e2e tests')
-    .action(runCommand);
-}
+/* eslint-disable-next-line no-restricted-syntax */
+export const paths = findPaths(__dirname);
