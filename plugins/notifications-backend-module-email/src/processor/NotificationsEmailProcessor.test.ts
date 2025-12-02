@@ -500,4 +500,62 @@ describe('NotificationsEmailProcessor', () => {
       },
     });
   });
+
+  it('should send email with deprecated ses config', async () => {
+    const SES_SENDMAIL_CONFIG = {
+      app: {
+        baseUrl: 'https://example.org',
+      },
+      notifications: {
+        processors: {
+          email: {
+            transportConfig: {
+              transport: 'ses',
+              region: 'us-west-2',
+            },
+            sender: 'backstage@backstage.io',
+            replyTo: 'no-reply@backstage.io',
+            sesConfig: {
+              fromArn:
+                'arn:aws:ses:us-west-2:123456789012:identity/example.com',
+            },
+          },
+        },
+      },
+    };
+    (createTransport as jest.Mock).mockReturnValue(mockTransport);
+    const processor = new NotificationsEmailProcessor(
+      logger,
+      mockServices.rootConfig({ data: SES_SENDMAIL_CONFIG }),
+      catalogServiceMock({ entities: [DEFAULT_ENTITIES_RESPONSE.items[0]] }),
+      auth,
+    );
+
+    await processor.postProcess(
+      {
+        origin: 'plugin',
+        id: '1234',
+        user: 'user:default/mock',
+        created: new Date(),
+        payload: { title: 'notification' },
+      },
+      {
+        recipients: { type: 'entity', entityRef: 'user:default/mock' },
+        payload: { title: 'notification' },
+      },
+    );
+
+    expect(sendmailMock).toHaveBeenCalledWith({
+      from: 'backstage@backstage.io',
+      html: '<p><a href="https://example.org/notifications">https://example.org/notifications</a></p>',
+      replyTo: 'no-reply@backstage.io',
+      subject: 'notification',
+      text: 'https://example.org/notifications',
+      to: 'mock@backstage.io',
+      ses: {
+        FromEmailAddressIdentityArn:
+          'arn:aws:ses:us-west-2:123456789012:identity/example.com',
+      },
+    });
+  });
 });

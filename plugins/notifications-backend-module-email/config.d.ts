@@ -138,6 +138,11 @@ export interface Config {
         sesConfig?: {
           /**
            * ARN of the identity to use for the "From"/sender address of the email
+           * @deprecated Use fromEmailAddressIdentityArn instead
+           */
+          fromArn?: string;
+          /**
+           * ARN of the identity to use for the "From"/sender address of the email
            */
           fromEmailAddressIdentityArn?: string;
           /**

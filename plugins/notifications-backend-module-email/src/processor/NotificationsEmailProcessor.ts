@@ -318,12 +318,15 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
     const fromEmailAddressIdentityArn = this.sesConfig.getOptionalString(
       'fromEmailAddressIdentityArn',
     );
+    const fromArn = this.sesConfig.getOptionalString('fromArn');
     const configurationSetName = this.sesConfig.getOptionalString(
       'configurationSetName',
     );
 
     if (fromEmailAddressIdentityArn)
       ses.FromEmailAddressIdentityArn = fromEmailAddressIdentityArn;
+    else if (fromArn) ses.FromEmailAddressIdentityArn = fromArn;
+
     if (configurationSetName) ses.ConfigurationSetName = configurationSetName;
 
     return Object.keys(ses).length > 0 ? ses : undefined;
