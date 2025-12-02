@@ -3098,7 +3098,7 @@ __metadata:
     pg-connection-string: "npm:^2.3.0"
     supertest: "npm:^7.0.0"
     testcontainers: "npm:^10.0.0"
-    textextensions: "npm:^5.16.0"
+    text-extensions: "npm:^2.4.0"
     uuid: "npm:^11.0.0"
     yn: "npm:^4.0.0"
     zod: "npm:^3.22.4"
@@ -47192,6 +47192,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"text-extensions@npm:^2.4.0":
+  version: 2.4.0
+  resolution: "text-extensions@npm:2.4.0"
+  checksum: 10/9bdbc9959e004ccc86a6ec076d6c5bb6765978263e9d0d5febb640d7675c09919ea912f3fe9d50b68c3c7c43cc865610a7cb24954343abb31f74c205fbae4e45
+  languageName: node
+  linkType: hard
+
 "text-hex@npm:1.0.x":
   version: 1.0.0
   resolution: "text-hex@npm:1.0.0"
@@ -47206,7 +47213,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"textextensions@npm:^5.12.0, textextensions@npm:^5.13.0, textextensions@npm:^5.16.0":
+"textextensions@npm:^5.12.0, textextensions@npm:^5.13.0":
   version: 5.16.0
   resolution: "textextensions@npm:5.16.0"
   checksum: 10/d41e9265e9d74d192d4fb26fc89a2f4dbe7a6d85cc5c14f99f1df68d07bce5346f8abe0ed680a91ef805b91e9972e5787c7365a03f3a5489e16ca350d28a3879
