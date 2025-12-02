@@ -288,11 +288,11 @@ export interface GroupedResponses extends DeploymentResources {
   // (undocumented)
   jobs: V1Job[];
   // (undocumented)
-  secrets: V1Secret[];
-  // (undocumented)
   persistentVolumeClaims: V1PersistentVolumeClaim[];
   // (undocumented)
   persistentVolumes: V1PersistentVolume[];
+  // (undocumented)
+  secrets: V1Secret[];
   // (undocumented)
   services: V1Service[];
   // (undocumented)
