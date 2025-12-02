@@ -1,5 +1,13 @@
 # @techdocs/cli
 
+## 1.10.3-next.1
+
+### Patch Changes
+
+- 43629b1: Updated to use new utilities from `@backstage/cli-common`.
+- Updated dependencies
+  - @backstage/cli-common@0.1.16-next.1
+
 ## 1.10.3-next.0
 
 ### Patch Changes

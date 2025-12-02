@@ -1,5 +1,14 @@
 # @backstage/plugin-scaffolder-react
 
+## 1.19.4-next.1
+
+### Patch Changes
+
+- 5ca461e: Fixed bug where custom `review.name` values were incorrectly formatted by `startCase`, preserving them exactly as written.
+- Updated dependencies
+  - @backstage/core-components@0.18.4-next.1
+  - @backstage/plugin-catalog-react@1.21.4-next.1
+
 ## 1.19.4-next.0
 
 ### Patch Changes
