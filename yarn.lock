@@ -2930,7 +2930,7 @@ __metadata:
     msw: "npm:^1.0.0"
     mysql2: "npm:^3.0.0"
     node-fetch: "npm:^2.7.0"
-    node-forge: "npm:^1.3.1"
+    node-forge: "npm:^1.3.2"
     node-mocks-http: "npm:^1.0.0"
     p-limit: "npm:^3.1.0"
     path-to-regexp: "npm:^8.0.0"
@@ -39186,7 +39186,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"node-forge@npm:^1, node-forge@npm:^1.2.1, node-forge@npm:^1.3.1":
+"node-forge@npm:^1, node-forge@npm:^1.2.1, node-forge@npm:^1.3.2":
   version: 1.3.2
   resolution: "node-forge@npm:1.3.2"
   checksum: 10/dcc54aaffe0cf52367214a20c0032aa9b209d9095dd14526504f1972d1900a07e96046b3684cb0c8d0cc3d48744dd18e02b7b447ab28fac615ffb850beeabf18
