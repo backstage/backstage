@@ -148,8 +148,9 @@ export const createGitlabRepoPushAction = (options: {
 
       const actions: CommitAction[] = (
         (
-          await Promise.all(
-            fileContents.map(async file => {
+          await (async () => {
+            const results = [];
+            for (const file of fileContents) {
               const action = await getFileAction(
                 { file, targetPath },
                 { repoID, branch: branchName },
@@ -158,9 +159,10 @@ export const createGitlabRepoPushAction = (options: {
                 remoteFiles,
                 ctx.input.commitAction,
               );
-              return { file, action };
-            }),
-          )
+              results.push({ file, action });
+            }
+            return results;
+          })()
         ).filter(o => o.action !== 'skip') as {
           file: SerializedFile;
           action: CommitAction['action'];
