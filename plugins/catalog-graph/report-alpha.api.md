@@ -103,8 +103,8 @@ const _default: OverridableFrontendPlugin<
         zoom?: 'disabled' | 'enabled' | 'enable-on-click' | undefined;
         title?: string | undefined;
         relations?: string[] | undefined;
-        maxDepth?: number | undefined;
         kinds?: string[] | undefined;
+        maxDepth?: number | undefined;
         mergeRelations?: boolean | undefined;
         relationPairs?: [string, string][] | undefined;
         unidirectional?: boolean | undefined;
@@ -176,8 +176,8 @@ const _default: OverridableFrontendPlugin<
         zoom?: 'disabled' | 'enabled' | 'enable-on-click' | undefined;
         relations?: string[] | undefined;
         rootEntityRefs?: string[] | undefined;
-        maxDepth?: number | undefined;
         kinds?: string[] | undefined;
+        maxDepth?: number | undefined;
         mergeRelations?: boolean | undefined;
         relationPairs?: [string, string][] | undefined;
         unidirectional?: boolean | undefined;
@@ -218,6 +218,29 @@ const _default: OverridableFrontendPlugin<
   }
 >;
 export default _default;
+
+// @public
+export const Direction: {
+  readonly TOP_BOTTOM: 'TB';
+  readonly BOTTOM_TOP: 'BT';
+  readonly LEFT_RIGHT: 'LR';
+  readonly RIGHT_LEFT: 'RL';
+};
+
+// @public (undocumented)
+export type Direction = (typeof Direction)[keyof typeof Direction];
+
+// @public (undocumented)
+export namespace Direction {
+  // (undocumented)
+  export type BOTTOM_TOP = typeof Direction.BOTTOM_TOP;
+  // (undocumented)
+  export type LEFT_RIGHT = typeof Direction.LEFT_RIGHT;
+  // (undocumented)
+  export type RIGHT_LEFT = typeof Direction.RIGHT_LEFT;
+  // (undocumented)
+  export type TOP_BOTTOM = typeof Direction.TOP_BOTTOM;
+}
 
 // (No @packageDocumentation comment for this package)
 ```
