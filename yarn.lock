@@ -7362,7 +7362,7 @@ __metadata:
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
     react-router-dom: "npm:^6.3.0"
-    testing-library__dom: "npm:^7.29.4-beta.1"
+    shadow-dom-testing-library: "npm:^1.13.1"
   peerDependencies:
     "@testing-library/react": ^16.0.0
     "@types/react": ^17.0.0 || ^18.0.0
@@ -7437,6 +7437,7 @@ __metadata:
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
     react-router-dom: "npm:^6.3.0"
+    shadow-dom-testing-library: "npm:^1.13.1"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
@@ -45240,6 +45241,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"shadow-dom-testing-library@npm:^1.13.1":
+  version: 1.13.1
+  resolution: "shadow-dom-testing-library@npm:1.13.1"
+  peerDependencies:
+    "@testing-library/dom": ">= 8"
+  checksum: 10/a10f3466592691368f260c15230d9e830cc5122d20002ad9b6c2918fa245089219d1f45c026153fa6ccf8848b546da6f985c0e461458c8c1e09786a1de626287
+  languageName: node
+  linkType: hard
+
 "shallow-clone@npm:^3.0.0":
   version: 3.0.1
   resolution: "shallow-clone@npm:3.0.1"
@@ -47163,13 +47173,6 @@ __metadata:
     tmp: "npm:^0.2.3"
     undici: "npm:^5.28.4"
   checksum: 10/09d983b4881a6460c9167c25a0367569feefcf89f69557511c07a0d0d89be5be2e3509c0b1fe0b8c6fae80d163064eefb71d691e1a0b33465b0e8ab5c7fb5313
-  languageName: node
-  linkType: hard
-
-"testing-library__dom@npm:^7.29.4-beta.1":
-  version: 7.29.4-beta.1
-  resolution: "testing-library__dom@npm:7.29.4-beta.1"
-  checksum: 10/d912418803b77df672c0894d053327a4b366cf7e5312dfb73bd2089d36272e2b38bccc1bd7284d9ed2f9f6530797778d0f72e94b8a44fe5d0327d11e7f757f2b
   languageName: node
   linkType: hard
 
