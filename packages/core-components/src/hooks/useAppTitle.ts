@@ -46,7 +46,7 @@ export function useAppTitle(): string {
   const defaultTitle = 'Backstage';
 
   // Try to get translation for the current language
-  const translatedTitle = t('app.title', {});
+  const translatedTitle = t('app.title');
 
   // Get the fallback title from config
   const configTitle = configApi.getOptionalString('app.title');
