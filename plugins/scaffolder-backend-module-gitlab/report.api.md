@@ -46,7 +46,7 @@ export const createGitlabIssueAction: (options: {
     discussionToResolve?: string | undefined;
     epicId?: number | undefined;
     labels?: string | undefined;
-    issueType?: 'issue' | 'task' | 'incident' | 'test_case' | undefined;
+    issueType?: 'issue' | 'incident' | 'test_case' | 'task' | undefined;
     mergeRequestToResolveDiscussionsOf?: number | undefined;
     milestoneId?: number | undefined;
     weight?: number | undefined;
@@ -130,7 +130,7 @@ export const createGitlabRepoPushAction: (options: {
     sourcePath?: string | undefined;
     targetPath?: string | undefined;
     token?: string | undefined;
-    commitAction?: 'update' | 'delete' | 'create' | undefined;
+    commitAction?: 'auto' | 'update' | 'create' | 'delete' | undefined;
   },
   {
     projectid: string;
@@ -163,7 +163,7 @@ export function createPublishGitlabAction(options: {
           visibility?: 'internal' | 'private' | 'public' | undefined;
           path?: string | undefined;
           description?: string | undefined;
-          merge_method?: 'merge' | 'rebase_merge' | 'ff' | undefined;
+          merge_method?: 'merge' | 'ff' | 'rebase_merge' | undefined;
           topics?: string[] | undefined;
           auto_devops_enabled?: boolean | undefined;
           only_allow_merge_if_pipeline_succeeds?: boolean | undefined;
@@ -224,7 +224,7 @@ export const createPublishGitlabMergeRequestAction: (options: {
     sourcePath?: string | undefined;
     targetPath?: string | undefined;
     token?: string | undefined;
-    commitAction?: 'auto' | 'update' | 'delete' | 'create' | 'skip' | undefined;
+    commitAction?: 'auto' | 'update' | 'skip' | 'create' | 'delete' | undefined;
     projectid?: string | undefined;
     removeSourceBranch?: boolean | undefined;
     assignee?: string | undefined;
@@ -275,7 +275,7 @@ export const editGitlabIssueAction: (options: {
     discussionLocked?: boolean | undefined;
     dueDate?: string | undefined;
     epicId?: number | undefined;
-    issueType?: 'issue' | 'task' | 'incident' | 'test_case' | undefined;
+    issueType?: 'issue' | 'incident' | 'test_case' | 'task' | undefined;
     labels?: string | undefined;
     milestoneId?: number | undefined;
     removeLabels?: string | undefined;
