@@ -134,7 +134,7 @@ export class CacheManager {
   ): CacheStoreOptions | undefined {
     const storeConfigPath = `backend.cache.${store}`;
 
-    if (!config.has(storeConfigPath)) {
+    if (store !== 'memory' && !config.has(storeConfigPath)) {
       logger?.warn(
         `No configuration found for cache store '${store}' at '${storeConfigPath}'.`,
       );
