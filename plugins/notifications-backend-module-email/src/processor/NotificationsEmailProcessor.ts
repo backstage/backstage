@@ -315,19 +315,18 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
       return undefined;
     }
     const ses: Partial<SendEmailCommandInput> = {};
-    const fromEmailAddressIdentityArn = this.sesConfig.getOptionalString(
-      'fromEmailAddressIdentityArn',
-    );
     const fromArn = this.sesConfig.getOptionalString('fromArn');
+    const sourceArn = this.sesConfig.getOptionalString('sourceArn');
     const configurationSetName = this.sesConfig.getOptionalString(
       'configurationSetName',
     );
 
-    if (fromEmailAddressIdentityArn)
-      ses.FromEmailAddressIdentityArn = fromEmailAddressIdentityArn;
-    else if (fromArn) ses.FromEmailAddressIdentityArn = fromArn;
-
+    if (fromArn) ses.FromEmailAddressIdentityArn = fromArn;
     if (configurationSetName) ses.ConfigurationSetName = configurationSetName;
+    if (sourceArn)
+      this.logger.warn(
+        'sourceArn is not supported in SESv2 and will be ignored',
+      );
 
     return Object.keys(ses).length > 0 ? ses : undefined;
   }
