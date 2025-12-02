@@ -31,11 +31,11 @@ __metadata:
   linkType: hard
 
 "@base-ui-components/react@npm:^1.0.0-beta.4":
-  version: 1.0.0-beta.6
-  resolution: "@base-ui-components/react@npm:1.0.0-beta.6"
+  version: 1.0.0-beta.7
+  resolution: "@base-ui-components/react@npm:1.0.0-beta.7"
   dependencies:
     "@babel/runtime": "npm:^7.28.4"
-    "@base-ui-components/utils": "npm:0.2.0"
+    "@base-ui-components/utils": "npm:0.2.1"
     "@floating-ui/react-dom": "npm:^2.1.6"
     "@floating-ui/utils": "npm:^0.2.10"
     reselect: "npm:^5.1.1"
@@ -48,13 +48,13 @@ __metadata:
   peerDependenciesMeta:
     "@types/react":
       optional: true
-  checksum: 10/b3cfa5449f596c6cb509017a33c31fad531c10ee3dc70ee98ca5a48dfc02a8333012bd29df660833f98b73ee895f34ff51037eeef35b58111492d98454881eee
+  checksum: 10/14a446e7ff58a8eab6bb81ee32fc8f49bea8e0e3f188aa023f24c5382d9d76b97886f1828ef8fe2532720fc6512f52b88587220a47e4009b1d8febc904d5cf1a
   languageName: node
   linkType: hard
 
-"@base-ui-components/utils@npm:0.2.0":
-  version: 0.2.0
-  resolution: "@base-ui-components/utils@npm:0.2.0"
+"@base-ui-components/utils@npm:0.2.1":
+  version: 0.2.1
+  resolution: "@base-ui-components/utils@npm:0.2.1"
   dependencies:
     "@babel/runtime": "npm:^7.28.4"
     "@floating-ui/utils": "npm:^0.2.10"
@@ -67,7 +67,7 @@ __metadata:
   peerDependenciesMeta:
     "@types/react":
       optional: true
-  checksum: 10/b5eae460e3f45fdb2c5116c94612c5b0c00190d4f0763836ba121e36e5c46c1caad862f4aa05827d90a8ebe924c29e42a7561c124de23ce3dc565dba2a6dff98
+  checksum: 10/fcf0dbf38bb6b8318174e419b3c7d4f6e044cbafe137ec499a2daddc482b317e936519f414335a6485d1721076c8e57fdc5b206f7845a44689fcfec1d81a659e
   languageName: node
   linkType: hard
 
