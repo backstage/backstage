@@ -1,6 +1,6 @@
 ---
-'@backstage/plugin-catalog-backend-module-github-org': minor
-'@backstage/plugin-catalog-backend-module-github': minor
+'@backstage/plugin-catalog-backend-module-github-org': patch
+'@backstage/plugin-catalog-backend-module-github': patch
 ---
 
 Introduce new configuration option to exclude suspended users from GitHub Enterprise instances.
