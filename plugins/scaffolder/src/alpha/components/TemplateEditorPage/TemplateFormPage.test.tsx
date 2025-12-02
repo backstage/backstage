@@ -16,16 +16,39 @@
 
 import { screen } from '@testing-library/react';
 import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
+
+jest.mock('@backstage/plugin-scaffolder-react', () => {
+  const actual = jest.requireActual('@backstage/plugin-scaffolder-react');
+  return {
+    ...actual,
+    useTemplateSecrets: () => ({
+      secrets: {},
+      setSecrets: jest.fn(),
+    }),
+  };
+});
 import { TemplateFormPage } from './TemplateFormPage';
 import { rootRouteRef } from '../../../routes';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
+import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
+import { formDecoratorsApiRef } from '../../api/ref';
 
 describe('TemplateFormPage', () => {
   const catalogApiMock = { getEntities: jest.fn().mockResolvedValue([]) };
+  const scaffolderApiMock = {};
+  const formDecoratorsApiMock = {
+    getFormDecorators: jest.fn().mockResolvedValue([]),
+  };
 
   it('Should render without exploding', async () => {
     await renderInTestApp(
-      <TestApiProvider apis={[[catalogApiRef, catalogApiMock]]}>
+      <TestApiProvider
+        apis={[
+          [catalogApiRef, catalogApiMock],
+          [scaffolderApiRef, scaffolderApiMock],
+          [formDecoratorsApiRef, formDecoratorsApiMock],
+        ]}
+      >
         <TemplateFormPage />
       </TestApiProvider>,
       {
@@ -41,7 +64,13 @@ describe('TemplateFormPage', () => {
 
   it('Should have an link back to the edit page', async () => {
     await renderInTestApp(
-      <TestApiProvider apis={[[catalogApiRef, catalogApiMock]]}>
+      <TestApiProvider
+        apis={[
+          [catalogApiRef, catalogApiMock],
+          [scaffolderApiRef, scaffolderApiMock],
+          [formDecoratorsApiRef, formDecoratorsApiMock],
+        ]}
+      >
         <TemplateFormPage />
       </TestApiProvider>,
       {
