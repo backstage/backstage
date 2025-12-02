@@ -1,5 +1,13 @@
 # @backstage/plugin-catalog-react
 
+## 1.21.4-next.1
+
+### Patch Changes
+
+- 6d39141: Fixed an issue where `EntityOwnerPicker` failed to filter options when the input text contained uppercase characters.
+- Updated dependencies
+  - @backstage/core-components@0.18.4-next.1
+
 ## 1.21.4-next.0
 
 ### Patch Changes

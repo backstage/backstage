@@ -1,5 +1,14 @@
 # @backstage/plugin-techdocs
 
+## 1.16.1-next.1
+
+### Patch Changes
+
+- 592361e: The `techdocs` config is now marked as optional.
+- Updated dependencies
+  - @backstage/core-components@0.18.4-next.1
+  - @backstage/plugin-catalog-react@1.21.4-next.1
+
 ## 1.16.1-next.0
 
 ### Patch Changes

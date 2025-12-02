@@ -1,5 +1,11 @@
 # @backstage/plugin-techdocs-backend
 
+## 2.1.3-next.1
+
+### Patch Changes
+
+- 592361e: The `techdocs` config is now marked as optional.
+
 ## 2.1.3-next.0
 
 ### Patch Changes

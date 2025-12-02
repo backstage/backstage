@@ -1,5 +1,14 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.20.5-next.1
+
+### Patch Changes
+
+- 8fa8d87: Add Kubernetes Plugin Secrets Accordion with masked secret datas
+- Updated dependencies
+  - @backstage/plugin-kubernetes-common@0.9.9-next.0
+  - @backstage/plugin-kubernetes-node@0.3.7-next.1
+
 ## 0.20.5-next.0
 
 ### Patch Changes

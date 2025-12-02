@@ -1,5 +1,22 @@
 # example-app
 
+## 0.2.116-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.10.0-next.1
+  - @backstage/core-components@0.18.4-next.1
+  - @backstage/plugin-techdocs-module-addons-contrib@1.1.31-next.1
+  - @backstage/plugin-catalog-react@1.21.4-next.1
+  - @backstage/plugin-scaffolder-react@1.19.4-next.1
+  - @backstage/plugin-catalog-unprocessed-entities@0.2.24-next.1
+  - @backstage/cli@0.34.6-next.1
+  - @backstage/plugin-techdocs@1.16.1-next.1
+  - @backstage/plugin-mui-to-bui@0.2.2-next.1
+  - @backstage/plugin-kubernetes@0.12.14-next.1
+  - @backstage/plugin-kubernetes-cluster@0.0.32-next.1
+
 ## 0.2.116-next.0
 
 ### Patch Changes
