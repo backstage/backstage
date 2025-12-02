@@ -5291,7 +5291,9 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-catalog-unprocessed-entities-common@workspace:plugins/catalog-unprocessed-entities-common"
   dependencies:
+    "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
+    "@backstage/errors": "workspace:^"
     "@backstage/plugin-permission-common": "workspace:^"
   languageName: unknown
   linkType: soft
@@ -5300,13 +5302,13 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-catalog-unprocessed-entities@workspace:plugins/catalog-unprocessed-entities"
   dependencies:
-    "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/dev-utils": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/frontend-plugin-api": "workspace:^"
+    "@backstage/plugin-catalog-unprocessed-entities-common": "workspace:^"
     "@material-ui/core": "npm:^4.9.13"
     "@material-ui/icons": "npm:^4.9.1"
     "@material-ui/lab": "npm:^4.0.0-alpha.60"

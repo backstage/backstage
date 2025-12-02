@@ -37,6 +37,8 @@
     "test": "backstage-cli package test"
   },
   "dependencies": {
+    "@backstage/catalog-model": "workspace:^",
+    "@backstage/errors": "workspace:^",
     "@backstage/plugin-permission-common": "workspace:^"
   },
   "devDependencies": {
