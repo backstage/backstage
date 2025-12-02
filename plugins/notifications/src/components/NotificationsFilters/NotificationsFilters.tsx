@@ -128,47 +128,6 @@ export const NotificationsFilters = ({
   const { t } = useTranslationRef(notificationsTranslationRef);
   const sortByText = getSortByText(sorting);
 
-  const CreatedAfterOptionsLocal = {
-    last24h: {
-      label: t(CreatedAfterOptions.last24h.labelKey, {}),
-      getDate: CreatedAfterOptions.last24h.getDate,
-    },
-    lastWeek: {
-      label: t(CreatedAfterOptions.lastWeek.labelKey, {}),
-      getDate: CreatedAfterOptions.lastWeek.getDate,
-    },
-    all: {
-      label: t(CreatedAfterOptions.all.labelKey, {}),
-      getDate: CreatedAfterOptions.all.getDate,
-    },
-  };
-
-  const SortByOptionsLocal = {
-    newest: {
-      label: t(SortByOptions.newest.labelKey, {}),
-      sortBy: SortByOptions.newest.sortBy,
-    },
-    oldest: {
-      label: t(SortByOptions.oldest.labelKey, {}),
-      sortBy: SortByOptions.oldest.sortBy,
-    },
-    topic: {
-      label: t(SortByOptions.topic.labelKey, {}),
-      sortBy: SortByOptions.topic.sortBy,
-    },
-    origin: {
-      label: t(SortByOptions.origin.labelKey, {}),
-      sortBy: SortByOptions.origin.sortBy,
-    },
-  };
-
-  const AllSeverityOptionsLocal = {
-    critical: t('filters.severity.critical'),
-    high: t('filters.severity.high'),
-    normal: t('filters.severity.normal'),
-    low: t('filters.severity.low'),
-  };
-
   const handleOnCreatedAfterChanged = (
     event: ChangeEvent<{ name?: string; value: unknown }>,
   ) => {
@@ -198,8 +157,8 @@ export const NotificationsFilters = ({
     event: ChangeEvent<{ name?: string; value: unknown }>,
   ) => {
     const idx = ((event.target.value as string) ||
-      'newest') as keyof typeof SortByOptionsLocal;
-    const option = SortByOptionsLocal[idx];
+      'newest') as keyof typeof SortByOptions;
+    const option = SortByOptions[idx];
     onSortingChanged({ ...option.sortBy });
   };
 
@@ -269,13 +228,12 @@ export const NotificationsFilters = ({
               value={createdAfter}
               onChange={handleOnCreatedAfterChanged}
             >
-              {Object.keys(CreatedAfterOptionsLocal).map((key: string) => (
+              {Object.keys(CreatedAfterOptions).map((key: string) => (
                 <MenuItem value={key} key={key}>
-                  {
-                    CreatedAfterOptionsLocal[
-                      key as keyof typeof CreatedAfterOptionsLocal
-                    ].label
-                  }
+                  {t(
+                    CreatedAfterOptions[key as keyof typeof CreatedAfterOptions]
+                      .labelKey,
+                  )}
                 </MenuItem>
               ))}
             </Select>
@@ -295,12 +253,9 @@ export const NotificationsFilters = ({
               value={sortByText}
               onChange={handleOnSortByChanged}
             >
-              {Object.keys(SortByOptionsLocal).map((key: string) => (
+              {Object.keys(SortByOptions).map((key: string) => (
                 <MenuItem value={key} key={key}>
-                  {
-                    SortByOptionsLocal[key as keyof typeof SortByOptionsLocal]
-                      .label
-                  }
+                  {t(SortByOptions[key as keyof typeof SortByOptions].labelKey)}
                 </MenuItem>
               ))}
             </Select>
@@ -319,9 +274,11 @@ export const NotificationsFilters = ({
               value={severity}
               onChange={handleOnSeverityChanged}
             >
-              {Object.keys(AllSeverityOptionsLocal).map((key: string) => (
+              {(
+                ['critical', 'high', 'normal', 'low'] as NotificationSeverity[]
+              ).map(key => (
                 <MenuItem value={key} key={key}>
-                  {AllSeverityOptionsLocal[key as NotificationSeverity]}
+                  {t(`filters.severity.${key}`)}
                 </MenuItem>
               ))}
             </Select>
