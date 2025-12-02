@@ -8340,14 +8340,14 @@ __metadata:
   linkType: hard
 
 "@elastic/elasticsearch@npm:^7.13.0":
-  version: 7.17.0
-  resolution: "@elastic/elasticsearch@npm:7.17.0"
+  version: 7.17.14
+  resolution: "@elastic/elasticsearch@npm:7.17.14"
   dependencies:
     debug: "npm:^4.3.1"
     hpagent: "npm:^0.1.1"
     ms: "npm:^2.1.3"
     secure-json-parse: "npm:^2.4.0"
-  checksum: 10/d54330ce50b4951b7b9db15349413b4961040fb0b73a09d3f07cef5cb2873fd22af17307e07b6c8b1b1e0844e76e9aeb78ce1e01d67a940e3190763a875648be
+  checksum: 10/ef26489eb8db667f0a6c2be4641e9b388bc5badd2ab7791eb82dffa138653642678f7e6ab2741b914747e95e0d43bf9daa0821bc509318c14cb40869cc9ebbc9
   languageName: node
   linkType: hard
 
