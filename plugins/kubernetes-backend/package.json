@@ -63,7 +63,7 @@
     "@kubernetes/client-node": "1.4.0",
     "@smithy/signature-v4": "^4.1.0",
     "@types/http-proxy-middleware": "^1.0.0",
-    "express": "^4.17.1",
+    "express": "^4.22.0",
     "express-promise-router": "^4.1.0",
     "fs-extra": "^11.2.0",
     "http-proxy-middleware": "^2.0.6",
