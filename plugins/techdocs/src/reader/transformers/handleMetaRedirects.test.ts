@@ -18,6 +18,19 @@ import { handleMetaRedirects } from './handleMetaRedirects';
 import { createTestShadowDom } from '../../test-utils';
 import { screen } from '@testing-library/react';
 
+// Mock the translation hook
+jest.mock('@backstage/core-plugin-api/alpha', () => ({
+  ...jest.requireActual('@backstage/core-plugin-api/alpha'),
+  useTranslationRef: () => ({
+    t: (key: string) => {
+      const translations: Record<string, string> = {
+        'redirectNotification.redirectNow': 'Redirect now',
+      };
+      return translations[key] || key;
+    },
+  }),
+}));
+
 describe('handleMetaRedirects', () => {
   const navigate = jest.fn();
 

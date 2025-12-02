@@ -98,37 +98,8 @@ export type DocsGroupConfig = {
   filterPredicate: ((entity: Entity) => boolean) | string;
 };
 
-// @public
-export const DocsTable: {
-  (props: DocsTableProps): JSX_2.Element | null;
-  columns: {
-    createTitleColumn(options?: {
-      hidden?: boolean;
-    }): TableColumn<DocsTableRow>;
-    createNameColumn(): TableColumn<DocsTableRow>;
-    createOwnerColumn(): TableColumn<DocsTableRow>;
-    createKindColumn(): TableColumn<DocsTableRow>;
-    createTypeColumn(): TableColumn<DocsTableRow>;
-  };
-  actions: {
-    createCopyDocsUrlAction(copyToClipboard: Function): (row: DocsTableRow) => {
-      icon: () => JSX_2.Element;
-      tooltip: string;
-      onClick: () => any;
-    };
-    createStarEntityAction(
-      isStarredEntity: Function,
-      toggleStarredEntity: Function,
-    ): (row: DocsTableRow) => {
-      cellStyle: {
-        paddingLeft: string;
-      };
-      icon: () => JSX_2.Element;
-      tooltip: string;
-      onClick: () => any;
-    };
-  };
-};
+// @public (undocumented)
+export const DocsTable: DocsTableType;
 
 // @public
 export type DocsTableProps = {
@@ -150,6 +121,16 @@ export type DocsTableRow = {
   };
 };
 
+// @public (undocumented)
+export interface DocsTableType {
+  // (undocumented)
+  (props: DocsTableProps): JSX.Element | null;
+  // (undocumented)
+  actions: Record<string, Function>;
+  // (undocumented)
+  columns: Record<string, Function>;
+}
+
 // @public
 export const EmbeddedDocsRouter: ({
   children,
@@ -168,37 +149,8 @@ export type EntityListDocsGridPageProps = {
   groups?: DocsGroupConfig[];
 };
 
-// @public
-export const EntityListDocsTable: {
-  (props: EntityListDocsTableProps): JSX_2.Element;
-  columns: {
-    createTitleColumn(options?: {
-      hidden?: boolean;
-    }): TableColumn<DocsTableRow>;
-    createNameColumn(): TableColumn<DocsTableRow>;
-    createOwnerColumn(): TableColumn<DocsTableRow>;
-    createKindColumn(): TableColumn<DocsTableRow>;
-    createTypeColumn(): TableColumn<DocsTableRow>;
-  };
-  actions: {
-    createCopyDocsUrlAction(copyToClipboard: Function): (row: DocsTableRow) => {
-      icon: () => JSX_2.Element;
-      tooltip: string;
-      onClick: () => any;
-    };
-    createStarEntityAction(
-      isStarredEntity: Function,
-      toggleStarredEntity: Function,
-    ): (row: DocsTableRow) => {
-      cellStyle: {
-        paddingLeft: string;
-      };
-      icon: () => JSX_2.Element;
-      tooltip: string;
-      onClick: () => any;
-    };
-  };
-};
+// @public (undocumented)
+export const EntityListDocsTable: EntityListDocsTableType;
 
 // @public
 export type EntityListDocsTableProps = {
@@ -206,6 +158,16 @@ export type EntityListDocsTableProps = {
   actions?: TableProps<DocsTableRow>['actions'];
   options?: TableOptions<DocsTableRow>;
 };
+
+// @public (undocumented)
+export interface EntityListDocsTableType {
+  // (undocumented)
+  (props: EntityListDocsTableProps): JSX.Element | null;
+  // (undocumented)
+  actions: Record<string, Function>;
+  // (undocumented)
+  columns: Record<string, Function>;
+}
 
 // @public
 export const EntityTechdocsContent: ({

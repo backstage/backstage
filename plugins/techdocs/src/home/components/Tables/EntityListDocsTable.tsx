@@ -24,10 +24,12 @@ import {
   WarningPanel,
 } from '@backstage/core-components';
 import { configApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import {
   useEntityList,
   useStarredEntities,
 } from '@backstage/plugin-catalog-react';
+import { techdocsTranslationRef } from '../../../translation';
 import { DocsTable } from './DocsTable';
 import { OffsetPaginatedDocsTable } from './OffsetPaginatedDocsTable';
 import { CursorPaginatedDocsTable } from './CursorPaginatedDocsTable';
@@ -49,11 +51,22 @@ export type EntityListDocsTableProps = {
 };
 
 /**
+ * @public
+ */
+export interface EntityListDocsTableType {
+  (props: EntityListDocsTableProps): JSX.Element | null;
+  columns: Record<string, Function>;
+  actions: Record<string, Function>;
+}
+
+/**
  * Component which renders a table with entities from catalog.
  *
  * @public
  */
-export const EntityListDocsTable = (props: EntityListDocsTableProps) => {
+const EntityListDocsTableComponent = (
+  props: EntityListDocsTableProps,
+): JSX.Element | null => {
   const { columns, actions, options } = props;
   const { loading, error, entities, filters, paginationMode, pageInfo } =
     useEntityList();
@@ -61,14 +74,16 @@ export const EntityListDocsTable = (props: EntityListDocsTableProps) => {
   const [, copyToClipboard] = useCopyToClipboard();
   const getRouteToReaderPageFor = useRouteRef(rootDocsRouteRef);
   const config = useApi(configApiRef);
+  const { t } = useTranslationRef(techdocsTranslationRef);
 
   const title = capitalize(filters.user?.value ?? 'all');
 
   const defaultActions = [
-    actionFactories.createCopyDocsUrlAction(copyToClipboard),
+    actionFactories.createCopyDocsUrlAction(copyToClipboard, t),
     actionFactories.createStarEntityAction(
       isStarredEntity,
       toggleStarredEntity,
+      t,
     ),
   ];
 
@@ -106,10 +121,7 @@ export const EntityListDocsTable = (props: EntityListDocsTableProps) => {
 
   if (error) {
     return (
-      <WarningPanel
-        severity="error"
-        title="Could not load available documentation."
-      >
+      <WarningPanel severity="error" title={t('error.couldNotLoad')}>
         <CodeSnippet language="text" text={error.toString()} />
       </WarningPanel>
     );
@@ -126,6 +138,12 @@ export const EntityListDocsTable = (props: EntityListDocsTableProps) => {
     />
   );
 };
+
+/**
+ * @public
+ */
+export const EntityListDocsTable =
+  EntityListDocsTableComponent as EntityListDocsTableType;
 
 EntityListDocsTable.columns = columnFactories;
 EntityListDocsTable.actions = actionFactories;
