@@ -27,10 +27,6 @@ export type {
 
 export type { ActionsService, ActionsServiceAction } from './ActionsService';
 
-export type {
-  BackstageInstance,
-  SystemMetadataService,
-} from './services/definitions/SystemMetadataService';
 export {
   actionsRegistryServiceRef,
   actionsServiceRef,
