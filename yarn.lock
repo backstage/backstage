@@ -7840,6 +7840,7 @@ __metadata:
     react-aria-components: "npm:^1.13.0"
     react-dom: "npm:^18.0.2"
     react-router-dom: "npm:^6.3.0"
+    react-stately: "npm:^3.42.0"
     storybook: "npm:^9.1.7"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
