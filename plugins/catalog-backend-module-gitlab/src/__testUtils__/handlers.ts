@@ -33,6 +33,7 @@ import {
   all_saas_subgroup_1_members,
   all_saas_subgroup_2_members,
   group_with_subgroups_response,
+  projects_with_catalog_info_yaml,
 } from './mocks';
 
 const httpHandlers = [
@@ -196,6 +197,32 @@ const httpGroupFindByEncodedPathDynamic = all_groups_response.flatMap(group => [
     },
   ),
 ]);
+
+const httpSearchFilesInGroupDynamic = all_groups_response.map(group => {
+  return rest.get(
+    `${apiBaseUrl}/groups/${encodeURIComponent(group.full_path)}/search`,
+    (_, res, ctx) => {
+      const searchResults = projects_with_catalog_info_yaml
+        .filter(project =>
+          project.path_with_namespace?.startsWith(group.full_path),
+        )
+        .map(project => {
+          return {
+            basename: 'catalog-info',
+            data: 'catalog-info.yaml',
+            path: 'catalog-info.yaml',
+            filename: 'catalog-info.yaml',
+            id: null,
+            ref: project.default_branch,
+            startline: 0,
+            project_id: project.id,
+          };
+        });
+
+      return res(ctx.json(searchResults));
+    },
+  );
+});
 
 const httpGroupFindByIdDynamic = all_groups_response.map(group => {
   return rest.get(`${apiBaseUrl}/groups/${group.id}`, (_, res, ctx) => {
@@ -741,4 +768,5 @@ export const handlers = [
   ...httpGroupListDescendantProjectsByFullPath,
   ...graphqlHandlers,
   ...httpGroupFindByEncodedPathDynamic,
+  ...httpSearchFilesInGroupDynamic,
 ];
