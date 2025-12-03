@@ -89,4 +89,3 @@ Selecting a entity in the main panel displays details of the entity. The type of
 Selecting a System, such as `examples`, displays `About`, `Relations`, and `Links` similar to a Component, but it also includes `Has components`, `APIs` and `Has Resources`.
 
 ![Details of system entity.](../assets/uiguide/details-system-entity.png)
-
