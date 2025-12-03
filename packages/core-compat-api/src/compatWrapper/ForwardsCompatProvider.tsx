@@ -37,9 +37,11 @@ import {
   swappableComponentsApiRef,
   iconsApiRef,
   routeResolutionApiRef,
+  routerApiRef,
   Progress,
   NotFoundErrorPage,
   ErrorDisplay,
+  ReactRouter6RouterApi,
 } from '@backstage/frontend-plugin-api';
 import { ComponentType, useMemo } from 'react';
 import { ReactNode } from 'react';
@@ -50,7 +52,6 @@ import { useVersionedContext } from '@backstage/version-bridge';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { type RouteResolver } from '../../../core-plugin-api/src/routing/useRouteRef';
 import { convertLegacyRouteRef } from '../convertLegacyRouteRef';
-import { ReactRouter6Provider } from '@backstage/frontend-app-api';
 
 class CompatComponentsApi implements SwappableComponentsApi {
   readonly #Progress: ComponentType<ProgressProps>;
@@ -146,6 +147,10 @@ class ForwardsCompatApis implements ApiHolder {
       return this.#iconsApi as T;
     } else if (ref.id === routeResolutionApiRef.id) {
       return this.#routeResolutionApi as T;
+    } else if (ref.id === routerApiRef.id) {
+      // Use the react-router-6 router API - we're already inside a router
+      // from the old app, so we just need to provide the API for hooks
+      return new ReactRouter6RouterApi() as T;
     }
     return undefined;
   }
@@ -173,9 +178,5 @@ function NewAppApisProvider(props: { children: ReactNode }) {
 }
 
 export function ForwardsCompatProvider(props: { children: ReactNode }) {
-  return (
-    <NewAppApisProvider>
-      <ReactRouter6Provider>{props.children}</ReactRouter6Provider>
-    </NewAppApisProvider>
-  );
+  return <NewAppApisProvider>{props.children}</NewAppApisProvider>;
 }

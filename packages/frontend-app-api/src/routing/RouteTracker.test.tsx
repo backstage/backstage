@@ -28,20 +28,11 @@ import {
   analyticsApiRef,
   AppNode,
   useAnalytics,
-  useRouting,
+  Link,
+  routerApiRef,
+  useApi,
 } from '@backstage/frontend-plugin-api';
 import { MATCH_ALL_ROUTE } from './extractRouteInfoFromAppNode';
-
-const TestLink = ({
-  to,
-  children,
-}: {
-  to: string;
-  children: React.ReactNode;
-}) => {
-  const { Link } = useRouting();
-  return <Link to={to}>{children}</Link>;
-};
 
 describe('RouteTracker', () => {
   const routeRef0 = createRouteRef();
@@ -64,7 +55,7 @@ describe('RouteTracker', () => {
     },
     {
       path: '/path/:p1/:p2',
-      element: <TestLink to="/path2/hello">go</TestLink>,
+      element: <Link to="/path2/hello">go</Link>,
       routeRefs: new Set([routeRef1]),
       caseSensitive: false,
       children: [MATCH_ALL_ROUTE],
@@ -123,8 +114,9 @@ describe('RouteTracker', () => {
   });
 
   it('should capture the navigate event on route change', async () => {
+    // Access Routes/Route from the router API since they can't be wrapped
     const TestRoutes = () => {
-      const { Routes, Route } = useRouting();
+      const { Routes, Route } = useApi(routerApiRef);
       return (
         <Routes>
           {routeObjects.map(({ path, element }) => (
@@ -213,8 +205,9 @@ describe('RouteTracker', () => {
       return <div>dummy</div>;
     };
 
+    // Access Routes/Route from the router API since they can't be wrapped
     const TestRoutes = () => {
-      const { Routes, Route } = useRouting();
+      const { Routes, Route } = useApi(routerApiRef);
       return (
         <Routes>
           <Route path="/not-routable-extension" element={<Dummy />} />

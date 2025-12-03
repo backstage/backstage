@@ -6,7 +6,6 @@
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { AppNode } from '@backstage/frontend-plugin-api';
 import { AppTree } from '@backstage/frontend-plugin-api';
-import { ComponentType } from 'react';
 import { ConfigApi } from '@backstage/core-plugin-api';
 import { ExtensionFactoryMiddleware } from '@backstage/frontend-plugin-api';
 import { ExternalRouteRef } from '@backstage/frontend-plugin-api';
@@ -14,10 +13,7 @@ import { FrontendFeature } from '@backstage/frontend-plugin-api';
 import { FrontendPlugin } from '@backstage/frontend-plugin-api';
 import { FrontendPluginInfo } from '@backstage/frontend-plugin-api';
 import { JsonObject } from '@backstage/types';
-import { JSX as JSX_2 } from 'react/jsx-runtime';
-import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
-import { RoutingContextType } from '@backstage/frontend-plugin-api';
 import { SubRouteRef } from '@backstage/frontend-plugin-api';
 
 // @public (undocumented)
@@ -162,7 +158,6 @@ export type CreateSpecializedAppOptions = {
       | ExtensionFactoryMiddleware
       | ExtensionFactoryMiddleware[];
     pluginInfoResolver?: FrontendPluginInfoResolver;
-    router?: RouterPreset | RouterAdapter;
   };
 };
 
@@ -179,37 +174,4 @@ export type FrontendPluginInfoResolver = (ctx: {
 }) => Promise<{
   info: FrontendPluginInfo;
 }>;
-
-// @public
-export const ReactRouter6Adapter: RouterAdapter;
-
-// @public
-export const ReactRouter6Provider: ({
-  children,
-}: {
-  children: ReactNode;
-}) => JSX_2.Element;
-
-// @public
-export const ReactRouter6Router: ({
-  children,
-}: {
-  children: ReactNode;
-}) => JSX_2.Element;
-
-// @public
-export interface RouterAdapter {
-  generatePath: RoutingContextType['generatePath'];
-  matchRoutes: RoutingContextType['matchRoutes'];
-  Provider: ComponentType<{
-    children: ReactNode;
-  }>;
-  Router: ComponentType<{
-    children: ReactNode;
-    basePath: string;
-  }>;
-}
-
-// @public
-export type RouterPreset = 'react-router-6';
 ```

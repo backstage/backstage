@@ -31,7 +31,7 @@ import {
   NavItemBlueprint,
   createFrontendPlugin,
   FrontendFeature,
-  useRouting,
+  Link,
 } from '@backstage/frontend-plugin-api';
 import appPlugin from '@backstage/plugin-app';
 
@@ -85,7 +85,6 @@ const NavItem = (props: {
   icon: IconComponent;
 }) => {
   const { routeRef, title, icon: Icon } = props;
-  const { Link } = useRouting();
   const link = useRouteRef(routeRef);
   if (!link) {
     return null;

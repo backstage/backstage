@@ -19,8 +19,9 @@ import {
   useAnalytics,
   AnalyticsContext,
   AnalyticsEventAttributes,
-  useRouting,
-  RoutingContextType,
+  useApi,
+  routerApiRef,
+  RouterApi,
 } from '@backstage/frontend-plugin-api';
 import { BackstageRouteObject } from './types';
 
@@ -31,7 +32,7 @@ import { BackstageRouteObject } from './types';
 const getExtensionContext = (
   pathname: string,
   routes: BackstageRouteObject[],
-  matchRoutes: RoutingContextType['matchRoutes'],
+  matchRoutes: RouterApi['matchRoutes'],
 ) => {
   try {
     // Find matching routes for the given path name.
@@ -111,8 +112,9 @@ export const RouteTracker = ({
 }: {
   routeObjects: BackstageRouteObject[];
 }) => {
-  const { useLocation, matchRoutes } = useRouting();
-  const location = useLocation();
+  const routerApi = useApi(routerApiRef);
+  const location = routerApi.useLocation();
+  const { matchRoutes } = routerApi;
   const { pathname, search, hash } = location;
 
   const { params, ...attributes } = getExtensionContext(

@@ -22,7 +22,7 @@
 
 export * from './apis';
 export * from './app';
-export * from './routing/TestRouterProvider';
+export * from './routing';
 
 export { TestApiProvider, TestApiRegistry } from '@backstage/test-utils';
 export type { TestApiProviderProps } from '@backstage/test-utils';

@@ -28,10 +28,11 @@ import {
   RouteResolutionApi,
   createApiFactory,
   routeResolutionApiRef,
+  routerApiRef,
   AppNode,
   ExtensionFactoryMiddleware,
   FrontendFeature,
-  RoutingContextType,
+  RouterApi,
 } from '@backstage/frontend-plugin-api';
 import {
   AnyApiFactory,
@@ -82,12 +83,6 @@ import {
   createPluginInfoAttacher,
   FrontendPluginInfoResolver,
 } from './createPluginInfoAttacher';
-import {
-  RouterAdapter,
-  RouterPreset,
-  isRouterAdapter,
-} from '../routing/RouterAdapter';
-import { ReactRouter6Adapter } from '../routing/ReactRouter6Provider';
 import { createRouteAliasResolver } from '../routing/RouteAliasResolver';
 import {
   AppError,
@@ -118,29 +113,17 @@ function deduplicateFeatures(
     .reverse();
 }
 
-function resolveRouterAdapter(
-  router?: RouterPreset | RouterAdapter,
-): RouterAdapter {
-  if (!router || router === 'react-router-6') {
-    return ReactRouter6Adapter;
-  }
-  if (isRouterAdapter(router)) {
-    return router;
-  }
-  throw new Error(`Unknown router preset: ${router}`);
-}
-
 // Helps delay callers from reaching out to the API before the app tree has been materialized
 class AppTreeApiProxy implements AppTreeApi {
   #routeInfo?: RouteInfo;
   private readonly tree: AppTree;
   private readonly appBasePath: string;
-  private matchRoutes: RoutingContextType['matchRoutes'];
+  private matchRoutes: RouterApi['matchRoutes'];
 
   constructor(
     tree: AppTree,
     appBasePath: string,
-    matchRoutes: RoutingContextType['matchRoutes'],
+    matchRoutes: RouterApi['matchRoutes'],
   ) {
     this.tree = tree;
     this.appBasePath = appBasePath;
@@ -193,14 +176,14 @@ class RouteResolutionApiProxy implements RouteResolutionApi {
 
   private readonly routeBindings: Map<ExternalRouteRef, RouteRef | SubRouteRef>;
   private readonly appBasePath: string;
-  private readonly matchRoutes: RoutingContextType['matchRoutes'];
-  private readonly generatePath: RoutingContextType['generatePath'];
+  private readonly matchRoutes: RouterApi['matchRoutes'];
+  private readonly generatePath: RouterApi['generatePath'];
 
   constructor(
     routeBindings: Map<ExternalRouteRef, RouteRef | SubRouteRef>,
     appBasePath: string,
-    matchRoutes: RoutingContextType['matchRoutes'],
-    generatePath: RoutingContextType['generatePath'],
+    matchRoutes: RouterApi['matchRoutes'],
+    generatePath: RouterApi['generatePath'],
   ) {
     this.routeBindings = routeBindings;
     this.appBasePath = appBasePath;
@@ -315,12 +298,6 @@ export type CreateSpecializedAppOptions = {
      * Allows for customizing how plugin info is retrieved.
      */
     pluginInfoResolver?: FrontendPluginInfoResolver;
-
-    /**
-     * Router implementation to use. Defaults to 'react-router-6'.
-     * Use a preset string for built-in routers, or provide a custom RouterAdapter.
-     */
-    router?: RouterPreset | RouterAdapter;
   };
 };
 
@@ -343,9 +320,6 @@ export function createSpecializedApp(options?: CreateSpecializedAppOptions): {
 
   const collector = createErrorCollector();
 
-  const routerAdapter = resolveRouterAdapter(options?.advanced?.router);
-  const { matchRoutes, generatePath } = routerAdapter;
-
   const tree = resolveAppTree(
     'root',
     resolveAppNodeSpecs({
@@ -361,6 +335,17 @@ export function createSpecializedApp(options?: CreateSpecializedAppOptions): {
   );
 
   const factories = createApiFactories({ tree, collector });
+
+  // Find the router API from factories
+  const routerApiFactory = factories.find(f => f.api.id === routerApiRef.id);
+  if (!routerApiFactory) {
+    throw new Error(
+      'No RouterApi factory found. Make sure the app plugin is included in your features.',
+    );
+  }
+  const routerApi = routerApiFactory.factory({}) as RouterApi;
+  const { matchRoutes, generatePath } = routerApi;
+
   const appBasePath = getBasePath(config);
   const appTreeApi = new AppTreeApiProxy(tree, appBasePath, matchRoutes);
 

@@ -20,7 +20,7 @@ import { RouteRef } from './RouteRef';
 import { SubRouteRef } from './SubRouteRef';
 import { ExternalRouteRef } from './ExternalRouteRef';
 import { RouteFunc, routeResolutionApiRef, useApi } from '../apis';
-import { useRouting } from './hooks';
+import { useLocation } from './hooks';
 
 /**
  * React hook for constructing URLs to routes.
@@ -39,14 +39,12 @@ export function useRouteRef<TParams extends AnyRouteRefParams>(
     | SubRouteRef<TParams>
     | ExternalRouteRef<TParams>,
 ): RouteFunc<TParams> | undefined {
-  const { useLocation } = useRouting();
-  const location = useLocation();
+  const { pathname } = useLocation();
   const routeResolutionApi = useApi(routeResolutionApiRef);
 
   const routeFunc = useMemo(
-    () =>
-      routeResolutionApi.resolve(routeRef, { sourcePath: location.pathname }),
-    [routeResolutionApi, routeRef, location.pathname],
+    () => routeResolutionApi.resolve(routeRef, { sourcePath: pathname }),
+    [routeResolutionApi, routeRef, pathname],
   );
 
   return routeFunc;

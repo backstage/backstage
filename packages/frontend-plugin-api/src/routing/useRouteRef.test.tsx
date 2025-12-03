@@ -24,7 +24,7 @@ import {
   TestRouterProvider,
 } from '@backstage/frontend-test-utils';
 import { routeResolutionApiRef } from '../apis';
-import { useRouting } from './hooks';
+import { useNavigate } from './hooks';
 
 describe('v1 consumer', () => {
   const context = createVersionedContextForTesting('routing-context');
@@ -85,7 +85,6 @@ describe('v1 consumer', () => {
 
     const Helper = () => {
       const routeFunc = useRouteRef(routeRef);
-      const { useNavigate } = useRouting();
       const navigate = useNavigate();
       return (
         <div>
@@ -116,7 +115,6 @@ describe('v1 consumer', () => {
 
     const Helper = () => {
       useRouteRef(routeRef);
-      const { useNavigate } = useRouting();
       const navigate = useNavigate();
       return (
         <div>
@@ -146,7 +144,6 @@ describe('v1 consumer', () => {
 
     const Helper = () => {
       useRouteRef(routeRef);
-      const { useNavigate } = useRouting();
       const navigate = useNavigate();
       return (
         <div>
@@ -176,7 +173,6 @@ describe('v1 consumer', () => {
 
     const Helper = () => {
       useRouteRef(routeRef);
-      const { useNavigate } = useRouting();
       const navigate = useNavigate();
       return (
         <div>

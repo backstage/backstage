@@ -18,7 +18,8 @@ import { render } from '@testing-library/react';
 import { TestRouterProvider } from '@backstage/frontend-test-utils';
 import { useRouteRefParams } from './useRouteRefParams';
 import { createRouteRef } from './RouteRef';
-import { useRouting } from './hooks';
+import { routerApiRef } from '../apis';
+import { useApi } from '../apis';
 
 describe('useRouteRefParams', () => {
   it('should provide types params', () => {
@@ -37,8 +38,9 @@ describe('useRouteRefParams', () => {
       );
     };
 
-    const Wrapper = () => {
-      const { Routes, Route } = useRouting();
+    // Wrapper component that accesses Routes/Route from the router API
+    const TestRoutes = () => {
+      const { Routes, Route } = useApi(routerApiRef);
       return (
         <Routes>
           <Route path="/:a/:b" element={<Page />} />
@@ -48,7 +50,7 @@ describe('useRouteRefParams', () => {
 
     const { getByText } = render(
       <TestRouterProvider initialEntries={['/foo/bar']}>
-        <Wrapper />
+        <TestRoutes />
       </TestRouterProvider>,
     );
 

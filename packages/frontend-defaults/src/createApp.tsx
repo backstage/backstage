@@ -32,8 +32,6 @@ import {
   CreateAppRouteBinder,
   createSpecializedApp,
   FrontendPluginInfoResolver,
-  RouterAdapter,
-  RouterPreset,
 } from '@backstage/frontend-app-api';
 import appPlugin from '@backstage/plugin-app';
 import { discoverAvailableFeatures } from './discovery';
@@ -102,12 +100,6 @@ export interface CreateAppOptions {
      * Allows for customizing how plugin info is retrieved.
      */
     pluginInfoResolver?: FrontendPluginInfoResolver;
-
-    /**
-     * Router implementation to use. Defaults to 'react-router-6'.
-     * Use a preset string for built-in routers, or provide a custom RouterAdapter.
-     */
-    router?: RouterPreset | RouterAdapter;
   };
 }
 

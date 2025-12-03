@@ -14,37 +14,113 @@
  * limitations under the License.
  */
 
-import { useVersionedContext } from '@backstage/version-bridge';
-import { RoutingContextType } from './RoutingContext';
+import { useApi, routerApiRef } from '../apis';
+import type { Location, To, Path, NavigateFunction } from './routerTypes';
 
 /**
- * Hook to access the routing context.
- *
- * Returns an object with static components (Route, Routes, Link, Outlet) and
- * lazy hooks (useLocation, useParams, useNavigate). Only components that call
- * the lazy hooks will rerender when the underlying values change.
+ * Returns the current location object.
  *
  * @example
  * ```tsx
- * // Static values - never cause rerenders
- * const { Link, Route, Routes } = useRouting();
- *
- * // Lazy hooks - only rerender when called
- * const { useLocation, useParams, useNavigate } = useRouting();
- * const location = useLocation(); // Only this component rerenders on location change
- * const params = useParams();     // Only this component rerenders on params change
- * const navigate = useNavigate(); // Stable function, doesn't cause rerenders
+ * const location = useLocation();
+ * console.log(location.pathname); // "/users/123"
  * ```
  *
  * @public
  */
-export function useRouting(): RoutingContextType {
-  const versionedContext = useVersionedContext<{ 1: RoutingContextType }>(
-    'frontend-routing-context',
-  );
-  const context = versionedContext?.atVersion(1);
-  if (!context) {
-    throw new Error('useRouting must be used within a RoutingProvider');
-  }
-  return context;
+export function useLocation(): Location {
+  const routerApi = useApi(routerApiRef);
+  return routerApi.useLocation();
+}
+
+/**
+ * Returns the current URL parameters as an object.
+ *
+ * @example
+ * ```tsx
+ * // For route "/users/:id"
+ * const { id } = useParams();
+ * ```
+ *
+ * @public
+ */
+export function useParams<
+  T extends Record<string, string | undefined> = Record<
+    string,
+    string | undefined
+  >,
+>(): T {
+  const routerApi = useApi(routerApiRef);
+  return routerApi.useParams<T>();
+}
+
+/**
+ * Returns a function to navigate programmatically.
+ *
+ * @example
+ * ```tsx
+ * const navigate = useNavigate();
+ * navigate('/home');
+ * navigate('/login', { replace: true });
+ * navigate(-1); // Go back
+ * ```
+ *
+ * @public
+ */
+export function useNavigate(): NavigateFunction {
+  const routerApi = useApi(routerApiRef);
+  return routerApi.useNavigate();
+}
+
+/**
+ * Returns the current search params and a function to update them.
+ *
+ * @example
+ * ```tsx
+ * const [searchParams, setSearchParams] = useSearchParams();
+ * const query = searchParams.get('q');
+ * setSearchParams({ q: 'new query' });
+ * ```
+ *
+ * @public
+ */
+export function useSearchParams(): [
+  URLSearchParams,
+  (
+    nextInit: URLSearchParams | ((prev: URLSearchParams) => URLSearchParams),
+    navigateOptions?: { replace?: boolean; state?: unknown },
+  ) => void,
+] {
+  const routerApi = useApi(routerApiRef);
+  return routerApi.useSearchParams();
+}
+
+/**
+ * Resolves a relative path against the current location.
+ *
+ * @example
+ * ```tsx
+ * const resolved = useResolvedPath('../settings');
+ * ```
+ *
+ * @public
+ */
+export function useResolvedPath(to: To): Path {
+  const routerApi = useApi(routerApiRef);
+  return routerApi.useResolvedPath(to);
+}
+
+/**
+ * Returns the href string for a given destination.
+ *
+ * @example
+ * ```tsx
+ * const href = useHref('/about');
+ * ```
+ *
+ * @public
+ */
+export function useHref(to: To): string {
+  const routerApi = useApi(routerApiRef);
+  return routerApi.useHref(to);
 }

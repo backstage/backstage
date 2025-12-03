@@ -17,7 +17,7 @@
 import { AnyRouteRefParams } from './types';
 import { RouteRef } from './RouteRef';
 import { SubRouteRef } from './SubRouteRef';
-import { useRouting } from './hooks';
+import { useParams } from './hooks';
 
 /**
  * React hook for retrieving dynamic params from the current URL.
@@ -27,7 +27,5 @@ import { useRouting } from './hooks';
 export function useRouteRefParams<Params extends AnyRouteRefParams>(
   _routeRef: RouteRef<Params> | SubRouteRef<Params>,
 ): Params {
-  const { useParams } = useRouting();
-  const params = useParams();
-  return params as Params;
+  return useParams() as Params;
 }

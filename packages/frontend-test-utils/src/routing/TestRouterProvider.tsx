@@ -14,8 +14,19 @@
  * limitations under the License.
  */
 
-import { ReactRouter6Provider } from '@backstage/frontend-app-api';
-import { MemoryRouter, MemoryRouterProps } from 'react-router-dom';
+import { useMemo, ReactNode } from 'react';
+import { MockRouterApi, MockRouterApiOptions } from '../apis/RouterApi';
+import { routerApiRef } from '@backstage/frontend-plugin-api';
+import { TestApiProvider } from '@backstage/test-utils';
+
+/**
+ * Props for TestRouterProvider.
+ * @public
+ */
+export interface TestRouterProviderProps extends MockRouterApiOptions {
+  /** Children to render within the router context */
+  children: ReactNode;
+}
 
 /**
  * A Backstage router and provider for testing that uses MemoryRouter from React Router v6.
@@ -24,11 +35,20 @@ import { MemoryRouter, MemoryRouterProps } from 'react-router-dom';
  */
 export const TestRouterProvider = ({
   children,
-  ...props
-}: MemoryRouterProps) => {
+  initialEntries,
+  initialIndex,
+}: TestRouterProviderProps) => {
+  const mockRouterApi = useMemo(
+    () => new MockRouterApi({ initialEntries, initialIndex }),
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+    [JSON.stringify(initialEntries), initialIndex],
+  );
+
+  const { Router } = mockRouterApi;
+
   return (
-    <MemoryRouter {...props}>
-      <ReactRouter6Provider>{children}</ReactRouter6Provider>
-    </MemoryRouter>
+    <TestApiProvider apis={[[routerApiRef, mockRouterApi]]}>
+      <Router basePath="">{children}</Router>
+    </TestApiProvider>
   );
 };

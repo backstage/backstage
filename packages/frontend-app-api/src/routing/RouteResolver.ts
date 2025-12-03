@@ -15,17 +15,13 @@
  */
 
 import {
-  matchRoutes as defaultMatchRoutes,
-  generatePath as defaultGeneratePath,
-} from 'react-router-dom';
-import {
   RouteRef,
   ExternalRouteRef,
   SubRouteRef,
   AnyRouteRefParams,
   RouteFunc,
   RouteResolutionApi,
-  RoutingContextType,
+  RouterApi,
 } from '@backstage/frontend-plugin-api';
 import mapValues from 'lodash/mapValues';
 import { AnyRouteRef, BackstageRouteObject } from './types';
@@ -107,7 +103,7 @@ function resolveBasePath(
   routePaths: Map<RouteRef, string>,
   routeParents: Map<RouteRef, RouteRef | undefined>,
   routeObjects: BackstageRouteObject[],
-  matchRoutes: RoutingContextType['matchRoutes'],
+  matchRoutes: RouterApi['matchRoutes'],
 ) {
   // While traversing the app element tree we build up the routeObjects structure
   // used here. It is the same kind of structure that react-router creates, with the
@@ -184,8 +180,8 @@ export class RouteResolver implements RouteResolutionApi {
   private readonly appBasePath: string; // base path without a trailing slash
   private readonly routeAliasResolver: RouteAliasResolver;
   private readonly routeRefsById: Map<string, RouteRef | SubRouteRef>;
-  private readonly matchRoutes: RoutingContextType['matchRoutes'];
-  private readonly generatePath: RoutingContextType['generatePath'];
+  private readonly matchRoutes: RouterApi['matchRoutes'];
+  private readonly generatePath: RouterApi['generatePath'];
 
   constructor(
     routePaths: Map<RouteRef, string>,
@@ -195,8 +191,8 @@ export class RouteResolver implements RouteResolutionApi {
     appBasePath: string, // base path without a trailing slash
     routeAliasResolver: RouteAliasResolver,
     routeRefsById: Map<string, RouteRef | SubRouteRef>,
-    matchRoutes?: RoutingContextType['matchRoutes'],
-    generatePath?: RoutingContextType['generatePath'],
+    matchRoutes: RouterApi['matchRoutes'],
+    generatePath: RouterApi['generatePath'],
   ) {
     this.routePaths = routePaths;
     this.routeParents = routeParents;
@@ -205,8 +201,8 @@ export class RouteResolver implements RouteResolutionApi {
     this.appBasePath = appBasePath;
     this.routeAliasResolver = routeAliasResolver;
     this.routeRefsById = routeRefsById;
-    this.matchRoutes = matchRoutes ?? defaultMatchRoutes;
-    this.generatePath = generatePath ?? defaultGeneratePath;
+    this.matchRoutes = matchRoutes;
+    this.generatePath = generatePath;
   }
 
   resolve<TParams extends AnyRouteRefParams>(

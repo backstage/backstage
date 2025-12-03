@@ -23,7 +23,8 @@ import {
 import {
   analyticsApiRef,
   useAnalytics,
-  useRouting,
+  routerApiRef,
+  useApi,
 } from '@backstage/frontend-plugin-api';
 import { renderInTestApp } from './renderInTestApp';
 
@@ -71,8 +72,9 @@ describe('renderInTestApp', () => {
   });
 
   it('should support setting different locations in the history stack', async () => {
+    // Access Routes/Route from the router API since they can't be wrapped
     const IndexPage = () => {
-      const { Routes, Route } = useRouting();
+      const { Routes, Route } = useApi(routerApiRef);
       return (
         <Routes>
           <Route path="/" element={<h1>Index Page</h1>} />
