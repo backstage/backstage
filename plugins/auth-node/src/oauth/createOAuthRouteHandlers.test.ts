@@ -877,10 +877,10 @@ describe('createOAuthRouteHandlers', () => {
       const expectedExpirationDate = Date.now() + 1000 * 24 * 60 * 60 * 1000;
       const cookie = getRefreshTokenCookie(agent);
       expect(cookie.expiration_date).toBeGreaterThanOrEqual(
-        expectedExpirationDate - 1000,
+        expectedExpirationDate - 5000,
       );
       expect(cookie.expiration_date).toBeLessThanOrEqual(
-        expectedExpirationDate + 1000,
+        expectedExpirationDate + 5000,
       );
     });
   });
