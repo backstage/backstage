@@ -8,7 +8,7 @@ Audience: Developers
 
 ## Overview
 
-The Catalog can be searched by any combination of owner, kind, type, lifecycle, processing status, namespace, and name.
+The Catalog can be searched by any combination of owner, kind, type, lifecycle, processing status, namespace, and name. [Customize Filters](../features/software-catalog/catalog-customization.md#customize-filters) provides information on how to modify the available search criteria.
 
 ![Catalog search options](../assets/uiguide/catalog-search-options.png)
 
@@ -32,13 +32,15 @@ There are three additional items that can be part of the system model:
 
 ## Searching for an entity
 
-- **Search by name:**
+You can search for an entity using a combination of the following:
+
+- **Search by name**
 
   Enter one or more consecutive letters into the `Filter` field. As you type the letters, the entities whose names do not contain that string will be filtered out of the displayed list.
 
   ![Search catalog by name](../assets/uiguide/search-by-name.png)
 
-- **Search by kind:**
+- **Search by kind**
 
   Use the `Kind` dropdown list to select which kind of entity to show in the list:
 
@@ -50,7 +52,7 @@ There are three additional items that can be part of the system model:
   - Template
   - User
 
-- **Search by Type:**
+- **Search by Type**
 
   Use the `Type` dropdown list to select which type of entity to show in the list. The selections available in the dropdown list depend on the kind of entity selected in the `Kind` list, and the types of entity you have registered for that kind.
 
