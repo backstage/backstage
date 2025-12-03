@@ -38985,19 +38985,19 @@ __metadata:
   linkType: hard
 
 "mysql2@npm:^3.0.0":
-  version: 3.11.5
-  resolution: "mysql2@npm:3.11.5"
+  version: 3.15.3
+  resolution: "mysql2@npm:3.15.3"
   dependencies:
     aws-ssl-profiles: "npm:^1.1.1"
     denque: "npm:^2.1.0"
     generate-function: "npm:^2.3.1"
-    iconv-lite: "npm:^0.6.3"
+    iconv-lite: "npm:^0.7.0"
     long: "npm:^5.2.1"
     lru.min: "npm:^1.0.0"
     named-placeholders: "npm:^1.1.3"
     seq-queue: "npm:^0.0.5"
     sqlstring: "npm:^2.3.2"
-  checksum: 10/912dc364f6f9684721add5474c732f5d7c2403ec17cb05b06f95adafab3cb32daa2798b283d48d0951d11af94a58558581ed22635803fc6baab651d3651c1cc9
+  checksum: 10/96fbab423afb05a9ac397c272aa1097872797e224b7d1785ac05b7e46d0884c1e613ad9e2c3082ad7973f229357f9ab5824a7f90e8c582b2094ce52027fff8e3
   languageName: node
   linkType: hard
 
