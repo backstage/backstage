@@ -16,7 +16,7 @@
 
 import { useState, useEffect, ReactNode } from 'react';
 import { useEntityList } from '@backstage/plugin-catalog-react';
-import { TableColumn } from '@backstage/core-components';
+import { TableColumn, TableProps } from '@backstage/core-components';
 import { CatalogTableRow } from './types';
 import { CatalogTableBase } from './CatalogTableBase';
 
@@ -27,6 +27,7 @@ interface OffsetPaginatedCatalogTableProps {
   subtitle?: string;
   emptyContent?: ReactNode;
   isLoading?: boolean;
+  actions?: TableProps<CatalogTableRow>['actions'];
 }
 
 /**
@@ -35,7 +36,8 @@ interface OffsetPaginatedCatalogTableProps {
 export function OffsetPaginatedCatalogTable(
   props: OffsetPaginatedCatalogTableProps,
 ) {
-  const { columns, data, title, subtitle, emptyContent, isLoading } = props;
+  const { columns, data, title, subtitle, emptyContent, isLoading, actions } =
+    props;
   const { setLimit, setOffset, limit, totalItems, offset } = useEntityList();
 
   // TODO: Figure out why this is needed
@@ -59,6 +61,7 @@ export function OffsetPaginatedCatalogTable(
       subtitle={subtitle}
       emptyContent={emptyContent}
       isLoading={isLoading}
+      actions={actions}
       pagination={{
         mode: 'server',
         offset: offset ?? 0,

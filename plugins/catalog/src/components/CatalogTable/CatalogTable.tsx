@@ -33,7 +33,6 @@ import {
   useEntityList,
   useStarredEntities,
 } from '@backstage/plugin-catalog-react';
-import { visuallyHidden } from '@mui/utils';
 import { capitalize } from 'lodash';
 import pluralize from 'pluralize';
 import { ReactNode, useMemo, useState } from 'react';
@@ -44,10 +43,8 @@ import { CursorPaginatedCatalogTable } from './CursorPaginatedCatalogTable';
 import { defaultCatalogTableColumnsFunc } from './defaultCatalogTableColumnsFunc';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { catalogTranslationRef } from '../../alpha';
-import { FavoriteToggleIcon } from '@backstage/core-components';
-import { Text } from '@backstage/ui';
-import { RiEdit2Line, RiExternalLinkLine } from '@remixicon/react';
 import { CatalogTableBase } from './CatalogTableBase';
+import { RiEdit2Line, RiExternalLinkLine, RiStarLine } from '@remixicon/react';
 
 /**
  * Props for {@link CatalogTable}.
@@ -132,60 +129,6 @@ export const CatalogTable = (props: CatalogTableProps) => {
     );
   }
 
-  const defaultActions: TableProps<CatalogTableRow>['actions'] = [
-    ({ entity }) => {
-      const url = entity.metadata.annotations?.[ANNOTATION_VIEW_URL];
-      const title = t('catalogTable.viewActionTitle');
-
-      return {
-        icon: () => (
-          <>
-            <Text style={visuallyHidden}>{title}</Text>
-            <RiExternalLinkLine fontSize="small" />
-          </>
-        ),
-        tooltip: title,
-        disabled: !url,
-        onClick: () => {
-          if (!url) return;
-          window.open(url, '_blank');
-        },
-      };
-    },
-    ({ entity }) => {
-      const url = entity.metadata.annotations?.[ANNOTATION_EDIT_URL];
-      const title = t('catalogTable.editActionTitle');
-
-      return {
-        icon: () => (
-          <>
-            <Text style={visuallyHidden}>{title}</Text>
-            <RiEdit2Line fontSize="small" />
-          </>
-        ),
-        tooltip: title,
-        disabled: !url,
-        onClick: () => {
-          if (!url) return;
-          window.open(url, '_blank');
-        },
-      };
-    },
-    ({ entity }) => {
-      const isStarred = isStarredEntity(entity);
-      const title = isStarred
-        ? t('catalogTable.unStarActionTitle')
-        : t('catalogTable.starActionTitle');
-
-      return {
-        cellStyle: { paddingLeft: '1em' },
-        icon: () => <FavoriteToggleIcon isFavorite={isStarred} />,
-        tooltip: title,
-        onClick: () => toggleStarredEntity(entity),
-      };
-    },
-  ];
-
   const currentKind = filters.kind?.label || '';
   const currentType = filters.type?.value || '';
   const currentCount = typeof totalItems === 'number' ? `(${totalItems})` : '';
@@ -196,6 +139,49 @@ export const CatalogTable = (props: CatalogTableProps) => {
     [titlePreamble, currentType, pluralize(currentKind), currentCount]
       .filter(s => s)
       .join(' ');
+
+  const defaultActions: TableProps<CatalogTableRow>['actions'] = [
+    ({ entity }) => {
+      const url = entity.metadata.annotations?.[ANNOTATION_VIEW_URL];
+      const tooltip = t('catalogTable.viewActionTitle');
+
+      return {
+        icon: () => <RiExternalLinkLine />,
+        tooltip,
+        disabled: !url,
+        onClick: () => {
+          if (!url) return;
+          window.open(url, '_blank');
+        },
+      };
+    },
+    ({ entity }) => {
+      const url = entity.metadata.annotations?.[ANNOTATION_EDIT_URL];
+      const tooltip = t('catalogTable.editActionTitle');
+
+      return {
+        icon: () => <RiEdit2Line />,
+        tooltip,
+        disabled: !url,
+        onClick: () => {
+          if (!url) return;
+          window.open(url, '_blank');
+        },
+      };
+    },
+    ({ entity }) => {
+      const isStarred = isStarredEntity(entity);
+      const tooltip = isStarred
+        ? t('catalogTable.unStarActionTitle')
+        : t('catalogTable.starActionTitle');
+
+      return {
+        icon: () => <RiStarLine />,
+        tooltip,
+        onClick: () => toggleStarredEntity(entity),
+      };
+    },
+  ];
 
   const actions = props.actions || defaultActions;
   const options: TableProps['options'] = {
@@ -230,6 +216,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
         title={title}
         subtitle={subtitle}
         data={entities.map(toEntityRow)}
+        actions={actions}
       />
     );
   }
@@ -244,6 +231,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
       subtitle={subtitle}
       emptyContent={emptyContent}
       isLoading={loading}
+      actions={actions}
       pagination={{
         mode: 'client',
         pageSize: currentPageSize,
