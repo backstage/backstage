@@ -2,4 +2,4 @@
 '@backstage/plugin-notifications-backend-module-slack': patch
 ---
 
-The throttle limit and interval is now a config variable
+Slack notification handler throttling can now be configured with the `concurrencyLimit` and `throttleInterval` options.
