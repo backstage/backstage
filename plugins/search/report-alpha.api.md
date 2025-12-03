@@ -67,12 +67,10 @@ const _default: OverridableFrontendPlugin<
     'page:search': OverridableExtensionDefinition<{
       config: {
         noTrack: boolean;
-      } & {
         path: string | undefined;
       };
       configInput: {
         noTrack?: boolean | undefined;
-      } & {
         path?: string | undefined;
       };
       output:
@@ -187,12 +185,10 @@ export const searchNavItem: OverridableExtensionDefinition<{
 export const searchPage: OverridableExtensionDefinition<{
   config: {
     noTrack: boolean;
-  } & {
     path: string | undefined;
   };
   configInput: {
     noTrack?: boolean | undefined;
-  } & {
     path?: string | undefined;
   };
   output:
