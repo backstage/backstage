@@ -2,4 +2,4 @@
 '@backstage/plugin-app': patch
 ---
 
-Support to set defaultLanguage and availableLanguages in new frontend system
+Support to set `defaultLanguage` and `availableLanguages` for the app language API in the new frontend system
