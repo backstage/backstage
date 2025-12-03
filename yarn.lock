@@ -50492,11 +50492,11 @@ __metadata:
   linkType: hard
 
 "zod-validation-error@npm:^3.4.0":
-  version: 3.4.1
-  resolution: "zod-validation-error@npm:3.4.1"
+  version: 3.5.4
+  resolution: "zod-validation-error@npm:3.5.4"
   peerDependencies:
     zod: ^3.24.4
-  checksum: 10/4975aacc1a931acdbaa3eeaf92fc89a210c6fd14a260d17688ec6302ce478c268c008c61bcdeab51c76191ac627e580f319775a7862be7b9c54c94f2f7cb6ed2
+  checksum: 10/eb85392e6fd7af255fb233713b1f038134e66cbaff20d1a52d46bd4210fe7b776d48d7dd2170095fbd2b375f6c41d629109bd5eac245c576083c9cf6e131a20b
   languageName: node
   linkType: hard
 
