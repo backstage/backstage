@@ -42749,11 +42749,11 @@ __metadata:
   linkType: hard
 
 "rate-limit-redis@npm:^4.2.0":
-  version: 4.2.3
-  resolution: "rate-limit-redis@npm:4.2.3"
+  version: 4.3.1
+  resolution: "rate-limit-redis@npm:4.3.1"
   peerDependencies:
     express-rate-limit: ">= 6"
-  checksum: 10/00c95868e48214b926272b2f01418695acd0487f766d36fec68992922037d43e67eeacc6854f38b8a511c69b9385b2de6994d08802a6aa422686dfd4c55e5ba0
+  checksum: 10/6e02374832ced889a61829e327d03d021c50c0fc3ac86674d8c922cd3a50c0451091106811c308ed5553776a28b6acbc5313e2c9d37aecb198ab306f249de21b
   languageName: node
   linkType: hard
 
