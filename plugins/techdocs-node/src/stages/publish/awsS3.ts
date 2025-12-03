@@ -139,12 +139,19 @@ export class AwsS3Publish implements PublisherBase {
     const credentialsConfig = config.getOptionalConfig(
       'techdocs.publisher.awsS3.credentials',
     );
+
     const credsManager = DefaultAwsCredentialsManager.fromConfig(config);
+
+    const awsS3IntegrationConfig =
+      config.getOptionalConfigArray('integrations.awsS3');
+
     const sdkCredentialProvider = await AwsS3Publish.buildCredentials(
       credsManager,
       accountId,
       credentialsConfig,
       region,
+      awsS3IntegrationConfig,
+      logger,
     );
 
     // AWS endpoint is an optional config. If missing, the default endpoint is built from
@@ -213,8 +220,10 @@ export class AwsS3Publish implements PublisherBase {
   private static async buildCredentials(
     credsManager: AwsCredentialsManager,
     accountId?: string,
-    config?: Config,
+    credentialsConfig?: Config,
     region?: string,
+    awsS3IntegrationConfig?: Config[],
+    logger: LoggerService,
   ): Promise<AwsCredentialIdentityProvider> {
     // Pull credentials for the specified account ID from the 'aws' config section
     if (accountId) {
@@ -222,21 +231,14 @@ export class AwsS3Publish implements PublisherBase {
         .sdkCredentialProvider;
     }
 
-    // Fall back to the default credential chain if neither account ID
-    // nor explicit credentials are provided
-    if (!config) {
-      return (await credsManager.getCredentialProvider()).sdkCredentialProvider;
-    }
+    const explicitCredentials = await AwsS3Publish.getExplicitCredentials({
+      credsManager,
+      credentialsConfig,
+      awsS3IntegrationConfig,
+      logger,
+    });
 
-    // Pull credentials from the techdocs config section (deprecated)
-    const accessKeyId = config.getOptionalString('accessKeyId');
-    const secretAccessKey = config.getOptionalString('secretAccessKey');
-    const explicitCredentials: AwsCredentialIdentityProvider =
-      accessKeyId && secretAccessKey
-        ? AwsS3Publish.buildStaticCredentials(accessKeyId, secretAccessKey)
-        : (await credsManager.getCredentialProvider()).sdkCredentialProvider;
-
-    const roleArn = config.getOptionalString('roleArn');
+    const roleArn = credentialsConfig?.getOptionalString('roleArn');
     if (roleArn) {
       return fromTemporaryCredentials({
         masterCredentials: explicitCredentials,
@@ -249,6 +251,72 @@ export class AwsS3Publish implements PublisherBase {
     }
 
     return explicitCredentials;
+  }
+
+  private static async getExplicitCredentials({
+    credentialsConfig,
+    awsS3IntegrationConfig,
+    credsManager,
+    logger,
+  }: {
+    credentialsConfig?: Config;
+    awsS3IntegrationConfig?: Config[];
+    credsManager: AwsCredentialsManager;
+    logger: LoggerService;
+  }): Promise<AwsCredentialIdentityProvider> {
+    const accessKeyId = credentialsConfig?.getOptionalString('accessKeyId');
+    const secretAccessKey =
+      credentialsConfig?.getOptionalString('secretAccessKey');
+
+    if (accessKeyId && secretAccessKey) {
+      return AwsS3Publish.buildStaticCredentials(accessKeyId, secretAccessKey);
+    }
+    if (awsS3IntegrationConfig && awsS3IntegrationConfig.length > 0) {
+      if (awsS3IntegrationConfig.length === 1) {
+        const singleAwsS3IntegrationConfig = awsS3IntegrationConfig[0];
+
+        const singleAwsS3IntegrationAccessKeyId =
+          singleAwsS3IntegrationConfig.getOptionalString('accessKeyId');
+        const singleAwsS3IntegrationSecretAccessKey =
+          singleAwsS3IntegrationConfig.getOptionalString('secretAccessKey');
+
+        if (
+          singleAwsS3IntegrationAccessKeyId &&
+          singleAwsS3IntegrationSecretAccessKey
+        ) {
+          return AwsS3Publish.buildStaticCredentials(
+            singleAwsS3IntegrationAccessKeyId,
+            singleAwsS3IntegrationSecretAccessKey,
+          );
+        }
+      } else {
+        if (accessKeyId) {
+          const targetAwsS3IntegrationConfig = awsS3IntegrationConfig.find(
+            c => c.getOptionalString('accessKeyId') === accessKeyId,
+          );
+
+          if (!targetAwsS3IntegrationConfig) {
+            logger.warn(
+              `No AWS S3 integration config under integrations.awsS3 found for access key id ${accessKeyId}.`,
+            );
+          }
+          const targetAwsS3IntegrationAccessKeyId =
+            targetAwsS3IntegrationConfig?.getOptionalString('accessKeyId');
+          const targetAwsS3IntegrationSecretAccessKey =
+            targetAwsS3IntegrationConfig?.getOptionalString('secretAccessKey');
+          if (
+            targetAwsS3IntegrationAccessKeyId &&
+            targetAwsS3IntegrationSecretAccessKey
+          ) {
+            return AwsS3Publish.buildStaticCredentials(
+              targetAwsS3IntegrationAccessKeyId,
+              targetAwsS3IntegrationSecretAccessKey,
+            );
+          }
+        }
+      }
+    }
+    return (await credsManager.getCredentialProvider()).sdkCredentialProvider;
   }
 
   /**
