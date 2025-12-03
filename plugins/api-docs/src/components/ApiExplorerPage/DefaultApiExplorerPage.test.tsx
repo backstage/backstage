@@ -117,10 +117,10 @@ describe('DefaultApiExplorerPage', () => {
   it('should render the default column of the grid', async () => {
     await renderWrapped(<DefaultApiExplorerPage />);
 
-    const columnHeader = screen
-      .getAllByRole('button')
-      .filter(c => c.tagName === 'SPAN');
-    const columnHeaderLabels = columnHeader.map(c => c.textContent);
+    const columnHeader = screen.getAllByRole('columnheader');
+    const columnHeaderLabels = columnHeader.map(
+      c => c.textContent?.trim() || '',
+    );
 
     await waitFor(() =>
       expect(columnHeaderLabels).toEqual([
@@ -144,10 +144,10 @@ describe('DefaultApiExplorerPage', () => {
     ];
     await renderWrapped(<DefaultApiExplorerPage columns={columns} />);
 
-    const columnHeader = screen
-      .getAllByRole('button')
-      .filter(c => c.tagName === 'SPAN');
-    const columnHeaderLabels = columnHeader.map(c => c.textContent);
+    const columnHeader = screen.getAllByRole('columnheader');
+    const columnHeaderLabels = columnHeader.map(
+      c => c.textContent?.trim() || '',
+    );
 
     await waitFor(() =>
       expect(columnHeaderLabels).toEqual(['Foo', 'Bar', 'Baz', 'Actions']),
@@ -164,7 +164,9 @@ describe('DefaultApiExplorerPage', () => {
       expect(screen.getByRole('button', { name: /view/i })).toBeInTheDocument();
     });
     expect(screen.getByRole('button', { name: /edit/i })).toBeInTheDocument();
-    expect(screen.getByTitle(/Add to favorites/)).toBeInTheDocument();
+    expect(
+      screen.getByRole('button', { name: /Add to favorites/i }),
+    ).toBeInTheDocument();
   });
 
   it('should render the custom actions of an item passed as prop', async () => {
@@ -187,8 +189,13 @@ describe('DefaultApiExplorerPage', () => {
     await waitFor(() => {
       expect(screen.getByText(/All apis \(1\)/)).toBeInTheDocument();
     });
-    expect(screen.getByTitle(/Foo Action/)).toBeInTheDocument();
-    expect(screen.getByTitle(/Bar Action/)).toBeInTheDocument();
-    expect(screen.getByTitle(/Bar Action/).firstChild).toBeDisabled();
+    expect(
+      screen.getByRole('button', { name: /Foo Action/i }),
+    ).toBeInTheDocument();
+    const barActionButton = screen.getByRole('button', {
+      name: /Bar Action/i,
+    });
+    expect(barActionButton).toBeInTheDocument();
+    expect(barActionButton).toBeDisabled();
   });
 });
