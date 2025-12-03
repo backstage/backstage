@@ -133,8 +133,6 @@ To run the application:
    yarn start
    ```
 
-   Here again, there's a small wait for the frontend to start up. Once the frontend is built, your browser window should automatically open.
-
 As the frontend and backend are starting, you will see output similar to the following. The output shows that the app and backend are starting up with the configuration coming from `app-config.yaml`. You will see the plugins being initialized, and authorization and permissions being setup. In addition you will see a series of REST API calls for those plugins that use a service backend, such as the service catalog.
 
 ```
