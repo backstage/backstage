@@ -14,24 +14,21 @@
  * limitations under the License.
  */
 
-import type { HeightProps } from '../../props/height.props';
-import type { WidthProps } from '../../props/width.props';
-import type { PositionProps } from '../../props/position.props';
-import type { DisplayProps } from '../../props/display.props';
-import type { SpaceProps } from '../../types';
-import type { BoxOwnProps } from './Box.props';
+import type { SpaceProps, Responsive } from '../../types';
 
 /** @public */
 export interface BoxProps extends SpaceProps {
-  display?: DisplayProps['display'];
-  as?: BoxOwnProps['as'];
-  width?: WidthProps['width'];
-  minWidth?: WidthProps['minWidth'];
-  maxWidth?: WidthProps['maxWidth'];
-  height?: HeightProps['height'];
-  minHeight?: HeightProps['minHeight'];
-  maxHeight?: HeightProps['maxHeight'];
-  position?: PositionProps['position'];
+  display?: Responsive<'none' | 'flex' | 'block' | 'inline'>;
+  as?: keyof JSX.IntrinsicElements;
+  width?: Responsive<string>;
+  minWidth?: Responsive<string>;
+  maxWidth?: Responsive<string>;
+  height?: Responsive<string>;
+  minHeight?: Responsive<string>;
+  maxHeight?: Responsive<string>;
+  position?: Responsive<
+    'static' | 'relative' | 'absolute' | 'fixed' | 'sticky'
+  >;
   children?: React.ReactNode;
   className?: string;
   style?: React.CSSProperties;

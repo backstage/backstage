@@ -25,18 +25,11 @@ import {
 } from '@backstage/frontend-plugin-api';
 import mapValues from 'lodash/mapValues';
 import { AnyRouteRef, BackstageRouteObject } from './types';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { isRouteRef } from '../../../frontend-plugin-api/src/routing/RouteRef';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import {
-  isSubRouteRef,
-  toInternalSubRouteRef,
-} from '../../../frontend-plugin-api/src/routing/SubRouteRef';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import {
-  isExternalRouteRef,
-  toInternalExternalRouteRef,
-} from '../../../frontend-plugin-api/src/routing/ExternalRouteRef';
+  OpaqueRouteRef,
+  OpaqueExternalRouteRef,
+  OpaqueSubRouteRef,
+} from '@internal/frontend';
 import { RouteAliasResolver } from './RouteAliasResolver';
 
 // Joins a list of paths together, avoiding trailing and duplicate slashes
@@ -65,10 +58,10 @@ function resolveTargetRef(
   let ref: AnyRouteRef = targetRouteRef;
   let path = '';
 
-  if (isExternalRouteRef(ref)) {
+  if (OpaqueExternalRouteRef.isType(ref)) {
     let resolvedRoute = routeBindings.get(ref);
     if (!resolvedRoute) {
-      const internal = toInternalExternalRouteRef(ref);
+      const internal = OpaqueExternalRouteRef.toInternal(ref);
       const defaultTarget = internal.getDefaultTarget();
       if (defaultTarget) {
         resolvedRoute = routeRefsById.get(defaultTarget);
@@ -80,13 +73,13 @@ function resolveTargetRef(
     ref = resolvedRoute;
   }
 
-  if (isSubRouteRef(ref)) {
-    const internal = toInternalSubRouteRef(ref);
+  if (OpaqueSubRouteRef.isType(ref)) {
+    const internal = OpaqueSubRouteRef.toInternal(ref);
     path = ref.path;
     ref = internal.getParent();
   }
 
-  if (!isRouteRef(ref)) {
+  if (!OpaqueRouteRef.isType(ref)) {
     throw new Error(
       `Unexpectedly resolved ${targetRouteRef} to a non-route ref ${ref}`,
     );
@@ -179,18 +172,31 @@ function resolveBasePath(
 }
 
 export class RouteResolver implements RouteResolutionApi {
+  private readonly routePaths: Map<RouteRef, string>;
+  private readonly routeParents: Map<RouteRef, RouteRef | undefined>;
+  private readonly routeObjects: BackstageRouteObject[];
+  private readonly routeBindings: Map<ExternalRouteRef, RouteRef | SubRouteRef>;
+  private readonly appBasePath: string; // base path without a trailing slash
+  private readonly routeAliasResolver: RouteAliasResolver;
+  private readonly routeRefsById: Map<string, RouteRef | SubRouteRef>;
+
   constructor(
-    private readonly routePaths: Map<RouteRef, string>,
-    private readonly routeParents: Map<RouteRef, RouteRef | undefined>,
-    private readonly routeObjects: BackstageRouteObject[],
-    private readonly routeBindings: Map<
-      ExternalRouteRef,
-      RouteRef | SubRouteRef
-    >,
-    private readonly appBasePath: string, // base path without a trailing slash
-    private readonly routeAliasResolver: RouteAliasResolver,
-    private readonly routeRefsById: Map<string, RouteRef | SubRouteRef>,
-  ) {}
+    routePaths: Map<RouteRef, string>,
+    routeParents: Map<RouteRef, RouteRef | undefined>,
+    routeObjects: BackstageRouteObject[],
+    routeBindings: Map<ExternalRouteRef, RouteRef | SubRouteRef>,
+    appBasePath: string, // base path without a trailing slash
+    routeAliasResolver: RouteAliasResolver,
+    routeRefsById: Map<string, RouteRef | SubRouteRef>,
+  ) {
+    this.routePaths = routePaths;
+    this.routeParents = routeParents;
+    this.routeObjects = routeObjects;
+    this.routeBindings = routeBindings;
+    this.appBasePath = appBasePath;
+    this.routeAliasResolver = routeAliasResolver;
+    this.routeRefsById = routeRefsById;
+  }
 
   resolve<TParams extends AnyRouteRefParams>(
     anyRouteRef:

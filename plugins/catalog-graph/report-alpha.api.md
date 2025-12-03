@@ -6,18 +6,18 @@
 import { AnyApiFactory } from '@backstage/frontend-plugin-api';
 import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
 import { ApiFactory } from '@backstage/frontend-plugin-api';
-import { Direction } from '@backstage/plugin-catalog-graph';
 import { Entity } from '@backstage/catalog-model';
 import { EntityCardType } from '@backstage/plugin-catalog-react/alpha';
 import { EntityPredicate } from '@backstage/plugin-catalog-react/alpha';
 import { ExtensionBlueprintParams } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
-import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
-import { ExternalRouteRef } from '@backstage/frontend-plugin-api';
+import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { JSX as JSX_2 } from 'react';
+import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
-import { RouteRef } from '@backstage/frontend-plugin-api';
+import { RouteRef } from '@backstage/core-plugin-api';
+import { RouteRef as RouteRef_2 } from '@backstage/frontend-plugin-api';
 import { TranslationRef } from '@backstage/frontend-plugin-api';
 
 // @alpha (undocumented)
@@ -31,7 +31,7 @@ export const catalogGraphTranslationRef: TranslationRef<
     readonly 'catalogGraphPage.supportButtonDescription': 'Start tracking your component in by adding it to the software catalog.';
     readonly 'catalogGraphPage.simplifiedSwitchLabel': 'Simplified';
     readonly 'catalogGraphPage.mergeRelationsSwitchLabel': 'Merge relations';
-    readonly 'catalogGraphPage.zoomOutDescription': 'Use pinch &amp; zoom to move around the diagram. Click to change active node, shift click to navigate to entity.';
+    readonly 'catalogGraphPage.zoomOutDescription': 'Use pinch & zoom to move around the diagram. Click to change active node, shift click to navigate to entity.';
     readonly 'catalogGraphPage.curveFilter.title': 'Curve';
     readonly 'catalogGraphPage.curveFilter.curveStepBefore': 'Step Before';
     readonly 'catalogGraphPage.curveFilter.curveMonotoneX': 'Monotone X';
@@ -54,14 +54,17 @@ const _default: OverridableFrontendPlugin<
     catalogGraph: RouteRef<undefined>;
   },
   {
-    catalogEntity: ExternalRouteRef<{
-      name: string;
-      kind: string;
-      namespace: string;
-    }>;
+    catalogEntity: ExternalRouteRef<
+      {
+        name: string;
+        kind: string;
+        namespace: string;
+      },
+      true
+    >;
   },
   {
-    'api:catalog-graph': ExtensionDefinition<{
+    'api:catalog-graph': OverridableExtensionDefinition<{
       kind: 'api';
       name: undefined;
       config: {};
@@ -76,14 +79,14 @@ const _default: OverridableFrontendPlugin<
         params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
-    'entity-card:catalog-graph/relations': ExtensionDefinition<{
+    'entity-card:catalog-graph/relations': OverridableExtensionDefinition<{
       config: {
         kinds: string[] | undefined;
         relations: string[] | undefined;
         maxDepth: number | undefined;
         unidirectional: boolean | undefined;
         mergeRelations: boolean | undefined;
-        direction: Direction | undefined;
+        direction: 'TB' | 'BT' | 'LR' | 'RL' | undefined;
         relationPairs: [string, string][] | undefined;
         zoom: 'disabled' | 'enabled' | 'enable-on-click' | undefined;
         curve: 'curveStepBefore' | 'curveMonotoneX' | undefined;
@@ -96,7 +99,7 @@ const _default: OverridableFrontendPlugin<
       configInput: {
         height?: number | undefined;
         curve?: 'curveStepBefore' | 'curveMonotoneX' | undefined;
-        direction?: Direction | undefined;
+        direction?: 'TB' | 'BT' | 'LR' | 'RL' | undefined;
         zoom?: 'disabled' | 'enabled' | 'enable-on-click' | undefined;
         title?: string | undefined;
         relations?: string[] | undefined;
@@ -136,8 +139,8 @@ const _default: OverridableFrontendPlugin<
         [x: string]: ExtensionInput<
           ExtensionDataRef,
           {
-            optional: boolean;
             singleton: boolean;
+            optional: boolean;
           }
         >;
       };
@@ -149,7 +152,7 @@ const _default: OverridableFrontendPlugin<
         type?: EntityCardType;
       };
     }>;
-    'page:catalog-graph': ExtensionDefinition<{
+    'page:catalog-graph': OverridableExtensionDefinition<{
       config: {
         selectedKinds: string[] | undefined;
         selectedRelations: string[] | undefined;
@@ -157,7 +160,7 @@ const _default: OverridableFrontendPlugin<
         maxDepth: number | undefined;
         unidirectional: boolean | undefined;
         mergeRelations: boolean | undefined;
-        direction: Direction | undefined;
+        direction: 'TB' | 'BT' | 'LR' | 'RL' | undefined;
         showFilters: boolean | undefined;
         curve: 'curveStepBefore' | 'curveMonotoneX' | undefined;
         kinds: string[] | undefined;
@@ -169,7 +172,7 @@ const _default: OverridableFrontendPlugin<
       };
       configInput: {
         curve?: 'curveStepBefore' | 'curveMonotoneX' | undefined;
-        direction?: Direction | undefined;
+        direction?: 'TB' | 'BT' | 'LR' | 'RL' | undefined;
         zoom?: 'disabled' | 'enabled' | 'enable-on-click' | undefined;
         relations?: string[] | undefined;
         rootEntityRefs?: string[] | undefined;
@@ -188,7 +191,7 @@ const _default: OverridableFrontendPlugin<
         | ExtensionDataRef<string, 'core.routing.path', {}>
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
         | ExtensionDataRef<
-            RouteRef<AnyRouteRefParams>,
+            RouteRef_2<AnyRouteRefParams>,
             'core.routing.ref',
             {
               optional: true;
@@ -198,8 +201,8 @@ const _default: OverridableFrontendPlugin<
         [x: string]: ExtensionInput<
           ExtensionDataRef,
           {
-            optional: boolean;
             singleton: boolean;
+            optional: boolean;
           }
         >;
       };
@@ -209,7 +212,7 @@ const _default: OverridableFrontendPlugin<
         defaultPath?: [Error: `Use the 'path' param instead`];
         path: string;
         loader: () => Promise<JSX.Element>;
-        routeRef?: RouteRef;
+        routeRef?: RouteRef_2;
       };
     }>;
   }

@@ -151,13 +151,23 @@ export class AwsS3UrlReader implements UrlReaderService {
     });
   };
 
+  private readonly credsManager: AwsCredentialsManager;
+  private readonly integration: AwsS3Integration;
+  private readonly deps: {
+    treeResponseFactory: ReadTreeResponseFactory;
+  };
+
   constructor(
-    private readonly credsManager: AwsCredentialsManager,
-    private readonly integration: AwsS3Integration,
-    private readonly deps: {
+    credsManager: AwsCredentialsManager,
+    integration: AwsS3Integration,
+    deps: {
       treeResponseFactory: ReadTreeResponseFactory;
     },
-  ) {}
+  ) {
+    this.credsManager = credsManager;
+    this.integration = integration;
+    this.deps = deps;
+  }
 
   /**
    * If accessKeyId and secretAccessKey are missing, the standard credentials provider chain will be used:

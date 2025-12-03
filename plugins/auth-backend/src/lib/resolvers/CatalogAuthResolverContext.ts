@@ -70,15 +70,31 @@ export class CatalogAuthResolverContext implements AuthResolverContext {
     );
   }
 
+  public readonly logger: LoggerService;
+  public readonly tokenIssuer: TokenIssuer;
+  public readonly catalogIdentityClient: CatalogIdentityClient;
+  private readonly catalog: CatalogService;
+  private readonly auth: AuthService;
+  private readonly userInfo: UserInfoDatabase;
+  private readonly ownershipResolver?: AuthOwnershipResolver;
+
   private constructor(
-    public readonly logger: LoggerService,
-    public readonly tokenIssuer: TokenIssuer,
-    public readonly catalogIdentityClient: CatalogIdentityClient,
-    private readonly catalog: CatalogService,
-    private readonly auth: AuthService,
-    private readonly userInfo: UserInfoDatabase,
-    private readonly ownershipResolver?: AuthOwnershipResolver,
-  ) {}
+    logger: LoggerService,
+    tokenIssuer: TokenIssuer,
+    catalogIdentityClient: CatalogIdentityClient,
+    catalog: CatalogService,
+    auth: AuthService,
+    userInfo: UserInfoDatabase,
+    ownershipResolver?: AuthOwnershipResolver,
+  ) {
+    this.logger = logger;
+    this.tokenIssuer = tokenIssuer;
+    this.catalogIdentityClient = catalogIdentityClient;
+    this.catalog = catalog;
+    this.auth = auth;
+    this.userInfo = userInfo;
+    this.ownershipResolver = ownershipResolver;
+  }
 
   async issueToken(params: TokenParams) {
     const { sub, ent = [sub], ...additionalClaims } = params.claims;

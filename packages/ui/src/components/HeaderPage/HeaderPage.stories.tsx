@@ -44,22 +44,27 @@ const tabs: HeaderTab[] = [
   {
     id: 'overview',
     label: 'Overview',
+    href: '/overview',
   },
   {
     id: 'checks',
     label: 'Checks',
+    href: '/checks',
   },
   {
     id: 'tracks',
     label: 'Tracks',
+    href: '/tracks',
   },
   {
     id: 'campaigns',
     label: 'Campaigns',
+    href: '/campaigns',
   },
   {
     id: 'integrations',
     label: 'Integrations',
+    href: '/integrations',
   },
 ];
 
@@ -148,7 +153,11 @@ export const WithCustomActions: Story = {
         <>
           <Button>Custom action</Button>
           <MenuTrigger>
-            <ButtonIcon variant="tertiary" icon={<RiMore2Line />} />
+            <ButtonIcon
+              variant="tertiary"
+              icon={<RiMore2Line />}
+              aria-label="More options"
+            />
             <Menu placement="bottom end">
               {menuItems.map(option => (
                 <MenuItem

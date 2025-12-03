@@ -35,8 +35,10 @@ import session from 'express-session';
 import connectSessionKnex from 'connect-session-knex';
 import passport from 'passport';
 import { AuthDatabase } from '../database/AuthDatabase';
-import { readBackstageTokenExpiration } from './readBackstageTokenExpiration';
-import { TokenIssuer } from '../identity/types';
+import {
+  readBackstageTokenExpiration,
+  readDcrTokenExpiration,
+} from './readTokenExpiration.ts';
 import { StaticTokenIssuer } from '../identity/StaticTokenIssuer';
 import { StaticKeyStore } from '../identity/StaticKeyStore';
 import { bindProviderRouters, ProviderFactories } from '../providers/router';
@@ -91,29 +93,37 @@ export async function createRouter(
     ? ['ent']
     : [];
 
-  let tokenIssuer: TokenIssuer;
-  if (keyStore instanceof StaticKeyStore) {
-    tokenIssuer = new StaticTokenIssuer(
-      {
-        logger: logger.child({ component: 'token-factory' }),
-        issuer: authUrl,
-        sessionExpirationSeconds: backstageTokenExpiration,
-        omitClaimsFromToken,
-      },
-      keyStore as StaticKeyStore,
-    );
-  } else {
-    tokenIssuer = new TokenFactory({
+  const createTokenIssuer = (opts: {
+    logger: LoggerService;
+    expirationSeconds: number;
+  }) => {
+    if (keyStore instanceof StaticKeyStore) {
+      return new StaticTokenIssuer(
+        {
+          logger: opts.logger,
+          issuer: authUrl,
+          sessionExpirationSeconds: opts.expirationSeconds,
+          omitClaimsFromToken,
+        },
+        keyStore as StaticKeyStore,
+      );
+    }
+    return new TokenFactory({
       issuer: authUrl,
       keyStore,
-      keyDurationSeconds: backstageTokenExpiration,
-      logger: logger.child({ component: 'token-factory' }),
+      keyDurationSeconds: opts.expirationSeconds,
+      logger: opts.logger,
       algorithm:
         tokenFactoryAlgorithm ??
         config.getOptionalString('auth.identityTokenAlgorithm'),
       omitClaimsFromToken,
     });
-  }
+  };
+
+  const tokenIssuer = createTokenIssuer({
+    logger: logger.child({ component: 'token-factory' }),
+    expirationSeconds: backstageTokenExpiration,
+  });
 
   const secret = config.getOptionalString('auth.session.secret');
   if (secret) {
@@ -151,11 +161,18 @@ export async function createRouter(
     userInfo,
   });
 
+  const dcrTokenExpiration = readDcrTokenExpiration(config);
+
+  const oidcTokenIssuer = createTokenIssuer({
+    logger: logger.child({ component: 'oidc-token-factory' }),
+    expirationSeconds: dcrTokenExpiration,
+  });
+
   const oidc = await OidcDatabase.create({ database });
 
   const oidcRouter = OidcRouter.create({
     auth: options.auth,
-    tokenIssuer,
+    tokenIssuer: oidcTokenIssuer,
     baseUrl: authUrl,
     appUrl,
     userInfo,

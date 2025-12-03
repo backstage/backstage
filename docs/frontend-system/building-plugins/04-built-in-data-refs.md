@@ -34,6 +34,14 @@ const examplePage = createExtension({
 });
 ```
 
+### `title`
+
+|      id      |   type   |
+| :----------: | :------: |
+| `core.title` | `string` |
+
+The `title` data reference can be used for defining the extension input/output of string titles.
+
 ### `routePath`
 
 |         id          |   type   |

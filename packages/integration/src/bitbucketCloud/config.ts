@@ -49,6 +49,8 @@ export type BitbucketCloudIntegrationConfig = {
 
   /**
    * The access token to use for requests to Bitbucket Cloud (bitbucket.org).
+   *
+   * See https://support.atlassian.com/bitbucket-cloud/docs/api-tokens/
    */
   token?: string;
 
@@ -70,13 +72,23 @@ export function readBitbucketCloudIntegrationConfig(
   // If config is provided, we assume authenticated access is desired
   // (as the anonymous one is provided by default).
   const username = config.getString('username');
-  const appPassword = config.getString('appPassword')?.trim();
+  // TODO: appPassword can be removed once fully
+  // deprecated by BitBucket on 9th June 2026.
+  const appPassword = config.getOptionalString('appPassword')?.trim();
+  const token = config.getOptionalString('token');
+
+  if (!token && !appPassword) {
+    throw new Error(
+      `Bitbucket Cloud integration must be configured with as username and either a token or an appPassword.`,
+    );
+  }
 
   return {
     host,
     apiBaseUrl,
     username,
     appPassword,
+    token,
     commitSigningKey: config.getOptionalString('commitSigningKey'),
   };
 }

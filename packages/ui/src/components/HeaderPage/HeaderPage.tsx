@@ -19,9 +19,12 @@ import { Text } from '../Text';
 import { RiArrowRightSLine } from '@remixicon/react';
 import { Tabs, TabList, Tab } from '../Tabs';
 import { useStyles } from '../../hooks/useStyles';
+import { HeaderPageDefinition } from './definition';
 import { Container } from '../Container';
 import { Link } from '../Link';
 import { Fragment } from 'react/jsx-runtime';
+import styles from './HeaderPage.module.css';
+import clsx from 'clsx';
 
 /**
  * A component that renders a header page.
@@ -29,13 +32,20 @@ import { Fragment } from 'react/jsx-runtime';
  * @public
  */
 export const HeaderPage = (props: HeaderPageProps) => {
-  const { title, tabs, customActions, breadcrumbs } = props;
-  const { classNames } = useStyles('HeaderPage');
+  const { classNames, cleanedProps } = useStyles(HeaderPageDefinition, props);
+  const { className, title, tabs, customActions, breadcrumbs } = cleanedProps;
 
   return (
-    <Container className={classNames.root}>
-      <div className={classNames.content}>
-        <div className={classNames.breadcrumbs}>
+    <Container
+      className={clsx(classNames.root, styles[classNames.root], className)}
+    >
+      <div className={clsx(classNames.content, styles[classNames.content])}>
+        <div
+          className={clsx(
+            classNames.breadcrumbs,
+            styles[classNames.breadcrumbs],
+          )}
+        >
           {breadcrumbs &&
             breadcrumbs.map(breadcrumb => (
               <Fragment key={breadcrumb.label}>
@@ -56,10 +66,17 @@ export const HeaderPage = (props: HeaderPageProps) => {
             {title}
           </Text>
         </div>
-        <div className={classNames.controls}>{customActions}</div>
+        <div className={clsx(classNames.controls, styles[classNames.controls])}>
+          {customActions}
+        </div>
       </div>
       {tabs && (
-        <div className={classNames.tabsWrapper}>
+        <div
+          className={clsx(
+            classNames.tabsWrapper,
+            styles[classNames.tabsWrapper],
+          )}
+        >
           <Tabs>
             <TabList>
               {tabs.map(tab => (

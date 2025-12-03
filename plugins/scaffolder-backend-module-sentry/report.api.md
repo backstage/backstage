@@ -26,6 +26,21 @@ export function createSentryCreateProjectAction(options: {
 >;
 
 // @public
+export function createSentryFetchDSNAction(options: {
+  config: Config;
+}): TemplateAction<
+  {
+    organizationSlug: string;
+    projectSlug: string;
+    authToken?: string | undefined;
+  },
+  {
+    dsn?: string | undefined;
+  },
+  'v2'
+>;
+
+// @public
 const sentryModule: BackendFeature;
 export default sentryModule;
 

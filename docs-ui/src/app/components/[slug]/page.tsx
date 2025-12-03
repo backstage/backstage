@@ -7,9 +7,7 @@ export default async function Page({
 }) {
   const { slug } = await params;
 
-  const { default: Component } = await import(
-    `@/content/components/${slug}.mdx`
-  );
+  const { default: Component } = await import(`@/content/${slug}.mdx`);
 
   return <Component />;
 }

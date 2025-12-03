@@ -108,7 +108,11 @@ describe('eventsPlugin', () => {
 
   describe('event bus', () => {
     class ReqHelper {
-      constructor(private readonly backend: TestBackend) {}
+      private readonly backend: TestBackend;
+
+      constructor(backend: TestBackend) {
+        this.backend = backend;
+      }
 
       subscribe(id: string, topics: string[], options?: { auth?: string }) {
         return request(this.backend.server)
@@ -143,7 +147,7 @@ describe('eventsPlugin', () => {
     }
 
     const databases = TestDatabases.create({
-      ids: ['SQLITE_3', 'MYSQL_8', 'POSTGRES_13', 'POSTGRES_17'],
+      ids: ['SQLITE_3', 'MYSQL_8', 'POSTGRES_14', 'POSTGRES_18'],
     });
 
     async function mockKnexFactory(databaseId: TestDatabaseId) {

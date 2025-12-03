@@ -14,30 +14,33 @@
  * limitations under the License.
  */
 
-import { createElement, forwardRef } from 'react';
+import { forwardRef } from 'react';
 import { FlexProps } from './types';
 import clsx from 'clsx';
-import { flexPropDefs } from './Flex.props';
-import { extractProps } from '../../utils/extractProps';
-import { gapPropDefs } from '../../props/gap-props';
-import { spacingPropDefs } from '../../props/spacing.props';
 import { useStyles } from '../../hooks/useStyles';
+import { FlexDefinition } from './definition';
+import styles from './Flex.module.css';
 
 /** @public */
 export const Flex = forwardRef<HTMLDivElement, FlexProps>((props, ref) => {
-  const propDefs = {
-    ...gapPropDefs,
-    ...flexPropDefs,
-    ...spacingPropDefs,
-  };
+  const { classNames, utilityClasses, style, cleanedProps } = useStyles(
+    FlexDefinition,
+    { gap: '4', ...props },
+  );
 
-  const { classNames } = useStyles('Flex');
-  const { className, style } = extractProps(props, propDefs);
+  const { className, ...rest } = cleanedProps;
 
-  return createElement('div', {
-    ref,
-    className: clsx(classNames.root, className),
-    style,
-    children: props.children,
-  });
+  return (
+    <div
+      ref={ref}
+      className={clsx(
+        classNames.root,
+        utilityClasses,
+        styles[classNames.root],
+        className,
+      )}
+      style={style}
+      {...rest}
+    />
+  );
 });

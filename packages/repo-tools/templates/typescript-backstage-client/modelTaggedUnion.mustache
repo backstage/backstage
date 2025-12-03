@@ -12,7 +12,7 @@ export interface {{classname}} { {{>modelGenericAdditionalProperties}}
     * {{{.}}}
     */
     {{/description}}
-    {{name}}{{^required}}?{{/required}}: {{#discriminatorValue}}'{{.}}'{{/discriminatorValue}}{{^discriminatorValue}}{{#isEnum}}{{{datatypeWithEnum}}}{{/isEnum}}{{^isEnum}}{{{dataType}}}{{/isEnum}}{{/discriminatorValue}}{{#isNullable}} | null{{/isNullable}};
+    '{{#baseName}}{{baseName}}{{/baseName}}{{^baseName}}{{name}}{{/baseName}}'{{^required}}?{{/required}}: {{#discriminatorValue}}'{{.}}'{{/discriminatorValue}}{{^discriminatorValue}}{{#isEnum}}{{{datatypeWithEnum}}}{{/isEnum}}{{^isEnum}}{{{dataType}}}{{/isEnum}}{{/discriminatorValue}}{{#isNullable}} | null{{/isNullable}};
 {{/allVars}}
 }
 {{>modelGenericEnums}}

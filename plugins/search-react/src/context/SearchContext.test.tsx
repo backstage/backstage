@@ -264,11 +264,14 @@ describe('SearchContext', () => {
         result.current.setTerm(term);
       });
 
-      expect(searchApiMock.query).toHaveBeenLastCalledWith({
-        term,
-        types: ['*'],
-        filters: {},
-      });
+      expect(searchApiMock.query).toHaveBeenLastCalledWith(
+        {
+          term,
+          types: ['*'],
+          filters: {},
+        },
+        { signal: expect.any(AbortSignal) },
+      );
     });
 
     it('When types is set', async () => {
@@ -286,11 +289,14 @@ describe('SearchContext', () => {
         result.current.setTypes(types);
       });
 
-      expect(searchApiMock.query).toHaveBeenLastCalledWith({
-        types,
-        term: '',
-        filters: {},
-      });
+      expect(searchApiMock.query).toHaveBeenLastCalledWith(
+        {
+          types,
+          term: '',
+          filters: {},
+        },
+        { signal: expect.any(AbortSignal) },
+      );
     });
 
     it('When filters are set', async () => {
@@ -308,11 +314,14 @@ describe('SearchContext', () => {
         result.current.setFilters(filters);
       });
 
-      expect(searchApiMock.query).toHaveBeenLastCalledWith({
-        filters,
-        term: '',
-        types: ['*'],
-      });
+      expect(searchApiMock.query).toHaveBeenLastCalledWith(
+        {
+          filters,
+          term: '',
+          types: ['*'],
+        },
+        { signal: expect.any(AbortSignal) },
+      );
     });
 
     it('When page limit is set', async () => {
@@ -330,12 +339,15 @@ describe('SearchContext', () => {
         result.current.setPageLimit(pageLimit);
       });
 
-      expect(searchApiMock.query).toHaveBeenLastCalledWith({
-        pageLimit,
-        term: '',
-        types: ['*'],
-        filters: {},
-      });
+      expect(searchApiMock.query).toHaveBeenLastCalledWith(
+        {
+          pageLimit,
+          term: '',
+          types: ['*'],
+          filters: {},
+        },
+        { signal: expect.any(AbortSignal) },
+      );
     });
 
     it('When page cursor is set', async () => {
@@ -353,12 +365,15 @@ describe('SearchContext', () => {
         result.current.setPageCursor(pageCursor);
       });
 
-      expect(searchApiMock.query).toHaveBeenLastCalledWith({
-        pageCursor,
-        term: '',
-        types: ['*'],
-        filters: {},
-      });
+      expect(searchApiMock.query).toHaveBeenLastCalledWith(
+        {
+          pageCursor,
+          term: '',
+          types: ['*'],
+          filters: {},
+        },
+        { signal: expect.any(AbortSignal) },
+      );
     });
 
     it('provides function for fetch the next page', async () => {
@@ -382,12 +397,15 @@ describe('SearchContext', () => {
         result.current.fetchNextPage!();
       });
 
-      expect(searchApiMock.query).toHaveBeenLastCalledWith({
-        term: '',
-        types: ['*'],
-        filters: {},
-        pageCursor: 'NEXT',
-      });
+      expect(searchApiMock.query).toHaveBeenLastCalledWith(
+        {
+          term: '',
+          types: ['*'],
+          filters: {},
+          pageCursor: 'NEXT',
+        },
+        { signal: expect.any(AbortSignal) },
+      );
     });
 
     it('provides function for fetch the previous page', async () => {
@@ -410,12 +428,15 @@ describe('SearchContext', () => {
         result.current.fetchPreviousPage!();
       });
 
-      expect(searchApiMock.query).toHaveBeenLastCalledWith({
-        term: '',
-        types: ['*'],
-        filters: {},
-        pageCursor: 'PREVIOUS',
-      });
+      expect(searchApiMock.query).toHaveBeenLastCalledWith(
+        {
+          term: '',
+          types: ['*'],
+          filters: {},
+          pageCursor: 'PREVIOUS',
+        },
+        { signal: expect.any(AbortSignal) },
+      );
     });
   });
 
@@ -456,11 +477,14 @@ describe('SearchContext', () => {
       });
 
       await waitFor(() => {
-        expect(searchApiMock.query).toHaveBeenCalledWith({
-          term: '',
-          types: ['*'],
-          filters: {},
-        });
+        expect(searchApiMock.query).toHaveBeenCalledWith(
+          {
+            term: '',
+            types: ['*'],
+            filters: {},
+          },
+          { signal: expect.any(AbortSignal) },
+        );
         expect(analyticsApiMock.captureEvent).not.toHaveBeenCalled();
       });
 
@@ -470,11 +494,14 @@ describe('SearchContext', () => {
       });
 
       await waitFor(() => {
-        expect(searchApiMock.query).toHaveBeenCalledWith({
-          term: 'eva',
-          types: ['*'],
-          filters: {},
-        });
+        expect(searchApiMock.query).toHaveBeenCalledWith(
+          {
+            term: 'eva',
+            types: ['*'],
+            filters: {},
+          },
+          { signal: expect.any(AbortSignal) },
+        );
         expect(analyticsApiMock.captureEvent).toHaveBeenCalledWith({
           action: 'search',
           subject: 'eva',
@@ -493,11 +520,14 @@ describe('SearchContext', () => {
       });
 
       await waitFor(() => {
-        expect(searchApiMock.query).toHaveBeenCalledWith({
-          term: 'eva.m',
-          types: ['*'],
-          filters: {},
-        });
+        expect(searchApiMock.query).toHaveBeenCalledWith(
+          {
+            term: 'eva.m',
+            types: ['*'],
+            filters: {},
+          },
+          { signal: expect.any(AbortSignal) },
+        );
         expect(analyticsApiMock.captureEvent).toHaveBeenCalledWith({
           action: 'search',
           subject: 'eva.m',
@@ -531,11 +561,14 @@ describe('SearchContext', () => {
       });
 
       await waitFor(() => {
-        expect(searchApiMock.query).toHaveBeenLastCalledWith({
-          term: 'term',
-          types: ['*'],
-          filters: {},
-        });
+        expect(searchApiMock.query).toHaveBeenLastCalledWith(
+          {
+            term: 'term',
+            types: ['*'],
+            filters: {},
+          },
+          { signal: expect.any(AbortSignal) },
+        );
         expect(analyticsApiMock.captureEvent).toHaveBeenCalledWith({
           action: 'search',
           subject: 'term',

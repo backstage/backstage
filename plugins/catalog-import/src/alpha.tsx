@@ -20,10 +20,6 @@ import {
   fetchApiRef,
 } from '@backstage/core-plugin-api';
 import {
-  compatWrapper,
-  convertLegacyRouteRef,
-} from '@backstage/core-compat-api';
-import {
   createFrontendPlugin,
   PageBlueprint,
   ApiBlueprint,
@@ -35,6 +31,8 @@ import {
 import { CatalogImportClient, catalogImportApiRef } from './api';
 import { rootRouteRef } from './plugin';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
+import { RequirePermission } from '@backstage/plugin-permission-react';
+import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common/alpha';
 
 export * from './translation';
 
@@ -43,11 +41,13 @@ export * from './translation';
 const catalogImportPage = PageBlueprint.make({
   params: {
     path: '/catalog-import',
-    routeRef: convertLegacyRouteRef(rootRouteRef),
+    routeRef: rootRouteRef,
     loader: () =>
-      import('./components/ImportPage').then(m =>
-        compatWrapper(<m.ImportPage />),
-      ),
+      import('./components/ImportPage').then(m => (
+        <RequirePermission permission={catalogEntityCreatePermission}>
+          <m.ImportPage />
+        </RequirePermission>
+      )),
   },
 });
 
@@ -88,7 +88,7 @@ export default createFrontendPlugin({
   info: { packageJson: () => import('../package.json') },
   extensions: [catalogImportApi, catalogImportPage],
   routes: {
-    importPage: convertLegacyRouteRef(rootRouteRef),
+    importPage: rootRouteRef,
   },
 });
 

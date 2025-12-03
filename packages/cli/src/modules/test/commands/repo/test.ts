@@ -22,7 +22,7 @@ import { relative as relativePath } from 'path';
 import { Command, OptionValues } from 'commander';
 import { Lockfile, PackageGraph } from '@backstage/cli-node';
 import { paths } from '../../../../lib/paths';
-import { runCheck, runPlain } from '../../../../lib/run';
+import { runCheck, runOutput } from '@backstage/cli-common';
 import { isChildPath } from '@backstage/cli-common';
 import { SuccessCache } from '../../../../lib/cache/SuccessCache';
 
@@ -63,14 +63,14 @@ async function readPackageTreeHashes(graph: PackageGraph) {
     ...pkg,
     path: relativePath(paths.targetRoot, pkg.dir),
   }));
-  const output = await runPlain(
+  const output = await runOutput([
     'git',
     'ls-tree',
-    '--format="%(objectname)=%(path)"',
+    '--format=%(objectname)=%(path)',
     'HEAD',
     '--',
     ...pkgs.map(pkg => pkg.path),
-  );
+  ]);
 
   const map = new Map(
     output
@@ -175,8 +175,8 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
     !hasFlags('--coverage', '--watch', '--watchAll')
   ) {
     const isGitRepo = () =>
-      runCheck('git', 'rev-parse', '--is-inside-work-tree');
-    const isMercurialRepo = () => runCheck('hg', '--cwd', '.', 'root');
+      runCheck(['git', 'rev-parse', '--is-inside-work-tree']);
+    const isMercurialRepo = () => runCheck(['hg', '--cwd', '.', 'root']);
 
     if ((await isGitRepo()) || (await isMercurialRepo())) {
       isSingleWatchMode = true;

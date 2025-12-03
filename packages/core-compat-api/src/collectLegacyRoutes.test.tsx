@@ -39,7 +39,7 @@ import {
   useApp,
 } from '@backstage/core-plugin-api';
 import { screen } from '@testing-library/react';
-import { renderInTestApp } from '@backstage/frontend-test-utils';
+import { renderTestApp } from '@backstage/frontend-test-utils';
 
 const exampleApiRef = createApiRef<string>({
   id: 'plugin.example.service',
@@ -304,7 +304,7 @@ describe('collectLegacyRoutes', () => {
       </FlatRoutes>,
     );
 
-    renderInTestApp(<div />, { features });
+    renderTestApp({ features });
 
     await expect(
       screen.findByText('plugins: app, test'),

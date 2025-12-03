@@ -14,20 +14,21 @@
  * limitations under the License.
  */
 
+import { resolvePackagePath } from '@backstage/backend-plugin-api';
 import chalk from 'chalk';
+import fs from 'fs-extra';
 import { resolve } from 'path';
+import { exec } from '../../../../../lib/exec';
 import {
   OPENAPI_IGNORE_FILES,
   OUTPUT_PATH,
 } from '../../../../../lib/openapi/constants';
-import { paths as cliPaths } from '../../../../../lib/paths';
-import fs from 'fs-extra';
-import { exec } from '../../../../../lib/exec';
-import { resolvePackagePath } from '@backstage/backend-plugin-api';
+import { deduplicateImports } from '../../../../../lib/openapi/dedupe-imports';
 import {
   getPathToCurrentOpenApiSpec,
   toGeneratorAdditionalProperties,
 } from '../../../../../lib/openapi/helpers';
+import { paths as cliPaths } from '../../../../../lib/paths';
 
 async function generate(
   outputDirectory: string,
@@ -99,6 +100,14 @@ async function generate(
     await exec(`${prettier} --write ${parentDirectory}`, [], {
       signal: abortSignal?.signal,
     });
+  }
+
+  // Deduplicate imports in generated files
+  const generatedFiles = await fs.readdir(resolvedOutputDirectory);
+  for (const file of generatedFiles) {
+    if (file.endsWith('.ts')) {
+      deduplicateImports(resolve(resolvedOutputDirectory, file));
+    }
   }
 
   fs.removeSync(resolve(resolvedOutputDirectory, '.openapi-generator-ignore'));

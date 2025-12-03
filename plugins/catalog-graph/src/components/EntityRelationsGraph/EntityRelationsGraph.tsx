@@ -89,8 +89,10 @@ export type EntityRelationsGraphProps = {
   zoom?: 'enabled' | 'disabled' | 'enable-on-click';
   renderNode?: DependencyGraphTypes.RenderNodeFunction<EntityNode>;
   renderLabel?: DependencyGraphTypes.RenderLabelFunction<EntityEdge>;
+  renderEdge?: DependencyGraphTypes.RenderEdgeFunction<EntityEdge>;
   curve?: 'curveStepBefore' | 'curveMonotoneX';
   showArrowHeads?: boolean;
+  allowFullscreen?: boolean;
 };
 
 /**
@@ -114,8 +116,10 @@ export const EntityRelationsGraph = (props: EntityRelationsGraphProps) => {
     zoom = 'enabled',
     renderNode,
     renderLabel,
+    renderEdge,
     curve,
     showArrowHeads,
+    allowFullscreen,
   } = props;
 
   const theme = useTheme();
@@ -156,6 +160,7 @@ export const EntityRelationsGraph = (props: EntityRelationsGraphProps) => {
           edges={edges}
           renderNode={renderNode || DefaultRenderNode}
           renderLabel={renderLabel || DefaultRenderLabel}
+          renderEdge={renderEdge}
           direction={direction}
           className={classes.graph}
           fit="contain"
@@ -166,6 +171,7 @@ export const EntityRelationsGraph = (props: EntityRelationsGraphProps) => {
           zoom={zoom}
           curve={curve}
           showArrowHeads={showArrowHeads}
+          allowFullscreen={allowFullscreen}
         />
       )}
     </div>

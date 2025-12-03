@@ -44,11 +44,19 @@ import {
 } from '@backstage/backend-plugin-api';
 
 export class AuthorizedEntitiesCatalog implements EntitiesCatalog {
+  private readonly entitiesCatalog: EntitiesCatalog;
+  private readonly permissionApi: PermissionsService;
+  private readonly transformConditions: ConditionTransformer<EntityFilter>;
+
   constructor(
-    private readonly entitiesCatalog: EntitiesCatalog,
-    private readonly permissionApi: PermissionsService,
-    private readonly transformConditions: ConditionTransformer<EntityFilter>,
-  ) {}
+    entitiesCatalog: EntitiesCatalog,
+    permissionApi: PermissionsService,
+    transformConditions: ConditionTransformer<EntityFilter>,
+  ) {
+    this.entitiesCatalog = entitiesCatalog;
+    this.permissionApi = permissionApi;
+    this.transformConditions = transformConditions;
+  }
 
   async entities(request: EntitiesRequest): Promise<EntitiesResponse> {
     const authorizeDecision = (

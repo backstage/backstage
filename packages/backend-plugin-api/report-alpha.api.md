@@ -103,30 +103,5 @@ export const actionsServiceRef: ServiceRef<
   'singleton'
 >;
 
-// @alpha (undocumented)
-export type BackendFeatureMeta =
-  | {
-      type: 'plugin';
-      pluginId: string;
-    }
-  | {
-      type: 'module';
-      pluginId: string;
-      moduleId: string;
-    };
-
-// @alpha (undocumented)
-export interface InstanceMetadataService {
-  // (undocumented)
-  getInstalledFeatures: () => BackendFeatureMeta[];
-}
-
-// @alpha (undocumented)
-export const instanceMetadataServiceRef: ServiceRef<
-  InstanceMetadataService,
-  'plugin',
-  'singleton'
->;
-
 // (No @packageDocumentation comment for this package)
 ```

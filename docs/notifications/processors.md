@@ -148,6 +148,7 @@ notifications:
       - token: xoxb-XXXXXXXXX
         broadcastChannels: # Optional, if you wish to support broadcast notifications.
           - C12345678
+        username: 'Backstage Bot' # Optional, defaults to the name of the Slack App.
 ```
 
 Multiple instances can be added in the `slack` array, allowing you to have multiple configurations if you need to send

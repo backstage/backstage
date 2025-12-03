@@ -140,14 +140,24 @@ export class ExternalAuthTokenHandler {
     return new ExternalAuthTokenHandler(ownPluginId, contexts);
   }
 
+  private readonly ownPluginId: string;
+  private readonly contexts: {
+    context: unknown;
+    handler: ExternalTokenHandler<unknown>;
+    allAccessRestrictions?: AccessRestrictionsMap;
+  }[];
+
   constructor(
-    private readonly ownPluginId: string,
-    private readonly contexts: {
+    ownPluginId: string,
+    contexts: {
       context: unknown;
       handler: ExternalTokenHandler<unknown>;
       allAccessRestrictions?: AccessRestrictionsMap;
     }[],
-  ) {}
+  ) {
+    this.ownPluginId = ownPluginId;
+    this.contexts = contexts;
+  }
 
   async verifyToken(token: string): Promise<
     | {

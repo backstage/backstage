@@ -16,51 +16,58 @@
 
 import clsx from 'clsx';
 import { forwardRef, Ref } from 'react';
-import { Button as RAButton, Focusable } from 'react-aria-components';
+import { Button as RAButton, ProgressBar } from 'react-aria-components';
+import { RiLoader4Line } from '@remixicon/react';
 import type { ButtonProps } from './types';
 import { useStyles } from '../../hooks/useStyles';
+import { ButtonDefinition } from './definition';
+import styles from './Button.module.css';
 
 /** @public */
 export const Button = forwardRef(
   (props: ButtonProps, ref: Ref<HTMLButtonElement>) => {
-    const {
-      size = 'small',
-      variant = 'primary',
-      iconStart,
-      iconEnd,
-      children,
-      className,
-      isDisabled,
-      ...rest
-    } = props;
-
-    const { classNames, dataAttributes } = useStyles('Button', {
-      size,
-      variant,
-    });
-
-    const btn = (
-      <RAButton
-        className={clsx(classNames.root, className)}
-        ref={ref}
-        {...dataAttributes}
-        {...rest}
-        isDisabled={!!isDisabled}
-      >
-        {iconStart}
-        {children}
-        {iconEnd}
-      </RAButton>
+    const { classNames, dataAttributes, cleanedProps } = useStyles(
+      ButtonDefinition,
+      {
+        size: 'small',
+        variant: 'primary',
+        ...props,
+      },
     );
 
-    return isDisabled ? (
-      <Focusable>
-        <span role="button" tabIndex={0} style={{ display: 'inline-flex' }}>
-          {btn}
-        </span>
-      </Focusable>
-    ) : (
-      btn
+    const { children, className, iconStart, iconEnd, loading, ...rest } =
+      cleanedProps;
+
+    return (
+      <RAButton
+        className={clsx(classNames.root, styles[classNames.root], className)}
+        ref={ref}
+        isPending={loading}
+        {...dataAttributes}
+        {...rest}
+      >
+        {({ isPending }) => (
+          <>
+            <span
+              className={clsx(classNames.content, styles[classNames.content])}
+            >
+              {iconStart}
+              {children}
+              {iconEnd}
+            </span>
+
+            {isPending && (
+              <ProgressBar
+                aria-label="Loading"
+                isIndeterminate
+                className={clsx(classNames.spinner, styles[classNames.spinner])}
+              >
+                <RiLoader4Line aria-hidden="true" />
+              </ProgressBar>
+            )}
+          </>
+        )}
+      </RAButton>
     );
   },
 );

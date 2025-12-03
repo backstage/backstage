@@ -53,6 +53,7 @@ import {
   createGraphqlClient,
   createRemoveEntitiesOperation,
   createReplaceEntitiesOperation,
+  DEFAULT_PAGE_SIZES,
   DeferredEntitiesBuilder,
   getOrganizationTeam,
   getOrganizationTeams,
@@ -130,6 +131,14 @@ export interface GithubOrgEntityProviderOptions {
    * Optionally include a team transformer for transforming from GitHub teams to Group Entities
    */
   teamTransformer?: TeamTransformer;
+
+  /**
+   * Optionally exclude suspended users when querying organization users.
+   * @defaultValue false
+   * @remarks
+   * Only for GitHub Enterprise instances. Will error if used against GitHub.com API.
+   */
+  excludeSuspendedUsers?: boolean;
 }
 
 /**
@@ -167,6 +176,7 @@ export class GithubOrgEntityProvider implements EntityProvider {
       userTransformer: options.userTransformer,
       teamTransformer: options.teamTransformer,
       events: options.events,
+      excludeSuspendedUsers: options.excludeSuspendedUsers,
     });
 
     provider.schedule(options.schedule);
@@ -184,6 +194,7 @@ export class GithubOrgEntityProvider implements EntityProvider {
       githubCredentialsProvider?: GithubCredentialsProvider;
       userTransformer?: UserTransformer;
       teamTransformer?: TeamTransformer;
+      excludeSuspendedUsers?: boolean;
     },
   ) {
     this.credentialsProvider =
@@ -236,6 +247,8 @@ export class GithubOrgEntityProvider implements EntityProvider {
       org,
       tokenType,
       this.options.userTransformer,
+      DEFAULT_PAGE_SIZES,
+      this.options.excludeSuspendedUsers,
     );
     const { teams } = await getOrganizationTeams(
       client,
@@ -364,6 +377,8 @@ export class GithubOrgEntityProvider implements EntityProvider {
       org,
       tokenType,
       this.options.userTransformer,
+      DEFAULT_PAGE_SIZES,
+      this.options.excludeSuspendedUsers,
     );
 
     if (!isGroupEntity(team)) {
@@ -455,6 +470,8 @@ export class GithubOrgEntityProvider implements EntityProvider {
       org,
       tokenType,
       this.options.userTransformer,
+      DEFAULT_PAGE_SIZES,
+      this.options.excludeSuspendedUsers,
     );
 
     const usersToRebuild = users.filter(u => u.metadata.name === userLogin);

@@ -542,6 +542,297 @@ describe('SlackNotificationProcessor', () => {
     });
   });
 
+  describe('when username is configured', () => {
+    it('should include username in group messages', async () => {
+      const slack = new WebClient();
+      const usernameConfig = mockServices.rootConfig({
+        data: {
+          app: {
+            baseUrl: 'https://example.org',
+          },
+          notifications: {
+            processors: {
+              slack: [
+                {
+                  token: 'mock-token',
+                  username: 'BackstageBot',
+                },
+              ],
+            },
+          },
+        },
+      });
+
+      const processor = SlackNotificationProcessor.fromConfig(usernameConfig, {
+        auth,
+        logger,
+        catalog: catalogServiceMock({
+          entities: DEFAULT_ENTITIES_RESPONSE.items,
+        }),
+        slack,
+      })[0];
+
+      await processor.processOptions({
+        recipients: { type: 'entity', entityRef: 'group:default/mock' },
+        payload: { title: 'notification' },
+      });
+
+      expect(slack.chat.postMessage).toHaveBeenCalledWith({
+        channel: 'C12345678',
+        text: 'notification',
+        username: 'BackstageBot',
+        attachments: [
+          {
+            color: '#00A699',
+            blocks: [
+              {
+                type: 'section',
+                text: {
+                  text: 'No description provided',
+                  type: 'mrkdwn',
+                },
+                accessory: {
+                  type: 'button',
+                  text: {
+                    type: 'plain_text',
+                    text: 'View More',
+                  },
+                  action_id: 'button-action',
+                },
+              },
+              {
+                type: 'context',
+                elements: [
+                  {
+                    type: 'plain_text',
+                    text: 'Severity: normal',
+                    emoji: true,
+                  },
+                  {
+                    type: 'plain_text',
+                    text: 'Topic: N/A',
+                    emoji: true,
+                  },
+                ],
+              },
+            ],
+            fallback: 'notification',
+          },
+        ],
+      });
+    });
+
+    it('should include username in direct user messages', async () => {
+      const slack = new WebClient();
+      const usernameConfig = mockServices.rootConfig({
+        data: {
+          app: {
+            baseUrl: 'https://example.org',
+          },
+          notifications: {
+            processors: {
+              slack: [
+                {
+                  token: 'mock-token',
+                  username: 'BackstageBot',
+                },
+              ],
+            },
+          },
+        },
+      });
+
+      const processor = SlackNotificationProcessor.fromConfig(usernameConfig, {
+        auth,
+        logger,
+        catalog: catalogServiceMock({
+          entities: DEFAULT_ENTITIES_RESPONSE.items,
+        }),
+        slack,
+      })[0];
+
+      await processor.postProcess(
+        {
+          origin: 'plugin',
+          id: '1234',
+          user: 'user:default/mock',
+          created: new Date(),
+          payload: {
+            title: 'notification',
+            link: '/catalog/user/default/jane.doe',
+          },
+        },
+        {
+          recipients: { type: 'entity', entityRef: 'user:default/mock' },
+          payload: { title: 'notification' },
+        },
+      );
+
+      expect(slack.chat.postMessage).toHaveBeenCalledWith({
+        channel: 'U12345678',
+        text: 'notification',
+        username: 'BackstageBot',
+        attachments: [
+          {
+            color: '#00A699',
+            blocks: [
+              {
+                type: 'section',
+                text: {
+                  text: 'No description provided',
+                  type: 'mrkdwn',
+                },
+                accessory: {
+                  type: 'button',
+                  text: {
+                    type: 'plain_text',
+                    text: 'View More',
+                  },
+                  action_id: 'button-action',
+                },
+              },
+              {
+                type: 'context',
+                elements: [
+                  {
+                    type: 'plain_text',
+                    text: 'Severity: normal',
+                    emoji: true,
+                  },
+                  {
+                    type: 'plain_text',
+                    text: 'Topic: N/A',
+                    emoji: true,
+                  },
+                ],
+              },
+            ],
+            fallback: 'notification',
+          },
+        ],
+      });
+    });
+
+    it('should include username in broadcast messages', async () => {
+      const slack = new WebClient();
+      const usernameAndBroadcastConfig = mockServices.rootConfig({
+        data: {
+          app: {
+            baseUrl: 'https://example.org',
+          },
+          notifications: {
+            processors: {
+              slack: [
+                {
+                  token: 'mock-token',
+                  username: 'BackstageBot',
+                  broadcastChannels: ['C12345678'],
+                },
+              ],
+            },
+          },
+        },
+      });
+
+      const processor = SlackNotificationProcessor.fromConfig(
+        usernameAndBroadcastConfig,
+        {
+          auth,
+          logger,
+          catalog: catalogServiceMock({
+            entities: DEFAULT_ENTITIES_RESPONSE.items,
+          }),
+          slack,
+        },
+      )[0];
+
+      await processor.postProcess(
+        {
+          origin: 'plugin',
+          id: '1234',
+          user: null,
+          created: new Date(),
+          payload: {
+            title: 'notification',
+            link: '/catalog/user/default/jane.doe',
+          },
+        },
+        {
+          recipients: { type: 'broadcast' },
+          payload: { title: 'notification' },
+        },
+      );
+
+      expect(slack.chat.postMessage).toHaveBeenCalledWith({
+        channel: 'C12345678',
+        text: 'notification',
+        username: 'BackstageBot',
+        attachments: [
+          {
+            color: '#00A699',
+            blocks: [
+              {
+                type: 'section',
+                text: {
+                  text: 'No description provided',
+                  type: 'mrkdwn',
+                },
+                accessory: {
+                  type: 'button',
+                  text: {
+                    type: 'plain_text',
+                    text: 'View More',
+                  },
+                  action_id: 'button-action',
+                },
+              },
+              {
+                type: 'context',
+                elements: [
+                  {
+                    type: 'plain_text',
+                    text: 'Severity: normal',
+                    emoji: true,
+                  },
+                  {
+                    type: 'plain_text',
+                    text: 'Topic: N/A',
+                    emoji: true,
+                  },
+                ],
+              },
+            ],
+            fallback: 'notification',
+          },
+        ],
+      });
+    });
+  });
+
+  describe('when username is not configured', () => {
+    it('should not include username in messages', async () => {
+      const slack = new WebClient();
+
+      const processor = SlackNotificationProcessor.fromConfig(config, {
+        auth,
+        logger,
+        catalog: catalogServiceMock({
+          entities: DEFAULT_ENTITIES_RESPONSE.items,
+        }),
+        slack,
+      })[0];
+
+      await processor.processOptions({
+        recipients: { type: 'entity', entityRef: 'group:default/mock' },
+        payload: { title: 'notification' },
+      });
+
+      const calls = (slack.chat.postMessage as jest.Mock).mock.calls;
+      expect(calls).toHaveLength(1);
+      expect(calls[0][0].username).toBeUndefined();
+    });
+  });
+
   describe('when replacing user entity refs with Slack IDs', () => {
     const createBaseMessage = (text: string) => ({
       channel: 'U12345678',

@@ -196,7 +196,7 @@ describe('loadPortableTemplateConfig', () => {
       private: true,
       version: '0.1.0',
       packageNamePrefix: '@internal/',
-      packageNamePluginInfix: 'plugin-',
+      packageNamePluginInfix: 'backstage-plugin-',
     });
   });
 
@@ -316,7 +316,7 @@ describe('loadPortableTemplateConfig', () => {
       version: '0.1.0',
       private: true,
       packageNamePrefix: '@internal/',
-      packageNamePluginInfix: 'plugin-',
+      packageNamePluginInfix: 'backstage-plugin-',
     });
 
     await expect(
@@ -333,7 +333,7 @@ describe('loadPortableTemplateConfig', () => {
       version: '0.1.0',
       private: true,
       packageNamePrefix: '@internal/',
-      packageNamePluginInfix: 'plugin-',
+      packageNamePluginInfix: 'backstage-plugin-',
     });
   });
 });

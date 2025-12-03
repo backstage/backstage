@@ -131,6 +131,18 @@ export interface Config {
              * (Optional) TaskScheduleDefinition for the refresh.
              */
             schedule?: SchedulerServiceTaskScheduleDefinitionConfig;
+
+            /**
+             * (Optional) Page sizes for GitHub GraphQL API queries.
+             * Reduce these values if hitting RESOURCE_LIMITS_EXCEEDED errors.
+             */
+            pageSizes?: {
+              /**
+               * (Optional) Number of repositories to fetch per page when querying repositories.
+               * Default: `25`.
+               */
+              repositories?: number;
+            };
           }
         | {
             [name: string]: {
@@ -209,6 +221,18 @@ export interface Config {
                * (Optional) TaskScheduleDefinition for the refresh.
                */
               schedule?: SchedulerServiceTaskScheduleDefinitionConfig;
+
+              /**
+               * (Optional) Page sizes for GitHub GraphQL API queries.
+               * Reduce these values if hitting RESOURCE_LIMITS_EXCEEDED errors.
+               */
+              pageSizes?: {
+                /**
+                 * (Optional) Number of repositories to fetch per page when querying repositories.
+                 * Default: `25`.
+                 */
+                repositories?: number;
+              };
             };
           };
 
@@ -241,9 +265,37 @@ export interface Config {
             orgs?: string[];
 
             /**
+             * (Optional) Only for GitHub Enterprise. Whether to exclude suspended users when querying organization users.
+             * Default: `false`.
+             */
+            excludeSuspendedUsers?: boolean;
+
+            /**
              * The refresh schedule to use.
              */
             schedule: SchedulerServiceTaskScheduleDefinitionConfig;
+
+            /**
+             * (Optional) Page sizes for GitHub GraphQL API queries.
+             * Reduce these values if hitting RESOURCE_LIMITS_EXCEEDED errors.
+             */
+            pageSizes?: {
+              /**
+               * (Optional) Number of teams to fetch per page when querying organization teams.
+               * Default: `25`.
+               */
+              teams?: number;
+              /**
+               * (Optional) Number of team members to fetch per page when querying team members.
+               * Default: `50`.
+               */
+              teamMembers?: number;
+              /**
+               * (Optional) Number of organization members to fetch per page when querying org members.
+               * Default: `50`.
+               */
+              organizationMembers?: number;
+            };
           }
         | Array<{
             /**
@@ -270,9 +322,37 @@ export interface Config {
             orgs?: string[];
 
             /**
+             * (Optional) Only for GitHub Enterprise. Whether to exclude suspended users when querying organization users.
+             * Default: `false`.
+             */
+            excludeSuspendedUsers?: boolean;
+
+            /**
              * The refresh schedule to use.
              */
             schedule: SchedulerServiceTaskScheduleDefinitionConfig;
+
+            /**
+             * (Optional) Page sizes for GitHub GraphQL API queries.
+             * Reduce these values if hitting RESOURCE_LIMITS_EXCEEDED errors.
+             */
+            pageSizes?: {
+              /**
+               * (Optional) Number of teams to fetch per page when querying organization teams.
+               * Default: `25`.
+               */
+              teams?: number;
+              /**
+               * (Optional) Number of team members to fetch per page when querying team members.
+               * Default: `50`.
+               */
+              teamMembers?: number;
+              /**
+               * (Optional) Number of organization members to fetch per page when querying org members.
+               * Default: `50`.
+               */
+              organizationMembers?: number;
+            };
           }>;
     };
   };

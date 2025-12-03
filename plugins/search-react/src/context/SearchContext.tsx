@@ -23,6 +23,7 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useRef,
   useState,
 } from 'react';
 import useAsync, { AsyncState } from 'react-use/esm/useAsync';
@@ -132,15 +133,28 @@ const useSearchContextValue = (
 
   const prevTerm = usePrevious(term);
   const prevFilters = usePrevious(filters);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   const result = useAsync(async () => {
-    const resultSet = await searchApi.query({
-      term,
-      types,
-      filters,
-      pageLimit,
-      pageCursor,
-    });
+    // Here we cancel the previous request before making a new one
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+
+    const resultSet = await searchApi.query(
+      {
+        term,
+        types,
+        filters,
+        pageLimit,
+        pageCursor,
+      },
+      { signal: controller.signal },
+    );
+
     if (term) {
       analytics.captureEvent('search', term, {
         value: resultSet.numberOfResults,
@@ -161,6 +175,14 @@ const useSearchContextValue = (
   const fetchPreviousPage = useCallback(() => {
     setPageCursor(result.value?.previousPageCursor);
   }, [result.value?.previousPageCursor]);
+
+  useEffect(() => {
+    return () => {
+      if (abortControllerRef.current) {
+        abortControllerRef.current.abort();
+      }
+    };
+  }, []);
 
   useEffect(() => {
     // Any time a term is reset, we want to start from page 0.

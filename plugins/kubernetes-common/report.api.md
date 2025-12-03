@@ -254,6 +254,7 @@ export type FetchResponse =
   | PodFetchResponse
   | ServiceFetchResponse
   | ConfigMapFetchResponse
+  | SecretFetchResponse
   | DeploymentFetchResponse
   | LimitRangeFetchResponse
   | ResourceQuotaFetchResponse
@@ -282,6 +283,8 @@ export interface GroupedResponses extends DeploymentResources {
   ingresses: V1Ingress[];
   // (undocumented)
   jobs: V1Job[];
+  // (undocumented)
+  secrets: V1Secret[];
   // (undocumented)
   services: V1Service[];
   // (undocumented)
@@ -445,6 +448,14 @@ export interface ResourceRef {
   name: string;
   // (undocumented)
   namespace: string;
+}
+
+// @public (undocumented)
+export interface SecretFetchResponse {
+  // (undocumented)
+  resources: Array<V1Secret>;
+  // (undocumented)
+  type: 'secrets';
 }
 
 // @public (undocumented)

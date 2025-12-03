@@ -214,7 +214,7 @@ describe('AzureUrlReader', () => {
             res(
               ctx.status(200),
               ctx.set('Content-Type', 'application/zip'),
-              ctx.body(repoBuffer),
+              ctx.body(new Uint8Array(repoBuffer)),
             ),
         ),
         rest.get(
@@ -324,7 +324,7 @@ describe('AzureUrlReader', () => {
             res(
               ctx.status(200),
               ctx.set('Content-Type', 'application/zip'),
-              ctx.body(repoBuffer),
+              ctx.body(new Uint8Array(repoBuffer)),
             ),
         ),
         rest.get(

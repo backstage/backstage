@@ -88,7 +88,9 @@ describe('SearchModal', () => {
     );
 
     expect(screen.getByRole('dialog')).toBeInTheDocument();
-    expect(searchApiMock.query).toHaveBeenCalledWith(initialState);
+    expect(searchApiMock.query).toHaveBeenCalledWith(initialState, {
+      signal: expect.any(AbortSignal),
+    });
   });
 
   it('Should create a local search context if a parent is not defined', async () => {
@@ -104,12 +106,15 @@ describe('SearchModal', () => {
     );
 
     expect(screen.getByRole('dialog')).toBeInTheDocument();
-    expect(searchApiMock.query).toHaveBeenCalledWith({
-      term: '',
-      filters: {},
-      types: [],
-      pageCursor: undefined,
-    });
+    expect(searchApiMock.query).toHaveBeenCalledWith(
+      {
+        term: '',
+        filters: {},
+        types: [],
+        pageCursor: undefined,
+      },
+      { signal: expect.any(AbortSignal) },
+    );
   });
 
   it('Should render a custom Modal correctly', async () => {
@@ -200,6 +205,7 @@ describe('SearchModal', () => {
 
     expect(searchApiMock.query).toHaveBeenCalledWith(
       expect.objectContaining({ term: 'term' }),
+      { signal: expect.any(AbortSignal) },
     );
 
     const input = screen.getByLabelText<HTMLInputElement>('Search');
@@ -232,6 +238,7 @@ describe('SearchModal', () => {
 
     expect(searchApiMock.query).toHaveBeenCalledWith(
       expect.objectContaining({ term: 'term' }),
+      { signal: expect.any(AbortSignal) },
     );
 
     const fullResultsBtn = screen.getByRole('button', {

@@ -38,13 +38,14 @@ interface AnyJWK extends Record<string, string> {
 }
 class FakeTokenFactory {
   private readonly keys = new Array<AnyJWK>();
+  private readonly options: {
+    issuer: string;
+    keyDurationSeconds: number;
+  };
 
-  constructor(
-    private readonly options: {
-      issuer: string;
-      keyDurationSeconds: number;
-    },
-  ) {}
+  constructor(options: { issuer: string; keyDurationSeconds: number }) {
+    this.options = options;
+  }
 
   async issueToken(params: {
     claims: {

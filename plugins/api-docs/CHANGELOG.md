@@ -1,5 +1,89 @@
 # @backstage/plugin-api-docs
 
+## 0.13.2-next.0
+
+### Patch Changes
+
+- d02db50: Remove unnecessary use of `compatWrapper` and `convertLegacyRouteRef`(s) for the new frontend system.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.2-next.0
+  - @backstage/core-plugin-api@1.12.1-next.0
+  - @backstage/plugin-catalog-react@1.21.4-next.0
+  - @backstage/plugin-catalog@1.32.1-next.0
+  - @backstage/core-components@0.18.4-next.0
+  - @backstage/plugin-permission-react@0.4.39-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/plugin-catalog-common@1.1.7
+
+## 0.13.1
+
+### Patch Changes
+
+- 7c281a5: Add i18n support for Raw tab title and an error message
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.0
+  - @backstage/core-compat-api@0.5.4
+  - @backstage/plugin-catalog@1.32.0
+  - @backstage/plugin-catalog-react@1.21.3
+  - @backstage/core-components@0.18.3
+  - @backstage/core-plugin-api@1.12.0
+  - @backstage/plugin-permission-react@0.4.38
+  - @backstage/catalog-model@1.7.6
+  - @backstage/plugin-catalog-common@1.1.7
+
+## 0.13.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog@1.32.0-next.1
+  - @backstage/plugin-catalog-react@1.21.3-next.1
+  - @backstage/core-components@0.18.3-next.1
+  - @backstage/core-plugin-api@1.11.2-next.1
+  - @backstage/frontend-plugin-api@0.12.2-next.1
+  - @backstage/core-compat-api@0.5.4-next.0
+
+## 0.13.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-react@0.4.38-next.0
+  - @backstage/plugin-catalog-react@1.21.3-next.0
+  - @backstage/core-plugin-api@1.11.2-next.0
+  - @backstage/core-components@0.18.3-next.0
+  - @backstage/catalog-model@1.7.6-next.0
+  - @backstage/frontend-plugin-api@0.12.2-next.0
+  - @backstage/core-compat-api@0.5.4-next.0
+  - @backstage/plugin-catalog@1.31.5-next.0
+  - @backstage/plugin-catalog-common@1.1.7-next.0
+
+## 0.13.0
+
+### Minor Changes
+
+- b8a381e: Remove explicit dependency on `isomorphic-form-data`.
+
+  This explicit dependency was added to address [an issue](https://github.com/swagger-api/swagger-ui/issues/7436) in the
+  dependency `swagger-ui-react`. That [issue has since been resolved](https://github.com/swagger-api/swagger-ui/issues/7436#issuecomment-889792304),
+  and `isomorphic-form-data` no longer needs to be declared.
+
+  Additionally, this changeset updates the `swagger-ui-react` dependency to version `5.19.0` or higher, which includes
+  [compatibility](https://github.com/swagger-api/swagger-ui?tab=readme-ov-file#compatibility) with the latest versions of
+  the OpenAPI specification.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.2
+  - @backstage/core-components@0.18.2
+  - @backstage/frontend-plugin-api@0.12.1
+  - @backstage/core-compat-api@0.5.3
+  - @backstage/plugin-catalog@1.31.4
+  - @backstage/core-plugin-api@1.11.1
+  - @backstage/plugin-catalog-common@1.1.6
+  - @backstage/plugin-permission-react@0.4.37
+
 ## 0.13.0-next.1
 
 ### Patch Changes

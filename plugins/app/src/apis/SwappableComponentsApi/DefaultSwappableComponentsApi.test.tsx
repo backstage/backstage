@@ -16,6 +16,7 @@
 
 import {
   ApiBlueprint,
+  AppRootElementBlueprint,
   createExtensionInput,
   createFrontendModule,
   createSwappableComponent,
@@ -24,7 +25,7 @@ import {
 } from '@backstage/frontend-plugin-api';
 import { DefaultSwappableComponentsApi } from './DefaultSwappableComponentsApi';
 import { render, screen } from '@testing-library/react';
-import { renderInTestApp } from '@backstage/frontend-test-utils';
+import { renderInTestApp, renderTestApp } from '@backstage/frontend-test-utils';
 
 const { ref: testRefA } = createSwappableComponent({ id: 'test.a' });
 const { ref: testRefB1 } = createSwappableComponent({ id: 'test.b' });
@@ -149,8 +150,17 @@ describe('DefaultSwappableComponentsApi', () => {
           id: 'test.mock',
         });
 
-        renderInTestApp(<MockComponent />, {
-          extensions: [api],
+        renderTestApp({
+          extensions: [
+            AppRootElementBlueprint.make({
+              name: 'derp',
+              params: define =>
+                define({
+                  element: <MockComponent />,
+                }),
+            }),
+            api,
+          ],
         });
 
         await expect(
@@ -164,8 +174,17 @@ describe('DefaultSwappableComponentsApi', () => {
           loader: () => () => <div>test.mock</div>,
         });
 
-        renderInTestApp(<MockComponent />, {
-          extensions: [api],
+        renderTestApp({
+          extensions: [
+            AppRootElementBlueprint.make({
+              name: 'derp',
+              params: define =>
+                define({
+                  element: <MockComponent />,
+                }),
+            }),
+            api,
+          ],
         });
 
         await expect(
@@ -179,8 +198,17 @@ describe('DefaultSwappableComponentsApi', () => {
           loader: async () => () => <div>test.mock</div>,
         });
 
-        renderInTestApp(<MockComponent />, {
-          extensions: [api],
+        renderTestApp({
+          extensions: [
+            AppRootElementBlueprint.make({
+              name: 'derp',
+              params: define =>
+                define({
+                  element: <MockComponent />,
+                }),
+            }),
+            api,
+          ],
         });
 
         await expect(
@@ -202,8 +230,17 @@ describe('DefaultSwappableComponentsApi', () => {
             }),
         });
 
-        renderInTestApp(<MockComponent />, {
-          extensions: [api],
+        renderTestApp({
+          extensions: [
+            AppRootElementBlueprint.make({
+              name: 'derp',
+              params: define =>
+                define({
+                  element: <MockComponent />,
+                }),
+            }),
+            api,
+          ],
           features: [
             createFrontendModule({
               pluginId: 'app',
@@ -231,8 +268,17 @@ describe('DefaultSwappableComponentsApi', () => {
             }),
         });
 
-        renderInTestApp(<MockComponent />, {
-          extensions: [api],
+        renderTestApp({
+          extensions: [
+            AppRootElementBlueprint.make({
+              name: 'derp',
+              params: define =>
+                define({
+                  element: <MockComponent />,
+                }),
+            }),
+            api,
+          ],
           features: [
             createFrontendModule({
               pluginId: 'app',
@@ -264,8 +310,17 @@ describe('DefaultSwappableComponentsApi', () => {
             }),
         });
 
-        renderInTestApp(<MockComponent external="test" />, {
-          extensions: [api],
+        renderTestApp({
+          extensions: [
+            AppRootElementBlueprint.make({
+              name: 'derp',
+              params: define =>
+                define({
+                  element: <MockComponent external="test" />,
+                }),
+            }),
+            api,
+          ],
           features: [
             createFrontendModule({
               pluginId: 'app',

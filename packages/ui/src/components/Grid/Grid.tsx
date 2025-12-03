@@ -14,48 +14,57 @@
  * limitations under the License.
  */
 
-import { createElement, forwardRef } from 'react';
-import { gapPropDefs } from '../../props/gap-props';
-import { extractProps } from '../../utils/extractProps';
-import { gridItemPropDefs, gridPropDefs } from './Grid.props';
+import { forwardRef } from 'react';
 import clsx from 'clsx';
 import type { GridItemProps, GridProps } from './types';
-import { spacingPropDefs } from '../../props/spacing.props';
 import { useStyles } from '../../hooks/useStyles';
+import { GridDefinition, GridItemDefinition } from './definition';
+import styles from './Grid.module.css';
 
 const GridRoot = forwardRef<HTMLDivElement, GridProps>((props, ref) => {
-  const propDefs = {
-    ...gapPropDefs,
-    ...gridPropDefs,
-    ...spacingPropDefs,
-  };
+  const { classNames, utilityClasses, style, cleanedProps } = useStyles(
+    GridDefinition,
+    { columns: 'auto', gap: '4', ...props },
+  );
 
-  const { classNames } = useStyles('Grid');
+  const { className, ...rest } = cleanedProps;
 
-  const { className, style } = extractProps(props, propDefs);
-
-  return createElement('div', {
-    ref,
-    className: clsx(classNames.root, className),
-    style,
-    children: props.children,
-  });
+  return (
+    <div
+      ref={ref}
+      className={clsx(
+        classNames.root,
+        utilityClasses,
+        styles[classNames.root],
+        className,
+      )}
+      style={style}
+      {...rest}
+    />
+  );
 });
 
 const GridItem = forwardRef<HTMLDivElement, GridItemProps>((props, ref) => {
-  const propDefs = {
-    ...gridItemPropDefs,
-  };
+  const { classNames, utilityClasses, style, cleanedProps } = useStyles(
+    GridItemDefinition,
+    props,
+  );
 
-  const { classNames } = useStyles('Grid');
-  const { className, style } = extractProps(props, propDefs);
+  const { className, ...rest } = cleanedProps;
 
-  return createElement('div', {
-    ref,
-    className: clsx(classNames.item, className),
-    style,
-    children: props.children,
-  });
+  return (
+    <div
+      ref={ref}
+      className={clsx(
+        classNames.root,
+        utilityClasses,
+        styles[classNames.root],
+        className,
+      )}
+      style={style}
+      {...rest}
+    />
+  );
 });
 
 /** @public */

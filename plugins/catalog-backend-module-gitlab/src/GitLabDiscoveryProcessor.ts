@@ -139,7 +139,7 @@ export class GitLabDiscoveryProcessor implements CatalogProcessor {
         const project_branch = branch === '*' ? project.default_branch : branch;
 
         const projectHasFile: boolean = await client.hasFile(
-          project.path_with_namespace,
+          project.id,
           project_branch,
           catalogPath,
         );

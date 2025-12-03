@@ -44,6 +44,7 @@ function makeExt(
     version: 'v1',
     id,
     attachTo: { id: attachId, input: 'default' },
+    inputs: {},
     disabled: status === 'disabled',
     toString: expect.any(Function),
   } as Extension<unknown>;
@@ -61,6 +62,7 @@ function makeExtDef(
     name,
     attachTo: { id: attachId, input: 'default' },
     disabled: status === 'disabled',
+    inputs: {},
     override: () => ({} as ExtensionDefinition),
   } as ExtensionDefinition;
 }

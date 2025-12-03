@@ -1,1 +1,0 @@
-export { IconLibrary } from './IconLibrary';

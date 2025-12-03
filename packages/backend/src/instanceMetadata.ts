@@ -17,21 +17,21 @@ import {
   coreServices,
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
-import { instanceMetadataServiceRef } from '@backstage/backend-plugin-api/alpha';
 
-// Example usage of the instance metadata service to log the installed features.
+// Example usage of the instance metadata service to log the installed plugins.
 export default createBackendPlugin({
   pluginId: 'instance-metadata-logging',
   register(env) {
     env.registerInit({
       deps: {
-        instanceMetadata: instanceMetadataServiceRef,
+        instanceMetadata: coreServices.rootInstanceMetadata,
         logger: coreServices.logger,
       },
       async init({ instanceMetadata, logger }) {
+        const plugins = await instanceMetadata.getInstalledPlugins();
         logger.info(
-          `Installed features on this instance: ${instanceMetadata
-            .getInstalledFeatures()
+          `Installed plugins on this instance: ${plugins
+            .map(e => e.pluginId)
             .join(', ')}`,
         );
       },

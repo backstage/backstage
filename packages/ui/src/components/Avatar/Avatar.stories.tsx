@@ -16,7 +16,7 @@
 
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Avatar } from './index';
-import { Flex } from '../..';
+import { Flex, Text } from '../..';
 
 const meta = {
   title: 'Backstage UI/Avatar',
@@ -45,10 +45,52 @@ export const Sizes: Story = {
     ...Default.args,
   },
   render: args => (
-    <Flex>
-      <Avatar {...args} size="small" />
-      <Avatar {...args} size="medium" />
-      <Avatar {...args} size="large" />
+    <Flex direction="column" gap="6">
+      <Flex>
+        <Avatar {...args} size="x-small" />
+        <Avatar {...args} size="small" />
+        <Avatar {...args} size="medium" />
+        <Avatar {...args} size="large" />
+        <Avatar {...args} size="x-large" />
+      </Flex>
+      <Flex>
+        <Avatar {...args} size="x-small" src="" />
+        <Avatar {...args} size="small" src="" />
+        <Avatar {...args} size="medium" src="" />
+        <Avatar {...args} size="large" src="" />
+        <Avatar {...args} size="x-large" src="" />
+      </Flex>
+    </Flex>
+  ),
+};
+
+export const Purpose: Story = {
+  args: {
+    ...Default.args,
+  },
+  render: args => (
+    <Flex direction="column" gap="4">
+      <Flex direction="column" gap="1">
+        <Text variant="title-x-small">Informative (default)</Text>
+        <Text variant="body-medium">
+          Use when avatar appears alone. Announced as "{args.name}" to screen
+          readers:
+        </Text>
+        <Flex gap="2" align="center">
+          <Avatar {...args} purpose="informative" />
+        </Flex>
+      </Flex>
+      <Flex direction="column" gap="1">
+        <Text variant="title-x-small">Decoration</Text>
+        <Text variant="body-medium">
+          Use when name appears adjacent to avatar. Hidden from screen readers
+          to avoid redundancy:
+        </Text>
+        <Flex gap="2" align="center">
+          <Avatar {...args} purpose="decoration" />
+          <Text>{args.name}</Text>
+        </Flex>
+      </Flex>
     </Flex>
   ),
 };

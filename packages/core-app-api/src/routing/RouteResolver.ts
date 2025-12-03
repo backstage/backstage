@@ -170,16 +170,25 @@ function resolveBasePath(
 }
 
 export class RouteResolver {
+  private readonly routePaths: Map<RouteRef, string>;
+  private readonly routeParents: Map<RouteRef, RouteRef | undefined>;
+  private readonly routeObjects: BackstageRouteObject[];
+  private readonly routeBindings: Map<ExternalRouteRef, RouteRef | SubRouteRef>;
+  private readonly appBasePath: string; // base path without a trailing slash
+
   constructor(
-    private readonly routePaths: Map<RouteRef, string>,
-    private readonly routeParents: Map<RouteRef, RouteRef | undefined>,
-    private readonly routeObjects: BackstageRouteObject[],
-    private readonly routeBindings: Map<
-      ExternalRouteRef,
-      RouteRef | SubRouteRef
-    >,
-    private readonly appBasePath: string, // base path without a trailing slash
-  ) {}
+    routePaths: Map<RouteRef, string>,
+    routeParents: Map<RouteRef, RouteRef | undefined>,
+    routeObjects: BackstageRouteObject[],
+    routeBindings: Map<ExternalRouteRef, RouteRef | SubRouteRef>,
+    appBasePath: string, // base path without a trailing slash
+  ) {
+    this.routePaths = routePaths;
+    this.routeParents = routeParents;
+    this.routeObjects = routeObjects;
+    this.routeBindings = routeBindings;
+    this.appBasePath = appBasePath;
+  }
 
   resolve<Params extends AnyParams>(
     anyRouteRef:

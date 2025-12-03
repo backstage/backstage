@@ -38,7 +38,7 @@ describe('util', () => {
 
   describe('supported', () => {
     const databases = TestDatabases.create({
-      ids: ['POSTGRES_17', 'POSTGRES_13'],
+      ids: ['POSTGRES_18', 'POSTGRES_14'],
     });
 
     if (databases.eachSupportedId().length < 1) {

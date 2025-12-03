@@ -8,7 +8,6 @@ import * as ButtonLinkStories from '../../../packages/ui/src/components/ButtonLi
 import * as CheckboxStories from '../../../packages/ui/src/components/Checkbox/Checkbox.stories';
 import * as ContainerStories from '../../../packages/ui/src/components/Container/Container.stories';
 import * as GridStories from '../../../packages/ui/src/components/Grid/Grid.stories';
-import * as IconStories from '../../../packages/ui/src/components/Icon/Icon.stories';
 import * as TextFieldStories from '../../../packages/ui/src/components/TextField/TextField.stories';
 import * as TextStories from '../../../packages/ui/src/components/Text/Text.stories';
 import * as FlexStories from '../../../packages/ui/src/components/Flex/Flex.stories';
@@ -16,7 +15,8 @@ import * as SelectStories from '../../../packages/ui/src/components/Select/Selec
 import * as MenuStories from '../../../packages/ui/src/components/Menu/Menu.stories';
 import * as LinkStories from '../../../packages/ui/src/components/Link/Link.stories';
 import * as AvatarStories from '../../../packages/ui/src/components/Avatar/Avatar.stories';
-import * as CollapsibleStories from '../../../packages/ui/src/components/Collapsible/Collapsible.stories';
+import * as AccordionStories from '../../../packages/ui/src/components/Accordion/Accordion.stories';
+import * as DialogStories from '../../../packages/ui/src/components/Dialog/Dialog.stories';
 import * as RadioGroupStories from '../../../packages/ui/src/components/RadioGroup/RadioGroup.stories';
 import * as TabsStories from '../../../packages/ui/src/components/Tabs/Tabs.stories';
 import * as SwitchStories from '../../../packages/ui/src/components/Switch/Switch.stories';
@@ -28,6 +28,8 @@ import * as HeaderStories from '../../../packages/ui/src/components/Header/Heade
 import * as HeaderPageStories from '../../../packages/ui/src/components/HeaderPage/HeaderPage.stories';
 import * as TableStories from '../../../packages/ui/src/components/Table/Table.stories';
 import * as TagGroupStories from '../../../packages/ui/src/components/TagGroup/TagGroup.stories';
+import * as PasswordFieldStories from '../../../packages/ui/src/components/PasswordField/PasswordField.stories';
+import * as VisuallyHiddenStories from '../../../packages/ui/src/components/VisuallyHidden/VisuallyHidden.stories';
 
 // Helper function to create snippet components
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -51,15 +53,17 @@ export const ButtonLinkSnippet = createSnippetComponent(ButtonLinkStories);
 export const CheckboxSnippet = createSnippetComponent(CheckboxStories);
 export const ContainerSnippet = createSnippetComponent(ContainerStories);
 export const GridSnippet = createSnippetComponent(GridStories);
-export const IconSnippet = createSnippetComponent(IconStories);
 export const TextFieldSnippet = createSnippetComponent(TextFieldStories);
+export const PasswordFieldSnippet =
+  createSnippetComponent(PasswordFieldStories);
 export const TextSnippet = createSnippetComponent(TextStories);
 export const FlexSnippet = createSnippetComponent(FlexStories);
 export const SelectSnippet = createSnippetComponent(SelectStories);
 export const MenuSnippet = createSnippetComponent(MenuStories);
 export const LinkSnippet = createSnippetComponent(LinkStories);
 export const AvatarSnippet = createSnippetComponent(AvatarStories);
-export const CollapsibleSnippet = createSnippetComponent(CollapsibleStories);
+export const AccordionSnippet = createSnippetComponent(AccordionStories);
+export const DialogSnippet = createSnippetComponent(DialogStories);
 export const RadioGroupSnippet = createSnippetComponent(RadioGroupStories);
 export const TabsSnippet = createSnippetComponent(TabsStories);
 export const SwitchSnippet = createSnippetComponent(SwitchStories);
@@ -71,3 +75,6 @@ export const HeaderSnippet = createSnippetComponent(HeaderStories);
 export const HeaderPageSnippet = createSnippetComponent(HeaderPageStories);
 export const TableSnippet = createSnippetComponent(TableStories);
 export const TagGroupSnippet = createSnippetComponent(TagGroupStories);
+export const VisuallyHiddenSnippet = createSnippetComponent(
+  VisuallyHiddenStories,
+);

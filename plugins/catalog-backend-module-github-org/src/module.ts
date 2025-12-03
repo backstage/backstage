@@ -120,6 +120,8 @@ export const catalogModuleGithubOrgEntityProvider = createBackendModule({
               teamTransformer,
               alwaysUseDefaultNamespace:
                 definitions.length === 1 && definition.orgs?.length === 1,
+              pageSizes: definition.pageSizes,
+              excludeSuspendedUsers: definition.excludeSuspendedUsers,
             }),
           );
         }
@@ -133,6 +135,12 @@ function readDefinitionsFromConfig(rootConfig: Config): Array<{
   githubUrl: string;
   orgs?: string[];
   schedule: SchedulerServiceTaskScheduleDefinition;
+  pageSizes?: {
+    teams?: number;
+    teamMembers?: number;
+    organizationMembers?: number;
+  };
+  excludeSuspendedUsers?: boolean;
 }> {
   const baseKey = 'catalog.providers.githubOrg';
   const baseConfig = rootConfig.getOptional(baseKey);
@@ -151,5 +159,16 @@ function readDefinitionsFromConfig(rootConfig: Config): Array<{
     schedule: readSchedulerServiceTaskScheduleDefinitionFromConfig(
       c.getConfig('schedule'),
     ),
+    pageSizes: c.has('pageSizes')
+      ? {
+          teams: c.getOptionalNumber('pageSizes.teams'),
+          teamMembers: c.getOptionalNumber('pageSizes.teamMembers'),
+          organizationMembers: c.getOptionalNumber(
+            'pageSizes.organizationMembers',
+          ),
+        }
+      : undefined,
+    excludeSuspendedUsers:
+      c.getOptionalBoolean('excludeSuspendedUsers') ?? false,
   }));
 }

@@ -116,7 +116,7 @@ indexBuilder.addCollator({
 The default highlighting styling for matched terms in search results is your
 browsers default styles for the `<mark>` HTML tag. If you want to customize
 how highlighted terms look you can follow Backstage's guide on how to
-[Customize the look-and-feel of your App](https://backstage.io/docs/getting-started/app-custom-theme)
+[Customizing Your App's UI](https://backstage.io/docs/conf/user-interface)
 to create an override with your preferred styling.
 
 For example, using the new MUI V4+V5 unified theming method, the following will result

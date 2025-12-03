@@ -15,12 +15,12 @@
  */
 
 import { Command } from 'commander';
-import { run } from './run';
+import { runCommand } from './runCommand';
 
 export function registerCommands(program: Command) {
   program
     .command('run')
     .option('--keep', 'Do not remove the temporary dir after tests complete')
     .description('Run e2e tests')
-    .action(run);
+    .action(runCommand);
 }

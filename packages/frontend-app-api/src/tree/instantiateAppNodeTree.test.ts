@@ -787,14 +787,8 @@ describe('instantiateAppNodeTree', () => {
       inputs: {
         [name in string]:
           | undefined
-          | ResolvedExtensionInput<
-              ExtensionInput<any, { singleton: boolean; optional: boolean }>
-            >
-          | Array<
-              ResolvedExtensionInput<
-                ExtensionInput<any, { singleton: boolean; optional: boolean }>
-              >
-            >;
+          | ResolvedExtensionInput<ExtensionInput>
+          | Array<ResolvedExtensionInput<ExtensionInput>>;
       };
     }) {
       return [

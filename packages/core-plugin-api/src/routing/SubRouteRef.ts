@@ -36,15 +36,40 @@ export class SubRouteRefImpl<Params extends AnyParams>
   declare $$routeRefType: 'sub';
   readonly [routeRefType] = 'sub';
 
+  private readonly id: string;
+  readonly path: string;
+  readonly parent: RouteRef;
+  readonly params: ParamKeys<Params>;
+
   constructor(
-    private readonly id: string,
-    readonly path: string,
-    readonly parent: RouteRef,
-    readonly params: ParamKeys<Params>,
-  ) {}
+    id: string,
+    path: string,
+    parent: RouteRef,
+    params: ParamKeys<Params>,
+  ) {
+    this.id = id;
+    this.path = path;
+    this.parent = parent;
+    this.params = params;
+  }
 
   toString() {
     return `routeRef{type=sub,id=${this.id}}`;
+  }
+
+  // NFS implementation below
+  readonly $$type = '@backstage/SubRouteRef';
+  readonly version = 'v1';
+  readonly T = undefined as any;
+
+  getParams(): string[] {
+    return this.params as string[];
+  }
+  getParent(): RouteRef {
+    return this.parent;
+  }
+  getDescription(): string {
+    return `at ${this.path} with parent ${this.parent}`;
   }
 }
 
@@ -145,7 +170,7 @@ export function createSubRouteRef<
     path,
     parent,
     params as ParamKeys<MergeParams<Params, ParentParams>>,
-  ) as SubRouteRef<OptionalParams<MergeParams<Params, ParentParams>>>;
+  );
 
   // But skip type checking of the return value itself, because the conditional
   // type checking of the parent parameter overlap is tricky to express.

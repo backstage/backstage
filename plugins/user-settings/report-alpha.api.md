@@ -6,22 +6,23 @@
 import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
-import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
-import { IconComponent } from '@backstage/core-plugin-api';
+import { IconComponent } from '@backstage/frontend-plugin-api';
 import { JSX as JSX_2 } from 'react';
+import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
 import { RouteRef } from '@backstage/frontend-plugin-api';
-import { TranslationRef } from '@backstage/core-plugin-api/alpha';
+import { RouteRef as RouteRef_2 } from '@backstage/core-plugin-api';
+import { TranslationRef } from '@backstage/frontend-plugin-api';
 
 // @alpha (undocumented)
 const _default: OverridableFrontendPlugin<
   {
-    root: RouteRef<undefined>;
+    root: RouteRef_2<undefined>;
   },
   {},
   {
-    'nav-item:user-settings': ExtensionDefinition<{
+    'nav-item:user-settings': OverridableExtensionDefinition<{
       kind: 'nav-item';
       name: undefined;
       config: {};
@@ -42,7 +43,7 @@ const _default: OverridableFrontendPlugin<
         routeRef: RouteRef<undefined>;
       };
     }>;
-    'page:user-settings': ExtensionDefinition<{
+    'page:user-settings': OverridableExtensionDefinition<{
       config: {
         path: string | undefined;
       };
@@ -82,7 +83,7 @@ const _default: OverridableFrontendPlugin<
 export default _default;
 
 // @alpha (undocumented)
-export const settingsNavItem: ExtensionDefinition<{
+export const settingsNavItem: OverridableExtensionDefinition<{
   kind: 'nav-item';
   name: undefined;
   config: {};

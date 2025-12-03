@@ -176,7 +176,7 @@ Choose the correct next steps for your user role, if you're likely to be deployi
   - [Setting up authentication](./config/authentication.md)
   - [Configuring a database](./config/database.md)
   - [Adding plugins](./configure-app-with-plugins.md)
-  - [Customizing the theme](./app-custom-theme.md)
+  - [Customizing Your App's UI](../conf/user-interface/index.md)
   - [Populating the homepage](./homepage.md)
 - Deploying to production
   - [Deploying with Docker](../deployment/docker.md)

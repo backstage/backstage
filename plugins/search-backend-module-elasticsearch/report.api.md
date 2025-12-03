@@ -18,7 +18,7 @@ import { LoggerService } from '@backstage/backend-plugin-api';
 import { Readable } from 'stream';
 import { SearchEngine } from '@backstage/plugin-search-backend-node';
 import { SearchQuery } from '@backstage/plugin-search-common';
-import { TransportRequestPromise } from '@opensearch-project/opensearch/lib/Transport';
+import { TransportRequestPromise } from '@opensearch-project/opensearch/lib/Transport.js';
 import { TransportRequestPromise as TransportRequestPromise_2 } from '@elastic/elasticsearch/lib/Transport';
 
 // @public
@@ -348,7 +348,7 @@ export class ElasticSearchSearchEngine implements SearchEngine {
     indexPrefix: string,
     logger: LoggerService,
     batchSize: number,
-    batchKeyField?: string | undefined,
+    batchKeyField?: string,
     highlightOptions?: ElasticSearchHighlightOptions,
     queryOptions?: ElasticSearchQueryConfig,
   );

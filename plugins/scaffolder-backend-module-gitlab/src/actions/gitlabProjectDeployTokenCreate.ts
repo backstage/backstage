@@ -17,8 +17,8 @@
 import { InputError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
-import { DeployTokenScope, Gitlab } from '@gitbeaker/rest';
-import { getToken } from '../util';
+import { DeployTokenScope } from '@gitbeaker/rest';
+import { getClient, parseRepoUrl } from '../util';
 import { examples } from './gitlabProjectDeployTokenCreate.examples';
 
 /**
@@ -78,8 +78,7 @@ export const createGitlabProjectDeployTokenAction = (options: {
     },
     async handler(ctx) {
       ctx.logger.info(`Creating Token for Project "${ctx.input.projectId}"`);
-      const { projectId, name, username, scopes } = ctx.input;
-      const { token, integrationConfig } = getToken(ctx.input, integrations);
+      const { projectId, name, username, scopes, repoUrl, token } = ctx.input;
 
       if (scopes.length === 0) {
         throw new InputError(
@@ -87,10 +86,8 @@ export const createGitlabProjectDeployTokenAction = (options: {
         );
       }
 
-      const api = new Gitlab({
-        host: integrationConfig.config.baseUrl,
-        token: token,
-      });
+      const { host } = parseRepoUrl(repoUrl, integrations);
+      const api = getClient({ host, integrations, token });
 
       const { deployToken, deployUsername } = await ctx.checkpoint({
         key: `create.deploy.token.${projectId}.${name}`,

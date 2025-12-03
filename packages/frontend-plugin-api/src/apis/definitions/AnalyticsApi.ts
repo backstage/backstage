@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import { ApiRef, createApiRef } from '@backstage/core-plugin-api';
+import { ApiRef, createApiRef } from '../system';
 import { AnalyticsContextValue } from '../../analytics/types';
-import type { AnalyticsImplementationBlueprint } from '../../blueprints/';
 
 /**
  * Represents an event worth tracking in an analytics system that could inform

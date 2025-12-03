@@ -16,14 +16,14 @@
 
 import { version as cliVersion } from '../../../../package.json';
 import os from 'os';
-import { runPlain } from '../../../lib/run';
+import { runOutput } from '@backstage/cli-common';
 import { paths } from '../../../lib/paths';
 import { Lockfile } from '../../../lib/versioning';
 import fs from 'fs-extra';
 
 export default async () => {
   await new Promise(async () => {
-    const yarnVersion = await runPlain('yarn --version');
+    const yarnVersion = await runOutput(['yarn', '--version']);
     const isLocal = fs.existsSync(paths.resolveOwn('./src'));
 
     const backstageFile = paths.resolveTargetRoot('backstage.json');

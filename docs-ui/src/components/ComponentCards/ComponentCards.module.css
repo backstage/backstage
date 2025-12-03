@@ -28,7 +28,7 @@
   display: flex;
   flex-direction: column;
   justify-content: flex-end;
-  background-color: var(--panel);
+  background-color: var(--bg);
   border-radius: 8px;
   border: 1px solid var(--border);
   padding: 16px;
@@ -36,7 +36,7 @@
   min-height: 120px;
 
   &:hover {
-    background-color: var(--panel-hover);
+    background-color: var(--bg-hover);
   }
 }
 

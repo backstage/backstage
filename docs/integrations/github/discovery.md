@@ -58,7 +58,7 @@ To receive the `repository.transferred` event, the new owner account must have t
 
 :::
 
-When creating the webhook in GitHub the "Payload URL" will looks something along these lines: `https://<your-intance-name>/api/events/http/github` and the "Content Type" should be `application/json`.
+When creating the webhook in GitHub the "Payload URL" will looks something along these lines: `https://<your-instance-name>/api/events/http/github` and the "Content Type" should be `application/json`.
 
 The GitHub Webhooks UI will send a trial event to validate it can connect when you save your new Webhook. It is possible to retry this trial event if it fails and you want to send it again. Additionally there is a Recent Deliveries tab you can use to validate that the events are being fired should you need to do any later troubleshooting.
 
@@ -210,6 +210,8 @@ catalog:
         filters: # optional filters
           branch: 'develop' # optional string
           repository: '.*' # optional Regex
+        pageSizes:
+          repositories: 25
       wildcardProviderId:
         organization: 'new-org' # string
         catalogPath: '/groups/**/*.yaml' # this will search all folders for files that end in .yaml
@@ -308,6 +310,10 @@ If you do so, `default` will be used as provider ID.
     The amount of time that should pass before the first invocation happens.
   - **`scope`** _(optional)_:
     `'global'` or `'local'`. Sets the scope of concurrency control.
+- **`pageSizes`** _(optional)_:
+  Configure page sizes for GitHub GraphQL API queries. This can help prevent `RESOURCE_LIMITS_EXCEEDED` errors.
+  - **`repositories`** _(optional)_:
+    Number of repositories to fetch per page. Defaults to `25`. Reduce this value if hitting API resource limits.
 
 ## GitHub API Rate Limits
 

@@ -17,15 +17,6 @@
 import { createServiceRef } from '@backstage/backend-plugin-api';
 
 /**
- * @alpha
- */
-export const instanceMetadataServiceRef = createServiceRef<
-  import('./InstanceMetadataService').InstanceMetadataService
->({
-  id: 'core.instanceMetadata',
-});
-
-/**
  * Service for calling distributed actions
  *
  * See {@link ActionsService}

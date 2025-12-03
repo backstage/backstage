@@ -581,20 +581,12 @@ describe('hasFile', () => {
   });
 
   it('should find catalog file', async () => {
-    const hasFile = await client.hasFile(
-      'group1/test-repo1',
-      'main',
-      'catalog-info.yaml',
-    );
+    const hasFile = await client.hasFile(1, 'main', 'catalog-info.yaml');
     expect(hasFile).toBe(true);
   });
 
   it('should not find catalog file', async () => {
-    const hasFile = await client.hasFile(
-      'group1/test-repo1',
-      'unknown',
-      'catalog-info.yaml',
-    );
+    const hasFile = await client.hasFile(1, 'unknown', 'catalog-info.yaml');
     expect(hasFile).toBe(false);
   });
 });

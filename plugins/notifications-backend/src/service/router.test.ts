@@ -32,7 +32,7 @@ import {
 import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
 import { DatabaseService } from '@backstage/backend-plugin-api';
 import { v4 as uuid } from 'uuid';
-import { DatabaseNotificationsStore } from '../database';
+import { DatabaseNotificationsStore, generateSettingsHash } from '../database';
 
 const databases = TestDatabases.create();
 let store: DatabaseNotificationsStore;
@@ -67,6 +67,16 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
                 {
                   id: 'external:test-service2',
                   enabled: false,
+                },
+                {
+                  id: 'external:test-service3',
+                  enabled: true,
+                  topics: [
+                    {
+                      id: 'test-topic3',
+                      enabled: false,
+                    },
+                  ],
                 },
               ],
             },
@@ -274,6 +284,31 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
       expect(notifications).toHaveLength(1);
     });
 
+    it('should not send to user entity if excluded', async () => {
+      const response = await sendNotification({
+        recipients: {
+          type: 'entity',
+          entityRef: ['user:default/mock'],
+          excludeEntityRef: 'user:default/mock',
+        },
+        payload: {
+          title: 'test notification',
+          metadata: {
+            attr: 1,
+          },
+        },
+      });
+
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual([]);
+
+      const client = await database.getClient();
+      const notifications = await client('notification')
+        .where('user', 'user:default/mock')
+        .select();
+      expect(notifications).toHaveLength(0);
+    });
+
     it('should send to group entity', async () => {
       const response = await sendNotification({
         recipients: {
@@ -304,6 +339,50 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
         .where('user', 'user:default/mock')
         .select();
       expect(notifications).toHaveLength(1);
+    });
+
+    it('should send not send to group entity if excluded', async () => {
+      const response = await sendNotification({
+        recipients: {
+          type: 'entity',
+          entityRef: ['group:default/mock'],
+          excludeEntityRef: 'group:default/mock',
+        },
+        payload: {
+          title: 'test notification',
+        },
+      });
+
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual([]);
+
+      const client = await database.getClient();
+      const notifications = await client('notification')
+        .where('user', 'user:default/mock')
+        .select();
+      expect(notifications).toHaveLength(0);
+    });
+
+    it('should send not send to user entity if excluded', async () => {
+      const response = await sendNotification({
+        recipients: {
+          type: 'entity',
+          entityRef: ['group:default/mock'],
+          excludeEntityRef: 'user:default/mock',
+        },
+        payload: {
+          title: 'test notification',
+        },
+      });
+
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual([]);
+
+      const client = await database.getClient();
+      const notifications = await client('notification')
+        .where('user', 'user:default/mock')
+        .select();
+      expect(notifications).toHaveLength(0);
     });
 
     it('should only send one notification per user', async () => {
@@ -501,6 +580,157 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
       } as unknown as NotificationSendOptions);
 
       expect(response.status).toEqual(400);
+    });
+
+    it('should not send notification when channel is disabled and user has no settings', async () => {
+      // Create a new config with channel disabled
+      const configWithChannelDisabled = mockServices.rootConfig({
+        data: {
+          app: { baseUrl: 'http://localhost' },
+          notifications: {
+            defaultSettings: {
+              channels: [
+                {
+                  id: 'Web',
+                  enabled: false, // Channel disabled by default (opt-in)
+                },
+              ],
+            },
+          },
+        },
+      });
+
+      const routerWithChannelDisabled = await createRouter({
+        logger: mockServices.logger.mock(),
+        store,
+        signals: signalService,
+        userInfo,
+        config: configWithChannelDisabled,
+        httpAuth,
+        auth,
+        catalog,
+      });
+      const appWithChannelDisabled = express()
+        .use(routerWithChannelDisabled)
+        .use(mockErrorHandler());
+
+      const sendNotificationToDisabledChannel = (
+        opts: NotificationSendOptions,
+      ) =>
+        request(appWithChannelDisabled)
+          .post('/notifications')
+          .send(opts)
+          .set('Content-Type', 'application/json')
+          .set('Accept', 'application/json');
+
+      const response = await sendNotificationToDisabledChannel({
+        recipients: {
+          type: 'entity',
+          entityRef: ['user:default/mock'],
+        },
+        payload: {
+          title: 'test notification',
+          topic: 'test-topic',
+        },
+      });
+
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual([]); // No notifications sent
+
+      const client = await database.getClient();
+      const notifications = await client('notification')
+        .where('user', 'user:default/mock')
+        .select();
+      expect(notifications).toHaveLength(0); // No notifications created
+    });
+
+    it('should send notification when user enabled specific topic even if channel is disabled', async () => {
+      // Create a new config with channel disabled
+      const configWithChannelDisabled = mockServices.rootConfig({
+        data: {
+          app: { baseUrl: 'http://localhost' },
+          notifications: {
+            defaultSettings: {
+              channels: [
+                {
+                  id: 'Web',
+                  enabled: false, // Channel disabled by default (opt-in)
+                },
+              ],
+            },
+          },
+        },
+      });
+
+      const routerWithChannelDisabled = await createRouter({
+        logger: mockServices.logger.mock(),
+        store,
+        signals: signalService,
+        userInfo,
+        config: configWithChannelDisabled,
+        httpAuth,
+        auth,
+        catalog,
+      });
+      const appWithChannelDisabled = express()
+        .use(routerWithChannelDisabled)
+        .use(mockErrorHandler());
+
+      const sendNotificationToDisabledChannel = (
+        opts: NotificationSendOptions,
+      ) =>
+        request(appWithChannelDisabled)
+          .post('/notifications')
+          .send(opts)
+          .set('Content-Type', 'application/json')
+          .set('Accept', 'application/json');
+
+      // User explicitly enables a specific topic
+      const client = await database.getClient();
+      await client('user_settings').insert({
+        settings_key_hash: generateSettingsHash(
+          'user:default/mock',
+          'Web',
+          'external:test-service',
+          'important-topic',
+        ),
+        user: 'user:default/mock',
+        channel: 'Web',
+        origin: 'external:test-service',
+        topic: 'important-topic',
+        enabled: true,
+      });
+
+      const response = await sendNotificationToDisabledChannel({
+        recipients: {
+          type: 'entity',
+          entityRef: ['user:default/mock'],
+        },
+        payload: {
+          title: 'important notification',
+          topic: 'important-topic',
+        },
+      });
+
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual([
+        {
+          created: expect.any(String),
+          id: expect.any(String),
+          origin: 'external:test-service',
+          payload: {
+            severity: 'normal',
+            title: 'important notification',
+            topic: 'important-topic',
+          },
+          user: 'user:default/mock',
+        },
+      ]);
+
+      const notifications = await client('notification')
+        .where('user', 'user:default/mock')
+        .select();
+      expect(notifications).toHaveLength(1); // Notification created for enabled topic
     });
   });
 
@@ -760,6 +990,16 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
                 id: 'external:test-service2',
                 topics: [{ enabled: false, id: 'test-topic2' }],
               },
+              {
+                enabled: true,
+                id: 'external:test-service3',
+                topics: [
+                  {
+                    enabled: false,
+                    id: 'test-topic3',
+                  },
+                ],
+              },
             ]),
           },
         ],
@@ -794,6 +1034,16 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
                 id: 'external:test-service2',
                 topics: [{ enabled: false, id: 'test-topic2' }],
               },
+              {
+                enabled: true,
+                id: 'external:test-service3',
+                topics: [
+                  {
+                    enabled: false,
+                    id: 'test-topic3',
+                  },
+                ],
+              },
             ]),
           },
         ],
@@ -818,7 +1068,180 @@ describe.each(databases.eachSupportedId())('createRouter (%s)', databaseId => {
                 id: 'external:test-service2',
                 topics: [{ enabled: false, id: 'test-topic2' }],
               },
+              {
+                enabled: true,
+                id: 'external:test-service3',
+                topics: [
+                  {
+                    enabled: false,
+                    id: 'test-topic3',
+                  },
+                ],
+              },
             ]),
+          },
+        ],
+      });
+    });
+
+    it('should respect channel-level enabled flag from config', async () => {
+      // Create a new config with channel-level enabled flag
+      const configWithChannelEnabled = mockServices.rootConfig({
+        data: {
+          app: { baseUrl: 'http://localhost' },
+          notifications: {
+            defaultSettings: {
+              channels: [
+                {
+                  id: 'Web',
+                  enabled: false, // Channel disabled by default (opt-in)
+                },
+              ],
+            },
+          },
+        },
+      });
+
+      const routerWithChannelDisabled = await createRouter({
+        logger: mockServices.logger.mock(),
+        store,
+        signals: signalService,
+        userInfo,
+        config: configWithChannelEnabled,
+        httpAuth,
+        auth,
+        catalog,
+      });
+      const appWithChannelDisabled = express()
+        .use(routerWithChannelDisabled)
+        .use(mockErrorHandler());
+
+      const response = await request(appWithChannelDisabled).get('/settings');
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual({
+        channels: [
+          {
+            id: 'Web',
+            enabled: false,
+            origins: expect.arrayContaining([
+              {
+                enabled: false,
+                id: 'external:test-service',
+                topics: [{ enabled: false, id: 'test-topic' }],
+              },
+              {
+                enabled: false,
+                id: 'external:test-service2',
+                topics: [{ enabled: false, id: 'test-topic2' }],
+              },
+            ]),
+          },
+        ],
+      });
+    });
+
+    it('should allow user to enable specific topic even when channel is disabled', async () => {
+      // Create a new config with channel disabled
+      const configWithChannelDisabled = mockServices.rootConfig({
+        data: {
+          app: { baseUrl: 'http://localhost' },
+          notifications: {
+            defaultSettings: {
+              channels: [
+                {
+                  id: 'Web',
+                  enabled: false, // Channel disabled by default (opt-in)
+                },
+              ],
+            },
+          },
+        },
+      });
+
+      const routerWithChannelDisabled = await createRouter({
+        logger: mockServices.logger.mock(),
+        store,
+        signals: signalService,
+        userInfo,
+        config: configWithChannelDisabled,
+        httpAuth,
+        auth,
+        catalog,
+      });
+      const appWithChannelDisabled = express()
+        .use(routerWithChannelDisabled)
+        .use(mockErrorHandler());
+
+      const client = await database.getClient();
+
+      // Clear existing notifications from beforeEach
+      await client('notification').del();
+
+      // Create notifications with multiple topics for the same origin
+      await client('notification').insert({
+        id: uuid(),
+        user: 'user:default/mock',
+        origin: 'external:test-service',
+        topic: 'topic-build-failed',
+        title: 'Build Failed',
+        created: new Date(),
+        severity: 'high',
+      });
+
+      await client('notification').insert({
+        id: uuid(),
+        user: 'user:default/mock',
+        origin: 'external:test-service',
+        topic: 'topic-deployment-success',
+        title: 'Deployment Success',
+        created: new Date(),
+        severity: 'normal',
+      });
+
+      await client('notification').insert({
+        id: uuid(),
+        user: 'user:default/mock',
+        origin: 'external:test-service',
+        topic: 'topic-security-alert',
+        title: 'Security Alert',
+        created: new Date(),
+        severity: 'critical',
+      });
+
+      // User explicitly enables only one specific topic (build failures)
+      // The other topics are NOT in the database, so they should inherit from channel default (false)
+      await client('user_settings').insert({
+        settings_key_hash: generateSettingsHash(
+          'user:default/mock',
+          'Web',
+          'external:test-service',
+          'topic-build-failed',
+        ),
+        user: 'user:default/mock',
+        channel: 'Web',
+        origin: 'external:test-service',
+        topic: 'topic-build-failed',
+        enabled: true,
+      });
+
+      const response = await request(appWithChannelDisabled).get('/settings');
+      expect(response.status).toEqual(200);
+      expect(response.body).toEqual({
+        channels: [
+          {
+            id: 'Web',
+            enabled: false,
+            origins: [
+              {
+                enabled: true, // Origin gets enabled when user enables a topic
+                id: 'external:test-service',
+                topics: expect.arrayContaining([
+                  { enabled: true, id: 'topic-build-failed' }, // User explicitly enabled this
+                  { enabled: false, id: 'topic-deployment-success' }, // Inherits from channel default (false)
+                  { enabled: false, id: 'topic-security-alert' }, // Inherits from channel default (false)
+                ]),
+              },
+            ],
           },
         ],
       });

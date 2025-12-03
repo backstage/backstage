@@ -136,16 +136,29 @@ export class ElasticSearchSearchEngine implements SearchEngine {
   private readonly highlightOptions: ElasticSearchHighlightConfig;
   private readonly queryOptions?: ElasticSearchQueryConfig;
 
+  private readonly elasticSearchClientOptions: ElasticSearchClientOptions;
+  private readonly aliasPostfix: string;
+  private readonly indexPrefix: string;
+  private readonly logger: LoggerService;
+  private readonly batchSize: number;
+  private readonly batchKeyField?: string;
+
   constructor(
-    private readonly elasticSearchClientOptions: ElasticSearchClientOptions,
-    private readonly aliasPostfix: string,
-    private readonly indexPrefix: string,
-    private readonly logger: LoggerService,
-    private readonly batchSize: number,
-    private readonly batchKeyField?: string,
+    elasticSearchClientOptions: ElasticSearchClientOptions,
+    aliasPostfix: string,
+    indexPrefix: string,
+    logger: LoggerService,
+    batchSize: number,
+    batchKeyField?: string,
     highlightOptions?: ElasticSearchHighlightOptions,
     queryOptions?: ElasticSearchQueryConfig,
   ) {
+    this.elasticSearchClientOptions = elasticSearchClientOptions;
+    this.aliasPostfix = aliasPostfix;
+    this.indexPrefix = indexPrefix;
+    this.logger = logger;
+    this.batchSize = batchSize;
+    this.batchKeyField = batchKeyField;
     this.elasticSearchClientWrapper =
       ElasticSearchClientWrapper.fromClientOptions(elasticSearchClientOptions);
     const uuidTag = uuid();

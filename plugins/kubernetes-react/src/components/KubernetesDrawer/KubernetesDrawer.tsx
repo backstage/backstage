@@ -31,6 +31,8 @@ import {
 } from '@material-ui/core/styles';
 import CloseIcon from '@material-ui/icons/Close';
 import { ManifestYaml } from './ManifestYaml';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { kubernetesReactTranslationRef } from '../../translation';
 
 const useDrawerContentStyles = makeStyles((_theme: Theme) =>
   createStyles({
@@ -72,6 +74,7 @@ const KubernetesDrawerContent = ({
   close,
 }: KubernetesDrawerContentProps) => {
   const classes = useDrawerContentStyles();
+  const { t } = useTranslationRef(kubernetesReactTranslationRef);
   const [isYaml, setIsYaml] = useState<boolean>(false);
 
   return (
@@ -86,7 +89,7 @@ const KubernetesDrawerContent = ({
           <Grid item xs={1}>
             <IconButton
               key="dismiss"
-              title="Close the drawer"
+              title={t('kubernetesDrawer.closeDrawer')}
               onClick={() => close()}
               color="inherit"
             >
@@ -104,10 +107,10 @@ const KubernetesDrawerContent = ({
                   onChange={event => {
                     setIsYaml(event.target.checked);
                   }}
-                  name="YAML"
+                  name={t('kubernetesDrawer.yaml')}
                 />
               }
-              label="YAML"
+              label={t('kubernetesDrawer.yaml')}
             />
           </Grid>
         </Grid>

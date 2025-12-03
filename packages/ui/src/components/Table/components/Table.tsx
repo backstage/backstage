@@ -15,20 +15,23 @@
  */
 
 import { useStyles } from '../../../hooks/useStyles';
+import { TableDefinition } from '../definition';
 import {
   Table as ReactAriaTable,
   type TableProps,
 } from 'react-aria-components';
+import styles from '../Table.module.css';
+import clsx from 'clsx';
 
 /** @public */
 export const Table = (props: TableProps) => {
-  const { classNames } = useStyles('Table');
+  const { classNames, cleanedProps } = useStyles(TableDefinition, props);
 
   return (
     <ReactAriaTable
-      className={classNames.table}
+      className={clsx(classNames.table, styles[classNames.table])}
       aria-label="Data table"
-      {...props}
+      {...cleanedProps}
     />
   );
 };

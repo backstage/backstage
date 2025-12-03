@@ -18,7 +18,10 @@ import type { HeaderProps } from './types';
 import { HeaderToolbar } from './HeaderToolbar';
 import { Tabs, TabList, Tab } from '../Tabs';
 import { useStyles } from '../../hooks/useStyles';
+import { HeaderDefinition } from './definition';
 import { type NavigateOptions } from 'react-router-dom';
+import styles from './Header.module.css';
+import clsx from 'clsx';
 
 declare module 'react-aria-components' {
   interface RouterConfig {
@@ -32,10 +35,16 @@ declare module 'react-aria-components' {
  * @public
  */
 export const Header = (props: HeaderProps) => {
-  const { tabs, icon, title, titleLink, customActions, onTabSelectionChange } =
-    props;
-
-  const { classNames } = useStyles('Header');
+  const { classNames, cleanedProps } = useStyles(HeaderDefinition, props);
+  const {
+    className,
+    tabs,
+    icon,
+    title,
+    titleLink,
+    customActions,
+    onTabSelectionChange,
+  } = cleanedProps;
 
   const hasTabs = tabs && tabs.length > 0;
 
@@ -49,7 +58,13 @@ export const Header = (props: HeaderProps) => {
         hasTabs={hasTabs}
       />
       {tabs && (
-        <div className={classNames.tabsWrapper}>
+        <div
+          className={clsx(
+            classNames.tabsWrapper,
+            styles[classNames.tabsWrapper],
+            className,
+          )}
+        >
           <Tabs onSelectionChange={onTabSelectionChange}>
             <TabList>
               {tabs?.map(tab => (

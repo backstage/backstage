@@ -30,11 +30,6 @@ import {
   fetchApiRef,
 } from '@backstage/core-plugin-api';
 import {
-  compatWrapper,
-  convertLegacyRouteRef,
-  convertLegacyRouteRefs,
-} from '@backstage/core-compat-api';
-import {
   EntityContentBlueprint,
   EntityIconLinkBlueprint,
 } from '@backstage/plugin-catalog-react/alpha';
@@ -55,6 +50,7 @@ import {
 } from '@backstage/plugin-techdocs-react';
 
 import { useTechdocsReaderIconLinkProps } from './hooks/useTechdocsReaderIconLinkProps';
+import { DocsIcon } from '@backstage/core-components';
 
 /** @alpha */
 const techdocsEntityIconLink = EntityIconLinkBlueprint.make({
@@ -116,15 +112,15 @@ export const techDocsSearchResultListItemExtension =
     },
     factory(originalFactory, { config }) {
       return originalFactory({
+        icon: <DocsIcon />,
         predicate: result => result.type === 'techdocs',
         component: async () => {
           const { TechDocsSearchResultListItem } = await import(
             '../search/components/TechDocsSearchResultListItem'
           );
-          return props =>
-            compatWrapper(
-              <TechDocsSearchResultListItem {...props} {...config} />,
-            );
+          return props => (
+            <TechDocsSearchResultListItem {...props} {...config} />
+          );
         },
       });
     },
@@ -138,11 +134,11 @@ export const techDocsSearchResultListItemExtension =
 const techDocsPage = PageBlueprint.make({
   params: {
     path: '/docs',
-    routeRef: convertLegacyRouteRef(rootRouteRef),
+    routeRef: rootRouteRef,
     loader: () =>
-      import('../home/components/TechDocsIndexPage').then(m =>
-        compatWrapper(<m.TechDocsIndexPage />),
-      ),
+      import('../home/components/TechDocsIndexPage').then(m => (
+        <m.TechDocsIndexPage />
+      )),
   },
 });
 
@@ -166,16 +162,14 @@ const techDocsReaderPage = PageBlueprint.makeWithOverrides({
 
     return originalFactory({
       path: '/docs/:namespace/:kind/:name',
-      routeRef: convertLegacyRouteRef(rootDocsRouteRef),
+      routeRef: rootDocsRouteRef,
       loader: async () =>
-        await import('../Router').then(({ TechDocsReaderRouter }) => {
-          return compatWrapper(
-            <TechDocsReaderRouter>
-              <TechDocsReaderLayout />
-              <TechDocsAddons>{addons}</TechDocsAddons>
-            </TechDocsReaderRouter>,
-          );
-        }),
+        await import('../Router').then(({ TechDocsReaderRouter }) => (
+          <TechDocsReaderRouter>
+            <TechDocsReaderLayout />
+            <TechDocsAddons>{addons}</TechDocsAddons>
+          </TechDocsReaderRouter>
+        )),
     });
   },
 });
@@ -201,7 +195,7 @@ const techDocsEntityContent = EntityContentBlueprint.makeWithOverrides({
       {
         path: 'docs',
         title: 'TechDocs',
-        routeRef: convertLegacyRouteRef(rootCatalogDocsRouteRef),
+        routeRef: rootCatalogDocsRouteRef,
         loader: () =>
           import('../Router').then(({ EmbeddedDocsRouter }) => {
             const addons = context.inputs.addons.map(output => {
@@ -210,14 +204,14 @@ const techDocsEntityContent = EntityContentBlueprint.makeWithOverrides({
               attachTechDocsAddonComponentData(Addon, options);
               return <Addon key={options.name} />;
             });
-            return compatWrapper(
+            return (
               <EmbeddedDocsRouter
                 emptyState={context.inputs.emptyState?.get(
                   coreExtensionData.reactElement,
                 )}
               >
                 <TechDocsAddons>{addons}</TechDocsAddons>
-              </EmbeddedDocsRouter>,
+              </EmbeddedDocsRouter>
             );
           }),
       },
@@ -239,7 +233,7 @@ const techDocsNavItem = NavItemBlueprint.make({
   params: {
     icon: LibraryBooks,
     title: 'Docs',
-    routeRef: convertLegacyRouteRef(rootRouteRef),
+    routeRef: rootRouteRef,
   },
 });
 
@@ -258,9 +252,9 @@ export default createFrontendPlugin({
     techDocsEntityContentEmptyState,
     techDocsSearchResultListItemExtension,
   ],
-  routes: convertLegacyRouteRefs({
+  routes: {
     root: rootRouteRef,
     docRoot: rootDocsRouteRef,
     entityContent: rootCatalogDocsRouteRef,
-  }),
+  },
 });

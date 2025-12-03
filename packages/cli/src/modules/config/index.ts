@@ -62,7 +62,7 @@ export default createCliPlugin({
       path: ['config:print'],
       description: 'Print the app configuration for the current package',
       execute: async ({ args, info }) => {
-        const argv = await yargs
+        const argv = await yargs()
           .options({
             package: { type: 'string' },
             lax: { type: 'boolean' },
@@ -82,7 +82,7 @@ export default createCliPlugin({
       description:
         'Validate that the given configuration loads and matches schema',
       execute: async ({ args }) => {
-        const argv = await yargs
+        const argv = await yargs()
           .options({
             package: { type: 'string' },
             lax: { type: 'boolean' },
@@ -105,7 +105,7 @@ export default createCliPlugin({
       path: ['config:schema'],
       description: 'Print the JSON schema for the given configuration',
       execute: async ({ args }) => {
-        const argv = await yargs
+        const argv = await yargs()
           .options({
             package: { type: 'string' },
             format: { type: 'string' },
@@ -122,7 +122,7 @@ export default createCliPlugin({
       path: ['config', 'schema'],
       description: 'Print the JSON schema for the given configuration',
       execute: async ({ args }) => {
-        const argv = await yargs
+        const argv = await yargs()
           .options({
             package: { type: 'string' },
             format: { type: 'string' },

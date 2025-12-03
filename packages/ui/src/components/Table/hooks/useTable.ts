@@ -50,8 +50,8 @@ export function useTable<T = any>(
   const isControlled =
     controlledOffset !== undefined || controlledPageSize !== undefined;
 
-  // Calculate row count from data or use provided value
-  const rowCount = data?.length ?? providedRowCount ?? 0;
+  // Use providedRowCount if passed, otherwise fallback to data length
+  const rowCount = providedRowCount ?? data?.length ?? 0;
 
   // Internal state for uncontrolled mode
   const [internalOffset, setInternalOffset] = useState(defaultOffset);

@@ -102,6 +102,16 @@ Visit <http://localhost:3000> and you should see the bleeding edge of Backstage 
 
 If you want to get a better understanding of the layout of the repo now that you have a local copy running feel free to review the [Backstage Project Structure](https://backstage.io/docs/getting-started/#general-folder-structure) documentation.
 
+#### Using Docker for the Example App
+
+You can run the Example App using Docker with Postgres, OpenSearch and Redis services. This setup very closely resembles how Backstage is run in production in many occasions.
+
+To start the Example App with Docker, make sure you have Docker and Docker Compose installed on your machine, then run the following command from the root of the repository:
+
+```bash
+yarn start:docker
+```
+
 ## Coding Guidelines
 
 All code is formatted with `prettier` using the configuration in the repo. If possible, we recommend configuring your editor to format automatically, but you can also use the `yarn prettier --write <file>` command to format files.

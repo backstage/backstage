@@ -22,3 +22,4 @@ export type {
   TabProps,
   TabMatchStrategy,
 } from './types';
+export { TabsDefinition } from './definition';

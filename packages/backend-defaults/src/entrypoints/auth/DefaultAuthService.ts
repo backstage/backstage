@@ -38,14 +38,28 @@ import { UserTokenHandler } from './user/UserTokenHandler';
 
 /** @internal */
 export class DefaultAuthService implements AuthService {
+  private readonly userTokenHandler: UserTokenHandler;
+  private readonly pluginTokenHandler: PluginTokenHandler;
+  private readonly externalTokenHandler: ExternalAuthTokenHandler;
+  private readonly pluginId: string;
+  private readonly disableDefaultAuthPolicy: boolean;
+  private readonly pluginKeySource: PluginKeySource;
+
   constructor(
-    private readonly userTokenHandler: UserTokenHandler,
-    private readonly pluginTokenHandler: PluginTokenHandler,
-    private readonly externalTokenHandler: ExternalAuthTokenHandler,
-    private readonly pluginId: string,
-    private readonly disableDefaultAuthPolicy: boolean,
-    private readonly pluginKeySource: PluginKeySource,
-  ) {}
+    userTokenHandler: UserTokenHandler,
+    pluginTokenHandler: PluginTokenHandler,
+    externalTokenHandler: ExternalAuthTokenHandler,
+    pluginId: string,
+    disableDefaultAuthPolicy: boolean,
+    pluginKeySource: PluginKeySource,
+  ) {
+    this.userTokenHandler = userTokenHandler;
+    this.pluginTokenHandler = pluginTokenHandler;
+    this.externalTokenHandler = externalTokenHandler;
+    this.pluginId = pluginId;
+    this.disableDefaultAuthPolicy = disableDefaultAuthPolicy;
+    this.pluginKeySource = pluginKeySource;
+  }
 
   async authenticate(
     token: string,

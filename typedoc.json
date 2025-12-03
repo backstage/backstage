@@ -1,0 +1,8 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "name": "Backstage",
+  "navigationLinks": {
+    "Docs": "https://backstage.io/docs",
+    "Github": "https://github.com/backstage/backstage"
+  }
+}

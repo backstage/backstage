@@ -20,12 +20,12 @@ import type { SelectProps as AriaSelectProps } from 'react-aria-components';
 import type { FieldLabelProps } from '../FieldLabel/types';
 
 /** @public */
-export interface SelectProps
-  extends AriaSelectProps<{
-      name: string;
-      value: string;
-    }>,
-    Omit<FieldLabelProps, 'htmlFor' | 'id'> {
+export type Option = { value: string; label: string; disabled?: boolean };
+
+/** @public */
+export interface SelectProps<T extends 'single' | 'multiple'>
+  extends AriaSelectProps<Option, T>,
+    Omit<FieldLabelProps, 'htmlFor' | 'id' | 'className'> {
   /**
    * An icon to render before the input
    */
@@ -33,12 +33,31 @@ export interface SelectProps
 
   /**
    * The size of the select field
-   * @defaultValue 'medium'
+   * @defaultValue 'small'
    */
   size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
 
   /**
    * The options of the select field
    */
-  options?: Array<{ value: string; label: string; disabled?: boolean }>;
+  options?: Array<Option>;
+
+  /**
+   * Enable search/filter functionality in the dropdown
+   * @defaultValue false
+   */
+  searchable?: boolean;
+
+  /**
+   * placeholder text for the search input
+   * only used when searchable is true
+   * @defaultvalue 'search...'
+   */
+  searchPlaceholder?: string;
+
+  /**
+   * Selection mode, single or multiple
+   * @defaultvalue 'single'
+   */
+  selectionMode?: T;
 }

@@ -1,0 +1,9 @@
+---
+title: Template Designer
+author: tduniec
+authorUrl: https://github.com/tduniec
+category: Productivity
+description: Template Designer turns blank Backstage YAML into a storyboard-like canvas, guiding anyone through drag-and-drop scaffolder authoring before ever touching code. Rally non-experts, broadcast best practices, and accelerate template launches directly inside Backstage.
+documentation: https://github.com/tduniec/template-designer-plugin/blob/main/README.md
+iconUrl: https://raw.githubusercontent.com/tduniec/template-designer-plugin/main/img/logo/templateDesignerLogo.png
+addedDate: 2025-11-19

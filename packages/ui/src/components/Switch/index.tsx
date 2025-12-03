@@ -16,3 +16,4 @@
 
 export * from './Switch';
 export * from './types';
+export { SwitchDefinition } from './definition';

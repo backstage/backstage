@@ -17,7 +17,7 @@
 import { minimatch } from 'minimatch';
 import { getPackages } from '@manypkg/get-packages';
 import { detectYarnVersion } from './yarn';
-import { execFile } from '../run';
+import { runOutput } from '@backstage/cli-common';
 import { NotFoundError } from '@backstage/errors';
 
 const DEP_TYPES = [
@@ -54,11 +54,7 @@ export async function fetchPackageInfo(
 
   const cmd = yarnVersion === 'classic' ? ['info'] : ['npm', 'info'];
   try {
-    const { stdout: output } = await execFile(
-      'yarn',
-      [...cmd, '--json', name],
-      { shell: true },
-    );
+    const output = await runOutput(['yarn', ...cmd, '--json', name]);
 
     if (!output) {
       throw new NotFoundError(
@@ -81,7 +77,12 @@ export async function fetchPackageInfo(
       throw error;
     }
 
-    if (error?.stdout.includes('Response Code: 404')) {
+    if (
+      error instanceof Error &&
+      'stdout' in error &&
+      typeof error.stdout === 'string' &&
+      error.stdout.includes('Response Code: 404')
+    ) {
       throw new NotFoundError(
         `No package information found for package ${name}`,
       );

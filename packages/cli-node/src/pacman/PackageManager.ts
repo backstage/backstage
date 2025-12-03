@@ -16,7 +16,8 @@
 
 import { Yarn } from './yarn';
 import { Lockfile } from './Lockfile';
-import { SpawnOptionsPartialEnv, paths } from '../util';
+import { paths } from '../paths';
+import { RunOptions } from '@backstage/cli-common';
 import fs from 'fs-extra';
 
 /**
@@ -55,7 +56,7 @@ export interface PackageManager {
   getMonorepoPackages(): Promise<string[]>;
 
   /** Uses the package manager to run a command in the repo. */
-  run(args: string[], options?: SpawnOptionsPartialEnv): Promise<void>;
+  run(args: string[], options?: RunOptions): Promise<void>;
 
   /**
    * Executes the package manager's pack command to bundle the repo into an

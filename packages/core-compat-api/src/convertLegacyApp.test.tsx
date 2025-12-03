@@ -27,7 +27,7 @@ import {
   createRouteRef,
 } from '@backstage/core-plugin-api';
 import { EntityLayout, EntitySwitch, isKind } from '@backstage/plugin-catalog';
-import { renderInTestApp } from '@backstage/frontend-test-utils';
+import { renderTestApp } from '@backstage/frontend-test-utils';
 import { default as catalogPlugin } from '@backstage/plugin-catalog/alpha';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
@@ -263,7 +263,7 @@ describe('convertLegacyApp', () => {
     });
 
     // Overview
-    const renderOverviewTest = await renderInTestApp(<div />, {
+    const renderOverviewTest = await renderTestApp({
       features: [catalogOverride, ...converted],
       initialRouteEntries: ['/catalog/default/test/x'],
     });
@@ -272,7 +272,7 @@ describe('convertLegacyApp', () => {
     ).resolves.toBeInTheDocument();
     renderOverviewTest.unmount();
 
-    const renderOverviewOther = await renderInTestApp(<div />, {
+    const renderOverviewOther = await renderTestApp({
       features: [catalogOverride, ...converted],
       initialRouteEntries: ['/catalog/default/other/x'],
     });
@@ -282,7 +282,7 @@ describe('convertLegacyApp', () => {
     renderOverviewOther.unmount();
 
     // Foo tab
-    const renderFooTest = await renderInTestApp(<div />, {
+    const renderFooTest = await renderTestApp({
       features: [catalogOverride, ...converted],
       initialRouteEntries: ['/catalog/default/test/x/foo'],
     });
@@ -291,7 +291,7 @@ describe('convertLegacyApp', () => {
     ).resolves.toBeInTheDocument();
     renderFooTest.unmount();
 
-    const renderFooOther = await renderInTestApp(<div />, {
+    const renderFooOther = await renderTestApp({
       features: [catalogOverride, ...converted],
       initialRouteEntries: ['/catalog/default/other/x/foo'],
     });
@@ -301,7 +301,7 @@ describe('convertLegacyApp', () => {
     renderFooOther.unmount();
 
     // Bar tab
-    const renderBarTest = await renderInTestApp(<div />, {
+    const renderBarTest = await renderTestApp({
       features: [catalogOverride, ...converted],
       initialRouteEntries: ['/catalog/default/test/x/bar'],
     });
@@ -310,7 +310,7 @@ describe('convertLegacyApp', () => {
     ).resolves.toBeInTheDocument();
     renderBarTest.unmount();
 
-    const renderBarOther = await renderInTestApp(<div />, {
+    const renderBarOther = await renderTestApp({
       features: [catalogOverride, ...converted],
       initialRouteEntries: ['/catalog/default/other/x/bar'],
     });

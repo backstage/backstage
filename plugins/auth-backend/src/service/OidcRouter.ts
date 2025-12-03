@@ -26,16 +26,31 @@ import { TokenIssuer } from '../identity/types';
 import { UserInfoDatabase } from '../database/UserInfoDatabase';
 import { OidcDatabase } from '../database/OidcDatabase';
 import { json } from 'express';
+import { readDcrTokenExpiration } from './readTokenExpiration.ts';
 
 export class OidcRouter {
+  private readonly oidc: OidcService;
+  private readonly logger: LoggerService;
+  private readonly auth: AuthService;
+  private readonly appUrl: string;
+  private readonly httpAuth: HttpAuthService;
+  private readonly config: RootConfigService;
+
   private constructor(
-    private readonly oidc: OidcService,
-    private readonly logger: LoggerService,
-    private readonly auth: AuthService,
-    private readonly appUrl: string,
-    private readonly httpAuth: HttpAuthService,
-    private readonly config: RootConfigService,
-  ) {}
+    oidc: OidcService,
+    logger: LoggerService,
+    auth: AuthService,
+    appUrl: string,
+    httpAuth: HttpAuthService,
+    config: RootConfigService,
+  ) {
+    this.oidc = oidc;
+    this.logger = logger;
+    this.auth = auth;
+    this.appUrl = appUrl;
+    this.httpAuth = httpAuth;
+    this.config = config;
+  }
 
   static create(options: {
     auth: AuthService;
@@ -332,12 +347,15 @@ export class OidcRouter {
           });
         }
 
+        const expiresIn = readDcrTokenExpiration(this.config);
+
         try {
           const result = await this.oidc.exchangeCodeForToken({
             code,
             redirectUri,
             codeVerifier,
             grantType,
+            expiresIn,
           });
 
           return res.json({

@@ -20,11 +20,17 @@ import {
 } from '@material-ui/core/styles';
 import { useTheme as useV5Theme } from '@mui/material/styles';
 import { makeStyles as makeV5Styles } from '@mui/styles';
-import { render, screen } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import { UnifiedThemeProvider } from './UnifiedThemeProvider';
 import { themes } from './themes';
 
 describe('UnifiedThemeProvider', () => {
+  afterEach(() => {
+    document.body.removeAttribute('data-theme-name');
+    document.body.removeAttribute('data-theme-mode');
+    document.body.removeAttribute('data-unified-theme-stack');
+  });
+
   it('provides a themes for v4 and v5 directly', () => {
     function MyV4Component() {
       const theme = useV4Theme();
@@ -80,5 +86,18 @@ describe('UnifiedThemeProvider', () => {
     expect(window.getComputedStyle(screen.getByText('v5')).color).toBe(
       'rgb(158, 158, 158)',
     );
+  });
+
+  it('applies theme attributes based on the provided options', async () => {
+    render(
+      <UnifiedThemeProvider theme={themes.light} themeName="aperture">
+        <span>theme</span>
+      </UnifiedThemeProvider>,
+    );
+
+    await waitFor(() =>
+      expect(document.body.getAttribute('data-theme-name')).toBe('aperture'),
+    );
+    expect(document.body.getAttribute('data-theme-mode')).toBe('light');
   });
 });

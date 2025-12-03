@@ -34,6 +34,20 @@ export type BundlerRead = (url: string) => Promise<Buffer>;
 
 export type BundlerResolveUrl = (url: string, base: string) => string;
 
+// Preserved references paths for AsyncAPI v3 documents
+const asyncApiV3PreservedPaths = [
+  /#\/channels\/.*\/servers/,
+  /#\/operations\/.*\/channel/,
+  /#\/operations\/.*\/messages/,
+  /#\/operations\/.*\/reply\/channel/,
+  /#\/operations\/.*\/reply\/messages/,
+  /#\/components\/channels\/.*\/servers/,
+  /#\/components\/operations\/.*\/channel/,
+  /#\/components\/operations\/.*\/messages/,
+  /#\/components\/operations\/.*\/reply\/channel/,
+  /#\/components\/operations\/.*\/reply\/messages/,
+];
+
 export async function bundleFileWithRefs(
   fileWithRefs: string,
   baseUrl: string,
@@ -46,7 +60,7 @@ export async function bundleFileWithRefs(
       return protocol === undefined || protocol === 'file';
     },
     read: async file => {
-      const relativePath = path.relative('.', file.url);
+      const relativePath = path.relative('.', file.url).replace(/\\/g, '/');
       const url = resolveUrl(relativePath, baseUrl);
       return await read(url);
     },
@@ -61,14 +75,29 @@ export async function bundleFileWithRefs(
       return await read(url);
     },
   };
-
   const options: ParserOptions = {
     resolve: {
       file: fileUrlReaderResolver,
       http: httpUrlReaderResolver,
     },
   };
+
   const fileObject = parse(fileWithRefs);
+
+  if (fileObject.asyncapi) {
+    const version = parseInt(fileObject.asyncapi, 10);
+
+    if (version === 3) {
+      options.bundle = {
+        excludedPathMatcher: (refPath: string): any => {
+          return asyncApiV3PreservedPaths.some(pattern =>
+            pattern.test(refPath),
+          );
+        },
+      };
+    }
+  }
+
   const bundledObject = await $RefParser.bundle(fileObject, options);
   return stringify(bundledObject);
 }
