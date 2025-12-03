@@ -1,0 +1,1 @@
+Fixed an issue where TestDatabases would fail to run for PostgreSQL 18 tests
