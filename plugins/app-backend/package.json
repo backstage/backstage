@@ -60,7 +60,7 @@
     "@backstage/plugin-app-node": "workspace:^",
     "@backstage/plugin-auth-node": "workspace:^",
     "@backstage/types": "workspace:^",
-    "express": "^4.17.1",
+    "express": "^4.22.0",
     "express-promise-router": "^4.1.0",
     "fs-extra": "^11.2.0",
     "globby": "^11.0.0",

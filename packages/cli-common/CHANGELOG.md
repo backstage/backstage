@@ -1,5 +1,11 @@
 # @backstage/cli-common
 
+## 0.1.16-next.1
+
+### Patch Changes
+
+- 5cfb2a4: Added new `run`, `runOutput`, and `runCheck` utilities to help run child processes in a safe and portable way.
+
 ## 0.1.16-next.0
 
 ### Patch Changes

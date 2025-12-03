@@ -90,6 +90,7 @@ catalog:
           initialDelay: { seconds: 30 }
           frequency: { hours: 1 }
           timeout: { minutes: 50 }
+        excludeSuspendedUsers: true
 ```
 
 Directly under the `githubOrg` is a list of configurations, each entry is a structure with the following elements:
@@ -105,6 +106,8 @@ Directly under the `githubOrg` is a list of configurations, each entry is a stru
   - `organizationMembers`: Number of organization members to fetch per page (default: 50)
 
   Reducing page sizes will result in more API calls and slightly longer sync times, but will prevent API resource limits for organizations with large number of teams and members.
+
+- `excludeSuspendedUsers` (optional): Whether to exclude suspended users when querying organization users. Only for GitHub Enterprise instances. Will error if used against GitHub.com API.
 
 ### Events Support
 

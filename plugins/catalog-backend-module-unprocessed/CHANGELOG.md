@@ -1,5 +1,12 @@
 # @backstage/plugin-catalog-backend-module-unprocessed
 
+## 0.6.7-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-unprocessed-entities-common@0.0.12-next.0
+
 ## 0.6.7-next.0
 
 ### Patch Changes

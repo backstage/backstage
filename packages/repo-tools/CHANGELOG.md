@@ -1,5 +1,15 @@
 # @backstage/repo-tools
 
+## 0.16.1-next.1
+
+### Patch Changes
+
+- 688f070: Updated to use new utilities from `@backstage/cli-common`.
+- d1e38a7: Properly create workspace in OS temporary directory for `generate-patch` command
+- Updated dependencies
+  - @backstage/cli-node@0.2.16-next.1
+  - @backstage/cli-common@0.1.16-next.1
+
 ## 0.16.1-next.0
 
 ### Patch Changes

@@ -1,5 +1,21 @@
 # @backstage/core-components
 
+## 0.18.4-next.1
+
+### Patch Changes
+
+- 9a942a4: Fixed bug in the `LogViewer` component where shift + click always opened a new window instead of just changing the selection.
+
+  In addition, improved the `LogViewer` component by a few usability enhancements:
+
+  - Added support for multiple selections using cmd/ctrl + click
+  - Improved the generated hash that is added to the URL to also support ranges & multiple selections
+  - Added an hover effect & info tooltip to the "Copy to clipboard" button to indicate its functionality
+  - Added some color and a separator to the line numbers to improve readability
+
+- 207c3c8: long words like urls now breaks to new line on warning panels instead of overflowing the container
+- 5d52dab: Add i18n support for LogViewer search control
+
 ## 0.18.4-next.0
 
 ### Patch Changes

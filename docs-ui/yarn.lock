@@ -31,11 +31,11 @@ __metadata:
   linkType: hard
 
 "@base-ui-components/react@npm:^1.0.0-beta.4":
-  version: 1.0.0-beta.6
-  resolution: "@base-ui-components/react@npm:1.0.0-beta.6"
+  version: 1.0.0-beta.7
+  resolution: "@base-ui-components/react@npm:1.0.0-beta.7"
   dependencies:
     "@babel/runtime": "npm:^7.28.4"
-    "@base-ui-components/utils": "npm:0.2.0"
+    "@base-ui-components/utils": "npm:0.2.1"
     "@floating-ui/react-dom": "npm:^2.1.6"
     "@floating-ui/utils": "npm:^0.2.10"
     reselect: "npm:^5.1.1"
@@ -48,13 +48,13 @@ __metadata:
   peerDependenciesMeta:
     "@types/react":
       optional: true
-  checksum: 10/b3cfa5449f596c6cb509017a33c31fad531c10ee3dc70ee98ca5a48dfc02a8333012bd29df660833f98b73ee895f34ff51037eeef35b58111492d98454881eee
+  checksum: 10/14a446e7ff58a8eab6bb81ee32fc8f49bea8e0e3f188aa023f24c5382d9d76b97886f1828ef8fe2532720fc6512f52b88587220a47e4009b1d8febc904d5cf1a
   languageName: node
   linkType: hard
 
-"@base-ui-components/utils@npm:0.2.0":
-  version: 0.2.0
-  resolution: "@base-ui-components/utils@npm:0.2.0"
+"@base-ui-components/utils@npm:0.2.1":
+  version: 0.2.1
+  resolution: "@base-ui-components/utils@npm:0.2.1"
   dependencies:
     "@babel/runtime": "npm:^7.28.4"
     "@floating-ui/utils": "npm:^0.2.10"
@@ -67,7 +67,7 @@ __metadata:
   peerDependenciesMeta:
     "@types/react":
       optional: true
-  checksum: 10/b5eae460e3f45fdb2c5116c94612c5b0c00190d4f0763836ba121e36e5c46c1caad862f4aa05827d90a8ebe924c29e42a7561c124de23ce3dc565dba2a6dff98
+  checksum: 10/fcf0dbf38bb6b8318174e419b3c7d4f6e044cbafe137ec499a2daddc482b317e936519f414335a6485d1721076c8e57fdc5b206f7845a44689fcfec1d81a659e
   languageName: node
   linkType: hard
 
@@ -179,14 +179,14 @@ __metadata:
   linkType: hard
 
 "@codemirror/view@npm:^6.0.0, @codemirror/view@npm:^6.17.0, @codemirror/view@npm:^6.23.0, @codemirror/view@npm:^6.27.0, @codemirror/view@npm:^6.34.4, @codemirror/view@npm:^6.35.0":
-  version: 6.38.6
-  resolution: "@codemirror/view@npm:6.38.6"
+  version: 6.38.8
+  resolution: "@codemirror/view@npm:6.38.8"
   dependencies:
     "@codemirror/state": "npm:^6.5.0"
     crelt: "npm:^1.0.6"
     style-mod: "npm:^4.1.0"
     w3c-keyname: "npm:^2.2.4"
-  checksum: 10/5a047337a98de111817ce8c8d39e6429c90ca0b0a4d2678d6e161e9e5961b1d476a891f447ab7a05cac395d4a93530e7c68bedd93191285265f0742a308ad00b
+  checksum: 10/81b1508015a378e4719d0239254173f0c5cd340c2abf96eb488fe5fb474bdb37ec1f010b9890ced774accd7aeb9443e7337cb6a89544b954273e5ddabece7cea
   languageName: node
   linkType: hard
 
@@ -4735,8 +4735,8 @@ __metadata:
   linkType: hard
 
 "mdast-util-to-hast@npm:^13.0.0":
-  version: 13.2.0
-  resolution: "mdast-util-to-hast@npm:13.2.0"
+  version: 13.2.1
+  resolution: "mdast-util-to-hast@npm:13.2.1"
   dependencies:
     "@types/hast": "npm:^3.0.0"
     "@types/mdast": "npm:^4.0.0"
@@ -4747,7 +4747,7 @@ __metadata:
     unist-util-position: "npm:^5.0.0"
     unist-util-visit: "npm:^5.0.0"
     vfile: "npm:^6.0.0"
-  checksum: 10/b17ee338f843af31a1c7a2ebf0df6f0b41c9380b7119a63ab521d271df665456578e1234bb7617883e8d860fe878038dcf2b76ab2f21e0f7451215a096d26cce
+  checksum: 10/8fddf5e66ea24dc85c8fe1cc2acd8fbe36e9d4f21b06322e156431fd71385eab9d2d767646f50276ca4ce3684cb967c4e226c60c3fff3428feb687ccb598fa39
   languageName: node
   linkType: hard
 

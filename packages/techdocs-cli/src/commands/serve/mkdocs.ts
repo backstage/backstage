@@ -18,7 +18,7 @@ import { OptionValues } from 'commander';
 import openBrowser from 'react-dev-utils/openBrowser';
 import { createLogger } from '../../lib/utility';
 import { runMkdocsServer } from '../../lib/mkdocsServer';
-import { LogFunc, waitForSignal } from '../../lib/run';
+import { RunOnOutput } from '@backstage/cli-common';
 import { getMkdocsYml } from '@backstage/plugin-techdocs-node';
 import fs from 'fs-extra';
 import { checkIfDockerIsOperational } from './utils';
@@ -45,7 +45,7 @@ export default async function serveMkdocs(opts: OptionValues) {
   // We want to open browser only once based on a log.
   let boolOpenBrowserTriggered = false;
 
-  const logFunc: LogFunc = data => {
+  const logFunc: RunOnOutput = data => {
     // Sometimes the lines contain an unnecessary extra new line in between
     const logLines = data.toString().split('\n');
     const logPrefix = opts.docker ? '[docker/mkdocs]' : '[mkdocs]';
@@ -74,18 +74,18 @@ export default async function serveMkdocs(opts: OptionValues) {
   // Had me questioning this whole implementation for half an hour.
 
   // Commander stores --no-docker in cmd.docker variable
-  const childProcess = await runMkdocsServer({
+  const childProcess = runMkdocsServer({
     port: opts.port,
     dockerImage: opts.dockerImage,
     dockerEntrypoint: opts.dockerEntrypoint,
     dockerOptions: opts.dockerOption,
     useDocker: opts.docker,
-    stdoutLogFunc: logFunc,
-    stderrLogFunc: logFunc,
+    onStdout: logFunc,
+    onStderr: logFunc,
   });
 
   // Keep waiting for user to cancel the process
-  await waitForSignal([childProcess]);
+  await childProcess.waitForExit();
 
   if (configIsTemporary) {
     process.on('exit', async () => {

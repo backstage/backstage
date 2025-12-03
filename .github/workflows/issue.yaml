@@ -16,13 +16,13 @@ jobs:
     if: github.repository == 'backstage/backstage'
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@95d9a5deda9de15063e7595e9719c11c38c90ae2 # v2.13.2
+        uses: step-security/harden-runner@df199fb7be9f65074067a9eb93f12bb4c5547cf2 # v2.13.3
         with:
           egress-policy: audit
 
       # We need to checkout the `.github/ISSUE_TEMPLATE` for the advanced labeler action to be able to read the templates
       # While at it we might as well checkout all of `.github` so that the labeling actions don't need to fetch their configs
-      - uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
+      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4
         with:
           sparse-checkout: .github
 
