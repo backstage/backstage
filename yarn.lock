@@ -48600,9 +48600,9 @@ __metadata:
   linkType: hard
 
 "undici@npm:^7.2.3":
-  version: 7.9.0
-  resolution: "undici@npm:7.9.0"
-  checksum: 10/fa92d3d9106612be566e79942174e00426c2e1f9a688fb86c8d1809c84a032c02fc57bd601d2051a45d94bbd312c50221644b58c8186c4f0d64f8ecc7f18b806
+  version: 7.16.0
+  resolution: "undici@npm:7.16.0"
+  checksum: 10/2bb71672b23d3dc0f56f1b7fb6c936e4487a350db46eaafc03f2f9107f99cdf8e51ecdd32e589e2381ef47a64b6369cfb31f328b2c3ea663023aa47bc5258b9e
   languageName: node
   linkType: hard
 
