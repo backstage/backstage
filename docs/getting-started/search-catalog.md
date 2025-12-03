@@ -21,6 +21,7 @@ The [Technical Overview](../overview/technical-overview.md) provides greater det
   - `Resources` - The physical or virtual infrastructure needed to operate a component.
 
 - Organizational Entities
+  
   - `User` - A person, such as an employee, contractor, or similar.
   - `Group` - An organizational entity, such as a team, business unit, and so on.
 
