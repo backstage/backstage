@@ -29,13 +29,15 @@ import getRawBody from 'raw-body';
 import {
   GoogleGcsIntegrationConfig,
   readGoogleGcsIntegrationConfig,
-  GOOGLE_GCS_HOST,
 } from '@backstage/integration';
+
 import { Readable } from 'stream';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
 import packageinfo from '../../../../package.json';
 import { assertError } from '@backstage/errors';
 import { relative } from 'path/posix';
+
+const GOOGLE_GCS_HOST = 'storage.cloud.google.com';
 
 const parseURL = (
   url: string,
@@ -141,8 +143,6 @@ export class GoogleGcsUrlReader implements UrlReaderService {
       autoPaginate: true,
       prefix: key,
     });
-
-    console.log({ files, bucket, key, url });
 
     const responses = files.map(file => ({
       data: file.createReadStream(),
