@@ -30346,7 +30346,6 @@ __metadata:
     "@opentelemetry/exporter-prometheus": "npm:^0.54.0"
     "@opentelemetry/sdk-node": "npm:^0.54.0"
     example-app: "link:../app"
-    express-promise-router: "npm:^4.1.0"
   languageName: unknown
   linkType: soft
 
