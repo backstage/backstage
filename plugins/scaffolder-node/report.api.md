@@ -239,6 +239,7 @@ export type ExecuteShellCommandOptions = {
   options?: SpawnOptionsWithoutStdio;
   logger?: LoggerService;
   logStream?: Writable;
+  stderrLogging?: StderrLoggingOptions;
 };
 
 // @public
@@ -362,6 +363,21 @@ export type SerializedTaskEvent = {
   type: TaskEventType;
   createdAt: string;
 };
+
+// @public
+export type StderrLoggingOptions =
+  | {
+      level: StderrLogLevel;
+    }
+  | {
+      selector: StderrLogLevelSelector;
+    };
+
+// @public
+export type StderrLogLevel = 'error' | 'warn' | 'info' | 'debug';
+
+// @public
+export type StderrLogLevelSelector = (message: string) => StderrLogLevel | null;
 
 // @public @deprecated
 export interface TaskBroker {
