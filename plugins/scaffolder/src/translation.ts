@@ -350,12 +350,10 @@ export const scaffolderTranslationRef = createTranslationRef({
       },
     },
     templateWizardPage: {
-      title: 'Create a new component',
-      subtitle:
-        'Create new software components using standard templates in your organization',
-      pageTitle: 'Create a new component',
       pageContextMenu: {
         editConfigurationTitle: 'Edit Configuration',
+        hideDescriptionTitle: 'Hide Description',
+        showDescriptionTitle: 'Show Description',
       },
     },
     templateEditorToolbar: {

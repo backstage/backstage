@@ -162,15 +162,12 @@ describe('TemplateWizardPage', () => {
   });
 
   describe('scaffolder page context menu', () => {
-    it('should render if editUrl is set to url', async () => {
+    it('should not render the menu if editUrl and description are undefined', async () => {
       catalogApi.getEntityByRef.mockResolvedValue({
         apiVersion: 'v1',
-        kind: 'service',
+        kind: 'Service',
         metadata: {
           name: 'test',
-          annotations: {
-            [ANNOTATION_EDIT_URL]: 'http://localhost:3000',
-          },
         },
         spec: {
           profile: {
@@ -190,13 +187,55 @@ describe('TemplateWizardPage', () => {
           },
         },
       );
-      expect(queryByTestId('menu-button')).toBeInTheDocument();
+
+      expect(queryByTestId('menu-button')).not.toBeInTheDocument();
     });
 
-    it('should not render if editUrl is undefined', async () => {
+    it('should render the edit menu item if editUrl is set to url', async () => {
       catalogApi.getEntityByRef.mockResolvedValue({
         apiVersion: 'v1',
-        kind: 'service',
+        kind: 'Service',
+        metadata: {
+          name: 'test',
+          annotations: {
+            [ANNOTATION_EDIT_URL]: 'http://localhost:3000',
+          },
+        },
+        spec: {
+          profile: {
+            displayName: 'BackUser',
+          },
+        },
+      });
+      const { queryByTestId, getByTestId } = await renderInTestApp(
+        <ApiProvider apis={apis}>
+          <SecretsContextProvider>
+            <TemplateWizardPage customFieldExtensions={[]} />,
+          </SecretsContextProvider>
+        </ApiProvider>,
+        {
+          mountedRoutes: {
+            '/create': rootRouteRef,
+          },
+        },
+      );
+
+      // open menu
+      fireEvent.click(getByTestId('menu-button'));
+
+      expect(queryByTestId('edit-menu-item')).toBeInTheDocument();
+    });
+
+    it('should not render the edit menu item if editUrl is undefined', async () => {
+      scaffolderApiMock.getTemplateParameterSchema.mockResolvedValue({
+        title: 'React JSON Schema Form Test',
+        description: 'A test description',
+        steps: [],
+      });
+
+      catalogApi.getEntityByRef.mockResolvedValue({
+        apiVersion: 'v1',
+        kind: 'Service',
         metadata: {
           name: 'test',
           // annotations are not set
@@ -219,7 +258,235 @@ describe('TemplateWizardPage', () => {
           },
         },
       );
-      expect(queryByTestId('menu-button')).not.toBeInTheDocument();
+
+      // open menu
+      const menu = queryByTestId('menu-button');
+      expect(menu).toBeInTheDocument();
+      fireEvent.click(menu!);
+
+      expect(queryByTestId('edit-menu-item')).not.toBeInTheDocument();
+    });
+
+    it('should render "hide description" if the description is visible', async () => {
+      scaffolderApiMock.getTemplateParameterSchema.mockResolvedValue({
+        title: 'React JSON Schema Form Test',
+        // long description to ensure it is shown by default
+        description: 'More than 140 characters incoming! '.repeat(10),
+        steps: [],
+      });
+
+      catalogApi.getEntityByRef.mockResolvedValue({
+        apiVersion: 'v1',
+        kind: 'service',
+        metadata: {
+          name: 'test',
+          // annotations are not set
+        },
+        spec: {
+          profile: {
+            displayName: 'BackUser',
+          },
+        },
+      });
+
+      const { queryByTestId, queryByText } = await renderInTestApp(
+        <ApiProvider apis={apis}>
+          <SecretsContextProvider>
+            <TemplateWizardPage customFieldExtensions={[]} />,
+          </SecretsContextProvider>
+        </ApiProvider>,
+        {
+          mountedRoutes: {
+            '/create': rootRouteRef,
+          },
+        },
+      );
+
+      // open menu
+      const menu = queryByTestId('menu-button');
+      expect(menu).toBeInTheDocument();
+      fireEvent.click(menu!);
+
+      expect(queryByTestId('description-menu-item')).toBeInTheDocument();
+      expect(queryByText('Hide Description')).toBeInTheDocument();
+    });
+
+    it('should render "show description" if the description is not visible', async () => {
+      scaffolderApiMock.getTemplateParameterSchema.mockResolvedValue({
+        title: 'React JSON Schema Form Test',
+        // short description to ensure it is hidden by default
+        description: 'These are less than 140 characters.',
+        steps: [],
+      });
+
+      catalogApi.getEntityByRef.mockResolvedValue({
+        apiVersion: 'v1',
+        kind: 'service',
+        metadata: {
+          name: 'test',
+          // annotations are not set
+        },
+        spec: {
+          profile: {
+            displayName: 'BackUser',
+          },
+        },
+      });
+
+      const { queryByTestId, queryByText, getByTestId } = await renderInTestApp(
+        <ApiProvider apis={apis}>
+          <SecretsContextProvider>
+            <TemplateWizardPage customFieldExtensions={[]} />,
+          </SecretsContextProvider>
+        </ApiProvider>,
+        {
+          mountedRoutes: {
+            '/create': rootRouteRef,
+          },
+        },
+      );
+
+      // open menu
+      fireEvent.click(getByTestId('menu-button'));
+
+      expect(queryByTestId('description-menu-item')).toBeInTheDocument();
+      expect(queryByText('Show Description')).toBeInTheDocument();
+    });
+
+    it('should not render the description item if no description is set', async () => {
+      scaffolderApiMock.getTemplateParameterSchema.mockResolvedValue({
+        title: 'React JSON Schema Form Test',
+        // no description
+        steps: [],
+      });
+
+      catalogApi.getEntityByRef.mockResolvedValue({
+        apiVersion: 'v1',
+        kind: 'service',
+        metadata: {
+          name: 'test',
+          annotations: {
+            [ANNOTATION_EDIT_URL]: 'http://localhost:3000',
+          },
+        },
+        spec: {
+          profile: {
+            displayName: 'BackUser',
+          },
+        },
+      });
+
+      const { queryByTestId, getByTestId } = await renderInTestApp(
+        <ApiProvider apis={apis}>
+          <SecretsContextProvider>
+            <TemplateWizardPage customFieldExtensions={[]} />,
+          </SecretsContextProvider>
+        </ApiProvider>,
+        {
+          mountedRoutes: {
+            '/create': rootRouteRef,
+          },
+        },
+      );
+
+      // open menu
+      fireEvent.click(getByTestId('menu-button'));
+
+      expect(queryByTestId('description-menu-item')).not.toBeInTheDocument();
+    });
+
+    it('should always hide the description if spec.presentation.showDescription is false', async () => {
+      scaffolderApiMock.getTemplateParameterSchema.mockResolvedValue({
+        title: 'React JSON Schema Form Test',
+        // long description to ensure it is shown by default
+        description: 'More than 140 characters incoming! '.repeat(10),
+        steps: [],
+        presentation: {
+          showDescription: false,
+        },
+      });
+
+      catalogApi.getEntityByRef.mockResolvedValue({
+        apiVersion: 'v1',
+        kind: 'service',
+        metadata: {
+          name: 'test',
+          // annotations are not set
+        },
+        spec: {
+          profile: {
+            displayName: 'BackUser',
+          },
+        },
+      });
+
+      const { queryByTestId, queryByText } = await renderInTestApp(
+        <ApiProvider apis={apis}>
+          <SecretsContextProvider>
+            <TemplateWizardPage customFieldExtensions={[]} />,
+          </SecretsContextProvider>
+        </ApiProvider>,
+        {
+          mountedRoutes: {
+            '/create': rootRouteRef,
+          },
+        },
+      );
+
+      // open menu
+      const menu = queryByTestId('menu-button');
+      expect(menu).toBeInTheDocument();
+      fireEvent.click(menu!);
+
+      expect(queryByTestId('description-menu-item')).toBeInTheDocument();
+      expect(queryByText('Show Description')).toBeInTheDocument();
+    });
+
+    it('should always show the description if spec.presentation.showDescription is true', async () => {
+      scaffolderApiMock.getTemplateParameterSchema.mockResolvedValue({
+        title: 'React JSON Schema Form Test',
+        // long description to ensure it is shown by default
+        description: 'These are less than 140 characters.',
+        steps: [],
+        presentation: {
+          showDescription: true,
+        },
+      });
+
+      catalogApi.getEntityByRef.mockResolvedValue({
+        apiVersion: 'v1',
+        kind: 'service',
+        metadata: {
+          name: 'test',
+          // annotations are not set
+        },
+        spec: {
+          profile: {
+            displayName: 'BackUser',
+          },
+        },
+      });
+
+      const { queryByTestId, queryByText } = await renderInTestApp(
+        <ApiProvider apis={apis}>
+          <SecretsContextProvider>
+            <TemplateWizardPage customFieldExtensions={[]} />,
+          </SecretsContextProvider>
+        </ApiProvider>,
+        {
+          mountedRoutes: {
+            '/create': rootRouteRef,
+          },
+        },
+      );
+
+      // open menu
+      const menu = queryByTestId('menu-button');
+      expect(menu).toBeInTheDocument();
+      fireEvent.click(menu!);
+
+      expect(queryByTestId('description-menu-item')).toBeInTheDocument();
+      expect(queryByText('Hide Description')).toBeInTheDocument();
     });
   });
 });
