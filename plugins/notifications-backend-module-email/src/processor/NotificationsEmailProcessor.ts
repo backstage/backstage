@@ -54,6 +54,7 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
   private readonly sender: string;
   private readonly replyTo?: string;
   private readonly sesConfig?: Config;
+  private readonly sesOptions?: Partial<SendEmailCommandInput>;
   private readonly cacheTtl: number;
   private readonly concurrencyLimit: number;
   private readonly throttleInterval: number;
@@ -92,6 +93,7 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
     this.sender = emailProcessorConfig.getString('sender');
     this.replyTo = emailProcessorConfig.getOptionalString('replyTo');
     this.sesConfig = emailProcessorConfig.getOptionalConfig('sesConfig');
+    this.sesOptions = this.getSesOptions();
     this.concurrencyLimit =
       emailProcessorConfig.getOptionalNumber('concurrencyLimit') ?? 2;
     this.throttleInterval = emailProcessorConfig.has('throttleInterval')
@@ -308,9 +310,7 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
     return contentParts.join('\n\n');
   }
 
-  private async getSesOptions(): Promise<
-    Partial<SendEmailCommandInput> | undefined
-  > {
+  private getSesOptions(): Partial<SendEmailCommandInput> | undefined {
     if (!this.sesConfig) {
       return undefined;
     }
@@ -338,7 +338,7 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
       html: this.getHtmlContent(notification),
       text: this.getTextContent(notification),
       replyTo: this.replyTo,
-      ses: await this.getSesOptions(),
+      ses: this.sesOptions,
     };
 
     await this.sendMails(mailOptions, emails);
@@ -356,7 +356,7 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
       html: await this.templateRenderer?.getHtml?.(notification),
       text: await this.templateRenderer?.getText?.(notification),
       replyTo: this.replyTo,
-      ses: await this.getSesOptions(),
+      ses: this.sesOptions,
     };
 
     await this.sendMails(mailOptions, emails);
