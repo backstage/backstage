@@ -21,6 +21,11 @@ app:
         ownerEntityRefs: [cubic-belugas]
 
   extensions:
+    # set availableLanguages example
+    - api:app/app-language:
+        config:
+          availableLanguages: ['en', 'es', 'fr', 'de', 'ja']
+          defaultLanguage: 'en'
     - entity-card:org/members-list:
         config:
           showAggregateMembersToggle: true

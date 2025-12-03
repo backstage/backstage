@@ -232,12 +232,26 @@ const appPlugin: OverridableFrontendPlugin<
       ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
     'api:app/app-language': OverridableExtensionDefinition<{
+      config: {
+        defaultLanguage: string | undefined;
+        availableLanguages: string[] | undefined;
+      };
+      configInput: {
+        defaultLanguage?: string | undefined;
+        availableLanguages?: string[] | undefined;
+      };
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
+      inputs: {
+        [x: string]: ExtensionInput<
+          ExtensionDataRef,
+          {
+            singleton: boolean;
+            optional: boolean;
+          }
+        >;
+      };
       kind: 'api';
       name: 'app-language';
-      config: {};
-      configInput: {};
-      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
-      inputs: {};
       params: <
         TApi,
         TImpl extends TApi,
