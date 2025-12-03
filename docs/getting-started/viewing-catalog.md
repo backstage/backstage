@@ -15,33 +15,31 @@ When you first log into your standalone Backstage App, `Home` is selected in the
 
 The [Technical Overview](../overview/technical-overview.md) provides greater detail, but the catalog displays two main kinds of registered entities:
 
-  - **Core Entities**
+- **Core Entities**
+  - `Components` - Individual pieces of software that can be tracked in source control and can implement APIs for other components to consume.
+  - `APIs` - Implemented by components and form the boundaries between different components. The API can be either public, restricted, or private.
+  - `Resources` - The physical or virtual infrastructure needed to operate a component.
 
-    - `Components` - Individual pieces of software that can be tracked in source control and can implement APIs for other components to consume.
-    - `APIs` - Implemented by components and form the boundaries between different components. The API can be either public, restricted, or private.
-    - `Resources` - The physical or virtual infrastructure needed to operate a component.
-
-  - **Organizational Entities**
-
-    - `User` - A person, such as an employee, contractor, or similar.
-    - `Group` - An organizational entity, such as a team, business unit, and so on.
+- **Organizational Entities**
+  - `User` - A person, such as an employee, contractor, or similar.
+  - `Group` - An organizational entity, such as a team, business unit, and so on.
 
 There are three additional items that can be part of the system model:
 
-  - `Location` - A marker that references other places to look for catalog data.
-  - `Type` - It has no set meaning. You can assign your own types and use them as desired.
-  - `Template` - Describes both the parameters that are rendered in the frontend part of the scaffolding wizard, and the steps that are executed when scaffolding that component.
+- `Location` - A marker that references other places to look for catalog data.
+- `Type` - It has no set meaning. You can assign your own types and use them as desired.
+- `Template` - Describes both the parameters that are rendered in the frontend part of the scaffolding wizard, and the steps that are executed when scaffolding that component.
 
 It should be noted that you can also [create your own kinds of entities](../features/software-catalog/extending-the-model.md#adding-a-new-kind), if you need to model something in your organization that does not map to one of the existing entity types.
 
 Initially, the Catalog displays registered entities matching the following filter settings:
 
-  - **Kind** - Component
-  - **Type** - all
-  - **Owner** - Owned
-  - **Lifecycle** - list of lifecycle values of entities in the Catalog
-  - **Processing Status** - normal
-  - **Namespace** - The ID of a [namespace](../features/software-catalog/descriptor-format.md#namespace-optional) to which the entity belongs
+- **Kind** - Component
+- **Type** - all
+- **Owner** - Owned
+- **Lifecycle** - list of lifecycle values of entities in the Catalog
+- **Processing Status** - normal
+- **Namespace** - The ID of a [namespace](../features/software-catalog/descriptor-format.md#namespace-optional) to which the entity belongs
 
 You can change the initial setting for the [Owner](../features/software-catalog/catalog-customization.md#initially-selected-filter) and [Kind](../features/software-catalog/catalog-customization.md#initially-selected-kind) filters.
 
@@ -49,23 +47,23 @@ You can change the initial setting for the [Owner](../features/software-catalog/
 
 For each kind of entity, a set of columns display information regarding the entity. For example, the default set of information for a `Component` is:
 
-  - `Name` - the name of the component
-  - `System` - an optional field that references the system to which the component belongs
-  - `Owner` - the owner of the component
-  - `Type` - common types are as follows, but you can [create a new type](../features/software-catalog/extending-the-model.md#adding-a-new-kind) to meet your organization's needs
-    -  `service` - a backend service, typically exposing an API
-    -  `website` - a website
-    - `library` - a software library, such as an npm module or a Java library
-  - `Lifecyle`
-    - `experimental` - an experiment or early, non-production component, signaling
+- `Name` - the name of the component
+- `System` - an optional field that references the system to which the component belongs
+- `Owner` - the owner of the component
+- `Type` - common types are as follows, but you can [create a new type](../features/software-catalog/extending-the-model.md#adding-a-new-kind) to meet your organization's needs
+  - `service` - a backend service, typically exposing an API
+  - `website` - a website
+  - `library` - a software library, such as an npm module or a Java library
+- `Lifecyle`
+  - `experimental` - an experiment or early, non-production component, signaling
     that users may not prefer to consume it over other more established
     components, or that there are low or no reliability guarantees
-    - `production` - an established, owned, maintained component
-    - `deprecated` - a component that is at the end of its lifecycle, and may
+  - `production` - an established, owned, maintained component
+  - `deprecated` - a component that is at the end of its lifecycle, and may
     disappear at a later point in time
-  - `Description` - an optional field that describes the component.
-  - `Tags` - an optional field that can be used for searching
-  - `Actions` - see [Catalog Actions](#catalog-actions)
+- `Description` - an optional field that describes the component.
+- `Tags` - an optional field that can be used for searching
+- `Actions` - see [Catalog Actions](#catalog-actions)
 
 You can modify the columns associated with each kind of entity, following the instructions in [Customize Columns](../features/software-catalog/catalog-customization.md#customize-actions).
 
@@ -73,9 +71,9 @@ You can modify the columns associated with each kind of entity, following the in
 
 For each entity, there are a set of actions that are available.
 
-  - View - View the `catalog-info.yaml` file that defines the entity.
-  - Edit - Edit the `catalog-info.yaml` file that defines the entity. See [Updating a Component](../getting-started/update-a-component.md)
-  - Star - Designate the entity as a favorite. You can filter and [search](../getting-started/search-catalog.md) for starred entities.
+- View - View the `catalog-info.yaml` file that defines the entity.
+- Edit - Edit the `catalog-info.yaml` file that defines the entity. See [Updating a Component](../getting-started/update-a-component.md)
+- Star - Designate the entity as a favorite. You can filter and [search](../getting-started/search-catalog.md) for starred entities.
 
 ![Screenshot explaining entity actions.](../assets/uiguide/entity-actions.png)
 
@@ -85,10 +83,10 @@ For each entity, there are a set of actions that are available.
 
 Selecting a entity in the main panel displays details of the entity. The type of details depends on the type of entity. For example, selecting a Component, such as `example-website`, displays the following details:
 
-  - `About` - Metadata for the entity, such as description, owner,tags,and domain.
-  - `Relations` - see [Viewing entity relations](#viewing-entitiy-relationships)
-  - `Links` - any links associated with the entity
-  - `Has subcomponents` - An entity reference to another component of which the component is a part
+- `About` - Metadata for the entity, such as description, owner,tags,and domain.
+- `Relations` - see [Viewing entity relations](#viewing-entitiy-relationships)
+- `Links` - any links associated with the entity
+- `Has subcomponents` - An entity reference to another component of which the component is a part
 
 Selecting a System, such as `examples`, displays `About`, `Relations`, and `Links` similar to a Component, but it also includes `Has components`, `APIs` and `Has Resources`.
 
