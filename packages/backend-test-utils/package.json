@@ -75,7 +75,7 @@
     "mysql2": "^3.0.0",
     "pg": "^8.11.3",
     "pg-connection-string": "^2.3.0",
-    "testcontainers": "^10.0.0",
+    "testcontainers": "^11.9.0",
     "text-extensions": "^2.4.0",
     "uuid": "^11.0.0",
     "yn": "^4.0.0",
