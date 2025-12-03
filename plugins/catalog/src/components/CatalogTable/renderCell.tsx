@@ -39,54 +39,6 @@ export function renderCell(
   column: TableColumn<CatalogTableRow>,
   actions?: TableProps<CatalogTableRow>['actions'],
 ): JSX.Element {
-  // Actions column - render action buttons
-  if (column.field === '__actions__') {
-    if (!actions || actions.length === 0) {
-      return <Cell id="actions" className="bui-TableCell" />;
-    }
-
-    const actionElements = actions
-      .map((actionFn, index) => {
-        // Actions are functions that take { entity } and return an action object
-        // Type assertion needed because Material Table's actions type is complex
-        const actionFnTyped = actionFn as (data: {
-          entity: CatalogTableRow['entity'];
-        }) => {
-          icon: () => ReactElement;
-          tooltip: string;
-          disabled?: boolean;
-          onClick: () => void;
-          cellStyle?: CSSProperties;
-        } | null;
-        const action = actionFnTyped({ entity: item.entity });
-        if (!action) return null;
-
-        const { icon, tooltip, disabled, onClick, cellStyle } = action;
-        const IconComponent = icon();
-
-        return (
-          <TooltipTrigger key={index} isDisabled={disabled}>
-            <ButtonIcon
-              icon={IconComponent}
-              aria-label={tooltip}
-              isDisabled={disabled}
-              onPress={onClick}
-              style={cellStyle}
-            />
-            <Tooltip>{tooltip}</Tooltip>
-          </TooltipTrigger>
-        );
-      })
-      .filter(Boolean);
-
-    return (
-      <Cell id="actions" className="bui-TableCell">
-        <Flex direction="row" gap="2" align="center">
-          {actionElements}
-        </Flex>
-      </Cell>
-    );
-  }
   const cellId = column.field || String(column.title);
   const cellValue = column.field
     ? extractValueByField(item, column.field)
@@ -199,6 +151,55 @@ export function renderCell(
     }
     return (
       <CellText id={cellId} title={targets.join(', ')} hidden={column.hidden} />
+    );
+  }
+
+  // Actions column - render action buttons (handled last since it's always the last column)
+  if (column.field === '__actions__') {
+    if (!actions || actions.length === 0) {
+      return <Cell id="actions" className="bui-TableCell" />;
+    }
+
+    const actionElements = actions
+      .map((actionFn, index) => {
+        // Actions are functions that take { entity } and return an action object
+        // Type assertion needed because Material Table's actions type is complex
+        const actionFnTyped = actionFn as (data: {
+          entity: CatalogTableRow['entity'];
+        }) => {
+          icon: () => ReactElement;
+          tooltip: string;
+          disabled?: boolean;
+          onClick: () => void;
+          cellStyle?: CSSProperties;
+        } | null;
+        const action = actionFnTyped({ entity: item.entity });
+        if (!action) return null;
+
+        const { icon, tooltip, disabled, onClick, cellStyle } = action;
+        const IconComponent = icon();
+
+        return (
+          <TooltipTrigger key={index} isDisabled={disabled}>
+            <ButtonIcon
+              icon={IconComponent}
+              aria-label={tooltip}
+              isDisabled={disabled}
+              onPress={onClick}
+              style={cellStyle}
+            />
+            <Tooltip>{tooltip}</Tooltip>
+          </TooltipTrigger>
+        );
+      })
+      .filter(Boolean);
+
+    return (
+      <Cell id="actions" className="bui-TableCell">
+        <Flex direction="row" gap="2" align="center">
+          {actionElements}
+        </Flex>
+      </Cell>
     );
   }
 

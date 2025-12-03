@@ -165,8 +165,6 @@ describe('DefaultCatalogPage', () => {
     displayName: 'Display Name',
   });
 
-  const starredApi = new MockStarredEntitiesApi();
-
   const renderWrapped = (children: ReactNode) =>
     renderInTestApp(
       <TestApiProvider
@@ -174,7 +172,7 @@ describe('DefaultCatalogPage', () => {
           [catalogApiRef, catalogApi],
           [identityApiRef, identityApi],
           [storageApiRef, mockApis.storage()],
-          [starredEntitiesApiRef, starredApi],
+          [starredEntitiesApiRef, new MockStarredEntitiesApi()],
           [permissionApiRef, mockApis.permission()],
         ]}
       >
@@ -255,13 +253,13 @@ describe('DefaultCatalogPage', () => {
       screen.findByText(/Owned components \(1\)/),
     ).resolves.toBeInTheDocument();
     await expect(
-      screen.findByRole('button', { name: /view/i }),
+      screen.findByRole('button', { name: /View/i }),
     ).resolves.toBeInTheDocument();
     await expect(
-      screen.findByRole('button', { name: /edit/i }),
+      screen.findByRole('button', { name: /Edit/i }),
     ).resolves.toBeInTheDocument();
     await expect(
-      screen.findByRole('button', { name: /add to favorites/i }),
+      screen.findByRole('button', { name: /Add to favorites/i }),
     ).resolves.toBeInTheDocument();
   }, 20_000);
 
@@ -293,11 +291,12 @@ describe('DefaultCatalogPage', () => {
       screen.findByText(/Owned components \(1\)/),
     ).resolves.toBeInTheDocument();
     await expect(
-      screen.findByRole('button', { name: /foo action/i }),
+      screen.findByRole('button', { name: /Foo Action/i }),
     ).resolves.toBeInTheDocument();
     const barActionButton = await screen.findByRole('button', {
-      name: /bar action/i,
+      name: /Bar Action/i,
     });
+    expect(barActionButton).toBeInTheDocument();
     expect(barActionButton).toBeDisabled();
   }, 20_000);
 
@@ -329,9 +328,6 @@ describe('DefaultCatalogPage', () => {
   // this test is for fixing the bug after favoriting an entity, the matching
   // entities defaulting to "owned" filter and not based on the selected filter
   it('should render the correct entities filtered on the selected filter', async () => {
-    // Pre-star an entity before rendering (since default actions have been removed)
-    await starredApi.toggleStarred('component:default/Entity1');
-
     await renderWrapped(<DefaultCatalogPage />);
     await waitFor(() => expect(catalogApi.queryEntities).toHaveBeenCalled());
 
@@ -339,18 +335,33 @@ describe('DefaultCatalogPage', () => {
     await expect(
       screen.findByText(/Owned components \(1\)/),
     ).resolves.toBeInTheDocument();
+    // The "Starred" menu option should initially be disabled, since there
+    // aren't any starred entities.
+    expect(screen.getByTestId('user-picker-starred')).toHaveAttribute(
+      'aria-disabled',
+      'true',
+    );
     fireEvent.click(screen.getByTestId('user-picker-all'));
     await expect(
       screen.findByText(/All components \(2\)/),
     ).resolves.toBeInTheDocument();
 
-    // Verify that switching filters maintains the correct filter state
-    // (The original bug was that after starring, it would default back to "owned")
-    // Since default actions are removed, we can't star via UI, but we can verify
-    // that filter switching works correctly
-    fireEvent.click(screen.getByTestId('user-picker-owned'));
+    const starredIcons = await screen.findAllByRole('button', {
+      name: /Add to favorites/i,
+    });
+    fireEvent.click(starredIcons[0]);
     await expect(
-      screen.findByText(/Owned components \(1\)/),
+      screen.findByText(/All components \(2\)/),
+    ).resolves.toBeInTheDocument();
+
+    // Now that we've starred an entity, the "Starred" menu option should be
+    // enabled.
+    expect(
+      await screen.findByTestId('user-picker-starred'),
+    ).not.toHaveAttribute('aria-disabled', 'true');
+    fireEvent.click(screen.getByTestId('user-picker-starred'));
+    await expect(
+      screen.findByText(/Starred components \(1\)/),
     ).resolves.toBeInTheDocument();
   }, 20_000);
 
