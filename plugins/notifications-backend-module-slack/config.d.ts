@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { HumanDuration } from '@backstage/types';
+
 export interface Config {
   notifications?: {
     processors?: {
@@ -28,6 +30,14 @@ export interface Config {
          * Names, or Slack Channel IDs. Any valid identifier that chat.postMessage can accept.
          */
         broadcastChannels?: string[];
+        /**
+         * Concurrency limit for Slack notifications, defaults to 10
+         */
+        concurrencyLimit?: number;
+        /**
+         * Throttle duration between Slack notifications, defaults to 1 minute
+         */
+        throttleInterval?: HumanDuration | string;
       }>;
     };
   };
