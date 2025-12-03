@@ -161,19 +161,40 @@ export function renderCell(
     }
 
     const actionElements = actions
-      .map((actionFn, index) => {
-        // Actions are functions that take { entity } and return an action object
-        // Type assertion needed because Material Table's actions type is complex
-        const actionFnTyped = actionFn as (data: {
-          entity: CatalogTableRow['entity'];
-        }) => {
+      .map((actionFnOrObj, index) => {
+        // Actions can be either functions that take { entity } and return an action object,
+        // or static action objects. Material Table supports both formats.
+        let action: {
           icon: () => ReactElement;
           tooltip: string;
           disabled?: boolean;
           onClick: () => void;
           cellStyle?: CSSProperties;
         } | null;
-        const action = actionFnTyped({ entity: item.entity });
+
+        if (typeof actionFnOrObj === 'function') {
+          // Function format: call with { entity }
+          const actionFnTyped = actionFnOrObj as (data: {
+            entity: CatalogTableRow['entity'];
+          }) => {
+            icon: () => ReactElement;
+            tooltip: string;
+            disabled?: boolean;
+            onClick: () => void;
+            cellStyle?: CSSProperties;
+          } | null;
+          action = actionFnTyped({ entity: item.entity });
+        } else {
+          // Object format: use directly
+          action = actionFnOrObj as {
+            icon: () => ReactElement;
+            tooltip: string;
+            disabled?: boolean;
+            onClick: () => void;
+            cellStyle?: CSSProperties;
+          } | null;
+        }
+
         if (!action) return null;
 
         const { icon, tooltip, disabled, onClick, cellStyle } = action;
