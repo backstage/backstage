@@ -14,5 +14,6 @@
  * limitations under the License.
  */
 
-export { readGoogleGcsIntegrationConfig } from './config';
+export { readGoogleGcsIntegrationConfig, GOOGLE_GCS_HOST } from './config';
 export type { GoogleGcsIntegrationConfig } from './config';
+export { GoogleGcsIntegration } from './GoogleGcsIntegration';

@@ -17,24 +17,25 @@
 import * as GoogleCloud from '@google-cloud/storage';
 import {
   UrlReaderService,
+  UrlReaderServiceReadTreeOptions,
   UrlReaderServiceReadTreeResponse,
   UrlReaderServiceReadUrlOptions,
   UrlReaderServiceReadUrlResponse,
   UrlReaderServiceSearchOptions,
   UrlReaderServiceSearchResponse,
 } from '@backstage/backend-plugin-api';
-import { ReaderFactory } from './types';
+import { ReaderFactory, ReadTreeResponseFactory } from './types';
 import getRawBody from 'raw-body';
 import {
   GoogleGcsIntegrationConfig,
   readGoogleGcsIntegrationConfig,
+  GOOGLE_GCS_HOST,
 } from '@backstage/integration';
 import { Readable } from 'stream';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
 import packageinfo from '../../../../package.json';
 import { assertError } from '@backstage/errors';
-
-const GOOGLE_GCS_HOST = 'storage.cloud.google.com';
+import { relative } from 'path/posix';
 
 const parseURL = (
   url: string,
@@ -59,7 +60,7 @@ const parseURL = (
  * @public
  */
 export class GoogleGcsUrlReader implements UrlReaderService {
-  static factory: ReaderFactory = ({ config, logger }) => {
+  static factory: ReaderFactory = ({ config, logger, treeResponseFactory }) => {
     if (!config.has('integrations.googleGcs')) {
       return [];
     }
@@ -83,20 +84,29 @@ export class GoogleGcsUrlReader implements UrlReaderService {
         userAgent: `backstage/backend-defaults.GoogleGcsUrlReader/${packageinfo.version}`,
       });
     }
-    const reader = new GoogleGcsUrlReader(gcsConfig, storage);
+    const reader = new GoogleGcsUrlReader(gcsConfig, storage, {
+      treeResponseFactory,
+    });
     const predicate = (url: URL) => url.host === GOOGLE_GCS_HOST;
     return [{ reader, predicate }];
   };
 
   private readonly integration: GoogleGcsIntegrationConfig;
   private readonly storage: GoogleCloud.Storage;
+  private readonly deps: {
+    treeResponseFactory: ReadTreeResponseFactory;
+  };
 
   constructor(
     integration: GoogleGcsIntegrationConfig,
     storage: GoogleCloud.Storage,
+    deps: {
+      treeResponseFactory: ReadTreeResponseFactory;
+    },
   ) {
     this.integration = integration;
     this.storage = storage;
+    this.deps = deps;
   }
 
   private readStreamFromUrl(url: string): Readable {
@@ -121,8 +131,28 @@ export class GoogleGcsUrlReader implements UrlReaderService {
     return ReadUrlResponseFactory.fromReadable(stream);
   }
 
-  async readTree(): Promise<UrlReaderServiceReadTreeResponse> {
-    throw new Error('GcsUrlReader does not implement readTree');
+  async readTree(
+    url: string,
+    _options?: UrlReaderServiceReadTreeOptions,
+  ): Promise<UrlReaderServiceReadTreeResponse> {
+    const { bucket, key } = parseURL(url);
+
+    const [files] = await this.storage.bucket(bucket).getFiles({
+      autoPaginate: true,
+      prefix: key,
+    });
+
+    console.log({ files, bucket, key, url });
+
+    const responses = files.map(file => ({
+      data: file.createReadStream(),
+      path: relative(key, file.name),
+      lastModifiedAt: file.metadata.updated
+        ? new Date(file.metadata.updated as string)
+        : undefined,
+    }));
+
+    return this.deps.treeResponseFactory.fromReadableArray(responses);
   }
 
   async search(

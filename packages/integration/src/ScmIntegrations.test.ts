@@ -43,6 +43,7 @@ import {
   AzureBlobStorageIntegrationConfig,
   AzureBlobStorageIntergation,
 } from './azureBlobStorage';
+import { GoogleGcsIntegration, GoogleGcsIntegrationConfig } from './googleGcs';
 
 describe('ScmIntegrations', () => {
   const awsS3 = new AwsS3Integration({
@@ -93,6 +94,10 @@ describe('ScmIntegrations', () => {
     host: 'harness.local',
   } as HarnessIntegrationConfig);
 
+  const googleGcs = new GoogleGcsIntegration({
+    host: 'storage.cloud.google.com',
+  } as GoogleGcsIntegrationConfig);
+
   const i = new ScmIntegrations({
     awsS3: basicIntegrations([awsS3], item => item.config.host),
     awsCodeCommit: basicIntegrations([awsCodeCommit], item => item.config.host),
@@ -108,6 +113,7 @@ describe('ScmIntegrations', () => {
     github: basicIntegrations([github], item => item.config.host),
     gitlab: basicIntegrations([gitlab], item => item.config.host),
     gitea: basicIntegrations([gitea], item => item.config.host),
+    googleGcs: basicIntegrations([googleGcs], item => item.config.host),
     harness: basicIntegrations([harness], item => item.config.host),
   });
 
