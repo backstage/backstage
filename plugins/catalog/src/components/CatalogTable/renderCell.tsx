@@ -14,9 +14,19 @@
  * limitations under the License.
  */
 
-import { Cell, CellText, TagGroup, Tag } from '@backstage/ui';
+import type { ReactNode, ReactElement, CSSProperties } from 'react';
+import {
+  Cell,
+  CellText,
+  TagGroup,
+  Tag,
+  ButtonIcon,
+  TooltipTrigger,
+  Tooltip,
+  Flex,
+} from '@backstage/ui';
 import { EntityRefLink, EntityRefLinks } from '@backstage/plugin-catalog-react';
-import { TableColumn } from '@backstage/core-components';
+import { TableColumn, TableProps } from '@backstage/core-components';
 import { CatalogTableRow } from './types';
 import { extractValueByField } from './utils';
 
@@ -27,11 +37,80 @@ import { extractValueByField } from './utils';
 export function renderCell(
   item: CatalogTableRow,
   column: TableColumn<CatalogTableRow>,
+  actions?: TableProps<CatalogTableRow>['actions'],
 ): JSX.Element {
+  // Actions column - render action buttons
+  if (column.field === '__actions__') {
+    if (!actions || actions.length === 0) {
+      return <Cell id="actions" className="bui-TableCell" />;
+    }
+
+    const actionElements = actions
+      .map((actionFn, index) => {
+        // Actions are functions that take { entity } and return an action object
+        // Type assertion needed because Material Table's actions type is complex
+        const actionFnTyped = actionFn as (data: {
+          entity: CatalogTableRow['entity'];
+        }) => {
+          icon: () => ReactElement;
+          tooltip: string;
+          disabled?: boolean;
+          onClick: () => void;
+          cellStyle?: CSSProperties;
+        } | null;
+        const action = actionFnTyped({ entity: item.entity });
+        if (!action) return null;
+
+        const { icon, tooltip, disabled, onClick, cellStyle } = action;
+        const IconComponent = icon();
+
+        return (
+          <TooltipTrigger key={index} isDisabled={disabled}>
+            <ButtonIcon
+              icon={IconComponent}
+              aria-label={tooltip}
+              isDisabled={disabled}
+              onPress={onClick}
+              style={cellStyle}
+            />
+            <Tooltip>{tooltip}</Tooltip>
+          </TooltipTrigger>
+        );
+      })
+      .filter(Boolean);
+
+    return (
+      <Cell id="actions" className="bui-TableCell">
+        <Flex direction="row" gap="2" align="center">
+          {actionElements}
+        </Flex>
+      </Cell>
+    );
+  }
   const cellId = column.field || String(column.title);
   const cellValue = column.field
     ? extractValueByField(item, column.field)
     : null;
+
+  // If column has a custom render function, use it (for backward compatibility with old format)
+  if (column.render) {
+    // Material Table's render signature: (rowData: T) => ReactNode
+    // Our custom format uses: ({ entity, resolved }) => ReactNode
+    // Type assertion needed because TypeScript expects Material Table's signature
+    const renderFn = column.render as (data: {
+      entity: CatalogTableRow['entity'];
+      resolved: CatalogTableRow['resolved'];
+    }) => ReactNode;
+    const renderedContent = renderFn({
+      entity: item.entity,
+      resolved: item.resolved,
+    });
+    return (
+      <Cell id={cellId} className="bui-TableCell" hidden={column.hidden}>
+        {renderedContent}
+      </Cell>
+    );
+  }
 
   // Determine cell component based on field
 

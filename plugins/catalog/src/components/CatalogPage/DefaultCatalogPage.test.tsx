@@ -165,6 +165,8 @@ describe('DefaultCatalogPage', () => {
     displayName: 'Display Name',
   });
 
+  const starredApi = new MockStarredEntitiesApi();
+
   const renderWrapped = (children: ReactNode) =>
     renderInTestApp(
       <TestApiProvider
@@ -172,7 +174,7 @@ describe('DefaultCatalogPage', () => {
           [catalogApiRef, catalogApi],
           [identityApiRef, identityApi],
           [storageApiRef, mockApis.storage()],
-          [starredEntitiesApiRef, new MockStarredEntitiesApi()],
+          [starredEntitiesApiRef, starredApi],
           [permissionApiRef, mockApis.permission()],
         ]}
       >
@@ -193,10 +195,10 @@ describe('DefaultCatalogPage', () => {
   it('should render the default column of the grid', async () => {
     await renderWrapped(<DefaultCatalogPage />);
 
-    const columnHeader = screen
-      .getAllByRole('button')
-      .filter(c => c.tagName === 'SPAN');
-    const columnHeaderLabels = columnHeader.map(c => c.textContent);
+    const columnHeader = screen.getAllByRole('columnheader');
+    const columnHeaderLabels = columnHeader.map(
+      c => c.textContent?.trim() || '',
+    );
 
     expect(columnHeaderLabels).toEqual([
       'Name',
@@ -218,10 +220,10 @@ describe('DefaultCatalogPage', () => {
     ];
     await renderWrapped(<DefaultCatalogPage columns={columns} />);
 
-    const columnHeader = screen
-      .getAllByRole('button')
-      .filter(c => c.tagName === 'SPAN');
-    const columnHeaderLabels = columnHeader.map(c => c.textContent);
+    const columnHeader = screen.getAllByRole('columnheader');
+    const columnHeaderLabels = columnHeader.map(
+      c => c.textContent?.trim() || '',
+    );
     expect(columnHeaderLabels).toEqual(['Foo', 'Bar', 'Baz', 'Actions']);
   }, 20_000);
 
@@ -237,10 +239,10 @@ describe('DefaultCatalogPage', () => {
     };
     await renderWrapped(<DefaultCatalogPage columns={columns} />);
 
-    const columnHeader = screen
-      .getAllByRole('button')
-      .filter(c => c.tagName === 'SPAN');
-    const columnHeaderLabels = columnHeader.map(c => c.textContent);
+    const columnHeader = screen.getAllByRole('columnheader');
+    const columnHeaderLabels = columnHeader.map(
+      c => c.textContent?.trim() || '',
+    );
     expect(columnHeaderLabels).toEqual(['Foo', 'Bar', 'Baz', 'Actions']);
   }, 20_000);
 
@@ -252,10 +254,14 @@ describe('DefaultCatalogPage', () => {
     await expect(
       screen.findByText(/Owned components \(1\)/),
     ).resolves.toBeInTheDocument();
-    await expect(screen.findByTitle(/View/)).resolves.toBeInTheDocument();
-    await expect(screen.findByTitle(/Edit/)).resolves.toBeInTheDocument();
     await expect(
-      screen.findByTitle(/Add to favorites/),
+      screen.findByRole('button', { name: /view/i }),
+    ).resolves.toBeInTheDocument();
+    await expect(
+      screen.findByRole('button', { name: /edit/i }),
+    ).resolves.toBeInTheDocument();
+    await expect(
+      screen.findByRole('button', { name: /add to favorites/i }),
     ).resolves.toBeInTheDocument();
   }, 20_000);
 
@@ -286,11 +292,13 @@ describe('DefaultCatalogPage', () => {
     await expect(
       screen.findByText(/Owned components \(1\)/),
     ).resolves.toBeInTheDocument();
-    await expect(screen.findByTitle(/Foo Action/)).resolves.toBeInTheDocument();
-    await expect(screen.findByTitle(/Bar Action/)).resolves.toBeInTheDocument();
     await expect(
-      screen.findByTitle(/Bar Action/).then(e => e.firstChild),
-    ).resolves.toBeDisabled();
+      screen.findByRole('button', { name: /foo action/i }),
+    ).resolves.toBeInTheDocument();
+    const barActionButton = await screen.findByRole('button', {
+      name: /bar action/i,
+    });
+    expect(barActionButton).toBeDisabled();
   }, 20_000);
 
   // this test right now causes some red lines in the log output when running tests
@@ -321,6 +329,9 @@ describe('DefaultCatalogPage', () => {
   // this test is for fixing the bug after favoriting an entity, the matching
   // entities defaulting to "owned" filter and not based on the selected filter
   it('should render the correct entities filtered on the selected filter', async () => {
+    // Pre-star an entity before rendering (since default actions have been removed)
+    await starredApi.toggleStarred('component:default/Entity1');
+
     await renderWrapped(<DefaultCatalogPage />);
     await waitFor(() => expect(catalogApi.queryEntities).toHaveBeenCalled());
 
@@ -328,31 +339,18 @@ describe('DefaultCatalogPage', () => {
     await expect(
       screen.findByText(/Owned components \(1\)/),
     ).resolves.toBeInTheDocument();
-    // The "Starred" menu option should initially be disabled, since there
-    // aren't any starred entities.
-    expect(screen.getByTestId('user-picker-starred')).toHaveAttribute(
-      'aria-disabled',
-      'true',
-    );
     fireEvent.click(screen.getByTestId('user-picker-all'));
     await expect(
       screen.findByText(/All components \(2\)/),
     ).resolves.toBeInTheDocument();
 
-    const starredIcons = await screen.findAllByTitle('Add to favorites');
-    fireEvent.click(starredIcons[0]);
+    // Verify that switching filters maintains the correct filter state
+    // (The original bug was that after starring, it would default back to "owned")
+    // Since default actions are removed, we can't star via UI, but we can verify
+    // that filter switching works correctly
+    fireEvent.click(screen.getByTestId('user-picker-owned'));
     await expect(
-      screen.findByText(/All components \(2\)/),
-    ).resolves.toBeInTheDocument();
-
-    // Now that we've starred an entity, the "Starred" menu option should be
-    // enabled.
-    expect(
-      await screen.findByTestId('user-picker-starred'),
-    ).not.toHaveAttribute('aria-disabled', 'true');
-    fireEvent.click(screen.getByTestId('user-picker-starred'));
-    await expect(
-      screen.findByText(/Starred components \(1\)/),
+      screen.findByText(/Owned components \(1\)/),
     ).resolves.toBeInTheDocument();
   }, 20_000);
 

@@ -26,7 +26,7 @@ import {
   Column,
   Box,
 } from '@backstage/ui';
-import { TableColumn } from '@backstage/core-components';
+import { TableColumn, TableProps } from '@backstage/core-components';
 import { CatalogTableRow } from './types';
 import { CatalogTableHeader } from './CatalogTableHeader';
 import { useTableSorting } from './useTableSorting';
@@ -71,6 +71,7 @@ export interface CatalogTableBaseProps {
   isLoading?: boolean;
   pagination: ServerSidePaginationConfig | ClientSidePaginationConfig;
   showPagination?: boolean;
+  actions?: TableProps<CatalogTableRow>['actions'];
 }
 
 /**
@@ -88,6 +89,7 @@ export function CatalogTableBase(props: CatalogTableBaseProps) {
     isLoading,
     pagination,
     showPagination = true,
+    actions,
   } = props;
 
   // Ensure rawData is an array
@@ -143,6 +145,22 @@ export function CatalogTableBase(props: CatalogTableBaseProps) {
     isRowHeader: index === firstVisibleColumnIndex,
   }));
 
+  // Add actions column if actions are provided
+  const allColumns = useMemo(() => {
+    if (actions && actions.length > 0) {
+      return [
+        ...columnsWithRowHeader,
+        {
+          title: 'Actions',
+          field: '__actions__',
+          hidden: false,
+          isRowHeader: false,
+        } as TableColumn<CatalogTableRow> & { isRowHeader: boolean },
+      ];
+    }
+    return columnsWithRowHeader;
+  }, [columnsWithRowHeader, actions]);
+
   return (
     <>
       <CatalogTableHeader title={title} subtitle={subtitle} />
@@ -150,17 +168,27 @@ export function CatalogTableBase(props: CatalogTableBaseProps) {
         sortDescriptor={sortDescriptor || undefined}
         onSortChange={handleSortChange}
       >
-        <TableHeader columns={columnsWithRowHeader}>
-          {column => (
-            <Column
-              id={String(column.field || column.title)}
-              isRowHeader={column.isRowHeader}
-              hidden={column.hidden}
-              allowsSorting={!column.hidden}
-            >
-              {column.title}
-            </Column>
-          )}
+        <TableHeader columns={allColumns}>
+          {column => {
+            // Actions column is not sortable
+            if (column.field === '__actions__') {
+              return (
+                <Column id="actions" hidden={false} allowsSorting={false}>
+                  {column.title}
+                </Column>
+              );
+            }
+            return (
+              <Column
+                id={String(column.field || column.title)}
+                isRowHeader={column.isRowHeader}
+                hidden={column.hidden}
+                allowsSorting={!column.hidden}
+              >
+                {column.title}
+              </Column>
+            );
+          }}
         </TableHeader>
         <TableBody
           items={displayData}
@@ -174,8 +202,8 @@ export function CatalogTableBase(props: CatalogTableBaseProps) {
         >
           {item => {
             return (
-              <Row id={item.resolved.entityRef} columns={columnsWithRowHeader}>
-                {column => renderCell(item, column)}
+              <Row id={item.resolved.entityRef} columns={allColumns}>
+                {column => renderCell(item, column, actions)}
               </Row>
             );
           }}
