@@ -42,7 +42,7 @@ Initially, the Catalog displays registered entities matching the following filte
 - **Processing Status** - normal
 - **Namespace** - The ID of a [namespace](../features/software-catalog/descriptor-format.md#namespace-optional) to which the entity belongs
 
-You can change the initial setting for each filter. [Catalog Customization](../features/software-catalog/catalog-customization.md) provides additional information.
+You can change the initial setting for the [Owner](../features/software-catalog/catalog-customization.md#initially-selected-filter) and [Kind](../features/software-catalog/catalog-customization.md#initially-selected-kind) filters.
 
 ## Informational columns for each entity
 
