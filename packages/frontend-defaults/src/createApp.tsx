@@ -21,7 +21,6 @@ import {
   ExtensionFactoryMiddleware,
   FrontendFeature,
   FrontendFeatureLoader,
-  RoutingContextType,
 } from '@backstage/frontend-plugin-api';
 import { Progress } from '@backstage/core-components';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
@@ -33,6 +32,8 @@ import {
   CreateAppRouteBinder,
   createSpecializedApp,
   FrontendPluginInfoResolver,
+  RouterAdapter,
+  RouterPreset,
 } from '@backstage/frontend-app-api';
 import appPlugin from '@backstage/plugin-app';
 import { discoverAvailableFeatures } from './discovery';
@@ -103,12 +104,10 @@ export interface CreateAppOptions {
     pluginInfoResolver?: FrontendPluginInfoResolver;
 
     /**
-     * Allows for customizing the routing implementation.
+     * Router implementation to use. Defaults to 'react-router-6'.
+     * Use a preset string for built-in routers, or provide a custom RouterAdapter.
      */
-    router?: {
-      matchRoutes: RoutingContextType['matchRoutes'];
-      generatePath: RoutingContextType['generatePath'];
-    };
+    router?: RouterPreset | RouterAdapter;
   };
 }
 

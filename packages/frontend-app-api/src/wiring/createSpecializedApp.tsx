@@ -79,13 +79,15 @@ import { ApiRegistry } from '../../../core-app-api/src/apis/system/ApiRegistry';
 import { AppIdentityProxy } from '../../../core-app-api/src/apis/implementations/IdentityApi/AppIdentityProxy';
 import { BackstageRouteObject } from '../routing/types';
 import {
-  matchRoutes as defaultMatchRoutes,
-  generatePath as defaultGeneratePath,
-} from 'react-router-dom';
-import {
   createPluginInfoAttacher,
   FrontendPluginInfoResolver,
 } from './createPluginInfoAttacher';
+import {
+  RouterAdapter,
+  RouterPreset,
+  isRouterAdapter,
+} from '../routing/RouterAdapter';
+import { ReactRouter6Adapter } from '../routing/ReactRouter6Provider';
 import { createRouteAliasResolver } from '../routing/RouteAliasResolver';
 import {
   AppError,
@@ -114,6 +116,18 @@ function deduplicateFeatures(
       return true;
     })
     .reverse();
+}
+
+function resolveRouterAdapter(
+  router?: RouterPreset | RouterAdapter,
+): RouterAdapter {
+  if (!router || router === 'react-router-6') {
+    return ReactRouter6Adapter;
+  }
+  if (isRouterAdapter(router)) {
+    return router;
+  }
+  throw new Error(`Unknown router preset: ${router}`);
 }
 
 // Helps delay callers from reaching out to the API before the app tree has been materialized
@@ -303,12 +317,10 @@ export type CreateSpecializedAppOptions = {
     pluginInfoResolver?: FrontendPluginInfoResolver;
 
     /**
-     * Allows for customizing the routing implementation.
+     * Router implementation to use. Defaults to 'react-router-6'.
+     * Use a preset string for built-in routers, or provide a custom RouterAdapter.
      */
-    router?: {
-      matchRoutes: RoutingContextType['matchRoutes'];
-      generatePath: RoutingContextType['generatePath'];
-    };
+    router?: RouterPreset | RouterAdapter;
   };
 };
 
@@ -331,10 +343,8 @@ export function createSpecializedApp(options?: CreateSpecializedAppOptions): {
 
   const collector = createErrorCollector();
 
-  const { matchRoutes, generatePath } = options?.advanced?.router ?? {
-    matchRoutes: defaultMatchRoutes,
-    generatePath: defaultGeneratePath,
-  };
+  const routerAdapter = resolveRouterAdapter(options?.advanced?.router);
+  const { matchRoutes, generatePath } = routerAdapter;
 
   const tree = resolveAppTree(
     'root',

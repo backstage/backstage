@@ -44,6 +44,7 @@ import {
   createVersionedValueMap,
 } from '@backstage/version-bridge';
 import { getBasePath } from './getBasePath';
+import { RouterAdapter } from './RouterAdapter';
 
 /**
  * The versioned routing context, stored as a global singleton via version-bridge.
@@ -122,4 +123,38 @@ export const ReactRouter6Router = ({ children }: { children: ReactNode }) => {
       <ReactRouter6Provider>{children}</ReactRouter6Provider>
     </BrowserRouter>
   );
+};
+
+/**
+ * Internal router component that accepts basePath as a prop.
+ * Used by the RouterAdapter interface.
+ */
+const ReactRouter6RouterWithBasePath = ({
+  children,
+  basePath,
+}: {
+  children: ReactNode;
+  basePath: string;
+}) => {
+  return (
+    <BrowserRouter basename={basePath}>
+      <ReactRouter6Provider>{children}</ReactRouter6Provider>
+    </BrowserRouter>
+  );
+};
+
+/**
+ * A RouterAdapter implementation for React Router v6.
+ *
+ * This adapter provides the standard React Router v6 implementation
+ * for the Backstage routing system.
+ *
+ * @public
+ */
+export const ReactRouter6Adapter: RouterAdapter = {
+  Provider: ReactRouter6Provider,
+  Router: ReactRouter6RouterWithBasePath,
+  matchRoutes: (routes, loc) => matchRoutes(routes, loc),
+  generatePath: (path: string, p?: Record<string, string | undefined>) =>
+    generatePath(path, p),
 };

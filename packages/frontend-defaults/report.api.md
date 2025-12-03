@@ -14,7 +14,8 @@ import { FrontendFeatureLoader } from '@backstage/frontend-plugin-api';
 import { FrontendPluginInfoResolver } from '@backstage/frontend-app-api';
 import { JSX as JSX_2 } from 'react';
 import { ReactNode } from 'react';
-import { RoutingContextType } from '@backstage/frontend-plugin-api';
+import { RouterAdapter } from '@backstage/frontend-app-api';
+import { RouterPreset } from '@backstage/frontend-app-api';
 
 // @public
 export function createApp(options?: CreateAppOptions): {
@@ -33,10 +34,7 @@ export interface CreateAppOptions {
       | ExtensionFactoryMiddleware[];
     loadingElement?: ReactNode;
     pluginInfoResolver?: FrontendPluginInfoResolver;
-    router?: {
-      matchRoutes: RoutingContextType['matchRoutes'];
-      generatePath: RoutingContextType['generatePath'];
-    };
+    router?: RouterPreset | RouterAdapter;
   };
   bindRoutes?(context: { bind: CreateAppRouteBinder }): void;
   features?: (FrontendFeature | FrontendFeatureLoader)[];

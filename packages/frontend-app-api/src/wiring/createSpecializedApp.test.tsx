@@ -27,6 +27,7 @@ import {
   useRouteRef,
   analyticsApiRef,
   createExtensionDataRef,
+  RoutingContextType,
 } from '@backstage/frontend-plugin-api';
 import { screen, render } from '@testing-library/react';
 import { createSpecializedApp } from './createSpecializedApp';
@@ -792,6 +793,101 @@ describe('createSpecializedApp', () => {
       expect(info).toEqual({
         packageName: 'decorated:@backstage/frontend-app-api',
       });
+    });
+  });
+
+  describe('router adapter', () => {
+    it('should use default ReactRouter6Adapter when no router option is provided', () => {
+      // No router option provided - should work without errors
+      const app = createSpecializedApp({
+        features: [
+          createFrontendPlugin({
+            pluginId: 'test',
+            extensions: [
+              createExtension({
+                attachTo: { id: 'root', input: 'app' },
+                output: [coreExtensionData.reactElement],
+                factory: () => [
+                  coreExtensionData.reactElement(<div>Test</div>),
+                ],
+              }),
+            ],
+          }),
+        ],
+      });
+
+      expect(app.tree).toBeDefined();
+    });
+
+    it('should accept react-router-6 preset string', () => {
+      const app = createSpecializedApp({
+        features: [
+          createFrontendPlugin({
+            pluginId: 'test',
+            extensions: [
+              createExtension({
+                attachTo: { id: 'root', input: 'app' },
+                output: [coreExtensionData.reactElement],
+                factory: () => [
+                  coreExtensionData.reactElement(<div>Test</div>),
+                ],
+              }),
+            ],
+          }),
+        ],
+        advanced: {
+          router: 'react-router-6',
+        },
+      });
+
+      expect(app.tree).toBeDefined();
+    });
+
+    it('should accept a custom RouterAdapter', () => {
+      const customMatchRoutes: RoutingContextType['matchRoutes'] = jest.fn(
+        () => null,
+      );
+      const customGeneratePath: RoutingContextType['generatePath'] = jest.fn(
+        path => path,
+      );
+
+      const app = createSpecializedApp({
+        features: [
+          createFrontendPlugin({
+            pluginId: 'test',
+            extensions: [
+              createExtension({
+                attachTo: { id: 'root', input: 'app' },
+                output: [coreExtensionData.reactElement],
+                factory: () => [
+                  coreExtensionData.reactElement(<div>Test</div>),
+                ],
+              }),
+            ],
+          }),
+        ],
+        advanced: {
+          router: {
+            Provider: ({ children }) => <>{children}</>,
+            Router: ({ children }) => <>{children}</>,
+            matchRoutes: customMatchRoutes,
+            generatePath: customGeneratePath,
+          },
+        },
+      });
+
+      expect(app.tree).toBeDefined();
+    });
+
+    it('should throw for unknown router preset', () => {
+      expect(() =>
+        createSpecializedApp({
+          features: [],
+          advanced: {
+            router: 'unknown-router' as any,
+          },
+        }),
+      ).toThrow('Unknown router preset: unknown-router');
     });
   });
 });
