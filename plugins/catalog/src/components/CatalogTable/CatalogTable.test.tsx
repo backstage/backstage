@@ -132,6 +132,70 @@ describe('CatalogTable component', () => {
     expect(screen.getByText(/component3/)).toBeInTheDocument();
   });
 
+  it('should use specified edit URL if in annotation', async () => {
+    const entity = {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Component',
+      metadata: {
+        name: 'component1',
+        annotations: { [ANNOTATION_EDIT_URL]: 'https://other.place' },
+      },
+    };
+
+    await renderInTestApp(
+      <ApiProvider apis={mockApis}>
+        <MockEntityListContextProvider value={{ entities: [entity] }}>
+          <CatalogTable />
+        </MockEntityListContextProvider>
+      </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
+    );
+
+    const editButton = screen.getByRole('button', { name: /Edit/i });
+
+    await act(async () => {
+      fireEvent.click(editButton);
+    });
+
+    expect(window.open).toHaveBeenCalledWith('https://other.place', '_blank');
+  });
+
+  it('should use specified view URL if in annotation', async () => {
+    const entity = {
+      apiVersion: 'backstage.io/v1alpha1',
+      kind: 'Component',
+      metadata: {
+        name: 'component1',
+        annotations: { [ANNOTATION_VIEW_URL]: 'https://other.place' },
+      },
+    };
+
+    await renderInTestApp(
+      <ApiProvider apis={mockApis}>
+        <MockEntityListContextProvider value={{ entities: [entity] }}>
+          <CatalogTable />
+        </MockEntityListContextProvider>
+      </ApiProvider>,
+      {
+        mountedRoutes: {
+          '/catalog/:namespace/:kind/:name': entityRouteRef,
+        },
+      },
+    );
+
+    const viewButton = screen.getByRole('button', { name: /View/i });
+
+    await act(async () => {
+      fireEvent.click(viewButton);
+    });
+
+    expect(window.open).toHaveBeenCalledWith('https://other.place', '_blank');
+  });
+
   it.each([
     {
       kind: 'api',
@@ -261,76 +325,13 @@ describe('CatalogTable component', () => {
     20_000,
   );
 
-  it('should use specified edit URL if in annotation', async () => {
-    const entity = {
-      apiVersion: 'backstage.io/v1alpha1',
-      kind: 'Component',
-      metadata: {
-        name: 'component1',
-        annotations: { [ANNOTATION_EDIT_URL]: 'https://other.place' },
-      },
-    };
-
-    await renderInTestApp(
-      <ApiProvider apis={mockApis}>
-        <MockEntityListContextProvider value={{ entities: [entity] }}>
-          <CatalogTable />
-        </MockEntityListContextProvider>
-      </ApiProvider>,
-      {
-        mountedRoutes: {
-          '/catalog/:namespace/:kind/:name': entityRouteRef,
-        },
-      },
-    );
-
-    const editButton = screen.getByRole('button', { name: /edit/i });
-
-    await act(async () => {
-      fireEvent.click(editButton);
-    });
-
-    expect(window.open).toHaveBeenCalledWith('https://other.place', '_blank');
-  });
-
-  it('should use specified view URL if in annotation', async () => {
-    const entity = {
-      apiVersion: 'backstage.io/v1alpha1',
-      kind: 'Component',
-      metadata: {
-        name: 'component1',
-        annotations: { [ANNOTATION_VIEW_URL]: 'https://other.place' },
-      },
-    };
-
-    await renderInTestApp(
-      <ApiProvider apis={mockApis}>
-        <MockEntityListContextProvider value={{ entities: [entity] }}>
-          <CatalogTable />
-        </MockEntityListContextProvider>
-      </ApiProvider>,
-      {
-        mountedRoutes: {
-          '/catalog/:namespace/:kind/:name': entityRouteRef,
-        },
-      },
-    );
-
-    const viewButton = screen.getByRole('button', { name: /view/i });
-
-    await act(async () => {
-      fireEvent.click(viewButton);
-    });
-
-    expect(window.open).toHaveBeenCalledWith('https://other.place', '_blank');
-  });
-
   it('should render the subtitle when it is specified', async () => {
     const entity = {
       apiVersion: 'backstage.io/v1alpha1',
       kind: 'Component',
       metadata: {
         name: 'component1',
+        annotations: { [ANNOTATION_EDIT_URL]: 'https://other.place' },
       },
     };
 
