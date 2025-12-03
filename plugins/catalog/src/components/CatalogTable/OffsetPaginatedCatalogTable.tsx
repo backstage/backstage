@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useState, useEffect, ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { useEntityList } from '@backstage/plugin-catalog-react';
 import { TableColumn, TableProps } from '@backstage/core-components';
 import { CatalogTableRow } from './types';
@@ -40,19 +40,6 @@ export function OffsetPaginatedCatalogTable(
     props;
   const { setLimit, setOffset, limit, totalItems, offset } = useEntityList();
 
-  // TODO: Figure out why this is needed
-  // We need to make sure that the offset is working with the URL
-  const [, setPage] = useState(
-    offset && limit ? Math.floor(offset / limit) : 0,
-  );
-
-  // Sync page state with offset changes
-  useEffect(() => {
-    if (offset !== undefined && limit) {
-      setPage(Math.floor(offset / limit));
-    }
-  }, [offset, limit]);
-
   return (
     <CatalogTableBase
       columns={columns}
@@ -69,14 +56,10 @@ export function OffsetPaginatedCatalogTable(
         totalItems: totalItems ?? 0,
         onOffsetChange: (newOffset: number) => {
           setOffset!(newOffset);
-          if (limit) {
-            setPage(Math.floor(newOffset / limit));
-          }
         },
         onPageSizeChange: (newPageSize: number) => {
           setLimit!(newPageSize);
           setOffset!(0);
-          setPage(0);
         },
       }}
     />
