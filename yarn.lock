@@ -28279,12 +28279,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"destroyable-server@npm:^1.0.0, destroyable-server@npm:^1.0.2":
-  version: 1.0.2
-  resolution: "destroyable-server@npm:1.0.2"
+"destroyable-server@npm:^1.0.0, destroyable-server@npm:^1.1.1":
+  version: 1.1.1
+  resolution: "destroyable-server@npm:1.1.1"
   dependencies:
     "@types/node": "npm:*"
-  checksum: 10/c93c7651dac530bf9dd4263eab59f5724a2453dc35658d98e3707c4c9171d8496ef404655852bef257586b31850f4f6730397bc5ff496ed799352660b0495a0a
+  checksum: 10/483867c0ee3adb6f265e0163ea5f204135a30cd2b14ef07f58054186f63cc12ca7c591431b30cb664216e1bdc3156d50c74b56c3e17f67a5e75b0d32f0fe84f5
   languageName: node
   linkType: hard
 
@@ -38736,8 +38736,8 @@ __metadata:
   linkType: hard
 
 "mockttp@npm:^3.13.0":
-  version: 3.15.5
-  resolution: "mockttp@npm:3.15.5"
+  version: 3.17.1
+  resolution: "mockttp@npm:3.17.1"
   dependencies:
     "@graphql-tools/schema": "npm:^8.5.0"
     "@graphql-tools/utils": "npm:^8.8.0"
@@ -38755,7 +38755,7 @@ __metadata:
     cors: "npm:^2.8.4"
     cors-gate: "npm:^1.1.3"
     cross-fetch: "npm:^3.1.5"
-    destroyable-server: "npm:^1.0.2"
+    destroyable-server: "npm:^1.1.1"
     express: "npm:^4.14.0"
     fast-json-patch: "npm:^3.1.1"
     graphql: "npm:^14.0.2 || ^15.5"
@@ -38774,7 +38774,7 @@ __metadata:
     parse-multipart-data: "npm:^1.4.0"
     performance-now: "npm:^2.1.0"
     portfinder: "npm:^1.0.32"
-    read-tls-client-hello: "npm:^1.0.0"
+    read-tls-client-hello: "npm:^1.1.0"
     semver: "npm:^7.5.3"
     socks-proxy-agent: "npm:^7.0.0"
     typed-error: "npm:^3.0.2"
@@ -38783,7 +38783,7 @@ __metadata:
     ws: "npm:^8.8.0"
   bin:
     mockttp: dist/admin/admin-bin.js
-  checksum: 10/93eca69baa35db11ae7f541d712bfd208edf0017db3091e874f59fc64a7c036179906b4e9b66936f054ad1c258645d085452dafab58a1c2df9fd6d67330f8328
+  checksum: 10/09278221361b9896636bbf9e6a6d6427afe2375c035dcc6ddd56d308a7b197ae3a5196fba7b00b9fb1bfb0b4c22daacc046bdc207e0ab9ef15bb2a79637cdfbf
   languageName: node
   linkType: hard
 
@@ -43760,12 +43760,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"read-tls-client-hello@npm:^1.0.0":
-  version: 1.0.1
-  resolution: "read-tls-client-hello@npm:1.0.1"
+"read-tls-client-hello@npm:^1.0.0, read-tls-client-hello@npm:^1.1.0":
+  version: 1.1.0
+  resolution: "read-tls-client-hello@npm:1.1.0"
   dependencies:
     "@types/node": "npm:*"
-  checksum: 10/fefa63605eebb197b6046cb26d7efde16eb24c026edbbca789c30b7b5be7c0dd8e45fb4d32707513dfc4dd468b787b2a46ed8be846f29eac844d6d80710688c6
+  checksum: 10/c3a15164065e33509b3dee05e70865e68b7b061804e70f864d6afdc55b30663ce6fed2730d9508a44672757622a454c2a38b696c262bdd0ebcbb39f28acee621
   languageName: node
   linkType: hard
 
