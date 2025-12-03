@@ -40,6 +40,7 @@
     "@backstage/errors": "workspace:^",
     "@backstage/plugin-catalog-node": "workspace:^",
     "@backstage/types": "workspace:^",
+    "@cfworker/json-schema": "^4.1.1",
     "@modelcontextprotocol/sdk": "^1.12.3",
     "express": "^4.22.0",
     "express-promise-router": "^4.1.0",
