@@ -5,8 +5,6 @@ sidebar_label: Viewing the Catalog
 description: Viewing the Catalog
 ---
 
-Audience: Developers
-
 ## Overview
 
 When you first log into your standalone Backstage App, `Home` is selected in the sidebar, which displays the Catalog in the main panel.
@@ -91,3 +89,4 @@ Selecting a entity in the main panel displays details of the entity. The type of
 Selecting a System, such as `examples`, displays `About`, `Relations`, and `Links` similar to a Component, but it also includes `Has components`, `APIs` and `Has Resources`.
 
 ![Details of system entity.](../assets/uiguide/details-system-entity.png)
+
