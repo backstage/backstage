@@ -1,5 +1,11 @@
 # @backstage/backend-test-utils
 
+## 1.10.1
+
+### Patch Changes
+
+- Fix PostgreSQL 18 `TestDatabases` by pinning the data directory
+
 ## 1.10.0
 
 ### Minor Changes
