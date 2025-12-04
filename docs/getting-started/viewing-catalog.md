@@ -5,6 +5,8 @@ sidebar_label: Viewing the Catalog
 description: Viewing the Catalog
 ---
 
+Audience: Developers
+
 ## Overview
 
 When you first log into your standalone Backstage App, `Home` is selected in the sidebar, which displays the Catalog in the main panel.
