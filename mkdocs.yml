@@ -44,6 +44,7 @@ nav:
               - Register a component: 'getting-started/register-a-component.md'
               - Create a component: 'getting-started/create-a-component.md'
               - Update a component: 'getting-started/update-a-component.md'
+              - Unregister/delete a component: 'getting-started/unregister-delete-component.md'
           - Searching the Catalog: 'getting-started/search-catalog.md'
       - Keeping Backstage Updated: 'getting-started/keeping-backstage-updated.md'
   - Core Features:
