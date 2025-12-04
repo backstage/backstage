@@ -147,11 +147,11 @@ export class AwsS3Publish implements PublisherBase {
 
     const sdkCredentialProvider = await AwsS3Publish.buildCredentials(
       credsManager,
+      logger,
       accountId,
       credentialsConfig,
       region,
       awsS3IntegrationConfig,
-      logger,
     );
 
     // AWS endpoint is an optional config. If missing, the default endpoint is built from
@@ -219,11 +219,11 @@ export class AwsS3Publish implements PublisherBase {
 
   private static async buildCredentials(
     credsManager: AwsCredentialsManager,
+    logger: LoggerService,
     accountId?: string,
     credentialsConfig?: Config,
     region?: string,
     awsS3IntegrationConfig?: Config[],
-    logger: LoggerService,
   ): Promise<AwsCredentialIdentityProvider> {
     // Pull credentials for the specified account ID from the 'aws' config section
     if (accountId) {
