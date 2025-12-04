@@ -24,6 +24,10 @@ import { useEntityList } from '../../hooks';
 import { CatalogFilters, reduceCatalogFilters } from '../../utils/filters';
 import useAsyncFn from 'react-use/esm/useAsyncFn';
 import useDeepCompareEffect from 'react-use/esm/useDeepCompareEffect';
+import {
+  omitEntityFilterQueryKey,
+  setEntityFilterQueryKey,
+} from '@backstage/catalog-client';
 
 export function useOwnedEntitiesCount() {
   const identityApi = useApi(identityApiRef);
@@ -60,14 +64,18 @@ export function useOwnedEntitiesCount() {
           return 0;
         }
 
-        const { ['metadata.name']: metadata, ...filter } = req.filter.filter;
+        const filter = omitEntityFilterQueryKey(
+          'metadata.name',
+          req.filter.filter,
+        );
 
         const { totalItems } = await catalogApi.queryEntities({
           ...req.filter,
-          filter: {
-            ...filter,
-            'relations.ownedBy': ownedClaims,
-          },
+          filter: setEntityFilterQueryKey(
+            'relations.ownedBy',
+            ownedClaims,
+            filter,
+          ),
           limit: 0,
         });
         return totalItems;

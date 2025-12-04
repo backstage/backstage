@@ -22,6 +22,8 @@ export type {
   CatalogRequestOptions,
   EntityFieldsQuery,
   EntityFilterQuery,
+  EntityFilterSet,
+  EntityFilterSets,
   EntityOrderQuery,
   GetEntitiesByRefsRequest,
   GetEntitiesByRefsResponse,
