@@ -337,6 +337,178 @@ describe('createOAuthRouteHandlers', () => {
       expect(getGrantedScopesCookie(agent)).toBeUndefined();
     });
 
+    it('should clean up old cookies (non-chunked) with domain attribute during migration', async () => {
+      const agent = request.agent(
+        wrapInApp(createOAuthRouteHandlers(baseConfig)),
+      );
+
+      agent.jar.setCookie(
+        'my-provider-nonce=123',
+        '127.0.0.1',
+        '/my-provider/handler',
+      );
+
+      agent.jar.setCookie(
+        'my-provider-refresh-token=old-refresh-token; Domain=127.0.0.1',
+        '127.0.0.1',
+        '/my-provider',
+      );
+
+      mockAuthenticator.authenticate.mockResolvedValue({
+        fullProfile: { id: 'id' } as PassportProfile,
+        session: mockSession,
+      });
+
+      const res = await agent.get('/my-provider/handler/frame').query({
+        state: encodeOAuthState({
+          env: 'development',
+          nonce: '123',
+        } as OAuthState),
+      });
+
+      expect(res.status).toBe(200);
+
+      const setCookieHeaders = [res.get('Set-Cookie') ?? []].flat();
+      const hasDeleteWithDomain = setCookieHeaders.some(
+        cookie =>
+          cookie.includes('my-provider-refresh-token=;') &&
+          cookie.includes('Max-Age=0') &&
+          cookie.includes('Domain=127.0.0.1'),
+      );
+      expect(hasDeleteWithDomain).toBe(true);
+
+      expect(getRefreshTokenCookie(agent).value).toBe('refresh-token');
+    });
+
+    it('should clean up old chunked cookies with domain attribute during migration', async () => {
+      const agent = request.agent(
+        wrapInApp(createOAuthRouteHandlers(baseConfig)),
+      );
+
+      agent.jar.setCookie(
+        'my-provider-nonce=123',
+        '127.0.0.1',
+        '/my-provider/handler',
+      );
+
+      // Simulate old chunked cookies with domain attribute (legacy format)
+      agent.jar.setCookie(
+        `my-provider-refresh-token-0=${fiveKilobyteRefreshToken.slice(
+          0,
+          4000,
+        )}; Domain=127.0.0.1`,
+        '/my-provider',
+      );
+      agent.jar.setCookie(
+        `my-provider-refresh-token-1=${fiveKilobyteRefreshToken.slice(
+          4000,
+        )}; Domain=127.0.0.1`,
+        '/my-provider',
+      );
+
+      mockAuthenticator.authenticate.mockResolvedValue({
+        fullProfile: { id: 'id' } as PassportProfile,
+        session: {
+          ...mockSession,
+          refreshToken: fiveKilobyteRefreshToken,
+        },
+      });
+
+      const res = await agent.get('/my-provider/handler/frame').query({
+        state: encodeOAuthState({
+          env: 'development',
+          nonce: '123',
+        } as OAuthState),
+      });
+
+      expect(res.status).toBe(200);
+
+      const setCookieHeaders = [res.get('Set-Cookie') ?? []].flat();
+      const hasChunk0DeleteWithDomain = setCookieHeaders.some(
+        cookie =>
+          cookie.includes('my-provider-refresh-token-0=') &&
+          cookie.includes('Max-Age=0') &&
+          cookie.includes('Domain=127.0.0.1'),
+      );
+      const hasChunk1DeleteWithDomain = setCookieHeaders.some(
+        cookie =>
+          cookie.includes('my-provider-refresh-token-1=') &&
+          cookie.includes('Max-Age=0') &&
+          cookie.includes('Domain=127.0.0.1'),
+      );
+
+      expect(hasChunk0DeleteWithDomain).toBe(true);
+      expect(hasChunk1DeleteWithDomain).toBe(true);
+
+      expect(getRefreshTokenCookie(agent, 0).value).toBe(
+        fiveKilobyteRefreshToken.slice(0, 4000),
+      );
+      expect(getRefreshTokenCookie(agent, 1).value).toBe(
+        fiveKilobyteRefreshToken.slice(4000),
+      );
+    });
+
+    it('should clean up old chunked cookies with domain when migrating to non-chunked', async () => {
+      const agent = request.agent(
+        wrapInApp(createOAuthRouteHandlers(baseConfig)),
+      );
+
+      agent.jar.setCookie(
+        'my-provider-nonce=123',
+        '127.0.0.1',
+        '/my-provider/handler',
+      );
+
+      agent.jar.setCookie(
+        `my-provider-refresh-token-0=${fiveKilobyteRefreshToken.slice(
+          0,
+          4000,
+        )}; Domain=127.0.0.1`,
+        '/my-provider',
+      );
+      agent.jar.setCookie(
+        `my-provider-refresh-token-1=${fiveKilobyteRefreshToken.slice(
+          4000,
+        )}; Domain=127.0.0.1`,
+        '/my-provider',
+      );
+
+      mockAuthenticator.authenticate.mockResolvedValue({
+        fullProfile: { id: 'id' } as PassportProfile,
+        session: mockSession,
+      });
+
+      const res = await agent.get('/my-provider/handler/frame').query({
+        state: encodeOAuthState({
+          env: 'development',
+          nonce: '123',
+        } as OAuthState),
+      });
+
+      expect(res.status).toBe(200);
+
+      const setCookieHeaders = [res.get('Set-Cookie') ?? []].flat();
+      const hasChunk0DeleteWithDomain = setCookieHeaders.some(
+        cookie =>
+          cookie.includes('my-provider-refresh-token-0=;') &&
+          cookie.includes('Max-Age=0') &&
+          cookie.includes('Domain=127.0.0.1'),
+      );
+      const hasChunk1DeleteWithDomain = setCookieHeaders.some(
+        cookie =>
+          cookie.includes('my-provider-refresh-token-1=;') &&
+          cookie.includes('Max-Age=0') &&
+          cookie.includes('Domain=127.0.0.1'),
+      );
+
+      expect(hasChunk0DeleteWithDomain).toBe(true);
+      expect(hasChunk1DeleteWithDomain).toBe(true);
+
+      expect(getRefreshTokenCookie(agent).value).toBe('refresh-token');
+      expect(getRefreshTokenCookie(agent, 0)).toBeUndefined();
+      expect(getRefreshTokenCookie(agent, 1)).toBeUndefined();
+    });
+
     it('should authenticate with sign-in, profile transform, and persisted scopes', async () => {
       const agent = request.agent(
         wrapInApp(
