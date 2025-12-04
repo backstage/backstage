@@ -52,7 +52,11 @@ const columnsValues = [
 
 export const utilityClassMap: Record<
   string,
-  { class: string; cssVar?: string; values: readonly (string | number)[] }
+  {
+    class: string;
+    cssVar?: `--${string}`;
+    values: readonly (string | number)[];
+  }
 > = {
   m: {
     class: 'bui-m',

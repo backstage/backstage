@@ -13,11 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import clsx from 'clsx';
 import type { ComponentDefinition } from '../types';
 
-interface UseClassNamesOptions<
+type StylesOf<Def> = Def extends ComponentDefinition<any, infer Styles>
+  ? Styles
+  : never;
+
+export interface UseClassNamesOptions<
   TDefinition extends ComponentDefinition<any, any>,
 > {
   /**
@@ -25,7 +28,7 @@ interface UseClassNamesOptions<
    * - Defaults to 'root'
    * - Set to null to not merge (component handles manually)
    */
-  mergeInto?: keyof TDefinition['classNames'] | null;
+  mergeClassNameInto?: keyof StylesOf<TDefinition> | null;
 }
 
 /**
@@ -43,28 +46,29 @@ export function useClassNames<
   TDefinition extends ComponentDefinition<any, any>,
 >(
   definition: TDefinition,
-  styles: Readonly<{ [key: string]: string }>,
+  styles: Readonly<Record<string, string>>,
   props: { className?: string },
   options: UseClassNamesOptions<TDefinition> = {},
-): Record<keyof TDefinition['classNames'], string> {
-  const { mergeInto = 'root' } = options;
+): { [K in keyof StylesOf<TDefinition>]: string } {
+  const { mergeClassNameInto: mergeInto = 'root' } = options;
 
-  const classNames = definition.classNames;
+  const classNames = definition.classNames as StylesOf<TDefinition>;
 
-  const result: Record<keyof typeof classNames, string> = {};
+  type Result = { [K in keyof StylesOf<TDefinition>]: string };
+  const result: Partial<Result> = {};
 
-  // Process each className
-  (Object.keys(classNames) as Array<keyof typeof classNames>).forEach(key => {
-    const baseClass = classNames[key];
-    const moduleClass = styles[baseClass];
+  (Object.keys(classNames) as Array<keyof StylesOf<TDefinition>>).forEach(
+    key => {
+      const baseClass = classNames[key];
+      const moduleClass = styles[baseClass];
 
-    // Merge prop className only into the specified element
-    const shouldMergeClassName = mergeInto !== null && mergeInto === key;
+      const shouldMergeClassName = mergeInto !== null && mergeInto === key;
 
-    result[key] = shouldMergeClassName
-      ? clsx(baseClass, moduleClass, props.className)
-      : clsx(baseClass, moduleClass);
-  });
+      result[key] = shouldMergeClassName
+        ? clsx(baseClass, moduleClass, props.className)
+        : clsx(baseClass, moduleClass);
+    },
+  );
 
-  return result;
+  return result as Result;
 }

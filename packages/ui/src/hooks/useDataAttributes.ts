@@ -13,35 +13,36 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 import { useBreakpoint, breakpoints } from './useBreakpoint';
-import type { ComponentDefinition } from '../types';
 import { applyDefaults, resolveResponsiveValue } from './helpers';
+import type { ComponentDefinition } from '../types';
 
-/**
- * Generate data-* attributes from props with responsive resolution
- *
- * @param definition - Component definition with dataAttributes list
- * @param props - Component props
- * @returns Object with data-* prefixed attributes
- *
- * @public
- */
-export function useDataAttributes<T extends ComponentDefinition<any, any>>(
-  definition: T,
-  props: Record<string, any>,
-): Record<string, string> {
-  const { breakpoint } = useBreakpoint();
-  const dataAttributes: Record<string, string> = {};
+// --- Helper types ---
 
-  if (!definition.dataAttributes || definition.dataAttributes.length === 0) {
-    return dataAttributes;
-  }
+type AnyProps = Record<string, any>;
+type AnyStyles = Readonly<Record<string, string>>;
+type AnyComponentDefinition = ComponentDefinition<AnyProps, AnyStyles>;
 
-  // Apply defaults first
+type EnsureSubtype<Sub extends Super, Super> = Sub;
+
+// --- Base union for impl ---
+
+export type DataAttributesBase = Record<`data-${string}`, string> | undefined;
+
+// --- Internal impl (no hooks; breakpoint is passed in) ---
+
+function dataAttributesImpl(
+  definition: AnyComponentDefinition,
+  props: AnyProps,
+  breakpoint: string, // or Breakpoint if you have a stricter type
+): DataAttributesBase {
+  const { dataAttributes } = definition;
+  if (!dataAttributes?.length) return undefined;
+
+  const result: Record<`data-${string}`, string> = {};
   const propsWithDefaults = applyDefaults(definition, props);
 
-  for (const key of definition.dataAttributes) {
+  for (const key of dataAttributes) {
     const propKey = String(key);
     const value = propsWithDefaults[propKey];
 
@@ -51,16 +52,47 @@ export function useDataAttributes<T extends ComponentDefinition<any, any>>(
 
     // Handle boolean/number - convert directly to string
     if (typeof value === 'boolean' || typeof value === 'number') {
-      dataAttributes[`data-${propKey}`] = String(value);
+      result[`data-${propKey}`] = String(value);
       continue;
     }
 
     // Resolve responsive value
     const resolved = resolveResponsiveValue(value, breakpoint, breakpoints);
     if (resolved !== undefined) {
-      dataAttributes[`data-${propKey}`] = resolved;
+      result[`data-${propKey}`] = resolved;
     }
   }
 
-  return dataAttributes;
+  return result;
+}
+
+// --- Public conditional result type ---
+
+export type DataAttributesResult<Def extends AnyComponentDefinition> =
+  Def extends {
+    dataAttributes: readonly (keyof any)[];
+  }
+    ? Record<`data-${string}`, string>
+    : undefined;
+
+type _CheckDataAttrsSafe = EnsureSubtype<
+  DataAttributesResult<AnyComponentDefinition>,
+  DataAttributesBase
+>;
+
+// --- Exported hook ---
+
+export function useDataAttributes<
+  Def extends AnyComponentDefinition,
+  All extends AnyProps,
+>(definition: Def, props: All): DataAttributesResult<Def> {
+  const { breakpoint } = useBreakpoint();
+
+  const base = dataAttributesImpl(
+    definition as AnyComponentDefinition,
+    props as AnyProps,
+    breakpoint,
+  );
+
+  return base as DataAttributesResult<Def>;
 }

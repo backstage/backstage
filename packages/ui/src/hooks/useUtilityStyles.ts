@@ -15,30 +15,26 @@
  */
 
 import clsx from 'clsx';
-import type { Breakpoint, ComponentDefinition } from '../types';
+import type { ComponentDefinition } from '../types';
 import { utilityClassMap } from '../utils/utilityClassMap';
-import { breakpoints, useBreakpoint } from './useBreakpoint';
-import { applyDefaults, resolveResponsiveValue } from './helpers';
-
-type Responsive<T, BP extends string = Breakpoint> = Partial<Record<BP, T>>;
-type ResolvedValue<T> = T extends Responsive<infer V, any> ? V : T;
+import { applyDefaults } from './helpers';
 
 type UtilityConfig = {
   class: string;
-  cssVar?: string;
+  cssVar?: `--${string}`;
   values: readonly (string | number)[];
 };
+//
+type BUICSSProperties = React.CSSProperties & {
+  [index: `--${string}`]: any;
+};
 
-/**
- * Process a single utility value and add to class list / style object
- * (unchanged logic)
- */
 function processUtilityValue(
   value: unknown,
   utilityConfig: UtilityConfig,
   prefix: string,
   utilityClassList: string[],
-  style: Record<string, unknown>,
+  style: BUICSSProperties,
 ): void {
   if (
     utilityConfig.values.length > 0 &&
@@ -49,7 +45,7 @@ function processUtilityValue(
       : `${utilityConfig.class}-${value}`;
     utilityClassList.push(className);
   } else if (utilityConfig.cssVar) {
-    const cssVarKey = prefix
+    const cssVarKey: `--${string}` = prefix
       ? `${utilityConfig.cssVar}-${prefix.slice(0, -1)}`
       : utilityConfig.cssVar;
     style[cssVarKey] = value;
@@ -61,69 +57,63 @@ function processUtilityValue(
   }
 }
 
-// Which keys are "utility" keys for this definition and also exist on All?
-type UtilityKeys<
-  Def extends ComponentDefinition<any, any>,
-  All extends Record<string, any>,
-> = Extract<
-  NonNullable<Def['utilityProps']>[number],
-  Extract<keyof All, string>
->;
+// --- Helper types ---
 
-// If there are no utility keys, return All; otherwise return Omit<All, K>
-type PropsWithoutUtility<
-  Def extends ComponentDefinition<any, any>,
-  All extends Record<string, any>,
-> = [UtilityKeys<Def, All>] extends [never]
-  ? All
-  : Omit<All, UtilityKeys<Def, All>>;
+type AnyProps = Record<string, any>;
+type AnyStyles = Readonly<Record<string, string>>;
+type AnyComponentDefinition = ComponentDefinition<AnyProps, AnyStyles>;
 
-export function useUtilityStyles<
-  Def extends ComponentDefinition<any, any>,
-  All extends Record<string, any>,
->(
-  definition: Def,
-  props: All,
-): {
-  utilityClasses: string;
-  style: React.CSSProperties;
-  propsWithoutUtilities: PropsWithoutUtility<Def, All>;
-} {
-  const { breakpoint } = useBreakpoint();
+type StylesOf<Def> = Def extends ComponentDefinition<any, infer Styles>
+  ? Styles
+  : never;
 
-  // Canonical key union of utility keys we will handle
-  type K = UtilityKeys<Def, All>;
+type ClassNamesResult<Def extends AnyComponentDefinition> = {
+  [K in keyof StylesOf<Def>]: string;
+};
 
-  // Normalise to an array; types now align with K (string keys)
-  const utilityKeys = (definition.utilityProps ?? []) as ReadonlyArray<K>;
+export interface UseUtilityStylesOptions<
+  TDefinition extends AnyComponentDefinition,
+> {
+  /**
+   * Which className key to merge the utility classes into.
+   *
+   * - Defaults to 'root'
+   */
+  mergeUtilityClassesInto?: keyof StylesOf<TDefinition>;
+}
 
+function utilityStylesImpl(
+  definition: AnyComponentDefinition,
+  props: AnyProps,
+  baseClassNames: Record<string, string>,
+  mergeInto: string,
+): UtilityStylesBase {
+  const { utilityProps } = definition;
+  if (!utilityProps?.length) {
+    // No utilities defined -> nothing to merge
+    return undefined;
+  }
+
+  const utilityKeys = utilityProps as ReadonlyArray<string>;
   const utilityClassList: string[] = [];
-  const style: Record<string, unknown> = {};
-
-  const propsWithDefaults = applyDefaults(definition, props) as All;
+  const style: BUICSSProperties = {};
+  const propsWithDefaults = applyDefaults(definition, props);
 
   for (const key of utilityKeys) {
-    // Read the value with strong typing
-    const value = propsWithDefaults[key] as All[K];
+    const value = propsWithDefaults[key];
 
     if (value === undefined || value === null) continue;
 
-    const utilityConfig = utilityClassMap[key as string]; // map is string-keyed
+    const utilityConfig = utilityClassMap[key];
     if (!utilityConfig) continue;
 
-    const resolved = resolveResponsiveValue(
-      value,
-      breakpoint,
-      breakpoints,
-    ) as ResolvedValue<All[K]>;
-
+    // Check if value is a responsive object
     if (typeof value === 'object' && value !== null) {
       const breakpointValues = value as { [key: string]: unknown };
-      // Handle responsive object values
       for (const bp in breakpointValues) {
         const prefix = bp === 'initial' ? '' : `${bp}:`;
         processUtilityValue(
-          resolved,
+          breakpointValues[bp],
           utilityConfig,
           prefix,
           utilityClassList,
@@ -131,36 +121,73 @@ export function useUtilityStyles<
         );
       }
     } else {
-      processUtilityValue(resolved, utilityConfig, '', utilityClassList, style);
+      processUtilityValue(value, utilityConfig, '', utilityClassList, style);
     }
   }
 
-  // Build propsWithoutUtilities by deleting K keys from a copy
-  const propsWithoutUtilities = { ...(propsWithDefaults as any) } as [
-    K,
-  ] extends [never]
-    ? All
-    : Omit<All, K> & Partial<Pick<All, K>>;
+  const utilityClassName = clsx(utilityClassList);
 
-  for (const k of utilityKeys) {
-    delete (propsWithoutUtilities as any)[k];
-  }
-  const mergedStyles = {
+  const mergedStyles: BUICSSProperties = {
     ...style,
     ...(props.style || {}),
   };
 
-  if ('style' in propsWithoutUtilities) {
-    propsWithoutUtilities.style = mergedStyles;
+  // Merge utilityClassName into the chosen slot of baseClassNames
+  let classNames: Record<string, string> = baseClassNames;
+
+  if (!(mergeInto in baseClassNames)) {
+    throw new Error(
+      `useUtilityStyles: Invalid mergeInto key. Key '${mergeInto}' does not match available classNames: ${Object.keys(
+        definition.classNames,
+      )}.`,
+    );
+  }
+
+  if (utilityClassName && mergeInto !== null) {
+    classNames = {
+      ...baseClassNames,
+      [mergeInto]: clsx(baseClassNames[mergeInto] ?? '', utilityClassName),
+    };
   }
 
   return {
-    utilityClasses: clsx(utilityClassList),
+    classNames,
     style: mergedStyles,
-    // Collapse to All when K is never; otherwise Omit<All, K>
-    propsWithoutUtilities: propsWithoutUtilities as PropsWithoutUtility<
-      Def,
-      All
-    >,
   };
+}
+
+export type UtilityStylesResult<Def extends AnyComponentDefinition> =
+  Def extends { utilityProps: readonly (keyof any)[] }
+    ? {
+        classNames: ClassNamesResult<Def>;
+        style: BUICSSProperties;
+      }
+    : undefined;
+
+export type UtilityStylesBase =
+  | undefined
+  | {
+      classNames: Record<string, string>;
+      style: BUICSSProperties;
+    };
+
+export function useUtilityStyles<
+  Def extends AnyComponentDefinition,
+  All extends AnyProps,
+>(
+  definition: Def,
+  props: All,
+  baseClassNames: ClassNamesResult<Def>,
+  options: UseUtilityStylesOptions<Def>,
+): UtilityStylesResult<Def> {
+  const mergeInto = (options.mergeUtilityClassesInto as string) ?? 'root';
+
+  const impl = utilityStylesImpl(
+    definition as AnyComponentDefinition,
+    props as AnyProps,
+    baseClassNames as Record<string, string>,
+    mergeInto,
+  );
+
+  return impl as UtilityStylesResult<Def>;
 }

@@ -14,81 +14,121 @@
  * limitations under the License.
  */
 
+import { useMemo } from 'react';
 import { useBreakpoint, breakpoints } from './useBreakpoint';
-import type { Breakpoint, RAExtendingComponentDefinition } from '../types';
 import { applyDefaults, resolveResponsiveValue } from './helpers';
+import type {
+  Breakpoint,
+  ComponentDefinition,
+  RAExtendingComponentDefinition,
+} from '../types';
+
+// --- Helper types ---
+
+type AnyProps = Record<string, any>;
+type AnyStyles = Readonly<Record<string, string>>;
+type AnyComponentDefinition = ComponentDefinition<AnyProps, AnyStyles>;
 
 type Responsive<T, BP extends string = Breakpoint> = Partial<Record<BP, T>>;
 type ResolvedValue<T> = T extends Responsive<infer V, any> ? V : T;
 
-export function useComponentProps<
-  Def extends RAExtendingComponentDefinition<any, any>,
-  All extends Record<string, any>,
->(
-  definition: Def,
-  props: All,
-): {
-  // === Important: use *the same* key union (K) in both buckets ===
-  ownProps: {
-    [P in Extract<
-      Extract<keyof Def['ownProps'], string>,
-      keyof All
-    >]: ResolvedValue<All[P]>;
-  };
-  inheritedProps: Omit<
-    All,
-    Extract<Extract<keyof Def['ownProps'], string>, keyof All>
-  >;
-} {
-  const { breakpoint } = useBreakpoint();
+type EnsureSubtype<Sub extends Super, Super> = Sub;
 
-  // Canonical key unions
-  type KDef = Extract<keyof Def['ownProps'], string>;
-  type K = Extract<KDef, keyof All>; // keys we’ll actually produce
+// --- Public conditional result type ---
+//
+// Def: the component definition (RA or non-RA)
+// All: the *full* props type for the component (ButtonProps, etc)
 
-  // Optional compile-time sanity check: all own keys must exist in `All`
-  type Missing = Exclude<KDef, keyof All>;
-  type __EnsureAllOwnInAll = [Missing] extends [never]
-    ? unknown
-    : { __ERROR_OWN_KEYS_MISSING_IN_All: Missing };
-  void (null as unknown as __EnsureAllOwnInAll);
+export type ComponentPropsResult<
+  Def,
+  All extends AnyProps,
+> = Def extends RAExtendingComponentDefinition<any, any>
+  ? {
+      ownProps: {
+        [P in Extract<
+          Extract<keyof Def['ownProps'], string>,
+          keyof All
+        >]: ResolvedValue<All[P]>;
+      };
+      inheritedProps: Omit<
+        All,
+        Extract<Extract<keyof Def['ownProps'], string>, keyof All>
+      >;
+    }
+  : {
+      // Non-RA: all props are "own", no inheritedProps exposed
+      ownProps: { [P in keyof All]: ResolvedValue<All[P]> };
+    };
 
-  // Typed own keys from the map (Object.keys gives strings)
-  const ownKeys = Object.keys(definition.ownProps) as KDef[];
+// --- Base shape for implementation ---
 
-  // Apply defaults (use your typed version if you have it)
+type ComponentPropsBase = {
+  ownProps: AnyProps;
+  inheritedProps?: AnyProps;
+};
+
+type _CheckComponentPropsSafe = EnsureSubtype<
+  ComponentPropsResult<AnyComponentDefinition, AnyProps>,
+  ComponentPropsBase
+>;
+
+// --- Internal helpers ---
+
+function isRAExtending(
+  def: AnyComponentDefinition,
+): def is RAExtendingComponentDefinition<AnyProps, AnyStyles> {
+  return (def as any).ownProps != null;
+}
+
+function componentPropsImpl(
+  definition: AnyComponentDefinition,
+  props: AnyProps,
+  breakpoint: Breakpoint,
+): ComponentPropsBase {
   const propsWithDefaults = applyDefaults(definition, props);
 
-  // Build typed ownProps using precisely K
-  const ownProps = {} as { [P in K]: ResolvedValue<All[P]> };
-  for (const k of ownKeys) {
-    // If you keep the Missing-check above, KDef ≡ K; otherwise narrow to K at use:
-    const key = k as K;
-    const v = propsWithDefaults[key]; // v: All[K]
-    const resolved = resolveResponsiveValue(
-      v,
-      breakpoint,
-      breakpoints,
-    ) as ResolvedValue<typeof v>;
-    (ownProps as any)[key] = resolved ?? v;
+  if (isRAExtending(definition)) {
+    const ownKeys = Object.keys(definition.ownProps) as string[];
+
+    const ownProps: AnyProps = {};
+    const inheritedProps: AnyProps = { ...propsWithDefaults };
+
+    for (const k of ownKeys) {
+      const v = propsWithDefaults[k];
+      const resolved = resolveResponsiveValue(v, breakpoint, breakpoints);
+      ownProps[k] = resolved ?? v;
+      delete inheritedProps[k];
+    }
+
+    return { ownProps, inheritedProps };
   }
 
-  // Build inherited by deleting own keys from a shallow copy
-  const inheritedDraft = { ...propsWithDefaults };
-  // const inheritedDraft = { ...(propsWithDefaults as any) } as Omit<All, K> &
-  //   Partial<Pick<All, K>>;
-  for (const k of ownKeys) delete inheritedDraft[k];
+  // Non-RA: all props are "own"
+  const ownProps: AnyProps = {};
+  for (const k in propsWithDefaults) {
+    const v = propsWithDefaults[k];
+    const resolved = resolveResponsiveValue(v, breakpoint, breakpoints);
+    ownProps[k] = resolved ?? v;
+  }
 
-  return {
-    ownProps: ownProps as {
-      [P in Extract<
-        Extract<keyof Def['ownProps'], string>,
-        keyof All
-      >]: ResolvedValue<All[P]>;
-    },
-    inheritedProps: inheritedDraft as Omit<
-      All,
-      Extract<Extract<keyof Def['ownProps'], string>, keyof All>
-    >,
-  };
+  return { ownProps };
+}
+
+export function useComponentProps<
+  Def extends AnyComponentDefinition,
+  All extends AnyProps,
+>(definition: Def, props: All): ComponentPropsResult<Def, All> {
+  const { breakpoint } = useBreakpoint();
+
+  const base = useMemo(
+    () =>
+      componentPropsImpl(
+        definition as AnyComponentDefinition,
+        props as AnyProps,
+        breakpoint,
+      ),
+    [definition, props, breakpoint],
+  );
+
+  return base as ComponentPropsResult<Def, All>;
 }

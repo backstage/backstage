@@ -37,14 +37,13 @@ export function applyDefaults<
   if (!definition.defaults) return props as WithAppliedDefaults<D, All>;
 
   // Start with a shallow copy
-  const result: Record<string, any> = { ...props };
+  const result: All = { ...props };
 
-  // Iterate keys of defaults with strong key typing
   for (const key of Object.keys(definition.defaults) as Array<
     keyof NonNullable<D['defaults']> & string
   >) {
     if (result[key] === undefined) {
-      result[key] = (definition.defaults as Record<string, any>)[key];
+      result[key] = definition.defaults[key];
     }
   }
 

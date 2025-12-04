@@ -20,21 +20,13 @@ import { RiLoader4Line } from '@remixicon/react';
 import type { ButtonProps } from './types';
 import { ButtonDefinition } from './definition';
 import styles from './Button.module.css';
-import { useClassNames } from '../../hooks/useClassNames';
-import { useComponentProps } from '../../hooks/useComponentProps';
-import { useDataAttributes } from '../../hooks/useDataAttributes';
+import { useComponentDefinition } from '../../hooks/useComponentDefinition';
 
 /** @public */
 export const Button = forwardRef(
   (props: ButtonProps, ref: Ref<HTMLButtonElement>) => {
-    const classNames = useClassNames(ButtonDefinition, styles, props);
-
-    const { ownProps, inheritedProps } = useComponentProps(
-      ButtonDefinition,
-      props,
-    );
-
-    const dataAttributes = useDataAttributes(ButtonDefinition, props);
+    const { classNames, ownProps, inheritedProps, dataAttributes } =
+      useComponentDefinition(ButtonDefinition, styles, props);
     const { children, iconStart, iconEnd, loading } = ownProps;
 
     return (
