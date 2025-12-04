@@ -17,6 +17,11 @@
 import { QueryEntitiesResponse } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
 import { useApi } from '@backstage/core-plugin-api';
+import {
+  createVersionedContext,
+  createVersionedValueMap,
+  useVersionedContext,
+} from '@backstage/version-bridge';
 import { compact, isEqual } from 'lodash';
 import qs from 'qs';
 import {
@@ -122,11 +127,17 @@ export type EntityListContextProps<
   paginationMode: PaginationMode;
 };
 
+// This context has support for multiple concurrent versions of this package.
+// It is currently used in parallel with the old context in order to provide
+// a smooth transition, but will eventually be the only context we use.
+export const NewEntityListContext = createVersionedContext<{
+  1: EntityListContextProps<any>;
+}>('entity-list-context');
+
 /**
  * Creates new context for entity listing and filtering.
- * @public
  */
-export const EntityListContext = createContext<
+export const OldEntityListContext = createContext<
   EntityListContextProps<any> | undefined
 >(undefined);
 
@@ -487,9 +498,13 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
   );
 
   return (
-    <EntityListContext.Provider value={value}>
-      {props.children}
-    </EntityListContext.Provider>
+    <OldEntityListContext.Provider value={value}>
+      <NewEntityListContext.Provider
+        value={createVersionedValueMap({ 1: value })}
+      >
+        {props.children}
+      </NewEntityListContext.Provider>
+    </OldEntityListContext.Provider>
   );
 };
 
@@ -500,8 +515,22 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
 export function useEntityList<
   EntityFilters extends DefaultEntityFilters = DefaultEntityFilters,
 >(): EntityListContextProps<EntityFilters> {
-  const context = useContext(EntityListContext);
-  if (!context)
-    throw new Error('useEntityList must be used within EntityListProvider');
-  return context;
+  const versionedHolder = useVersionedContext<{
+    1: EntityListContextProps<any>;
+  }>('entity-list-context');
+  const oldContext = useContext(OldEntityListContext);
+
+  if (versionedHolder) {
+    const value = versionedHolder.atVersion(1);
+    if (!value) {
+      throw new Error('EntityListContext v1 not available');
+    }
+    return value;
+  }
+
+  if (oldContext) {
+    return oldContext;
+  }
+
+  throw new Error('useEntityList must be used within EntityListProvider');
 }

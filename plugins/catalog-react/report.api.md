@@ -322,7 +322,7 @@ export const EntityLifecyclePicker: (props: {
   initialFilter?: string[];
 }) => JSX_2.Element;
 
-// @public
+// @public @deprecated
 export const EntityListContext: Context<
   EntityListContextProps<any> | undefined
 >;
