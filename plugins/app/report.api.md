@@ -241,15 +241,7 @@ const appPlugin: OverridableFrontendPlugin<
         availableLanguages?: string[] | undefined;
       };
       output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
-      inputs: {
-        [x: string]: ExtensionInput<
-          ExtensionDataRef,
-          {
-            singleton: boolean;
-            optional: boolean;
-          }
-        >;
-      };
+      inputs: {};
       kind: 'api';
       name: 'app-language';
       params: <
@@ -726,15 +718,7 @@ const appPlugin: OverridableFrontendPlugin<
         transientTimeoutMs?: number | undefined;
       };
       output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
-      inputs: {
-        [x: string]: ExtensionInput<
-          ExtensionDataRef,
-          {
-            singleton: boolean;
-            optional: boolean;
-          }
-        >;
-      };
+      inputs: {};
       kind: 'app-root-element';
       name: 'alert-display';
       params: {
@@ -745,15 +729,7 @@ const appPlugin: OverridableFrontendPlugin<
       config: {};
       configInput: {};
       output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
-      inputs: {
-        [x: string]: ExtensionInput<
-          ExtensionDataRef,
-          {
-            singleton: boolean;
-            optional: boolean;
-          }
-        >;
-      };
+      inputs: {};
       kind: 'app-root-element';
       name: 'dialog-display';
       params: {
