@@ -16,11 +16,13 @@ When you first log into your standalone Backstage App, `Home` is selected in the
 The [Technical Overview](../overview/technical-overview.md) provides greater detail, but the catalog displays two main kinds of registered entities:
 
 - **Core Entities**
+
   - `Components` - Individual pieces of software that can be tracked in source control and can implement APIs for other components to consume.
   - `APIs` - Implemented by components and form the boundaries between different components. The API can be either public, restricted, or private.
   - `Resources` - The physical or virtual infrastructure needed to operate a component.
 
 - **Organizational Entities**
+
   - `User` - A person, such as an employee, contractor, or similar.
   - `Group` - An organizational entity, such as a team, business unit, and so on.
 
@@ -34,12 +36,12 @@ It should be noted that you can also [create your own kinds of entities](../feat
 
 Initially, the Catalog displays registered entities matching the following filter settings:
 
-- **Kind** - Component
-- **Type** - all
-- **Owner** - Owned
-- **Lifecycle** - list of lifecycle values of entities in the Catalog
-- **Processing Status** - normal
-- **Namespace** - The ID of a [namespace](../features/software-catalog/descriptor-format.md#namespace-optional) to which the entity belongs
+- `Kind` - Component
+- `Type` - all
+- `Owner` - Owned
+- `Lifecycle` - list of lifecycle values of entities in the Catalog
+- `Processing Status` - normal
+- `Namespace` - The ID of a [namespace](../features/software-catalog/descriptor-format.md#namespace-optional) to which the entity belongs
 
 You can change the initial setting for the [Owner](../features/software-catalog/catalog-customization.md#initially-selected-filter) and [Kind](../features/software-catalog/catalog-customization.md#initially-selected-kind) filters.
 
