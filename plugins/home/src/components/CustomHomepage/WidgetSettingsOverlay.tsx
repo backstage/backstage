@@ -44,7 +44,10 @@ const useStyles = makeStyles((theme: Theme) =>
     },
     settingsOverlay: {
       position: 'absolute',
-      backgroundColor: 'rgba(40, 40, 40, 0.93)',
+      backgroundColor:
+        theme.palette.type === 'dark'
+          ? 'rgba(40, 40, 40, 0.93)'
+          : 'rgba(255, 255, 255, 0.93)',
       width: '100%',
       height: '100%',
       top: 0,
