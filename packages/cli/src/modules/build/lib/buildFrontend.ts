@@ -20,12 +20,18 @@ import { buildBundle, getModuleFederationOptions } from './bundler';
 import { getEnvironmentParallelism } from '../../../lib/parallel';
 import { loadCliConfig } from '../../config/lib/config';
 import { BackstagePackageJson } from '@backstage/cli-node';
+import {
+  ConfiguredSharedDependencies,
+  Remote,
+} from '@backstage/module-federation-common';
 
 interface BuildAppOptions {
   targetDir: string;
   writeStats: boolean;
   configPaths: string[];
-  isModuleFederationRemote?: true;
+  isModuleFederationRemote?:
+    | true
+    | { sharedDependencies: ConfiguredSharedDependencies<Remote> };
   webpack?: typeof import('webpack');
 }
 
@@ -39,11 +45,15 @@ export async function buildFrontend(options: BuildAppOptions) {
     entry: 'src/index',
     parallelism: getEnvironmentParallelism(),
     statsJsonEnabled: writeStats,
-    moduleFederation: await getModuleFederationOptions(
-      packageJson,
-      resolvePath(targetDir),
-      options.isModuleFederationRemote,
-    ),
+    moduleFederationRemote: options.isModuleFederationRemote
+      ? await getModuleFederationOptions(
+          packageJson,
+          resolvePath(targetDir),
+          typeof options.isModuleFederationRemote !== 'object'
+            ? undefined
+            : options.isModuleFederationRemote.sharedDependencies,
+        )
+      : undefined,
     ...(await loadCliConfig({
       args: configPaths,
       fromPackage: packageJson.name,
