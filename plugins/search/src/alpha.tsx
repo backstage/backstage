@@ -152,7 +152,6 @@ export const searchPage = PageBlueprint.makeWithOverrides({
                     <Grid item xs={3}>
                       <SearchType.Accordion
                         name="Result Type"
-                        defaultValue="software-catalog"
                         showCounts
                         types={[
                           {
