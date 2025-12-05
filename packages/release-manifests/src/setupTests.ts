@@ -14,17 +14,14 @@
  * limitations under the License.
  */
 
-/**
- * Sets up handlers for request mocking
- * @public
- * @param worker - service worker
- */
-export function registerMswTestHooks(worker: {
-  listen: (options?: any) => void;
-  close: () => void;
-  resetHandlers: () => void;
-}) {
-  beforeAll(() => worker.listen());
-  afterAll(() => worker.close());
-  afterEach(() => worker.resetHandlers());
-}
+import { TextEncoder, TextDecoder } from 'util';
+import { TransformStream } from 'stream/web';
+import { BroadcastChannel } from 'worker_threads';
+
+// MSW v2 requires these globals
+Object.assign(global, {
+  TextEncoder,
+  TextDecoder,
+  TransformStream,
+  BroadcastChannel,
+});

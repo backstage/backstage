@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { RestContext, rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import { ConfigReader } from '@backstage/config';
 import {
@@ -29,6 +29,12 @@ import {
 } from './types/api';
 import { DiscoveryApi } from './types/discovery';
 import { createPermission } from './permissions';
+
+jest.mock('cross-fetch', () => ({
+  __esModule: true,
+  default: (...args: Parameters<typeof fetch>) => fetch(...args),
+  Response: global.Response,
+}));
 
 const server = setupServer();
 const token = 'fake-token';
@@ -65,19 +71,20 @@ describe('PermissionClient', () => {
       resourceRef: 'foo:bar',
     };
 
-    const mockAuthorizeHandler = jest.fn((req, res, { json }: RestContext) => {
-      const responses = req.body.items.map(
+    const mockAuthorizeHandler = jest.fn(async ({ request }) => {
+      const body = await request.json();
+      const responses = body.items.map(
         (a: IdentifiedPermissionMessage<EvaluatePermissionRequest>) => ({
           id: a.id,
           result: AuthorizeResult.ALLOW,
         }),
       );
 
-      return res(json({ items: responses }));
+      return HttpResponse.json({ items: responses });
     });
 
     beforeEach(() => {
-      server.use(rest.post(`${mockBaseUrl}/authorize`, mockAuthorizeHandler));
+      server.use(http.post(`${mockBaseUrl}/authorize`, mockAuthorizeHandler));
     });
 
     afterEach(() => {
@@ -90,11 +97,21 @@ describe('PermissionClient', () => {
     });
 
     it('should include a request body', async () => {
+      let capturedBody: any;
+      mockAuthorizeHandler.mockImplementationOnce(async ({ request }) => {
+        capturedBody = await request.json();
+        const responses = capturedBody.items.map(
+          (a: IdentifiedPermissionMessage<EvaluatePermissionRequest>) => ({
+            id: a.id,
+            result: AuthorizeResult.ALLOW,
+          }),
+        );
+        return HttpResponse.json({ items: responses });
+      });
+
       await client.authorize([mockAuthorizeConditional]);
 
-      const request = mockAuthorizeHandler.mock.calls[0][0];
-
-      expect(request.body).toEqual({
+      expect(capturedBody).toEqual({
         items: [
           expect.objectContaining({
             permission: mockPermission,
@@ -114,74 +131,66 @@ describe('PermissionClient', () => {
     it('should not include authorization headers if no token is supplied', async () => {
       await client.authorize([mockAuthorizeConditional]);
 
-      const request = mockAuthorizeHandler.mock.calls[0][0];
+      const { request } = mockAuthorizeHandler.mock.calls[0][0];
       expect(request.headers.has('authorization')).toEqual(false);
     });
 
     it('should include correctly-constructed authorization header if token is supplied', async () => {
       await client.authorize([mockAuthorizeConditional], { token });
 
-      const request = mockAuthorizeHandler.mock.calls[0][0];
+      const { request } = mockAuthorizeHandler.mock.calls[0][0];
       expect(request.headers.get('authorization')).toEqual('Bearer fake-token');
     });
 
     it('should forward response errors', async () => {
-      mockAuthorizeHandler.mockImplementationOnce(
-        (_req, res, { status }: RestContext) => {
-          return res(status(401));
-        },
-      );
+      mockAuthorizeHandler.mockImplementationOnce(async () => {
+        return new HttpResponse(null, { status: 401 });
+      });
       await expect(
         client.authorize([mockAuthorizeConditional], { token }),
       ).rejects.toThrow(/request failed with 401/i);
     });
 
     it('should reject responses with missing ids', async () => {
-      mockAuthorizeHandler.mockImplementationOnce(
-        (_req, res, { json }: RestContext) => {
-          return res(
-            json({
-              items: [{ id: 'wrong-id', result: AuthorizeResult.ALLOW }],
-            }),
-          );
-        },
-      );
+      mockAuthorizeHandler.mockImplementationOnce(async () => {
+        return HttpResponse.json({
+          items: [{ id: 'wrong-id', result: AuthorizeResult.ALLOW }],
+        });
+      });
       await expect(
         client.authorize([mockAuthorizeConditional], { token }),
       ).rejects.toThrow(/items in response do not match request/i);
     });
 
     it('should reject invalid responses', async () => {
-      mockAuthorizeHandler.mockImplementationOnce(
-        (req, res, { json }: RestContext) => {
-          const responses = req.body.items.map(
-            (a: IdentifiedPermissionMessage<EvaluatePermissionRequest>) => ({
-              id: a.id,
-              outcome: AuthorizeResult.ALLOW,
-            }),
-          );
+      mockAuthorizeHandler.mockImplementationOnce(async ({ request }) => {
+        const body = await request.json();
+        const responses = body.items.map(
+          (a: IdentifiedPermissionMessage<EvaluatePermissionRequest>) => ({
+            id: a.id,
+            outcome: AuthorizeResult.ALLOW,
+          }),
+        );
 
-          return res(json({ items: responses }));
-        },
-      );
+        return HttpResponse.json({ items: responses });
+      });
       await expect(
         client.authorize([mockAuthorizeConditional], { token }),
       ).rejects.toThrow(/invalid input/i);
     });
 
     it('should allow all when permission.enabled is false', async () => {
-      mockAuthorizeHandler.mockImplementationOnce(
-        (req, res, { json }: RestContext) => {
-          const responses = req.body.map(
-            (a: IdentifiedPermissionMessage<EvaluatePermissionRequest>) => ({
-              id: a.id,
-              result: AuthorizeResult.DENY,
-            }),
-          );
+      mockAuthorizeHandler.mockImplementationOnce(async ({ request }) => {
+        const body = await request.json();
+        const responses = body.map(
+          (a: IdentifiedPermissionMessage<EvaluatePermissionRequest>) => ({
+            id: a.id,
+            result: AuthorizeResult.DENY,
+          }),
+        );
 
-          return res(json({ items: responses }));
-        },
-      );
+        return HttpResponse.json({ items: responses });
+      });
       const disabled = new PermissionClient({
         discovery,
         config: new ConfigReader({ permission: { enabled: false } }),
@@ -194,18 +203,17 @@ describe('PermissionClient', () => {
     });
 
     it('should allow all when permission.enabled is not configured', async () => {
-      mockAuthorizeHandler.mockImplementationOnce(
-        (req, res, { json }: RestContext) => {
-          const responses = req.body.map(
-            (a: IdentifiedPermissionMessage<EvaluatePermissionRequest>) => ({
-              id: a.id,
-              outcome: AuthorizeResult.DENY,
-            }),
-          );
+      mockAuthorizeHandler.mockImplementationOnce(async ({ request }) => {
+        const body = await request.json();
+        const responses = body.map(
+          (a: IdentifiedPermissionMessage<EvaluatePermissionRequest>) => ({
+            id: a.id,
+            outcome: AuthorizeResult.DENY,
+          }),
+        );
 
-          return res(json(responses));
-        },
-      );
+        return HttpResponse.json(responses);
+      });
       const disabled = new PermissionClient({
         discovery,
         config: new ConfigReader({}),
@@ -240,20 +248,19 @@ describe('PermissionClient', () => {
 
     beforeEach(() => {
       mockAuthorizeHandler.mockReset();
-      server.use(rest.post(`${mockBaseUrl}/authorize`, mockAuthorizeHandler));
+      server.use(http.post(`${mockBaseUrl}/authorize`, mockAuthorizeHandler));
 
-      mockAuthorizeHandler.mockImplementation(
-        (req, res, { json }: RestContext) => {
-          const responses = req.body.items.map(
-            (a: BatchedAuthorizePermissionRequest) => ({
-              id: a.id,
-              result: [AuthorizeResult.ALLOW],
-            }),
-          );
+      mockAuthorizeHandler.mockImplementation(async ({ request }) => {
+        const body = await request.json();
+        const responses = body.items.map(
+          (a: BatchedAuthorizePermissionRequest) => ({
+            id: a.id,
+            result: [AuthorizeResult.ALLOW],
+          }),
+        );
 
-          return res(json({ items: responses }));
-        },
-      );
+        return HttpResponse.json({ items: responses });
+      });
     });
 
     afterEach(() => {
@@ -271,6 +278,18 @@ describe('PermissionClient', () => {
         attributes: {},
       });
 
+      let capturedBody: any;
+      mockAuthorizeHandler.mockImplementationOnce(async ({ request }) => {
+        capturedBody = await request.json();
+        const responses = capturedBody.items.map(
+          (a: BatchedAuthorizePermissionRequest) => ({
+            id: a.id,
+            result: [AuthorizeResult.ALLOW],
+          }),
+        );
+        return HttpResponse.json({ items: responses });
+      });
+
       await client.authorize([
         { permission: mockPermission, resourceRef: 'foo:bar' },
         { permission: mockPermission, resourceRef: 'foo:car' },
@@ -278,9 +297,7 @@ describe('PermissionClient', () => {
         { permission: basicPermission },
       ]);
 
-      const request = mockAuthorizeHandler.mock.calls[0][0];
-
-      expect(request.body).toEqual({
+      expect(capturedBody).toEqual({
         items: [
           {
             id: expect.any(String),
@@ -305,56 +322,49 @@ describe('PermissionClient', () => {
     it('should not include authorization headers if no token is supplied', async () => {
       await client.authorize([mockAuthorizeConditional]);
 
-      const request = mockAuthorizeHandler.mock.calls[0][0];
+      const { request } = mockAuthorizeHandler.mock.calls[0][0];
       expect(request.headers.has('authorization')).toEqual(false);
     });
 
     it('should include correctly-constructed authorization header if token is supplied', async () => {
       await client.authorize([mockAuthorizeConditional], { token });
 
-      const request = mockAuthorizeHandler.mock.calls[0][0];
+      const { request } = mockAuthorizeHandler.mock.calls[0][0];
       expect(request.headers.get('authorization')).toEqual('Bearer fake-token');
     });
 
     it('should forward response errors', async () => {
-      mockAuthorizeHandler.mockImplementationOnce(
-        (_req, res, { status }: RestContext) => {
-          return res(status(401));
-        },
-      );
+      mockAuthorizeHandler.mockImplementationOnce(async () => {
+        return new HttpResponse(null, { status: 401 });
+      });
       await expect(
         client.authorize([mockAuthorizeConditional], { token }),
       ).rejects.toThrow(/request failed with 401/i);
     });
 
     it('should reject responses with missing ids', async () => {
-      mockAuthorizeHandler.mockImplementationOnce(
-        (_req, res, { json }: RestContext) => {
-          return res(
-            json({
-              items: [{ id: 'wrong-id', result: [AuthorizeResult.ALLOW] }],
-            }),
-          );
-        },
-      );
+      mockAuthorizeHandler.mockImplementationOnce(async () => {
+        return HttpResponse.json({
+          items: [{ id: 'wrong-id', result: [AuthorizeResult.ALLOW] }],
+        });
+      });
       await expect(
         client.authorize([mockAuthorizeConditional], { token }),
       ).rejects.toThrow(/items in response do not match request/i);
     });
 
     it('should reject invalid responses', async () => {
-      mockAuthorizeHandler.mockImplementationOnce(
-        (req, res, { json }: RestContext) => {
-          const responses = req.body.items.map(
-            (a: IdentifiedPermissionMessage<EvaluatePermissionRequest>) => ({
-              id: a.id,
-              outcome: AuthorizeResult.ALLOW,
-            }),
-          );
+      mockAuthorizeHandler.mockImplementationOnce(async ({ request }) => {
+        const body = await request.json();
+        const responses = body.items.map(
+          (a: IdentifiedPermissionMessage<EvaluatePermissionRequest>) => ({
+            id: a.id,
+            outcome: AuthorizeResult.ALLOW,
+          }),
+        );
 
-          return res(json({ items: responses }));
-        },
-      );
+        return HttpResponse.json({ items: responses });
+      });
       await expect(
         client.authorize([mockAuthorizeConditional], { token }),
       ).rejects.toThrow(/invalid_type/i);
@@ -396,28 +406,26 @@ describe('PermissionClient', () => {
         attributes: {},
       });
 
-      mockAuthorizeHandler.mockImplementationOnce(
-        (req, res, { json }: RestContext) => {
-          return res(
-            json({
-              items: [
-                {
-                  id: req.body.items[0].id,
-                  result: [AuthorizeResult.ALLOW, AuthorizeResult.DENY],
-                },
-                {
-                  id: req.body.items[1].id,
-                  result: AuthorizeResult.DENY,
-                },
-                {
-                  id: req.body.items[2].id,
-                  result: [AuthorizeResult.DENY, AuthorizeResult.ALLOW],
-                },
-              ],
-            }),
-          );
-        },
-      );
+      let capturedBody: any;
+      mockAuthorizeHandler.mockImplementationOnce(async ({ request }) => {
+        capturedBody = await request.json();
+        return HttpResponse.json({
+          items: [
+            {
+              id: capturedBody.items[0].id,
+              result: [AuthorizeResult.ALLOW, AuthorizeResult.DENY],
+            },
+            {
+              id: capturedBody.items[1].id,
+              result: AuthorizeResult.DENY,
+            },
+            {
+              id: capturedBody.items[2].id,
+              result: [AuthorizeResult.DENY, AuthorizeResult.ALLOW],
+            },
+          ],
+        });
+      });
 
       const response = await client.authorize([
         {
@@ -444,7 +452,7 @@ describe('PermissionClient', () => {
         },
       ]);
 
-      expect(mockAuthorizeHandler.mock.calls[0][0].body).toEqual({
+      expect(capturedBody).toEqual({
         items: [
           {
             permission: {
@@ -500,29 +508,28 @@ describe('PermissionClient', () => {
       permission: mockPermission,
     };
 
-    const mockPolicyDecisionHandler = jest.fn(
-      (req, res, { json }: RestContext) => {
-        const responses = req.body.items.map(
-          (a: IdentifiedPermissionMessage<ConditionalPolicyDecision>) => ({
-            id: a.id,
-            pluginId: 'test-plugin',
+    const mockPolicyDecisionHandler = jest.fn(async ({ request }) => {
+      const body = await request.json();
+      const responses = body.items.map(
+        (a: IdentifiedPermissionMessage<ConditionalPolicyDecision>) => ({
+          id: a.id,
+          pluginId: 'test-plugin',
+          resourceType: 'test-resource',
+          result: AuthorizeResult.CONDITIONAL,
+          conditions: {
             resourceType: 'test-resource',
-            result: AuthorizeResult.CONDITIONAL,
-            conditions: {
-              resourceType: 'test-resource',
-              rule: 'FOO',
-              params: { foo: 'bar' },
-            },
-          }),
-        );
+            rule: 'FOO',
+            params: { foo: 'bar' },
+          },
+        }),
+      );
 
-        return res(json({ items: responses }));
-      },
-    );
+      return HttpResponse.json({ items: responses });
+    });
 
     beforeEach(() => {
       server.use(
-        rest.post(`${mockBaseUrl}/authorize`, mockPolicyDecisionHandler),
+        http.post(`${mockBaseUrl}/authorize`, mockPolicyDecisionHandler),
       );
     });
 
@@ -536,11 +543,28 @@ describe('PermissionClient', () => {
     });
 
     it('should include a request body', async () => {
+      let capturedBody: any;
+      mockPolicyDecisionHandler.mockImplementationOnce(async ({ request }) => {
+        capturedBody = await request.json();
+        const responses = capturedBody.items.map(
+          (a: IdentifiedPermissionMessage<ConditionalPolicyDecision>) => ({
+            id: a.id,
+            pluginId: 'test-plugin',
+            resourceType: 'test-resource',
+            result: AuthorizeResult.CONDITIONAL,
+            conditions: {
+              resourceType: 'test-resource',
+              rule: 'FOO',
+              params: { foo: 'bar' },
+            },
+          }),
+        );
+        return HttpResponse.json({ items: responses });
+      });
+
       await client.authorizeConditional([mockResourceAuthorizeConditional]);
 
-      const request = mockPolicyDecisionHandler.mock.calls[0][0];
-
-      expect(request.body).toEqual({
+      expect(capturedBody).toEqual({
         items: [
           expect.objectContaining({
             permission: mockPermission,
@@ -568,7 +592,7 @@ describe('PermissionClient', () => {
     it('should not include authorization headers if no token is supplied', async () => {
       await client.authorizeConditional([mockResourceAuthorizeConditional]);
 
-      const request = mockPolicyDecisionHandler.mock.calls[0][0];
+      const { request } = mockPolicyDecisionHandler.mock.calls[0][0];
       expect(request.headers.has('authorization')).toEqual(false);
     });
 
@@ -577,16 +601,14 @@ describe('PermissionClient', () => {
         token,
       });
 
-      const request = mockPolicyDecisionHandler.mock.calls[0][0];
+      const { request } = mockPolicyDecisionHandler.mock.calls[0][0];
       expect(request.headers.get('authorization')).toEqual('Bearer fake-token');
     });
 
     it('should forward response errors', async () => {
-      mockPolicyDecisionHandler.mockImplementationOnce(
-        (_req, res, { status }: RestContext) => {
-          return res(status(401));
-        },
-      );
+      mockPolicyDecisionHandler.mockImplementationOnce(async () => {
+        return new HttpResponse(null, { status: 401 });
+      });
       await expect(
         client.authorizeConditional([mockResourceAuthorizeConditional], {
           token,
@@ -595,24 +617,23 @@ describe('PermissionClient', () => {
     });
 
     it('should handle responses with rules with no params', async () => {
-      mockPolicyDecisionHandler.mockImplementationOnce(
-        (req, res, { json }: RestContext) => {
-          const responses = req.body.items.map(
-            (a: IdentifiedPermissionMessage<ConditionalPolicyDecision>) => ({
-              id: a.id,
-              pluginId: 'test-plugin',
+      mockPolicyDecisionHandler.mockImplementationOnce(async ({ request }) => {
+        const body = await request.json();
+        const responses = body.items.map(
+          (a: IdentifiedPermissionMessage<ConditionalPolicyDecision>) => ({
+            id: a.id,
+            pluginId: 'test-plugin',
+            resourceType: 'test-resource',
+            result: AuthorizeResult.CONDITIONAL,
+            conditions: {
               resourceType: 'test-resource',
-              result: AuthorizeResult.CONDITIONAL,
-              conditions: {
-                resourceType: 'test-resource',
-                rule: 'FOO',
-              },
-            }),
-          );
+              rule: 'FOO',
+            },
+          }),
+        );
 
-          return res(json({ items: responses }));
-        },
-      );
+        return HttpResponse.json({ items: responses });
+      });
 
       const response = await client.authorizeConditional([
         mockResourceAuthorizeConditional,
@@ -629,15 +650,11 @@ describe('PermissionClient', () => {
     });
 
     it('should reject responses with missing ids', async () => {
-      mockPolicyDecisionHandler.mockImplementationOnce(
-        (_req, res, { json }: RestContext) => {
-          return res(
-            json({
-              items: [{ id: 'wrong-id', result: AuthorizeResult.ALLOW }],
-            }),
-          );
-        },
-      );
+      mockPolicyDecisionHandler.mockImplementationOnce(async () => {
+        return HttpResponse.json({
+          items: [{ id: 'wrong-id', result: AuthorizeResult.ALLOW }],
+        });
+      });
       await expect(
         client.authorizeConditional([mockResourceAuthorizeConditional], {
           token,
@@ -646,18 +663,17 @@ describe('PermissionClient', () => {
     });
 
     it('should reject invalid responses', async () => {
-      mockPolicyDecisionHandler.mockImplementationOnce(
-        (req, res, { json }: RestContext) => {
-          const responses = req.body.items.map(
-            (a: IdentifiedPermissionMessage<ConditionalPolicyDecision>) => ({
-              id: a.id,
-              outcome: AuthorizeResult.ALLOW,
-            }),
-          );
+      mockPolicyDecisionHandler.mockImplementationOnce(async ({ request }) => {
+        const body = await request.json();
+        const responses = body.items.map(
+          (a: IdentifiedPermissionMessage<ConditionalPolicyDecision>) => ({
+            id: a.id,
+            outcome: AuthorizeResult.ALLOW,
+          }),
+        );
 
-          return res(json({ items: responses }));
-        },
-      );
+        return HttpResponse.json({ items: responses });
+      });
       await expect(
         client.authorizeConditional([mockResourceAuthorizeConditional], {
           token,
@@ -666,18 +682,17 @@ describe('PermissionClient', () => {
     });
 
     it('should allow all when permission.enabled is false', async () => {
-      mockPolicyDecisionHandler.mockImplementationOnce(
-        (req, res, { json }: RestContext) => {
-          const responses = req.body.map(
-            (a: IdentifiedPermissionMessage<ConditionalPolicyDecision>) => ({
-              id: a.id,
-              result: AuthorizeResult.DENY,
-            }),
-          );
+      mockPolicyDecisionHandler.mockImplementationOnce(async ({ request }) => {
+        const body = await request.json();
+        const responses = body.map(
+          (a: IdentifiedPermissionMessage<ConditionalPolicyDecision>) => ({
+            id: a.id,
+            result: AuthorizeResult.DENY,
+          }),
+        );
 
-          return res(json({ items: responses }));
-        },
-      );
+        return HttpResponse.json({ items: responses });
+      });
       const disabled = new PermissionClient({
         discovery,
         config: new ConfigReader({ permission: { enabled: false } }),
@@ -695,18 +710,17 @@ describe('PermissionClient', () => {
     });
 
     it('should allow all when permission.enabled is not configured', async () => {
-      mockPolicyDecisionHandler.mockImplementationOnce(
-        (req, res, { json }: RestContext) => {
-          const responses = req.body.map(
-            (a: IdentifiedPermissionMessage<ConditionalPolicyDecision>) => ({
-              id: a.id,
-              outcome: AuthorizeResult.DENY,
-            }),
-          );
+      mockPolicyDecisionHandler.mockImplementationOnce(async ({ request }) => {
+        const body = await request.json();
+        const responses = body.map(
+          (a: IdentifiedPermissionMessage<ConditionalPolicyDecision>) => ({
+            id: a.id,
+            outcome: AuthorizeResult.DENY,
+          }),
+        );
 
-          return res(json({ items: responses }));
-        },
-      );
+        return HttpResponse.json({ items: responses });
+      });
       const disabled = new PermissionClient({
         discovery,
         config: new ConfigReader({}),

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2021 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,17 +14,13 @@
  * limitations under the License.
  */
 
-/**
- * Sets up handlers for request mocking
- * @public
- * @param worker - service worker
- */
-export function registerMswTestHooks(worker: {
-  listen: (options?: any) => void;
-  close: () => void;
-  resetHandlers: () => void;
-}) {
-  beforeAll(() => worker.listen());
-  afterAll(() => worker.close());
-  afterEach(() => worker.resetHandlers());
-}
+import { TextEncoder, TextDecoder } from 'util';
+import { BroadcastChannel } from 'worker_threads';
+import { TransformStream } from 'stream/web';
+
+Object.assign(global, {
+  TextEncoder,
+  TextDecoder,
+  BroadcastChannel,
+  TransformStream,
+});

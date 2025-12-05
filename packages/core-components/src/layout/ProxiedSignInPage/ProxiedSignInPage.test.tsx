@@ -15,7 +15,7 @@
  */
 
 import { render, screen } from '@testing-library/react';
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import {
   mockApis,
@@ -25,6 +25,13 @@ import {
 } from '@backstage/test-utils';
 import { ProxiedSignInPage } from './ProxiedSignInPage';
 import { discoveryApiRef } from '@backstage/core-plugin-api';
+
+// Mock cross-fetch to delegate to native fetch, which MSW v2 can intercept
+jest.mock('cross-fetch', () => ({
+  __esModule: true,
+  default: (...args: Parameters<typeof fetch>) => fetch(...args),
+  Response: global.Response,
+}));
 
 describe('ProxiedSignInPage', () => {
   const worker = setupServer();
@@ -49,11 +56,9 @@ describe('ProxiedSignInPage', () => {
 
   it('should sign in a user', async () => {
     worker.use(
-      rest.get('http://example.com/api/auth/test/refresh', (_, res, ctx) =>
-        res(
-          ctx.status(200),
-          ctx.set('Content-Type', 'application/json'),
-          ctx.json({
+      http.get('http://example.com/api/auth/test/refresh', () =>
+        HttpResponse.json(
+          {
             profile: {
               email: 'e',
               displayName: 'd',
@@ -67,7 +72,11 @@ describe('ProxiedSignInPage', () => {
                 ownershipEntityRefs: ['k:ns/oe'],
               },
             },
-          }),
+          },
+          {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          },
         ),
       ),
     );
@@ -81,13 +90,15 @@ describe('ProxiedSignInPage', () => {
 
   it('should forward error', async () => {
     worker.use(
-      rest.get('http://example.com/api/auth/test/refresh', (_, res, ctx) =>
-        res(
-          ctx.status(401),
-          ctx.set('Content-Type', 'application/json'),
-          ctx.json({
+      http.get('http://example.com/api/auth/test/refresh', () =>
+        HttpResponse.json(
+          {
             error: { name: 'Error', message: 'not-displayed' },
-          }),
+          },
+          {
+            status: 401,
+            headers: { 'Content-Type': 'application/json' },
+          },
         ),
       ),
     );
@@ -131,13 +142,15 @@ describe('ProxiedSignInPage', () => {
     });
 
     worker.use(
-      rest.get('http://example.com/api/auth/test/refresh', (_, res, ctx) =>
-        res(
-          ctx.status(401),
-          ctx.set('Content-Type', 'application/json'),
-          ctx.json({
+      http.get('http://example.com/api/auth/test/refresh', () =>
+        HttpResponse.json(
+          {
             error: { name: 'Error', message: 'not-displayed' },
-          }),
+          },
+          {
+            status: 401,
+            headers: { 'Content-Type': 'application/json' },
+          },
         ),
       ),
     );

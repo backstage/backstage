@@ -15,7 +15,7 @@
  */
 
 import { findOperationByRequest, OpenApiProxyValidator } from './validation';
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import { registerMswTestHooks } from '@backstage/test-utils';
 import { CompletedBody, CompletedRequest, CompletedResponse } from 'mockttp';
@@ -66,8 +66,8 @@ describe('OpenApiProxyValidator', () => {
 
   async function mockSchema(schema: any) {
     server.use(
-      rest.get('http://localhost:7000/openapi.json', (_req, res, ctx) =>
-        res(ctx.json(schema)),
+      http.get('http://localhost:7000/openapi.json', () =>
+        HttpResponse.json(schema),
       ),
     );
     await validator.initialize('http://localhost:7000/openapi.json');
