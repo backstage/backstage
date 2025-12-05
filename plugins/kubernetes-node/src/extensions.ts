@@ -13,10 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  createExtensionPoint,
-  HttpAuthService,
-} from '@backstage/backend-plugin-api';
+import { createExtensionPoint } from '@backstage/backend-plugin-api';
 import {
   AuthenticationStrategy,
   CustomResource,
@@ -27,8 +24,6 @@ import {
   KubernetesServiceLocator,
 } from '@backstage/plugin-kubernetes-node';
 import type express from 'express';
-import type { CatalogService } from '@backstage/plugin-catalog-node';
-import type { PermissionEvaluator } from '@backstage/plugin-permission-common';
 
 /**
  * A factory function for creating a KubernetesObjectsProvider.
@@ -185,9 +180,6 @@ export type KubernetesRouterFactory = (opts: {
   getDefault: () => express.Router;
   objectsProvider: KubernetesObjectsProvider;
   clusterSupplier: KubernetesClustersSupplier;
-  catalog: CatalogService;
-  permissions: PermissionEvaluator;
-  httpAuth: HttpAuthService;
   authStrategyMap: { [key: string]: AuthenticationStrategy };
 }) => express.Router;
 

@@ -125,9 +125,6 @@ export class KubernetesRouter {
           ),
         objectsProvider,
         clusterSupplier,
-        catalog,
-        permissions,
-        httpAuth,
         authStrategyMap,
       }) ??
       this.buildDefaultRouter(

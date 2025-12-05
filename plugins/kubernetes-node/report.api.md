@@ -5,14 +5,12 @@
 ```ts
 import { AuthenticationStrategy as AuthenticationStrategy_2 } from '@backstage/plugin-kubernetes-node';
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
-import type { CatalogService } from '@backstage/plugin-catalog-node';
 import { CustomResource as CustomResource_2 } from '@backstage/plugin-kubernetes-node';
 import { CustomResourceMatcher } from '@backstage/plugin-kubernetes-common';
 import { Entity } from '@backstage/catalog-model';
 import type express from 'express';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { FetchResponse } from '@backstage/plugin-kubernetes-common';
-import { HttpAuthService } from '@backstage/backend-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { KubernetesClustersSupplier as KubernetesClustersSupplier_2 } from '@backstage/plugin-kubernetes-node';
 import { KubernetesFetcher as KubernetesFetcher_2 } from '@backstage/plugin-kubernetes-node';
@@ -23,7 +21,6 @@ import { KubernetesServiceLocator as KubernetesServiceLocator_2 } from '@backsta
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { ObjectsByEntityResponse } from '@backstage/plugin-kubernetes-common';
 import { ObjectToFetch as ObjectToFetch_2 } from '@backstage/plugin-kubernetes-node';
-import type { PermissionEvaluator } from '@backstage/plugin-permission-common';
 
 // @public (undocumented)
 export interface AuthenticationStrategy {
@@ -240,9 +237,6 @@ export type KubernetesRouterFactory = (opts: {
   getDefault: () => express.Router;
   objectsProvider: KubernetesObjectsProvider_2;
   clusterSupplier: KubernetesClustersSupplier_2;
-  catalog: CatalogService;
-  permissions: PermissionEvaluator;
-  httpAuth: HttpAuthService;
   authStrategyMap: {
     [key: string]: AuthenticationStrategy_2;
   };
