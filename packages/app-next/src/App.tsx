@@ -21,18 +21,12 @@ import userSettingsPlugin from '@backstage/plugin-user-settings/alpha';
 import homePlugin, {
   titleExtensionDataRef,
 } from '@backstage/plugin-home/alpha';
-
 import {
   coreExtensionData,
   createExtension,
   createFrontendModule,
 } from '@backstage/frontend-plugin-api';
-import {
-  techdocsPlugin,
-  TechDocsIndexPage,
-  TechDocsReaderPage,
-  EntityTechdocsContent,
-} from '@backstage/plugin-techdocs';
+import techdocsPlugin from '@backstage/plugin-techdocs/alpha';
 import appVisualizerPlugin from '@backstage/plugin-app-visualizer';
 import { homePage } from './HomePage';
 import { convertLegacyAppRoot } from '@backstage/core-compat-api';
@@ -40,11 +34,9 @@ import { FlatRoutes } from '@backstage/core-app-api';
 import { Route } from 'react-router';
 import { CatalogImportPage } from '@backstage/plugin-catalog-import';
 import kubernetesPlugin from '@backstage/plugin-kubernetes/alpha';
-import { convertLegacyPlugin } from '@backstage/core-compat-api';
-import { convertLegacyPageExtension } from '@backstage/core-compat-api';
-import { convertLegacyEntityContentExtension } from '@backstage/plugin-catalog-react/alpha';
 import { pluginInfoResolver } from './pluginInfoResolver';
 import { appModuleNav } from './modules/appModuleNav';
+import { techDocsTransformersModule } from './modules/customTechdocsTransformer';
 
 /*
 
@@ -79,20 +71,33 @@ TODO:
  * TechDocs does support the new frontend system so this conversion is not
  * strictly necessary, but it's left here to provide a demo of the utilities for
  * converting legacy plugins.
- */
-const convertedTechdocsPlugin = convertLegacyPlugin(techdocsPlugin, {
-  extensions: [
-    // TODO: We likely also need a way to convert an entire <Route> tree similar to collectLegacyRoutes
-    convertLegacyPageExtension(TechDocsIndexPage, {
-      name: 'index',
-      path: '/docs',
-    }),
-    convertLegacyPageExtension(TechDocsReaderPage, {
-      path: '/docs/:namespace/:kind/:name/*',
-    }),
-    convertLegacyEntityContentExtension(EntityTechdocsContent),
-  ],
-});
+ * 
+ *
+  import {
+    techDocsPlugin,
+    TechDocsIndexPage,
+    TechDocsReaderPage,
+    EntityTechdocsContent,
+  } from '@backstage/plugin-techdocs';
+
+  import { convertLegacyPlugin } from '@backstage/core-compat-api';
+  import { convertLegacyPageExtension } from '@backstage/core-compat-api';
+  import { convertLegacyEntityContentExtension } from '@backstage/plugin-catalog-react/alpha';
+
+  const convertedTechdocsPlugin = convertLegacyPlugin(techdocsPlugin, {
+    extensions: [
+      // TODO: We likely also need a way to convert an entire <Route> tree similar to collectLegacyRoutes
+      convertLegacyPageExtension(TechDocsIndexPage, {
+        name: 'index',
+        path: '/docs',
+      }),
+      convertLegacyPageExtension(TechDocsReaderPage, {
+        path: '/docs/:namespace/:kind/:name/*',
+      }),
+      convertLegacyEntityContentExtension(EntityTechdocsContent),
+    ],
+  });
+*/
 
 const customHomePageModule = createFrontendModule({
   pluginId: 'home',
@@ -125,7 +130,8 @@ const collectedLegacyPlugins = convertLegacyAppRoot(
 const app = createApp({
   features: [
     pagesPlugin,
-    convertedTechdocsPlugin,
+    techdocsPlugin,
+    techDocsTransformersModule,
     userSettingsPlugin,
     homePlugin,
     appVisualizerPlugin,
