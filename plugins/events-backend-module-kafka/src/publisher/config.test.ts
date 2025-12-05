@@ -73,6 +73,9 @@ describe('readConfig', () => {
     expect(
       publisherConfigs?.kafkaConsumerConfigs[0].consumerSubscribeTopics.topics,
     ).toEqual(['topic-A']);
+    // Verify defaults are applied when not specified
+    expect(publisherConfigs?.kafkaConsumerConfigs[0].autoCommit).toBe(true);
+    expect(publisherConfigs?.kafkaConsumerConfigs[0].pauseOnError).toBe(false);
   });
 
   it('all fields configured', () => {
@@ -196,6 +199,54 @@ describe('readConfig', () => {
     expect(
       publisherConfigs?.kafkaConsumerConfigs[0].consumerConfig.maxWaitTimeInMs,
     ).toBe(4000);
+  });
+
+  it('should respect explicitly configured autoCommit and pauseOnError values', () => {
+    const config = new ConfigReader({
+      events: {
+        modules: {
+          kafka: {
+            kafkaConsumingEventPublisher: {
+              clientId: 'backstage-events',
+              brokers: ['kafka1:9092'],
+              topics: [
+                {
+                  topic: 'fake1',
+                  kafka: {
+                    topics: ['topic-A'],
+                    groupId: 'my-group',
+                    autoCommit: false,
+                    pauseOnError: true,
+                  },
+                },
+                {
+                  topic: 'fake2',
+                  kafka: {
+                    topics: ['topic-B'],
+                    groupId: 'my-group',
+                    autoCommit: true,
+                    pauseOnError: false,
+                  },
+                },
+              ],
+            },
+          },
+        },
+      },
+    });
+
+    const publisherConfigs = readConfig(config);
+
+    expect(publisherConfigs).toBeDefined();
+    expect(publisherConfigs?.kafkaConsumerConfigs.length).toBe(2);
+
+    // First topic has autoCommit=false, pauseOnError=true
+    expect(publisherConfigs?.kafkaConsumerConfigs[0].autoCommit).toBe(false);
+    expect(publisherConfigs?.kafkaConsumerConfigs[0].pauseOnError).toBe(true);
+
+    // Second topic has autoCommit=true, pauseOnError=false
+    expect(publisherConfigs?.kafkaConsumerConfigs[1].autoCommit).toBe(true);
+    expect(publisherConfigs?.kafkaConsumerConfigs[1].pauseOnError).toBe(false);
   });
 
   it('should handle HumanDuration and string values for durations and timeouts', () => {
