@@ -514,11 +514,12 @@ describe('Stepper', () => {
 
     const mockFormData = { firstName: 'John' };
 
-    Object.defineProperty(window, 'location', {
-      value: {
-        search: `?formData=${JSON.stringify(mockFormData)}`,
-      },
-    });
+    // Use history.replaceState to set the query string (jsdom 27 doesn't allow redefining window.location)
+    window.history.replaceState(
+      {},
+      '',
+      `?formData=${JSON.stringify(mockFormData)}`,
+    );
 
     const { getByRole } = await renderInTestApp(
       <SecretsContextProvider>

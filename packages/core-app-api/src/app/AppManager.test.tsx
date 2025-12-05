@@ -670,14 +670,10 @@ describe('Integration Test', () => {
     });
 
     expect(errorLogs).toEqual([
-      expect.objectContaining({
-        detail: new Error(expectedMessage),
-        type: 'unhandled exception',
-      }),
-      expect.objectContaining({
-        detail: new Error(expectedMessage),
-        type: 'unhandled exception',
-      }),
+      expect.stringContaining(`Error: ${expectedMessage}`),
+      expect.objectContaining({ type: 'unhandled-exception' }),
+      expect.stringContaining(`Error: ${expectedMessage}`),
+      expect.objectContaining({ type: 'unhandled-exception' }),
       expect.stringContaining(
         'The above error occurred in the <Provider> component:',
       ),
@@ -714,14 +710,10 @@ describe('Integration Test', () => {
       ).rejects.toThrow(expectedMessage);
     });
     expect(errorLogs).toEqual([
-      expect.objectContaining({
-        detail: new Error(expectedMessage),
-        type: 'unhandled exception',
-      }),
-      expect.objectContaining({
-        detail: new Error(expectedMessage),
-        type: 'unhandled exception',
-      }),
+      expect.stringContaining(`Error: ${expectedMessage}`),
+      expect.objectContaining({ type: 'unhandled-exception' }),
+      expect.stringContaining(`Error: ${expectedMessage}`),
+      expect.objectContaining({ type: 'unhandled-exception' }),
       expect.stringContaining(
         'The above error occurred in the <Provider> component:',
       ),
