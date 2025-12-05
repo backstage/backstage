@@ -3387,7 +3387,7 @@ __metadata:
     lodash: "npm:^4.17.21"
     minimist: "npm:^1.2.5"
     msw: "npm:^1.0.0"
-    typescript-json-schema: "npm:^0.65.0"
+    typescript-json-schema: "npm:^0.67.0"
     yaml: "npm:^2.0.0"
     zen-observable: "npm:^0.10.0"
   languageName: unknown
@@ -48423,9 +48423,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript-json-schema@npm:^0.65.0":
-  version: 0.65.1
-  resolution: "typescript-json-schema@npm:0.65.1"
+"typescript-json-schema@npm:^0.67.0":
+  version: 0.67.0
+  resolution: "typescript-json-schema@npm:0.67.0"
   dependencies:
     "@types/json-schema": "npm:^7.0.9"
     "@types/node": "npm:^18.11.9"
@@ -48437,7 +48437,7 @@ __metadata:
     yargs: "npm:^17.1.1"
   bin:
     typescript-json-schema: bin/typescript-json-schema
-  checksum: 10/50a1935378639d5d47e452702766a3fdab22e1d06192f26f81b79e0da504e71af987ff21cb13909479a202aad8d1216a654f16ebda2ee2056b5f859584b4c7d2
+  checksum: 10/23769ab7701558aa4decb9dad832d12b9c2c619d102088023d277ce8f4abcd21453a9b095bc82de32cfca68efd1520f75124878f96dd95d8ccf91f35e1b7744f
   languageName: node
   linkType: hard
 
