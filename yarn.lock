@@ -37379,8 +37379,8 @@ __metadata:
   linkType: hard
 
 "logform@npm:^2.3.2, logform@npm:^2.6.0, logform@npm:^2.6.1":
-  version: 2.6.1
-  resolution: "logform@npm:2.6.1"
+  version: 2.7.0
+  resolution: "logform@npm:2.7.0"
   dependencies:
     "@colors/colors": "npm:1.6.0"
     "@types/triple-beam": "npm:^1.3.2"
@@ -37388,7 +37388,7 @@ __metadata:
     ms: "npm:^2.1.1"
     safe-stable-stringify: "npm:^2.3.1"
     triple-beam: "npm:^1.3.0"
-  checksum: 10/e67f414787fbfe1e6a997f4c84300c7e06bee3d0bd579778af667e24b36db3ea200ed195d41b61311ff738dab7faabc615a07b174b22fe69e0b2f39e985be64b
+  checksum: 10/4b861bfd67efe599ab41113ae3ffe92b1873bf86793fb442f58971852430d8f416f9904da69e5043071fb3725690e2499a13acbfe92a57ba7d21690004f9edc0
   languageName: node
   linkType: hard
 
