@@ -64,4 +64,3 @@ To delete an entity:
    ![Screenshot of selecting delete entity.](../assets/uiguide/select-delete-entity.png)
 
 A confirmation message that the entity has been successfully deleted is briefly displayed.The entity is no longer displayed in the Catalog.
-
