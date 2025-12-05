@@ -12,6 +12,7 @@ Options:
   -h, --help
 
 Commands:
+  auth [command]
   build-workspace
   config [command]
   config:check
@@ -27,6 +28,84 @@ Commands:
   repo [command]
   versions:bump
   versions:migrate
+```
+
+### `backstage-cli auth`
+
+```
+Usage: backstage-cli auth [options] [command] [command]
+
+Options:
+  -h, --help
+
+Commands:
+  help [command]
+  list
+  login
+  logout
+  print-token
+  select
+  show
+```
+
+### `backstage-cli auth list`
+
+```
+Usage: <none>
+
+Options:
+  --help
+  --version
+```
+
+### `backstage-cli auth login`
+
+```
+Usage: <none>
+
+Options:
+  --help
+  --version
+```
+
+### `backstage-cli auth logout`
+
+```
+Usage: <none>
+
+Options:
+  --help
+  --version
+```
+
+### `backstage-cli auth print-token`
+
+```
+Usage: <none>
+
+Options:
+  --help
+  --version
+```
+
+### `backstage-cli auth select`
+
+```
+Usage: <none>
+
+Options:
+  --help
+  --version
+```
+
+### `backstage-cli auth show`
+
+```
+Usage: <none>
+
+Options:
+  --help
+  --version
 ```
 
 ### `backstage-cli build-workspace`
