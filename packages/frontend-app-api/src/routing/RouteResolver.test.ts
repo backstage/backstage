@@ -28,6 +28,12 @@ import {
   createSubRouteRef as createLegacySubRouteRef,
   createExternalRouteRef as createLegacyExternalRouteRef,
 } from '@backstage/core-plugin-api';
+import { RouteObject, RouteMatch } from '@backstage/frontend-plugin-api';
+import {
+  matchRoutes as rrMatchRoutes,
+  generatePath,
+  RouteObject as RRRouteObject,
+} from 'react-router-dom';
 import { RouteResolver } from './RouteResolver';
 import { MATCH_ALL_ROUTE } from './extractRouteInfoFromAppNode';
 import {
@@ -58,6 +64,23 @@ function src(sourcePath: string) {
 
 const emptyResolver = createExactRouteAliasResolver(new Map());
 
+/**
+ * matchRoutes implementation using react-router.
+ * Adapts between our RouteObject type and react-router's internal types.
+ */
+function matchRoutes<T extends RouteObject>(
+  routes: T[],
+  location: { pathname: string },
+): RouteMatch<T>[] | null {
+  // Type assertion needed: our RouteObject has Backstage-specific fields
+  // that react-router's RouteObject doesn't know about, but are structurally compatible
+  const rrRoutes = routes as unknown as RRRouteObject[];
+  const matches = rrMatchRoutes(rrRoutes, location);
+  // Type assertion needed: the match result uses react-router's internal route type,
+  // but the actual objects at runtime are our T types
+  return matches as unknown as RouteMatch<T>[] | null;
+}
+
 describe('RouteResolver', () => {
   it('should not resolve anything with an empty resolver', () => {
     const r = new RouteResolver(
@@ -68,6 +91,8 @@ describe('RouteResolver', () => {
       '',
       emptyResolver,
       new Map(),
+      matchRoutes,
+      generatePath,
     );
 
     expect(r.resolve(ref1, src('/'))?.()).toBe(undefined);
@@ -91,6 +116,8 @@ describe('RouteResolver', () => {
       '',
       emptyResolver,
       new Map(),
+      matchRoutes,
+      generatePath,
     );
 
     expect(r.resolve(ref1, src('/'))?.()).toBe('/my-route');
@@ -132,6 +159,8 @@ describe('RouteResolver', () => {
       '',
       emptyResolver,
       new Map(),
+      matchRoutes,
+      generatePath,
     );
 
     expect(r.resolve(ref1, src('/'))?.()).toBe('/my-route');
@@ -173,6 +202,8 @@ describe('RouteResolver', () => {
         externalRoutes: new Map(),
       }),
       new Map(),
+      matchRoutes,
+      generatePath,
     );
 
     expect(r.resolve(ref1, src('/'))?.()).toBe('/my-route');
@@ -224,6 +255,8 @@ describe('RouteResolver', () => {
         ['test.root', subRef1],
         ['test.param', ref2],
       ]),
+      matchRoutes,
+      generatePath,
     );
 
     expect(r.resolve(externalRef1, src('/'))?.()).toBe('/my-route');
@@ -280,6 +313,8 @@ describe('RouteResolver', () => {
       '',
       emptyResolver,
       new Map(),
+      matchRoutes,
+      generatePath,
     );
 
     expect(r.resolve(ref2, src('/'))?.({ x: 'x' })).toBe('/root/x');
@@ -337,6 +372,8 @@ describe('RouteResolver', () => {
       '',
       emptyResolver,
       new Map(),
+      matchRoutes,
+      generatePath,
     );
 
     const l = '/my-grandparent/my-y/my-parent/my-x';
@@ -412,9 +449,11 @@ describe('RouteResolver', () => {
         },
       ],
       new Map(),
-      '/base',
+      '',
       emptyResolver,
       new Map(),
+      matchRoutes,
+      generatePath,
     );
 
     expect(r.resolve(ref2, src('/'))?.({ x: 'a/#&?b' })).toBe(
@@ -463,6 +502,8 @@ describe('RouteResolver', () => {
         '',
         emptyResolver,
         new Map(),
+        matchRoutes,
+        generatePath,
       );
 
       expect(r.resolve(legacyRef1, src('/'))?.()).toBe(undefined);
@@ -488,6 +529,8 @@ describe('RouteResolver', () => {
         '',
         emptyResolver,
         new Map(),
+        matchRoutes,
+        generatePath,
       );
 
       expect(r.resolve(legacyRef1, src('/'))?.()).toBe('/my-route');
@@ -531,6 +574,8 @@ describe('RouteResolver', () => {
         '',
         emptyResolver,
         new Map(),
+        matchRoutes,
+        generatePath,
       );
 
       expect(r.resolve(legacyRef1, src('/'))?.()).toBe('/my-route');
@@ -591,6 +636,8 @@ describe('RouteResolver', () => {
         '',
         emptyResolver,
         new Map(),
+        matchRoutes,
+        generatePath,
       );
 
       expect(r.resolve(legacyRef2, src('/'))?.({ x: 'x' })).toBe('/root/x');

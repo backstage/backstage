@@ -72,6 +72,9 @@
   "peerDependenciesMeta": {
     "@types/react": {
       "optional": true
+    },
+    "react-router-dom": {
+      "optional": true
     }
   }
 }

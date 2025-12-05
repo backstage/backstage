@@ -20,8 +20,12 @@ import {
   MockAnalyticsApi,
   TestApiProvider,
 } from '@backstage/frontend-test-utils';
-import { analyticsApiRef, useAnalytics } from '@backstage/frontend-plugin-api';
-import { Routes, Route } from 'react-router-dom';
+import {
+  analyticsApiRef,
+  useAnalytics,
+  routerApiRef,
+  useApi,
+} from '@backstage/frontend-plugin-api';
 import { renderInTestApp } from './renderInTestApp';
 
 describe('renderInTestApp', () => {
@@ -68,15 +72,20 @@ describe('renderInTestApp', () => {
   });
 
   it('should support setting different locations in the history stack', async () => {
-    renderInTestApp(
-      <Routes>
-        <Route path="/" element={<h1>Index Page</h1>} />
-        <Route path="/second-page" element={<h1>Second Page</h1>} />
-      </Routes>,
-      {
-        initialRouteEntries: ['/second-page'],
-      },
-    );
+    // Access Routes/Route from the router API since they can't be wrapped
+    const IndexPage = () => {
+      const { Routes, Route } = useApi(routerApiRef);
+      return (
+        <Routes>
+          <Route path="/" element={<h1>Index Page</h1>} />
+          <Route path="/second-page" element={<h1>Second Page</h1>} />
+        </Routes>
+      );
+    };
+
+    renderInTestApp(<IndexPage />, {
+      initialRouteEntries: ['/second-page'],
+    });
 
     expect(screen.getByText('Second Page')).toBeInTheDocument();
   });

@@ -14,6 +14,33 @@
  * limitations under the License.
  */
 
+export type {
+  Location,
+  Path,
+  To,
+  NavigateOptions,
+  NavigateFunction,
+  RouteObject,
+  RouteMatch,
+  LinkProps,
+  NavLinkProps,
+  RouteProps,
+} from './routerTypes';
+
+export {
+  useLocation,
+  useParams,
+  useNavigate,
+  useSearchParams,
+  useResolvedPath,
+  useHref,
+} from './hooks';
+
+// Note: Routes and Route are NOT exported here because react-router's
+// Routes component inspects children types and rejects wrappers.
+// Access them via: const { Routes, Route } = useApi(routerApiRef);
+export { Link, NavLink, Outlet } from './components';
+
 export type { AnyRouteRefParams } from './types';
 export { createRouteRef, type RouteRef } from './RouteRef';
 export { createSubRouteRef, type SubRouteRef } from './SubRouteRef';

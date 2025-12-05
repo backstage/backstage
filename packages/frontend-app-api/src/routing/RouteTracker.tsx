@@ -15,11 +15,13 @@
  */
 
 import { useEffect } from 'react';
-import { matchRoutes, useLocation } from 'react-router-dom';
 import {
   useAnalytics,
   AnalyticsContext,
   AnalyticsEventAttributes,
+  useApi,
+  routerApiRef,
+  RouterApi,
 } from '@backstage/frontend-plugin-api';
 import { BackstageRouteObject } from './types';
 
@@ -30,6 +32,7 @@ import { BackstageRouteObject } from './types';
 const getExtensionContext = (
   pathname: string,
   routes: BackstageRouteObject[],
+  matchRoutes: RouterApi['matchRoutes'],
 ) => {
   try {
     // Find matching routes for the given path name.
@@ -109,11 +112,15 @@ export const RouteTracker = ({
 }: {
   routeObjects: BackstageRouteObject[];
 }) => {
-  const { pathname, search, hash } = useLocation();
+  const routerApi = useApi(routerApiRef);
+  const location = routerApi.useLocation();
+  const { matchRoutes } = routerApi;
+  const { pathname, search, hash } = location;
 
   const { params, ...attributes } = getExtensionContext(
     pathname,
     routeObjects,
+    matchRoutes,
   ) || { params: {} };
 
   return (
