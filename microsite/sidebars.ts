@@ -18,57 +18,57 @@ const scaffolderSidebar = tryToLoadCustomSidebar(
   '../docs/features/software-templates/api/sidebar.ts',
 );
 
+function sidebarElementWithIndex(label: string, children: any[], differentiator = '') {
+  return {
+    type: 'category',
+    label: label,
+    link: { 
+      type: 'generated-index', 
+      title: label, 
+      slug: `/${differentiator}${label.toLowerCase().replace(/[^a-z0-9 _-]/gi, '-')}/generated-index`,
+    },
+    items: children,
+  };
+}
+
 export default {
-  docs: {
-    Overview: [
+  docs: [
+    sidebarElementWithIndex('Overview', [
       'overview/what-is-backstage',
       'overview/technical-overview',
       'overview/architecture-overview',
       'overview/roadmap',
       'overview/threat-model',
       'overview/versioning-policy',
-    ],
-    'Getting Started': [
+    ]),
+    sidebarElementWithIndex('Getting Started', [
       'getting-started/index',
-      {
-        type: 'category',
-        label: 'Configuring Backstage',
-        items: [
+      sidebarElementWithIndex('Configuring Backstage', [
           'getting-started/config/database',
           'getting-started/config/authentication',
           'getting-started/configure-app-with-plugins',
           'getting-started/homepage',
         ],
-      },
-      {
-        type: 'category',
-        label: 'Deploying Backstage',
-        items: [
+      ),
+      sidebarElementWithIndex('Deploying Backstage', [
           'deployment/index',
           'deployment/scaling',
           'deployment/docker',
           'deployment/k8s',
         ],
-      },
-      {
-        type: 'category',
-        label: 'Using Backstage',
-        items: [
+      ),
+      sidebarElementWithIndex('Using Backstage', [
           'getting-started/logging-in',
           'getting-started/register-a-component',
           'getting-started/create-a-component',
         ],
-      },
+      ),
       'overview/support',
       'getting-started/keeping-backstage-updated',
-    ],
+    ]),
     ...(process.env.GOLDEN_PATH
-      ? {
-          'Golden Paths': [
-            {
-              type: 'category',
-              label: '001 - create-app',
-              items: [
+      ? [sidebarElementWithIndex('Golden Paths', [
+            sidebarElementWithIndex('001 - Create an App', [
                 'golden-path/create-app/index',
                 'golden-path/create-app/npx-create-app',
                 'golden-path/create-app/local-development',
@@ -77,37 +77,25 @@ export default {
                 'golden-path/create-app/custom-theme',
                 'golden-path/create-app/keeping-backstage-updated',
               ],
-            },
-            {
-              type: 'category',
-              label: '002 - Plugins',
-              items: [
+            ),
+            sidebarElementWithIndex('002 - Plugins', [
                 'golden-path/plugins/index',
                 'golden-path/plugins/why-build-plugins',
                 'golden-path/plugins/sustainable-plugin-development',
-                {
-                  type: 'category',
-                  label: 'Backend Plugins',
-                  items: [
+                sidebarElementWithIndex('Backend Plugins', [
                     'golden-path/plugins/backend/001-first-steps',
                     'golden-path/plugins/backend/002-poking-around',
                   ],
-                },
+                ),
               ],
-            },
+            ),
           ],
-        }
-      : {}),
-    'Core Features': [
-      {
-        type: 'category',
-        label: 'Auth and Identity',
-        items: [
+        )]
+      : []),
+    sidebarElementWithIndex('Core Features', [
+      sidebarElementWithIndex('Auth and Identity', [
           'auth/index',
-          {
-            type: 'category',
-            label: 'Included providers',
-            items: [
+          sidebarElementWithIndex('Included providers', [
               'auth/auth0/provider',
               'auth/atlassian/provider',
               'auth/aws-alb/provider',
@@ -126,7 +114,7 @@ export default {
               'auth/onelogin/provider',
               'auth/vmware-cloud/provider',
             ],
-          },
+          ),
           'auth/identity-resolver',
           'auth/oauth',
           'auth/oidc',
@@ -135,12 +123,9 @@ export default {
           'auth/autologout',
           'auth/troubleshooting',
         ],
-      },
-      {
-        type: 'category',
-        label: 'Kubernetes',
-        items: [
-          'features/kubernetes/overview',
+      ),
+      sidebarElementWithIndex('Kubernetes', [
+        'features/kubernetes/overview',
           'features/kubernetes/installation',
           'features/kubernetes/configuration',
           'features/kubernetes/authentication',
@@ -148,44 +133,32 @@ export default {
           'features/kubernetes/troubleshooting',
           'features/kubernetes/proxy',
         ],
-      },
-      {
-        type: 'category',
-        label: 'Notifications',
-        items: [
-          'notifications/index',
+      ),
+      sidebarElementWithIndex('Notifications', [
+        'notifications/index',
           'notifications/processors',
           'notifications/usage',
         ],
-      },
-      {
-        type: 'category',
-        label: 'Permissions',
-        items: [
-          'permissions/overview',
+      ),
+      sidebarElementWithIndex('Permissions', [
+        'permissions/overview',
           'permissions/concepts',
           'permissions/getting-started',
           'permissions/writing-a-policy',
           'permissions/frontend-integration',
           'permissions/custom-rules',
-          {
-            type: 'category',
-            label: 'Tutorial: using Permissions in your plugin',
-            items: [
+          sidebarElementWithIndex('Tutorial: using Permissions in your plugin', [
               'permissions/plugin-authors/01-setup',
               'permissions/plugin-authors/02-adding-a-basic-permission-check',
               'permissions/plugin-authors/03-adding-a-resource-permission-check',
               'permissions/plugin-authors/04-authorizing-access-to-paginated-data',
               'permissions/plugin-authors/05-frontend-authorization',
             ],
-          },
+          ),
         ],
-      },
-      {
-        type: 'category',
-        label: 'Search',
-        items: [
-          'features/search/search-overview',
+      ),
+      sidebarElementWithIndex('Search', [
+        'features/search/search-overview',
           'features/search/getting-started',
           'features/search/concepts',
           {
@@ -209,12 +182,9 @@ export default {
           'features/search/collators',
           'features/search/how-to-guides',
         ],
-      },
-      {
-        type: 'category',
-        label: 'Software Catalog',
-        items: [
-          'features/software-catalog/software-catalog-overview',
+      ),
+      sidebarElementWithIndex('Software Catalog', [
+        'features/software-catalog/software-catalog-overview',
           'features/software-catalog/life-of-an-entity',
           'features/software-catalog/configuration',
           'features/software-catalog/system-model',
@@ -245,12 +215,9 @@ export default {
           'features/software-catalog/creating-the-catalog-graph',
           'features/software-catalog/faq',
         ],
-      },
-      {
-        type: 'category',
-        label: 'Software Templates',
-        items: [
-          'features/software-templates/software-templates-index',
+      ),
+      sidebarElementWithIndex('Software Templates', [
+        'features/software-templates/software-templates-index',
           'features/software-templates/configuration',
           'features/software-templates/adding-templates',
           'features/software-templates/writing-templates',
@@ -283,11 +250,8 @@ export default {
             items: scaffolderSidebar,
           },
         ],
-      },
-      {
-        type: 'category',
-        label: 'TechDocs',
-        items: [
+      ),
+      sidebarElementWithIndex('TechDocs', [
           'features/techdocs/techdocs-overview',
           'features/techdocs/getting-started',
           'features/techdocs/concepts',
@@ -303,105 +267,63 @@ export default {
           'features/techdocs/troubleshooting',
           'features/techdocs/faqs',
         ],
-      },
-    ],
-    Integrations: [
+      ),
+    ]),
+    sidebarElementWithIndex('Integrations', [
       'integrations/index',
-      {
-        type: 'category',
-        label: 'AWS S3',
-        items: [
-          'integrations/aws-s3/locations',
-          'integrations/aws-s3/discovery',
-        ],
-      },
-      {
-        type: 'category',
-        label: 'Azure Blob Storage',
-        items: [
-          'integrations/azure-blobStorage/locations',
-          'integrations/azure-blobStorage/discovery',
-        ],
-      },
-      {
-        type: 'category',
-        label: 'Azure',
-        items: [
-          'integrations/azure/locations',
+      sidebarElementWithIndex('AWS S3', [
+        'integrations/aws-s3/locations',
+        'integrations/aws-s3/discovery',
+      ]),
+      sidebarElementWithIndex('Azure Blob Storage', [
+        'integrations/azure-blobStorage/locations',
+        'integrations/azure-blobStorage/discovery',
+      ]),
+      sidebarElementWithIndex('Azure', [
+        'integrations/azure/locations',
           'integrations/azure/discovery',
           'integrations/azure/org',
         ],
-      },
-      {
-        type: 'category',
-        label: 'Bitbucket Cloud',
-        items: [
-          'integrations/bitbucketCloud/locations',
+      ),
+      sidebarElementWithIndex('Bitbucket Cloud', [
+        'integrations/bitbucketCloud/locations',
           'integrations/bitbucketCloud/discovery',
         ],
-      },
-      {
-        type: 'category',
-        label: 'Bitbucket Server',
-        items: [
-          'integrations/bitbucketServer/locations',
-          'integrations/bitbucketServer/discovery',
-        ],
-      },
-      {
-        type: 'category',
-        label: 'Datadog',
-        items: ['integrations/datadog-rum/installation'],
-      },
-      {
-        type: 'category',
-        label: 'Gerrit',
-        items: [
-          'integrations/gerrit/locations',
+      ),
+      sidebarElementWithIndex('Bitbucket Server', [
+        'integrations/bitbucketServer/locations',
+        'integrations/bitbucketServer/discovery',
+      ]),
+      sidebarElementWithIndex('Datadog', [
+        'integrations/datadog-rum/installation',
+      ]),
+      sidebarElementWithIndex('Gerrit', [
+        'integrations/gerrit/locations',
           'integrations/gerrit/discovery',
         ],
-      },
-      {
-        type: 'category',
-        label: 'GitHub',
-        items: [
+      ),
+      sidebarElementWithIndex('Github', [
           'integrations/github/locations',
           'integrations/github/discovery',
           'integrations/github/org',
           'integrations/github/github-apps',
         ],
-      },
-      {
-        type: 'category',
-        label: 'GitLab',
-        items: [
+      ),
+      sidebarElementWithIndex('GitLab', [
           'integrations/gitlab/locations',
           'integrations/gitlab/discovery',
           'integrations/gitlab/org',
         ],
-      },
-      {
-        type: 'category',
-        label: 'Gitea',
-        items: ['integrations/gitea/locations', 'integrations/gitea/discovery'],
-      },
-      {
-        type: 'category',
-        label: 'Harness',
-        items: ['integrations/harness/locations'],
-      },
-      {
-        type: 'category',
-        label: 'Google GCS',
-        items: ['integrations/google-cloud-storage/locations'],
-      },
-      {
-        type: 'category',
-        label: 'LDAP',
-        items: ['integrations/ldap/org'],
-      },
-    ],
-    Plugins: [
+      ),
+      sidebarElementWithIndex('Gitea', [
+        'integrations/gitea/locations',
+        'integrations/gitea/discovery',
+      ]),
+      sidebarElementWithIndex('Harness', ['integrations/harness/locations']),
+      sidebarElementWithIndex('Google GCS', ['integrations/google-cloud-storage/locations']),
+      sidebarElementWithIndex('LDAP', ['integrations/ldap/org']),
+    ]),
+    sidebarElementWithIndex('Plugins', [
       'plugins/index',
       'plugins/existing-plugins',
       'plugins/create-a-plugin',
@@ -413,55 +335,35 @@ export default {
       'plugins/internationalization',
       'plugins/analytics',
       'plugins/feature-flags',
-      {
-        type: 'category',
-        label: 'OpenAPI',
-        items: [
-          'openapi/01-getting-started',
-          'openapi/generate-client',
+      sidebarElementWithIndex('OpenAPI', [
+        'openapi/01-getting-started',
+        'openapi/generate-client',
           'openapi/test-case-validation',
         ],
-      },
-      {
-        type: 'category',
-        label: 'Backends and APIs',
-        items: [
+      ),
+      sidebarElementWithIndex('Backends and APIs', [
           'plugins/proxying',
           'plugins/backend-plugin',
           'plugins/call-existing-api',
         ],
-      },
-      {
-        type: 'category',
-        label: 'Testing',
-        items: ['plugins/testing'],
-      },
-      {
-        type: 'category',
-        label: 'Publishing',
-        items: [
-          'plugins/publish-private',
-          'plugins/add-to-directory',
-          'plugins/observability',
-        ],
-      },
-    ],
-    Configuration: [
+      ),
+      sidebarElementWithIndex('Testing', ['plugins/testing']),
+      sidebarElementWithIndex('Publishing', [
+        'plugins/publish-private',
+        'plugins/add-to-directory',
+        'plugins/observability',
+      ]),
+    ]),
+    sidebarElementWithIndex('Configuration', [
       'conf/index',
       'conf/reading',
       'conf/writing',
       'conf/defining',
-    ],
-    Framework: [
-      {
-        type: 'category',
-        label: 'Backend System',
-        items: [
-          'backend-system/index',
-          {
-            type: 'category',
-            label: 'Architecture',
-            items: [
+    ]),
+    sidebarElementWithIndex('Framework', [
+      sidebarElementWithIndex('Backend System', [
+        'backend-system/index',
+        sidebarElementWithIndex('Architecture', [
               'backend-system/architecture/index',
               'backend-system/architecture/services',
               'backend-system/architecture/plugins',
@@ -470,28 +372,20 @@ export default {
               'backend-system/architecture/feature-loaders',
               'backend-system/architecture/naming-patterns',
             ],
-          },
-          {
-            type: 'category',
-            label: 'Building Backends',
-            items: [
+            'backend-system/architecture'
+        ),
+        sidebarElementWithIndex('Building Backends', [
               'backend-system/building-backends/index',
               'backend-system/building-backends/migrating',
             ],
-          },
-          {
-            type: 'category',
-            label: 'Building Plugins & Modules',
-            items: [
+        ),
+        sidebarElementWithIndex('Building Plugins & Modules', [
               'backend-system/building-plugins-and-modules/index',
               'backend-system/building-plugins-and-modules/testing',
               'backend-system/building-plugins-and-modules/migrating',
             ],
-          },
-          {
-            type: 'category',
-            label: 'Core Services',
-            items: [
+        ),
+        sidebarElementWithIndex('Core Services', [
               'backend-system/core-services/index',
               'backend-system/core-services/auditor',
               'backend-system/core-services/auth',
@@ -518,18 +412,12 @@ export default {
               'backend-system/core-services/actions-registry',
               'backend-system/core-services/actions',
             ],
-          },
+        ),
         ],
-      },
-      {
-        type: 'category',
-        label: 'New Frontend System',
-        items: [
+      ),
+      sidebarElementWithIndex('New Frontend System',[
           'frontend-system/index',
-          {
-            type: 'category',
-            label: 'Architecture',
-            items: [
+          sidebarElementWithIndex('Architecture', [
               'frontend-system/architecture/index',
               'frontend-system/architecture/app',
               'frontend-system/architecture/plugins',
@@ -542,74 +430,58 @@ export default {
               'frontend-system/architecture/naming-patterns',
               'frontend-system/architecture/migrations',
             ],
-          },
-          {
-            type: 'category',
-            label: 'Building Plugins',
-            items: [
+            'frontend-system/architecture'
+          ),
+          sidebarElementWithIndex('Building Plugins', [
               'frontend-system/building-plugins/index',
               'frontend-system/building-plugins/testing',
               'frontend-system/building-plugins/common-extension-blueprints',
               'frontend-system/building-plugins/built-in-data-refs',
               'frontend-system/building-plugins/migrating',
             ],
-          },
-          {
-            type: 'category',
-            label: 'Building Apps',
-            items: [
+          ),
+          sidebarElementWithIndex('Building Apps', [
               'frontend-system/building-apps/index',
               'frontend-system/building-apps/configuring-extensions',
               'frontend-system/building-apps/built-in-extensions',
               'frontend-system/building-apps/plugin-conversion',
               'frontend-system/building-apps/migrating',
             ],
-          },
-          {
-            type: 'category',
-            label: 'Utility APIs',
-            items: [
+          ),
+          sidebarElementWithIndex('Utility APIs', [
               'frontend-system/utility-apis/index',
               'frontend-system/utility-apis/creating',
               'frontend-system/utility-apis/consuming',
               'frontend-system/utility-apis/configuring',
             ],
-          },
+          ),
         ],
-      },
-      {
-        'Backstage CLI': [
+      ),
+      sidebarElementWithIndex('Backstage CLI', [
           'tooling/cli/overview',
           'tooling/cli/build-system',
           'tooling/cli/commands',
           'tooling/cli/templates',
-          {
-            type: 'category',
-            label: 'Local Development',
-            items: [
+          sidebarElementWithIndex('Local Development', [
               'tooling/local-dev/linking-local-packages',
               'tooling/local-dev/debugging',
               'tooling/local-dev/profiling',
             ],
-          },
+          ),
           'tooling/package-metadata',
         ],
-      },
-      {
-        type: 'category',
-        label: 'User Interface',
-        items: [
-          'conf/user-interface/index',
+      ),
+      sidebarElementWithIndex('User Interface', [
+        'conf/user-interface/index',
           'conf/user-interface/logo',
           'conf/user-interface/icons',
           'conf/user-interface/sidebar',
         ],
-      },
-    ],
-    Tutorials: [
-      { 'Non-technical': ['overview/adopting'] },
-      {
-        Technical: [
+      ),
+    ]),
+    sidebarElementWithIndex('Tutorials', [
+      sidebarElementWithIndex('Non-technical', ['overview/adopting'] ),
+      sidebarElementWithIndex('Technical', [
           'tutorials/quickstart-app-plugin',
           'tutorials/configuring-plugin-databases',
           'tutorials/manual-knex-rollback',
@@ -620,9 +492,8 @@ export default {
           'tutorials/integrating-event-driven-updates-with-entity-providers',
           'accessibility/index',
         ],
-      },
-      {
-        Migrations: [
+      ),
+      sidebarElementWithIndex('Migrations', [
           'tutorials/react-router-stable-migration',
           'tutorials/react18-migration',
           'tutorials/package-role-migration',
@@ -632,27 +503,23 @@ export default {
           'tutorials/auth-service-migration',
           'tutorials/jsx-transform-migration',
         ],
-      },
-    ],
-    FAQ: ['faq/index', 'faq/product', 'faq/technical'],
-    Contribute: [
+      ),
+    ]),
+    sidebarElementWithIndex('FAQ', ['faq/index', 'faq/product', 'faq/technical']),
+    sidebarElementWithIndex('Contribute', [
       'contribute/index',
       'contribute/getting-involved',
       'contribute/project-structure',
-    ],
-    References: [
-      {
-        'Designing for Backstage': [
+    ]),
+    sidebarElementWithIndex('References', [
+      sidebarElementWithIndex('Designing for Backstage', [
           'dls/design',
           'dls/component-design-guidelines',
           'dls/contributing-to-storybook',
           'dls/figma',
         ],
-      },
-      {
-        type: 'category',
-        label: 'Architecture Decision Records (ADRs)',
-        items: [
+      ),
+      sidebarElementWithIndex('Architecture Decision Records (ADRs)', [
           'architecture-decisions/adrs-overview',
           'architecture-decisions/adrs-adr001',
           'architecture-decisions/adrs-adr002',
@@ -669,13 +536,13 @@ export default {
           'architecture-decisions/adrs-adr013',
           'architecture-decisions/adrs-adr014',
         ],
-      },
+      ),
       'api/deprecations',
       'references/glossary',
       'api/utility-apis',
       'reference/index',
-    ],
-  },
+    ]),
+  ],
   releases: {
     'Release Notes': releases.map(release => `releases/${release}`),
   },
