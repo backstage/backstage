@@ -19,7 +19,7 @@ import {
 } from '@backstage/backend-plugin-api';
 import { ForwardedError, InputError, NotFoundError } from '@backstage/errors';
 import { JsonObject, JsonValue } from '@backstage/types';
-import { z, AnyZodObject } from 'zod';
+import { AnyZodObject, z } from 'zod';
 import zodToJsonSchema from 'zod-to-json-schema';
 import { mockCredentials } from '../../services';
 import {
@@ -98,6 +98,7 @@ export class MockActionsRegistry
             ? zodToJsonSchema(action.schema.output(z))
             : zodToJsonSchema(z.object({})),
         } as ActionsServiceAction['schema'],
+        authorized: true,
       })),
     };
   }

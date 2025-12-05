@@ -154,6 +154,44 @@ export interface Config {
        * List of plugin sources to load actions from.
        */
       pluginSources?: string[];
+      /**
+       * Configuration for individual actions.
+       */
+      actionConfig?: {
+        [id: string]: {
+          /**
+           * Disables single action.
+           */
+          disabled?: true;
+          /**
+           * Defines permissions required to execute the action. If omitted, the
+           * default `authorize` callback provided in the action registration will
+           * be used to authorize execution.
+           */
+          permissions?:
+            | Array<{
+                /**
+                 * Name of the permission to check, f.eg. 'catalog.entity.read'.
+                 */
+                name: string;
+                /**
+                 * Optional attributes to further describe the permission being requested.
+                 */
+                attributes?: {
+                  action?: 'create' | 'read' | 'update' | 'delete';
+                };
+                /**
+                 * For resource permissions, both the resource type and ref must be provided.
+                 */
+                resourceType?: string;
+                resourceRef?: string;
+              }>
+            | {
+                /** Indicates that permission checks for this action are disabled. */
+                disabled: true;
+              };
+        };
+      };
     };
 
     /**

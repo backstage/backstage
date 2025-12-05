@@ -5,6 +5,7 @@
 ```ts
 import { AnyZodObject } from 'zod';
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
+import { DefinitivePolicyDecision } from '@backstage/plugin-permission-common';
 import { JsonObject } from '@backstage/types';
 import { JSONSchema7 } from 'json-schema';
 import { JsonValue } from '@backstage/types';
@@ -36,6 +37,9 @@ export type ActionsRegistryActionOptions<
     idempotent?: boolean;
     readOnly?: boolean;
   };
+  authorize?: (
+    context: ActionsRegistryAuthorizeContext<TInputSchema>,
+  ) => Promise<DefinitivePolicyDecision>;
   action: (context: ActionsRegistryActionContext<TInputSchema>) => Promise<
     z.infer<TOutputSchema> extends void
       ? void
@@ -44,6 +48,13 @@ export type ActionsRegistryActionOptions<
         }
   >;
 };
+
+// @alpha (undocumented)
+export type ActionsRegistryAuthorizeContext<TInputSchema extends AnyZodObject> =
+  {
+    credentials: BackstageCredentials;
+    input?: z.infer<TInputSchema>;
+  };
 
 // @alpha (undocumented)
 export interface ActionsRegistryService {
@@ -94,6 +105,7 @@ export type ActionsServiceAction = {
     destructive: boolean;
     idempotent: boolean;
   };
+  authorized: boolean;
 };
 
 // @alpha

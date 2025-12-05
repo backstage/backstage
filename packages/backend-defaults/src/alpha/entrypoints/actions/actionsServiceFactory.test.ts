@@ -32,9 +32,11 @@ import {
 import { json } from 'express';
 import Router from 'express-promise-router';
 import request from 'supertest';
-import { ActionsServiceAction } from '@backstage/backend-plugin-api/alpha';
-import { actionsRegistryServiceRef } from '@backstage/backend-plugin-api/alpha';
-import { actionsServiceRef } from '@backstage/backend-plugin-api/alpha';
+import {
+  actionsRegistryServiceRef,
+  ActionsServiceAction,
+  actionsServiceRef,
+} from '@backstage/backend-plugin-api/alpha';
 
 const server = setupServer();
 
@@ -77,6 +79,7 @@ describe('actionsServiceFactory', () => {
         idempotent: false,
         readOnly: false,
       },
+      authorized: true,
     };
 
     beforeEach(() => {
@@ -313,6 +316,7 @@ describe('actionsServiceFactory', () => {
                   type: 'object',
                 },
               },
+              authorized: true,
               attributes: {
                 destructive: true,
                 idempotent: false,
