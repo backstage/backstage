@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useApi } from '@backstage/core-plugin-api';
+import { useApi } from '../apis/system';
 import { useAnalyticsContext } from './AnalyticsContext';
 import { analyticsApiRef, AnalyticsTracker, AnalyticsApi } from '../apis';
 import { useRef } from 'react';

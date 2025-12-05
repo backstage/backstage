@@ -1,5 +1,25 @@
 # @backstage/plugin-techdocs-module-addons-contrib
 
+## 1.1.31-next.1
+
+### Patch Changes
+
+- 8d6709e: Updated tests to match test-utils change
+- Updated dependencies
+  - @backstage/core-components@0.18.4-next.1
+
+## 1.1.31-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.2-next.0
+  - @backstage/integration@1.18.3-next.0
+  - @backstage/core-plugin-api@1.12.1-next.0
+  - @backstage/plugin-techdocs-react@1.3.6-next.0
+  - @backstage/integration-react@1.2.13-next.0
+  - @backstage/core-components@0.18.4-next.0
+
 ## 1.1.30
 
 ### Patch Changes

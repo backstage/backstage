@@ -26,7 +26,7 @@ import {
  */
 export interface Backend {
   add(feature: BackendFeature | Promise<{ default: BackendFeature }>): void;
-  start(): Promise<void>;
+  start(): Promise<{ result: BackendStartupResult }>;
   stop(): Promise<void>;
 }
 
@@ -43,3 +43,88 @@ export interface CreateSpecializedBackendOptions {
 export type ServiceOrExtensionPoint<T = unknown> =
   | ExtensionPoint<T>
   | ServiceRef<T>;
+
+/**
+ * Result of a module startup attempt.
+ * @public
+ */
+export interface ModuleStartupResult {
+  /**
+   * The time the module startup was completed.
+   */
+  resultAt: Date;
+
+  /**
+   * The ID of the module.
+   */
+  moduleId: string;
+
+  /**
+   * If the startup failed, this contains information about the failure.
+   */
+  failure?: {
+    /**
+     * The error that occurred during startup, if any.
+     */
+    error: Error;
+    /**
+     * Whether the failure was allowed.
+     */
+    allowed: boolean;
+  };
+}
+
+/**
+ * Result of a plugin startup attempt.
+ * @public
+ */
+export interface PluginStartupResult {
+  /**
+   * The time the plugin startup was completed.
+   */
+  resultAt: Date;
+  /**
+   * If the startup failed, this contains information about the failure.
+   */
+  failure?: {
+    /**
+     * The error that occurred during startup, if any.
+     */
+    error: Error;
+    /**
+     * Whether the failure was allowed.
+     */
+    allowed: boolean;
+  };
+  /**
+   * The ID of the plugin.
+   */
+  pluginId: string;
+  /**
+   * Results for all modules belonging to this plugin.
+   */
+  modules: ModuleStartupResult[];
+}
+
+/**
+ * Result of a backend startup attempt.
+ * @public
+ */
+export interface BackendStartupResult {
+  /**
+   * The time the backend startup started.
+   */
+  beginAt: Date;
+  /**
+   * The time the backend startup was completed.
+   */
+  resultAt: Date;
+  /**
+   * Results for all plugins that were attempted to start.
+   */
+  plugins: PluginStartupResult[];
+  /**
+   * The outcome of the backend startup.
+   */
+  outcome: 'success' | 'failure';
+}

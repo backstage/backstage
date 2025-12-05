@@ -1,5 +1,31 @@
 # @backstage/plugin-kubernetes
 
+## 0.12.14-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-kubernetes-react@0.5.14-next.1
+  - @backstage/core-components@0.18.4-next.1
+  - @backstage/plugin-catalog-react@1.21.4-next.1
+  - @backstage/plugin-kubernetes-common@0.9.9-next.0
+
+## 0.12.14-next.0
+
+### Patch Changes
+
+- f15d5f1: add missing i18n support for kubernetes and kubernetes-react
+- d02db50: Remove unnecessary use of `compatWrapper` and `convertLegacyRouteRef`(s) for the new frontend system.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.2-next.0
+  - @backstage/plugin-kubernetes-react@0.5.14-next.0
+  - @backstage/core-plugin-api@1.12.1-next.0
+  - @backstage/plugin-catalog-react@1.21.4-next.0
+  - @backstage/core-components@0.18.4-next.0
+  - @backstage/plugin-permission-react@0.4.39-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/plugin-kubernetes-common@0.9.8
+
 ## 0.12.13
 
 ### Patch Changes

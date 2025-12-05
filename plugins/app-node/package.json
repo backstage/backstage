@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-app-node",
-  "version": "0.1.39",
+  "version": "0.1.40-next.0",
   "description": "Node.js library for the app plugin",
   "backstage": {
     "role": "node-library",
@@ -39,7 +39,7 @@
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/config-loader": "workspace:^",
     "@types/express": "^4.17.6",
-    "express": "^4.17.1",
+    "express": "^4.22.0",
     "fs-extra": "^11.2.0"
   },
   "devDependencies": {

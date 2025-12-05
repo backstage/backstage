@@ -152,6 +152,36 @@ export class OAuthCookieManager {
     };
     const req = res.req;
     let output = res;
+
+    const chunkedFormatExists = OAuthCookieManager.chunkedCookieExists(
+      req,
+      name,
+    );
+
+    // If using the default cookieConfigurer, delete old cookie with domain
+    // explicitly set to the callbackUrl's domain (legacy behavior)
+    if (this.cookieConfigurer === defaultCookieConfigurer) {
+      const { hostname: domain } = new URL(this.options.callbackUrl);
+      output = output.cookie(name, '', {
+        ...this.getRemoveCookieOptions(),
+        domain: domain,
+      });
+
+      if (chunkedFormatExists) {
+        for (let chunkNumber = 0; ; chunkNumber++) {
+          const key = OAuthCookieManager.getCookieChunkName(name, chunkNumber);
+          const exists = !!req.cookies[key];
+          if (!exists) {
+            break;
+          }
+          output = output.cookie(key, '', {
+            ...this.getRemoveCookieOptions(),
+            domain: domain,
+          });
+        }
+      }
+    }
+
     if (val.length > MAX_COOKIE_SIZE_CHARACTERS) {
       const nonChunkedFormatExists = !!req.cookies[name];
       if (nonChunkedFormatExists) {
@@ -169,10 +199,6 @@ export class OAuthCookieManager {
       return output;
     }
 
-    const chunkedFormatExists = OAuthCookieManager.chunkedCookieExists(
-      req,
-      name,
-    );
     if (chunkedFormatExists) {
       for (let chunkNumber = 0; ; chunkNumber++) {
         const key = OAuthCookieManager.getCookieChunkName(name, chunkNumber);
@@ -182,15 +208,6 @@ export class OAuthCookieManager {
         }
         output = output.cookie(key, '', this.getRemoveCookieOptions());
       }
-    }
-
-    // If using the default cookieConfigurer, delete old cookie with domain set to the callbackUrl's domain (legacy behavior)
-    if (this.cookieConfigurer === defaultCookieConfigurer) {
-      const { hostname: domain } = new URL(this.options.callbackUrl);
-      output = output.cookie(name, '', {
-        ...this.getRemoveCookieOptions(),
-        domain: `.${domain}`,
-      });
     }
 
     return output.cookie(name, val, options);

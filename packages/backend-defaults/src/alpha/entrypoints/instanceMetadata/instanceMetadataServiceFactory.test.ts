@@ -18,9 +18,11 @@ import {
   coreServices,
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
-import { instanceMetadataServiceFactory } from './instanceMetadataServiceFactory';
+import {
+  instanceMetadataServiceFactory,
+  instanceMetadataServiceRef,
+} from './instanceMetadataServiceFactory';
 import { startTestBackend } from '@backstage/backend-test-utils';
-import { instanceMetadataServiceRef } from '@backstage/backend-plugin-api/alpha';
 import Router from 'express-promise-router';
 import request from 'supertest';
 

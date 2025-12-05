@@ -1,5 +1,34 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.20.5-next.1
+
+### Patch Changes
+
+- 8fa8d87: Add Kubernetes Plugin Secrets Accordion with masked secret datas
+- Updated dependencies
+  - @backstage/plugin-kubernetes-common@0.9.9-next.0
+  - @backstage/plugin-kubernetes-node@0.3.7-next.1
+
+## 0.20.5-next.0
+
+### Patch Changes
+
+- e9589d9: Replace `@aws-sdk/signature-v4` with `@smithy/signature-v4`,
+  as stated in the [package documentation](https://www.npmjs.com/package/@aws-sdk/signature-v4?activeTab=readme)
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.1-next.0
+  - @backstage/plugin-permission-node@0.10.7-next.0
+  - @backstage/plugin-kubernetes-node@0.3.7-next.0
+  - @backstage/plugin-catalog-node@1.20.1-next.0
+  - @backstage/config@1.3.6
+  - @backstage/integration-aws-node@0.1.19
+  - @backstage/catalog-client@1.12.1
+  - @backstage/catalog-model@1.7.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-kubernetes-common@0.9.8
+  - @backstage/plugin-permission-common@0.9.3
+
 ## 0.20.4
 
 ### Patch Changes

@@ -35,6 +35,8 @@ import { Events } from '../Events';
 import { LinkButton } from '@backstage/core-components';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { kubernetesReactTranslationRef } from '../../../translation';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -72,6 +74,7 @@ export const FixDialog: FC<FixDialogProps> = ({
 }: FixDialogProps) => {
   const [isOpen, setOpen] = useState(!!open);
   const classes = useStyles();
+  const { t } = useTranslationRef(kubernetesReactTranslationRef);
 
   const openDialog = () => {
     setOpen(true);
@@ -87,21 +90,27 @@ export const FixDialog: FC<FixDialogProps> = ({
     return (
       <Grid container>
         <Grid item xs={12}>
-          <Typography variant="h6">Detected error:</Typography>
+          <Typography variant="h6">{t('fixDialog.detectedError')}</Typography>
           <Typography>{error.message}</Typography>
         </Grid>
         <Grid item xs={12}>
-          <Typography variant="h6">Cause explanation:</Typography>
+          <Typography variant="h6">
+            {t('fixDialog.causeExplanation')}
+          </Typography>
           <Typography>
-            {error.proposedFix?.rootCauseExplanation ?? 'unknown'}
+            {error.proposedFix?.rootCauseExplanation ?? t('podsTable.unknown')}
           </Typography>
         </Grid>
         <Grid item xs={12}>
-          <Typography variant="h6">Fix:</Typography>
+          <Typography variant="h6">{t('fixDialog.fix')}</Typography>
           <List>
             {(error.proposedFix?.actions ?? []).map((fix, i) => {
               return (
-                <ListItem key={`${pod.metadata?.name ?? 'unknown'}-pf-${i}`}>
+                <ListItem
+                  key={`${
+                    pod.metadata?.name ?? t('podsTable.unknown')
+                  }-pf-${i}`}
+                >
                   {fix}
                 </ListItem>
               );
@@ -112,14 +121,15 @@ export const FixDialog: FC<FixDialogProps> = ({
         {pf && pf.type === 'logs' && (
           <>
             <Grid item xs={12}>
-              <Typography variant="h6">Crash logs:</Typography>
+              <Typography variant="h6">{t('fixDialog.crashLogs')}</Typography>
             </Grid>
             <Grid item xs={9}>
               <PodLogs
                 previous
                 containerScope={{
-                  podName: pod.metadata?.name ?? 'unknown',
-                  podNamespace: pod.metadata?.namespace ?? 'unknown',
+                  podName: pod.metadata?.name ?? t('podsTable.unknown'),
+                  podNamespace:
+                    pod.metadata?.namespace ?? t('podsTable.unknown'),
                   cluster: { name: clusterName },
                   containerName: pf.container,
                 }}
@@ -130,7 +140,7 @@ export const FixDialog: FC<FixDialogProps> = ({
         {pf && pf.type === 'events' && (
           <>
             <Grid item xs={12}>
-              <Typography variant="h6">Events:</Typography>
+              <Typography variant="h6">{t('fixDialog.events')}</Typography>
             </Grid>
             <Grid item xs={9}>
               <Events
@@ -150,18 +160,21 @@ export const FixDialog: FC<FixDialogProps> = ({
     <>
       <Button
         variant="outlined"
-        aria-label="fix issue"
+        aria-label={t('fixDialog.ariaLabels.fixIssue')}
         component="label"
         onClick={openDialog}
         startIcon={<HelpIcon />}
       >
-        Help
+        {t('fixDialog.helpButton')}
       </Button>
       <Dialog maxWidth="xl" fullWidth open={isOpen} onClose={closeDialog}>
         <DialogTitle id="dialog-title">
-          {pod.metadata?.name} - {error.type}
+          {t('fixDialog.title', {
+            podName: pod.metadata?.name ?? '',
+            errorType: error.type,
+          })}
           <IconButton
-            aria-label="close"
+            aria-label={t('fixDialog.ariaLabels.close')}
             className={classes.closeButton}
             onClick={closeDialog}
           >
@@ -178,7 +191,7 @@ export const FixDialog: FC<FixDialogProps> = ({
               target="_blank"
               rel="noopener"
             >
-              Open docs
+              {t('fixDialog.openDocs')}
             </LinkButton>
           )}
         </DialogActions>

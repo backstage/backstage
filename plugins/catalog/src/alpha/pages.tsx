@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  compatWrapper,
-  convertLegacyRouteRef,
-} from '@backstage/core-compat-api';
+import { convertLegacyRouteRef } from '@backstage/core-compat-api';
 import {
   coreExtensionData,
   createExtensionInput,
@@ -59,17 +56,17 @@ export const catalogPage = PageBlueprint.makeWithOverrides({
   factory(originalFactory, { inputs, config }) {
     return originalFactory({
       path: '/catalog',
-      routeRef: convertLegacyRouteRef(rootRouteRef),
+      routeRef: rootRouteRef,
       loader: async () => {
         const { BaseCatalogPage } = await import('../components/CatalogPage');
         const filters = inputs.filters.map(filter =>
           filter.get(coreExtensionData.reactElement),
         );
-        return compatWrapper(
+        return (
           <BaseCatalogPage
             filters={<>{filters}</>}
             pagination={config.pagination}
-          />,
+          />
         );
       },
     });
@@ -220,7 +217,7 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
           );
         };
 
-        return compatWrapper(<Component />);
+        return <Component />;
       },
     });
   },

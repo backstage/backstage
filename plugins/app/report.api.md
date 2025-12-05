@@ -13,15 +13,14 @@ import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionBlueprintParams } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
-import { IconComponent } from '@backstage/core-plugin-api';
-import { IconComponent as IconComponent_2 } from '@backstage/frontend-plugin-api';
+import { IconComponent } from '@backstage/frontend-plugin-api';
 import { JSX as JSX_2 } from 'react';
 import { NavContentComponent } from '@backstage/frontend-plugin-api';
 import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
 import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
-import { SignInPageProps } from '@backstage/core-plugin-api';
+import { SignInPageProps } from '@backstage/frontend-plugin-api';
 import { SwappableComponentRef } from '@backstage/frontend-plugin-api';
 import { TranslationMessages } from '@backstage/frontend-plugin-api';
 import { TranslationResource } from '@backstage/frontend-plugin-api';
@@ -233,12 +232,18 @@ const appPlugin: OverridableFrontendPlugin<
       ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
     'api:app/app-language': OverridableExtensionDefinition<{
-      kind: 'api';
-      name: 'app-language';
-      config: {};
-      configInput: {};
+      config: {
+        defaultLanguage: string | undefined;
+        availableLanguages: string[] | undefined;
+      };
+      configInput: {
+        defaultLanguage?: string | undefined;
+        availableLanguages?: string[] | undefined;
+      };
       output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
       inputs: {};
+      kind: 'api';
+      name: 'app-language';
       params: <
         TApi,
         TImpl extends TApi,
@@ -458,7 +463,7 @@ const appPlugin: OverridableFrontendPlugin<
         icons: ExtensionInput<
           ConfigurableExtensionDataRef<
             {
-              [x: string]: IconComponent_2;
+              [x: string]: IconComponent;
             },
             'core.icons',
             {}
@@ -713,15 +718,7 @@ const appPlugin: OverridableFrontendPlugin<
         transientTimeoutMs?: number | undefined;
       };
       output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
-      inputs: {
-        [x: string]: ExtensionInput<
-          ExtensionDataRef,
-          {
-            singleton: boolean;
-            optional: boolean;
-          }
-        >;
-      };
+      inputs: {};
       kind: 'app-root-element';
       name: 'alert-display';
       params: {
@@ -732,15 +729,7 @@ const appPlugin: OverridableFrontendPlugin<
       config: {};
       configInput: {};
       output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
-      inputs: {
-        [x: string]: ExtensionInput<
-          ExtensionDataRef,
-          {
-            singleton: boolean;
-            optional: boolean;
-          }
-        >;
-      };
+      inputs: {};
       kind: 'app-root-element';
       name: 'dialog-display';
       params: {

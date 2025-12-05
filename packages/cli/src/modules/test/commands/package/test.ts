@@ -16,7 +16,7 @@
 
 import { Command, OptionValues } from 'commander';
 import { paths } from '../../../../lib/paths';
-import { runCheck } from '../../../../lib/run';
+import { runCheck } from '@backstage/cli-common';
 
 function includesAnyOf(hayStack: string[], ...needles: string[]) {
   for (const needle of needles) {
@@ -55,8 +55,8 @@ export default async (_opts: OptionValues, cmd: Command) => {
     !includesAnyOf(args, '--watch', '--watchAll')
   ) {
     const isGitRepo = () =>
-      runCheck('git', 'rev-parse', '--is-inside-work-tree');
-    const isMercurialRepo = () => runCheck('hg', '--cwd', '.', 'root');
+      runCheck(['git', 'rev-parse', '--is-inside-work-tree']);
+    const isMercurialRepo = () => runCheck(['hg', '--cwd', '.', 'root']);
 
     if ((await isGitRepo()) || (await isMercurialRepo())) {
       args.push('--watch');

@@ -134,4 +134,24 @@ describe('replaceGithubUrlType', () => {
       ),
     ).toBe('https://github.com/backstage/backstage/blob/tree/README.md');
   });
+  it('should replace with lowercase', () => {
+    expect(
+      replaceGithubUrlType(
+        'https://githuB.com/backstage/backstage/blob/master/README.md',
+        'edit',
+      ),
+    ).toBe('https://github.com/backstage/backstage/edit/master/README.md');
+    expect(
+      replaceGithubUrlType(
+        'https://github.com/Backstage/backstage/blob/master/README.md',
+        'edit',
+      ),
+    ).toBe('https://github.com/backstage/backstage/edit/master/README.md');
+    expect(
+      replaceGithubUrlType(
+        'https://github.com/backstage/Backstage/blob/master/README.md',
+        'edit',
+      ),
+    ).toBe('https://github.com/backstage/backstage/edit/master/README.md');
+  });
 });

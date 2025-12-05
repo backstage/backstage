@@ -1,5 +1,22 @@
 # @backstage/cli-node
 
+## 0.2.16-next.1
+
+### Patch Changes
+
+- 4e8c726: Updated to use new utilities from `@backstage/cli-common`.
+- Updated dependencies
+  - @backstage/cli-common@0.1.16-next.1
+
+## 0.2.16-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.16-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
 ## 0.2.15
 
 ### Patch Changes

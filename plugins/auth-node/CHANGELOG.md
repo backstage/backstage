@@ -1,5 +1,18 @@
 # @backstage/plugin-auth-node
 
+## 0.6.10-next.0
+
+### Patch Changes
+
+- 2389358: remove leading dot in auth cookie cleanup call
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.1-next.0
+  - @backstage/config@1.3.6
+  - @backstage/catalog-client@1.12.1
+  - @backstage/catalog-model@1.7.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
 ## 0.6.9
 
 ### Patch Changes

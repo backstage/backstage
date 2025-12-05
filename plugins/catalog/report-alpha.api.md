@@ -16,17 +16,18 @@ import { EntityPredicate } from '@backstage/plugin-catalog-react/alpha';
 import { ExtensionBlueprintParams } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
-import { ExternalRouteRef } from '@backstage/frontend-plugin-api';
-import { IconComponent } from '@backstage/core-plugin-api';
+import { ExternalRouteRef } from '@backstage/core-plugin-api';
+import { IconComponent } from '@backstage/frontend-plugin-api';
 import { IconLinkVerticalProps } from '@backstage/core-components';
 import { JSX as JSX_2 } from 'react';
 import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
-import { RouteRef } from '@backstage/frontend-plugin-api';
+import { RouteRef } from '@backstage/core-plugin-api';
+import { RouteRef as RouteRef_2 } from '@backstage/frontend-plugin-api';
 import { SearchResultItemExtensionComponent } from '@backstage/plugin-search-react/alpha';
 import { SearchResultItemExtensionPredicate } from '@backstage/plugin-search-react/alpha';
 import { SearchResultListItemBlueprintParams } from '@backstage/plugin-search-react/alpha';
-import { TranslationRef } from '@backstage/core-plugin-api/alpha';
+import { TranslationRef } from '@backstage/frontend-plugin-api';
 
 // @alpha (undocumented)
 export const catalogTranslationRef: TranslationRef<
@@ -124,17 +125,23 @@ const _default: OverridableFrontendPlugin<
     }>;
   },
   {
-    viewTechDoc: ExternalRouteRef<{
-      name: string;
-      kind: string;
-      namespace: string;
-    }>;
-    createComponent: ExternalRouteRef<undefined>;
-    createFromTemplate: ExternalRouteRef<{
-      namespace: string;
-      templateName: string;
-    }>;
-    unregisterRedirect: ExternalRouteRef<undefined>;
+    viewTechDoc: ExternalRouteRef<
+      {
+        name: string;
+        kind: string;
+        namespace: string;
+      },
+      true
+    >;
+    createComponent: ExternalRouteRef<undefined, true>;
+    createFromTemplate: ExternalRouteRef<
+      {
+        namespace: string;
+        templateName: string;
+      },
+      true
+    >;
+    unregisterRedirect: ExternalRouteRef<undefined, true>;
   },
   {
     'api:catalog': OverridableExtensionDefinition<{
@@ -190,15 +197,7 @@ const _default: OverridableFrontendPlugin<
         initialFilter?: string | undefined;
       };
       output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
-      inputs: {
-        [x: string]: ExtensionInput<
-          ExtensionDataRef,
-          {
-            singleton: boolean;
-            optional: boolean;
-          }
-        >;
-      };
+      inputs: {};
       kind: 'catalog-filter';
       name: 'kind';
       params: {
@@ -224,15 +223,7 @@ const _default: OverridableFrontendPlugin<
         initialFilter?: 'all' | 'owned' | 'starred' | undefined;
       };
       output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
-      inputs: {
-        [x: string]: ExtensionInput<
-          ExtensionDataRef,
-          {
-            singleton: boolean;
-            optional: boolean;
-          }
-        >;
-      };
+      inputs: {};
       kind: 'catalog-filter';
       name: 'list';
       params: {
@@ -247,15 +238,7 @@ const _default: OverridableFrontendPlugin<
         mode?: 'all' | 'owners-only' | undefined;
       };
       output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
-      inputs: {
-        [x: string]: ExtensionInput<
-          ExtensionDataRef,
-          {
-            singleton: boolean;
-            optional: boolean;
-          }
-        >;
-      };
+      inputs: {};
       kind: 'catalog-filter';
       name: 'mode';
       params: {
@@ -759,7 +742,7 @@ const _default: OverridableFrontendPlugin<
         | ExtensionDataRef<string, 'core.routing.path', {}>
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
         | ExtensionDataRef<
-            RouteRef<AnyRouteRefParams>,
+            RouteRef_2<AnyRouteRefParams>,
             'core.routing.ref',
             {
               optional: true;
@@ -852,7 +835,7 @@ const _default: OverridableFrontendPlugin<
         defaultGroup?: [Error: `Use the 'group' param instead`];
         group?: keyof defaultEntityContentGroups | (string & {});
         loader: () => Promise<JSX.Element>;
-        routeRef?: RouteRef;
+        routeRef?: RouteRef_2;
         filter?: string | EntityPredicate | ((entity: Entity) => boolean);
       };
     }>;
@@ -967,7 +950,7 @@ const _default: OverridableFrontendPlugin<
         {
           title: string;
           icon: IconComponent;
-          routeRef: RouteRef<undefined>;
+          routeRef: RouteRef_2<undefined>;
         },
         'core.nav-item.target',
         {}
@@ -976,7 +959,7 @@ const _default: OverridableFrontendPlugin<
       params: {
         title: string;
         icon: IconComponent;
-        routeRef: RouteRef<undefined>;
+        routeRef: RouteRef_2<undefined>;
       };
     }>;
     'page:catalog': OverridableExtensionDefinition<{
@@ -988,7 +971,6 @@ const _default: OverridableFrontendPlugin<
               offset?: number | undefined;
               limit?: number | undefined;
             };
-      } & {
         path: string | undefined;
       };
       configInput: {
@@ -1000,14 +982,13 @@ const _default: OverridableFrontendPlugin<
               limit?: number | undefined;
             }
           | undefined;
-      } & {
         path?: string | undefined;
       };
       output:
         | ExtensionDataRef<string, 'core.routing.path', {}>
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
         | ExtensionDataRef<
-            RouteRef<AnyRouteRefParams>,
+            RouteRef_2<AnyRouteRefParams>,
             'core.routing.ref',
             {
               optional: true;
@@ -1028,7 +1009,7 @@ const _default: OverridableFrontendPlugin<
         defaultPath?: [Error: `Use the 'path' param instead`];
         path: string;
         loader: () => Promise<JSX.Element>;
-        routeRef?: RouteRef;
+        routeRef?: RouteRef_2;
       };
     }>;
     'page:catalog/entity': OverridableExtensionDefinition<{
@@ -1041,7 +1022,6 @@ const _default: OverridableFrontendPlugin<
               }
             >[]
           | undefined;
-      } & {
         path: string | undefined;
       };
       configInput: {
@@ -1053,14 +1033,13 @@ const _default: OverridableFrontendPlugin<
               }
             >[]
           | undefined;
-      } & {
         path?: string | undefined;
       };
       output:
         | ExtensionDataRef<string, 'core.routing.path', {}>
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
         | ExtensionDataRef<
-            RouteRef<AnyRouteRefParams>,
+            RouteRef_2<AnyRouteRefParams>,
             'core.routing.ref',
             {
               optional: true;
@@ -1091,7 +1070,7 @@ const _default: OverridableFrontendPlugin<
           | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
           | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
           | ConfigurableExtensionDataRef<
-              RouteRef<AnyRouteRefParams>,
+              RouteRef_2<AnyRouteRefParams>,
               'core.routing.ref',
               {
                 optional: true;
@@ -1149,7 +1128,7 @@ const _default: OverridableFrontendPlugin<
         defaultPath?: [Error: `Use the 'path' param instead`];
         path: string;
         loader: () => Promise<JSX.Element>;
-        routeRef?: RouteRef;
+        routeRef?: RouteRef_2;
       };
     }>;
     'search-result-list-item:catalog': OverridableExtensionDefinition<{

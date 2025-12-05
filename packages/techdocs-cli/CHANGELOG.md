@@ -1,5 +1,24 @@
 # @techdocs/cli
 
+## 1.10.3-next.1
+
+### Patch Changes
+
+- 43629b1: Updated to use new utilities from `@backstage/cli-common`.
+- Updated dependencies
+  - @backstage/cli-common@0.1.16-next.1
+
+## 1.10.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.14.0-next.0
+  - @backstage/cli-common@0.1.16-next.0
+  - @backstage/plugin-techdocs-node@1.13.10-next.0
+  - @backstage/config@1.3.6
+  - @backstage/catalog-model@1.7.6
+
 ## 1.10.2
 
 ### Patch Changes
