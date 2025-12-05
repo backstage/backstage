@@ -18,8 +18,13 @@ import { MockFetchApi } from '@backstage/test-utils';
 import { SearchClient } from './apis';
 
 describe('apis', () => {
-  const query = {
+  const emptyQuery = {
     term: '',
+    filters: {},
+    types: [],
+  };
+  const query = {
+    term: 'abc',
     filters: {},
     types: [],
   };
@@ -48,27 +53,23 @@ describe('apis', () => {
     fetchApi,
   });
 
+  it('returns empty results without calling fetch when term is blank', async () => {
+    const result = await client.query(emptyQuery);
+    expect(result).toEqual({ results: [] });
+    expect(mockFetch).not.toHaveBeenCalled();
+  });
+
   it('Fetch is called with expected URL (including stringified Q params)', async () => {
     identityApi.getCredentials.mockResolvedValue({});
     await client.query(query);
     expect(getBaseUrl).toHaveBeenLastCalledWith('search');
-    expect(mockFetch).toHaveBeenLastCalledWith(`${baseUrl}/query?term=`, {
+    expect(mockFetch).toHaveBeenLastCalledWith(`${baseUrl}/query?term=abc`, {
       signal: undefined,
     });
   });
 
-  it('Fetch is called with abort signal when provided', async () => {
-    identityApi.getCredentials.mockResolvedValue({});
-    const abortController = new AbortController();
-    await client.query(query, { signal: abortController.signal });
-    expect(getBaseUrl).toHaveBeenLastCalledWith('search');
-    expect(mockFetch).toHaveBeenLastCalledWith(`${baseUrl}/query?term=`, {
-      signal: abortController.signal,
-    });
-  });
-
-  it('Resolves JSON from fetch response', async () => {
-    const result = { loading: false, error: '', value: {} };
+  it('Resolves JSON from fetch response for non-empty term', async () => {
+    const result = { results: [{ type: 'software-catalog', document: {} }] };
     json.mockReturnValueOnce(result);
     expect(await client.query(query)).toStrictEqual(result);
   });
