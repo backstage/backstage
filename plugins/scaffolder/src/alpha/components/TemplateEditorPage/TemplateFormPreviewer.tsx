@@ -40,6 +40,7 @@ import {
   TemplateEditorLayoutToolbar,
   TemplateEditorLayoutFiles,
   TemplateEditorLayoutPreview,
+  TemplateEditorLayoutConsole,
   TemplateEditorPanels,
 } from './TemplateEditorLayout';
 import { TemplateEditorToolbar } from './TemplateEditorToolbar';
@@ -51,6 +52,7 @@ import {
 import { TemplateEditorForm } from './TemplateEditorForm';
 import { TemplateEditorTextArea } from './TemplateEditorTextArea';
 import { DryRunProvider, useDryRun } from './DryRunContext';
+import { DryRunResults } from './DryRunResults';
 
 const EXAMPLE_TEMPLATE_PARAMS_YAML = `# Edit the template parameters below to see how they will render in the scaffolder form UI
 parameters:
@@ -109,13 +111,15 @@ const useStyles = makeStyles(
       "toolbar"
       "textArea"
       "preview"
+      "results"
     `,
       [theme.breakpoints.up('md')]: {
         gridTemplateAreas: `
       "toolbar toolbar"
       "textArea preview"
+      "results results"
     `,
-        gridTemplateRows: 'auto 1fr',
+        gridTemplateRows: 'auto 1fr auto',
         gridTemplateColumns: '1fr',
       },
     },
@@ -268,7 +272,7 @@ ${templateYaml
         let match = urlPattern.exec(templateYaml);
 
         while (match !== null) {
-          const dirPath = match[1].split('/')[0];
+          const dirPath = match[1];
           directories.add(dirPath);
           match = urlPattern.exec(templateYaml);
         }
@@ -342,6 +346,9 @@ ${templateYaml
           </TemplateEditorLayoutPreview>
         }
       />
+      <TemplateEditorLayoutConsole>
+        <DryRunResults />
+      </TemplateEditorLayoutConsole>
     </TemplateEditorLayout>
   );
 }
