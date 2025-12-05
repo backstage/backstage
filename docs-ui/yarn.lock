@@ -861,18 +861,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@next/eslint-plugin-next@npm:15.3.4":
-  version: 15.3.4
-  resolution: "@next/eslint-plugin-next@npm:15.3.4"
+"@next/eslint-plugin-next@npm:15.5.6":
+  version: 15.5.6
+  resolution: "@next/eslint-plugin-next@npm:15.5.6"
   dependencies:
     fast-glob: "npm:3.3.1"
-  checksum: 10/8a473bd32a06f62c16f60f9c40b7b8149cf91170ce4c1546cda57e9c85ac8481c7ad3aa4a77e8c3c7000e80d3de809d2db7df6cb79e13fd258fff382729abf60
+  checksum: 10/67faf90bcf5735deff9cb9c18dc521af397209976db7bf39217f0f417134da55320dd61e2a6c9094193405ebf72203b9364fef6cf600b7d8fc84a5e5f7bd4edc
   languageName: node
   linkType: hard
 
-"@next/mdx@npm:15.3.4":
-  version: 15.3.4
-  resolution: "@next/mdx@npm:15.3.4"
+"@next/mdx@npm:15.5.6":
+  version: 15.5.6
+  resolution: "@next/mdx@npm:15.5.6"
   dependencies:
     source-map: "npm:^0.7.0"
   peerDependencies:
@@ -883,7 +883,7 @@ __metadata:
       optional: true
     "@mdx-js/react":
       optional: true
-  checksum: 10/07904beda049317e43857f9dfe659adb6e57c4417475de1d21a7605f8ace5d9aa992a06465d1a94fe4b62331901765b15659555e8aadedbd410f86df1bebd1bd
+  checksum: 10/a0b7ca6cb9e06e0be27f8581580921185767ff50ec3c03414a77e8a90dbb696317efe4da4fc9f3ad900b866ae53aa04ee726d7abac55fba03aabd5ed834aa030
   languageName: node
   linkType: hard
 
@@ -2515,7 +2515,7 @@ __metadata:
     "@lezer/highlight": "npm:^1.2.1"
     "@mdx-js/loader": "npm:^3.1.0"
     "@mdx-js/react": "npm:^3.1.0"
-    "@next/mdx": "npm:15.3.4"
+    "@next/mdx": "npm:15.5.6"
     "@octokit/rest": "npm:^22.0.1"
     "@remixicon/react": "npm:^4.6.0"
     "@shikijs/transformers": "npm:^3.13.0"
@@ -2529,7 +2529,7 @@ __metadata:
     chokidar: "npm:^3.6.0"
     clsx: "npm:^2.1.1"
     eslint: "npm:^8"
-    eslint-config-next: "npm:15.3.4"
+    eslint-config-next: "npm:15.5.6"
     html-react-parser: "npm:^5.2.5"
     lightningcss: "npm:^1.28.2"
     motion: "npm:^12.4.1"
@@ -2942,11 +2942,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eslint-config-next@npm:15.3.4":
-  version: 15.3.4
-  resolution: "eslint-config-next@npm:15.3.4"
+"eslint-config-next@npm:15.5.6":
+  version: 15.5.6
+  resolution: "eslint-config-next@npm:15.5.6"
   dependencies:
-    "@next/eslint-plugin-next": "npm:15.3.4"
+    "@next/eslint-plugin-next": "npm:15.5.6"
     "@rushstack/eslint-patch": "npm:^1.10.3"
     "@typescript-eslint/eslint-plugin": "npm:^5.4.2 || ^6.0.0 || ^7.0.0 || ^8.0.0"
     "@typescript-eslint/parser": "npm:^5.4.2 || ^6.0.0 || ^7.0.0 || ^8.0.0"
@@ -2962,7 +2962,7 @@ __metadata:
   peerDependenciesMeta:
     typescript:
       optional: true
-  checksum: 10/6c21254d3383b9158ff5f3b2881cc702bee3d2635b4326757965945691f6e65e25fdfef4f2964382fb4b2f52d9f03b929cb71d267709727df7365e7da80c8c3a
+  checksum: 10/6efc0a3444ca51adbc0b82e945a1988e1bd42bc153bd64fbbe10ae0e34d8473256e516f2afb138ecbba401802691fedea18d9f7fe798fbd79b4ccf8705c83554
   languageName: node
   linkType: hard
 

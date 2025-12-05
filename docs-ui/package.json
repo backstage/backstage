@@ -24,7 +24,7 @@
     "@lezer/highlight": "^1.2.1",
     "@mdx-js/loader": "^3.1.0",
     "@mdx-js/react": "^3.1.0",
-    "@next/mdx": "15.3.4",
+    "@next/mdx": "15.5.6",
     "@remixicon/react": "^4.6.0",
     "@storybook/react": "^8.6.12",
     "@uiw/codemirror-themes": "^4.23.7",
@@ -49,7 +49,7 @@
     "@types/react-dom": "19.1.7",
     "chokidar": "^3.6.0",
     "eslint": "^8",
-    "eslint-config-next": "15.3.4",
+    "eslint-config-next": "15.5.6",
     "lightningcss": "^1.28.2",
     "typescript": "^5",
     "unified": "^11.0.4"
