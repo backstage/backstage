@@ -158,6 +158,7 @@
     "eslint-plugin-testing-library": "^6.0.0",
     "fs-extra": "^11.2.0",
     "husky": "^9.0.0",
+    "js-yaml": "^4.1.1",
     "lint-staged": "^15.0.0",
     "madge": "^8.0.0",
     "minimist": "^1.2.5",

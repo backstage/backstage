@@ -35261,7 +35261,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"js-yaml@npm:^4.0.0, js-yaml@npm:^4.1.0":
+"js-yaml@npm:^4.0.0, js-yaml@npm:^4.1.0, js-yaml@npm:^4.1.1":
   version: 4.1.1
   resolution: "js-yaml@npm:4.1.1"
   dependencies:
@@ -44604,6 +44604,7 @@ __metadata:
     eslint-plugin-testing-library: "npm:^6.0.0"
     fs-extra: "npm:^11.2.0"
     husky: "npm:^9.0.0"
+    js-yaml: "npm:^4.1.1"
     lint-staged: "npm:^15.0.0"
     madge: "npm:^8.0.0"
     minimist: "npm:^1.2.5"
