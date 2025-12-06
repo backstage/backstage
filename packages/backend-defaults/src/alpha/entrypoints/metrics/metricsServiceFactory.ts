@@ -13,32 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createServiceFactory } from '@backstage/backend-plugin-api';
-import { coreServices } from '@backstage/backend-plugin-api';
-import { DefaultActionsService } from './DefaultActionsService';
+
 import {
-  actionsServiceRef,
+  metricsServiceRef,
   rootMetricsServiceRef,
 } from '@backstage/backend-plugin-api/alpha';
+import {
+  coreServices,
+  createServiceFactory,
+} from '@backstage/backend-plugin-api';
 
 /**
- * @public
+ * Service factory for collecting plugin-scoped metrics.
+ * This is the default metrics service for plugins.
+ *
+ * @alpha
  */
-export const actionsServiceFactory = createServiceFactory({
-  service: actionsServiceRef,
+export const metricsServiceFactory = createServiceFactory({
+  service: metricsServiceRef,
   deps: {
-    discovery: coreServices.discovery,
-    config: coreServices.rootConfig,
-    logger: coreServices.logger,
-    auth: coreServices.auth,
-    metrics: rootMetricsServiceRef,
+    rootMetrics: rootMetricsServiceRef,
+    pluginMetadata: coreServices.pluginMetadata,
   },
-  factory: ({ discovery, config, logger, auth, metrics }) =>
-    DefaultActionsService.create({
-      discovery,
-      config,
-      logger,
-      auth,
-      metrics: metrics.forService(actionsServiceRef.id),
-    }),
+  factory: ({ pluginMetadata, rootMetrics }) => {
+    return rootMetrics.forPlugin(pluginMetadata.getId());
+  },
 });

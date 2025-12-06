@@ -13,10 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { rootMetricsServiceRef } from '@backstage/backend-plugin-api/alpha';
+import { DefaultRootMetricsService } from './DefaultRootMetricsService';
+import { createServiceFactory } from '@backstage/backend-plugin-api';
 
-export { actionsRegistryServiceFactory } from './entrypoints/actionsRegistry';
-export { actionsServiceFactory } from './entrypoints/actions';
-export {
-  metricsServiceFactory,
-  rootMetricsServiceFactory,
-} from './entrypoints/metrics';
+/**
+ * Service factory responsible for creating the root metrics service
+ *
+ * @alpha
+ */
+export const rootMetricsServiceFactory = createServiceFactory({
+  service: rootMetricsServiceRef,
+  deps: {},
+  factory: () => DefaultRootMetricsService.create(),
+});

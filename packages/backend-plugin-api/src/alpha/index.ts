@@ -22,4 +22,11 @@ export type {
 
 export type { ActionsService, ActionsServiceAction } from './ActionsService';
 
-export { actionsRegistryServiceRef, actionsServiceRef } from './refs';
+export type { MetricsService, RootMetricsService } from './MetricsService';
+
+export {
+  actionsRegistryServiceRef,
+  actionsServiceRef,
+  metricsServiceRef,
+  rootMetricsServiceRef,
+} from './refs';
