@@ -53,6 +53,7 @@ describe('config', () => {
         fallbackBranch: 'master',
         host: 'host',
         catalogFile: 'catalog-info.yaml',
+        catalogFilePattern: undefined,
         projectPattern: /[\s\S]*/,
         groupPattern: /[\s\S]*/,
         userPattern: /[\s\S]*/,
@@ -99,6 +100,7 @@ describe('config', () => {
         fallbackBranch: 'main',
         host: 'host',
         catalogFile: 'custom-file.yaml',
+        catalogFilePattern: undefined,
         projectPattern: /[\s\S]*/,
         groupPattern: /[\s\S]*/,
         userPattern: /[\s\S]*/,
@@ -145,6 +147,7 @@ describe('config', () => {
         fallbackBranch: 'main',
         host: 'host',
         catalogFile: 'custom-file.yaml',
+        catalogFilePattern: undefined,
         projectPattern: /[\s\S]*/,
         groupPattern: /[\s\S]*/,
         userPattern: /[\s\S]*/,
@@ -191,6 +194,7 @@ describe('config', () => {
         fallbackBranch: 'main',
         host: 'host',
         catalogFile: 'custom-file.yaml',
+        catalogFilePattern: undefined,
         projectPattern: /[\s\S]*/,
         groupPattern: /[\s\S]*/,
         userPattern: /[\s\S]*/,
@@ -238,6 +242,7 @@ describe('config', () => {
         fallbackBranch: 'main',
         host: 'host',
         catalogFile: 'custom-file.yaml',
+        catalogFilePattern: undefined,
         projectPattern: /[\s\S]*/,
         groupPattern: /[\s\S]*/,
         userPattern: /[\s\S]*/,
@@ -286,6 +291,7 @@ describe('config', () => {
         fallbackBranch: 'master',
         host: 'host',
         catalogFile: 'catalog-info.yaml',
+        catalogFilePattern: undefined,
         projectPattern: /[\s\S]*/,
         groupPattern: /[\s\S]*/,
         userPattern: /[\s\S]*/,
@@ -377,6 +383,7 @@ describe('config', () => {
         fallbackBranch: 'main',
         host: 'host',
         catalogFile: 'custom-file.yaml',
+        catalogFilePattern: undefined,
         projectPattern: /[\s\S]*/,
         groupPattern: /[\s\S]*/,
         userPattern: /[\s\S]*/,
@@ -423,6 +430,7 @@ describe('config', () => {
         fallbackBranch: 'main',
         host: 'host',
         catalogFile: 'custom-file.yaml',
+        catalogFilePattern: undefined,
         projectPattern: /[\s\S]*/,
         groupPattern: /[\s\S]*/,
         userPattern: /[\s\S]*/,
@@ -469,6 +477,7 @@ describe('config', () => {
         fallbackBranch: 'main',
         host: 'host',
         catalogFile: 'custom-file.yaml',
+        catalogFilePattern: undefined,
         projectPattern: /[\s\S]*/,
         groupPattern: /[\s\S]*/,
         userPattern: /[\s\S]*/,
@@ -515,6 +524,7 @@ describe('config', () => {
         fallbackBranch: 'main',
         host: 'host',
         catalogFile: 'custom-file.yaml',
+        catalogFilePattern: undefined,
         projectPattern: /[\s\S]*/,
         groupPattern: /[\s\S]*/,
         userPattern: /[\s\S]*/,
@@ -529,6 +539,139 @@ describe('config', () => {
         includeArchivedRepos: false,
         membership: undefined,
         topics: 'topic1,topic2,topic3',
+      }),
+    );
+  });
+
+  it('valid config with entityFilePattern', () => {
+    const config = new ConfigReader({
+      catalog: {
+        providers: {
+          gitlab: {
+            test: {
+              group: 'group',
+              host: 'host',
+              entityFilePattern: '(catalog-info|backstage)\\.ya?ml$',
+            },
+          },
+        },
+      },
+    });
+
+    const result = readGitlabConfigs(config);
+    expect(result).toHaveLength(1);
+    result.forEach(r =>
+      expect(r).toStrictEqual({
+        id: 'test',
+        group: 'group',
+        branch: undefined,
+        fallbackBranch: 'master',
+        host: 'host',
+        catalogFile: 'catalog-info.yaml',
+        catalogFilePattern: new RegExp('(catalog-info|backstage)\\.ya?ml$'),
+        projectPattern: /[\s\S]*/,
+        groupPattern: /[\s\S]*/,
+        userPattern: /[\s\S]*/,
+        orgEnabled: false,
+        allowInherited: false,
+        relations: [],
+        schedule: undefined,
+        skipForkedRepos: false,
+        includeArchivedRepos: false,
+        excludeRepos: [],
+        restrictUsersToGroup: false,
+        includeUsersWithoutSeat: false,
+        membership: undefined,
+        topics: undefined,
+      }),
+    );
+  });
+
+  it('valid config with entityFilePattern for path matching', () => {
+    const config = new ConfigReader({
+      catalog: {
+        providers: {
+          gitlab: {
+            test: {
+              group: 'group',
+              host: 'host',
+              entityFilePattern: '.*/api/.*\\.yaml$',
+            },
+          },
+        },
+      },
+    });
+
+    const result = readGitlabConfigs(config);
+    expect(result).toHaveLength(1);
+    result.forEach(r =>
+      expect(r).toStrictEqual({
+        id: 'test',
+        group: 'group',
+        branch: undefined,
+        fallbackBranch: 'master',
+        host: 'host',
+        catalogFile: 'catalog-info.yaml',
+        catalogFilePattern: new RegExp('.*/api/.*\\.yaml$'),
+        projectPattern: /[\s\S]*/,
+        groupPattern: /[\s\S]*/,
+        userPattern: /[\s\S]*/,
+        orgEnabled: false,
+        allowInherited: false,
+        relations: [],
+        schedule: undefined,
+        skipForkedRepos: false,
+        includeArchivedRepos: false,
+        excludeRepos: [],
+        restrictUsersToGroup: false,
+        includeUsersWithoutSeat: false,
+        membership: undefined,
+        topics: undefined,
+      }),
+    );
+  });
+
+  it('valid config with both entityFilename and entityFilePattern (pattern takes precedence)', () => {
+    const config = new ConfigReader({
+      catalog: {
+        providers: {
+          gitlab: {
+            test: {
+              group: 'group',
+              host: 'host',
+              entityFilename: 'custom-file.yaml',
+              entityFilePattern: '.*\\.json$',
+            },
+          },
+        },
+      },
+    });
+
+    const result = readGitlabConfigs(config);
+    expect(result).toHaveLength(1);
+    result.forEach(r =>
+      expect(r).toStrictEqual({
+        id: 'test',
+        group: 'group',
+        branch: undefined,
+        fallbackBranch: 'master',
+        host: 'host',
+        catalogFile: 'custom-file.yaml',
+        catalogFilePattern: new RegExp('.*\\.json$'),
+        projectPattern: /[\s\S]*/,
+        groupPattern: /[\s\S]*/,
+        userPattern: /[\s\S]*/,
+        orgEnabled: false,
+        allowInherited: false,
+        relations: [],
+        schedule: undefined,
+        skipForkedRepos: false,
+        includeArchivedRepos: false,
+        excludeRepos: [],
+        restrictUsersToGroup: false,
+        includeUsersWithoutSeat: false,
+        membership: undefined,
+        topics: undefined,
       }),
     );
   });
