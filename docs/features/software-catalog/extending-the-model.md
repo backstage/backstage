@@ -580,9 +580,22 @@ export class FoobarEntitiesProcessor implements CatalogProcessor {
       // Typically you will want to emit any relations associated with the
       // entity here.
       emit(processingResult.relation({ ... }))
+
+      // Or you might want to emit status items based on the entity's data
+      if(entity.spec.someField === 'someCondition') {
+        // Emit a warning status item
+        emit(processingResult.status('Foobar entity is in a warning state', 'warning'));
+      } else if(entity.spec.someField === 'errorCondition') {
+        // Emit an error status item
+        emit(processingResult.status('Foobar entity is in an error state', 'error'));
+      } else {
+        // Or emit informational status items
+        emit(processingResult.status('This is a status message', 'info'));
+      }
     }
 
-    return entity;
+    // Return the (possibly mutated) entity
+    return {...entity, spec: { ...entity.spec, newField: 'someValue' }};
   }
 }
 ```

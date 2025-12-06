@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-import { AlphaEntity, EntityStatusItem } from '@backstage/catalog-model/alpha';
-import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
+import {
+  Entity,
+  EntityStatusItem,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
 import {
   catalogApiRef,
   EntityRefLink,
@@ -27,7 +30,7 @@ import {
   CatalogApi,
   ENTITY_STATUS_CATALOG_PROCESSING_TYPE,
 } from '@backstage/catalog-client';
-import { useApi, ApiHolder } from '@backstage/core-plugin-api';
+import { ApiHolder, useApi } from '@backstage/core-plugin-api';
 import useAsync from 'react-use/esm/useAsync';
 import { SerializedError } from '@backstage/errors';
 import { catalogTranslationRef } from '../../alpha/translation';
@@ -52,7 +55,7 @@ async function getOwnAndAncestorsErrors(
   const ancestors = await catalogApi.getEntityAncestors({ entityRef });
   const items = ancestors.items
     .map(item => {
-      const statuses = (item.entity as AlphaEntity).status?.items ?? [];
+      const statuses = (item.entity as Entity).status?.items ?? [];
       const errors = statuses
         .filter(errorFilter)
         .map(e => e.error)

@@ -26,3 +26,8 @@ export * from './kinds';
 export * from './location';
 export type { CompoundEntityRef } from './types';
 export * from './validation';
+export type {
+  EntityStatus,
+  EntityStatusItem,
+  EntityStatusLevel,
+} from './entity/EntityStatus';
