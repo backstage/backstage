@@ -271,17 +271,30 @@ export interface AppRouterProps {
 
 // @public
 export class AppThemeSelector implements AppThemeApi {
-  constructor(themes: AppTheme[]);
+  constructor(themes: AppTheme[], storageApi?: StorageApi, errorApi?: ErrorApi);
   // (undocumented)
   activeThemeId$(): Observable<string | undefined>;
   // (undocumented)
-  static createWithStorage(themes: AppTheme[]): AppThemeSelector;
+  static create(themes: AppTheme[]): AppThemeSelector;
+  // (undocumented)
+  static createWithStorage(options: AppThemeSelectorOptions): AppThemeSelector;
+  destroy(): void;
   // (undocumented)
   getActiveThemeId(): string | undefined;
   // (undocumented)
   getInstalledThemes(): AppTheme[];
   // (undocumented)
   setActiveThemeId(themeId?: string): void;
+}
+
+// @public
+export interface AppThemeSelectorOptions {
+  // (undocumented)
+  errorApi: ErrorApi;
+  // (undocumented)
+  storageApi: StorageApi;
+  // (undocumented)
+  themes: AppTheme[];
 }
 
 // @public

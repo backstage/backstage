@@ -45,9 +45,9 @@ import {
   fetchApiRef,
   discoveryApiRef,
   errorApiRef,
+  storageApiRef,
 } from '@backstage/core-plugin-api';
 import {
-  AppLanguageApi,
   appLanguageApiRef,
   translationApiRef,
   TranslationMessages,
@@ -170,10 +170,12 @@ export class AppManager implements BackstageApp {
   private readonly configLoader?: AppConfigLoader;
   private readonly defaultApis: Iterable<AnyApiFactory>;
   private readonly bindRoutes: AppOptions['bindRoutes'];
-  private readonly appLanguageApi: AppLanguageApi;
+  private appLanguageApi: AppLanguageSelector;
   private readonly translationResources: Array<
     TranslationResource | TranslationMessages
   >;
+  private readonly defaultLanguage: string;
+  private readonly availableLanguages: string[];
 
   private readonly appIdentityProxy = new AppIdentityProxy();
   private readonly apiFactoryRegistry: ApiFactoryRegistry;
@@ -189,11 +191,15 @@ export class AppManager implements BackstageApp {
     this.defaultApis = options.defaultApis ?? [];
     this.bindRoutes = options.bindRoutes;
     this.apiFactoryRegistry = new ApiFactoryRegistry();
-    this.appLanguageApi = AppLanguageSelector.createWithStorage({
+    this.appLanguageApi = AppLanguageSelector.create({
       defaultLanguage: options.__experimentalTranslations?.defaultLanguage,
       availableLanguages:
         options.__experimentalTranslations?.availableLanguages,
     });
+    this.defaultLanguage =
+      options.__experimentalTranslations?.defaultLanguage ?? 'en';
+    this.availableLanguages = options.__experimentalTranslations
+      ?.availableLanguages ?? ['en'];
     this.translationResources =
       options.__experimentalTranslations?.resources ?? [];
   }
@@ -241,7 +247,7 @@ export class AppManager implements BackstageApp {
     const Provider = ({ children }: PropsWithChildren<{}>) => {
       const needsFeatureFlagRegistrationRef = useRef(true);
       const appThemeApi = useMemo(
-        () => AppThemeSelector.createWithStorage(this.themes),
+        () => AppThemeSelector.create(this.themes),
         [],
       );
 
@@ -323,6 +329,14 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
         needsFeatureFlagRegistrationRef.current = false;
 
         const featureFlagsApi = this.getApiHolder().get(featureFlagsApiRef)!;
+        const storageApi = this.getApiHolder().get(storageApiRef)!;
+        const errorApi = this.getApiHolder().get(errorApiRef)!;
+        this.appLanguageApi = AppLanguageSelector.createWithStorage({
+          defaultLanguage: this.defaultLanguage,
+          availableLanguages: this.availableLanguages,
+          storageApi,
+          errorApi,
+        });
 
         if (featureFlagsApi) {
           for (const flag of this.featureFlags) {
@@ -435,8 +449,14 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
     }
     this.apiFactoryRegistry.register('static', {
       api: appThemeApiRef,
-      deps: {},
-      factory: () => AppThemeSelector.createWithStorage(this.themes),
+      deps: { storageApi: storageApiRef, errorApi: errorApiRef },
+      factory: ({ storageApi, errorApi }) => {
+        return AppThemeSelector.createWithStorage({
+          themes: this.themes,
+          storageApi,
+          errorApi,
+        });
+      },
     });
     this.apiFactoryRegistry.register('static', {
       api: configApiRef,

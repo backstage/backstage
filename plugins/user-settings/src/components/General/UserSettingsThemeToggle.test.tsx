@@ -15,7 +15,11 @@
  */
 
 import { AppTheme, appThemeApiRef } from '@backstage/core-plugin-api';
-import { TestApiRegistry, renderInTestApp } from '@backstage/test-utils';
+import {
+  TestApiRegistry,
+  mockApis,
+  renderInTestApp,
+} from '@backstage/test-utils';
 import { lightTheme } from '@backstage/theme';
 import { ThemeProvider } from '@material-ui/core/styles';
 import CssBaseline from '@material-ui/core/CssBaseline';
@@ -33,10 +37,15 @@ const mockTheme: AppTheme = {
     </ThemeProvider>
   ),
 };
+const mockErrorApi = { post: jest.fn(), error$: jest.fn() };
 
 const apiRegistry = TestApiRegistry.from([
   appThemeApiRef,
-  AppThemeSelector.createWithStorage([mockTheme]),
+  AppThemeSelector.createWithStorage({
+    themes: [mockTheme],
+    storageApi: mockApis.storage(),
+    errorApi: mockErrorApi,
+  }),
 ]);
 
 describe('<UserSettingsThemeToggle />', () => {
