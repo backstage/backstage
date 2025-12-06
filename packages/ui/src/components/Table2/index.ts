@@ -34,6 +34,19 @@ export type {
   CellTextProps,
   CellProfileProps,
   ColumnProps,
+  TableProps,
+  TableColumnDefinition,
+  OffsetPaginationConfig,
+  CursorPaginationConfig,
+  ClientSidePaginationConfig,
 } from './types';
 
 export { TableDefinition } from './definition';
+
+// Pagination hooks
+export { useTableAsyncData } from './hooks/useTableAsyncData';
+export { useTableData } from './hooks/useTableData';
+export type {
+  UseTableAsyncDataResult,
+  UseTableDataResult,
+} from './hooks/types';

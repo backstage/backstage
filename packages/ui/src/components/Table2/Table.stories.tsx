@@ -19,6 +19,24 @@ import { Table } from './Table';
 import { MemoryRouter } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import { TableProps } from './types';
+import { useTableAsyncData } from './hooks/useTableAsyncData';
+import { useTableData } from './hooks/useTableData';
+import {
+  OffsetPaginationConfig,
+  CursorPaginationConfig,
+  ClientSidePaginationConfig,
+} from './types';
+import {
+  TableRoot,
+  TableHeader,
+  TableBody,
+  Column,
+  Row,
+  Cell,
+  CellText,
+  CellProfile,
+} from './components';
+import { TablePagination } from '../TablePagination2';
 
 const meta = {
   title: 'Backstage UI/Table 2',
@@ -47,6 +65,77 @@ interface PokeAPIResponse {
   results: PokemonListItem[];
 }
 
+interface PokemonDetail {
+  id: number;
+  name: string;
+  sprite: string;
+  type: string;
+  height: number;
+  weight: number;
+  url: string;
+}
+
+// Helper function to fetch Pokemon list from PokeAPI
+async function fetchPokemonList(
+  offset: number,
+  limit: number,
+): Promise<PokeAPIResponse> {
+  const response = await fetch(
+    `https://pokeapi.co/api/v2/pokemon?offset=${offset}&limit=${limit}`,
+  );
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`);
+  }
+  return response.json();
+}
+
+// Helper function to fetch Pokemon with detailed information
+async function fetchPokemonWithDetails(
+  offset: number,
+  limit: number,
+): Promise<{ data: PokemonDetail[]; totalCount: number }> {
+  const json = await fetchPokemonList(offset, limit);
+
+  // Fetch additional details for each Pokemon
+  const pokemonDetails = await Promise.all(
+    json.results.map(async pokemon => {
+      const detailResponse = await fetch(pokemon.url);
+      if (!detailResponse.ok) {
+        return null;
+      }
+      const detailJson = await detailResponse.json();
+      return {
+        id: detailJson.id,
+        name:
+          detailJson.name.charAt(0).toLocaleUpperCase('en-US') +
+          detailJson.name.slice(1),
+        sprite: detailJson.sprites.front_default,
+        type: detailJson.types
+          .map((t: { type: { name: string } }) => t.type.name)
+          .join(', '),
+        height: detailJson.height,
+        weight: detailJson.weight,
+        url: pokemon.url,
+      };
+    }),
+  );
+
+  const transformedData = pokemonDetails.filter(Boolean).map(pokemon => ({
+    id: pokemon!.id,
+    name: pokemon!.name,
+    sprite: pokemon!.sprite,
+    type: pokemon!.type,
+    height: pokemon!.height,
+    weight: pokemon!.weight,
+    url: pokemon!.url,
+  }));
+
+  return {
+    data: transformedData,
+    totalCount: json.count,
+  };
+}
+
 // Offset Pagination Story
 export const TableOffsetPagination: Story = {
   render: () => {
@@ -56,13 +145,7 @@ export const TableOffsetPagination: Story = {
     ];
 
     const fetchData = async (offset: number, pageSize: number) => {
-      const response = await fetch(
-        `https://pokeapi.co/api/v2/pokemon?offset=${offset}&limit=${pageSize}`,
-      );
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const json: PokeAPIResponse = await response.json();
+      const json = await fetchPokemonList(offset, pageSize);
       // Transform Pokemon data to match column structure
       const transformedData = json.results.map((pokemon, index) => ({
         id: offset + index + 1,
@@ -71,22 +154,30 @@ export const TableOffsetPagination: Story = {
           pokemon.name.slice(1),
         url: pokemon.url,
       }));
+
       return {
         data: transformedData,
         totalCount: json.count,
       };
     };
 
+    const paginationConfig: OffsetPaginationConfig = {
+      mode: 'offset',
+      fetchData,
+      initialOffset: 0,
+      initialPageSize: 20,
+      showPageSizeOptions: true,
+    };
+
+    const paginationState = useTableAsyncData(paginationConfig);
+
     return (
       <Table
         columns={columns}
-        pagination={{
-          mode: 'offset',
-          fetchData,
-          initialOffset: 0,
-          initialPageSize: 20,
-          showPageSizeOptions: true,
-        }}
+        data={paginationState.data}
+        pagination={paginationState}
+        loading={paginationState.loading}
+        error={paginationState.error}
       />
     );
   },
@@ -114,13 +205,7 @@ export const TableCursorPagination: Story = {
       // Parse cursor as offset (default to 0 if no cursor)
       const offset = cursor ? parseInt(cursor, 10) : 0;
 
-      const response = await fetch(
-        `https://pokeapi.co/api/v2/pokemon?offset=${offset}&limit=${limit}`,
-      );
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      const json: PokeAPIResponse = await response.json();
+      const json = await fetchPokemonList(offset, limit);
 
       // Transform Pokemon data to match column structure
       const transformedData = json.results.map((pokemon, index) => ({
@@ -146,15 +231,22 @@ export const TableCursorPagination: Story = {
       };
     };
 
+    const paginationConfig: CursorPaginationConfig = {
+      mode: 'cursor',
+      fetchData,
+      initialCursor: undefined, // Start from beginning
+      initialLimit: 20,
+    };
+
+    const paginationState = useTableAsyncData(paginationConfig);
+
     return (
       <Table
         columns={columns}
-        pagination={{
-          mode: 'cursor',
-          fetchData,
-          initialCursor: undefined, // Start from beginning
-          initialLimit: 20,
-        }}
+        data={paginationState.data}
+        pagination={paginationState}
+        loading={paginationState.loading}
+        error={paginationState.error}
       />
     );
   },
@@ -180,13 +272,7 @@ export const TableClientSidePagination: Story = {
         setLoading(true);
         setError(null);
         try {
-          const response = await fetch(
-            'https://pokeapi.co/api/v2/pokemon?limit=1000',
-          );
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-          const json: PokeAPIResponse = await response.json();
+          const json = await fetchPokemonList(0, 1000);
           // Transform Pokemon data to match column structure
           const transformedData = json.results.map((pokemon, index) => ({
             id: index + 1,
@@ -205,6 +291,15 @@ export const TableClientSidePagination: Story = {
       fetchAllData();
     }, []);
 
+    const paginationConfig: ClientSidePaginationConfig = {
+      mode: 'client',
+      data: allData,
+      initialPageSize: 20,
+      showPageSizeOptions: true,
+    };
+
+    const paginationState = useTableData(paginationConfig);
+
     if (loading) {
       return <div style={{ padding: '20px' }}>Loading...</div>;
     }
@@ -220,13 +315,116 @@ export const TableClientSidePagination: Story = {
     return (
       <Table
         columns={columns}
-        pagination={{
-          mode: 'client',
-          data: allData,
-          initialPageSize: 20,
-          showPageSizeOptions: true,
-        }}
+        data={paginationState.data}
+        pagination={paginationState}
+        loading={paginationState.loading}
+        error={paginationState.error}
       />
+    );
+  },
+};
+
+// Custom Components Story with Offset Pagination
+// This story demonstrates how to use custom cell components (CellProfile and CellText)
+// instead of the default Cell component, while using offset pagination
+export const TableWithCustomComponents: Story = {
+  render: () => {
+    const columns: TableProps['columns'] = [
+      { name: 'Pokemon', id: 'name', isRowHeader: true },
+      { name: 'Type', id: 'type' },
+      { name: 'Details', id: 'details' },
+    ];
+
+    const fetchData = async (offset: number, pageSize: number) => {
+      return fetchPokemonWithDetails(offset, pageSize);
+    };
+
+    const paginationConfig: OffsetPaginationConfig = {
+      mode: 'offset',
+      fetchData,
+      initialOffset: 0,
+      initialPageSize: 10,
+      showPageSizeOptions: true,
+    };
+
+    const paginationState = useTableAsyncData(paginationConfig);
+
+    return (
+      <>
+        {paginationState.error && (
+          <div style={{ color: 'red', padding: '10px' }}>
+            Error: {paginationState.error.message}
+          </div>
+        )}
+        {paginationState.loading && (
+          <div style={{ padding: '10px' }}>Loading...</div>
+        )}
+        <TableRoot>
+          <TableHeader columns={columns}>
+            {column => (
+              <Column isRowHeader={column.isRowHeader}>{column.name}</Column>
+            )}
+          </TableHeader>
+          <TableBody items={paginationState.data} dependencies={[columns]}>
+            {item => (
+              <Row columns={columns}>
+                {column => {
+                  if (column.id === 'name') {
+                    return (
+                      <CellProfile
+                        key={column.id}
+                        src={item.sprite}
+                        name={item.name}
+                        description={`#${item.id}`}
+                        href={`https://www.pokemon.com/us/pokedex/${item.name.toLocaleLowerCase(
+                          'en-US',
+                        )}`}
+                      />
+                    );
+                  }
+                  if (column.id === 'type') {
+                    return (
+                      <CellText
+                        key={column.id}
+                        title={item.type}
+                        description={`Height: ${item.height / 10}m, Weight: ${
+                          item.weight / 10
+                        }kg`}
+                      />
+                    );
+                  }
+                  if (column.id === 'details') {
+                    return (
+                      <CellText
+                        key={column.id}
+                        title="View Details"
+                        href={item.url}
+                        description="External API link"
+                      />
+                    );
+                  }
+                  return <Cell key={column.id}>{item[column.id]}</Cell>;
+                }}
+              </Row>
+            )}
+          </TableBody>
+        </TableRoot>
+        {paginationState && (
+          <TablePagination
+            fromCount={paginationState.fromCount}
+            toCount={paginationState.toCount}
+            totalCount={paginationState.totalCount}
+            pageSize={paginationState.pageSize}
+            onNextPage={paginationState.onNextPage}
+            onPreviousPage={paginationState.onPreviousPage}
+            onPageSizeChange={paginationState.onPageSizeChange}
+            isNextDisabled={paginationState.isNextDisabled}
+            isPrevDisabled={paginationState.isPrevDisabled}
+            isLoading={paginationState.loading}
+            showPageSizeOptions={paginationState.showPageSizeOptions}
+          />
+        )}
+      </>
     );
   },
 };

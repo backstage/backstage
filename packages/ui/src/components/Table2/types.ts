@@ -74,13 +74,14 @@ export interface ClientSidePaginationConfig {
   onPageSizeChange?: (pageSize: number) => void;
 }
 
+import { UseTableAsyncDataResult, UseTableDataResult } from './hooks/types';
+
 export interface TableProps {
   columns: TableColumnDefinition[];
-  data?: Record<string, any>[]; // Optional when using pagination
-  pagination?:
-    | OffsetPaginationConfig
-    | CursorPaginationConfig
-    | ClientSidePaginationConfig;
+  data: Record<string, any>[];
+  pagination?: UseTableAsyncDataResult | UseTableDataResult;
+  loading?: boolean;
+  error?: Error | null;
 }
 
 /** @public */
