@@ -19,14 +19,6 @@
 
 // This script is used to audit the list of plugins in the Plugin Directory: https://backstage.io/plugins
 
-// Read all the plugin YAML files in microsite/data/plugins
-// Build up an nice object to work with
-// validate the NPM package and pull down: latest version, created, modified
-// validate the docs still load
-// output: title, author, latest version, created, modified, docs status, time since last update
-
-// https://registry.npmjs.com/@backstage-community/plugin-azure-devops-backend
-
 const { resolve } = require('path');
 const fs = require('fs-extra');
 const yaml = require('js-yaml');
