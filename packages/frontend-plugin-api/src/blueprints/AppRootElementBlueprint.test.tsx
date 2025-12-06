@@ -14,7 +14,19 @@
  * limitations under the License.
  */
 
+import { screen, waitFor } from '@testing-library/react';
+import {
+  MockErrorApi,
+  TestApiProvider,
+  withLogCollector,
+} from '@backstage/test-utils';
+import { errorApiRef } from '../apis';
+import {
+  createExtensionTester,
+  renderInTestApp,
+} from '@backstage/frontend-test-utils';
 import { AppRootElementBlueprint } from './AppRootElementBlueprint';
+import { ForwardedError } from '@backstage/errors';
 
 describe('AppRootElementBlueprint', () => {
   it('should create an extension with sensible defaults', () => {
@@ -45,5 +57,58 @@ describe('AppRootElementBlueprint', () => {
         "version": "v2",
       }
     `);
+  });
+
+  it('should post error to errorApi and not render children when error occurs', async () => {
+    const errorApi = new MockErrorApi({ collect: true });
+    const errorMessage = 'Test error message';
+    const ErrorComponent = () => {
+      throw new Error(errorMessage);
+    };
+
+    await withLogCollector(['error'], async () => {
+      const extension = AppRootElementBlueprint.make({
+        params: {
+          element: <ErrorComponent />,
+        },
+      });
+
+      const tester = createExtensionTester(extension);
+      renderInTestApp(
+        <TestApiProvider apis={[[errorApiRef, errorApi]]}>
+          {tester.reactElement()}
+        </TestApiProvider>,
+      );
+
+      await waitFor(() => {
+        const errors = errorApi.getErrors();
+        expect(errors.length).toBeGreaterThan(0);
+        const postedError = errors[0].error;
+        expect(postedError).toBeInstanceOf(ForwardedError);
+        expect(postedError.message).toBe(
+          "Error in extension 'app-root-element:test'; caused by Error: Test error message",
+        );
+      });
+
+      expect(screen.queryByText(errorMessage)).not.toBeInTheDocument();
+    });
+  });
+
+  it('should render children when there is no error', async () => {
+    const successMessage = 'Success!';
+    const SuccessComponent = () => <div>{successMessage}</div>;
+
+    const extension = AppRootElementBlueprint.make({
+      params: {
+        element: <SuccessComponent />,
+      },
+    });
+
+    const tester = createExtensionTester(extension);
+    renderInTestApp(tester.reactElement());
+
+    await waitFor(() => {
+      expect(screen.getByText(successMessage)).toBeInTheDocument();
+    });
   });
 });

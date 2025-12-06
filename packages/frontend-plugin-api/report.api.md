@@ -1146,6 +1146,8 @@ export interface ExtensionBoundaryProps {
   // (undocumented)
   children: ReactNode;
   // (undocumented)
+  errorPresentation?: 'error-api' | 'error-display';
+  // (undocumented)
   node: AppNode;
 }
 

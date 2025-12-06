@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { ExtensionBoundary } from '@backstage/frontend-plugin-api';
 import { coreExtensionData, createExtensionBlueprint } from '../wiring';
 
 /**
@@ -26,7 +27,11 @@ export const AppRootElementBlueprint = createExtensionBlueprint({
   kind: 'app-root-element',
   attachTo: { id: 'app/root', input: 'elements' },
   output: [coreExtensionData.reactElement],
-  *factory(params: { element: JSX.Element }) {
-    yield coreExtensionData.reactElement(params.element);
+  *factory(params: { element: JSX.Element }, { node }) {
+    yield coreExtensionData.reactElement(
+      <ExtensionBoundary node={node} errorPresentation="error-api">
+        {params.element}
+      </ExtensionBoundary>,
+    );
   },
 });
