@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
-export { TablePagination } from './TablePagination';
-export type { TablePaginationProps } from './types';
-export { TablePaginationDefinition } from './definition';
+export { Cell } from './Cell';
+export { CellProfile } from './CellProfile';
+export { CellText } from './CellText';
+export { Column } from './Column';
+export { Row } from './Row';
+export { TableRoot } from './TableRoot';
+export { TableBody } from './TableBody';
+export { TableHeader } from './TableHeader';

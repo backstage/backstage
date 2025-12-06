@@ -16,59 +16,43 @@
 
 import clsx from 'clsx';
 import { Text, ButtonIcon, Select } from '../..';
-import type { TablePaginationCursorProps } from './types';
+import type { TablePaginationProps } from './types';
 import { useStyles } from '../../hooks/useStyles';
 import { TablePaginationDefinition } from './definition';
 import styles from './TablePagination.module.css';
 import { RiArrowLeftSLine, RiArrowRightSLine } from '@remixicon/react';
 
 /**
- * Pagination controls for Table components with cursor-based pagination.
+ * Pagination controls for Table components.
+ * A simple, presentational component that accepts pre-calculated values and callbacks.
  *
  * @public
  */
-export function TablePaginationCursor(props: TablePaginationCursorProps) {
+export function TablePagination(props: TablePaginationProps) {
   const { classNames, cleanedProps } = useStyles(TablePaginationDefinition, {
     showPageSizeOptions: true,
     ...props,
   });
   const {
     className,
-    nextCursor,
-    prevCursor,
+    fromCount,
+    toCount,
     totalCount,
-    currentPage,
-    limit,
-    fetchNext,
-    fetchPrev,
-    setLimit,
-    isLoading,
+    pageSize,
     onNextPage,
     onPreviousPage,
-    onLimitChange,
+    onPageSizeChange,
+    isNextDisabled,
+    isPrevDisabled,
+    isLoading,
     showPageSizeOptions,
     ...rest
   } = cleanedProps;
 
-  const fromCount = (currentPage - 1) * limit + 1;
-  const toCount =
+  const rangeText =
     totalCount !== undefined
-      ? Math.min(currentPage * limit, totalCount)
-      : currentPage * limit;
-
-  const nextPage = () => {
-    if (nextCursor) {
-      onNextPage?.();
-      fetchNext();
-    }
-  };
-
-  const previousPage = () => {
-    if (prevCursor !== undefined) {
-      onPreviousPage?.();
-      fetchPrev();
-    }
-  };
+      ? `${fromCount} - ${toCount} of ${totalCount}`
+      : `${fromCount} - ${toCount}`;
 
   return (
     <div
@@ -78,7 +62,7 @@ export function TablePaginationCursor(props: TablePaginationCursorProps) {
       <div className={clsx(classNames.left, styles[classNames.left])}>
         {showPageSizeOptions && (
           <Select
-            name="limit"
+            name="pageSize"
             size="small"
             placeholder="Show 10 results"
             options={[
@@ -89,41 +73,32 @@ export function TablePaginationCursor(props: TablePaginationCursorProps) {
               { label: 'Show 40 results', value: '40' },
               { label: 'Show 50 results', value: '50' },
             ]}
-            selectedKey={limit?.toString()}
+            selectedKey={pageSize.toString()}
             onSelectionChange={value => {
-              const newLimit = Number(value);
-              setLimit?.(newLimit);
-              onLimitChange?.(newLimit);
+              const newPageSize = Number(value);
+              onPageSizeChange(newPageSize);
             }}
             className={clsx(classNames.select, styles[classNames.select])}
           />
         )}
       </div>
       <div className={clsx(classNames.right, styles[classNames.right])}>
-        {totalCount !== undefined ? (
-          <Text
-            as="p"
-            variant="body-medium"
-          >{`${fromCount} - ${toCount} of ${totalCount}`}</Text>
-        ) : (
-          <Text
-            as="p"
-            variant="body-medium"
-          >{`${fromCount} - ${toCount}`}</Text>
-        )}
+        <Text as="p" variant="body-medium">
+          {rangeText}
+        </Text>
         <ButtonIcon
           variant="secondary"
           size="small"
-          onClick={previousPage}
-          isDisabled={!prevCursor || isLoading}
+          onClick={onPreviousPage}
+          isDisabled={isPrevDisabled || isLoading}
           icon={<RiArrowLeftSLine />}
           aria-label="Previous"
         />
         <ButtonIcon
           variant="secondary"
           size="small"
-          onClick={nextPage}
-          isDisabled={!nextCursor || isLoading}
+          onClick={onNextPage}
+          isDisabled={isNextDisabled || isLoading}
           icon={<RiArrowRightSLine />}
           aria-label="Next"
         />

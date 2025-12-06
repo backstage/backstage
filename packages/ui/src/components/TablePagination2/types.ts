@@ -15,33 +15,17 @@
  */
 
 /** @public */
-export interface TablePaginationOffsetProps
+export interface TablePaginationProps
   extends React.HTMLAttributes<HTMLDivElement> {
-  offset?: number;
-  pageSize?: number;
-  setPageSize?: (pageSize: number) => void;
-  setOffset?: (offset: number) => void;
-  rowCount?: number;
-  onNextPage?: () => void;
-  onPreviousPage?: () => void;
-  onPageSizeChange?: (pageSize: number) => void;
-  showPageSizeOptions?: boolean;
-}
-
-/** @public */
-export interface TablePaginationCursorProps
-  extends React.HTMLAttributes<HTMLDivElement> {
-  nextCursor?: string;
-  prevCursor?: string;
+  fromCount: number;
+  toCount: number;
   totalCount?: number;
-  currentPage: number;
-  limit: number;
-  fetchNext: () => void;
-  fetchPrev: () => void;
-  setLimit?: (limit: number) => void;
+  pageSize: number;
+  onNextPage: () => void;
+  onPreviousPage: () => void;
+  onPageSizeChange: (pageSize: number) => void;
+  isNextDisabled: boolean;
+  isPrevDisabled: boolean;
   isLoading?: boolean;
-  onNextPage?: () => void;
-  onPreviousPage?: () => void;
-  onLimitChange?: (limit: number) => void;
   showPageSizeOptions?: boolean;
 }
