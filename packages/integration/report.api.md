@@ -588,8 +588,8 @@ export function getGitilesAuthenticationUrl(
 export function getGitLabFileFetchUrl(
   url: string,
   config: GitLabIntegrationConfig,
-  token?: string,
-): Promise<string>;
+  _token?: string,
+): string;
 
 // @public
 export function getGitLabIntegrationRelativePath(
