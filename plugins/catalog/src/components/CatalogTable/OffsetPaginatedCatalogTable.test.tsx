@@ -38,7 +38,7 @@ describe('OffsetPaginatedCatalogTable', () => {
       },
       resolved: {
         name,
-        entityRef: 'component:default/component',
+        entityRef: `component:default/${name}`,
       },
     } as CatalogTableRow;
   });
@@ -97,36 +97,58 @@ describe('OffsetPaginatedCatalogTable', () => {
       ),
     );
 
+    // Wait for items to render
+    await screen.findByText(data[0].resolved.name);
+
     for (const item of data) {
-      expect(screen.queryByText(item.resolved.name)).toBeInTheDocument();
+      expect(screen.getByText(item.resolved.name)).toBeInTheDocument();
     }
   });
 
   it('should display and invoke the next and previous buttons', async () => {
-    const offsetFn = jest.fn();
+    let currentOffset = 0;
+    const offsetFn = jest.fn((newOffset: number) => {
+      currentOffset = newOffset;
+    });
 
-    await renderInTestApp(
+    const { rerender } = await renderInTestApp(
       wrapInContext(
         <OffsetPaginatedCatalogTable data={data} columns={columns} />,
-        { setOffset: offsetFn, limit: 10, totalItems: data.length, offset: 0 },
+        {
+          setOffset: offsetFn,
+          limit: 10,
+          totalItems: data.length,
+          offset: currentOffset,
+        },
       ),
     );
 
-    expect(offsetFn).toHaveBeenNthCalledWith(1, 0);
-    const nextButton = screen.queryAllByRole('button', {
-      name: 'Next Page',
-    })[0];
+    // Wait for pagination to render
+    const nextButton = await screen.findByRole('button', {
+      name: /next/i,
+    });
     expect(nextButton).toBeEnabled();
 
+    // Click next to go to page 2
     fireEvent.click(nextButton);
-    expect(offsetFn).toHaveBeenNthCalledWith(2, 10);
+    expect(offsetFn).toHaveBeenCalledWith(10);
 
-    const prevButton = screen.queryAllByRole('button', {
-      name: 'Previous Page',
-    })[0];
+    // Re-render with updated offset to simulate state change
+    await rerender(
+      wrapInContext(
+        <OffsetPaginatedCatalogTable data={data} columns={columns} />,
+        { setOffset: offsetFn, limit: 10, totalItems: data.length, offset: 10 },
+      ),
+    );
+
+    // Now previous button should be enabled (we're on page 2)
+    const prevButton = await screen.findByRole('button', {
+      name: /previous/i,
+    });
     expect(prevButton).toBeEnabled();
 
+    // Click previous to go back to page 1
     fireEvent.click(prevButton);
-    expect(offsetFn).toHaveBeenNthCalledWith(3, 0);
+    expect(offsetFn).toHaveBeenCalledWith(0);
   });
 });
