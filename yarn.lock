@@ -7606,7 +7606,9 @@ __metadata:
     express: "npm:^4.22.0"
     express-promise-router: "npm:^4.1.0"
     knex: "npm:^3.0.0"
+    p-limit: "npm:^3.1.0"
     supertest: "npm:^7.0.0"
+    zod: "npm:^3.22.4"
   languageName: unknown
   linkType: soft
 
@@ -7615,6 +7617,7 @@ __metadata:
   resolution: "@backstage/plugin-user-settings-common@workspace:plugins/user-settings-common"
   dependencies:
     "@backstage/cli": "workspace:^"
+    "@backstage/types": "workspace:^"
   languageName: unknown
   linkType: soft
 
@@ -7645,6 +7648,7 @@ __metadata:
     "@testing-library/react": "npm:^16.0.0"
     "@testing-library/user-event": "npm:^14.0.0"
     "@types/react": "npm:^18.0.0"
+    dataloader: "npm:^2.0.0"
     msw: "npm:^1.0.0"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
