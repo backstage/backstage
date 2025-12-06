@@ -36,6 +36,9 @@ import {
   kubernetesObjectsProviderExtensionPoint,
   type KubernetesObjectsProviderExtensionPoint,
   KubernetesObjectsProviderFactory,
+  KubernetesRouterExtensionPoint,
+  kubernetesRouterExtensionPoint,
+  KubernetesRouterFactory,
   type KubernetesServiceLocator,
   kubernetesServiceLocatorExtensionPoint,
   type KubernetesServiceLocatorExtensionPoint,
@@ -157,6 +160,24 @@ class AuthStrategy implements KubernetesAuthStrategyExtensionPoint {
   }
 }
 
+class CustomRouter implements KubernetesRouterExtensionPoint {
+  private router: KubernetesRouterFactory | undefined;
+
+  getRouter() {
+    return this.router;
+  }
+
+  addRouter(router: KubernetesRouterFactory) {
+    if (this.router) {
+      throw new Error(
+        'Multiple Kubernetes routers is not supported at this time',
+      );
+    }
+
+    this.router = router;
+  }
+}
+
 /**
  * This is the backend plugin that provides the Kubernetes integration.
  * @public
@@ -169,6 +190,7 @@ export const kubernetesPlugin = createBackendPlugin({
     const extPointAuthStrategy = new AuthStrategy();
     const extPointFetcher = new Fetcher();
     const extPointServiceLocator = new ServiceLocator();
+    const extPointRouter = new CustomRouter();
 
     env.registerExtensionPoint(
       kubernetesObjectsProviderExtensionPoint,
@@ -190,6 +212,7 @@ export const kubernetesPlugin = createBackendPlugin({
       kubernetesServiceLocatorExtensionPoint,
       extPointServiceLocator,
     );
+    env.registerExtensionPoint(kubernetesRouterExtensionPoint, extPointRouter);
 
     env.registerInit({
       deps: {
@@ -247,6 +270,7 @@ export const kubernetesPlugin = createBackendPlugin({
             clusterSupplier,
             serviceLocator,
             objectsProvider,
+            customRouter: extPointRouter.getRouter(),
           });
 
           http.use(await router.getRouter());

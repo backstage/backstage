@@ -209,6 +209,7 @@ export class KubernetesInitializer {
             customResources,
             objectTypesToFetch,
           }),
+        fetcher,
         clusterSupplier,
         serviceLocator,
         customResources,
