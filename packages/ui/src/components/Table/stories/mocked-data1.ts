@@ -15,6 +15,7 @@
  */
 
 export interface DataProps {
+  id: string;
   name: string;
   owner: {
     name: string;
@@ -29,6 +30,7 @@ export interface DataProps {
 
 export const data: DataProps[] = [
   {
+    id: 'authentication-and-authorization-service',
     name: 'authentication-and-authorization-service',
     owner: {
       name: 'security-team',
@@ -42,6 +44,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'user-interface-dashboard-and-analytics-platform',
     name: 'user-interface-dashboard-and-analytics-platform',
     owner: {
       name: 'frontend-team',
@@ -55,6 +58,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'payment-gateway',
     name: 'payment-gateway',
     owner: {
       name: 'finance-team',
@@ -68,6 +72,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'real-time-analytics-processing-and-visualization-engine',
     name: 'real-time-analytics-processing-and-visualization-engine',
     owner: {
       name: 'data-team',
@@ -81,6 +86,7 @@ export const data: DataProps[] = [
     lifecycle: 'experimental',
   },
   {
+    id: 'notification-center',
     name: 'notification-center',
     owner: {
       name: 'platform-team',
@@ -94,6 +100,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'administrative-control-panel-and-user-management-interface',
     name: 'administrative-control-panel-and-user-management-interface',
     owner: {
       name: 'frontend-team',
@@ -107,6 +114,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'search-indexer',
     name: 'search-indexer',
     owner: {
       name: 'search-team',
@@ -120,6 +128,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'cross-platform-mobile-application-framework',
     name: 'cross-platform-mobile-application-framework',
     owner: {
       name: 'mobile-team',
@@ -133,6 +142,7 @@ export const data: DataProps[] = [
     lifecycle: 'experimental',
   },
   {
+    id: 'database-migration',
     name: 'database-migration',
     owner: {
       name: 'devops-team',
@@ -146,6 +156,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'api-gateway',
     name: 'api-gateway',
     owner: {
       name: 'platform-team',
@@ -159,6 +170,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'content-management',
     name: 'content-management',
     owner: {
       name: 'content-team',
@@ -172,6 +184,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'enterprise-reporting-and-analytics-dashboard',
     name: 'enterprise-reporting-and-analytics-dashboard',
     owner: {
       name: 'analytics-team',
@@ -185,6 +198,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'image-processing-and-optimization-service',
     name: 'image-processing-and-optimization-service',
     owner: {
       name: 'media-team',
@@ -198,6 +212,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'customer-portal',
     name: 'customer-portal',
     owner: {
       name: 'frontend-team',
@@ -211,6 +226,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'log-aggregator',
     name: 'log-aggregator',
     owner: {
       name: 'devops-team',
@@ -224,6 +240,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'identity-provider',
     name: 'identity-provider',
     owner: {
       name: 'security-team',
@@ -237,6 +254,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'document-storage',
     name: 'document-storage',
     owner: {
       name: 'storage-team',
@@ -250,6 +268,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'workflow-engine',
     name: 'workflow-engine',
     owner: {
       name: 'platform-team',
@@ -263,6 +282,7 @@ export const data: DataProps[] = [
     lifecycle: 'experimental',
   },
   {
+    id: 'mobile-backend',
     name: 'mobile-backend',
     owner: {
       name: 'mobile-team',
@@ -276,6 +296,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'system-monitoring-and-alerting-dashboard',
     name: 'system-monitoring-and-alerting-dashboard',
     owner: {
       name: 'devops-team',
@@ -289,6 +310,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'email-service',
     name: 'email-service',
     owner: {
       name: 'communication-team',
@@ -302,6 +324,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'data-pipeline',
     name: 'data-pipeline',
     owner: {
       name: 'data-team',
@@ -315,6 +338,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'configuration-manager',
     name: 'configuration-manager',
     owner: {
       name: 'platform-team',
@@ -328,6 +352,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'testing-framework',
     name: 'testing-framework',
     owner: {
       name: 'qa-team',
@@ -341,6 +366,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'cache-service',
     name: 'cache-service',
     owner: {
       name: 'platform-team',
@@ -354,6 +380,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'billing-system',
     name: 'billing-system',
     owner: {
       name: 'finance-team',
@@ -367,6 +394,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'comprehensive-product-documentation-and-api-reference',
     name: 'comprehensive-product-documentation-and-api-reference',
     owner: {
       name: 'docs-team',
@@ -380,6 +408,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'queue-manager',
     name: 'queue-manager',
     owner: {
       name: 'platform-team',
@@ -393,6 +422,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'security-scanner',
     name: 'security-scanner',
     owner: {
       name: 'security-team',
@@ -406,6 +436,7 @@ export const data: DataProps[] = [
     lifecycle: 'experimental',
   },
   {
+    id: 'user-profile',
     name: 'user-profile',
     owner: {
       name: 'frontend-team',
@@ -419,6 +450,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'data-warehouse',
     name: 'data-warehouse',
     owner: {
       name: 'data-team',
@@ -432,6 +464,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'deployment-automation',
     name: 'deployment-automation',
     owner: {
       name: 'devops-team',
@@ -445,6 +478,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'chat-service',
     name: 'chat-service',
     owner: {
       name: 'communication-team',
@@ -458,6 +492,7 @@ export const data: DataProps[] = [
     lifecycle: 'experimental',
   },
   {
+    id: 'analytics-dashboard',
     name: 'analytics-dashboard',
     owner: {
       name: 'analytics-team',
@@ -471,6 +506,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'file-uploader',
     name: 'file-uploader',
     owner: {
       name: 'storage-team',
@@ -484,6 +520,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'search-service',
     name: 'search-service',
     owner: {
       name: 'search-team',
@@ -497,6 +534,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'mobile-sdk',
     name: 'mobile-sdk',
     owner: {
       name: 'mobile-team',
@@ -510,6 +548,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'performance-monitor',
     name: 'performance-monitor',
     owner: {
       name: 'devops-team',
@@ -523,6 +562,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'content-delivery',
     name: 'content-delivery',
     owner: {
       name: 'media-team',
@@ -536,6 +576,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'user-authentication',
     name: 'user-authentication',
     owner: {
       name: 'security-team',
@@ -549,6 +590,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'data-export',
     name: 'data-export',
     owner: {
       name: 'data-team',
@@ -562,6 +604,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'admin-api',
     name: 'admin-api',
     owner: {
       name: 'platform-team',
@@ -575,6 +618,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'testing-dashboard',
     name: 'testing-dashboard',
     owner: {
       name: 'qa-team',
@@ -587,6 +631,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'message-broker',
     name: 'message-broker',
     owner: {
       name: 'platform-team',
@@ -600,6 +645,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'payment-processor',
     name: 'payment-processor',
     owner: {
       name: 'finance-team',
@@ -613,6 +659,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'document-viewer',
     name: 'document-viewer',
     owner: {
       name: 'frontend-team',
@@ -625,6 +672,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'load-balancer',
     name: 'load-balancer',
     owner: {
       name: 'devops-team',
@@ -638,6 +686,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'security-audit',
     name: 'security-audit',
     owner: {
       name: 'security-team',
@@ -651,6 +700,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'user-settings',
     name: 'user-settings',
     owner: {
       name: 'frontend-team',
@@ -664,6 +714,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'data-import',
     name: 'data-import',
     owner: {
       name: 'data-team',
@@ -677,6 +728,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'infrastructure-monitor',
     name: 'infrastructure-monitor',
     owner: {
       name: 'devops-team',
@@ -690,6 +742,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'notification-manager',
     name: 'notification-manager',
     owner: {
       name: 'communication-team',
@@ -703,6 +756,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'analytics-processor',
     name: 'analytics-processor',
     owner: {
       name: 'analytics-team',
@@ -716,6 +770,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'file-manager',
     name: 'file-manager',
     owner: {
       name: 'storage-team',
@@ -728,6 +783,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'search-index',
     name: 'search-index',
     owner: {
       name: 'search-team',
@@ -740,6 +796,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'mobile-authentication',
     name: 'mobile-authentication',
     owner: {
       name: 'mobile-team',
@@ -753,6 +810,7 @@ export const data: DataProps[] = [
     lifecycle: 'experimental',
   },
   {
+    id: 'system-monitor',
     name: 'system-monitor',
     owner: {
       name: 'devops-team',
@@ -766,6 +824,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'media-processor',
     name: 'media-processor',
     owner: {
       name: 'media-team',
@@ -778,6 +837,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'user-management',
     name: 'user-management',
     owner: {
       name: 'security-team',
@@ -790,6 +850,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'data-transformer',
     name: 'data-transformer',
     owner: {
       name: 'data-team',
@@ -803,6 +864,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'admin-dashboard',
     name: 'admin-dashboard',
     owner: {
       name: 'platform-team',
@@ -816,6 +878,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'test-automation',
     name: 'test-automation',
     owner: {
       name: 'qa-team',
@@ -828,6 +891,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'event-bus',
     name: 'event-bus',
     owner: {
       name: 'platform-team',
@@ -840,6 +904,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'invoice-generator',
     name: 'invoice-generator',
     owner: {
       name: 'finance-team',
@@ -852,6 +917,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'document-editor',
     name: 'document-editor',
     owner: {
       name: 'frontend-team',
@@ -864,6 +930,7 @@ export const data: DataProps[] = [
     lifecycle: 'experimental',
   },
   {
+    id: 'service-discovery',
     name: 'service-discovery',
     owner: {
       name: 'devops-team',
@@ -876,6 +943,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'security-monitor',
     name: 'security-monitor',
     owner: {
       name: 'security-team',
@@ -888,6 +956,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'user-preferences',
     name: 'user-preferences',
     owner: {
       name: 'frontend-team',
@@ -900,6 +969,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'data-validator',
     name: 'data-validator',
     owner: {
       name: 'data-team',
@@ -912,6 +982,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'infrastructure-automation',
     name: 'infrastructure-automation',
     owner: {
       name: 'devops-team',
@@ -925,6 +996,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'notification-dispatcher',
     name: 'notification-dispatcher',
     owner: {
       name: 'communication-team',
@@ -938,6 +1010,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'analytics-collector',
     name: 'analytics-collector',
     owner: {
       name: 'analytics-team',
@@ -950,6 +1023,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'file-processor',
     name: 'file-processor',
     owner: {
       name: 'storage-team',
@@ -962,6 +1036,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'search-analyzer',
     name: 'search-analyzer',
     owner: {
       name: 'search-team',
@@ -974,6 +1049,7 @@ export const data: DataProps[] = [
     lifecycle: 'experimental',
   },
   {
+    id: 'mobile-notifications',
     name: 'mobile-notifications',
     owner: {
       name: 'mobile-team',
@@ -986,6 +1062,7 @@ export const data: DataProps[] = [
     lifecycle: 'experimental',
   },
   {
+    id: 'system-alerts',
     name: 'system-alerts',
     owner: {
       name: 'devops-team',
@@ -998,6 +1075,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'media-encoder',
     name: 'media-encoder',
     owner: {
       name: 'media-team',
@@ -1010,6 +1088,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'user-authorization',
     name: 'user-authorization',
     owner: {
       name: 'security-team',
@@ -1022,6 +1101,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'data-aggregator',
     name: 'data-aggregator',
     owner: {
       name: 'data-team',
@@ -1034,6 +1114,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'admin-authentication',
     name: 'admin-authentication',
     owner: {
       name: 'platform-team',
@@ -1046,6 +1127,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'test-coverage',
     name: 'test-coverage',
     owner: {
       name: 'qa-team',
@@ -1058,6 +1140,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'event-processor',
     name: 'event-processor',
     owner: {
       name: 'platform-team',
@@ -1070,6 +1153,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'payment-validator',
     name: 'payment-validator',
     owner: {
       name: 'finance-team',
@@ -1082,6 +1166,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'document-converter',
     name: 'document-converter',
     owner: {
       name: 'frontend-team',
@@ -1094,6 +1179,7 @@ export const data: DataProps[] = [
     lifecycle: 'experimental',
   },
   {
+    id: 'service-health',
     name: 'service-health',
     owner: {
       name: 'devops-team',
@@ -1106,6 +1192,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'security-logger',
     name: 'security-logger',
     owner: {
       name: 'security-team',
@@ -1118,6 +1205,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'user-analytics',
     name: 'user-analytics',
     owner: {
       name: 'frontend-team',
@@ -1131,6 +1219,7 @@ export const data: DataProps[] = [
     lifecycle: 'experimental',
   },
   {
+    id: 'data-cleaner',
     name: 'data-cleaner',
     owner: {
       name: 'data-team',
@@ -1143,6 +1232,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'infrastructure-deployer',
     name: 'infrastructure-deployer',
     owner: {
       name: 'devops-team',
@@ -1155,6 +1245,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'notification-queue',
     name: 'notification-queue',
     owner: {
       name: 'communication-team',
@@ -1167,6 +1258,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'analytics-exporter',
     name: 'analytics-exporter',
     owner: {
       name: 'analytics-team',
@@ -1179,6 +1271,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'file-validator',
     name: 'file-validator',
     owner: {
       name: 'storage-team',
@@ -1191,6 +1284,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'search-optimizer',
     name: 'search-optimizer',
     owner: {
       name: 'search-team',
@@ -1203,6 +1297,7 @@ export const data: DataProps[] = [
     lifecycle: 'experimental',
   },
   {
+    id: 'mobile-analytics',
     name: 'mobile-analytics',
     owner: {
       name: 'mobile-team',
@@ -1215,6 +1310,7 @@ export const data: DataProps[] = [
     lifecycle: 'experimental',
   },
   {
+    id: 'system-logger',
     name: 'system-logger',
     owner: {
       name: 'devops-team',
@@ -1227,6 +1323,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'media-validator',
     name: 'media-validator',
     owner: {
       name: 'media-team',
@@ -1239,6 +1336,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'user-audit',
     name: 'user-audit',
     owner: {
       name: 'security-team',
@@ -1251,6 +1349,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'data-normalizer',
     name: 'data-normalizer',
     owner: {
       name: 'data-team',
@@ -1263,6 +1362,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'admin-authorization',
     name: 'admin-authorization',
     owner: {
       name: 'platform-team',
@@ -1275,6 +1375,7 @@ export const data: DataProps[] = [
     lifecycle: 'production',
   },
   {
+    id: 'test-reporting',
     name: 'test-reporting',
     owner: {
       name: 'qa-team',

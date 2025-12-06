@@ -14,20 +14,18 @@
  * limitations under the License.
  */
 
-/** @public */
-export interface TablePaginationProps {
-  pageSize: number;
-  offset?: number;
-  totalCount?: number;
-  hasNextPage: boolean;
-  hasPreviousPage: boolean;
-  onNextPage: () => void;
-  onPreviousPage: () => void;
-  onPageSizeChange?: (size: number) => void;
-  showPageSizeOptions?: boolean;
-  getLabel?: (params: {
-    pageSize: number;
-    offset?: number;
-    totalCount?: number;
-  }) => string;
+import { useRef, useCallback } from 'react';
+
+/**
+ * Returns a stable callback reference that always calls the latest version
+ * of the provided function. Useful for callbacks passed as props that may
+ * change on every render but shouldn't trigger effect re-runs.
+ *
+ * @internal
+ */
+export function useStableCallback<T extends (...args: any[]) => any>(fn: T): T {
+  const ref = useRef(fn);
+  ref.current = fn;
+
+  return useCallback((...args: Parameters<T>) => ref.current(...args), []) as T;
 }
