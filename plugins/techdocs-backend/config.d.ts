@@ -64,6 +64,14 @@ export interface Config {
          * List of mkdocs plugins which should be added as default to all mkdocs.yml files.
          */
         defaultPlugins?: string[];
+
+        /**
+         * Disable external fonts for all TechDocs sites.
+         * If not set, the default value is false.
+         * If set to true, the external font will be disabled for all TechDocs sites.
+         * If set to false, the external font will be enabled for all TechDocs sites.
+         */
+        disableExternalFonts?: boolean;
       };
     };
 
