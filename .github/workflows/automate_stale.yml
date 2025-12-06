@@ -20,7 +20,7 @@ jobs:
           egress-policy: audit
 
       - name: Stale check - base
-        uses: actions/stale@5bef64f19d7facfb25b37b414482c7164d639639 # v9.1.0
+        uses: actions/stale@997185467fa4f803885201cee163a9f38240193d # v10.1.1
         with:
           stale-issue-message: >
             This issue has been automatically marked as stale because it has not had
@@ -42,7 +42,7 @@ jobs:
           operations-per-run: 100
 
       - name: Stale check - bugs without repro
-        uses: actions/stale@5bef64f19d7facfb25b37b414482c7164d639639 # v9.1.0
+        uses: actions/stale@997185467fa4f803885201cee163a9f38240193d # v10.1.1
         with:
           stale-issue-message: >
             This bug report has been automatically marked as stale because it has not had
