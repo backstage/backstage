@@ -14,25 +14,23 @@
  * limitations under the License.
  */
 
-import { Component, PropsWithChildren } from 'react';
+import { Component, ReactNode } from 'react';
 import { FrontendPlugin } from '../wiring';
 import { ErrorDisplay } from './DefaultSwappableComponents';
 
-type ErrorBoundaryProps = PropsWithChildren<{
-  plugin?: FrontendPlugin;
-}>;
-type ErrorBoundaryState = { error?: Error };
-
 /** @internal */
-export class ErrorBoundary extends Component<
-  ErrorBoundaryProps,
-  ErrorBoundaryState
+export class ErrorDisplayBoundary extends Component<
+  {
+    children: ReactNode;
+    plugin: FrontendPlugin;
+  },
+  { error?: Error }
 > {
   static getDerivedStateFromError(error: Error) {
     return { error };
   }
 
-  state: ErrorBoundaryState = { error: undefined };
+  state = { error: undefined };
 
   handleErrorReset = () => {
     this.setState({ error: undefined });
