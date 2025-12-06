@@ -1,5 +1,25 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.20.5-next.2
+
+### Patch Changes
+
+- de96a60: chore(deps): bump `express` from 4.21.2 to 4.22.0
+- fb029b6: Updated luxon types
+- Updated dependencies
+  - @backstage/plugin-permission-node@0.10.7-next.1
+  - @backstage/backend-plugin-api@1.5.1-next.0
+  - @backstage/catalog-client@1.12.1
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/integration-aws-node@0.1.19
+  - @backstage/types@1.2.2
+  - @backstage/plugin-catalog-node@1.20.1-next.0
+  - @backstage/plugin-kubernetes-common@0.9.9-next.0
+  - @backstage/plugin-kubernetes-node@0.3.7-next.1
+  - @backstage/plugin-permission-common@0.9.3
+
 ## 0.20.5-next.1
 
 ### Patch Changes

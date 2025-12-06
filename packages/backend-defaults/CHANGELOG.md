@@ -1,5 +1,29 @@
 # @backstage/backend-defaults
 
+## 0.14.0-next.1
+
+### Patch Changes
+
+- de96a60: chore(deps): bump `express` from 4.21.2 to 4.22.0
+- aa79251: build(deps): bump `node-forge` from 1.3.1 to 1.3.2
+- fb029b6: Updated luxon types
+- 847a330: Fix for `jose` types
+- 25b560e: Internal change to support new versions of the `logform` library
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.10-next.1
+  - @backstage/plugin-events-node@0.4.18-next.1
+  - @backstage/plugin-permission-node@0.10.7-next.1
+  - @backstage/integration@1.18.3-next.1
+  - @backstage/config-loader@1.10.7-next.1
+  - @backstage/backend-app-api@1.4.0-next.0
+  - @backstage/backend-dev-utils@0.1.5
+  - @backstage/backend-plugin-api@1.5.1-next.0
+  - @backstage/cli-node@0.2.16-next.1
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/integration-aws-node@0.1.19
+  - @backstage/types@1.2.2
+
 ## 0.14.0-next.0
 
 ### Minor Changes

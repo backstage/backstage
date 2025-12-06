@@ -1,5 +1,24 @@
 # @backstage/plugin-scaffolder-react
 
+## 1.19.4-next.2
+
+### Patch Changes
+
+- fb029b6: Updated luxon types
+- 9b38f22: Updated dependency `use-immer` to `^0.11.0`.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.2-next.1
+  - @backstage/catalog-client@1.12.1
+  - @backstage/catalog-model@1.7.6
+  - @backstage/core-components@0.18.4-next.1
+  - @backstage/core-plugin-api@1.12.1-next.0
+  - @backstage/theme@0.7.1-next.0
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-catalog-react@1.21.4-next.1
+  - @backstage/plugin-permission-react@0.4.39-next.0
+  - @backstage/plugin-scaffolder-common@1.7.4-next.0
+
 ## 1.19.4-next.1
 
 ### Patch Changes

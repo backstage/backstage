@@ -1,5 +1,17 @@
 # @backstage/frontend-plugin-api
 
+## 0.13.2-next.1
+
+### Patch Changes
+
+- f3f84f1: Made the return type of `.withOverrides` to be simplified.
+- Updated dependencies
+  - @backstage/config@1.3.6
+  - @backstage/core-components@0.18.4-next.1
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.11
+
 ## 0.13.2-next.0
 
 ### Patch Changes

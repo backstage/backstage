@@ -1,5 +1,18 @@
 # @backstage/plugin-mcp-actions-backend
 
+## 0.1.6-next.1
+
+### Patch Changes
+
+- de96a60: chore(deps): bump `express` from 4.21.2 to 4.22.0
+- Updated dependencies
+  - @backstage/backend-defaults@0.14.0-next.1
+  - @backstage/backend-plugin-api@1.5.1-next.0
+  - @backstage/catalog-client@1.12.1
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-catalog-node@1.20.1-next.0
+
 ## 0.1.6-next.0
 
 ### Patch Changes
