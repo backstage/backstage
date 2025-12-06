@@ -52,7 +52,7 @@ import {
   bulkStorageOperation,
   getCloudPathForLocalPath,
   getFileTreeRecursively,
-  getHeadersForFileExtension,
+  getHeadersForFilename,
   getStaleFiles,
   isValidContentPath,
   lowerCaseEntityTriplet,
@@ -670,8 +670,7 @@ export class AwsS3Publish implements PublisherBase {
       }
 
       // Files with different extensions (CSS, HTML) need to be served with different headers
-      const fileExtension = path.extname(filePath);
-      const responseHeaders = getHeadersForFileExtension(fileExtension);
+      const responseHeaders = getHeadersForFilename(filePath);
 
       try {
         const resp = await this.storageClient.send(
