@@ -34,6 +34,19 @@ Lists the configuration being used by your current running Backstage instance.
 
 ![Example of Config tab](./docs/devtools-config-tab.png)
 
+### Scheduled Tasks
+
+Scheduled tasks can be viewed and triggered under the `Scheduled Tasks` tab. You first must add the list of plugins for scheduled tasks to your config:
+
+```yaml
+devTools:
+  scheduledTasks:
+    plugins:
+      - catalog
+```
+
+![Example of Scheduled Tasks tab](./docs/devtools-scheduled-tasks-tab.png)
+
 ## Optional Features
 
 The DevTools plugin can be setup with other tabs with additional helpful features.

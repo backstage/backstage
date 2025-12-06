@@ -311,3 +311,8 @@ auth:
 
 permission:
   enabled: true
+
+devTools:
+  scheduledTasks:
+    plugins:
+      - catalog

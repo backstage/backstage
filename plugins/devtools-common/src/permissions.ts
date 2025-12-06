@@ -49,6 +49,22 @@ export const devToolsExternalDependenciesReadPermission = createPermission({
 });
 
 /**
+ * @public
+ */
+export const devToolsTaskSchedulerReadPermission = createPermission({
+  name: 'devtools.task-scheduler',
+  attributes: { action: 'read' },
+});
+
+/**
+ * @public
+ */
+export const devToolsTaskSchedulerCreatePermission = createPermission({
+  name: 'devtools.task-scheduler',
+  attributes: { action: 'create' },
+});
+
+/**
  * List of all Devtools permissions
  *
  * @public
@@ -58,4 +74,6 @@ export const devToolsPermissions = [
   devToolsInfoReadPermission,
   devToolsConfigReadPermission,
   devToolsExternalDependenciesReadPermission,
+  devToolsTaskSchedulerReadPermission,
+  devToolsTaskSchedulerCreatePermission,
 ];

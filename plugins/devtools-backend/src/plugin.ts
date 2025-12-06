@@ -37,6 +37,7 @@ export const devtoolsPlugin = createBackendPlugin({
         httpRouter: coreServices.httpRouter,
         discovery: coreServices.discovery,
         httpAuth: coreServices.httpAuth,
+        auth: coreServices.auth,
         permissionsRegistry: coreServices.permissionsRegistry,
       },
       async init({

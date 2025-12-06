@@ -9,16 +9,29 @@ import { ConfigInfo } from '@backstage/plugin-devtools-common';
 import { DevToolsInfo } from '@backstage/plugin-devtools-common';
 import { ExternalDependency } from '@backstage/plugin-devtools-common';
 import { LoggerService } from '@backstage/backend-plugin-api';
+import { ScheduledTasks } from '@backstage/plugin-devtools-common';
+import { TriggerScheduledTask } from '@backstage/plugin-devtools-common';
 
 // @public (undocumented)
 export class DevToolsBackendApi {
   constructor(logger: LoggerService, config: Config);
+  // (undocumented)
+  getScheduledTasksByPlugin(
+    plugin: string,
+    token: string,
+  ): Promise<ScheduledTasks>;
   // (undocumented)
   listConfig(): Promise<ConfigInfo>;
   // (undocumented)
   listExternalDependencyDetails(): Promise<ExternalDependency[]>;
   // (undocumented)
   listInfo(): Promise<DevToolsInfo>;
+  // (undocumented)
+  triggerScheduledTask(
+    plugin: string,
+    taskId: string,
+    token: string,
+  ): Promise<TriggerScheduledTask>;
 }
 
 // @public

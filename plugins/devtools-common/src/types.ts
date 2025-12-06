@@ -17,6 +17,7 @@
 /* eslint-disable @typescript-eslint/no-redeclare */
 
 import { JsonValue } from '@backstage/types';
+import { TaskApiTasksResponse } from '@backstage/backend-defaults/scheduler';
 
 /** @public */
 export type Endpoint = {
@@ -81,4 +82,15 @@ export type ConfigError = {
   message: string;
   messages?: string[];
   stack?: string;
+};
+
+/** @public */
+export type ScheduledTasks = {
+  scheduledTasks?: TaskApiTasksResponse[];
+  error?: string;
+};
+
+/** @public */
+export type TriggerScheduledTask = {
+  error?: string;
 };

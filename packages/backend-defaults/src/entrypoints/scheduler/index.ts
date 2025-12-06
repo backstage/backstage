@@ -16,3 +16,4 @@
 
 export { DefaultSchedulerService } from './lib/DefaultSchedulerService';
 export { schedulerServiceFactory } from './schedulerServiceFactory';
+export * from './lib/types';

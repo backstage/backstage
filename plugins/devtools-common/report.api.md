@@ -4,6 +4,7 @@
 
 ```ts
 import { BasicPermission } from '@backstage/plugin-permission-common';
+import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 
 // @public (undocumented)
@@ -45,6 +46,12 @@ export const devToolsInfoReadPermission: BasicPermission;
 export const devToolsPermissions: BasicPermission[];
 
 // @public (undocumented)
+export const devToolsTaskSchedulerCreatePermission: BasicPermission;
+
+// @public (undocumented)
+export const devToolsTaskSchedulerReadPermission: BasicPermission;
+
+// @public (undocumented)
 export type Endpoint = {
   name: string;
   type: string;
@@ -82,5 +89,52 @@ export namespace ExternalDependencyStatus {
 export type PackageDependency = {
   name: string;
   versions: string;
+};
+
+// @public (undocumented)
+export type ScheduledTasks = {
+  scheduledTasks?: TaskApiTasksResponse[];
+  error?: string;
+};
+
+// @public (undocumented)
+export type TaskApiTasksResponse = {
+  taskId: string;
+  pluginId: string;
+  scope: 'global' | 'local';
+  settings: {
+    version: number;
+  } & JsonObject;
+  taskState:
+    | {
+        status: 'running';
+        startedAt: string;
+        timesOutAt?: string;
+        lastRunError?: string;
+        lastRunEndedAt?: string;
+      }
+    | {
+        status: 'idle';
+        startsAt?: string;
+        lastRunError?: string;
+        lastRunEndedAt?: string;
+      }
+    | null;
+  workerState:
+    | {
+        status: 'initial-wait';
+      }
+    | {
+        status: 'idle';
+      }
+    | {
+        status: 'running';
+      }
+    | null;
+};
+
+// @public (undocumented)
+export type TriggerScheduledTask = {
+  error?: string;
 };
 ```
