@@ -497,9 +497,13 @@ describe('NotificationsEmailProcessor', () => {
       text: 'https://example.org/notifications',
       to: 'mock@backstage.io',
       ses: {
-        SourceArn: 'arn:aws:ses:us-west-2:123456789012:identity/example.com',
-        FromArn: 'arn:aws:ses:us-west-2:123456789012:identity/example.com',
+        FromEmailAddressIdentityArn:
+          'arn:aws:ses:us-west-2:123456789012:identity/example.com',
       },
     });
+
+    expect(logger.warn).toHaveBeenCalledWith(
+      'sourceArn is not supported in SESv2 and will be ignored',
+    );
   });
 });
