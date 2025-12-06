@@ -86,6 +86,9 @@ jobs:
 
       - run: yarn tsc
       - run: yarn backstage-cli repo build
+        # For now BUI has a custom build script and needs to be built separately
+      - name: build BUI
+        run: yarn --cwd packages/ui build
       - name: run E2E test
         run: yarn e2e-test run
         env:

@@ -40,6 +40,7 @@ import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { CatalogTableColumnsFunc } from '../CatalogTable/types';
 import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common/alpha';
 import { usePermission } from '@backstage/plugin-permission-react';
+import { Flex } from '@backstage/ui';
 
 /** @internal */
 export type BaseCatalogPageProps = {
@@ -62,14 +63,16 @@ export function BaseCatalogPage(props: BaseCatalogPageProps) {
   return (
     <PageWithHeader title={t('indexPage.title', { orgName })} themeId="home">
       <Content>
-        <ContentHeader title="">
-          {allowed && (
-            <CreateButton
-              title={t('indexPage.createButtonTitle')}
-              to={createComponentLink && createComponentLink()}
-            />
-          )}
-          <SupportButton>{t('indexPage.supportButtonContent')}</SupportButton>
+        <ContentHeader>
+          <Flex gap="1">
+            {allowed && (
+              <CreateButton
+                title={t('indexPage.createButtonTitle')}
+                to={createComponentLink && createComponentLink()}
+              />
+            )}
+            <SupportButton>{t('indexPage.supportButtonContent')}</SupportButton>
+          </Flex>
         </ContentHeader>
         <EntityListProvider pagination={pagination}>
           <CatalogFilterLayout>
