@@ -55,8 +55,19 @@ export default {
         label: 'Using Backstage',
         items: [
           'getting-started/logging-in',
-          'getting-started/register-a-component',
-          'getting-started/create-a-component',
+          'getting-started/viewing-catalog.md',
+          'getting-started/view-what-you-own.md',
+          'getting-started/viewing-entity-relationships.md',
+          {
+            type: 'category',
+            label: 'Managing Components',
+            items: [
+              'getting-started/register-a-component',
+              'getting-started/create-a-component',
+              'getting-started/update-a-component',
+            ],
+          },
+          'getting-started/search-catalog',
         ],
       },
       'overview/support',
