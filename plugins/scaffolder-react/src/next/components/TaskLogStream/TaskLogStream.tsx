@@ -15,6 +15,7 @@
  */
 import { LogViewer } from '@backstage/core-components';
 import { makeStyles } from '@material-ui/core/styles';
+import { useCallback } from 'react';
 
 const useStyles = makeStyles({
   root: {
@@ -32,9 +33,31 @@ const useStyles = makeStyles({
  */
 export const TaskLogStream = (props: { logs: { [k: string]: string[] } }) => {
   const styles = useStyles();
+
+  const downaloadLogs = useCallback(() => {
+    const element = document.createElement('a');
+    const taskId = window.location.href.split('/').pop();
+    const file = new Blob(
+      [
+        Object.values(props.logs)
+          .map(l => l.join('\n'))
+          .filter(Boolean)
+          .join('\n'),
+      ],
+      { type: 'text/plain' },
+    );
+    element.href = URL.createObjectURL(file);
+    element.download = `${taskId}.log`;
+    element.click();
+    URL.revokeObjectURL(element.href);
+    element.remove();
+  }, [props.logs]);
+
   return (
     <div className={styles.root}>
       <LogViewer
+        showDownloadButton
+        onDownloadLog={downaloadLogs}
         text={Object.values(props.logs)
           .map(l => l.join('\n'))
           .filter(Boolean)
