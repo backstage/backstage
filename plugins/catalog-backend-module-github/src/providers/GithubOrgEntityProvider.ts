@@ -565,7 +565,13 @@ export class GithubOrgEntityProvider implements EntityProvider {
 
     const userTransformer =
       this.options.userTransformer || defaultUserTransformer;
-    const { name, avatar_url: avatarUrl, email, login } = event.membership.user;
+    const {
+      name,
+      avatar_url: avatarUrl,
+      email,
+      login,
+      node_id,
+    } = event.membership.user;
     const org = event.organization.login;
     const { headers } = await this.credentialsProvider.getCredentials({
       url: this.options.orgUrl,
@@ -581,6 +587,7 @@ export class GithubOrgEntityProvider implements EntityProvider {
         avatarUrl,
         login,
         email: email || undefined,
+        id: node_id,
         // we don't have this information in the event, so the refresh will handle that for us
         organizationVerifiedDomainEmails: [],
       },

@@ -20,10 +20,22 @@ export const githubAuthenticator: OAuthAuthenticator<
   PassportProfile
 >;
 
+// @public (undocumented)
+export type GitHubProfile = PassportProfile & {
+  nodeId?: string;
+};
+
 // @public
 export namespace githubSignInResolvers {
   const usernameMatchingUserEntityName: SignInResolverFactory<
     OAuthAuthenticatorResult<PassportProfile>,
+    | {
+        dangerouslyAllowSignInWithoutUserInCatalog?: boolean | undefined;
+      }
+    | undefined
+  >;
+  const userIdMatchingUserEntityAnnotation: SignInResolverFactory<
+    OAuthAuthenticatorResult<GitHubProfile>,
     | {
         dangerouslyAllowSignInWithoutUserInCatalog?: boolean | undefined;
       }

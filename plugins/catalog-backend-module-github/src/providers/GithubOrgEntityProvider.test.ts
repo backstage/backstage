@@ -89,6 +89,7 @@ describe('GithubOrgEntityProvider', () => {
               nodes: [
                 {
                   login: 'a',
+                  id: 'f',
                   name: 'b',
                   bio: 'c',
                   email: 'd',
@@ -136,6 +137,7 @@ describe('GithubOrgEntityProvider', () => {
                   'backstage.io/managed-by-origin-location':
                     'url:https://https://github.com/a',
                   'github.com/user-login': 'a',
+                  'github.com/user-id': 'f',
                 },
                 description: 'c',
                 name: 'a',
@@ -311,6 +313,7 @@ describe('GithubOrgEntityProvider', () => {
             'backstage.io/managed-by-origin-location':
               'url:https://github.com/githubuser',
             'github.com/user-login': 'githubuser',
+            'github.com/user-id': 'githubuserId',
           },
         },
         spec: {
@@ -331,6 +334,7 @@ describe('GithubOrgEntityProvider', () => {
             user: {
               name: 'githubuser',
               login: 'githubuser',
+              node_id: 'githubuserId',
               avatar_url: 'https://avatars.githubusercontent.com/u/83820368',
               email: 'user1@test.com',
             },
@@ -398,6 +402,7 @@ describe('GithubOrgEntityProvider', () => {
             'backstage.io/managed-by-origin-location':
               'url:https://github.com/githubuser',
             'github.com/user-login': 'githubuser',
+            'github.com/user-id': 'githubuserId',
           },
         },
         spec: {
@@ -418,6 +423,7 @@ describe('GithubOrgEntityProvider', () => {
             user: {
               name: 'githubuser',
               login: 'githubuser',
+              node_id: 'githubuserId',
               avatar_url: 'https://avatars.githubusercontent.com/u/83820368',
               email: 'user1@test.com',
             },
@@ -778,6 +784,7 @@ describe('GithubOrgEntityProvider', () => {
               nodes: [
                 {
                   login: 'a',
+                  id: 'f',
                   name: 'b',
                   bio: 'c',
                   email: 'd',
@@ -785,6 +792,7 @@ describe('GithubOrgEntityProvider', () => {
                 },
                 {
                   login: 'githubuser',
+                  id: 'githubuserId',
                   name: 'githubuser',
                   bio: 'githubuser',
                   email: 'd',
@@ -865,6 +873,7 @@ describe('GithubOrgEntityProvider', () => {
                   'backstage.io/managed-by-origin-location':
                     'url:https://github.com/a',
                   'github.com/user-login': 'a',
+                  'github.com/user-id': 'f',
                 },
                 name: 'a',
                 description: 'c',
@@ -891,6 +900,7 @@ describe('GithubOrgEntityProvider', () => {
                   'backstage.io/managed-by-origin-location':
                     'url:https://github.com/githubuser',
                   'github.com/user-login': 'githubuser',
+                  'github.com/user-id': 'githubuserId',
                 },
                 name: 'githubuser',
                 description: 'githubuser',
@@ -1029,6 +1039,7 @@ describe('GithubOrgEntityProvider', () => {
               nodes: [
                 {
                   login: 'a',
+                  id: 'f',
                   name: 'b',
                   bio: 'c',
                   email: 'd',
@@ -1036,6 +1047,7 @@ describe('GithubOrgEntityProvider', () => {
                 },
                 {
                   login: 'githubuser',
+                  id: 'githubuserId',
                   name: 'githubuser',
                   bio: 'githubuser',
                   email: 'd',
@@ -1112,6 +1124,7 @@ describe('GithubOrgEntityProvider', () => {
                   'backstage.io/managed-by-origin-location':
                     'url:https://github.com/githubuser',
                   'github.com/user-login': 'githubuser',
+                  'github.com/user-id': 'githubuserId',
                 },
                 name: 'githubuser',
                 description: 'githubuser',
@@ -1168,6 +1181,7 @@ describe('GithubOrgEntityProvider', () => {
                   'backstage.io/managed-by-origin-location':
                     'url:https://github.com/githubuser',
                   'github.com/user-login': 'githubuser',
+                  'github.com/user-id': 'githubuserId',
                 },
                 name: 'githubuser',
                 description: 'githubuser',
@@ -1277,6 +1291,7 @@ describe('GithubOrgEntityProvider', () => {
               nodes: [
                 {
                   login: 'githubuser',
+                  id: 'githubuserId',
                   name: 'githubuser',
                   bio: 'githubuser',
                   email: 'd',
@@ -1336,6 +1351,7 @@ describe('GithubOrgEntityProvider', () => {
                   'backstage.io/managed-by-origin-location':
                     'url:https://github.com/githubuser',
                   'github.com/user-login': 'githubuser',
+                  'github.com/user-id': 'githubuserId',
                 },
                 name: 'githubuser',
                 description: 'githubuser',
@@ -1392,6 +1408,7 @@ describe('GithubOrgEntityProvider', () => {
                   'backstage.io/managed-by-origin-location':
                     'url:https://github.com/githubuser',
                   'github.com/user-login': 'githubuser',
+                  'github.com/user-id': 'githubuserId',
                 },
                 name: 'githubuser',
                 description: 'githubuser',

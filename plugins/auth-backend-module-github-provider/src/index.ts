@@ -22,4 +22,4 @@
 
 export { githubAuthenticator } from './authenticator';
 export { authModuleGithubProvider as default } from './module';
-export { githubSignInResolvers } from './resolvers';
+export { githubSignInResolvers, type GitHubProfile } from './resolvers';
