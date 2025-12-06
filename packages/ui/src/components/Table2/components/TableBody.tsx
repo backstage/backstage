@@ -14,6 +14,23 @@
  * limitations under the License.
  */
 
-export { TablePagination } from './TablePagination';
-export type { TablePaginationProps } from './types';
-export { TablePaginationDefinition } from './definition';
+import {
+  TableBody as ReactAriaTableBody,
+  type TableBodyProps,
+} from 'react-aria-components';
+import { useStyles } from '../../../hooks/useStyles';
+import { TableDefinition } from '../definition';
+import styles from '../Table.module.css';
+import clsx from 'clsx';
+
+/** @public */
+export const TableBody = <T extends object>(props: TableBodyProps<T>) => {
+  const { classNames, cleanedProps } = useStyles(TableDefinition, props);
+
+  return (
+    <ReactAriaTableBody
+      className={clsx(classNames.body, styles[classNames.body])}
+      {...cleanedProps}
+    />
+  );
+};

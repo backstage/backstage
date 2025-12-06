@@ -13,6 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+import {
+  CellProps as ReactAriaCellProps,
+  ColumnProps as AriaColumnProps,
+} from 'react-aria-components';
+import type { TextColors } from '../../types';
+
 export interface TableColumnDefinition {
   id: string;
   name: string;
@@ -74,4 +81,29 @@ export interface TableProps {
     | OffsetPaginationConfig
     | CursorPaginationConfig
     | ClientSidePaginationConfig;
+}
+
+/** @public */
+export interface CellProps extends ReactAriaCellProps {}
+
+/** @public */
+export interface CellTextProps extends ReactAriaCellProps {
+  title: string;
+  description?: string;
+  color?: TextColors;
+  leadingIcon?: React.ReactNode | null;
+  href?: string;
+}
+
+/** @public */
+export interface CellProfileProps extends ReactAriaCellProps {
+  src?: string;
+  name?: string;
+  href?: string;
+  description?: string;
+  color?: TextColors;
+}
+
+export interface ColumnProps extends Omit<AriaColumnProps, 'children'> {
+  children?: React.ReactNode;
 }
