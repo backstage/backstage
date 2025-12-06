@@ -26,6 +26,7 @@ export default async (opts: OptionValues) => {
     fromPackage: opts.package,
     mockEnv: opts.lax,
     fullVisibility: !opts.frontend,
+    schemaPath: opts.schemaPath,
   });
   const visibility = getVisibilityOption(opts);
   const data = serializeConfigData(appConfigs, schema, visibility);
