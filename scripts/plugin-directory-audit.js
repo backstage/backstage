@@ -50,7 +50,7 @@ async function main() {
     );
 
     console.log(
-      `Auditing - ${pluginDataYaml.title} - ${pluginDataYaml.npmPackageName}`,
+      `Auditing - ${pluginDataYaml.title} by ${pluginDataYaml.author} - ${pluginDataYaml.npmPackageName}`,
     );
 
     const npmPackage = await getNpmPackage(pluginDataYaml.npmPackageName);
