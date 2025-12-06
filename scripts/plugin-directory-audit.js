@@ -1,5 +1,4 @@
 #!/usr/bin/env node
-/* eslint-disable @backstage/no-undeclared-imports */
 /*
  * Copyright 2025 The Backstage Authors
  *
@@ -16,6 +15,8 @@
  * limitations under the License.
  */
 
+/* eslint-disable @backstage/no-undeclared-imports */
+
 // This script is used to audit the list of plugins in the Plugin Directory: https://backstage.io/plugins
 
 // Read all the plugin YAML files in microsite/data/plugins
@@ -30,23 +31,49 @@ const { resolve } = require('path');
 const fs = require('fs-extra');
 const yaml = require('js-yaml');
 
-const __dirname = url.fileURLToPath(new URL('.', import.meta.url));
+async function getNpmPackage(npmPackageName) {
+  const response = await fetch(`https://registry.npmjs.com/${npmPackageName}`);
+  const json = await response.json();
+  return json;
+}
+
+function getAge(npmModified) {
+  const ageDif = Date.now() - new Date(npmModified).getTime();
+  return Math.round(ageDif / (1000 * 60 * 60 * 24));
+}
 
 async function main() {
   const rootPath = resolve(__dirname, '..');
   const pluginDataPath = resolve(rootPath, 'microsite/data/plugins');
 
+  console.log(__dirname, rootPath, pluginDataPath);
+
   const pluginDataFiles = fs.readdirSync(pluginDataPath);
 
-  const pluginData = [];
+  const pluginsData = [];
   for (const pluginDataFile of pluginDataFiles) {
+    const pluginDataFilePath = resolve(pluginDataPath, pluginDataFile);
     const pluginDataYaml = yaml.load(
-      fs.readFileSync(pluginDataFile, { encoding: 'utf-8' }),
+      fs.readFileSync(pluginDataFilePath, { encoding: 'utf-8' }),
     );
-    pluginData.push(pluginDataYaml);
+
+    console.log(
+      `Auditing - ${pluginDataYaml.title} - ${pluginDataYaml.npmPackageName}`,
+    );
+
+    const npmPackage = await getNpmPackage(pluginDataYaml.npmPackageName);
+
+    const pluginData = {
+      npmPackageName: pluginDataYaml.npmPackageName,
+      npmCreated: npmPackage.time?.created,
+      npmModified: npmPackage.time?.modified,
+      age: getAge(npmPackage.time?.modified),
+    };
+
+    pluginsData.push(pluginData);
   }
 
-  console.table(pluginData);
+  console.table(pluginsData);
 }
 
 main(process.argv.slice(2)).catch(error => {
