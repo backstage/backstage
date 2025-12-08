@@ -55,9 +55,9 @@ export default {
         label: 'Using Backstage',
         items: [
           'getting-started/logging-in',
-          'getting-started/viewing-catalog.md',
-          'getting-started/view-what-you-own.md',
-          'getting-started/viewing-entity-relationships.md',
+          'getting-started/viewing-catalog',
+          'getting-started/view-what-you-own',
+          'getting-started/viewing-entity-relationships',
           {
             type: 'category',
             label: 'Managing Components',
