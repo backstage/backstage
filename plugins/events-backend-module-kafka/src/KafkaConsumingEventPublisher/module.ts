@@ -17,11 +17,11 @@ import {
   coreServices,
   createBackendModule,
 } from '@backstage/backend-plugin-api';
-import { KafkaConsumerClient } from '../publisher/KafkaConsumerClient';
 import { eventsServiceRef } from '@backstage/plugin-events-node';
+import { KafkaConsumingEventPublisher } from './KafkaConsumingEventPublisher';
 
 /**
- * Kafka module for the Events plugin.
+ * Reads messages off of Kafka topics and forwards them into the Backstage events system.
  *
  * @public
  */
@@ -34,22 +34,22 @@ export const eventsModuleKafkaConsumingEventPublisher = createBackendModule({
         config: coreServices.rootConfig,
         events: eventsServiceRef,
         logger: coreServices.logger,
-        lifecycle: coreServices.lifecycle,
+        lifecycle: coreServices.rootLifecycle,
       },
       async init({ config, logger, events, lifecycle }) {
-        const kafka = KafkaConsumerClient.fromConfig({
+        const consumers = KafkaConsumingEventPublisher.fromConfig({
           config,
           events,
           logger,
         });
 
-        if (!kafka) {
-          return;
-        }
+        lifecycle.addStartupHook(async () => {
+          await Promise.all(consumers.map(consumer => consumer.start()));
+        });
 
-        await kafka.start();
-
-        lifecycle.addShutdownHook(async () => await kafka.shutdown());
+        lifecycle.addShutdownHook(async () => {
+          await Promise.all(consumers.map(consumer => consumer.shutdown()));
+        });
       },
     });
   },
