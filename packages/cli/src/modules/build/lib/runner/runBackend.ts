@@ -52,14 +52,6 @@ export async function runBackend(options: RunBackendOptions) {
     envEnv.NODE_ENV = 'development';
   }
 
-  // Unless the user explicitly toggles node-snapshot, default to provide --no-node-snapshot to reduce number of steps to run scaffolder
-  //  on Node LTS.
-  if (!envEnv.NODE_OPTIONS?.includes('--node-snapshot')) {
-    envEnv.NODE_OPTIONS =
-      (envEnv.NODE_OPTIONS ? envEnv.NODE_OPTIONS + ' ' : '') +
-      '--no-node-snapshot';
-  }
-
   // Set up the parent IPC server and bind the available services
   const server = new IpcServer();
   ServerDataStore.bind(server);
@@ -121,6 +113,12 @@ export async function runBackend(options: RunBackendOptions) {
       for (const r of requires) {
         optionArgs.push(`--require=${r}`);
       }
+    }
+
+    // Unless the user explicitly toggles node-snapshot, default to provide --no-node-snapshot to reduce number of steps to run scaffolder
+    //  on Node LTS.
+    if (!envEnv.NODE_OPTIONS?.includes('--node-snapshot')) {
+      optionArgs.push('--no-node-snapshot');
     }
 
     const userArgs = process.argv

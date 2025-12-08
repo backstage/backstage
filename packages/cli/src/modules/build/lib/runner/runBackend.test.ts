@@ -15,6 +15,7 @@
  */
 
 import { runBackend } from './runBackend';
+import spawn from 'cross-spawn';
 
 // Mock external dependencies
 jest.mock('chokidar', () => ({
@@ -51,8 +52,12 @@ jest.mock('ctrlc-windows', () => ({
 describe('runBackend', () => {
   let originalEnv: NodeJS.ProcessEnv;
   let originalPlatform: string;
+  const mockSpawn = spawn as jest.MockedFunction<typeof spawn>;
 
   beforeEach(() => {
+    // Use fake timers to control debounce
+    jest.useFakeTimers();
+
     // Save original environment
     originalEnv = { ...process.env };
     originalPlatform = process.platform;
@@ -76,44 +81,56 @@ describe('runBackend', () => {
     });
 
     jest.clearAllMocks();
+    jest.useRealTimers();
   });
 
-  describe('NODE_OPTIONS environment variable', () => {
-    it('should add --no-node-snapshot when NODE_OPTIONS is not set', async () => {
+  describe('--no-node-snapshot argument handling', () => {
+    it('should pass --no-node-snapshot when NODE_OPTIONS is not set', () => {
       delete process.env.NODE_OPTIONS;
 
       runBackend({
         entry: 'src/index',
       });
 
-      expect(process.env.NODE_OPTIONS).toBe('--no-node-snapshot');
+      // Fast-forward past the debounce delay (100ms)
+      jest.advanceTimersByTime(100);
+
+      expect(mockSpawn).toHaveBeenCalled();
+      const spawnArgs = mockSpawn.mock.calls[0][1] as string[];
+      expect(spawnArgs).toContain('--no-node-snapshot');
     });
 
-    it('should append --no-node-snapshot when NODE_OPTIONS exists without it', async () => {
+    it('should pass --no-node-snapshot when NODE_OPTIONS exists without --node-snapshot', () => {
       process.env.NODE_OPTIONS = '--max-old-space-size=4096';
 
       runBackend({
         entry: 'src/index',
       });
 
-      expect(process.env.NODE_OPTIONS).toBe(
-        '--max-old-space-size=4096 --no-node-snapshot',
-      );
+      // Fast-forward past the debounce delay (100ms)
+      jest.advanceTimersByTime(100);
+
+      expect(mockSpawn).toHaveBeenCalled();
+      const spawnArgs = mockSpawn.mock.calls[0][1] as string[];
+      expect(spawnArgs).toContain('--no-node-snapshot');
     });
 
-    it('should not add --no-node-snapshot when --node-snapshot already exists', async () => {
+    it('should not pass --no-node-snapshot when --node-snapshot already exists in NODE_OPTIONS', () => {
       process.env.NODE_OPTIONS = '--node-snapshot --max-old-space-size=4096';
 
       runBackend({
         entry: 'src/index',
       });
 
-      expect(process.env.NODE_OPTIONS).toBe(
-        '--node-snapshot --max-old-space-size=4096',
-      );
+      // Fast-forward past the debounce delay (100ms)
+      jest.advanceTimersByTime(100);
+
+      expect(mockSpawn).toHaveBeenCalled();
+      const spawnArgs = mockSpawn.mock.calls[0][1] as string[];
+      expect(spawnArgs).not.toContain('--no-node-snapshot');
     });
 
-    it('should not add --no-node-snapshot when --node-snapshot exists in the middle of NODE_OPTIONS', async () => {
+    it('should not pass --no-node-snapshot when --node-snapshot exists in the middle of NODE_OPTIONS', () => {
       process.env.NODE_OPTIONS =
         '--max-old-space-size=4096 --node-snapshot --inspect';
 
@@ -121,26 +138,49 @@ describe('runBackend', () => {
         entry: 'src/index',
       });
 
-      expect(process.env.NODE_OPTIONS).toBe(
-        '--max-old-space-size=4096 --node-snapshot --inspect',
-      );
+      // Fast-forward past the debounce delay (100ms)
+      jest.advanceTimersByTime(100);
+
+      expect(mockSpawn).toHaveBeenCalled();
+      const spawnArgs = mockSpawn.mock.calls[0][1] as string[];
+      expect(spawnArgs).not.toContain('--no-node-snapshot');
     });
 
-    it('should handle NODE_OPTIONS with trailing spaces', async () => {
+    it('should pass --no-node-snapshot even with trailing spaces in NODE_OPTIONS', () => {
       process.env.NODE_OPTIONS = '--max-old-space-size=4096 ';
 
       runBackend({
         entry: 'src/index',
       });
 
-      expect(process.env.NODE_OPTIONS).toBe(
-        '--max-old-space-size=4096  --no-node-snapshot',
-      );
+      // Fast-forward past the debounce delay (100ms)
+      jest.advanceTimersByTime(100);
+
+      expect(mockSpawn).toHaveBeenCalled();
+      const spawnArgs = mockSpawn.mock.calls[0][1] as string[];
+      expect(spawnArgs).toContain('--no-node-snapshot');
+    });
+
+    it('should pass --no-node-snapshot alongside other option args like --inspect', () => {
+      delete process.env.NODE_OPTIONS;
+
+      runBackend({
+        entry: 'src/index',
+        inspectEnabled: true,
+      });
+
+      // Fast-forward past the debounce delay (100ms)
+      jest.advanceTimersByTime(100);
+
+      expect(mockSpawn).toHaveBeenCalled();
+      const spawnArgs = mockSpawn.mock.calls[0][1] as string[];
+      expect(spawnArgs).toContain('--no-node-snapshot');
+      expect(spawnArgs).toContain('--inspect');
     });
   });
 
   describe('NODE_ENV environment variable', () => {
-    it('should set NODE_ENV to development when not set', async () => {
+    it('should set NODE_ENV to development when not set', () => {
       delete process.env.NODE_ENV;
 
       runBackend({
@@ -150,7 +190,7 @@ describe('runBackend', () => {
       expect(process.env.NODE_ENV).toBe('development');
     });
 
-    it('should not override existing NODE_ENV', async () => {
+    it('should not override existing NODE_ENV', () => {
       process.env.NODE_ENV = 'production';
 
       runBackend({
@@ -158,32 +198,6 @@ describe('runBackend', () => {
       });
 
       expect(process.env.NODE_ENV).toBe('production');
-    });
-  });
-
-  describe('combined environment setup', () => {
-    it('should set both NODE_ENV and NODE_OPTIONS when neither is set', async () => {
-      delete process.env.NODE_ENV;
-      delete process.env.NODE_OPTIONS;
-
-      runBackend({
-        entry: 'src/index',
-      });
-
-      expect(process.env.NODE_ENV).toBe('development');
-      expect(process.env.NODE_OPTIONS).toBe('--no-node-snapshot');
-    });
-
-    it('should handle both environment variables independently', async () => {
-      process.env.NODE_ENV = 'test';
-      process.env.NODE_OPTIONS = '--inspect';
-
-      runBackend({
-        entry: 'src/index',
-      });
-
-      expect(process.env.NODE_ENV).toBe('test');
-      expect(process.env.NODE_OPTIONS).toBe('--inspect --no-node-snapshot');
     });
   });
 });
