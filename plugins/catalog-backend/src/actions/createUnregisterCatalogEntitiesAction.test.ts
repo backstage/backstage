@@ -16,6 +16,7 @@
 import { createUnregisterCatalogEntitiesAction } from './createUnregisterCatalogEntitiesAction';
 import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
 import { actionsRegistryServiceMock } from '@backstage/backend-test-utils/alpha';
+import { ForwardedError } from '@backstage/errors';
 
 describe('createUnregisterCatalogEntitiesAction', () => {
   it('should successfully unregister a catalog location with a valid locationId', async () => {
@@ -34,9 +35,7 @@ describe('createUnregisterCatalogEntitiesAction', () => {
       input: { locationId: 'test-location-id-1234' },
     });
 
-    expect(result.output).toEqual({
-      error: undefined,
-    });
+    expect(result.output).toEqual({});
     expect(mockCatalog.removeLocationById).toHaveBeenCalledWith(
       'test-location-id-1234',
       expect.objectContaining({
@@ -45,7 +44,7 @@ describe('createUnregisterCatalogEntitiesAction', () => {
     );
   });
 
-  it('should return an error if locationId is not provided', async () => {
+  it('should throw an error if locationId is not provided', async () => {
     const mockActionsRegistry = actionsRegistryServiceMock();
     const mockCatalog = catalogServiceMock();
 
@@ -54,17 +53,15 @@ describe('createUnregisterCatalogEntitiesAction', () => {
       actionsRegistry: mockActionsRegistry,
     });
 
-    const result = await mockActionsRegistry.invoke({
-      id: 'test:unregister-catalog-entities',
-      input: { locationId: '' },
-    });
-
-    expect(result.output).toEqual({
-      error: 'a location ID must be specified',
-    });
+    await expect(
+      mockActionsRegistry.invoke({
+        id: 'test:unregister-catalog-entities',
+        input: { locationId: '' },
+      }),
+    ).rejects.toThrow('a locationID must be specified');
   });
 
-  it('should return an error if catalog.removeLocationById throws an error', async () => {
+  it('should throw a ForwardedError if catalog.removeLocationById throws an error', async () => {
     const mockActionsRegistry = actionsRegistryServiceMock();
     const mockCatalog = catalogServiceMock();
 
@@ -78,13 +75,11 @@ describe('createUnregisterCatalogEntitiesAction', () => {
       actionsRegistry: mockActionsRegistry,
     });
 
-    const result = await mockActionsRegistry.invoke({
-      id: 'test:unregister-catalog-entities',
-      input: { locationId: 'test-location-id-1234' },
-    });
-
-    expect(result.output).toEqual({
-      error: errorMessage,
-    });
+    await expect(
+      mockActionsRegistry.invoke({
+        id: 'test:unregister-catalog-entities',
+        input: { locationId: 'test-location-id-1234' },
+      }),
+    ).rejects.toThrow(ForwardedError);
   });
 });

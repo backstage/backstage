@@ -15,6 +15,7 @@
  */
 import { ActionsRegistryService } from '@backstage/backend-plugin-api/alpha';
 import { CatalogService } from '@backstage/plugin-catalog-node';
+import { ForwardedError, InputError } from '@backstage/errors';
 
 export const createUnregisterCatalogEntitiesAction = ({
   catalog,
@@ -38,8 +39,6 @@ where you supply the UUID for a Location entity link that allows for the removal
 the various Entities (Components, Systems, Resources, APIs, Users, and Groups) that were also created 
 when the Location was imported.
 
-If an error occurred during processing,  the 'error' field will contain a message describing the error.
-
 Example invocation and the output from the invocation:
   # Register a Location from a GitHub URL
   unregister-catalog-entities locationId: aaa-bbb-ccc-ddd
@@ -54,40 +53,24 @@ Example invocation and the output from the invocation:
               `Location ID returned from the 'register-catalog-entities' call.`,
             ),
         }),
-      output: z =>
-        z.object({
-          error: z
-            .string()
-            .optional()
-            .describe('Error message if creation fails'),
-        }),
+      output: z => z.object({}),
     },
     action: async ({ input, credentials }) => {
       if (!input.locationId || input.locationId === '') {
-        return {
-          output: {
-            error: 'a location ID must be specified',
-          },
-        };
+        throw new InputError('a locationID must be specified');
       }
 
       try {
         await catalog.removeLocationById(input.locationId, {
           credentials,
         });
-
-        return {
-          output: {
-            error: undefined,
-          },
-        };
       } catch (error) {
-        return {
-          output: {
-            error: error.message,
-          },
-        };
+        throw new ForwardedError(
+          `catalog removal of "${input.locationId} failed"`,
+          error,
+        );
       }
+      return { output: {} };
     },
   });
 };

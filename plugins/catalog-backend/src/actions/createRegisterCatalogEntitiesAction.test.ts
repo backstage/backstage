@@ -16,6 +16,7 @@
 import { createRegisterCatalogEntitiesAction } from './createRegisterCatalogEntitiesAction';
 import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
 import { actionsRegistryServiceMock } from '@backstage/backend-test-utils/alpha';
+import { ForwardedError } from '@backstage/errors';
 
 describe('createRegisterCatalogEntitiesAction', () => {
   it('should successfully register a catalog location with a valid URL', async () => {
@@ -48,7 +49,6 @@ describe('createRegisterCatalogEntitiesAction', () => {
 
     expect(result.output).toEqual({
       locationID: mockLocationId,
-      error: undefined,
     });
     expect(mockCatalog.addLocation).toHaveBeenCalledWith(
       {
@@ -61,7 +61,7 @@ describe('createRegisterCatalogEntitiesAction', () => {
     );
   });
 
-  it('should return an error if locationURL is not provided', async () => {
+  it('should throw an error if locationURL is not provided', async () => {
     const mockActionsRegistry = actionsRegistryServiceMock();
     const mockCatalog = catalogServiceMock();
 
@@ -70,17 +70,15 @@ describe('createRegisterCatalogEntitiesAction', () => {
       actionsRegistry: mockActionsRegistry,
     });
 
-    const result = await mockActionsRegistry.invoke({
-      id: 'test:register-catalog-entities',
-      input: { locationURL: '' },
-    });
-
-    expect(result.output).toEqual({
-      error: 'a location URL must be specified',
-    });
+    await expect(
+      mockActionsRegistry.invoke({
+        id: 'test:register-catalog-entities',
+        input: { locationURL: '' },
+      }),
+    ).rejects.toThrow('a location URL must be specified');
   });
 
-  it('should return an error if locationURL is not a valid URL', async () => {
+  it('should throw an error if locationURL is not a valid URL', async () => {
     const mockActionsRegistry = actionsRegistryServiceMock();
     const mockCatalog = catalogServiceMock();
 
@@ -89,17 +87,15 @@ describe('createRegisterCatalogEntitiesAction', () => {
       actionsRegistry: mockActionsRegistry,
     });
 
-    const result = await mockActionsRegistry.invoke({
-      id: 'test:register-catalog-entities',
-      input: { locationURL: 'not-a-valid-url' },
-    });
-
-    expect(result.output).toEqual({
-      error: 'location URL must be a valid URL string',
-    });
+    await expect(
+      mockActionsRegistry.invoke({
+        id: 'test:register-catalog-entities',
+        input: { locationURL: 'not-a-valid-url' },
+      }),
+    ).rejects.toThrow('locationURL "not-a-valid-url" an invalid URL');
   });
 
-  it('should return an error if catalog.addLocation throws an error', async () => {
+  it('should throw a ForwardedError if catalog.addLocation throws an error', async () => {
     const mockActionsRegistry = actionsRegistryServiceMock();
     const mockCatalog = catalogServiceMock();
 
@@ -113,16 +109,14 @@ describe('createRegisterCatalogEntitiesAction', () => {
       actionsRegistry: mockActionsRegistry,
     });
 
-    const result = await mockActionsRegistry.invoke({
-      id: 'test:register-catalog-entities',
-      input: {
-        locationURL:
-          'https://github.com/example/repo/blob/main/catalog-info.yaml',
-      },
-    });
-
-    expect(result.output).toEqual({
-      error: errorMessage,
-    });
+    await expect(
+      mockActionsRegistry.invoke({
+        id: 'test:register-catalog-entities',
+        input: {
+          locationURL:
+            'https://github.com/example/repo/blob/main/catalog-info.yaml',
+        },
+      }),
+    ).rejects.toThrow(ForwardedError);
   });
 });
