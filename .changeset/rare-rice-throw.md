@@ -1,5 +1,5 @@
 ---
-'@backstage/core-components': minor
+'@backstage/core-components': patch
 ---
 
-Add tooltipClasses prop to OverflowTooltip component to allow customisation of the tooltip
+Add `tooltipClasses` prop to `OverflowTooltip` component to allow customisation of the tooltip
