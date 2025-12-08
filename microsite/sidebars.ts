@@ -508,6 +508,7 @@ export default {
               'backend-system/core-services/plugin-metadata',
               'backend-system/core-services/root-config',
               'backend-system/core-services/root-health',
+              'backend-system/core-services/root-instance-metadata',
               'backend-system/core-services/root-http-router',
               'backend-system/core-services/root-lifecycle',
               'backend-system/core-services/root-logger',
