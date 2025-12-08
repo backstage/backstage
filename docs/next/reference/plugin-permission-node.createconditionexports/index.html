@@ -25,7 +25,7 @@
 <script src="/js/medium-zoom.js"></script>
 <script src="/js/dismissable-banner.js"></script>
 <script src="/js/scroll-nav-to-view-in-docs.js"></script><link rel="stylesheet" href="/assets/css/styles.23cb5106.css">
-<script src="/assets/js/runtime~main.a6b68ec4.js" defer="defer"></script>
+<script src="/assets/js/runtime~main.8d350772.js" defer="defer"></script>
 <script src="/assets/js/main.04f4473b.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
@@ -46,7 +46,7 @@
 <p>{ resourceRef: <a href="/docs/next/reference/plugin-permission-node.permissionresourceref">PermissionResourceRef</a>&lt;TResource, any, TResourceType&gt;; rules: TRules; }</p>
 </td><td>
 </td></tr></tbody></table>
-**Returns:**
+<p><strong>Returns:</strong></p>
 <p>{ conditions: <a href="/docs/next/reference/plugin-permission-node.conditions">Conditions</a>&lt;TRules&gt;; createConditionalDecision: (permission: <a href="/docs/next/reference/plugin-permission-common.resourcepermission">ResourcePermission</a>&lt;TResourceType&gt;, conditions: <a href="/docs/next/reference/plugin-permission-common.permissioncriteria">PermissionCriteria</a>&lt;<a href="/docs/next/reference/plugin-permission-common.permissioncondition">PermissionCondition</a>&lt;TResourceType&gt;&gt;) =&gt; <a href="/docs/next/reference/plugin-permission-common.conditionalpolicydecision">ConditionalPolicyDecision</a>; }</p>
 <h2 class="anchor anchorWithStickyNavbar_LWe7" id="remarks">Remarks<a href="#remarks" class="hash-link" aria-label="Direct link to Remarks" title="Direct link to Remarks">​</a></h2>
 <p>The function returns a <code>conditions</code> object containing a <a href="/docs/next/reference/plugin-permission-common.permissioncondition">PermissionCondition</a> factory for each of the supplied <a href="/docs/next/reference/plugin-permission-node.permissionrule">PermissionRule</a>s, along with a <code>createConditionalDecision</code> function which builds the wrapper object needed to enclose conditions when authoring <a href="/docs/next/reference/plugin-permission-node.permissionpolicy">PermissionPolicy</a> implementations.</p>

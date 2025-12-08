@@ -25,7 +25,7 @@
 <script src="/js/medium-zoom.js"></script>
 <script src="/js/dismissable-banner.js"></script>
 <script src="/js/scroll-nav-to-view-in-docs.js"></script><link rel="stylesheet" href="/assets/css/styles.23cb5106.css">
-<script src="/assets/js/runtime~main.a6b68ec4.js" defer="defer"></script>
+<script src="/assets/js/runtime~main.8d350772.js" defer="defer"></script>
 <script src="/assets/js/main.04f4473b.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
@@ -175,7 +175,7 @@ in the <code>engines</code> field in the root <code>package.json</code> of a new
 <li>New Backstage projects created with <code>@backstage/create-app</code> will have their <code>engines.node</code> version set accordingly.</li>
 <li>Dropping compatibility with unsupported releases is not considered a breaking change. This includes using new syntax or APIs, as well as bumping dependencies that drop support for these versions.</li>
 </ul>
-<p>Based on the above Backstage supports Node.js 20 and 22 as of the <code>1.33.0</code> release.</p>
+<p>Based on the above Backstage supports Node.js 22 and 24 as of the <code>1.46.0</code> release.</p>
 <h2 class="anchor anchorWithStickyNavbar_LWe7" id="typescript-releases">TypeScript Releases<a href="#typescript-releases" class="hash-link" aria-label="Direct link to TypeScript Releases" title="Direct link to TypeScript Releases">​</a></h2>
 <p>The Backstage project uses <a href="https://www.typescriptlang.org/" target="_blank" rel="noopener noreferrer">TypeScript</a> for type checking within the project, as well as external APIs and documentation. It is important to have a clear policy for which TypeScript versions we support, since we want to be able to adopt new TypeScript features, but at the same time not break existing projects that are using older versions.</p>
 <p>The TypeScript release cadence is roughly every three months. An important aspect of the TypeScript versioning is that it does not follow semver. In particular, there is no differentiation between major and minor versions, both of them are breaking. One way to think about it is to merge the two, for example version 4.7 can be considered major version 47, 5.0 is 50, and so on. Within these releases there can be a number of patch releases, which do follow semver.</p>
