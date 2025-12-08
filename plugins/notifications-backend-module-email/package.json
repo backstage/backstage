@@ -53,7 +53,7 @@
   "devDependencies": {
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
-    "@types/nodemailer": "^6.4.14"
+    "@types/nodemailer": "^7.0.0"
   },
   "configSchema": "config.d.ts"
 }
