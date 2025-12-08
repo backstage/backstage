@@ -44,7 +44,7 @@
     "@octokit/rest": "^22.0.1",
     "@shikijs/transformers": "^3.13.0",
     "@types/mdx": "^2.0.13",
-    "@types/node": "^20",
+    "@types/node": "^22.13.14",
     "@types/react": "19.1.9",
     "@types/react-dom": "19.1.7",
     "chokidar": "^3.6.0",

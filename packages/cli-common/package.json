@@ -43,6 +43,6 @@
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@types/cross-spawn": "^6.0.2",
-    "@types/node": "^20.16.0"
+    "@types/node": "^22.13.14"
   }
 }
