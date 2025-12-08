@@ -28,13 +28,13 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
-          node-version: 20.x
+          node-version: 22.x
           registry-url: https://registry.npmjs.org/ # Needed for auth
 
       - name: yarn install
         uses: backstage/actions/yarn-install@b3c1841fd69e1658ac631afafd0fb140a2309024 # v0.6.17
         with:
-          cache-prefix: ${{ runner.os }}-v20.x
+          cache-prefix: ${{ runner.os }}-v22.x
 
       - name: Run migration analysis
         id: analysis
@@ -62,7 +62,7 @@ jobs:
                 issue_number: issueNumber,
                 body: reportBody
               });
-              
+
               console.log(`✅ Successfully updated issue #${issueNumber}`);
             } catch (error) {
               console.error(`❌ Error updating issue: ${error.message}`);
