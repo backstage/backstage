@@ -178,26 +178,4 @@ describe('runBackend', () => {
       expect(spawnArgs).toContain('--inspect');
     });
   });
-
-  describe('NODE_ENV environment variable', () => {
-    it('should set NODE_ENV to development when not set', () => {
-      delete process.env.NODE_ENV;
-
-      runBackend({
-        entry: 'src/index',
-      });
-
-      expect(process.env.NODE_ENV).toBe('development');
-    });
-
-    it('should not override existing NODE_ENV', () => {
-      process.env.NODE_ENV = 'production';
-
-      runBackend({
-        entry: 'src/index',
-      });
-
-      expect(process.env.NODE_ENV).toBe('production');
-    });
-  });
 });

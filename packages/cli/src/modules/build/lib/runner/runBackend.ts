@@ -47,7 +47,7 @@ export type RunBackendOptions = {
 };
 
 export async function runBackend(options: RunBackendOptions) {
-  const envEnv = process.env as { NODE_ENV: string };
+  const envEnv = process.env as { NODE_ENV: string; NODE_OPTIONS?: string };
   if (!envEnv.NODE_ENV) {
     envEnv.NODE_ENV = 'development';
   }
