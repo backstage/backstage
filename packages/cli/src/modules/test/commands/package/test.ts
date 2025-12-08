@@ -78,6 +78,14 @@ export default async (_opts: OptionValues, cmd: Command) => {
     process.env.TZ = 'UTC';
   }
 
+  // Unless the user explicitly toggles node-snapshot, default to provide --no-node-snapshot to reduce number of steps to run scaffolder
+  //  on Node LTS.
+  if (!process.env.NODE_OPTIONS?.includes('--node-snapshot')) {
+    process.env.NODE_OPTIONS = `${
+      process.env.NODE_OPTIONS ? `${process.env.NODE_OPTIONS} ` : ''
+    }--no-node-snapshot`;
+  }
+
   // This ensures that the process doesn't exit too early before stdout is flushed
   if (args.includes('--help')) {
     (process.stdout as any)._handle.setBlocking(true);
