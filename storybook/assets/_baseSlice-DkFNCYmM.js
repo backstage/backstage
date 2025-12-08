@@ -1,1 +1,0 @@
-var u,b;function n(){if(b)return u;b=1;function h(c,e,r){var l=-1,i=c.length;e<0&&(e=-e>i?0:i+e),r=r>i?i:r,r<0&&(r+=i),i=e>r?0:r-e>>>0,e>>>=0;for(var f=Array(i);++l<i;)f[l]=c[l+e];return f}return u=h,u}export{n as r};
