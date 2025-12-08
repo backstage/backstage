@@ -55,6 +55,7 @@
     display: flex;
     flex-direction: column;
     outline: none;
+    overflow: clip;
   }
 
   /* Dialog entering animation */
