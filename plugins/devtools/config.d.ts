@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 export interface Config {
-  devTools: {
+  devTools?: {
     /**
      * Scheduled tasks configuration
      * @visibility frontend
      */
-    scheduledTasks: {
+    scheduledTasks?: {
       /**
        * A list of plugin IDs to select from, e.g. ['catalog', 'scaffolder']
        * @visibility frontend
