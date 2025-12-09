@@ -58,6 +58,7 @@ export default {
           'getting-started/viewing-catalog',
           'getting-started/view-what-you-own',
           'getting-started/viewing-entity-relationships',
+          'getting-started/search-catalog',
           {
             type: 'category',
             label: 'Managing Components',
@@ -65,9 +66,10 @@ export default {
               'getting-started/register-a-component',
               'getting-started/create-a-component',
               'getting-started/update-a-component',
+              'getting-started/unregister-delete-component',
             ],
           },
-          'getting-started/search-catalog',
+          
         ],
       },
       'overview/support',
