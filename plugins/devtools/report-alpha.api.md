@@ -6,9 +6,16 @@
 import { AnyApiFactory } from '@backstage/frontend-plugin-api';
 import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
 import { ApiFactory } from '@backstage/frontend-plugin-api';
+import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionBlueprintParams } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
+<<<<<<< HEAD
+import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
+import { ExtensionInput } from '@backstage/frontend-plugin-api';
+import { IconComponent } from '@backstage/core-plugin-api';
+=======
 import { IconComponent } from '@backstage/frontend-plugin-api';
+>>>>>>> master
 import { JSX as JSX_2 } from 'react';
 import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
@@ -58,9 +65,13 @@ const _default: OverridableFrontendPlugin<
         routeRef: RouteRef_2<undefined>;
       };
     }>;
+<<<<<<< HEAD
+    'page:devtools': ExtensionDefinition<{
+=======
     'page:devtools': OverridableExtensionDefinition<{
       kind: 'page';
       name: undefined;
+>>>>>>> master
       config: {
         path: string | undefined;
       };
@@ -77,12 +88,37 @@ const _default: OverridableFrontendPlugin<
               optional: true;
             }
           >;
-      inputs: {};
+      inputs: {
+        contents: ExtensionInput<
+          | ConfigurableExtensionDataRef<string, 'core.title', {}>
+          | ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+          | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
+          | ConfigurableExtensionDataRef<
+              RouteRef<AnyRouteRefParams>,
+              'core.routing.ref',
+              {
+                optional: true;
+              }
+            >,
+          {
+            singleton: false;
+            optional: true;
+          }
+        >;
+      };
+      kind: 'page';
+      name: undefined;
       params: {
         defaultPath?: [Error: `Use the 'path' param instead`];
         path: string;
+<<<<<<< HEAD
+        loader: () => Promise</** @alpha */
+        JSX.Element>;
+        routeRef?: RouteRef;
+=======
         loader: () => Promise<JSX.Element>;
         routeRef?: RouteRef_2;
+>>>>>>> master
       };
     }>;
   }
