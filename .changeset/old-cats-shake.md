@@ -1,5 +1,5 @@
 ---
-'@backstage/backend-defaults': minor
+'@backstage/backend-defaults': patch
 '@backstage/backend-plugin-api': minor
 ---
 
