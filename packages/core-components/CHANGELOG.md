@@ -1,5 +1,17 @@
 # @backstage/core-components
 
+## 0.18.4-next.2
+
+### Patch Changes
+
+- 4c00303: Add `tooltipClasses` prop to `OverflowTooltip` component to allow customisation of the tooltip
+- Updated dependencies
+  - @backstage/config@1.3.6
+  - @backstage/core-plugin-api@1.12.1-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/theme@0.7.1-next.0
+  - @backstage/version-bridge@1.0.11
+
 ## 0.18.4-next.1
 
 ### Patch Changes

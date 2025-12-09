@@ -1,5 +1,19 @@
 # @backstage/repo-tools
 
+## 0.16.1-next.2
+
+### Patch Changes
+
+- 2bae83a: Bump `@microsoft/api-documenter` and `@microsoft/api-extractor` to latest versions.
+- 2bae83a: Bumped dev dependencies `@types/node`
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.0-next.1
+  - @backstage/config-loader@1.10.7-next.1
+  - @backstage/cli-common@0.1.16-next.2
+  - @backstage/catalog-model@1.7.6
+  - @backstage/cli-node@0.2.16-next.1
+  - @backstage/errors@1.2.7
+
 ## 0.16.1-next.1
 
 ### Patch Changes

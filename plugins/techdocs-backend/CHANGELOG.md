@@ -1,5 +1,23 @@
 # @backstage/plugin-techdocs-backend
 
+## 2.1.3-next.2
+
+### Patch Changes
+
+- de96a60: chore(deps): bump `express` from 4.21.2 to 4.22.0
+- 2bae83a: Corrected `ErrorCallback` type to work with Node 22 types
+- Updated dependencies
+  - @backstage/backend-defaults@0.14.0-next.1
+  - @backstage/plugin-techdocs-node@1.13.10-next.1
+  - @backstage/integration@1.18.3-next.1
+  - @backstage/backend-plugin-api@1.6.0-next.1
+  - @backstage/catalog-client@1.12.1
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-catalog-node@1.20.1-next.1
+
 ## 2.1.3-next.1
 
 ### Patch Changes

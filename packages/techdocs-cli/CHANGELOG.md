@@ -1,5 +1,17 @@
 # @techdocs/cli
 
+## 1.10.3-next.2
+
+### Patch Changes
+
+- 2bae83a: Bumped dev dependencies `@types/node`
+- Updated dependencies
+  - @backstage/backend-defaults@0.14.0-next.1
+  - @backstage/plugin-techdocs-node@1.13.10-next.1
+  - @backstage/cli-common@0.1.16-next.2
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config@1.3.6
+
 ## 1.10.3-next.1
 
 ### Patch Changes
