@@ -61,7 +61,7 @@ export const devToolsTaskSchedulerReadPermission = createPermission({
  */
 export const devToolsTaskSchedulerCreatePermission = createPermission({
   name: 'devtools.scheduler.trigger',
-  attributes: { action: 'create' },
+  attributes: { action: 'update' },
 });
 
 /**
