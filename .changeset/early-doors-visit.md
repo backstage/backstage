@@ -2,4 +2,4 @@
 '@backstage/backend-defaults': patch
 ---
 
-allow configuration of the referrerPolicy
+Allow configuration of the `referrerPolicy`
