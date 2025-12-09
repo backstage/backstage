@@ -61,6 +61,7 @@ import {
   TechDocsMetadata,
 } from './types';
 import { LoggerService } from '@backstage/backend-plugin-api';
+import { AwsS3Integration, ScmIntegrations } from '@backstage/integration';
 
 const streamToBuffer = (stream: Readable): Promise<Buffer> => {
   return new Promise((resolve, reject) => {
@@ -142,16 +143,16 @@ export class AwsS3Publish implements PublisherBase {
 
     const credsManager = DefaultAwsCredentialsManager.fromConfig(config);
 
-    const awsS3IntegrationConfig =
-      config.getOptionalConfigArray('integrations.awsS3');
+    const scmIntegrations = ScmIntegrations.fromConfig(config);
+    const awsS3Integrations = scmIntegrations.awsS3.list();
 
     const sdkCredentialProvider = await AwsS3Publish.buildCredentials(
       credsManager,
       logger,
+      awsS3Integrations,
       accountId,
       credentialsConfig,
       region,
-      awsS3IntegrationConfig,
     );
 
     // AWS endpoint is an optional config. If missing, the default endpoint is built from
@@ -220,10 +221,10 @@ export class AwsS3Publish implements PublisherBase {
   private static async buildCredentials(
     credsManager: AwsCredentialsManager,
     logger: LoggerService,
+    awsS3Integrations: AwsS3Integration[],
     accountId?: string,
     credentialsConfig?: Config,
     region?: string,
-    awsS3IntegrationConfig?: Config[],
   ): Promise<AwsCredentialIdentityProvider> {
     // Pull credentials for the specified account ID from the 'aws' config section
     if (accountId) {
@@ -234,7 +235,7 @@ export class AwsS3Publish implements PublisherBase {
     const explicitCredentials = await AwsS3Publish.getExplicitCredentials({
       credsManager,
       credentialsConfig,
-      awsS3IntegrationConfig,
+      awsS3Integrations,
       logger,
     });
 
@@ -255,12 +256,12 @@ export class AwsS3Publish implements PublisherBase {
 
   private static async getExplicitCredentials({
     credentialsConfig,
-    awsS3IntegrationConfig,
+    awsS3Integrations,
     credsManager,
     logger,
   }: {
     credentialsConfig?: Config;
-    awsS3IntegrationConfig?: Config[];
+    awsS3Integrations: AwsS3Integration[];
     credsManager: AwsCredentialsManager;
     logger: LoggerService;
   }): Promise<AwsCredentialIdentityProvider> {
@@ -271,14 +272,16 @@ export class AwsS3Publish implements PublisherBase {
     if (accessKeyId && secretAccessKey) {
       return AwsS3Publish.buildStaticCredentials(accessKeyId, secretAccessKey);
     }
-    if (awsS3IntegrationConfig && awsS3IntegrationConfig.length > 0) {
-      if (awsS3IntegrationConfig.length === 1) {
-        const singleAwsS3IntegrationConfig = awsS3IntegrationConfig[0];
+
+    if (awsS3Integrations.length > 0) {
+      if (awsS3Integrations.length === 1) {
+        const singleAwsS3IntegrationConfig = awsS3Integrations[0].config;
 
         const singleAwsS3IntegrationAccessKeyId =
-          singleAwsS3IntegrationConfig.getOptionalString('accessKeyId');
+          singleAwsS3IntegrationConfig.accessKeyId;
+
         const singleAwsS3IntegrationSecretAccessKey =
-          singleAwsS3IntegrationConfig.getOptionalString('secretAccessKey');
+          singleAwsS3IntegrationConfig.secretAccessKey;
 
         if (
           singleAwsS3IntegrationAccessKeyId &&
@@ -291,8 +294,8 @@ export class AwsS3Publish implements PublisherBase {
         }
       } else {
         if (accessKeyId) {
-          const targetAwsS3IntegrationConfig = awsS3IntegrationConfig.find(
-            c => c.getOptionalString('accessKeyId') === accessKeyId,
+          const targetAwsS3IntegrationConfig = awsS3Integrations.find(
+            c => c.config.accessKeyId === accessKeyId,
           );
 
           if (!targetAwsS3IntegrationConfig) {
@@ -301,9 +304,9 @@ export class AwsS3Publish implements PublisherBase {
             );
           }
           const targetAwsS3IntegrationAccessKeyId =
-            targetAwsS3IntegrationConfig?.getOptionalString('accessKeyId');
+            targetAwsS3IntegrationConfig?.config.accessKeyId;
           const targetAwsS3IntegrationSecretAccessKey =
-            targetAwsS3IntegrationConfig?.getOptionalString('secretAccessKey');
+            targetAwsS3IntegrationConfig?.config.secretAccessKey;
           if (
             targetAwsS3IntegrationAccessKeyId &&
             targetAwsS3IntegrationSecretAccessKey
