@@ -52,7 +52,7 @@ export const devToolsExternalDependenciesReadPermission = createPermission({
  * @alpha
  */
 export const devToolsTaskSchedulerReadPermission = createPermission({
-  name: 'devtools.task-scheduler',
+  name: 'devtools.scheduler.read',
   attributes: { action: 'read' },
 });
 
