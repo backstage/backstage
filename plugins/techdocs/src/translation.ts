@@ -26,10 +26,7 @@ export const techdocsTranslationRef = createTranslationRef({
     notFound: {
       title: 'Documentation not found',
       builderNote:
-        "Note that techdocs.builder is not set to 'local' in your config, which means this Backstage app will not " +
-        "generate docs if they are not found. Make sure the project's docs are generated and published by some external " +
-        "process (e.g. CI/CD pipeline). Or change techdocs.builder to 'local' to generate docs from this Backstage " +
-        'instance.',
+        "Note that techdocs.builder is not set to 'local' in your config, which means this Backstage app will not generate docs if they are not found. Make sure the project's docs are generated and published by some external process (e.g. CI/CD pipeline). Or change techdocs.builder to 'local' to generate docs from this Backstage instance.",
     },
     buildLogs: {
       title: 'Build Details',

@@ -20,7 +20,7 @@ import { FavoriteToggleIcon } from '@backstage/core-components';
 import type { TranslationFunction } from '@backstage/core-plugin-api/alpha';
 import type { techdocsTranslationRef } from '../../../translation';
 
-type TranslationFunctionType = TranslationFunction<
+type InternalTranslationFunctionType = TranslationFunction<
   typeof techdocsTranslationRef extends { T: infer T } ? T : never
 >;
 
@@ -32,7 +32,7 @@ type TranslationFunctionType = TranslationFunction<
 export const actionFactories = {
   createCopyDocsUrlAction(
     copyToClipboard: Function,
-    t: TranslationFunctionType,
+    t: InternalTranslationFunctionType,
   ) {
     return (row: DocsTableRow) => {
       return {
@@ -46,7 +46,7 @@ export const actionFactories = {
   createStarEntityAction(
     isStarredEntity: Function,
     toggleStarredEntity: Function,
-    t: TranslationFunctionType,
+    t: InternalTranslationFunctionType,
   ) {
     return (row: DocsTableRow) => {
       const entity = row.entity;

@@ -393,7 +393,7 @@ export const techdocsTranslationRef: TranslationRef<
     readonly 'home.supportButton': 'Discover documentation in your ecosystem.';
     readonly 'aboutCard.viewTechdocs': 'View TechDocs';
     readonly 'notFound.title': 'Documentation not found';
-    readonly 'notFound.builderNote': string;
+    readonly 'notFound.builderNote': "Note that techdocs.builder is not set to 'local' in your config, which means this Backstage app will not generate docs if they are not found. Make sure the project's docs are generated and published by some external process (e.g. CI/CD pipeline). Or change techdocs.builder to 'local' to generate docs from this Backstage instance.";
     readonly 'buildLogs.title': 'Build Details';
     readonly 'buildLogs.closeDrawer': 'Close the drawer';
     readonly 'buildLogs.showBuildLogs': 'Show Build Logs';

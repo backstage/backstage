@@ -35,7 +35,7 @@ import { OffsetPaginatedDocsTable } from './OffsetPaginatedDocsTable';
 import { CursorPaginatedDocsTable } from './CursorPaginatedDocsTable';
 import { actionFactories } from './actions';
 import { columnFactories, defaultColumns } from './columns';
-import { DocsTableRow } from './types';
+import { DocsTableRow, ColumnFactories, ActionFactories } from './types';
 import { rootDocsRouteRef } from '../../../routes';
 import { entitiesToDocsMapper } from './helpers';
 
@@ -55,8 +55,8 @@ export type EntityListDocsTableProps = {
  */
 export interface EntityListDocsTableType {
   (props: EntityListDocsTableProps): JSX.Element | null;
-  columns: Record<string, Function>;
-  actions: Record<string, Function>;
+  columns: ColumnFactories;
+  actions: ActionFactories;
 }
 
 /**

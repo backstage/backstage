@@ -31,7 +31,7 @@ import {
 import { techdocsTranslationRef } from '../../../translation';
 import { actionFactories } from './actions';
 import { columnFactories, defaultColumns } from './columns';
-import { DocsTableRow } from './types';
+import { DocsTableRow, ColumnFactories, ActionFactories } from './types';
 import { entitiesToDocsMapper } from './helpers';
 
 /**
@@ -53,8 +53,8 @@ export type DocsTableProps = {
  */
 export interface DocsTableType {
   (props: DocsTableProps): JSX.Element | null;
-  columns: Record<string, Function>;
-  actions: Record<string, Function>;
+  columns: ColumnFactories;
+  actions: ActionFactories;
 }
 
 /**
