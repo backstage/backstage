@@ -56,6 +56,6 @@
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@backstage/plugin-catalog-common": "workspace:^",
-    "msw": "^1.0.0"
+    "msw": "^2.0.0"
   }
 }

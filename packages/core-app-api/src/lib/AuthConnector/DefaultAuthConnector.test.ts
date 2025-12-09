@@ -20,7 +20,7 @@ import * as loginPopup from '../loginPopup';
 import { UrlPatternDiscovery } from '../../apis';
 import { registerMswTestHooks } from '@backstage/test-utils';
 import { setupServer } from 'msw/node';
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { ConfigReader } from '@backstage/config';
 import { ConfigApi } from '@backstage/core-plugin-api';
 
@@ -61,16 +61,15 @@ describe('DefaultAuthConnector', () => {
 
   it('should refresh a session with scope', async () => {
     server.use(
-      rest.get('*', (req, res, ctx) =>
-        res(
-          ctx.json({
-            idToken: 'mock-id-token',
-            accessToken: 'mock-access-token',
-            scopes: req.url.searchParams.get('scope') || 'default-scope',
-            expiresInSeconds: '60',
-          }),
-        ),
-      ),
+      http.get('*', ({ request }) => {
+        const url = new URL(request.url);
+        return HttpResponse.json({
+          idToken: 'mock-id-token',
+          accessToken: 'mock-access-token',
+          scopes: url.searchParams.get('scope') || 'default-scope',
+          expiresInSeconds: '60',
+        });
+      }),
     );
 
     const connector = new DefaultAuthConnector<any>(defaultOptions);
@@ -86,9 +85,12 @@ describe('DefaultAuthConnector', () => {
 
   it('should handle failure to refresh session', async () => {
     server.use(
-      rest.get('*', (_req, res, ctx) =>
-        res(ctx.status(500, 'Error: Network NOPE')),
-      ),
+      http.get('*', () => {
+        return new HttpResponse(null, {
+          status: 500,
+          statusText: 'Error: Network NOPE',
+        });
+      }),
     );
 
     const connector = new DefaultAuthConnector(defaultOptions);
@@ -98,7 +100,11 @@ describe('DefaultAuthConnector', () => {
   });
 
   it('should handle failure response when refreshing session', async () => {
-    server.use(rest.get('*', (_req, res, ctx) => res(ctx.status(401, 'NOPE'))));
+    server.use(
+      http.get('*', () => {
+        return new HttpResponse(null, { status: 401, statusText: 'NOPE' });
+      }),
+    );
 
     const connector = new DefaultAuthConnector(defaultOptions);
     await expect(connector.refreshSession()).rejects.toThrow(

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import { registerMswTestHooks } from '../helpers';
 import { BitbucketServerIntegrationConfig } from './config';
@@ -24,6 +24,13 @@ import {
   getBitbucketServerFileFetchUrl,
   getBitbucketServerRequestOptions,
 } from './core';
+
+// Mock cross-fetch to delegate to native fetch, which MSW v2 can intercept
+jest.mock('cross-fetch', () => ({
+  __esModule: true,
+  default: (...args: Parameters<typeof fetch>) => fetch(...args),
+  Response: global.Response,
+}));
 
 describe('bitbucketServer core', () => {
   const worker = setupServer();
@@ -108,14 +115,13 @@ describe('bitbucketServer core', () => {
         displayId: 'main',
       };
       worker.use(
-        rest.get(
+        http.get(
           'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/default-branch',
-          (_, res, ctx) =>
-            res(
-              ctx.status(200),
-              ctx.set('Content-Type', 'application/json'),
-              ctx.json(defaultBranchResponse),
-            ),
+          () =>
+            HttpResponse.json(defaultBranchResponse, {
+              status: 200,
+              headers: { 'Content-Type': 'application/json' },
+            }),
         ),
       );
 
@@ -151,14 +157,13 @@ describe('bitbucketServer core', () => {
         displayId: 'main',
       };
       worker.use(
-        rest.get(
+        http.get(
           'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/default-branch',
-          (_, res, ctx) =>
-            res(
-              ctx.status(200),
-              ctx.set('Content-Type', 'application/json'),
-              ctx.json(defaultBranchResponse),
-            ),
+          () =>
+            HttpResponse.json(defaultBranchResponse, {
+              status: 200,
+              headers: { 'Content-Type': 'application/json' },
+            }),
         ),
       );
       const config: BitbucketServerIntegrationConfig = {
@@ -196,14 +201,13 @@ describe('bitbucketServer core', () => {
         displayId: 'main',
       };
       worker.use(
-        rest.get(
+        http.get(
           'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/default-branch',
-          (_, res, ctx) =>
-            res(
-              ctx.status(200),
-              ctx.set('Content-Type', 'application/json'),
-              ctx.json(defaultBranchResponse),
-            ),
+          () =>
+            HttpResponse.json(defaultBranchResponse, {
+              status: 200,
+              headers: { 'Content-Type': 'application/json' },
+            }),
         ),
       );
       const config: BitbucketServerIntegrationConfig = {
@@ -222,23 +226,21 @@ describe('bitbucketServer core', () => {
         displayId: 'main',
       };
       worker.use(
-        rest.get(
+        http.get(
           'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/default-branch',
-          (_, res, ctx) =>
-            res(
-              ctx.status(404),
-              ctx.set('Content-Type', 'application/json'),
-              ctx.json(defaultBranchResponse),
-            ),
+          () =>
+            HttpResponse.json(defaultBranchResponse, {
+              status: 404,
+              headers: { 'Content-Type': 'application/json' },
+            }),
         ),
-        rest.get(
+        http.get(
           'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/branches/default',
-          (_, res, ctx) =>
-            res(
-              ctx.status(200),
-              ctx.set('Content-Type', 'application/json'),
-              ctx.json(defaultBranchResponse),
-            ),
+          () =>
+            HttpResponse.json(defaultBranchResponse, {
+              status: 200,
+              headers: { 'Content-Type': 'application/json' },
+            }),
         ),
       );
       const config: BitbucketServerIntegrationConfig = {

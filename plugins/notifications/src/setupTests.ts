@@ -14,3 +14,22 @@
  * limitations under the License.
  */
 import '@testing-library/jest-dom';
+// eslint-disable-next-line no-restricted-imports
+import { TextEncoder, TextDecoder } from 'util';
+// eslint-disable-next-line no-restricted-imports
+import { BroadcastChannel } from 'worker_threads';
+// eslint-disable-next-line no-restricted-imports
+import { TransformStream } from 'stream/web';
+
+Object.assign(global, {
+  TextEncoder,
+  TextDecoder,
+  BroadcastChannel,
+  TransformStream,
+});
+
+jest.mock('cross-fetch', () => ({
+  __esModule: true,
+  default: (...args: Parameters<typeof fetch>) => fetch(...args),
+  Response: global.Response,
+}));
