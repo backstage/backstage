@@ -5995,7 +5995,7 @@ __metadata:
     "@backstage/plugin-catalog-node": "workspace:^"
     "@backstage/types": "workspace:^"
     "@cfworker/json-schema": "npm:^4.1.1"
-    "@modelcontextprotocol/sdk": "npm:^1.12.3"
+    "@modelcontextprotocol/sdk": "npm:^1.24.3"
     "@types/express": "npm:^4.17.6"
     express: "npm:^4.22.0"
     express-promise-router: "npm:^4.1.0"
@@ -11067,9 +11067,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@modelcontextprotocol/sdk@npm:^1.12.3":
-  version: 1.24.2
-  resolution: "@modelcontextprotocol/sdk@npm:1.24.2"
+"@modelcontextprotocol/sdk@npm:^1.24.3":
+  version: 1.24.3
+  resolution: "@modelcontextprotocol/sdk@npm:1.24.3"
   dependencies:
     ajv: "npm:^8.17.1"
     ajv-formats: "npm:^3.0.1"
@@ -11093,7 +11093,7 @@ __metadata:
       optional: true
     zod:
       optional: false
-  checksum: 10/3411ade6e64188eeb7c68946a08f65040a5604f7bd7fe828647d73d037103214d8372f2e9f48c988bfec55dc273be8b4915498bc820bed0a61c0d53d0a5dc8a0
+  checksum: 10/661aea493ee06674edc0d1409d5ff6e53053da2c3eb27d28ecdd5aa212d9d6bac8c00bec1cd18c1065f2d5774afef34e3cdcd19643056f954c14f611fee8cbc4
   languageName: node
   linkType: hard
 
