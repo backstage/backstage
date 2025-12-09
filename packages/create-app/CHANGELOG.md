@@ -1,5 +1,14 @@
 # @backstage/create-app
 
+## 0.7.7-next.2
+
+### Patch Changes
+
+- 2bae83a: Updated engines to support Node 22 or 24
+- 2bae83a: Bumped dev dependencies `@types/node`
+- Updated dependencies
+  - @backstage/cli-common@0.1.16-next.2
+
 ## 0.7.7-next.1
 
 ### Patch Changes
