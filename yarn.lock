@@ -29814,17 +29814,18 @@ __metadata:
   linkType: hard
 
 "eslint-rspack-plugin@npm:^4.2.1":
-  version: 4.2.1
-  resolution: "eslint-rspack-plugin@npm:4.2.1"
+  version: 4.3.0
+  resolution: "eslint-rspack-plugin@npm:4.3.0"
   dependencies:
     "@types/eslint": "npm:^8.56.10"
     jest-worker: "npm:^29.7.0"
     micromatch: "npm:^4.0.8"
     normalize-path: "npm:^3.0.0"
     schema-utils: "npm:^4.2.0"
+    tinyglobby: "npm:^0.2.15"
   peerDependencies:
     eslint: ^8.0.0 || ^9.0.0
-  checksum: 10/c45639e660d13af63c58f8f80103a033f607b9d635d9315d7d859408134cc35e2e3f981805f7abdd6061ec9d8207cfc7c0d5a097df9ac8c7ccd707ca5aa14583
+  checksum: 10/e312c993474cd4df180f6790359936b581391ac660769ce94b7e00e96322aedbbebc8d9132969db72b04d4588ccf40dd17c45d8f5d48df625a015a819c215ae3
   languageName: node
   linkType: hard
 
