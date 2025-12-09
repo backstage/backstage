@@ -63,6 +63,7 @@ async function createPgLiteDatabaseClient(
         ? async () => {
             const dataKey = `sqlite3-db-${pluginId}`;
             const { data: seedData } = await devStore.load(dataKey);
+
             const pglite = await PGlite.create({
               loadDataDir: seedData
                 ? new Blob([seedData] as BlobPart[])
@@ -70,7 +71,7 @@ async function createPgLiteDatabaseClient(
             });
 
             lifecycle.addShutdownHook(async () => {
-              const blob = await pglite.dumpDataDir('none');
+              const blob = await pglite.dumpDataDir('gzip');
               const data = await blob.arrayBuffer();
               await devStore.save(dataKey, data);
             });

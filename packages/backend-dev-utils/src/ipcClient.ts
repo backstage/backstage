@@ -40,7 +40,7 @@ type ResponseHandler = (response: Response) => void;
 const requestType = '@backstage/cli/channel/request';
 const responseType = '@backstage/cli/channel/response';
 
-const IPC_TIMEOUT_MS = 15000;
+const IPC_TIMEOUT_MS = 5000;
 
 /**
  * The client side of an IPC communication channel.
