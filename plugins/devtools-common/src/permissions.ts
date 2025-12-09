@@ -60,7 +60,7 @@ export const devToolsTaskSchedulerReadPermission = createPermission({
  * @alpha
  */
 export const devToolsTaskSchedulerCreatePermission = createPermission({
-  name: 'devtools.task-scheduler',
+  name: 'devtools.scheduler.trigger',
   attributes: { action: 'create' },
 });
 
