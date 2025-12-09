@@ -49,7 +49,7 @@ export const devToolsExternalDependenciesReadPermission = createPermission({
 });
 
 /**
- * @public
+ * @alpha
  */
 export const devToolsTaskSchedulerReadPermission = createPermission({
   name: 'devtools.task-scheduler',
@@ -57,7 +57,7 @@ export const devToolsTaskSchedulerReadPermission = createPermission({
 });
 
 /**
- * @public
+ * @alpha
  */
 export const devToolsTaskSchedulerCreatePermission = createPermission({
   name: 'devtools.task-scheduler',
@@ -74,6 +74,4 @@ export const devToolsPermissions = [
   devToolsInfoReadPermission,
   devToolsConfigReadPermission,
   devToolsExternalDependenciesReadPermission,
-  devToolsTaskSchedulerReadPermission,
-  devToolsTaskSchedulerCreatePermission,
 ];

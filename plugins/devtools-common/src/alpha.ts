@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,26 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-/**
- * Common types and permissions for the DevTools frontend and backend plugins.
- *
- * @packageDocumentation
- */
-
-export type {
-  ConfigError,
-  ConfigInfo,
-  DevToolsInfo,
-  Endpoint,
-  ExternalDependency,
-  PackageDependency,
-} from './types';
-export { ExternalDependencyStatus } from './types';
 export {
-  devToolsAdministerPermission,
-  devToolsConfigReadPermission,
-  devToolsExternalDependenciesReadPermission,
-  devToolsInfoReadPermission,
-  devToolsPermissions,
+  devToolsTaskSchedulerReadPermission,
+  devToolsTaskSchedulerCreatePermission,
 } from './permissions';
+export type {
+  ScheduledTasks,
+  TaskApiTasksResponse,
+  TriggerScheduledTask,
+} from './types';

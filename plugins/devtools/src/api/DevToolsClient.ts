@@ -19,9 +19,11 @@ import {
   ConfigInfo,
   DevToolsInfo,
   ExternalDependency,
+} from '@backstage/plugin-devtools-common';
+import {
   ScheduledTasks,
   TriggerScheduledTask,
-} from '@backstage/plugin-devtools-common';
+} from '@backstage/plugin-devtools-common/alpha';
 import { ResponseError } from '@backstage/errors';
 import { DevToolsApi } from './DevToolsApi';
 

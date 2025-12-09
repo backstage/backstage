@@ -19,9 +19,11 @@ import {
   ConfigInfo,
   DevToolsInfo,
   ExternalDependency,
+} from '@backstage/plugin-devtools-common';
+import {
   ScheduledTasks,
   TriggerScheduledTask,
-} from '@backstage/plugin-devtools-common';
+} from '@backstage/plugin-devtools-common/alpha';
 
 export const devToolsApiRef = createApiRef<DevToolsApi>({
   id: 'plugin.devtools.service',

@@ -22,18 +22,23 @@ import Tooltip from '@material-ui/core/Tooltip';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import TextField from '@material-ui/core/TextField';
 import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
-import { Progress, Table, TableColumn } from '@backstage/core-components';
+import {
+  ErrorPanel,
+  Progress,
+  Table,
+  TableColumn,
+} from '@backstage/core-components';
 import Alert from '@material-ui/lab/Alert';
 import { useScheduledTasks, useTriggerScheduledTask } from '../../../hooks';
-import { TaskApiTasksResponse } from '@backstage/plugin-devtools-common';
+import { TaskApiTasksResponse } from '@backstage/plugin-devtools-common/alpha';
 import { alertApiRef, configApiRef, useApi } from '@backstage/core-plugin-api';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import NightsStay from '@material-ui/icons/NightsStay';
-import Error from '@material-ui/icons/Error';
+import ErrorIcon from '@material-ui/icons/Error';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { ScheduledTaskDetailPanel } from './ScheduledTaskDetailedPanel';
 import { RequirePermission } from '@backstage/plugin-permission-react';
-import { devToolsTaskSchedulerCreatePermission } from '@backstage/plugin-devtools-common';
+import { devToolsTaskSchedulerCreatePermission } from '@backstage/plugin-devtools-common/alpha';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -141,7 +146,7 @@ export const ScheduledTasksContent = () => {
         return (
           <Box display="flex" alignItems="center">
             {rowData.taskState?.lastRunError && (
-              <Error style={errorIconStyle} />
+              <ErrorIcon style={errorIconStyle} />
             )}
             <Typography>{rowData.taskId}</Typography>
           </Box>
@@ -197,11 +202,9 @@ export const ScheduledTasksContent = () => {
           <Tooltip title="Run Task">
             <IconButton
               aria-label="Trigger"
+              disabled={isTriggering}
               onClick={() => {
                 triggerTask(selectedPlugin, rowData.taskId);
-                if (isTriggering) {
-                  <CircularProgress color="inherit" size="30px" />;
-                }
                 if (triggerError) {
                   alertApi.post({
                     message: `Error triggering task ${rowData.taskId}: ${error}`,
@@ -252,11 +255,30 @@ export const ScheduledTasksContent = () => {
       {loading && <Progress />}
 
       {error && (
-        <Alert severity="warning">
-          The plugin ID "{selectedPlugin}" doesn't have any scheduled tasks or
-          may contain a typo. Please verify the plugin ID is correct and that
-          the plugin has registered scheduled tasks.
-        </Alert>
+        <ErrorPanel
+          error={new Error(`No scheduled tasks found for "${selectedPlugin}"`)}
+          title="No Scheduled Tasks Found"
+        >
+          <Typography variant="body2">
+            The plugin ID "{selectedPlugin}" doesn't have any scheduled tasks or
+            may contain a typo.
+          </Typography>
+          <Typography variant="body2" style={{ marginTop: 8 }}>
+            Please verify:
+          </Typography>
+          <ul>
+            <li>
+              <Typography variant="body2">
+                The plugin ID is spelled correctly
+              </Typography>
+            </li>
+            <li>
+              <Typography variant="body2">
+                The plugin has registered scheduled tasks
+              </Typography>
+            </li>
+          </ul>
+        </ErrorPanel>
       )}
 
       {!loading && !error && (

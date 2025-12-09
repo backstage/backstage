@@ -9,7 +9,7 @@ import { JSX as JSX_2 } from 'react/jsx-runtime';
 import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { TabProps } from '@material-ui/core/Tab';
-import { TaskApiTasksResponse } from '@backstage/plugin-devtools-common';
+import { TaskApiTasksResponse } from '@backstage/plugin-devtools-common/alpha';
 
 // @public (undocumented)
 export const ConfigContent: () => JSX_2.Element;

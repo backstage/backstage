@@ -88,7 +88,7 @@ export type ConfigError = {
  * This is a duplication of the below:
  * @see https://github.com/backstage/backstage/blob/master/packages/backend-defaults/src/entrypoints/scheduler/lib/types.ts
  *
- * @public
+ * @alpha
  */
 export interface TaskApiTasksResponse {
   taskId: string;
@@ -123,13 +123,13 @@ export interface TaskApiTasksResponse {
     | null;
 }
 
-/** @public */
+/** @alpha */
 export type ScheduledTasks = {
   scheduledTasks?: TaskApiTasksResponse[];
   error?: string;
 };
 
-/** @public */
+/** @alpha */
 export type TriggerScheduledTask = {
   error?: string;
 };
