@@ -60,11 +60,8 @@ describe('runBackend', () => {
 
     // Save original environment
     originalEnv = { ...process.env };
+    process.env = {};
     originalPlatform = process.platform;
-
-    // Clear environment variables that we're testing
-    delete process.env.NODE_ENV;
-    delete process.env.NODE_OPTIONS;
 
     // Mock process.stdin.on to prevent actual stdin reading
     jest.spyOn(process.stdin, 'on').mockReturnValue(process.stdin);
