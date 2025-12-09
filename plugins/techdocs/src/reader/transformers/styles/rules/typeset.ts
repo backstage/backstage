@@ -110,7 +110,7 @@ ${headings.reduce<string>((style, heading) => {
 
 .md-typeset table:not([class]) {
   font-size: var(--md-typeset-font-size);
-  border: 1px solid var(--md-default-fg-color);
+  border: 1px solid var(--md-typeset-table-color);
   border-bottom: none;
   border-collapse: collapse;
   border-radius: ${theme.shape.borderRadius}px;
@@ -119,7 +119,7 @@ ${headings.reduce<string>((style, heading) => {
   font-weight: bold;
 }
 .md-typeset table:not([class]) td, .md-typeset table:not([class]) th {
-  border-bottom: 1px solid var(--md-default-fg-color);
+  border-bottom: 1px solid var(--md-typeset-table-color);
 }
 
 .md-typeset pre > code::-webkit-scrollbar-thumb {
