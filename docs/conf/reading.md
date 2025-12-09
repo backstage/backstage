@@ -115,7 +115,7 @@ example `getString`. These will throw an error if there is no value available.
 
 ## Accessing ConfigApi in Frontend Plugins
 
-The [ConfigApi](../reference/core-plugin-api.configapi.md) in the frontend is a
+The [ConfigApi](../reference/frontend-plugin-api.configapi.md) in the frontend is a
 [UtilityApi](../api/utility-apis.md). It's accessible as usual via the
 `configApiRef` exported from `@backstage/core-plugin-api`:
 

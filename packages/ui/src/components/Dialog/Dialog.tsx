@@ -31,6 +31,7 @@ import type {
 import { RiCloseLine } from '@remixicon/react';
 import { Button } from '../Button';
 import { useStyles } from '../../hooks/useStyles';
+import { DialogDefinition } from './definition';
 import { Flex } from '../Flex';
 import styles from './Dialog.module.css';
 
@@ -42,7 +43,7 @@ export const DialogTrigger = (props: DialogTriggerProps) => {
 /** @public */
 export const Dialog = forwardRef<React.ElementRef<typeof Modal>, DialogProps>(
   (props, ref) => {
-    const { classNames, cleanedProps } = useStyles('Dialog', props);
+    const { classNames, cleanedProps } = useStyles(DialogDefinition, props);
     const { className, children, width, height, style, ...rest } = cleanedProps;
 
     return (
@@ -84,7 +85,7 @@ export const DialogHeader = forwardRef<
   React.ElementRef<'div'>,
   DialogHeaderProps
 >((props, ref) => {
-  const { classNames, cleanedProps } = useStyles('Dialog', props);
+  const { classNames, cleanedProps } = useStyles(DialogDefinition, props);
   const { className, children, ...rest } = cleanedProps;
 
   return (
@@ -110,7 +111,7 @@ DialogHeader.displayName = 'DialogHeader';
 /** @public */
 export const DialogBody = forwardRef<React.ElementRef<'div'>, DialogBodyProps>(
   (props, ref) => {
-    const { classNames, cleanedProps } = useStyles('Dialog', props);
+    const { classNames, cleanedProps } = useStyles(DialogDefinition, props);
     const { className, children, ...rest } = cleanedProps;
 
     return (
@@ -132,7 +133,7 @@ export const DialogFooter = forwardRef<
   React.ElementRef<'div'>,
   React.ComponentPropsWithoutRef<'div'>
 >((props, ref) => {
-  const { classNames, cleanedProps } = useStyles('Dialog', props);
+  const { classNames, cleanedProps } = useStyles(DialogDefinition, props);
   const { className, children, ...rest } = cleanedProps;
 
   return (

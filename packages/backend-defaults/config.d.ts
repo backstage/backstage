@@ -994,6 +994,13 @@ export interface Config {
     csp?: { [policyId: string]: string[] | false };
 
     /**
+     * Referrer Policy options
+     */
+    referrer?: {
+      policy: string[];
+    };
+
+    /**
      * Options for the health check service and endpoint.
      */
     health?: {

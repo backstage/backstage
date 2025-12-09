@@ -20,7 +20,7 @@ import {
   SubRouteRef,
   ExternalRouteRef,
 } from '../../routing';
-import { createApiRef } from '@backstage/core-plugin-api';
+import { createApiRef } from '../system';
 
 /**
  * TS magic for handling route parameters.

@@ -1,0 +1,100 @@
+---
+description: Enforce usage of @backstage/test-utils in frontend tests
+globs: ['**/*.test.*', '**/*.spec.*']
+alwaysApply: false
+---
+# Backstage Frontend/Plugin Testing Rules
+
+**CRITICAL**: When writing tests for Backstage frontend code, plugins, or React components, you MUST use utilities from `@backstage/test-utils` wherever possible. Do NOT create custom mocks, test wrappers, or API implementations when equivalent utilities exist in test-utils.
+
+## Required Usage
+
+1. **API Mocking**: Always use `mockApis` from `@backstage/test-utils` instead of creating custom API mocks. This includes:
+   - `mockApis.analytics()` - For AnalyticsApi mocking
+   - `mockApis.config()` - For ConfigApi mocking with optional configuration data
+   - `mockApis.discovery()` - For DiscoveryApi mocking
+   - `mockApis.identity()` - For IdentityApi mocking with user entity ref, token, profile info
+   - `mockApis.permission()` - For PermissionApi mocking with authorization control
+   - `mockApis.storage()` - For StorageApi mocking with in-memory storage
+   - `mockApis.translation()` - For TranslationApi mocking (from alpha)
+   - Each API also provides `.mock()` for jest mocks and `.factory()` for API factories
+
+2. **Test App Wrappers**: Always use `wrapInTestApp` or `renderInTestApp` from `@backstage/test-utils` when testing React components that need Backstage app context (routing, theme, APIs). Use `createTestAppWrapper` for custom wrapper creation.
+
+3. **Test API Provider**: Always use `TestApiProvider` or `TestApiRegistry` from `@backstage/test-utils` when testing components that depend on Backstage APIs. This allows you to provide only the APIs needed for your test.
+
+4. **Async Component Rendering**: Use `renderWithEffects` from `@backstage/test-utils` when testing components that perform asynchronous operations (e.g., useEffect with fetch). This properly handles async rendering with React's act.
+
+5. **Log Collection**: Use `withLogCollector` from `@backstage/test-utils` when you need to capture and assert on console logs, warnings, or errors during tests.
+
+6. **MSW Integration**: Use `registerMswTestHooks` from `@backstage/test-utils` when setting up Mock Service Worker for HTTP request mocking in frontend tests.
+
+7. **Text Content Matcher**: Use `textContentMatcher` from `@backstage/test-utils` as a custom matcher for testing-library queries when matching text content.
+
+8. **Mock Breakpoint**: Use `mockBreakpoint` from `@backstage/test-utils` when testing components that use Material-UI's `useMediaQuery` hook (though this is deprecated in favor of core-components/testUtils).
+
+9. **Individual API Mocks**: Use individual mock APIs when you need more control:
+   - `MockAnalyticsApi` - Analytics API mock
+   - `MockConfigApi` - Config API mock
+   - `MockErrorApi` - Error API mock
+   - `MockFetchApi` - Fetch API mock
+   - `MockPermissionApi` - Permission API mock
+   - `MockStorageApi` - Storage API mock
+   - `MockTranslationApi` - Translation API mock (from alpha)
+
+10. **Alpha APIs**: For alpha/experimental APIs, use the utilities from `@backstage/test-utils/alpha` (e.g., `MockTranslationApi`).
+
+## Import Patterns
+
+Always import from the main package:
+
+```typescript
+import {
+  mockApis,
+  wrapInTestApp,
+  renderInTestApp,
+  createTestAppWrapper,
+  TestApiProvider,
+  TestApiRegistry,
+  renderWithEffects,
+  withLogCollector,
+  registerMswTestHooks,
+  textContentMatcher,
+  mockBreakpoint,
+  MockAnalyticsApi,
+  MockConfigApi,
+  MockErrorApi,
+  MockFetchApi,
+  MockPermissionApi,
+  MockStorageApi
+} from '@backstage/test-utils';
+```
+
+For alpha APIs:
+
+```typescript
+import {
+  MockTranslationApi
+} from '@backstage/test-utils/alpha';
+```
+
+## When to Use
+
+- **Always** use these utilities when writing frontend/plugin tests
+- **Always** use `renderInTestApp` or `wrapInTestApp` for components that need Backstage context
+- **Always** use `TestApiProvider` or `TestApiRegistry` when components depend on Backstage APIs
+- **Always** use `mockApis` instead of creating custom API implementations
+- **Never** manually set up React Router, theme providers, or API contexts when test wrappers are available
+- **Never** create custom API mocks when mockApis provides equivalents
+- **Never** use raw `render` from testing-library when `renderWithEffects` is needed for async components
+
+## Benefits
+
+Using test-utils ensures:
+- Consistent test setup across frontend codebase
+- Proper Backstage app context (routing, theme, APIs)
+- Simplified API mocking with realistic implementations
+- Proper async rendering handling
+- Well-tested and maintained utilities
+- Reduced boilerplate in test code
+- Better integration with Backstage's plugin architecture

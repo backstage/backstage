@@ -26,10 +26,6 @@ import {
 } from '@backstage/frontend-plugin-api';
 
 import { devToolsApiRef, DevToolsClient } from '../api';
-import {
-  compatWrapper,
-  convertLegacyRouteRef,
-} from '@backstage/core-compat-api';
 import BuildIcon from '@material-ui/icons/Build';
 import { rootRouteRef } from '../routes';
 
@@ -65,7 +61,7 @@ export const devToolsPage = PageBlueprint.makeWithOverrides({
   factory(originalFactory, { inputs }) {
     return originalFactory({
       path: '/devtools',
-      routeRef: convertLegacyRouteRef(rootRouteRef),
+      routeRef: rootRouteRef,
       loader: () => {
         const extensions = inputs.contents.map(content => ({
           path: content.get(coreExtensionData.routePath),
@@ -73,7 +69,7 @@ export const devToolsPage = PageBlueprint.makeWithOverrides({
           children: content.get(coreExtensionData.reactElement),
         }));
         return import('../components/DevToolsPage').then(m =>
-          compatWrapper(<m.DevToolsPage extensions={extensions} />),
+          <m.DevToolsPage extensions={extensions} />
         );
       },
     });
@@ -84,7 +80,7 @@ export const devToolsPage = PageBlueprint.makeWithOverrides({
 export const devToolsNavItem = NavItemBlueprint.make({
   params: {
     title: 'DevTools',
-    routeRef: convertLegacyRouteRef(rootRouteRef),
+    routeRef: rootRouteRef,
     icon: BuildIcon,
   },
 });
@@ -94,7 +90,7 @@ export default createFrontendPlugin({
   pluginId: 'devtools',
   info: { packageJson: () => import('../../package.json') },
   routes: {
-    root: convertLegacyRouteRef(rootRouteRef),
+    root: rootRouteRef,
   },
   extensions: [devToolsApi, devToolsPage, devToolsNavItem],
 });

@@ -1,5 +1,59 @@
 # @backstage/plugin-catalog-graph
 
+## 0.5.4-next.0
+
+### Patch Changes
+
+- a67c144: Fixed zoom out description (replace `&amp;` with &)
+- d02db50: Remove unnecessary use of `compatWrapper` and `convertLegacyRouteRef`(s) for the new frontend system.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.2-next.0
+  - @backstage/core-plugin-api@1.12.1-next.0
+  - @backstage/plugin-catalog-react@1.21.4-next.0
+  - @backstage/core-components@0.18.4-next.0
+  - @backstage/catalog-client@1.12.1
+  - @backstage/catalog-model@1.7.6
+  - @backstage/types@1.2.2
+
+## 0.5.3
+
+### Patch Changes
+
+- a2d7ae7: Ensure the catalog graph entity card respects the height prop so the visualization scales down properly on wide screens.
+- 1c7e1ce: - Revert `viewbox` back to old values.
+  - Added `fullScreen` prop to `EntityCatalogGraphCard`
+- b2bef92: Convert all enums to erasable-syntax compliant patterns
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.0
+  - @backstage/core-compat-api@0.5.4
+  - @backstage/plugin-catalog-react@1.21.3
+  - @backstage/core-components@0.18.3
+  - @backstage/core-plugin-api@1.12.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/catalog-client@1.12.1
+
+## 0.5.3-next.2
+
+### Patch Changes
+
+- a2d7ae7: Ensure the catalog graph entity card respects the height prop so the visualization scales down properly on wide screens.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.3-next.2
+  - @backstage/frontend-plugin-api@0.12.2-next.2
+  - @backstage/core-components@0.18.3-next.2
+
+## 0.5.3-next.1
+
+### Patch Changes
+
+- b2bef92: Convert all enums to erasable-syntax compliant patterns
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.3-next.1
+  - @backstage/core-components@0.18.3-next.1
+  - @backstage/core-plugin-api@1.11.2-next.1
+  - @backstage/frontend-plugin-api@0.12.2-next.1
+  - @backstage/core-compat-api@0.5.4-next.0
+
 ## 0.5.3-next.0
 
 ### Patch Changes

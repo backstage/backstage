@@ -1,5 +1,51 @@
 # @backstage/plugin-catalog-backend-module-github-org
 
+## 0.3.17-next.1
+
+### Patch Changes
+
+- ed5a7a3: Introduce new configuration option to exclude suspended users from GitHub Enterprise instances.
+
+  When it’s set to true, suspended users won’t be returned when querying the organization users for GitHub Enterprise instances.
+  Note that this option should be used only against GitHub Enterprise instances, the property does not exist in the github.com GraphQL schema, setting it will cause a schema validation error and the syncing of users will fail.
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend-module-github@0.11.3-next.1
+
+## 0.3.17-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.1-next.0
+  - @backstage/plugin-catalog-backend-module-github@0.11.3-next.0
+  - @backstage/plugin-catalog-node@1.20.1-next.0
+  - @backstage/plugin-events-node@0.4.18-next.0
+  - @backstage/config@1.3.6
+
+## 0.3.16
+
+### Patch Changes
+
+- 999d1c1: Added configurable `pageSizes` for GitHub GraphQL API queries to prevent `RESOURCE_LIMITS_EXCEEDED` errors with organizations with large number of teams and members. Please see the [GitHub Org Data documentation](https://backstage.io/docs/integrations/github/org#configuration-details) for new configuration options.
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.20.0
+  - @backstage/backend-plugin-api@1.5.0
+  - @backstage/plugin-catalog-backend-module-github@0.11.2
+  - @backstage/plugin-events-node@0.4.17
+  - @backstage/config@1.3.6
+
+## 0.3.16-next.1
+
+### Patch Changes
+
+- 999d1c1: Added configurable `pageSizes` for GitHub GraphQL API queries to prevent `RESOURCE_LIMITS_EXCEEDED` errors with organizations with large number of teams and members. Please see the [GitHub Org Data documentation](https://backstage.io/docs/integrations/github/org#configuration-details) for new configuration options.
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.20.0-next.1
+  - @backstage/backend-plugin-api@1.5.0-next.1
+  - @backstage/plugin-catalog-backend-module-github@0.11.2-next.1
+  - @backstage/plugin-events-node@0.4.17-next.1
+
 ## 0.3.16-next.0
 
 ### Patch Changes

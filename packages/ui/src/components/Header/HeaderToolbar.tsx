@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import { Link, RouterProvider } from 'react-aria-components';
+import { Link } from 'react-aria-components';
 import { useStyles } from '../../hooks/useStyles';
+import { HeaderDefinition } from './definition';
 import { useRef } from 'react';
 import { RiShapesLine } from '@remixicon/react';
 import type { HeaderToolbarProps } from './types';
 import { Text } from '../Text';
-import { useNavigate, useHref } from 'react-router-dom';
 import styles from './Header.module.css';
 import clsx from 'clsx';
 
@@ -30,9 +30,9 @@ import clsx from 'clsx';
  * @internal
  */
 export const HeaderToolbar = (props: HeaderToolbarProps) => {
-  const { classNames, cleanedProps } = useStyles('Header', props);
-  const { icon, title, titleLink, customActions, hasTabs } = cleanedProps;
-  let navigate = useNavigate();
+  const { classNames, cleanedProps } = useStyles(HeaderDefinition, props);
+  const { className, icon, title, titleLink, customActions, hasTabs } =
+    cleanedProps;
 
   // Refs for collision detection
   const toolbarWrapperRef = useRef<HTMLDivElement>(null);
@@ -51,59 +51,61 @@ export const HeaderToolbar = (props: HeaderToolbarProps) => {
   );
 
   return (
-    <RouterProvider navigate={navigate} useHref={useHref}>
+    <div
+      className={clsx(
+        classNames.toolbar,
+        styles[classNames.toolbar],
+        className,
+      )}
+      data-has-tabs={hasTabs}
+    >
       <div
-        className={clsx(classNames.toolbar, styles[classNames.toolbar])}
-        data-has-tabs={hasTabs}
+        className={clsx(
+          classNames.toolbarWrapper,
+          styles[classNames.toolbarWrapper],
+        )}
+        ref={toolbarWrapperRef}
       >
         <div
           className={clsx(
-            classNames.toolbarWrapper,
-            styles[classNames.toolbarWrapper],
+            classNames.toolbarContent,
+            styles[classNames.toolbarContent],
           )}
-          ref={toolbarWrapperRef}
+          ref={toolbarContentRef}
         >
-          <div
-            className={clsx(
-              classNames.toolbarContent,
-              styles[classNames.toolbarContent],
+          <Text as="h1" variant="body-medium">
+            {titleLink ? (
+              <Link
+                className={clsx(
+                  classNames.toolbarName,
+                  styles[classNames.toolbarName],
+                )}
+                href={titleLink}
+              >
+                {titleContent}
+              </Link>
+            ) : (
+              <div
+                className={clsx(
+                  classNames.toolbarName,
+                  styles[classNames.toolbarName],
+                )}
+              >
+                {titleContent}
+              </div>
             )}
-            ref={toolbarContentRef}
-          >
-            <Text as="h1" variant="body-medium">
-              {titleLink ? (
-                <Link
-                  className={clsx(
-                    classNames.toolbarName,
-                    styles[classNames.toolbarName],
-                  )}
-                  href={titleLink}
-                >
-                  {titleContent}
-                </Link>
-              ) : (
-                <div
-                  className={clsx(
-                    classNames.toolbarName,
-                    styles[classNames.toolbarName],
-                  )}
-                >
-                  {titleContent}
-                </div>
-              )}
-            </Text>
-          </div>
-          <div
-            className={clsx(
-              classNames.toolbarControls,
-              styles[classNames.toolbarControls],
-            )}
-            ref={toolbarControlsRef}
-          >
-            {customActions}
-          </div>
+          </Text>
+        </div>
+        <div
+          className={clsx(
+            classNames.toolbarControls,
+            styles[classNames.toolbarControls],
+          )}
+          ref={toolbarControlsRef}
+        >
+          {customActions}
         </div>
       </div>
-    </RouterProvider>
+    </div>
   );
 };

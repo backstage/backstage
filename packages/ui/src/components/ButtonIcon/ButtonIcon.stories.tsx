@@ -17,7 +17,9 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { ButtonIcon } from './ButtonIcon';
 import { Flex } from '../Flex';
+import { Text } from '../Text';
 import { RiCloudLine } from '@remixicon/react';
+import { useState } from 'react';
 
 const meta = {
   title: 'Backstage UI/ButtonIcon',
@@ -82,4 +84,92 @@ export const Responsive: Story = {
     },
   },
   render: args => <ButtonIcon {...args} icon={<RiCloudLine />} />,
+};
+
+export const Loading: Story = {
+  render: () => {
+    const [isLoading, setIsLoading] = useState(false);
+
+    const handleClick = () => {
+      setIsLoading(true);
+      setTimeout(() => {
+        setIsLoading(false);
+      }, 3000);
+    };
+
+    return (
+      <ButtonIcon
+        variant="primary"
+        icon={<RiCloudLine />}
+        loading={isLoading}
+        onPress={handleClick}
+      />
+    );
+  },
+};
+
+export const LoadingVariants: Story = {
+  render: () => (
+    <Flex direction="column" gap="4">
+      <Text>Primary</Text>
+      <Flex align="center" gap="4">
+        <ButtonIcon
+          variant="primary"
+          size="small"
+          icon={<RiCloudLine />}
+          loading
+        />
+        <ButtonIcon
+          variant="primary"
+          size="medium"
+          icon={<RiCloudLine />}
+          loading
+        />
+      </Flex>
+
+      <Text>Secondary</Text>
+      <Flex align="center" gap="4">
+        <ButtonIcon
+          variant="secondary"
+          size="small"
+          icon={<RiCloudLine />}
+          loading
+        />
+        <ButtonIcon
+          variant="secondary"
+          size="medium"
+          icon={<RiCloudLine />}
+          loading
+        />
+      </Flex>
+
+      <Text>Tertiary</Text>
+      <Flex align="center" gap="4">
+        <ButtonIcon
+          variant="tertiary"
+          size="small"
+          icon={<RiCloudLine />}
+          loading
+        />
+        <ButtonIcon
+          variant="tertiary"
+          size="medium"
+          icon={<RiCloudLine />}
+          loading
+        />
+      </Flex>
+
+      <Text>Loading vs Disabled</Text>
+      <Flex align="center" gap="4">
+        <ButtonIcon variant="primary" icon={<RiCloudLine />} loading />
+        <ButtonIcon variant="primary" icon={<RiCloudLine />} isDisabled />
+        <ButtonIcon
+          variant="primary"
+          icon={<RiCloudLine />}
+          loading
+          isDisabled
+        />
+      </Flex>
+    </Flex>
+  ),
 };

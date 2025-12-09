@@ -1,5 +1,26 @@
 # @backstage/plugin-kubernetes-common
 
+## 0.9.9-next.0
+
+### Patch Changes
+
+- 8fa8d87: Add Kubernetes Plugin Secrets Accordion with masked secret datas
+
+## 0.9.8
+
+### Patch Changes
+
+- 1906d37: Updated dependency `@kubernetes/client-node` to `1.4.0`.
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.3
+  - @backstage/catalog-model@1.7.6
+
+## 0.9.8-next.1
+
+### Patch Changes
+
+- 1906d37: Updated dependency `@kubernetes/client-node` to `1.4.0`.
+
 ## 0.9.8-next.0
 
 ### Patch Changes

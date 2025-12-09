@@ -13,13 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/* We want to maintain the same information as an enum, so we disable the redeclaration warning */
+/* eslint-disable @typescript-eslint/no-redeclare */
 
 import { BackstagePackage, BackstagePackageJson } from '@backstage/cli-node';
 
-export enum Output {
-  esm,
-  cjs,
-  types,
+export const Output = {
+  esm: 0,
+  cjs: 1,
+  types: 2,
+} as const;
+
+/**
+ * @public
+ */
+export type Output = (typeof Output)[keyof typeof Output];
+
+/**
+ * @public
+ */
+export namespace Output {
+  export type esm = typeof Output.esm;
+  export type cjs = typeof Output.cjs;
+  export type types = typeof Output.types;
 }
 
 export type BuildOptions = {

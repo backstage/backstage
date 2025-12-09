@@ -19,6 +19,7 @@ import { Text } from '../Text';
 import { RiArrowRightSLine } from '@remixicon/react';
 import { Tabs, TabList, Tab } from '../Tabs';
 import { useStyles } from '../../hooks/useStyles';
+import { HeaderPageDefinition } from './definition';
 import { Container } from '../Container';
 import { Link } from '../Link';
 import { Fragment } from 'react/jsx-runtime';
@@ -31,11 +32,13 @@ import clsx from 'clsx';
  * @public
  */
 export const HeaderPage = (props: HeaderPageProps) => {
-  const { classNames, cleanedProps } = useStyles('HeaderPage', props);
-  const { title, tabs, customActions, breadcrumbs } = cleanedProps;
+  const { classNames, cleanedProps } = useStyles(HeaderPageDefinition, props);
+  const { className, title, tabs, customActions, breadcrumbs } = cleanedProps;
 
   return (
-    <Container className={clsx(classNames.root, styles[classNames.root])}>
+    <Container
+      className={clsx(classNames.root, styles[classNames.root], className)}
+    >
       <div className={clsx(classNames.content, styles[classNames.content])}>
         <div
           className={clsx(

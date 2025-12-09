@@ -1,5 +1,48 @@
 # @backstage/create-app
 
+## 0.7.7-next.1
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.16-next.1
+
+## 0.7.7-next.0
+
+### Patch Changes
+
+- c8c2329: Add proxy configuration from env-vars to create-app tasks
+- Updated dependencies
+  - @backstage/cli-common@0.1.16-next.0
+
+## 0.7.6
+
+### Patch Changes
+
+- 2c1fe37: Bumped create-app version.
+- 20fae88: Bumped create-app version.
+- 9f939a6: Added `@backstage/plugin-app-visualizer` to the app in the `--next` template.
+- fc7cbfc: Added the new `@backstage/cli/templates/catalog-provider-module` template to the explicit template configuration for the `next-app` template.
+
+## 0.7.6-next.3
+
+### Patch Changes
+
+- Bumped create-app version.
+
+## 0.7.6-next.2
+
+### Patch Changes
+
+- 9f939a6: Added `@backstage/plugin-app-visualizer` to the app in the `--next` template.
+
+## 0.7.6-next.1
+
+### Patch Changes
+
+- Bumped create-app version.
+
 ## 0.7.6-next.0
 
 ### Patch Changes

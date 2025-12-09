@@ -25,8 +25,8 @@ import { FieldLabel } from '../FieldLabel';
 import { FieldError } from '../FieldError';
 import { RiSearch2Line, RiCloseCircleLine } from '@remixicon/react';
 import { useStyles } from '../../hooks/useStyles';
-import stylesSearchField from './SearchField.module.css';
-import stylesTextField from '../TextField/TextField.module.css';
+import { SearchFieldDefinition } from './definition';
+import styles from './SearchField.module.css';
 
 import type { SearchFieldProps } from './types';
 
@@ -50,19 +50,15 @@ export const SearchField = forwardRef<HTMLDivElement, SearchFieldProps>(
       }
     }, [label, ariaLabel, ariaLabelledBy]);
 
-    const { classNames: textFieldClassNames } = useStyles('TextField');
-
-    const {
-      classNames: searchFieldClassNames,
-      dataAttributes,
-      style,
-      cleanedProps,
-    } = useStyles('SearchField', {
-      size: 'small',
-      placeholder: 'Search',
-      startCollapsed: false,
-      ...props,
-    });
+    const { classNames, dataAttributes, style, cleanedProps } = useStyles(
+      SearchFieldDefinition,
+      {
+        size: 'small',
+        placeholder: 'Search',
+        startCollapsed: false,
+        ...props,
+      },
+    );
 
     const {
       className,
@@ -101,13 +97,7 @@ export const SearchField = forwardRef<HTMLDivElement, SearchFieldProps>(
 
     return (
       <AriaSearchField
-        className={clsx(
-          textFieldClassNames.root,
-          searchFieldClassNames.root,
-          stylesTextField[textFieldClassNames.root],
-          stylesSearchField[searchFieldClassNames.root],
-          className,
-        )}
+        className={clsx(classNames.root, styles[classNames.root], className)}
         {...dataAttributes}
         aria-label={ariaLabel}
         aria-labelledby={ariaLabelledBy}
@@ -125,16 +115,16 @@ export const SearchField = forwardRef<HTMLDivElement, SearchFieldProps>(
         />
         <div
           className={clsx(
-            textFieldClassNames.inputWrapper,
-            stylesTextField[textFieldClassNames.inputWrapper],
+            classNames.inputWrapper,
+            styles[classNames.inputWrapper],
           )}
           data-size={dataAttributes['data-size']}
         >
           {icon !== false && (
             <div
               className={clsx(
-                textFieldClassNames.inputIcon,
-                stylesTextField[textFieldClassNames.inputIcon],
+                classNames.inputIcon,
+                styles[classNames.inputIcon],
               )}
               data-size={dataAttributes['data-size']}
               aria-hidden="true"
@@ -143,18 +133,12 @@ export const SearchField = forwardRef<HTMLDivElement, SearchFieldProps>(
             </div>
           )}
           <Input
-            className={clsx(
-              textFieldClassNames.input,
-              stylesTextField[textFieldClassNames.input],
-            )}
+            className={clsx(classNames.input, styles[classNames.input])}
             {...(icon !== false && { 'data-icon': true })}
             placeholder={placeholder}
           />
           <Button
-            className={clsx(
-              searchFieldClassNames.clear,
-              stylesSearchField[searchFieldClassNames.clear],
-            )}
+            className={clsx(classNames.clear, styles[classNames.clear])}
             data-size={dataAttributes['data-size']}
           >
             <RiCloseCircleLine />

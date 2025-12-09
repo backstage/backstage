@@ -16,3 +16,4 @@
 
 export * from './SearchField';
 export * from './types';
+export { SearchFieldDefinition } from './definition';

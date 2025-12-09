@@ -92,7 +92,7 @@ export function BuiThemePreview({ mode, styleObject }: IsolatedPreviewProps) {
                   { value: 'option3', label: 'Option 3' },
                 ]}
               />
-              <Checkbox label="Checkbox Option" />
+              <Checkbox>Checkbox Option</Checkbox>
               <RadioGroup label="Radio Group" orientation="horizontal">
                 <Radio value="option-1">Option 1</Radio>
                 <Radio value="option-2">Option 2</Radio>

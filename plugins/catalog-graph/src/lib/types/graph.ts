@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/* We want to maintain the same information as an enum, so we disable the redeclaration warning */
+/* eslint-disable @typescript-eslint/no-redeclare */
 
 import { DependencyGraphTypes } from '@backstage/core-components';
 import { MouseEventHandler } from 'react';
@@ -107,21 +109,36 @@ export type EntityNode = DependencyGraphTypes.DependencyNode<EntityNodeData>;
  *
  * @public
  */
-export enum Direction {
+export const Direction = {
   /**
    * Top to bottom.
    */
-  TOP_BOTTOM = 'TB',
+  TOP_BOTTOM: 'TB',
   /**
    * Bottom to top.
    */
-  BOTTOM_TOP = 'BT',
+  BOTTOM_TOP: 'BT',
   /**
    * Left to right.
    */
-  LEFT_RIGHT = 'LR',
+  LEFT_RIGHT: 'LR',
   /**
    * Right to left.
    */
-  RIGHT_LEFT = 'RL',
+  RIGHT_LEFT: 'RL',
+} as const;
+
+/**
+ * @public
+ */
+export type Direction = (typeof Direction)[keyof typeof Direction];
+
+/**
+ * @public
+ */
+export namespace Direction {
+  export type TOP_BOTTOM = typeof Direction.TOP_BOTTOM;
+  export type BOTTOM_TOP = typeof Direction.BOTTOM_TOP;
+  export type LEFT_RIGHT = typeof Direction.LEFT_RIGHT;
+  export type RIGHT_LEFT = typeof Direction.RIGHT_LEFT;
 }

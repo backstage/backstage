@@ -1,5 +1,48 @@
 # @backstage/plugin-catalog-backend-module-unprocessed
 
+## 0.6.7-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-unprocessed-entities-common@0.0.12-next.0
+
+## 0.6.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.10-next.0
+  - @backstage/backend-plugin-api@1.5.1-next.0
+  - @backstage/plugin-catalog-node@1.20.1-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/errors@1.2.7
+  - @backstage/plugin-catalog-unprocessed-entities-common@0.0.11
+  - @backstage/plugin-permission-common@0.9.3
+
+## 0.6.6
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.20.0
+  - @backstage/backend-plugin-api@1.5.0
+  - @backstage/plugin-permission-common@0.9.3
+  - @backstage/plugin-auth-node@0.6.9
+  - @backstage/catalog-model@1.7.6
+  - @backstage/plugin-catalog-unprocessed-entities-common@0.0.11
+
+## 0.6.6-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.20.0-next.1
+  - @backstage/backend-plugin-api@1.5.0-next.1
+  - @backstage/plugin-permission-common@0.9.3-next.1
+  - @backstage/plugin-auth-node@0.6.9-next.1
+
 ## 0.6.6-next.0
 
 ### Patch Changes

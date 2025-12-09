@@ -17,21 +17,29 @@ import { Label } from 'react-aria-components';
 import { forwardRef } from 'react';
 import type { FieldLabelProps } from './types';
 import { useStyles } from '../../hooks/useStyles';
+import { FieldLabelDefinition } from './definition';
 import styles from './FieldLabel.module.css';
 import clsx from 'clsx';
 
 /** @public */
 export const FieldLabel = forwardRef<HTMLDivElement, FieldLabelProps>(
   (props: FieldLabelProps, ref) => {
-    const { classNames, cleanedProps } = useStyles('FieldLabel', props);
-    const { label, secondaryLabel, description, htmlFor, id, ...rest } =
-      cleanedProps;
+    const { classNames, cleanedProps } = useStyles(FieldLabelDefinition, props);
+    const {
+      className,
+      label,
+      secondaryLabel,
+      description,
+      htmlFor,
+      id,
+      ...rest
+    } = cleanedProps;
 
     if (!label) return null;
 
     return (
       <div
-        className={clsx(classNames.root, styles[classNames.root])}
+        className={clsx(classNames.root, styles[classNames.root], className)}
         {...rest}
         ref={ref}
       >

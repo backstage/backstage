@@ -39,10 +39,10 @@ describe('collectRouteIds', () => {
     const extRef = createExternalRouteRef();
 
     expect(String(ref)).toMatch(
-      /^RouteRef\{created at '.*collectRouteIds\.test\.ts.*'\}$/,
+      /^routeRef\{id=undefined,at='.*collectRouteIds\.test\.ts.*'\}$/,
     );
     expect(String(extRef)).toMatch(
-      /^ExternalRouteRef\{created at '.*collectRouteIds\.test\.ts.*'\}$/,
+      /^externalRouteRef\{id=undefined,at='.*collectRouteIds\.test\.ts.*'\}$/,
     );
 
     const collected = collectRouteIds(
@@ -62,8 +62,12 @@ describe('collectRouteIds', () => {
       'test.extRef': extRef,
     });
 
-    expect(String(ref)).toBe('RouteRef{test.ref}');
-    expect(String(extRef)).toBe('ExternalRouteRef{test.extRef}');
+    expect(String(ref)).toMatch(
+      /^routeRef\{id=test.ref,at='.*collectRouteIds\.test\.ts.*'\}$/,
+    );
+    expect(String(extRef)).toMatch(
+      /^externalRouteRef\{id=test.extRef,at='.*collectRouteIds\.test\.ts.*'\}$/,
+    );
   });
 
   it('should report duplicate route IDs', () => {

@@ -1,5 +1,31 @@
 # @backstage/plugin-bitbucket-cloud-common
 
+## 0.3.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.18.3-next.0
+
+## 0.3.4
+
+### Patch Changes
+
+- fa255f5: Support for Bitbucket Cloud's API token was added as `appPassword` is deprecated (no new creation from September 9, 2025) and will be removed on June 9, 2026.
+
+  API token usage example:
+
+  ```yaml
+  integrations:
+    bitbucketCloud:
+      - username: user@domain.com
+        token: my-token
+  ```
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/integration@1.18.2
+
 ## 0.3.4-next.0
 
 ### Patch Changes

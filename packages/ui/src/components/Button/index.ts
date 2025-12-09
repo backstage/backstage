@@ -16,3 +16,4 @@
 
 export * from './Button';
 export * from './types';
+export { ButtonDefinition } from './definition';

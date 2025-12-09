@@ -1,5 +1,417 @@
 # @backstage/ui
 
+## 0.10.0-next.1
+
+### Minor Changes
+
+- 16543fa: **Breaking change** The `Cell` component has been refactored to be a generic wrapper component that accepts `children` for custom cell content. The text-specific functionality (previously part of `Cell`) has been moved to a new `CellText` component.
+
+  ### Migration Guide
+
+  If you were using `Cell` with text-specific props (`title`, `description`, `leadingIcon`, `href`), you need to update your code to use `CellText` instead:
+
+  **Before:**
+
+  ```tsx
+  <Cell
+    title="My Title"
+    description="My description"
+    leadingIcon={<Icon />}
+    href="/path"
+  />
+  ```
+
+  **After:**
+
+  ```tsx
+  <CellText
+    title="My Title"
+    description="My description"
+    leadingIcon={<Icon />}
+    href="/path"
+  />
+  ```
+
+  For custom cell content, use the new generic `Cell` component:
+
+  ```tsx
+  <Cell>{/* Your custom content */}</Cell>
+  ```
+
+### Patch Changes
+
+- 50b7927: Fixed Checkbox indicator showing checkmark color when unchecked.
+
+  Affected components: Checkbox
+
+- 5bacf55: Fixed `ButtonIcon` incorrectly applying `className` to inner elements instead of only the root element.
+
+  Affected components: ButtonIcon
+
+- a20d317: Added row selection support with visual state styling for hover, selected, and pressed states. Fixed checkbox rendering to only show for multi-select toggle mode.
+
+  Affected components: Table, TableHeader, Row, Column
+
+## 0.9.1-next.0
+
+### Patch Changes
+
+- b3ad928: Fixed Table Row component to correctly handle cases where no `href` is provided, preventing unnecessary router provider wrapping and fixing the cursor incorrectly showing as a pointer despite the element not being a link.
+
+  Affected components: Row
+
+- fe7c751: Fixed `useTable` hook to prioritize `providedRowCount` over data length for accurate row count in server-side pagination scenarios.
+- c145031: Fixed Table column sorting indicator to show up arrow when no sort is active, correctly indicating that clicking will sort ascending.
+
+  Affected components: Column
+
+## 0.9.0
+
+### Minor Changes
+
+- 539cf26: **BREAKING**: Migrated Avatar component from Base UI to custom implementation with size changes:
+
+  - Base UI-specific props are no longer supported
+  - Size values have been updated:
+    - New `x-small` size added (1.25rem / 20px)
+    - `small` size unchanged (1.5rem / 24px)
+    - `medium` size unchanged (2rem / 32px, default)
+    - `large` size **changed from 3rem to 2.5rem** (40px)
+    - New `x-large` size added (3rem / 48px)
+
+  Migration:
+
+  ```diff
+  # Remove Base UI-specific props
+  - <Avatar src="..." name="..." render={...} />
+  + <Avatar src="..." name="..." />
+
+  # Update large size usage to x-large for same visual size
+  - <Avatar src="..." name="..." size="large" />
+  + <Avatar src="..." name="..." size="x-large" />
+  ```
+
+  Added `purpose` prop for accessibility control (`'informative'` or `'decoration'`).
+
+- 5c614ff: **BREAKING**: Migrated Checkbox component from Base UI to React Aria Components.
+
+  API changes required:
+
+  - `checked` → `isSelected`
+  - `defaultChecked` → `defaultSelected`
+  - `disabled` → `isDisabled`
+  - `required` → `isRequired`
+  - `label` prop removed - use `children` instead
+  - CSS: `bui-CheckboxLabel` class removed
+  - Data attribute: `data-checked` → `data-selected`
+  - Use without label is no longer supported
+
+  Migration examples:
+
+  Before:
+
+  ```tsx
+  <Checkbox label="Accept terms" checked={agreed} onChange={setAgreed} />
+  ```
+
+  After:
+
+  ```tsx
+  <Checkbox isSelected={agreed} onChange={setAgreed}>
+    Accept terms
+  </Checkbox>
+  ```
+
+  Before:
+
+  ```tsx
+  <Checkbox label="Option" disabled />
+  ```
+
+  After:
+
+  ```tsx
+  <Checkbox isDisabled>Option</Checkbox>
+  ```
+
+  Before:
+
+  ```tsx
+  <Checkbox />
+  ```
+
+  After:
+
+  ```tsx
+  <Checkbox>
+    <VisuallyHidden>Accessible label</VisuallyHidden>
+  </Checkbox>
+  ```
+
+- 134151f: Fixing styles on SearchField in Backstage UI after migration to CSS modules. `SearchField` has now its own set of class names. We previously used class names from `TextField` but this approach was creating some confusion so going forward in your theme you'll be able to theme `TextField` and `SearchField` separately.
+- a67670d: **BREAKING**: Removed central `componentDefinitions` object and related type utilities (`ComponentDefinitionName`, `ComponentClassNames`).
+
+  Component definitions are primarily intended for documenting the CSS class API for theming purposes, not for programmatic use in JavaScript/TypeScript.
+
+  **Migration Guide:**
+
+  If you were using component definitions or class names to build custom components, we recommend migrating to either:
+
+  - Use Backstage UI components directly as building blocks, or
+  - Duplicate the component CSS in your own stylesheets instead of relying on internal class names
+
+- b78fc45: **BREAKING**: Changed className prop behavior to augment default styles instead of being ignored or overriding them.
+
+  Affected components:
+
+  - Menu, MenuListBox, MenuAutocomplete, MenuAutocompleteListbox, MenuItem, MenuListBoxItem, MenuSection, MenuSeparator
+  - Switch
+  - Skeleton
+  - FieldLabel
+  - Header, HeaderToolbar
+  - HeaderPage
+  - Tabs, TabList, Tab, TabPanel
+
+  If you were passing custom className values to any of these components that relied on the previous behavior, you may need to adjust your styles to account for the default classes now being applied alongside your custom classes.
+
+- 83c100e: **BREAKING**: Removed `Collapsible` component. Migrate to `Accordion` or use React Aria `Disclosure`.
+
+  ## Migration Path 1: Accordion (Opinionated Styled Component)
+
+  Accordion provides preset styling with a similar component structure.
+
+  ```diff
+  - import { Collapsible } from '@backstage/ui';
+  + import { Accordion, AccordionTrigger, AccordionPanel } from '@backstage/ui';
+
+  - <Collapsible.Root>
+  -   <Collapsible.Trigger render={(props) => <Button {...props}>Toggle</Button>} />
+  -   <Collapsible.Panel>Content</Collapsible.Panel>
+  - </Collapsible.Root>
+
+  + <Accordion>
+  +   <AccordionTrigger title="Toggle" />
+  +   <AccordionPanel>Content</AccordionPanel>
+  + </Accordion>
+  ```
+
+  CSS classes: `.bui-CollapsibleRoot` → `.bui-Accordion`, `.bui-CollapsibleTrigger` → `.bui-AccordionTrigger` (now on heading element), `.bui-CollapsiblePanel` → `.bui-AccordionPanel`
+
+  ## Migration Path 2: React Aria Disclosure (Full Customization)
+
+  For custom styling without preset styles:
+
+  ```tsx
+  import { Disclosure, Button, DisclosurePanel } from 'react-aria-components';
+
+  <Disclosure>
+    <Button slot="trigger">Toggle</Button>
+    <DisclosurePanel>Content</DisclosurePanel>
+  </Disclosure>;
+  ```
+
+- 816af0f: **BREAKING**: The `SelectProps` interface now accepts a generic type parameter for selection mode.
+
+  Added searchable and multiple selection support to Select component. The component now accepts `searchable`, `selectionMode`, and `searchPlaceholder` props to enable filtering and multi-selection modes.
+
+  Migration: If you're using `SelectProps` type directly, update from `SelectProps` to `SelectProps<'single' | 'multiple'>`. Component usage remains backward compatible.
+
+### Patch Changes
+
+- d01de00: Fix broken external links in Backstage UI Header component.
+- 35a3614: Fixed CSS issues in Select component including popover width constraints, focus outline behavior, and overflow handling.
+- 01476f0: Improved visual consistency of PasswordField, SearchField, and MenuAutocomplete components.
+- 26c6a78: Fix default text color in Backstage UI
+- deaa427: Fixed Text component to prevent `truncate` prop from being spread to the underlying DOM element.
+- 1059f95: Improved the Link component structure in Backstage UI.
+- 836b0c7: Fixed dialog backdrop appearance in dark mode.
+- 6874094: Migrated CellProfile component from Base UI Avatar to Backstage UI Avatar component.
+- 719d772: Avatar components in x-small and small sizes now display only one initial instead of two, improving readability at smaller dimensions.
+- 6d35a6b: Removed `@base-ui-components/react` dependency as all components now use React Aria Components.
+- dac851f: Fix the default font size in Backstage UI.
+- 3c0ea67: Fix CSS layer ordering in Backstage UI to make sure component styles are loaded after tokens and base declarations.
+- 3b18d80: Fixed RadioGroup radio button ellipse distortion by preventing flex shrink and grow.
+- 4eb455c: Fix font smoothing as default in Backstage UI.
+- ff9f0c3: Enable tree-shaking of imports other than `*.css`.
+- 7839e7b: Added `loading` prop to Button and ButtonIcon components for displaying spinner during async operations.
+- a00fb88: Fixed Table Row component to properly support opening links in new tabs via right-click or Cmd+Click when using the `href` prop.
+- e16ece5: Set the color-scheme property depending on theme
+- 1ef3ca4: Added new VisuallyHidden component for hiding content visually while keeping it accessible to screen readers.
+- 00bfb83: Fix default font wight and font family in Backstage UI.
+
+## 0.9.0-next.3
+
+### Minor Changes
+
+- 83c100e: **BREAKING**: Removed `Collapsible` component. Migrate to `Accordion` or use React Aria `Disclosure`.
+
+  ## Migration Path 1: Accordion (Opinionated Styled Component)
+
+  Accordion provides preset styling with a similar component structure.
+
+  ```diff
+  - import { Collapsible } from '@backstage/ui';
+  + import { Accordion, AccordionTrigger, AccordionPanel } from '@backstage/ui';
+
+  - <Collapsible.Root>
+  -   <Collapsible.Trigger render={(props) => <Button {...props}>Toggle</Button>} />
+  -   <Collapsible.Panel>Content</Collapsible.Panel>
+  - </Collapsible.Root>
+
+  + <Accordion>
+  +   <AccordionTrigger title="Toggle" />
+  +   <AccordionPanel>Content</AccordionPanel>
+  + </Accordion>
+  ```
+
+  CSS classes: `.bui-CollapsibleRoot` → `.bui-Accordion`, `.bui-CollapsibleTrigger` → `.bui-AccordionTrigger` (now on heading element), `.bui-CollapsiblePanel` → `.bui-AccordionPanel`
+
+  ## Migration Path 2: React Aria Disclosure (Full Customization)
+
+  For custom styling without preset styles:
+
+  ```tsx
+  import { Disclosure, Button, DisclosurePanel } from 'react-aria-components';
+
+  <Disclosure>
+    <Button slot="trigger">Toggle</Button>
+    <DisclosurePanel>Content</DisclosurePanel>
+  </Disclosure>;
+  ```
+
+- 816af0f: **BREAKING**: The `SelectProps` interface now accepts a generic type parameter for selection mode.
+
+  Added searchable and multiple selection support to Select component. The component now accepts `searchable`, `selectionMode`, and `searchPlaceholder` props to enable filtering and multi-selection modes.
+
+  Migration: If you're using `SelectProps` type directly, update from `SelectProps` to `SelectProps<'single' | 'multiple'>`. Component usage remains backward compatible.
+
+### Patch Changes
+
+- 35a3614: Fixed CSS issues in Select component including popover width constraints, focus outline behavior, and overflow handling.
+- 01476f0: Improved visual consistency of PasswordField, SearchField, and MenuAutocomplete components.
+- 836b0c7: Fixed dialog backdrop appearance in dark mode.
+- 6d35a6b: Removed `@base-ui-components/react` dependency as all components now use React Aria Components.
+- 7839e7b: Added `loading` prop to Button and ButtonIcon components for displaying spinner during async operations.
+- a00fb88: Fixed Table Row component to properly support opening links in new tabs via right-click or Cmd+Click when using the href prop.
+
+## 0.9.0-next.2
+
+### Minor Changes
+
+- 539cf26: **BREAKING**: Migrated Avatar component from Base UI to custom implementation with size changes:
+
+  - Base UI-specific props are no longer supported
+  - Size values have been updated:
+    - New `x-small` size added (1.25rem / 20px)
+    - `small` size unchanged (1.5rem / 24px)
+    - `medium` size unchanged (2rem / 32px, default)
+    - `large` size **changed from 3rem to 2.5rem** (40px)
+    - New `x-large` size added (3rem / 48px)
+
+  Migration:
+
+  ```diff
+  # Remove Base UI-specific props
+  - <Avatar src="..." name="..." render={...} />
+  + <Avatar src="..." name="..." />
+
+  # Update large size usage to x-large for same visual size
+  - <Avatar src="..." name="..." size="large" />
+  + <Avatar src="..." name="..." size="x-large" />
+  ```
+
+  Added `purpose` prop for accessibility control (`'informative'` or `'decoration'`).
+
+- 134151f: Fixing styles on SearchField in Backstage UI after migration to CSS modules. `SearchField` has now its own set of class names. We previously used class names from `TextField` but this approach was creating some confusion so going forward in your theme you'll be able to theme `TextField` and `SearchField` separately.
+
+### Patch Changes
+
+- d01de00: Fix broken external links in Backstage UI Header component.
+- deaa427: Fixed Text component to prevent `truncate` prop from being spread to the underlying DOM element.
+- 1059f95: Improved the Link component structure in Backstage UI.
+- 6874094: Migrated CellProfile component from Base UI Avatar to Backstage UI Avatar component.
+- 719d772: Avatar components in x-small and small sizes now display only one initial instead of two, improving readability at smaller dimensions.
+- 3b18d80: Fixed RadioGroup radio button ellipse distortion by preventing flex shrink and grow.
+- e16ece5: Set the color-scheme property depending on theme
+
+## 0.9.0-next.1
+
+### Minor Changes
+
+- 5c614ff: **BREAKING**: Migrated Checkbox component from Base UI to React Aria Components.
+
+  API changes required:
+
+  - `checked` → `isSelected`
+  - `defaultChecked` → `defaultSelected`
+  - `disabled` → `isDisabled`
+  - `required` → `isRequired`
+  - `label` prop removed - use `children` instead
+  - CSS: `bui-CheckboxLabel` class removed
+  - Data attribute: `data-checked` → `data-selected`
+  - Use without label is no longer supported
+
+  Migration examples:
+
+  Before:
+
+  ```tsx
+  <Checkbox label="Accept terms" checked={agreed} onChange={setAgreed} />
+  ```
+
+  After:
+
+  ```tsx
+  <Checkbox isSelected={agreed} onChange={setAgreed}>
+    Accept terms
+  </Checkbox>
+  ```
+
+  Before:
+
+  ```tsx
+  <Checkbox label="Option" disabled />
+  ```
+
+  After:
+
+  ```tsx
+  <Checkbox isDisabled>Option</Checkbox>
+  ```
+
+  Before:
+
+  ```tsx
+  <Checkbox />
+  ```
+
+  After:
+
+  ```tsx
+  <Checkbox>
+    <VisuallyHidden>Accessible label</VisuallyHidden>
+  </Checkbox>
+  ```
+
+- b78fc45: **BREAKING**: Changed className prop behavior to augment default styles instead of being ignored or overriding them.
+
+  Affected components:
+
+  - Menu, MenuListBox, MenuAutocomplete, MenuAutocompleteListbox, MenuItem, MenuListBoxItem, MenuSection, MenuSeparator
+  - Switch
+  - Skeleton
+  - FieldLabel
+  - Header, HeaderToolbar
+  - HeaderPage
+  - Tabs, TabList, Tab, TabPanel
+
+  If you were passing custom className values to any of these components that relied on the previous behavior, you may need to adjust your styles to account for the default classes now being applied alongside your custom classes.
+
+### Patch Changes
+
+- ff9f0c3: Enable tree-shaking of imports other than `*.css`.
+- 1ef3ca4: Added new VisuallyHidden component for hiding content visually while keeping it accessible to screen readers.
+
 ## 0.8.2-next.0
 
 ### Patch Changes

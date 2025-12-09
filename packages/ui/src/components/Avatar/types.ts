@@ -14,12 +14,29 @@
  * limitations under the License.
  */
 
-import { Avatar } from '@base-ui-components/react/avatar';
-
 /** @public */
-export interface AvatarProps
-  extends React.ComponentPropsWithoutRef<typeof Avatar.Root> {
+export interface AvatarProps extends React.ComponentPropsWithoutRef<'div'> {
+  /**
+   * URL of the image to display
+   */
   src: string;
+
+  /**
+   * Name of the person - used for generating initials and accessibility labels
+   */
   name: string;
-  size?: 'small' | 'medium' | 'large';
+
+  /**
+   * Size of the avatar
+   * @defaultValue 'medium'
+   */
+  size?: 'x-small' | 'small' | 'medium' | 'large' | 'x-large';
+
+  /**
+   * Determines how the avatar is presented to assistive technologies.
+   * - 'informative': Avatar is announced as "\{name\}" to screen readers
+   * - 'decoration': Avatar is hidden from screen readers (use when name appears in adjacent text)
+   * @defaultValue 'informative'
+   */
+  purpose?: 'decoration' | 'informative';
 }

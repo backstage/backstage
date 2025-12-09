@@ -1,5 +1,44 @@
 # @backstage/backend-app-api
 
+## 1.4.0-next.0
+
+### Minor Changes
+
+- 5a2d538: Introduced backend startup result tracking and error handling. The `Backend.start()` method now returns a `BackendStartupResult` with detailed success/failure status and timing information for all plugins and modules. When startup fails, a `BackendStartupError` is thrown that includes the complete startup results, making it easier to diagnose which plugins or modules failed.
+
+  This also improves the default error message when backend startup fails, and of course makes it possible to craft your own custom error reporting based on the startup results.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.1-next.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+
+## 1.3.0
+
+### Minor Changes
+
+- a17d9df: Updates API for `instanceMetadata` service to return a list of plugins not features.
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.0
+  - @backstage/config@1.3.6
+
+## 1.3.0-next.1
+
+### Minor Changes
+
+- a17d9df: Updates API for `instanceMetadata` service to return a list of plugins not features.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.0-next.1
+
 ## 1.2.9-next.0
 
 ### Patch Changes

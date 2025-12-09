@@ -18,12 +18,16 @@ import {
   CellProps as ReactAriaCellProps,
   ColumnProps as AriaColumnProps,
 } from 'react-aria-components';
+import type { TextColors } from '../../types';
 
 /** @public */
-export interface CellProps extends ReactAriaCellProps {
+export interface CellProps extends ReactAriaCellProps {}
+
+/** @public */
+export interface CellTextProps extends ReactAriaCellProps {
   title: string;
   description?: string;
-  color?: 'primary' | 'secondary';
+  color?: TextColors;
   leadingIcon?: React.ReactNode | null;
   href?: string;
 }
@@ -34,7 +38,7 @@ export interface CellProfileProps extends ReactAriaCellProps {
   name?: string;
   href?: string;
   description?: string;
-  color?: 'primary' | 'secondary';
+  color?: TextColors;
 }
 
 /** @public */

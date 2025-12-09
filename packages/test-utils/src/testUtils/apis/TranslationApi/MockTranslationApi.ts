@@ -25,7 +25,7 @@ import ObservableImpl from 'zen-observable';
 import { Observable } from '@backstage/types';
 // Internal import to avoid code duplication, this will lead to duplication in build output
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { toInternalTranslationRef } from '../../../../../core-plugin-api/src/translation/TranslationRef';
+import { toInternalTranslationRef } from '../../../../../frontend-plugin-api/src/translation/TranslationRef';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { JsxInterpolator } from '../../../../../core-app-api/src/apis/implementations/TranslationApi/I18nextTranslationApi';
 

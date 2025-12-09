@@ -42,6 +42,7 @@ import {
   TabProps as AriaTabProps,
 } from 'react-aria-components';
 import { useStyles } from '../../hooks/useStyles';
+import { TabsDefinition } from './definition';
 import styles from './Tabs.module.css';
 import clsx from 'clsx';
 
@@ -84,8 +85,8 @@ const isTabActive = (
  * @public
  */
 export const Tabs = (props: TabsProps) => {
-  const { classNames, cleanedProps } = useStyles('Tabs', props);
-  const { children, ...rest } = cleanedProps;
+  const { classNames, cleanedProps } = useStyles(TabsDefinition, props);
+  const { className, children, ...rest } = cleanedProps;
   const tabsRef = useRef<HTMLDivElement>(null);
   const tabRefs = useRef<Map<string, HTMLDivElement>>(new Map());
   const [hoveredKey, setHoveredKey] = useState<string | null>(null);
@@ -149,7 +150,7 @@ export const Tabs = (props: TabsProps) => {
     <TabsContext.Provider value={contextValue}>
       <RouterProvider navigate={navigate} useHref={useHref}>
         <AriaTabs
-          className={clsx(classNames.tabs, styles[classNames.tabs])}
+          className={clsx(classNames.tabs, styles[classNames.tabs], className)}
           keyboardActivation="manual"
           selectedKey={computedSelectedKey}
           ref={tabsRef}
@@ -168,8 +169,8 @@ export const Tabs = (props: TabsProps) => {
  * @public
  */
 export const TabList = (props: TabListProps) => {
-  const { classNames, cleanedProps } = useStyles('Tabs', props);
-  const { children, ...rest } = cleanedProps;
+  const { classNames, cleanedProps } = useStyles(TabsDefinition, props);
+  const { className, children, ...rest } = cleanedProps;
   const { setHoveredKey, tabRefs, tabsRef, hoveredKey, prevHoveredKey } =
     useTabsContext();
 
@@ -193,6 +194,7 @@ export const TabList = (props: TabListProps) => {
       className={clsx(
         classNames.tabListWrapper,
         styles[classNames.tabListWrapper],
+        className,
       )}
     >
       <AriaTabList
@@ -218,8 +220,9 @@ export const TabList = (props: TabListProps) => {
  * @public
  */
 export const Tab = (props: TabProps) => {
-  const { classNames, cleanedProps } = useStyles('Tabs', props);
+  const { classNames, cleanedProps } = useStyles(TabsDefinition, props);
   const {
+    className,
     href,
     children,
     id,
@@ -231,7 +234,7 @@ export const Tab = (props: TabProps) => {
   return (
     <AriaTab
       id={id}
-      className={clsx(classNames.tab, styles[classNames.tab])}
+      className={clsx(classNames.tab, styles[classNames.tab], className)}
       ref={el => setTabRef(id as string, el as HTMLDivElement)}
       href={href}
       {...rest}
@@ -247,12 +250,12 @@ export const Tab = (props: TabProps) => {
  * @public
  */
 export const TabPanel = (props: TabPanelProps) => {
-  const { classNames, cleanedProps } = useStyles('Tabs', props);
-  const { children, ...rest } = cleanedProps;
+  const { classNames, cleanedProps } = useStyles(TabsDefinition, props);
+  const { className, children, ...rest } = cleanedProps;
 
   return (
     <AriaTabPanel
-      className={clsx(classNames.panel, styles[classNames.panel])}
+      className={clsx(classNames.panel, styles[classNames.panel], className)}
       {...rest}
     >
       {children}
