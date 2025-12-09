@@ -68,9 +68,9 @@ export const devToolsPage = PageBlueprint.makeWithOverrides({
           title: content.get(coreExtensionData.title),
           children: content.get(coreExtensionData.reactElement),
         }));
-        return import('../components/DevToolsPage').then(m =>
+        return import('../components/DevToolsPage').then(m => (
           <m.DevToolsPage extensions={extensions} />
-        );
+        ));
       },
     });
   },
