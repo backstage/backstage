@@ -60,7 +60,7 @@ describe('runBackend', () => {
 
     // Save original environment
     originalEnv = { ...process.env };
-    process.env = {};
+    process.env = { NODE_ENV: 'test' };
     originalPlatform = process.platform;
 
     // Mock process.stdin.on to prevent actual stdin reading
