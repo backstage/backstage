@@ -5493,6 +5493,7 @@ __metadata:
   resolution: "@backstage/plugin-devtools@workspace:plugins/devtools"
   dependencies:
     "@backstage/cli": "workspace:^"
+    "@backstage/core-compat-api": "workspace:^"
     "@backstage/core-components": "workspace:^"
     "@backstage/core-plugin-api": "workspace:^"
     "@backstage/dev-utils": "workspace:^"
@@ -5504,7 +5505,9 @@ __metadata:
     "@material-ui/icons": "npm:^4.9.1"
     "@material-ui/lab": "npm:^4.0.0-alpha.57"
     "@testing-library/jest-dom": "npm:^6.0.0"
+    "@types/lodash": "npm:^4.14.151"
     "@types/react": "npm:^18.0.0"
+    lodash: "npm:^4.17.21"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
     react-json-view: "npm:^1.21.3"

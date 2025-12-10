@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,9 +13,5 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-export { useConfig } from './useConfig';
-export { useExternalDependencies } from './useExternalDependencies';
-export { useInfo } from './useInfo';
-export { useScheduledTasks } from './useScheduledTasks';
-export { useTriggerScheduledTask } from './useTriggerScheduledTask';
+export { ScheduledTasksContent } from './ScheduledTasksContent';
+export { ScheduledTaskDetailPanel } from './ScheduledTaskDetailedPanel';
