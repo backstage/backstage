@@ -91,6 +91,7 @@ describe('createEntityPredicateSchema', () => {
     const predicates: Array<
       Exclude<EntityPredicate | unknown, EntityPredicate>
     > = [
+      ['service', 'website'],
       { kind: { 1: 'foo' } },
       { kind: { foo: 'bar' } },
       { kind: { $unknown: 'foo' } },

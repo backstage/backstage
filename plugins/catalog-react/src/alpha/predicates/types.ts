@@ -18,7 +18,7 @@
 export type EntityPredicate =
   | EntityPredicateExpression
   | EntityPredicatePrimitive
-  | EntityPredicatePrimitive[]
+  | never[]
   | { $all: EntityPredicate[] }
   | { $any: EntityPredicate[] }
   | { $not: EntityPredicate };
@@ -36,7 +36,7 @@ export type EntityPredicateValue =
   | EntityPredicatePrimitive[]
   | { $exists: boolean }
   | { $in: EntityPredicatePrimitive[] }
-  | { $contains: EntityPredicate };
+  | { $contains: EntityPredicateExpression | string };
 
 /** @alpha */
 export type EntityPredicatePrimitive = string | number | boolean;

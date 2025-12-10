@@ -478,7 +478,7 @@ export const EntityIconLinkBlueprint: ExtensionBlueprint<{
 export type EntityPredicate =
   | EntityPredicateExpression
   | EntityPredicatePrimitive
-  | EntityPredicatePrimitive[]
+  | never[]
   | {
       $all: EntityPredicate[];
     }
@@ -515,7 +515,7 @@ export type EntityPredicateValue =
       $in: EntityPredicatePrimitive[];
     }
   | {
-      $contains: EntityPredicate;
+      $contains: EntityPredicateExpression | string;
     };
 
 // @alpha
