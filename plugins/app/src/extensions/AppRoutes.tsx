@@ -20,7 +20,46 @@ import {
   createExtensionInput,
   NotFoundErrorPage,
 } from '@backstage/frontend-plugin-api';
-import { useRoutes } from 'react-router-dom';
+import { useEffect } from 'react';
+import {
+  matchRoutes,
+  useLocation,
+  useRoutes,
+  type RouteObject,
+} from 'react-router-dom';
+import { usePluginRoute } from './PluginRouteContext';
+
+type RouteObjectWithHandle = RouteObject & {
+  handle?: { pluginId?: string };
+};
+
+export function PluginAwareRoutes({
+  routes,
+}: {
+  routes: RouteObjectWithHandle[];
+}) {
+  const element = useRoutes(routes);
+  const location = useLocation();
+  const { setPluginId } = usePluginRoute();
+
+  useEffect(() => {
+    const matches = matchRoutes(routes, location);
+    const matchedPluginId = matches
+      ?.map(match => {
+        const handle = match.route.handle as { pluginId?: string } | undefined;
+        return handle?.pluginId;
+      })
+      .filter(
+        (pluginId): pluginId is string =>
+          typeof pluginId === 'string' && pluginId.length > 0,
+      )
+      .pop();
+
+    setPluginId(matchedPluginId);
+  }, [location, routes, setPluginId]);
+
+  return element;
+}
 
 export const AppRoutes = createExtension({
   name: 'routes',
@@ -34,29 +73,26 @@ export const AppRoutes = createExtension({
   },
   output: [coreExtensionData.reactElement],
   factory({ inputs }) {
-    const Routes = () => {
-      const element = useRoutes([
-        ...inputs.routes.map(route => {
-          const routePath = route.get(coreExtensionData.routePath);
+    const routes: RouteObjectWithHandle[] = [
+      ...inputs.routes.map(route => {
+        const routePath = route.get(coreExtensionData.routePath);
+        const pluginId = route.node.spec.plugin.id;
 
-          return {
-            path:
-              routePath === '/'
-                ? routePath
-                : `${routePath.replace(/\/$/, '')}/*`,
+        return {
+          path:
+            routePath === '/' ? routePath : `${routePath.replace(/\/$/, '')}/*`,
+          element: route.get(coreExtensionData.reactElement),
+          handle: { pluginId },
+        };
+      }),
+      {
+        path: '*',
+        element: <NotFoundErrorPage />,
+      },
+    ];
 
-            element: route.get(coreExtensionData.reactElement),
-          };
-        }),
-        {
-          path: '*',
-          element: <NotFoundErrorPage />,
-        },
-      ]);
-
-      return element;
-    };
-
-    return [coreExtensionData.reactElement(<Routes />)];
+    return [
+      coreExtensionData.reactElement(<PluginAwareRoutes routes={routes} />),
+    ];
   },
 });
