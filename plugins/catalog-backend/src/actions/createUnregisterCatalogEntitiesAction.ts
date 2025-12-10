@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 import { ActionsRegistryService } from '@backstage/backend-plugin-api/alpha';
+import { NotFoundError } from '@backstage/errors';
 import { CatalogService } from '@backstage/plugin-catalog-node';
-import { ForwardedError, InputError } from '@backstage/errors';
 
 export const createUnregisterCatalogEntitiesAction = ({
   catalog,
@@ -25,51 +25,77 @@ export const createUnregisterCatalogEntitiesAction = ({
   actionsRegistry: ActionsRegistryService;
 }) => {
   actionsRegistry.register({
-    name: 'unregister-catalog-entities',
-    title: 'Unregister Catalog Entities',
+    name: 'unregister-entity',
+    title: 'Unregister entity from the Catalog',
     attributes: {
       destructive: true,
       readOnly: false,
       idempotent: true,
     },
-    description: `Unregister a Location and the entities it ownws.
+    description: `Unregisters a Location entity and all entities it owns from the Backstage catalog.
 
-This tool is analogous to the "unregister location" function you see in the Backstage dashboard,
-where you supply the UUID for a Location entity link that allows for the removal of the Location and
-the various Entities (Components, Systems, Resources, APIs, Users, and Groups) that were also created 
-when the Location was imported.
+This action is similar to the "Unregister location" function in the Backstage UI, where you provide the unique identifier (locationId) of a Location entity. The action will remove the specified Location from the catalog as well as all entities that were created when the Location was imported.
 
-Example invocation and the output from the invocation:
-  # Register a Location from a GitHub URL
-  unregister-catalog-entities locationId: aaa-bbb-ccc-ddd
-  Output: {}      
+Once completed, all entities associated with the Location will be deleted from the catalog.
 `,
     schema: {
       input: z =>
-        z.object({
-          locationId: z
-            .string()
-            .describe(
-              `Location ID returned from the 'register-catalog-entities' call.`,
-            ),
-        }),
+        z
+          .object({
+            type: z.union([
+              z.object({
+                locationId: z
+                  .string()
+                  .describe(`Location ID of the Entity to unregister`),
+              }),
+              z.object({
+                locationUrl: z
+                  .string()
+                  .describe(
+                    `URL of the catalog-info.yaml file to unregister for example: https://github.com/backstage/demo/blob/master/catalog-info.yaml`,
+                  ),
+              }),
+            ]),
+          })
+          .describe(
+            'The type to the unregister-entity action. Either locationId or locationUrl must be provided.',
+          ),
       output: z => z.object({}),
     },
-    action: async ({ input, credentials }) => {
-      if (!input.locationId || input.locationId === '') {
-        throw new InputError('a locationID must be specified');
-      }
-
-      try {
-        await catalog.removeLocationById(input.locationId, {
+    action: async ({ input: { type }, credentials }) => {
+      if ('locationId' in type) {
+        await catalog.removeLocationById(type.locationId, {
           credentials,
         });
-      } catch (error) {
-        throw new ForwardedError(
-          `catalog removal of "${input.locationId} failed"`,
-          error,
-        );
+      } else {
+        const locations = await catalog
+          .getLocations(
+            {},
+            {
+              credentials,
+            },
+          )
+          .then(response =>
+            response.items.filter(
+              location =>
+                location.target.toLowerCase() ===
+                type.locationUrl.toLowerCase(),
+            ),
+          );
+
+        if (locations.length === 0) {
+          throw new NotFoundError(
+            `Location with URL ${type.locationUrl} not found`,
+          );
+        }
+
+        for (const location of locations) {
+          await catalog.removeLocationById(location.id, {
+            credentials,
+          });
+        }
       }
+
       return { output: {} };
     },
   });

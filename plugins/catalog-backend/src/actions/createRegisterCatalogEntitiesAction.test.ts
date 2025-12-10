@@ -40,15 +40,15 @@ describe('createRegisterCatalogEntitiesAction', () => {
     });
 
     const result = await mockActionsRegistry.invoke({
-      id: 'test:register-catalog-entities',
+      id: 'test:register-entity',
       input: {
-        locationURL:
+        locationUrl:
           'https://github.com/example/repo/blob/main/catalog-info.yaml',
       },
     });
 
     expect(result.output).toEqual({
-      locationID: mockLocationId,
+      locationId: mockLocationId,
     });
     expect(mockCatalog.addLocation).toHaveBeenCalledWith(
       {
@@ -61,7 +61,7 @@ describe('createRegisterCatalogEntitiesAction', () => {
     );
   });
 
-  it('should throw an error if locationURL is not provided', async () => {
+  it('should throw an error if locationUrl is not a valid URL', async () => {
     const mockActionsRegistry = actionsRegistryServiceMock();
     const mockCatalog = catalogServiceMock();
 
@@ -72,27 +72,10 @@ describe('createRegisterCatalogEntitiesAction', () => {
 
     await expect(
       mockActionsRegistry.invoke({
-        id: 'test:register-catalog-entities',
-        input: { locationURL: '' },
+        id: 'test:register-entity',
+        input: { locationUrl: 'not-a-valid-url' },
       }),
-    ).rejects.toThrow('a location URL must be specified');
-  });
-
-  it('should throw an error if locationURL is not a valid URL', async () => {
-    const mockActionsRegistry = actionsRegistryServiceMock();
-    const mockCatalog = catalogServiceMock();
-
-    createRegisterCatalogEntitiesAction({
-      catalog: mockCatalog,
-      actionsRegistry: mockActionsRegistry,
-    });
-
-    await expect(
-      mockActionsRegistry.invoke({
-        id: 'test:register-catalog-entities',
-        input: { locationURL: 'not-a-valid-url' },
-      }),
-    ).rejects.toThrow('locationURL "not-a-valid-url" an invalid URL');
+    ).rejects.toThrow('not-a-valid-url is an invalid URL');
   });
 
   it('should throw a ForwardedError if catalog.addLocation throws an error', async () => {
@@ -111,9 +94,9 @@ describe('createRegisterCatalogEntitiesAction', () => {
 
     await expect(
       mockActionsRegistry.invoke({
-        id: 'test:register-catalog-entities',
+        id: 'test:register-entity',
         input: {
-          locationURL:
+          locationUrl:
             'https://github.com/example/repo/blob/main/catalog-info.yaml',
         },
       }),
