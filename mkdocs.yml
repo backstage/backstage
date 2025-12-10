@@ -153,6 +153,7 @@ nav:
           - Call existing API: 'plugins/call-existing-api.md'
       - Testing:
           - Testing with Jest: 'plugins/testing.md'
+          - Testing with Playwright: 'plugins/playwright.md'
       - Publishing:
           - Publish private: 'plugins/publish-private.md'
           - Add to Directory: 'plugins/add-to-directory.md'
