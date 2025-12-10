@@ -31,11 +31,11 @@ export interface Config {
          */
         broadcastChannels?: string[];
         /**
-         * Concurrency limit for Slack notifications, defaults to 10
+         * Concurrency limit for Slack notifications per backend instance of the notifications plugin, defaults to 10.
          */
         concurrencyLimit?: number;
         /**
-         * Throttle duration between Slack notifications, defaults to 1 minute
+         * Throttle duration between Slack notifications per backend instance of the notifications plugin, defaults to 1 minute.
          */
         throttleInterval?: HumanDuration | string;
       }>;
