@@ -27,7 +27,7 @@ jest.mock('@backstage/plugin-scaffolder-node', () => {
 });
 
 import { createPublishBitbucketCloudPullRequestAction } from './bitbucketCloudPullRequest';
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import { registerMswTestHooks } from '@backstage/backend-test-utils';
 import { ScmIntegrations } from '@backstage/integration';
@@ -35,6 +35,12 @@ import { ConfigReader } from '@backstage/config';
 import yaml from 'yaml';
 import { examples } from './bitbucketCloudPullRequest.examples';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
+
+jest.mock('cross-fetch', () => ({
+  __esModule: true,
+  default: (...args: Parameters<typeof fetch>) => fetch(...args),
+  Response: global.Response,
+}));
 
 describe('publish:bitbucketCloud:pull-request', () => {
   const config = new ConfigReader({
@@ -235,30 +241,28 @@ describe('publish:bitbucketCloud:pull-request', () => {
   it(`should ${examples[0].description}`, async () => {
     expect.assertions(2);
     server.use(
-      rest.get(
+      http.get(
         'https://api.bitbucket.org/2.0/repositories/workspace/repo/refs/branches',
-        (req, res, ctx) => {
-          expect(req.headers.get('Authorization')).toBe(
+        ({ request }) => {
+          expect(request.headers.get('Authorization')).toBe(
             'Basic dGVzdC11c2VyOnRlc3QtcGFzc3dvcmQ=',
           );
-          return res(
-            ctx.status(200),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json(responseOfBranches),
-          );
+          return HttpResponse.json(responseOfBranches, {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          });
         },
       ),
-      rest.post(
+      http.post(
         'https://api.bitbucket.org/2.0/repositories/workspace/repo/pullrequests',
-        (req, res, ctx) => {
-          expect(req.headers.get('Authorization')).toBe(
+        ({ request }) => {
+          expect(request.headers.get('Authorization')).toBe(
             'Basic dGVzdC11c2VyOnRlc3QtcGFzc3dvcmQ=',
           );
-          return res(
-            ctx.status(201),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json(responseOfPullRequests),
-          );
+          return HttpResponse.json(responseOfPullRequests, {
+            status: 201,
+            headers: { 'Content-Type': 'application/json' },
+          });
         },
       ),
     );
@@ -275,30 +279,28 @@ describe('publish:bitbucketCloud:pull-request', () => {
   it(`should ${examples[1].description}`, async () => {
     expect.assertions(2);
     server.use(
-      rest.get(
+      http.get(
         'https://api.bitbucket.org/2.0/repositories/workspace/repo/refs/branches',
-        (req, res, ctx) => {
-          expect(req.headers.get('Authorization')).toBe(
+        ({ request }) => {
+          expect(request.headers.get('Authorization')).toBe(
             'Basic dGVzdC11c2VyOnRlc3QtcGFzc3dvcmQ=',
           );
-          return res(
-            ctx.status(200),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json(responseOfBranches),
-          );
+          return HttpResponse.json(responseOfBranches, {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          });
         },
       ),
-      rest.post(
+      http.post(
         'https://api.bitbucket.org/2.0/repositories/workspace/repo/pullrequests',
-        (req, res, ctx) => {
-          expect(req.headers.get('Authorization')).toBe(
+        ({ request }) => {
+          expect(request.headers.get('Authorization')).toBe(
             'Basic dGVzdC11c2VyOnRlc3QtcGFzc3dvcmQ=',
           );
-          return res(
-            ctx.status(201),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json(responseOfPullRequests),
-          );
+          return HttpResponse.json(responseOfPullRequests, {
+            status: 201,
+            headers: { 'Content-Type': 'application/json' },
+          });
         },
       ),
     );
@@ -315,30 +317,28 @@ describe('publish:bitbucketCloud:pull-request', () => {
   it(`should ${examples[2].description}`, async () => {
     expect.assertions(2);
     server.use(
-      rest.get(
+      http.get(
         'https://api.bitbucket.org/2.0/repositories/workspace/repo/refs/branches',
-        (req, res, ctx) => {
-          expect(req.headers.get('Authorization')).toBe(
+        ({ request }) => {
+          expect(request.headers.get('Authorization')).toBe(
             'Basic dGVzdC11c2VyOnRlc3QtcGFzc3dvcmQ=',
           );
-          return res(
-            ctx.status(200),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json(responseOfBranches),
-          );
+          return HttpResponse.json(responseOfBranches, {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          });
         },
       ),
-      rest.post(
+      http.post(
         'https://api.bitbucket.org/2.0/repositories/workspace/repo/pullrequests',
-        (req, res, ctx) => {
-          expect(req.headers.get('Authorization')).toBe(
+        ({ request }) => {
+          expect(request.headers.get('Authorization')).toBe(
             'Basic dGVzdC11c2VyOnRlc3QtcGFzc3dvcmQ=',
           );
-          return res(
-            ctx.status(201),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json(responseOfPullRequests),
-          );
+          return HttpResponse.json(responseOfPullRequests, {
+            status: 201,
+            headers: { 'Content-Type': 'application/json' },
+          });
         },
       ),
     );
@@ -355,30 +355,28 @@ describe('publish:bitbucketCloud:pull-request', () => {
   it(`should ${examples[3].description}`, async () => {
     expect.assertions(2);
     server.use(
-      rest.get(
+      http.get(
         'https://api.bitbucket.org/2.0/repositories/workspace/repo/refs/branches',
-        (req, res, ctx) => {
-          expect(req.headers.get('Authorization')).toBe(
+        ({ request }) => {
+          expect(request.headers.get('Authorization')).toBe(
             `Bearer ${yaml.parse(examples[3].example).steps[0].input.token}`,
           );
-          return res(
-            ctx.status(200),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json(responseOfBranches),
-          );
+          return HttpResponse.json(responseOfBranches, {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          });
         },
       ),
-      rest.post(
+      http.post(
         'https://api.bitbucket.org/2.0/repositories/workspace/repo/pullrequests',
-        (req, res, ctx) => {
-          expect(req.headers.get('Authorization')).toBe(
+        ({ request }) => {
+          expect(request.headers.get('Authorization')).toBe(
             `Bearer ${yaml.parse(examples[3].example).steps[0].input.token}`,
           );
-          return res(
-            ctx.status(201),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json(responseOfPullRequests),
-          );
+          return HttpResponse.json(responseOfPullRequests, {
+            status: 201,
+            headers: { 'Content-Type': 'application/json' },
+          });
         },
       ),
     );
@@ -395,30 +393,28 @@ describe('publish:bitbucketCloud:pull-request', () => {
   it(`should ${examples[4].description}`, async () => {
     expect.assertions(2);
     server.use(
-      rest.get(
+      http.get(
         'https://api.bitbucket.org/2.0/repositories/workspace/repo/refs/branches',
-        (req, res, ctx) => {
-          expect(req.headers.get('Authorization')).toBe(
+        ({ request }) => {
+          expect(request.headers.get('Authorization')).toBe(
             `Bearer ${yaml.parse(examples[4].example).steps[0].input.token}`,
           );
-          return res(
-            ctx.status(200),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json(responseOfBranches),
-          );
+          return HttpResponse.json(responseOfBranches, {
+            status: 200,
+            headers: { 'Content-Type': 'application/json' },
+          });
         },
       ),
-      rest.post(
+      http.post(
         'https://api.bitbucket.org/2.0/repositories/workspace/repo/pullrequests',
-        (req, res, ctx) => {
-          expect(req.headers.get('Authorization')).toBe(
+        ({ request }) => {
+          expect(request.headers.get('Authorization')).toBe(
             `Bearer ${yaml.parse(examples[4].example).steps[0].input.token}`,
           );
-          return res(
-            ctx.status(201),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json(responseOfPullRequests),
-          );
+          return HttpResponse.json(responseOfPullRequests, {
+            status: 201,
+            headers: { 'Content-Type': 'application/json' },
+          });
         },
       ),
     );

@@ -14,6 +14,21 @@
  * limitations under the License.
  */
 
+import { createPublishBitbucketServerAction } from './bitbucketServer';
+import { http, HttpResponse } from 'msw';
+import { setupServer } from 'msw/node';
+import { registerMswTestHooks } from '@backstage/backend-test-utils';
+import { ScmIntegrations } from '@backstage/integration';
+import { ConfigReader } from '@backstage/config';
+import { initRepoAndPush } from '@backstage/plugin-scaffolder-node';
+import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
+
+jest.mock('cross-fetch', () => ({
+  __esModule: true,
+  default: (...args: Parameters<typeof fetch>) => fetch(...args),
+  Response: global.Response,
+}));
+
 jest.mock('@backstage/plugin-scaffolder-node', () => {
   return {
     ...jest.requireActual('@backstage/plugin-scaffolder-node'),
@@ -25,15 +40,6 @@ jest.mock('@backstage/plugin-scaffolder-node', () => {
     }),
   };
 });
-
-import { createPublishBitbucketServerAction } from './bitbucketServer';
-import { rest } from 'msw';
-import { setupServer } from 'msw/node';
-import { registerMswTestHooks } from '@backstage/backend-test-utils';
-import { ScmIntegrations } from '@backstage/integration';
-import { ConfigReader } from '@backstage/config';
-import { initRepoAndPush } from '@backstage/plugin-scaffolder-node';
-import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 
 describe('publish:bitbucketServer', () => {
   const config = new ConfigReader({
@@ -123,19 +129,17 @@ describe('publish:bitbucketServer', () => {
   it('should call the correct APIs with token', async () => {
     expect.assertions(2);
     server.use(
-      rest.post(
+      http.post(
         'https://hosted.bitbucket.com/rest/api/1.0/projects/project/repos',
-        (req, res, ctx) => {
-          expect(req.headers.get('Authorization')).toBe('Bearer thing');
-          expect(req.body).toEqual({
+        async ({ request }) => {
+          expect(request.headers.get('Authorization')).toBe('Bearer thing');
+          expect(await request.json()).toEqual({
             public: false,
             name: 'repo',
             defaultBranch: 'master',
           });
-          return res(
-            ctx.status(201),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json({
+          return HttpResponse.json(
+            {
               links: {
                 self: [
                   {
@@ -149,7 +153,11 @@ describe('publish:bitbucketServer', () => {
                   },
                 ],
               },
-            }),
+            },
+            {
+              status: 201,
+              headers: { 'Content-Type': 'application/json' },
+            },
           );
         },
       ),
@@ -167,21 +175,19 @@ describe('publish:bitbucketServer', () => {
   it('should call the correct APIs with basic auth', async () => {
     expect.assertions(2);
     server.use(
-      rest.post(
+      http.post(
         'https://basic-auth.bitbucket.com/rest/api/1.0/projects/project/repos',
-        (req, res, ctx) => {
-          expect(req.headers.get('Authorization')).toBe(
+        async ({ request }) => {
+          expect(request.headers.get('Authorization')).toBe(
             'Basic dGVzdC11c2VyOnRlc3QtcGFzc3dvcmQ=',
           );
-          expect(req.body).toEqual({
+          expect(await request.json()).toEqual({
             public: false,
             name: 'repo',
             defaultBranch: 'master',
           });
-          return res(
-            ctx.status(201),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json({
+          return HttpResponse.json(
+            {
               links: {
                 self: [
                   {
@@ -195,7 +201,11 @@ describe('publish:bitbucketServer', () => {
                   },
                 ],
               },
-            }),
+            },
+            {
+              status: 201,
+              headers: { 'Content-Type': 'application/json' },
+            },
           );
         },
       ),
@@ -214,19 +224,17 @@ describe('publish:bitbucketServer', () => {
     expect.assertions(2);
     const token = 'user-token';
     server.use(
-      rest.post(
+      http.post(
         'https://no-credentials.bitbucket.com/rest/api/1.0/projects/project/repos',
-        (req, res, ctx) => {
-          expect(req.headers.get('Authorization')).toBe(`Bearer ${token}`);
-          expect(req.body).toEqual({
+        async ({ request }) => {
+          expect(request.headers.get('Authorization')).toBe(`Bearer ${token}`);
+          expect(await request.json()).toEqual({
             public: false,
             name: 'repo',
             defaultBranch: 'master',
           });
-          return res(
-            ctx.status(201),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json({
+          return HttpResponse.json(
+            {
               links: {
                 self: [
                   {
@@ -240,7 +248,11 @@ describe('publish:bitbucketServer', () => {
                   },
                 ],
               },
-            }),
+            },
+            {
+              status: 201,
+              headers: { 'Content-Type': 'application/json' },
+            },
           );
         },
       ),
@@ -275,21 +287,20 @@ describe('publish:bitbucketServer', () => {
     it('should call the correct APIs to enable LFS if requested and the host is hosted bitbucket', async () => {
       expect.assertions(1);
       server.use(
-        rest.post(
+        http.post(
           'https://hosted.bitbucket.com/rest/api/1.0/projects/project/repos',
-          (_, res, ctx) => {
-            return res(
-              ctx.status(201),
-              ctx.set('Content-Type', 'application/json'),
-              ctx.json(repoCreationResponse),
-            );
+          () => {
+            return HttpResponse.json(repoCreationResponse, {
+              status: 201,
+              headers: { 'Content-Type': 'application/json' },
+            });
           },
         ),
-        rest.put(
+        http.put(
           'https://hosted.bitbucket.com/rest/git-lfs/admin/projects/project/repos/repo/enabled',
-          (req, res, ctx) => {
-            expect(req.headers.get('Authorization')).toBe('Bearer thing');
-            return res(ctx.status(204));
+          ({ request }) => {
+            expect(request.headers.get('Authorization')).toBe('Bearer thing');
+            return new HttpResponse(null, { status: 204 });
           },
         ),
       );
@@ -306,20 +317,19 @@ describe('publish:bitbucketServer', () => {
 
     it('should report an error if enabling LFS fails', async () => {
       server.use(
-        rest.post(
+        http.post(
           'https://hosted.bitbucket.com/rest/api/1.0/projects/project/repos',
-          (_, res, ctx) => {
-            return res(
-              ctx.status(201),
-              ctx.set('Content-Type', 'application/json'),
-              ctx.json(repoCreationResponse),
-            );
+          () => {
+            return HttpResponse.json(repoCreationResponse, {
+              status: 201,
+              headers: { 'Content-Type': 'application/json' },
+            });
           },
         ),
-        rest.put(
+        http.put(
           'https://hosted.bitbucket.com/rest/git-lfs/admin/projects/project/repos/repo/enabled',
-          (_, res, ctx) => {
-            return res(ctx.status(500));
+          () => {
+            return new HttpResponse(null, { status: 500 });
           },
         ),
       );
@@ -339,19 +349,17 @@ describe('publish:bitbucketServer', () => {
 
   it('should call initAndPush with the correct values with token', async () => {
     server.use(
-      rest.post(
+      http.post(
         'https://hosted.bitbucket.com/rest/api/1.0/projects/project/repos',
-        (req, res, ctx) => {
-          expect(req.headers.get('Authorization')).toBe('Bearer thing');
-          expect(req.body).toEqual({
+        async ({ request }) => {
+          expect(request.headers.get('Authorization')).toBe('Bearer thing');
+          expect(await request.json()).toEqual({
             public: false,
             name: 'repo',
             defaultBranch: 'master',
           });
-          return res(
-            ctx.status(201),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json({
+          return HttpResponse.json(
+            {
               links: {
                 self: [
                   {
@@ -365,7 +373,11 @@ describe('publish:bitbucketServer', () => {
                   },
                 ],
               },
-            }),
+            },
+            {
+              status: 201,
+              headers: { 'Content-Type': 'application/json' },
+            },
           );
         },
       ),
@@ -389,21 +401,19 @@ describe('publish:bitbucketServer', () => {
 
   it('should call initAndPush with the correct values with basic auth', async () => {
     server.use(
-      rest.post(
+      http.post(
         'https://basic-auth.bitbucket.com/rest/api/1.0/projects/project/repos',
-        (req, res, ctx) => {
-          expect(req.headers.get('Authorization')).toBe(
+        async ({ request }) => {
+          expect(request.headers.get('Authorization')).toBe(
             'Basic dGVzdC11c2VyOnRlc3QtcGFzc3dvcmQ=',
           );
-          expect(req.body).toEqual({
+          expect(await request.json()).toEqual({
             public: false,
             name: 'repo',
             defaultBranch: 'master',
           });
-          return res(
-            ctx.status(201),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json({
+          return HttpResponse.json(
+            {
               links: {
                 self: [
                   {
@@ -417,7 +427,11 @@ describe('publish:bitbucketServer', () => {
                   },
                 ],
               },
-            }),
+            },
+            {
+              status: 201,
+              headers: { 'Content-Type': 'application/json' },
+            },
           );
         },
       ),
@@ -447,19 +461,17 @@ describe('publish:bitbucketServer', () => {
 
   it('should call initAndPush with the correct default branch', async () => {
     server.use(
-      rest.post(
+      http.post(
         'https://hosted.bitbucket.com/rest/api/1.0/projects/project/repos',
-        (req, res, ctx) => {
-          expect(req.headers.get('Authorization')).toBe('Bearer thing');
-          expect(req.body).toEqual({
+        async ({ request }) => {
+          expect(request.headers.get('Authorization')).toBe('Bearer thing');
+          expect(await request.json()).toEqual({
             public: false,
             name: 'repo',
             defaultBranch: 'main',
           });
-          return res(
-            ctx.status(201),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json({
+          return HttpResponse.json(
+            {
               links: {
                 self: [
                   {
@@ -473,7 +485,11 @@ describe('publish:bitbucketServer', () => {
                   },
                 ],
               },
-            }),
+            },
+            {
+              status: 201,
+              headers: { 'Content-Type': 'application/json' },
+            },
           );
         },
       ),
@@ -531,19 +547,17 @@ describe('publish:bitbucketServer', () => {
     });
 
     server.use(
-      rest.post(
+      http.post(
         'https://hosted.bitbucket.com/rest/api/1.0/projects/project/repos',
-        (req, res, ctx) => {
-          expect(req.headers.get('Authorization')).toBe('Bearer thing');
-          expect(req.body).toEqual({
+        async ({ request }) => {
+          expect(request.headers.get('Authorization')).toBe('Bearer thing');
+          expect(await request.json()).toEqual({
             public: false,
             name: 'repo',
             defaultBranch: 'master',
           });
-          return res(
-            ctx.status(201),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json({
+          return HttpResponse.json(
+            {
               links: {
                 self: [
                   {
@@ -557,7 +571,11 @@ describe('publish:bitbucketServer', () => {
                   },
                 ],
               },
-            }),
+            },
+            {
+              status: 201,
+              headers: { 'Content-Type': 'application/json' },
+            },
           );
         },
       ),
@@ -603,19 +621,17 @@ describe('publish:bitbucketServer', () => {
     });
 
     server.use(
-      rest.post(
+      http.post(
         'https://hosted.bitbucket.com/rest/api/1.0/projects/project/repos',
-        (req, res, ctx) => {
-          expect(req.headers.get('Authorization')).toBe('Bearer thing');
-          expect(req.body).toEqual({
+        async ({ request }) => {
+          expect(request.headers.get('Authorization')).toBe('Bearer thing');
+          expect(await request.json()).toEqual({
             public: false,
             name: 'repo',
             defaultBranch: 'master',
           });
-          return res(
-            ctx.status(201),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json({
+          return HttpResponse.json(
+            {
               links: {
                 self: [
                   {
@@ -629,7 +645,11 @@ describe('publish:bitbucketServer', () => {
                   },
                 ],
               },
-            }),
+            },
+            {
+              status: 201,
+              headers: { 'Content-Type': 'application/json' },
+            },
           );
         },
       ),
@@ -650,19 +670,17 @@ describe('publish:bitbucketServer', () => {
 
   it('should call outputs with the correct urls', async () => {
     server.use(
-      rest.post(
+      http.post(
         'https://hosted.bitbucket.com/rest/api/1.0/projects/project/repos',
-        (req, res, ctx) => {
-          expect(req.headers.get('Authorization')).toBe('Bearer thing');
-          expect(req.body).toEqual({
+        async ({ request }) => {
+          expect(request.headers.get('Authorization')).toBe('Bearer thing');
+          expect(await request.json()).toEqual({
             public: false,
             name: 'repo',
             defaultBranch: 'master',
           });
-          return res(
-            ctx.status(201),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json({
+          return HttpResponse.json(
+            {
               links: {
                 self: [
                   {
@@ -676,7 +694,11 @@ describe('publish:bitbucketServer', () => {
                   },
                 ],
               },
-            }),
+            },
+            {
+              status: 201,
+              headers: { 'Content-Type': 'application/json' },
+            },
           );
         },
       ),
@@ -696,19 +718,17 @@ describe('publish:bitbucketServer', () => {
 
   it('should call outputs with the correct urls with correct default branch', async () => {
     server.use(
-      rest.post(
+      http.post(
         'https://hosted.bitbucket.com/rest/api/1.0/projects/project/repos',
-        (req, res, ctx) => {
-          expect(req.headers.get('Authorization')).toBe('Bearer thing');
-          expect(req.body).toEqual({
+        async ({ request }) => {
+          expect(request.headers.get('Authorization')).toBe('Bearer thing');
+          expect(await request.json()).toEqual({
             public: false,
             name: 'repo',
             defaultBranch: 'main',
           });
-          return res(
-            ctx.status(201),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json({
+          return HttpResponse.json(
+            {
               links: {
                 self: [
                   {
@@ -722,7 +742,11 @@ describe('publish:bitbucketServer', () => {
                   },
                 ],
               },
-            }),
+            },
+            {
+              status: 201,
+              headers: { 'Content-Type': 'application/json' },
+            },
           );
         },
       ),

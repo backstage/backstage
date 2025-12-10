@@ -31,7 +31,7 @@ import {
   EntityProviderConnection,
   locationSpecToLocationEntity,
 } from '@backstage/plugin-catalog-node';
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import {
   BitbucketServerEntityProvider,
@@ -42,6 +42,12 @@ import { Entity, LocationEntity } from '@backstage/catalog-model';
 import { BitbucketServerEvents } from '../lib/index';
 import { DefaultEventsService } from '@backstage/plugin-events-node';
 import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
+
+jest.mock('cross-fetch', () => ({
+  __esModule: true,
+  default: (...args: Parameters<typeof fetch>) => fetch(...args),
+  Response: global.Response,
+}));
 
 class PersistingTaskRunner implements SchedulerServiceTaskRunner {
   private tasks: SchedulerServiceTaskInvocationDefinition[] = [];
@@ -83,14 +89,12 @@ function setupStubs(
 ) {
   // Stub projects
   server.use(
-    rest.get(`${baseUrl}/rest/api/1.0/projects`, (_, res, ctx) => {
-      return res(
-        ctx.json(
-          pagedResponse(
-            projects.map(p => {
-              return { key: p.key };
-            }),
-          ),
+    http.get(`${baseUrl}/rest/api/1.0/projects`, () => {
+      return HttpResponse.json(
+        pagedResponse(
+          projects.map(p => {
+            return { key: p.key };
+          }),
         ),
       );
     }),
@@ -99,27 +103,24 @@ function setupStubs(
   for (const project of projects) {
     // Stub list repositories
     server.use(
-      rest.get(
-        `${baseUrl}/rest/api/1.0/projects/${project.key}/repos`,
-        (_, res, ctx) => {
-          const response = [];
-          for (const repo of project.repos) {
-            response.push({
-              slug: repo.name,
-              links: {
-                self: [
-                  {
-                    href: `${baseUrl}/projects/${project.key}/repos/${repo.name}/browse`,
-                  },
-                ],
-              },
-              archived: repo.archived ?? false,
-              defaultBranch: defaultBranch,
-            });
-          }
-          return res(ctx.json(pagedResponse(response)));
-        },
-      ),
+      http.get(`${baseUrl}/rest/api/1.0/projects/${project.key}/repos`, () => {
+        const response = [];
+        for (const repo of project.repos) {
+          response.push({
+            slug: repo.name,
+            links: {
+              self: [
+                {
+                  href: `${baseUrl}/projects/${project.key}/repos/${repo.name}/browse`,
+                },
+              ],
+            },
+            archived: repo.archived ?? false,
+            defaultBranch: defaultBranch,
+          });
+        }
+        return HttpResponse.json(pagedResponse(response));
+      }),
     );
   }
 }
@@ -130,37 +131,34 @@ const test1RepoUrl = `https://${host}/projects/TEST/repos/test1/browse`;
 
 function setupRepositoryReqHandler(defaultBranch: string) {
   server.use(
-    rest.get(
-      `https://${host}/rest/api/1.0/projects/TEST/repos/test1`,
-      (_, res, ctx) => {
-        const response = {
-          slug: 'test1',
+    http.get(`https://${host}/rest/api/1.0/projects/TEST/repos/test1`, () => {
+      const response = {
+        slug: 'test1',
+        id: 1,
+        name: 'test1',
+        project: {
+          key: 'TEST',
           id: 1,
-          name: 'test1',
-          project: {
-            key: 'TEST',
-            id: 1,
-            name: 'TEST',
-            links: {
-              self: [
-                {
-                  href: `https://${host}/projects/TEST`,
-                },
-              ],
-            },
-          },
+          name: 'TEST',
           links: {
             self: [
               {
-                href: `${test1RepoUrl}`,
+                href: `https://${host}/projects/TEST`,
               },
             ],
           },
-          defaultBranch: defaultBranch,
-        };
-        return res(ctx.json(response));
-      },
-    ),
+        },
+        links: {
+          self: [
+            {
+              href: `${test1RepoUrl}`,
+            },
+          ],
+        },
+        defaultBranch: defaultBranch,
+      };
+      return HttpResponse.json(response);
+    }),
   );
 }
 
@@ -670,16 +668,16 @@ describe('BitbucketServerEntityProvider', () => {
 
   it('do not add locations when validateLocationsExist and catalog-info does not exist', async () => {
     server.use(
-      rest.get(
+      http.get(
         `https://${host}/rest/api/1.0/projects/project-test/repos/repo-test/raw/catalog-info.yaml`,
-        (_, res, ctx) => {
-          return res(ctx.status(404));
+        () => {
+          return new HttpResponse(null, { status: 404 });
         },
       ),
-      rest.get(
+      http.get(
         `https://${host}/rest/api/1.0/projects/other-project/repos/other-repo/raw/catalog-info.yaml`,
-        (_, res, ctx) => {
-          return res(ctx.status(200));
+        () => {
+          return new HttpResponse(null, { status: 200 });
         },
       ),
     );

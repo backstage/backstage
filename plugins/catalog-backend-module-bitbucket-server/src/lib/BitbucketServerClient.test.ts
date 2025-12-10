@@ -16,7 +16,7 @@
 
 import { registerMswTestHooks } from '@backstage/backend-test-utils';
 import { BitbucketServerIntegrationConfig } from '@backstage/integration';
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import {
   BitbucketServerClient,
@@ -29,6 +29,12 @@ import {
   BitbucketServerRepository,
 } from './types';
 import { NotFoundError } from '@backstage/errors';
+
+jest.mock('cross-fetch', () => ({
+  __esModule: true,
+  default: (...args: Parameters<typeof fetch>) => fetch(...args),
+  Response: global.Response,
+}));
 
 const server = setupServer();
 
@@ -59,11 +65,12 @@ describe('BitbucketServerClient', () => {
 
   it('listProjects', async () => {
     server.use(
-      rest.get(`${config.apiBaseUrl}/projects`, (req, res, ctx) => {
+      http.get(`${config.apiBaseUrl}/projects`, ({ request }) => {
         if (
-          req.headers.get('authorization') !== 'Basic dGVzdC11c2VyOnRlc3QtcHc='
+          request.headers.get('authorization') !==
+          'Basic dGVzdC11c2VyOnRlc3QtcHc='
         ) {
-          return res(ctx.status(400));
+          return new HttpResponse(null, { status: 400 });
         }
         const response: BitbucketServerPagedResponse<BitbucketServerProject> = {
           size: 1,
@@ -77,7 +84,7 @@ describe('BitbucketServerClient', () => {
             },
           ],
         };
-        return res(ctx.json(response));
+        return HttpResponse.json(response);
       }),
     );
 
@@ -96,14 +103,14 @@ describe('BitbucketServerClient', () => {
 
   it('listRepositories', async () => {
     server.use(
-      rest.get(
+      http.get(
         `${config.apiBaseUrl}/projects/test-project/repos`,
-        (req, res, ctx) => {
+        ({ request }) => {
           if (
-            req.headers.get('authorization') !==
+            request.headers.get('authorization') !==
             'Basic dGVzdC11c2VyOnRlc3QtcHc='
           ) {
-            return res(ctx.status(400));
+            return new HttpResponse(null, { status: 400 });
           }
           const response: BitbucketServerPagedResponse<BitbucketServerRepository> =
             {
@@ -131,7 +138,7 @@ describe('BitbucketServerClient', () => {
                 },
               ],
             };
-          return res(ctx.json(response));
+          return HttpResponse.json(response);
         },
       ),
     );
@@ -158,17 +165,19 @@ describe('BitbucketServerClient', () => {
 
   it('getFile', async () => {
     server.use(
-      rest.get(
+      http.get(
         `${config.apiBaseUrl}/projects/test-project/repos/test-repo/raw/catalog-info.yaml`,
-        (req, res, ctx) => {
+        ({ request }) => {
           if (
-            req.headers.get('authorization') !==
+            request.headers.get('authorization') !==
             'Basic dGVzdC11c2VyOnRlc3QtcHc='
           ) {
-            return res(ctx.status(400));
+            return new HttpResponse(null, { status: 400 });
           }
 
-          return res(ctx.text(catalogInfoFile));
+          return new HttpResponse(catalogInfoFile, {
+            headers: { 'Content-Type': 'text/plain' },
+          });
         },
       ),
     );
@@ -183,14 +192,14 @@ describe('BitbucketServerClient', () => {
 
   it('getRepository', async () => {
     server.use(
-      rest.get(
+      http.get(
         `${config.apiBaseUrl}/projects/test-project/repos/test-repo`,
-        (req, res, ctx) => {
+        ({ request }) => {
           if (
-            req.headers.get('authorization') !==
+            request.headers.get('authorization') !==
             'Basic dGVzdC11c2VyOnRlc3QtcHc='
           ) {
-            return res(ctx.status(400));
+            return new HttpResponse(null, { status: 400 });
           }
           const response: BitbucketServerRepository = {
             project: {
@@ -209,7 +218,7 @@ describe('BitbucketServerClient', () => {
             defaultBranch: 'master',
           };
 
-          return res(ctx.json(response));
+          return HttpResponse.json(response);
         },
       ),
     );
@@ -227,10 +236,10 @@ describe('BitbucketServerClient', () => {
 
   it('getRepository no repo', async () => {
     server.use(
-      rest.get(
+      http.get(
         `${config.apiBaseUrl}/projects/test-project/repos/wrong-repo`,
-        (_, res, ctx) => {
-          return res(ctx.status(404));
+        () => {
+          return new HttpResponse(null, { status: 404 });
         },
       ),
     );
@@ -250,14 +259,14 @@ describe('BitbucketServerClient', () => {
 
   it('getDefaultBranch success', async () => {
     server.use(
-      rest.get(
+      http.get(
         `${config.apiBaseUrl}/projects/test-project/repos/test-repo/default-branch`,
-        (req, res, ctx) => {
+        ({ request }) => {
           if (
-            req.headers.get('authorization') !==
+            request.headers.get('authorization') !==
             'Basic dGVzdC11c2VyOnRlc3QtcHc='
           ) {
-            return res(ctx.status(400));
+            return new HttpResponse(null, { status: 400 });
           }
           const response: BitbucketServerDefaultBranch = {
             id: 'refs/heads/master',
@@ -268,7 +277,7 @@ describe('BitbucketServerClient', () => {
             isDefault: true,
           };
 
-          return res(ctx.json(response));
+          return HttpResponse.json(response);
         },
       ),
     );
@@ -282,10 +291,10 @@ describe('BitbucketServerClient', () => {
 
   it('getDefaultBranch endpoint', async () => {
     server.use(
-      rest.get(
+      http.get(
         `${config.apiBaseUrl}/projects/test-project/repos/wrong-repo/default-branch`,
-        (_, res, ctx) => {
-          return res(ctx.status(404));
+        () => {
+          return new HttpResponse(null, { status: 404 });
         },
       ),
     );

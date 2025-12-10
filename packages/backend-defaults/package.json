@@ -216,7 +216,7 @@
     "better-sqlite3": "^12.0.0",
     "get-port": "^5.1.1",
     "http-errors": "^2.0.0",
-    "msw": "^1.0.0",
+    "msw": "^2.0.0",
     "node-mocks-http": "^1.0.0",
     "supertest": "^7.0.0",
     "wait-for-expect": "^3.0.2"

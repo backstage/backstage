@@ -27,13 +27,19 @@ jest.mock('@backstage/plugin-scaffolder-node', () => {
 });
 
 import { createPublishBitbucketCloudAction } from './bitbucketCloud';
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import { registerMswTestHooks } from '@backstage/backend-test-utils';
 import { ScmIntegrations } from '@backstage/integration';
 import { ConfigReader } from '@backstage/config';
 import { initRepoAndPush } from '@backstage/plugin-scaffolder-node';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
+
+jest.mock('cross-fetch', () => ({
+  __esModule: true,
+  default: (...args: Parameters<typeof fetch>) => fetch(...args),
+  Response: global.Response,
+}));
 
 describe('publish:bitbucketCloud', () => {
   const config = new ConfigReader({
@@ -127,19 +133,18 @@ describe('publish:bitbucketCloud', () => {
   it('should call the correct APIs', async () => {
     expect.assertions(2);
     server.use(
-      rest.post(
+      http.post(
         'https://api.bitbucket.org/2.0/repositories/workspace/repo',
-        (req, res, ctx) => {
-          expect(req.headers.get('Authorization')).toBe('Basic dTpw');
-          expect(req.body).toEqual({
+        async ({ request }) => {
+          expect(request.headers.get('Authorization')).toBe('Basic dTpw');
+          const body = await request.json();
+          expect(body).toEqual({
             is_private: true,
             scm: 'git',
             project: { key: 'project' },
           });
-          return res(
-            ctx.status(200),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json({
+          return HttpResponse.json(
+            {
               links: {
                 html: {
                   href: 'https://bitbucket.org/workspace/repo',
@@ -151,7 +156,11 @@ describe('publish:bitbucketCloud', () => {
                   },
                 ],
               },
-            }),
+            },
+            {
+              status: 200,
+              headers: { 'Content-Type': 'application/json' },
+            },
           );
         },
       ),
@@ -164,19 +173,18 @@ describe('publish:bitbucketCloud', () => {
     expect.assertions(2);
     const token = 'user-token';
     server.use(
-      rest.post(
+      http.post(
         'https://api.bitbucket.org/2.0/repositories/workspace/repo',
-        (req, res, ctx) => {
-          expect(req.headers.get('Authorization')).toBe(`Bearer ${token}`);
-          expect(req.body).toEqual({
+        async ({ request }) => {
+          expect(request.headers.get('Authorization')).toBe(`Bearer ${token}`);
+          const body = await request.json();
+          expect(body).toEqual({
             is_private: true,
             scm: 'git',
             project: { key: 'project' },
           });
-          return res(
-            ctx.status(200),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json({
+          return HttpResponse.json(
+            {
               links: {
                 html: {
                   href: 'https://bitbucket.org/workspace/repo',
@@ -188,7 +196,11 @@ describe('publish:bitbucketCloud', () => {
                   },
                 ],
               },
-            }),
+            },
+            {
+              status: 200,
+              headers: { 'Content-Type': 'application/json' },
+            },
           );
         },
       ),
@@ -204,13 +216,11 @@ describe('publish:bitbucketCloud', () => {
 
   it('should call initAndPush with the correct values', async () => {
     server.use(
-      rest.post(
+      http.post(
         'https://api.bitbucket.org/2.0/repositories/workspace/repo',
-        (_, res, ctx) =>
-          res(
-            ctx.status(200),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json({
+        () =>
+          HttpResponse.json(
+            {
               links: {
                 html: {
                   href: 'https://bitbucket.org/workspace/repo',
@@ -222,7 +232,11 @@ describe('publish:bitbucketCloud', () => {
                   },
                 ],
               },
-            }),
+            },
+            {
+              status: 200,
+              headers: { 'Content-Type': 'application/json' },
+            },
           ),
       ),
     );
@@ -241,13 +255,11 @@ describe('publish:bitbucketCloud', () => {
 
   it('should call initAndPush with the correct default branch', async () => {
     server.use(
-      rest.post(
+      http.post(
         'https://api.bitbucket.org/2.0/repositories/workspace/repo',
-        (_, res, ctx) =>
-          res(
-            ctx.status(200),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json({
+        () =>
+          HttpResponse.json(
+            {
               links: {
                 html: {
                   href: 'https://bitbucket.org/workspace/repo',
@@ -259,7 +271,11 @@ describe('publish:bitbucketCloud', () => {
                   },
                 ],
               },
-            }),
+            },
+            {
+              status: 200,
+              headers: { 'Content-Type': 'application/json' },
+            },
           ),
       ),
     );
@@ -308,13 +324,11 @@ describe('publish:bitbucketCloud', () => {
     });
 
     server.use(
-      rest.post(
+      http.post(
         'https://api.bitbucket.org/2.0/repositories/workspace/repo',
-        (_, res, ctx) =>
-          res(
-            ctx.status(200),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json({
+        () =>
+          HttpResponse.json(
+            {
               links: {
                 html: {
                   href: 'https://bitbucket.org/workspace/repo',
@@ -326,7 +340,11 @@ describe('publish:bitbucketCloud', () => {
                   },
                 ],
               },
-            }),
+            },
+            {
+              status: 200,
+              headers: { 'Content-Type': 'application/json' },
+            },
           ),
       ),
     );
@@ -366,13 +384,11 @@ describe('publish:bitbucketCloud', () => {
     });
 
     server.use(
-      rest.post(
+      http.post(
         'https://api.bitbucket.org/2.0/repositories/workspace/repo',
-        (_, res, ctx) =>
-          res(
-            ctx.status(200),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json({
+        () =>
+          HttpResponse.json(
+            {
               links: {
                 html: {
                   href: 'https://bitbucket.org/workspace/repo',
@@ -384,7 +400,11 @@ describe('publish:bitbucketCloud', () => {
                   },
                 ],
               },
-            }),
+            },
+            {
+              status: 200,
+              headers: { 'Content-Type': 'application/json' },
+            },
           ),
       ),
     );
@@ -404,13 +424,11 @@ describe('publish:bitbucketCloud', () => {
 
   it('should call outputs with the correct urls', async () => {
     server.use(
-      rest.post(
+      http.post(
         'https://api.bitbucket.org/2.0/repositories/workspace/repo',
-        (_, res, ctx) =>
-          res(
-            ctx.status(200),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json({
+        () =>
+          HttpResponse.json(
+            {
               links: {
                 html: {
                   href: 'https://bitbucket.org/workspace/repo',
@@ -422,7 +440,11 @@ describe('publish:bitbucketCloud', () => {
                   },
                 ],
               },
-            }),
+            },
+            {
+              status: 200,
+              headers: { 'Content-Type': 'application/json' },
+            },
           ),
       ),
     );
@@ -441,13 +463,11 @@ describe('publish:bitbucketCloud', () => {
 
   it('should call outputs with the correct urls with correct default branch', async () => {
     server.use(
-      rest.post(
+      http.post(
         'https://api.bitbucket.org/2.0/repositories/workspace/repo',
-        (_, res, ctx) =>
-          res(
-            ctx.status(200),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json({
+        () =>
+          HttpResponse.json(
+            {
               links: {
                 html: {
                   href: 'https://bitbucket.org/workspace/repo',
@@ -459,7 +479,11 @@ describe('publish:bitbucketCloud', () => {
                   },
                 ],
               },
-            }),
+            },
+            {
+              status: 200,
+              headers: { 'Content-Type': 'application/json' },
+            },
           ),
       ),
     );

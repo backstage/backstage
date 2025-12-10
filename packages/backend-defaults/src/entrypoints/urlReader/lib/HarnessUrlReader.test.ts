@@ -21,7 +21,7 @@ import {
 import { ConfigReader } from '@backstage/config';
 import { HarnessIntegration, readHarnessConfig } from '@backstage/integration';
 import { JsonObject } from '@backstage/types';
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import { UrlReaderPredicateTuple } from './types';
 import { DefaultReadTreeResponseFactory } from './tree';
@@ -30,6 +30,12 @@ import { HarnessUrlReader } from './HarnessUrlReader';
 import { NotFoundError, NotModifiedError } from '@backstage/errors';
 import fs from 'fs-extra';
 import path from 'path';
+
+jest.mock('cross-fetch', () => ({
+  __esModule: true,
+  default: (...args: Parameters<typeof fetch>) => fetch(...args),
+  Response: global.Response,
+}));
 
 const treeResponseFactory = DefaultReadTreeResponseFactory.create({
   config: new ConfigReader({}),
@@ -61,51 +67,48 @@ const harnessApiResponse = (content: any) => {
 const commitHash = '3bdd5457286abdf920db4b77bf2fef79a06190c2';
 
 const handlers = [
-  rest.get(
+  http.get(
     'https://app.harness.io/gateway/code/api/v1/repos/accountId/orgName/projName/repoName/:path+/raw/all-apis.yaml',
-    (_req, res, ctx) => {
-      return res(ctx.status(500), ctx.json({ message: 'Error!!!' }));
+    () => {
+      return HttpResponse.json({ message: 'Error!!!' }, { status: 500 });
     },
   ),
-  rest.get(
+  http.get(
     'https://app.harness.io/gateway/code/api/v1/repos/accountId/orgName/projName/repoName/:path+/raw/404error.yaml',
-    (_req, res, ctx) => {
-      return res(ctx.status(404), ctx.json({ message: 'File not found.' }));
+    () => {
+      return HttpResponse.json({ message: 'File not found.' }, { status: 404 });
     },
   ),
-  rest.get(
+  http.get(
     'https://app.harness.io/gateway/code/api/v1/repos/accountId/orgName/projName/repoName/:path+/raw/stream.TXT',
-    (_req, res, ctx) => {
-      return res(
-        ctx.status(200),
-        ctx.body(harnessApiResponse(responseBuffer.toString())),
-      );
+    () => {
+      return new HttpResponse(harnessApiResponse(responseBuffer.toString()), {
+        status: 200,
+      });
     },
   ),
 
-  rest.get(
+  http.get(
     'https://app.harness.io/gateway/code/api/v1/repos/accountId/orgName/projName/repoName/:path+/raw/buffer.TXT',
-    (_req, res, ctx) => {
-      return res(
-        ctx.status(200),
-        ctx.body(harnessApiResponse(responseBuffer.toString())),
-      );
+    () => {
+      return new HttpResponse(harnessApiResponse(responseBuffer.toString()), {
+        status: 200,
+      });
     },
   ),
-  rest.get(
+  http.get(
     'https://app.harness.io/gateway/code/api/v1/repos/accountId/orgName2/projectName/repoName/:path+/content?routingId=accountId&include_commit=true&git_ref=refs/heads/branchName',
-    (_req, res, ctx) => {
-      return res(
-        ctx.status(200),
-        ctx.set('Content-Type', 'application/json'),
-        ctx.json({ latest_commit: { sha: commitHash } }),
+    () => {
+      return HttpResponse.json(
+        { latest_commit: { sha: commitHash } },
+        { status: 200, headers: { 'Content-Type': 'application/json' } },
       );
     },
   ),
-  rest.get(
+  http.get(
     'https://app.harness.io/gateway/code/api/v1/repos/accountId/orgName3/projectName/repoName/:path+/content?routingId=accountId&include_commit=true&git_ref=refs/heads/branchName',
-    (_, res, ctx) => {
-      return res(ctx.status(404));
+    () => {
+      return new HttpResponse(null, { status: 404 });
     },
   ),
 ];
@@ -205,18 +208,17 @@ describe('HarnessUrlReader', () => {
 
     it('should be able to get archive', async () => {
       worker.use(
-        rest.get(
+        http.get(
           'https://app.harness.io/gateway/code/api/v1/repos/accountId/orgName2/projectName/repoName/:path+/archive/branchName.zip',
-          (_, res, ctx) => {
-            return res(
-              ctx.status(200),
-              ctx.set('Content-Type', 'application/gzip'),
-              ctx.set(
-                'content-disposition',
-                'attachment; filename=backstage-mock.zip',
-              ),
-              ctx.body(new Uint8Array(repoBuffer)),
-            );
+          () => {
+            return new HttpResponse(new Uint8Array(repoBuffer), {
+              status: 200,
+              headers: {
+                'Content-Type': 'application/gzip',
+                'content-disposition':
+                  'attachment; filename=backstage-mock.zip',
+              },
+            });
           },
         ),
       );

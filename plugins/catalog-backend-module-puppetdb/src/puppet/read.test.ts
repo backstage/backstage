@@ -21,9 +21,15 @@ import {
 } from '../providers';
 import { DEFAULT_NAMESPACE } from '@backstage/catalog-model';
 import { registerMswTestHooks } from '@backstage/backend-test-utils';
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import { ANNOTATION_PUPPET_CERTNAME, ENDPOINT_FACTSETS } from './constants';
+
+jest.mock('cross-fetch', () => ({
+  __esModule: true,
+  default: (...args: Parameters<typeof fetch>) => fetch(...args),
+  Response: global.Response,
+}));
 
 describe('readPuppetNodes', () => {
   const worker = setupServer();
@@ -41,79 +47,75 @@ describe('readPuppetNodes', () => {
 
     beforeEach(async () => {
       worker.use(
-        rest.get(`${config.baseUrl}/${ENDPOINT_FACTSETS}`, (_req, res, ctx) => {
-          return res(
-            ctx.status(200),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json([
-              {
-                certname: 'node1',
-                timestamp: 'time1',
-                hash: 'hash1',
-                producer_timestamp: 'producer_time1',
-                producer: 'producer1',
-                environment: 'environment1',
-                latest_report_status: 'unchanged',
-                facts: {
-                  data: [
-                    {
-                      name: 'is_virtual',
-                      value: true,
-                    },
-                    {
-                      name: 'kernel',
-                      value: 'Linux',
-                    },
-                    {
-                      name: 'ipaddress',
-                      value: 'ipaddress1',
-                    },
-                    {
-                      name: 'clientnoop',
-                      value: true,
-                    },
-                    {
-                      name: 'clientversion',
-                      value: 'clientversion1',
-                    },
-                  ],
-                },
+        http.get(`${config.baseUrl}/${ENDPOINT_FACTSETS}`, () => {
+          return HttpResponse.json([
+            {
+              certname: 'node1',
+              timestamp: 'time1',
+              hash: 'hash1',
+              producer_timestamp: 'producer_time1',
+              producer: 'producer1',
+              environment: 'environment1',
+              latest_report_status: 'unchanged',
+              facts: {
+                data: [
+                  {
+                    name: 'is_virtual',
+                    value: true,
+                  },
+                  {
+                    name: 'kernel',
+                    value: 'Linux',
+                  },
+                  {
+                    name: 'ipaddress',
+                    value: 'ipaddress1',
+                  },
+                  {
+                    name: 'clientnoop',
+                    value: true,
+                  },
+                  {
+                    name: 'clientversion',
+                    value: 'clientversion1',
+                  },
+                ],
               },
-              {
-                certname: 'node2',
-                timestamp: 'time2',
-                hash: 'hash2',
-                producer_timestamp: 'producer_time2',
-                producer: 'producer2',
-                latest_report_status: 'unchanged',
-                environment: 'environment2',
-                facts: {
-                  data: [
-                    {
-                      name: 'is_virtual',
-                      value: false,
-                    },
-                    {
-                      name: 'kernel',
-                      value: 'Windows',
-                    },
-                    {
-                      name: 'ipaddress',
-                      value: 'ipaddress2',
-                    },
-                    {
-                      name: 'clientnoop',
-                      value: false,
-                    },
-                    {
-                      name: 'clientversion',
-                      value: 'clientversion2',
-                    },
-                  ],
-                },
+            },
+            {
+              certname: 'node2',
+              timestamp: 'time2',
+              hash: 'hash2',
+              producer_timestamp: 'producer_time2',
+              producer: 'producer2',
+              latest_report_status: 'unchanged',
+              environment: 'environment2',
+              facts: {
+                data: [
+                  {
+                    name: 'is_virtual',
+                    value: false,
+                  },
+                  {
+                    name: 'kernel',
+                    value: 'Windows',
+                  },
+                  {
+                    name: 'ipaddress',
+                    value: 'ipaddress2',
+                  },
+                  {
+                    name: 'clientnoop',
+                    value: false,
+                  },
+                  {
+                    name: 'clientversion',
+                    value: 'clientversion2',
+                  },
+                ],
               },
-            ]),
-          );
+            },
+          ]);
         }),
       );
     });
@@ -196,16 +198,9 @@ describe('readPuppetNodes', () => {
     describe('where no results are matched', () => {
       beforeEach(async () => {
         worker.use(
-          rest.get(
-            `${config.baseUrl}/${ENDPOINT_FACTSETS}`,
-            (_req, res, ctx) => {
-              return res(
-                ctx.status(200),
-                ctx.set('Content-Type', 'application/json'),
-                ctx.json([]),
-              );
-            },
-          ),
+          http.get(`${config.baseUrl}/${ENDPOINT_FACTSETS}`, () => {
+            return HttpResponse.json([]);
+          }),
         );
       });
 
@@ -218,25 +213,18 @@ describe('readPuppetNodes', () => {
     describe('where results are matched', () => {
       beforeEach(async () => {
         worker.use(
-          rest.get(
-            `${config.baseUrl}/${ENDPOINT_FACTSETS}`,
-            (_req, res, ctx) => {
-              return res(
-                ctx.status(200),
-                ctx.set('Content-Type', 'application/json'),
-                ctx.json([
-                  {
-                    certname: 'node1',
-                    timestamp: 'time1',
-                    hash: 'hash1',
-                    producer_timestamp: 'producer_time1',
-                    producer: 'producer1',
-                    environment: 'environment1',
-                  },
-                ]),
-              );
-            },
-          ),
+          http.get(`${config.baseUrl}/${ENDPOINT_FACTSETS}`, () => {
+            return HttpResponse.json([
+              {
+                certname: 'node1',
+                timestamp: 'time1',
+                hash: 'hash1',
+                producer_timestamp: 'producer_time1',
+                producer: 'producer1',
+                environment: 'environment1',
+              },
+            ]);
+          }),
         );
       });
 

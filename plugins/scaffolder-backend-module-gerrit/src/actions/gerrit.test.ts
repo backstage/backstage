@@ -28,13 +28,19 @@ jest.mock('@backstage/plugin-scaffolder-node', () => {
 
 import path from 'path';
 import { createPublishGerritAction } from './gerrit';
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import { registerMswTestHooks } from '@backstage/backend-test-utils';
 import { ScmIntegrations } from '@backstage/integration';
 import { ConfigReader } from '@backstage/config';
 import { initRepoAndPush } from '@backstage/plugin-scaffolder-node';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
+
+jest.mock('cross-fetch', () => ({
+  __esModule: true,
+  default: (...args: Parameters<typeof fetch>) => fetch(...args),
+  Response: global.Response,
+}));
 
 describe('publish:gerrit', () => {
   const config = new ConfigReader({
@@ -91,23 +97,22 @@ describe('publish:gerrit', () => {
   it('can correctly create a new project', async () => {
     expect.assertions(5);
     server.use(
-      rest.put('https://gerrithost.org/a/projects/repo', (req, res, ctx) => {
-        expect(req.headers.get('Authorization')).toBe(
-          'Basic Z2Vycml0dXNlcjp1c2VydG9rZW4=',
-        );
-        expect(req.body).toEqual({
-          branches: ['master'],
-          create_empty_commit: false,
-          owners: ['owner'],
-          description,
-          parent: 'workspace',
-        });
-        return res(
-          ctx.status(201),
-          ctx.set('Content-Type', 'application/json'),
-          ctx.json({}),
-        );
-      }),
+      http.put(
+        'https://gerrithost.org/a/projects/repo',
+        async ({ request }) => {
+          expect(request.headers.get('Authorization')).toBe(
+            'Basic Z2Vycml0dXNlcjp1c2VydG9rZW4=',
+          );
+          expect(await request.json()).toEqual({
+            branches: ['master'],
+            create_empty_commit: false,
+            owners: ['owner'],
+            description,
+            parent: 'workspace',
+          });
+          return HttpResponse.json({}, { status: 201 });
+        },
+      ),
     );
 
     await action.handler({
@@ -141,23 +146,22 @@ describe('publish:gerrit', () => {
   it('can correctly create a new project with a specific sourcePath', async () => {
     expect.assertions(5);
     server.use(
-      rest.put('https://gerrithost.org/a/projects/repo', (req, res, ctx) => {
-        expect(req.headers.get('Authorization')).toBe(
-          'Basic Z2Vycml0dXNlcjp1c2VydG9rZW4=',
-        );
-        expect(req.body).toEqual({
-          branches: ['master'],
-          create_empty_commit: false,
-          owners: ['owner'],
-          description,
-          parent: 'workspace',
-        });
-        return res(
-          ctx.status(201),
-          ctx.set('Content-Type', 'application/json'),
-          ctx.json({}),
-        );
-      }),
+      http.put(
+        'https://gerrithost.org/a/projects/repo',
+        async ({ request }) => {
+          expect(request.headers.get('Authorization')).toBe(
+            'Basic Z2Vycml0dXNlcjp1c2VydG9rZW4=',
+          );
+          expect(await request.json()).toEqual({
+            branches: ['master'],
+            create_empty_commit: false,
+            owners: ['owner'],
+            description,
+            parent: 'workspace',
+          });
+          return HttpResponse.json({}, { status: 201 });
+        },
+      ),
     );
 
     await action.handler({
@@ -192,23 +196,22 @@ describe('publish:gerrit', () => {
   it('can correctly create a new project without specifying owner', async () => {
     expect.assertions(5);
     server.use(
-      rest.put('https://gerrithost.org/a/projects/repo', (req, res, ctx) => {
-        expect(req.headers.get('Authorization')).toBe(
-          'Basic Z2Vycml0dXNlcjp1c2VydG9rZW4=',
-        );
-        expect(req.body).toEqual({
-          branches: ['master'],
-          create_empty_commit: false,
-          owners: [],
-          description,
-          parent: 'workspace',
-        });
-        return res(
-          ctx.status(201),
-          ctx.set('Content-Type', 'application/json'),
-          ctx.json({}),
-        );
-      }),
+      http.put(
+        'https://gerrithost.org/a/projects/repo',
+        async ({ request }) => {
+          expect(request.headers.get('Authorization')).toBe(
+            'Basic Z2Vycml0dXNlcjp1c2VydG9rZW4=',
+          );
+          expect(await request.json()).toEqual({
+            branches: ['master'],
+            create_empty_commit: false,
+            owners: [],
+            description,
+            parent: 'workspace',
+          });
+          return HttpResponse.json({}, { status: 201 });
+        },
+      ),
     );
 
     await action.handler({
@@ -243,23 +246,22 @@ describe('publish:gerrit', () => {
   it('can correctly create a new project with main as default branch', async () => {
     expect.assertions(5);
     server.use(
-      rest.put('https://gerrithost.org/a/projects/repo', (req, res, ctx) => {
-        expect(req.headers.get('Authorization')).toBe(
-          'Basic Z2Vycml0dXNlcjp1c2VydG9rZW4=',
-        );
-        expect(req.body).toEqual({
-          branches: ['main'],
-          create_empty_commit: false,
-          owners: [],
-          description,
-          parent: 'workspace',
-        });
-        return res(
-          ctx.status(201),
-          ctx.set('Content-Type', 'application/json'),
-          ctx.json({}),
-        );
-      }),
+      http.put(
+        'https://gerrithost.org/a/projects/repo',
+        async ({ request }) => {
+          expect(request.headers.get('Authorization')).toBe(
+            'Basic Z2Vycml0dXNlcjp1c2VydG9rZW4=',
+          );
+          expect(await request.json()).toEqual({
+            branches: ['main'],
+            create_empty_commit: false,
+            owners: [],
+            description,
+            parent: 'workspace',
+          });
+          return HttpResponse.json({}, { status: 201 });
+        },
+      ),
     );
 
     await action.handler({

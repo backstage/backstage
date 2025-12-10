@@ -26,10 +26,16 @@ import {
 import { ConfigReader } from '@backstage/config';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
 import fs from 'fs-extra';
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import path from 'path';
 import { GerritEntityProvider } from './GerritEntityProvider';
+
+jest.mock('cross-fetch', () => ({
+  __esModule: true,
+  default: (...args: Parameters<typeof fetch>) => fetch(...args),
+  Response: global.Response,
+}));
 
 const server = setupServer();
 
@@ -116,12 +122,15 @@ describe('GerritEntityProvider', () => {
     const expected = getJsonFixture('expectedProviderEntities.json');
 
     server.use(
-      rest.get('https://g.com/gerrit/projects/', (_, res, ctx) =>
-        res(
-          ctx.status(200),
-          ctx.set('Content-Type', 'application/json'),
-          ctx.body(new Uint8Array(repoBuffer)),
-        ),
+      http.get(
+        'https://g.com/gerrit/projects/',
+        () =>
+          new HttpResponse(new Uint8Array(repoBuffer), {
+            status: 200,
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }),
       ),
     );
 
@@ -153,12 +162,15 @@ describe('GerritEntityProvider', () => {
     );
 
     server.use(
-      rest.get('https://g.com/gerrit/projects/', (_, res, ctx) =>
-        res(
-          ctx.status(200),
-          ctx.set('Content-Type', 'application/json'),
-          ctx.body(new Uint8Array(repoBuffer)),
-        ),
+      http.get(
+        'https://g.com/gerrit/projects/',
+        () =>
+          new HttpResponse(new Uint8Array(repoBuffer), {
+            status: 200,
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }),
       ),
     );
 
@@ -188,19 +200,25 @@ describe('GerritEntityProvider', () => {
     const expected = getJsonFixture('expectedProviderEntities.json');
 
     server.use(
-      rest.get('https://g.com/gerrit/projects/', (_, res, ctx) =>
-        res(
-          ctx.status(200),
-          ctx.set('Content-Type', 'application/json'),
-          ctx.body(new Uint8Array(repoBuffer)),
-        ),
+      http.get(
+        'https://g.com/gerrit/projects/',
+        () =>
+          new HttpResponse(new Uint8Array(repoBuffer), {
+            status: 200,
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }),
       ),
-      rest.get('https://g.com/gerrit/projects/:project/HEAD', (_, res, ctx) =>
-        res(
-          ctx.status(200),
-          ctx.set('Content-Type', 'application/json'),
-          ctx.body(`)]}'\n"refs/heads/main"`),
-        ),
+      http.get(
+        'https://g.com/gerrit/projects/:project/HEAD',
+        () =>
+          new HttpResponse(`)]}'\n"refs/heads/main"`, {
+            status: 200,
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }),
       ),
     );
 
@@ -252,8 +270,9 @@ describe('GerritEntityProvider', () => {
     })[0];
 
     server.use(
-      rest.get('https://g.com/gerrit/projects/', (_, res, ctx) =>
-        res(ctx.status(500, 'Error!.')),
+      http.get(
+        'https://g.com/gerrit/projects/',
+        () => new HttpResponse(null, { status: 500 }),
       ),
     );
 
@@ -396,12 +415,15 @@ describe('GerritEntityProvider', () => {
     const expected = getJsonFixture('expectedProviderEntities.json');
 
     server.use(
-      rest.get('https://g.com/gerrit/projects/', (_, res, ctx) =>
-        res(
-          ctx.status(200),
-          ctx.set('Content-Type', 'application/json'),
-          ctx.body(new Uint8Array(repoBuffer)),
-        ),
+      http.get(
+        'https://g.com/gerrit/projects/',
+        () =>
+          new HttpResponse(new Uint8Array(repoBuffer), {
+            status: 200,
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          }),
       ),
     );
 

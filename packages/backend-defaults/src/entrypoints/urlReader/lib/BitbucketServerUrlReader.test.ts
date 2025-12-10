@@ -24,13 +24,19 @@ import {
   registerMswTestHooks,
 } from '@backstage/backend-test-utils';
 import fs from 'fs-extra';
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import path from 'path';
 import { NotModifiedError } from '@backstage/errors';
 import { BitbucketServerUrlReader } from './BitbucketServerUrlReader';
 import { DefaultReadTreeResponseFactory } from './tree';
 import { UrlReaderServiceReadUrlResponse } from '@backstage/backend-plugin-api';
+
+jest.mock('cross-fetch', () => ({
+  __esModule: true,
+  default: (...args: Parameters<typeof fetch>) => fetch(...args),
+  Response: global.Response,
+}));
 
 createMockDirectory({ mockOsTmpDir: true });
 
@@ -61,57 +67,50 @@ describe('BitbucketServerUrlReader', () => {
 
     beforeEach(() => {
       worker.use(
-        rest.get(
+        http.get(
           'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/archive',
-          (_, res, ctx) =>
-            res(
-              ctx.status(200),
-              ctx.set('Content-Type', 'application/zip'),
-              ctx.set(
-                'content-disposition',
-                'attachment; filename=backstage-mock.tgz',
-              ),
-              ctx.body(new Uint8Array(repoBuffer)),
-            ),
+          () =>
+            new HttpResponse(repoBuffer, {
+              status: 200,
+              headers: {
+                'Content-Type': 'application/zip',
+                'content-disposition':
+                  'attachment; filename=backstage-mock.tgz',
+              },
+            }),
         ),
-        rest.get(
+        http.get(
           'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/branches',
-          (_, res, ctx) =>
-            res(
-              ctx.status(200),
-              ctx.json({
-                size: 2,
-                values: [
-                  {
-                    displayId: 'some-branch-that-should-be-ignored',
-                    latestCommit: 'bogus hash',
-                  },
-                  {
-                    displayId: 'some-branch',
-                    latestCommit: '12ab34cd56ef78gh90ij12kl34mn56op78qr90st',
-                  },
-                ],
-              }),
-            ),
+          () =>
+            HttpResponse.json({
+              size: 2,
+              values: [
+                {
+                  displayId: 'some-branch-that-should-be-ignored',
+                  latestCommit: 'bogus hash',
+                },
+                {
+                  displayId: 'some-branch',
+                  latestCommit: '12ab34cd56ef78gh90ij12kl34mn56op78qr90st',
+                },
+              ],
+            }),
         ),
-        rest.get(
+        http.get(
           'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/branches/default',
-          (_, res, ctx) =>
-            res(
-              ctx.status(200),
-              ctx.json({
-                id: 'refs/heads/master',
-                displayId: 'master',
-                type: 'BRANCH',
-                latestCommit: '3bdd5457286abdf920db4b77bf2fef79a06190c2',
-                latestChangeset: '3bdd5457286abdf920db4b77bf2fef79a06190c2',
-                isDefault: true,
-              }),
-            ),
+          () =>
+            HttpResponse.json({
+              id: 'refs/heads/master',
+              displayId: 'master',
+              type: 'BRANCH',
+              latestCommit: '3bdd5457286abdf920db4b77bf2fef79a06190c2',
+              latestChangeset: '3bdd5457286abdf920db4b77bf2fef79a06190c2',
+              isDefault: true,
+            }),
         ),
-        rest.get(
+        http.get(
           'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/default-branch',
-          (_, res, ctx) => res(ctx.status(404)),
+          () => new HttpResponse(null, { status: 404 }),
         ),
       );
     });
@@ -147,38 +146,34 @@ describe('BitbucketServerUrlReader', () => {
 
     beforeEach(() => {
       worker.use(
-        rest.get(
+        http.get(
           'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/archive',
-          (_, res, ctx) =>
-            res(
-              ctx.status(200),
-              ctx.set('Content-Type', 'application/zip'),
-              ctx.set(
-                'content-disposition',
-                'attachment; filename=backstage-mock.tgz',
-              ),
-              ctx.body(new Uint8Array(repoBuffer)),
-            ),
+          () =>
+            new HttpResponse(repoBuffer, {
+              status: 200,
+              headers: {
+                'Content-Type': 'application/zip',
+                'content-disposition':
+                  'attachment; filename=backstage-mock.tgz',
+              },
+            }),
         ),
-        rest.get(
+        http.get(
           'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/branches',
-          (_, res, ctx) =>
-            res(
-              ctx.status(200),
-              ctx.json({
-                size: 2,
-                values: [
-                  {
-                    displayId: 'some-branch-that-should-be-ignored',
-                    latestCommit: 'bogus hash',
-                  },
-                  {
-                    displayId: 'some-branch',
-                    latestCommit: '12ab34cd56ef78gh90ij12kl34mn56op78qr90st',
-                  },
-                ],
-              }),
-            ),
+          () =>
+            HttpResponse.json({
+              size: 2,
+              values: [
+                {
+                  displayId: 'some-branch-that-should-be-ignored',
+                  latestCommit: 'bogus hash',
+                },
+                {
+                  displayId: 'some-branch',
+                  latestCommit: '12ab34cd56ef78gh90ij12kl34mn56op78qr90st',
+                },
+              ],
+            }),
         ),
       );
     });
@@ -206,38 +201,34 @@ describe('BitbucketServerUrlReader', () => {
 
     beforeEach(() => {
       worker.use(
-        rest.get(
+        http.get(
           'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/archive',
-          (_, res, ctx) =>
-            res(
-              ctx.status(200),
-              ctx.set('Content-Type', 'application/zip'),
-              ctx.set(
-                'content-disposition',
-                'attachment; filename=backstage-mock.tgz',
-              ),
-              ctx.body(new Uint8Array(repoBuffer)),
-            ),
+          () =>
+            new HttpResponse(repoBuffer, {
+              status: 200,
+              headers: {
+                'Content-Type': 'application/zip',
+                'content-disposition':
+                  'attachment; filename=backstage-mock.tgz',
+              },
+            }),
         ),
-        rest.get(
+        http.get(
           'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/branches',
-          (_, res, ctx) =>
-            res(
-              ctx.status(200),
-              ctx.json({
-                size: 2,
-                values: [
-                  {
-                    displayId: 'master-of-none',
-                    latestCommit: 'bogus hash',
-                  },
-                  {
-                    displayId: 'master',
-                    latestCommit: '12ab34cd56ef78gh90ij12kl34mn56op78qr90st',
-                  },
-                ],
-              }),
-            ),
+          () =>
+            HttpResponse.json({
+              size: 2,
+              values: [
+                {
+                  displayId: 'master-of-none',
+                  latestCommit: 'bogus hash',
+                },
+                {
+                  displayId: 'master',
+                  latestCommit: '12ab34cd56ef78gh90ij12kl34mn56op78qr90st',
+                },
+              ],
+            }),
         ),
       );
     });
