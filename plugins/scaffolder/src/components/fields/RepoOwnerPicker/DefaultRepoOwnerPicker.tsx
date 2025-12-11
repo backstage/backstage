@@ -17,8 +17,10 @@
 import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import TextField from '@material-ui/core/TextField';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 
 import { BaseRepoOwnerPickerProps } from './types';
+import { scaffolderTranslationRef } from '../../../translation';
 
 /**
  * The underlying component that is rendered in the form for the `DefaultRepoOwnerPicker`
@@ -37,6 +39,8 @@ export const DefaultRepoOwnerPicker = ({
 }: BaseRepoOwnerPickerProps) => {
   const { owner } = state;
 
+  const { t } = useTranslationRef(scaffolderTranslationRef);
+
   return (
     <FormControl
       margin="normal"
@@ -45,13 +49,13 @@ export const DefaultRepoOwnerPicker = ({
     >
       <TextField
         id="ownerInput"
-        label={schema?.title ?? 'Owner'}
+        label={schema?.title ?? t('fields.repoOwnerPicker.title')}
         disabled={isDisabled}
         onChange={e => onChange({ owner: e.target.value })}
         value={owner}
       />
       <FormHelperText>
-        {schema?.description ?? 'The owner of the repository'}
+        {schema?.description ?? t('fields.repoOwnerPicker.description')}
       </FormHelperText>
     </FormControl>
   );

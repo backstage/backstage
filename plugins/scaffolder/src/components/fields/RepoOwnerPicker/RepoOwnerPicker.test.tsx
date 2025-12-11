@@ -50,7 +50,7 @@ describe('RepoOwnerPicker', () => {
     it('should render the repo owner picker with minimal props', async () => {
       const onSubmit = jest.fn();
 
-      const { getByRole } = await renderInTestApp(
+      const { getByRole, getByText } = await renderInTestApp(
         <TestApiProvider
           apis={[
             [scmIntegrationsApiRef, mockIntegrationsApi],
@@ -88,6 +88,9 @@ describe('RepoOwnerPicker', () => {
         }),
         expect.anything(),
       );
+
+      expect(getByText('Owner')).toBeInTheDocument();
+      expect(getByText('The owner of the repository')).toBeInTheDocument();
     });
 
     it('should disable the picker when ui:disabled', async () => {
