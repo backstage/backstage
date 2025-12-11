@@ -108,6 +108,10 @@ export class WebStorage implements StorageApi {
       WebStorage.addStorageEventListener();
       WebStorage.hasSubscribed = true;
     }
+
+    // Ensure the subscriber gets an initial value
+    setTimeout(() => this.notifyChanges(key), 0);
+
     return this.observable.filter(({ key: messageKey }) => messageKey === key);
   }
 
