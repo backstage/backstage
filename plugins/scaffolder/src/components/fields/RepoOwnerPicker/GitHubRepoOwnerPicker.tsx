@@ -22,7 +22,10 @@ import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
 import { useCallback, useState } from 'react';
 import useDebounce from 'react-use/esm/useDebounce';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+
 import { BaseRepoOwnerPickerProps } from './types';
+import { scaffolderTranslationRef } from '../../../translation';
 
 /**
  * The underlying component that is rendered in the form for the `GitHubRepoOwnerPicker`
@@ -49,6 +52,7 @@ export const GitHubRepoOwnerPicker = ({
   const [availableOwners, setAvailableOwners] = useState<string[]>([]);
 
   const scaffolderApi = useApi(scaffolderApiRef);
+  const { t } = useTranslationRef(scaffolderTranslationRef);
 
   const updateAvailableOwners = useCallback(() => {
     if (!scaffolderApi.autocomplete || !accessToken || !host) {
@@ -93,7 +97,7 @@ export const GitHubRepoOwnerPicker = ({
         renderInput={params => (
           <TextField
             {...params}
-            label={schema?.title ?? 'Owner'}
+            label={schema?.title ?? t('fields.repoOwnerPicker.title')}
             disabled={isDisabled}
             required={required}
           />
@@ -102,7 +106,7 @@ export const GitHubRepoOwnerPicker = ({
         autoSelect
       />
       <FormHelperText>
-        {schema?.description ?? 'The owner of the repository'}
+        {schema?.description ?? t('fields.repoOwnerPicker.description')}
       </FormHelperText>
     </FormControl>
   );
