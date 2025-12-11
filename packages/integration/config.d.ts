@@ -330,6 +330,10 @@ export interface Config {
          * https://docs.github.com/en/rest/reference/apps#list-installations-for-the-authenticated-app--code-samples
          */
         allowedInstallationOwners?: string[];
+        /**
+         * If true, then an installation token will be issued for access when no other token is available.
+         */
+        publicAccess?: boolean;
       }>;
     }>;
 
