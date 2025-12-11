@@ -229,6 +229,7 @@ export class GithubOrgEntityProvider implements EntityProvider {
     githubCredentialsProvider?: GithubCredentialsProvider;
     userTransformer?: UserTransformer;
     teamTransformer?: TeamTransformer;
+    pageSizes?: Partial<GithubPageSizes>;
     excludeSuspendedUsers?: boolean;
   });
   connect(connection: EntityProviderConnection): Promise<void>;
@@ -252,6 +253,7 @@ export interface GithubOrgEntityProviderOptions {
   id: string;
   logger: LoggerService;
   orgUrl: string;
+  pageSizes?: Partial<GithubPageSizes>;
   schedule?: 'manual' | SchedulerServiceTaskRunner;
   teamTransformer?: TeamTransformer;
   userTransformer?: UserTransformer;
