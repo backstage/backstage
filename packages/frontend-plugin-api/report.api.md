@@ -1319,6 +1319,7 @@ export interface ExternalRouteRef<
 // @public
 export type FeatureFlag = {
   name: string;
+  persisted: boolean;
   pluginId: string;
   description?: string;
 };
@@ -1326,14 +1327,22 @@ export type FeatureFlag = {
 // @public
 export type FeatureFlagConfig = {
   name: string;
+  description?: string;
+  persisted?: boolean;
 };
 
 // @public
 export interface FeatureFlagsApi {
+  getFlag(name: string): Promise<boolean>;
   getRegisteredFlags(): FeatureFlag[];
+  initialize?(): void;
+  // @deprecated
   isActive(name: string): boolean;
+  observe$(name: string): Observable<boolean>;
   registerFlag(flag: FeatureFlag): void;
+  // @deprecated
   save(options: FeatureFlagsSaveOptions): void;
+  setFlag(name: string, active: boolean): Promise<void>;
 }
 
 // @public
@@ -2389,6 +2398,14 @@ export function useApiHolder(): ApiHolder;
 
 // @public
 export function useAppNode(): AppNode | undefined;
+
+// @public
+export function useFeatureFlag<StrictPresence extends boolean = false>(
+  name: string,
+  options?: {
+    strictPresence: StrictPresence;
+  },
+): StrictPresence extends true ? boolean | undefined : boolean;
 
 // @public
 export function useRouteRef<TParams extends AnyRouteRefParams>(

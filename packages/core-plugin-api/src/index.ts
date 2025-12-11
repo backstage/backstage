@@ -24,6 +24,7 @@ export * from './analytics';
 export * from './apis';
 export * from './app';
 export * from './extensions';
+export * from './hooks';
 export * from './icons';
 export * from './plugin';
 export * from './routing';

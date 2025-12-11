@@ -15,10 +15,7 @@
  */
 
 import {
-  AlertApiForwarder,
   NoOpAnalyticsApi,
-  ErrorApiForwarder,
-  ErrorAlerter,
   GoogleAuth,
   GithubAuth,
   OktaAuth,
@@ -27,9 +24,7 @@ import {
   BitbucketAuth,
   BitbucketServerAuth,
   OAuthRequestManager,
-  WebStorage,
   OneLoginAuth,
-  UnhandledErrorForwarder,
   AtlassianAuth,
   createFetchApi,
   FetchMiddlewares,
@@ -40,9 +35,7 @@ import {
 
 import {
   createApiFactory,
-  alertApiRef,
   analyticsApiRef,
-  errorApiRef,
   discoveryApiRef,
   fetchApiRef,
   identityApiRef,
@@ -52,7 +45,6 @@ import {
   oktaAuthApiRef,
   gitlabAuthApiRef,
   microsoftAuthApiRef,
-  storageApiRef,
   configApiRef,
   oneloginAuthApiRef,
   bitbucketAuthApiRef,
@@ -73,28 +65,9 @@ export const apis = [
     factory: ({ configApi }) => FrontendHostDiscovery.fromConfig(configApi),
   }),
   createApiFactory({
-    api: alertApiRef,
-    deps: {},
-    factory: () => new AlertApiForwarder(),
-  }),
-  createApiFactory({
     api: analyticsApiRef,
     deps: {},
     factory: () => new NoOpAnalyticsApi(),
-  }),
-  createApiFactory({
-    api: errorApiRef,
-    deps: { alertApi: alertApiRef },
-    factory: ({ alertApi }) => {
-      const errorApi = new ErrorAlerter(alertApi, new ErrorApiForwarder());
-      UnhandledErrorForwarder.forward(errorApi, { hidden: false });
-      return errorApi;
-    },
-  }),
-  createApiFactory({
-    api: storageApiRef,
-    deps: { errorApi: errorApiRef },
-    factory: ({ errorApi }) => WebStorage.create({ errorApi }),
   }),
   createApiFactory({
     api: fetchApiRef,

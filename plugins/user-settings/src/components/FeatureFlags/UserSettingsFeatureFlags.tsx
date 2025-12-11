@@ -14,73 +14,89 @@
  * limitations under the License.
  */
 
-import { useRef, useCallback, useState } from 'react';
+import { useRef, useState } from 'react';
+import useAsync from 'react-use/esm/useAsync';
 import List from '@material-ui/core/List';
 import TextField from '@material-ui/core/TextField';
 import IconButton from '@material-ui/core/IconButton';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
-import { EmptyFlags } from './EmptyFlags';
-import { FlagItem } from './FeatureFlagsItem';
+import ClearIcon from '@material-ui/icons/Clear';
 import {
   FeatureFlag,
-  FeatureFlagsApi,
   featureFlagsApiRef,
-  FeatureFlagState,
   useApi,
 } from '@backstage/core-plugin-api';
-import { InfoCard } from '@backstage/core-components';
-import ClearIcon from '@material-ui/icons/Clear';
+import { ErrorPanel, InfoCard, Progress } from '@backstage/core-components';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
-import { userSettingsTranslationRef } from '../../translation';
 
-export const sortFlags = (
-  flags: FeatureFlag[],
-  featureFlagsApi: FeatureFlagsApi,
-): FeatureFlag[] => {
-  const activeFlags = flags.filter(flag => featureFlagsApi.isActive(flag.name));
-  const idleFlags = flags.filter(flag => !featureFlagsApi.isActive(flag.name));
-  return [...activeFlags, ...idleFlags];
-};
+import { EmptyFlags } from './EmptyFlags';
+import { FlagItem } from './FeatureFlagsItem';
+import { userSettingsTranslationRef } from '../../translation';
 
 /** @public */
 export const UserSettingsFeatureFlags = () => {
+  const featureFlagsApi = useApi(featureFlagsApiRef);
+
+  // This outer component (asynchronously) fetches the current state of all
+  // flags, to have them initially ordered as active first, before rendering the
+  // inner component.
+
+  const {
+    value: initiallyEnabledFlags,
+    loading,
+    error,
+  } = useAsync(async () => {
+    const featureFlags = featureFlagsApi.getRegisteredFlags();
+    const flags = await Promise.all(
+      featureFlags.map(async flag => ({
+        name: flag.name,
+        initialValue: await featureFlagsApi.getFlag(flag.name),
+      })),
+    );
+    return flags.filter(flag => flag.initialValue).map(flag => flag.name);
+  }, []);
+
+  if (error) {
+    return <ErrorPanel defaultExpanded error={error} />;
+  } else if (loading || initiallyEnabledFlags === undefined) {
+    return <Progress />;
+  }
+
+  return (
+    <UserSettingsFeatureFlagsInner
+      initiallyEnabledFlags={initiallyEnabledFlags}
+    />
+  );
+};
+
+const alphaNumSortFlags = (flags: FeatureFlag[]): FeatureFlag[] => {
+  return flags.sort((a, b) => a.name.localeCompare(b.name));
+};
+
+const sortFlags = (flags: FeatureFlag[], enabled: string[]): FeatureFlag[] => {
+  const activeFlags = flags.filter(flag => enabled.includes(flag.name));
+  const idleFlags = flags.filter(flag => !enabled.includes(flag.name));
+  return [...alphaNumSortFlags(activeFlags), ...alphaNumSortFlags(idleFlags)];
+};
+
+function UserSettingsFeatureFlagsInner({
+  initiallyEnabledFlags,
+}: {
+  initiallyEnabledFlags: string[];
+}) {
   const featureFlagsApi = useApi(featureFlagsApiRef);
   const inputRef = useRef<HTMLElement>();
 
   const initialFeatureFlags = featureFlagsApi.getRegisteredFlags();
   const initialFeatureFlagsSorted = sortFlags(
     initialFeatureFlags,
-    featureFlagsApi,
+    initiallyEnabledFlags,
   );
   const [featureFlags] = useState(initialFeatureFlagsSorted);
 
-  const initialFlagState = Object.fromEntries(
-    featureFlags.map(({ name }) => [name, featureFlagsApi.isActive(name)]),
-  );
-
-  const [state, setState] = useState<Record<string, boolean>>(initialFlagState);
   const [filterInput, setFilterInput] = useState<string>('');
   const { t } = useTranslationRef(userSettingsTranslationRef);
-
-  const toggleFlag = useCallback(
-    (flagName: string) => {
-      const newState = featureFlagsApi.isActive(flagName)
-        ? FeatureFlagState.None
-        : FeatureFlagState.Active;
-
-      featureFlagsApi.save({
-        states: { [flagName]: newState },
-        merge: true,
-      });
-
-      setState(prevState => ({
-        ...prevState,
-        [flagName]: newState === FeatureFlagState.Active,
-      }));
-    },
-    [featureFlagsApi],
-  );
 
   if (!featureFlags.length) {
     return <EmptyFlags />;
@@ -134,19 +150,14 @@ export const UserSettingsFeatureFlags = () => {
   return (
     <InfoCard title={<Header />}>
       <List dense>
-        {filteredFeatureFlags.map(featureFlag => {
-          const enabled = Boolean(state[featureFlag.name]);
-
-          return (
-            <FlagItem
-              key={featureFlag.name}
-              flag={featureFlag}
-              enabled={enabled}
-              toggleHandler={toggleFlag}
-            />
-          );
-        })}
+        {filteredFeatureFlags.map(featureFlag => (
+          <FlagItem
+            key={featureFlag.name}
+            flag={featureFlag}
+            initiallyEnabled={initiallyEnabledFlags.includes(featureFlag.name)}
+          />
+        ))}
       </List>
     </InfoCard>
   );
-};
+}
