@@ -140,6 +140,29 @@ export interface Config {
               groupId: string;
 
               /**
+               * (Optional) If true, the consumer group will start from the earliest offset when no committed offset is found.
+               * If false or not specified, it will start from the latest offset.
+               * Default: undefined (start from latest)
+               */
+              fromBeginning?: boolean;
+
+              /**
+               * (Optional) Enable auto-commit of offsets.
+               * When true (default), offsets are automatically committed at regular intervals (at-most-once delivery).
+               * When false, offsets are only committed after successful message processing (at-least-once delivery).
+               * Default: true (auto-commit enabled for backward compatibility)
+               */
+              autoCommit?: boolean;
+
+              /**
+               * (Optional) When true, the consumer will pause on error and stop processing messages.
+               * When false (default), the consumer will skip failed messages and continue processing.
+               * Note: When pauseOnError is false and autoCommit is also false, failed messages will still have their offsets committed.
+               * Default: false (skip errors for backward compatibility)
+               */
+              pauseOnError?: boolean;
+
+              /**
                * (Optional) Timeout used to detect failures.
                * The consumer sends periodic heartbeats to indicate its liveness to the broker.
                * If no heartbeats are received by the broker before the expiration of this session timeout,

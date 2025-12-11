@@ -29,6 +29,8 @@ export class KafkaConsumingEventPublisher {
   private readonly consumerSubscribeTopics: ConsumerSubscribeTopics;
   private readonly backstageTopic: string;
   private readonly logger: LoggerService;
+  private readonly autoCommit: boolean;
+  private readonly pauseOnError: boolean;
 
   static fromConfig(env: {
     kafkaClient: Kafka;
@@ -44,18 +46,17 @@ export class KafkaConsumingEventPublisher {
     );
   }
 
-  private readonly events: EventsService;
-
   private constructor(
     kafkaClient: Kafka,
     logger: LoggerService,
-    events: EventsService,
+    private readonly events: EventsService,
     config: KafkaConsumerConfig,
   ) {
-    this.events = events;
     this.kafkaConsumer = kafkaClient.consumer(config.consumerConfig);
     this.consumerSubscribeTopics = config.consumerSubscribeTopics;
     this.backstageTopic = config.backstageTopic;
+    this.autoCommit = config.autoCommit;
+    this.pauseOnError = config.pauseOnError;
     const id = `events.kafka.publisher:${this.backstageTopic}`;
     this.logger = logger.child({
       class: KafkaConsumingEventPublisher.prototype.constructor.name,
@@ -73,12 +74,55 @@ export class KafkaConsumingEventPublisher {
       await this.kafkaConsumer.subscribe(this.consumerSubscribeTopics);
 
       await this.kafkaConsumer.run({
-        eachMessage: async ({ message }) => {
-          this.events.publish({
-            topic: this.backstageTopic,
-            eventPayload: JSON.parse(message.value?.toString()!),
-            metadata: this.convertHeadersToMetadata(message.headers),
-          });
+        autoCommit: this.autoCommit,
+        eachMessage: async ({
+          topic,
+          partition,
+          message,
+          heartbeat,
+          pause,
+        }) => {
+          try {
+            await this.events.publish({
+              topic: this.backstageTopic,
+              eventPayload: JSON.parse(message.value?.toString()!),
+              metadata: this.convertHeadersToMetadata(message.headers),
+            });
+
+            // Only commit offset manually if autoCommit is disabled
+            if (!this.autoCommit) {
+              await this.kafkaConsumer.commitOffsets([
+                {
+                  topic,
+                  partition,
+                  offset: (parseInt(message.offset, 10) + 1).toString(),
+                },
+              ]);
+            }
+
+            await heartbeat();
+          } catch (error: any) {
+            this.logger.error(
+              `Failed to process message at offset ${message.offset} on partition ${partition} of topic ${topic}`,
+              error,
+            );
+
+            if (this.pauseOnError) {
+              pause();
+              throw error;
+            }
+
+            // Skip the failed message by committing its offset if autoCommit is disabled
+            if (!this.autoCommit) {
+              await this.kafkaConsumer.commitOffsets([
+                {
+                  topic,
+                  partition,
+                  offset: (parseInt(message.offset, 10) + 1).toString(),
+                },
+              ]);
+            }
+          }
         },
       });
     } catch (error: any) {
