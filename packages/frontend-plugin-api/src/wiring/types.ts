@@ -29,6 +29,13 @@ import { FrontendPlugin } from './createFrontendPlugin';
 export type FeatureFlagConfig = {
   /** Feature flag name */
   name: string;
+  /** Feature flag description */
+  description?: string;
+  /**
+   * Whether the feature flag is persisted in the StorageApi or locally in the
+   * browser. Defaults to `false` (local).
+   */
+  persisted?: boolean;
 };
 
 /** @public */
