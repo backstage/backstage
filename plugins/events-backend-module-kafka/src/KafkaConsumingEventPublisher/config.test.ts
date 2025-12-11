@@ -15,10 +15,16 @@
  */
 import { ConfigReader } from '@backstage/config';
 import { readConsumerConfig } from './config';
+import { mockServices } from '@backstage/backend-test-utils';
+
+const mockLogger = mockServices.logger.mock();
 
 describe('readConsumerConfig', () => {
   it('not configured', () => {
-    const publisherConfigs = readConsumerConfig(new ConfigReader({}));
+    const publisherConfigs = readConsumerConfig(
+      new ConfigReader({}),
+      mockLogger,
+    );
 
     expect(publisherConfigs).toEqual([]);
   });
@@ -55,7 +61,7 @@ describe('readConsumerConfig', () => {
       },
     });
 
-    const publisherConfigs = readConsumerConfig(config);
+    const publisherConfigs = readConsumerConfig(config, mockLogger);
 
     expect(publisherConfigs).toBeDefined();
     expect(Array.isArray(publisherConfigs)).toBe(true);
@@ -150,7 +156,7 @@ describe('readConsumerConfig', () => {
       },
     });
 
-    const publisherConfigs = readConsumerConfig(config);
+    const publisherConfigs = readConsumerConfig(config, mockLogger);
 
     expect(publisherConfigs).toBeDefined();
     expect(Array.isArray(publisherConfigs)).toBe(true);
@@ -243,7 +249,7 @@ describe('readConsumerConfig', () => {
       },
     });
 
-    const publisherConfigs = readConsumerConfig(config);
+    const publisherConfigs = readConsumerConfig(config, mockLogger);
 
     expect(publisherConfigs).toBeDefined();
     expect(Array.isArray(publisherConfigs)).toBe(true);
@@ -271,5 +277,78 @@ describe('readConsumerConfig', () => {
 
     // Consumer configuration
     expect(devConfig.kafkaConsumerConfigs.length).toBe(0);
+  });
+
+  it('single instance configuration (legacy format)', () => {
+    const config = new ConfigReader({
+      events: {
+        modules: {
+          kafka: {
+            kafkaConsumingEventPublisher: {
+              clientId: 'backstage-events',
+              brokers: ['kafka1:9092', 'kafka2:9092'],
+              topics: [
+                {
+                  topic: 'fake1',
+                  kafka: {
+                    topics: ['topic-A'],
+                    groupId: 'my-group',
+                  },
+                },
+                {
+                  topic: 'fake2',
+                  kafka: {
+                    topics: ['topic-B'],
+                    groupId: 'my-group',
+                  },
+                },
+              ],
+            },
+          },
+        },
+      },
+    });
+
+    const publisherConfigs = readConsumerConfig(config, mockLogger);
+
+    expect(publisherConfigs).toBeDefined();
+    expect(Array.isArray(publisherConfigs)).toBe(true);
+    expect(publisherConfigs).toHaveLength(1);
+
+    const defaultConfig = publisherConfigs[0];
+    expect(defaultConfig.instance).toBe('default');
+    expect(defaultConfig.kafkaConsumerConfigs.length).toBe(2);
+
+    expect(defaultConfig.kafkaConfig.clientId).toEqual('backstage-events');
+    expect(defaultConfig.kafkaConfig.brokers).toEqual([
+      'kafka1:9092',
+      'kafka2:9092',
+    ]);
+
+    expect(defaultConfig.kafkaConsumerConfigs).toEqual([
+      {
+        backstageTopic: 'fake1',
+        consumerConfig: {
+          groupId: 'my-group',
+        },
+        consumerSubscribeTopics: {
+          topics: ['topic-A'],
+        },
+      },
+      {
+        backstageTopic: 'fake2',
+        consumerConfig: {
+          groupId: 'my-group',
+        },
+        consumerSubscribeTopics: {
+          topics: ['topic-B'],
+        },
+      },
+    ]);
+
+    // Verify deprecation warning was logged
+    expect(mockLogger.warn).toHaveBeenCalledWith(
+      'Legacy single config format detected at events.modules.kafka.kafkaConsumingEventPublisher.',
+    );
   });
 });

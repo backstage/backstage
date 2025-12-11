@@ -19,6 +19,7 @@ import {
   readKafkaConfig,
   readOptionalHumanDurationInMs,
 } from '../utils/config';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 export interface KafkaConsumerConfig {
   backstageTopic: string;
@@ -35,57 +36,81 @@ export interface KafkaConsumingEventPublisherConfig {
 const CONFIG_PREFIX_PUBLISHER =
   'events.modules.kafka.kafkaConsumingEventPublisher';
 
+const processSinglePublisher = (
+  instanceName: string,
+  publisherConfig: Config,
+): KafkaConsumingEventPublisherConfig => {
+  return {
+    instance: instanceName,
+    kafkaConfig: readKafkaConfig(publisherConfig),
+    kafkaConsumerConfigs: publisherConfig
+      .getConfigArray('topics')
+      .map(topicConfig => {
+        return {
+          backstageTopic: topicConfig.getString('topic'),
+          consumerConfig: {
+            groupId: topicConfig.getString('kafka.groupId'),
+            sessionTimeout: readOptionalHumanDurationInMs(
+              topicConfig,
+              'kafka.sessionTimeout',
+            ),
+            rebalanceTimeout: readOptionalHumanDurationInMs(
+              topicConfig,
+              'kafka.rebalanceTimeout',
+            ),
+            heartbeatInterval: readOptionalHumanDurationInMs(
+              topicConfig,
+              'kafka.heartbeatInterval',
+            ),
+            metadataMaxAge: readOptionalHumanDurationInMs(
+              topicConfig,
+              'kafka.metadataMaxAge',
+            ),
+            maxBytesPerPartition: topicConfig.getOptionalNumber(
+              'kafka.maxBytesPerPartition',
+            ),
+            minBytes: topicConfig.getOptionalNumber('kafka.minBytes'),
+            maxBytes: topicConfig.getOptionalNumber('kafka.maxBytes'),
+            maxWaitTimeInMs: readOptionalHumanDurationInMs(
+              topicConfig,
+              'kafka.maxWaitTime',
+            ),
+          },
+          consumerSubscribeTopics: {
+            topics: topicConfig.getStringArray('kafka.topics'),
+          },
+        };
+      }),
+  };
+};
+
 export const readConsumerConfig = (
   config: Config,
+  logger: LoggerService,
 ): KafkaConsumingEventPublisherConfig[] => {
-  const publishers = config.getOptionalConfig(CONFIG_PREFIX_PUBLISHER);
+  const publishersConfig = config.getOptionalConfig(CONFIG_PREFIX_PUBLISHER);
+
+  // Check for legacy single publisher format
+  if (publishersConfig?.getOptionalString('clientId')) {
+    logger.warn(
+      'Legacy single config format detected at events.modules.kafka.kafkaConsumingEventPublisher.',
+    );
+    return [
+      processSinglePublisher(
+        'default', // use `default` as instance name for legacy single config
+        publishersConfig,
+      ),
+    ];
+  }
 
   return (
-    publishers?.keys()?.map(publisherKey => {
-      const publisherConfig = publishers.getConfig(publisherKey);
-
-      return {
-        instance: publisherKey,
-        kafkaConfig: readKafkaConfig(publisherConfig),
-        kafkaConsumerConfigs: publisherConfig
-          .getConfigArray('topics')
-          .map(topicConfig => {
-            return {
-              backstageTopic: topicConfig.getString('topic'),
-              consumerConfig: {
-                groupId: topicConfig.getString('kafka.groupId'),
-                sessionTimeout: readOptionalHumanDurationInMs(
-                  topicConfig,
-                  'kafka.sessionTimeout',
-                ),
-                rebalanceTimeout: readOptionalHumanDurationInMs(
-                  topicConfig,
-                  'kafka.rebalanceTimeout',
-                ),
-                heartbeatInterval: readOptionalHumanDurationInMs(
-                  topicConfig,
-                  'kafka.heartbeatInterval',
-                ),
-                metadataMaxAge: readOptionalHumanDurationInMs(
-                  topicConfig,
-                  'kafka.metadataMaxAge',
-                ),
-                maxBytesPerPartition: topicConfig.getOptionalNumber(
-                  'kafka.maxBytesPerPartition',
-                ),
-                minBytes: topicConfig.getOptionalNumber('kafka.minBytes'),
-                maxBytes: topicConfig.getOptionalNumber('kafka.maxBytes'),
-                maxWaitTimeInMs: readOptionalHumanDurationInMs(
-                  topicConfig,
-                  'kafka.maxWaitTime',
-                ),
-              },
-              consumerSubscribeTopics: {
-                topics: topicConfig.getStringArray('kafka.topics'),
-              },
-            };
-          }),
-      };
-    }) ?? []
+    publishersConfig
+      ?.keys()
+      ?.map(publisherKey =>
+        processSinglePublisher(
+          publisherKey,
+          publishersConfig.getConfig(publisherKey),
+        ),
+      ) ?? []
   );
 };

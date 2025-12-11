@@ -43,7 +43,7 @@ export class KafkaConsumingEventPublisher {
     events: EventsService;
     logger: LoggerService;
   }): KafkaConsumingEventPublisher[] {
-    const configs = readConsumerConfig(env.config);
+    const configs = readConsumerConfig(env.config, env.logger);
 
     return configs.map(
       kafkaConfig =>
