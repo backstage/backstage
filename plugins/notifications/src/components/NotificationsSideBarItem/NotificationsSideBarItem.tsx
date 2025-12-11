@@ -134,8 +134,6 @@ export type NotificationsSideBarItemProps = {
   noTrack?: boolean;
   /**
    * Optional render function to provide custom UI instead of the default SidebarItem.
-   * When provided, allows placing the notification indicator anywhere (e.g., header).
-   * The default SidebarItem will not be rendered when this prop is used.
    */
   renderItem?: (props: NotificationsRenderItemProps) => React.ReactNode;
 };
