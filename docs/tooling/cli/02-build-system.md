@@ -610,7 +610,7 @@ With that in mind, here are some IDEs configurations to run backstage components
     1.  Click on "Edit Configurations" on top panel
     2.  In the modal dialog click on link "Edit configuration templates..." located in the bottom left corner.
     3.  "Configuration file": leave empty (`backstage-cli` adds the config)
-    4.  "Node options": `--no-node-snapshot --experimental-vm-modules`
+    4.  "Node options": ` --experimental-vm-modules`
     5.  "Jest package": `~/workspace/backstage/node_modules/@backstage/cli` - the location of the backstage cli package.
     6.  "Working directory": `~/workspace/backstage`
     7.  "Jest Options": `repo test --runInBand --watch=false`

@@ -47,7 +47,7 @@ export type RunBackendOptions = {
 };
 
 export async function runBackend(options: RunBackendOptions) {
-  const envEnv = process.env as { NODE_ENV: string };
+  const envEnv = process.env as { NODE_ENV: string; NODE_OPTIONS?: string };
   if (!envEnv.NODE_ENV) {
     envEnv.NODE_ENV = 'development';
   }
@@ -113,6 +113,12 @@ export async function runBackend(options: RunBackendOptions) {
       for (const r of requires) {
         optionArgs.push(`--require=${r}`);
       }
+    }
+
+    // Unless the user explicitly toggles node-snapshot, default to provide --no-node-snapshot to reduce number of steps to run scaffolder
+    //  on Node LTS.
+    if (!envEnv.NODE_OPTIONS?.includes('--node-snapshot')) {
+      optionArgs.push('--no-node-snapshot');
     }
 
     const userArgs = process.argv
