@@ -19,14 +19,8 @@ import {
   scaffolderApiRef,
 } from '@backstage/plugin-scaffolder-react';
 import { GitHubRepoOwnerPicker } from './GitHubRepoOwnerPicker';
-import {
-  act,
-  fireEvent,
-  render,
-  waitFor,
-  screen,
-} from '@testing-library/react';
-import { TestApiProvider } from '@backstage/test-utils';
+import { act, fireEvent, waitFor, screen } from '@testing-library/react';
+import { renderInTestApp, TestApiProvider } from '@backstage/test-utils';
 import userEvent from '@testing-library/user-event';
 
 describe('GitHubRepoOwnerPicker', () => {
@@ -36,8 +30,8 @@ describe('GitHubRepoOwnerPicker', () => {
       .mockResolvedValue({ results: [{ id: 'owner1' }, { id: 'owner2' }] }),
   };
 
-  it('renders an input field', () => {
-    const { getByRole } = render(
+  it('renders an input field', async () => {
+    const { getByRole } = await renderInTestApp(
       <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
         <GitHubRepoOwnerPicker
           onChange={jest.fn()}
@@ -51,8 +45,8 @@ describe('GitHubRepoOwnerPicker', () => {
     expect(getByRole('textbox')).toHaveValue('owner1');
   });
 
-  it('input field disabled', () => {
-    render(
+  it('input field disabled', async () => {
+    await renderInTestApp(
       <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
         <GitHubRepoOwnerPicker
           onChange={jest.fn()}
@@ -70,10 +64,10 @@ describe('GitHubRepoOwnerPicker', () => {
     expect(input).toHaveValue('owner1');
   });
 
-  it('calls onChange when the input field changes', () => {
+  it('calls onChange when the input field changes', async () => {
     const onChange = jest.fn();
 
-    const { getByRole } = render(
+    const { getByRole } = await renderInTestApp(
       <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
         <GitHubRepoOwnerPicker
           onChange={onChange}
@@ -99,7 +93,7 @@ describe('GitHubRepoOwnerPicker', () => {
   it('should populate owners', async () => {
     const onChange = jest.fn();
 
-    const { getByRole, getByText } = render(
+    const { getByRole, getByText } = await renderInTestApp(
       <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
         <GitHubRepoOwnerPicker
           onChange={onChange}
@@ -130,7 +124,7 @@ describe('GitHubRepoOwnerPicker', () => {
   it('should filter out excluded owners', async () => {
     const onChange = jest.fn();
 
-    const { getByRole, getByText } = render(
+    const { getByRole, getByText } = await renderInTestApp(
       <TestApiProvider apis={[[scaffolderApiRef, scaffolderApiMock]]}>
         <GitHubRepoOwnerPicker
           onChange={onChange}
