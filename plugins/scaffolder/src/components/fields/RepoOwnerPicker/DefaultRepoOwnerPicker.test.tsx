@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, screen } from '@testing-library/react';
+import { renderInTestApp } from '@backstage/test-utils';
 
 import { DefaultRepoOwnerPicker } from './DefaultRepoOwnerPicker';
 
 describe('DefaultRepoOwnerPicker', () => {
-  it('renders an input field', () => {
-    const { getByRole } = render(
+  it('renders an input field', async () => {
+    const { getByRole } = await renderInTestApp(
       <DefaultRepoOwnerPicker
         onChange={jest.fn()}
         state={{ owner: 'owner1' }}
@@ -32,8 +33,8 @@ describe('DefaultRepoOwnerPicker', () => {
     expect(getByRole('textbox')).toHaveValue('owner1');
   });
 
-  it('input field disabled', () => {
-    render(
+  it('input field disabled', async () => {
+    await renderInTestApp(
       <DefaultRepoOwnerPicker
         onChange={jest.fn()}
         isDisabled
@@ -49,10 +50,10 @@ describe('DefaultRepoOwnerPicker', () => {
     expect(input).toHaveValue('owner1');
   });
 
-  it('calls onChange when the input field changes', () => {
+  it('calls onChange when the input field changes', async () => {
     const onChange = jest.fn();
 
-    const { getByRole } = render(
+    const { getByRole } = await renderInTestApp(
       <DefaultRepoOwnerPicker
         onChange={onChange}
         state={{ owner: 'owner1' }}
