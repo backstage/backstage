@@ -3819,19 +3819,16 @@ __metadata:
   dependencies:
     "@backstage/cli": "workspace:^"
     "@backstage/config": "workspace:^"
-    "@backstage/core-components": "workspace:^"
     "@backstage/errors": "workspace:^"
     "@backstage/frontend-app-api": "workspace:^"
     "@backstage/frontend-test-utils": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@backstage/types": "workspace:^"
     "@backstage/version-bridge": "workspace:^"
-    "@material-ui/core": "npm:^4.12.4"
     "@testing-library/jest-dom": "npm:^6.0.0"
     "@testing-library/react": "npm:^16.0.0"
     "@types/react": "npm:^18.0.0"
     history: "npm:^5.3.0"
-    lodash: "npm:^4.17.21"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
     react-router-dom: "npm:^6.3.0"
@@ -9876,7 +9873,6 @@ __metadata:
     "@backstage/version-bridge": "workspace:^"
     "@testing-library/jest-dom": "npm:^6.0.0"
     "@testing-library/react": "npm:^16.0.0"
-    zod: "npm:^3.22.4"
   languageName: unknown
   linkType: soft
 
