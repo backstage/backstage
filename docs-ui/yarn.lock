@@ -854,10 +854,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@next/env@npm:15.5.8":
-  version: 15.5.8
-  resolution: "@next/env@npm:15.5.8"
-  checksum: 10/8bc59025b43879208cf83771e1a0879bba9962410ab392fbc2fc04967fa9879bea8722faf293e6b4fff3bbc7302194c4c39a4df37fb9153f2c37c84c200e3139
+"@next/env@npm:15.5.9":
+  version: 15.5.9
+  resolution: "@next/env@npm:15.5.9"
+  checksum: 10/962329701343c2617c85ae99ef35adfd9e8f7b58d9c0316f2f0857f82875a91ef3151ef0743c50964b0066aa3d1214c5193cf229f7757d7c9329f7fb95605a4a
   languageName: node
   linkType: hard
 
@@ -2533,7 +2533,7 @@ __metadata:
     html-react-parser: "npm:^5.2.5"
     lightningcss: "npm:^1.28.2"
     motion: "npm:^12.4.1"
-    next: "npm:15.5.8"
+    next: "npm:15.5.9"
     next-mdx-remote-client: "npm:^2.1.2"
     prop-types: "npm:^15.8.1"
     react: "npm:19.1.1"
@@ -5342,11 +5342,11 @@ __metadata:
   languageName: node
   linkType: hard
 
-"next@npm:15.5.8":
-  version: 15.5.8
-  resolution: "next@npm:15.5.8"
+"next@npm:15.5.9":
+  version: 15.5.9
+  resolution: "next@npm:15.5.9"
   dependencies:
-    "@next/env": "npm:15.5.8"
+    "@next/env": "npm:15.5.9"
     "@next/swc-darwin-arm64": "npm:15.5.7"
     "@next/swc-darwin-x64": "npm:15.5.7"
     "@next/swc-linux-arm64-gnu": "npm:15.5.7"
@@ -5397,7 +5397,7 @@ __metadata:
       optional: true
   bin:
     next: dist/bin/next
-  checksum: 10/bf952a258b65fcc803a670b869e7bd60c921a8005ca4bc58c3849386994c384d4edeb36575c2aaea2aa0026ed774c50d5205a3f1b8702b107c0ff790e473b1ac
+  checksum: 10/ac27b82de08c9720e8e99cd64102af5e30306a8c861630d50da347a02c288cc441273ada64875c47e7a4d5991ff69cc92b23e906ce3271f9835a7911a0f060cc
   languageName: node
   linkType: hard
 
