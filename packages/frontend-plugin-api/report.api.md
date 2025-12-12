@@ -6,7 +6,7 @@
 import { AnyRouteRefParams as AnyRouteRefParams_2 } from '@backstage/frontend-plugin-api';
 import { ApiRef as ApiRef_2 } from '@backstage/frontend-plugin-api';
 import { ComponentType } from 'react';
-import { Config } from '@backstage/config';
+import type { Config } from '@backstage/config';
 import { ConfigurableExtensionDataRef as ConfigurableExtensionDataRef_2 } from '@backstage/frontend-plugin-api';
 import { Expand } from '@backstage/types';
 import { ExpandRecursive } from '@backstage/types';
@@ -23,7 +23,7 @@ import { PropsWithChildren } from 'react';
 import { ReactNode } from 'react';
 import { RouteRef as RouteRef_2 } from '@backstage/frontend-plugin-api';
 import { SwappableComponentRef as SwappableComponentRef_2 } from '@backstage/frontend-plugin-api';
-import { z } from 'zod';
+import type { z } from 'zod';
 
 // @public
 export type AlertApi = {
