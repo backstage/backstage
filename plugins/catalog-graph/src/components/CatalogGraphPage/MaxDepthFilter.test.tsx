@@ -27,11 +27,20 @@ import { ApiProvider } from '@backstage/core-app-api';
 import { discoveryApiRef, fetchApiRef } from '@backstage/core-plugin-api';
 
 describe('<MaxDepthFilter/>', () => {
+  const fetchApi: typeof fetchApiRef.T = {} as any;
+
   const config = mockApis.config();
   const apis: TestApiRegistry = TestApiRegistry.from(
-    [catalogGraphApiRef, new DefaultCatalogGraphApi({ config })],
+    [
+      catalogGraphApiRef,
+      new DefaultCatalogGraphApi({
+        config,
+        discoveryApi: mockApis.discovery(),
+        fetchApi,
+      }),
+    ],
     [discoveryApiRef, mockApis.discovery()],
-    [fetchApiRef, {}],
+    [fetchApiRef, fetchApi],
   );
 
   function Wrapper({ children }: { children: React.ReactNode }) {

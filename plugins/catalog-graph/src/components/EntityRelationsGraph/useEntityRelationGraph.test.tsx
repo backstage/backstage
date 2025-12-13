@@ -41,13 +41,21 @@ const useEntityRelationGraphFromBackend =
 
 function GraphContext(props: PropsWithChildren<{}>) {
   const config = mockApis.config();
+  const fetchApi: typeof fetchApiRef.T = {} as any;
   return (
     <ApiProvider
       apis={TestApiRegistry.from(
-        [catalogGraphApiRef, new DefaultCatalogGraphApi({ config })],
+        [
+          catalogGraphApiRef,
+          new DefaultCatalogGraphApi({
+            config,
+            discoveryApi: mockApis.discovery(),
+            fetchApi,
+          }),
+        ],
         [catalogApiRef, catalogApiMock()],
         [discoveryApiRef, mockApis.discovery()],
-        [fetchApiRef, {}],
+        [fetchApiRef, fetchApi],
       )}
     >
       {props.children}
@@ -204,6 +212,7 @@ describe('useEntityRelationGraph', () => {
     expect(useEntityRelationGraphFromBackend).toHaveBeenNthCalledWith(
       1,
       {
+        filter: {},
         maxDepth: Number.POSITIVE_INFINITY,
         rootEntityRefs: [],
       },
@@ -230,6 +239,7 @@ describe('useEntityRelationGraph', () => {
     expect(useEntityRelationGraphFromBackend).toHaveBeenNthCalledWith(
       1,
       {
+        filter: {},
         maxDepth: Number.POSITIVE_INFINITY,
         rootEntityRefs: [],
       },
@@ -257,6 +267,7 @@ describe('useEntityRelationGraph', () => {
     expect(useEntityRelationGraphFromBackend).toHaveBeenNthCalledWith(
       1,
       {
+        filter: {},
         maxDepth: Number.POSITIVE_INFINITY,
         rootEntityRefs: [],
       },
@@ -283,6 +294,7 @@ describe('useEntityRelationGraph', () => {
     expect(useEntityRelationGraphFromBackend).toHaveBeenNthCalledWith(
       1,
       {
+        filter: {},
         maxDepth: Number.POSITIVE_INFINITY,
         rootEntityRefs: ['b:d/c'],
       },
@@ -318,6 +330,7 @@ describe('useEntityRelationGraph', () => {
     expect(useEntityRelationGraphFromBackend).toHaveBeenNthCalledWith(
       1,
       {
+        filter: {},
         maxDepth: Number.POSITIVE_INFINITY,
         rootEntityRefs: ['b:d/c'],
       },

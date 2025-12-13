@@ -4,18 +4,22 @@
 
 ```ts
 import type { Entity } from '@backstage/catalog-model';
+import type { EntityFilterQuery } from '@backstage/catalog-client';
 
 // @public
-export interface GraphQueryParams {
-  // (undocumented)
-  kinds?: string[];
-  // (undocumented)
-  maxDepth?: number;
-  // (undocumented)
-  relations?: string[];
-  // (undocumented)
+export const catalogGraphApiSpec: {
+  path: string;
+  urlTemplate: string;
+};
+
+// @public
+export type GraphQueryRequest = {
   rootEntityRefs: string[];
-}
+  maxDepth?: number;
+  relations?: string[];
+  fields?: string[];
+  filter?: EntityFilterQuery;
+};
 
 // @public
 export interface GraphQueryResult {

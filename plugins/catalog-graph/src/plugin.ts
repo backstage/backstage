@@ -17,6 +17,8 @@ import {
   configApiRef,
   createApiFactory,
   createPlugin,
+  discoveryApiRef,
+  fetchApiRef,
 } from '@backstage/core-plugin-api';
 import { catalogEntityRouteRef, catalogGraphRouteRef } from './routes';
 import { catalogGraphApiRef, DefaultCatalogGraphApi } from './api';
@@ -36,8 +38,13 @@ export const catalogGraphPlugin = createPlugin({
   apis: [
     createApiFactory({
       api: catalogGraphApiRef,
-      deps: { config: configApiRef },
-      factory: ({ config }) => new DefaultCatalogGraphApi({ config }),
+      deps: {
+        config: configApiRef,
+        discoveryApi: discoveryApiRef,
+        fetchApi: fetchApiRef,
+      },
+      factory: ({ config, discoveryApi, fetchApi }) =>
+        new DefaultCatalogGraphApi({ config, discoveryApi, fetchApi }),
     }),
   ],
 });
