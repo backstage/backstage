@@ -7,7 +7,4 @@ description: Visualize CI/CD pipeline statistics such as build time or success a
 documentation: https://github.com/backstage/community-plugins/tree/main/workspaces/cicd-statistics/plugins/cicd-statistics
 iconUrl: /img/cicd-statistics.svg
 npmPackageName: '@backstage-community/plugin-cicd-statistics'
-tags:
-  - ci
-  - cd
 addedDate: '2022-01-13'

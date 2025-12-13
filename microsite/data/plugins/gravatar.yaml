@@ -7,8 +7,4 @@ description: The processor generates a Gravatar URL for each user based on their
 documentation: https://github.com/RoadieHQ/roadie-backstage-plugins/blob/main/plugins/backend/catalog-backend-module-gravatar/README.md
 iconUrl: https://gravatar.com/avatar/gravatar
 npmPackageName: '@roadiehq/catalog-backend-module-gravatar'
-tags:
-  - gravatar
-  - catalog
-  - processor
 addedDate: '2024-08-26'
