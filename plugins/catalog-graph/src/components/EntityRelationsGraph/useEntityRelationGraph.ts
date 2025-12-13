@@ -60,7 +60,9 @@ export function useEntityRelationGraph({
       rootEntityRefs,
       maxDepth,
       relations,
-      kinds,
+      filter: {
+        ...(kinds ? { kind: kinds } : {}),
+      },
     },
     { noFetch: fetchMethod !== 'backend' },
   );

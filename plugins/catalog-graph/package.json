@@ -63,10 +63,12 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.61",
     "classnames": "^2.3.1",
+    "fast-json-stable-stringify": "^2.1.0",
     "lodash": "^4.17.15",
     "p-limit": "^3.1.0",
     "qs": "^6.9.4",
-    "react-use": "^17.2.4"
+    "react-use": "^17.2.4",
+    "uri-template": "^2.0.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",

@@ -14,7 +14,14 @@
  * limitations under the License.
  */
 
-import { ConfigApi } from '@backstage/core-plugin-api';
+import * as parser from 'uri-template';
+
+import { ConfigApi, DiscoveryApi, FetchApi } from '@backstage/core-plugin-api';
+import {
+  GraphQueryRequest,
+  GraphQueryResult,
+} from '@backstage/plugin-catalog-graph-common';
+
 import { ALL_RELATION_PAIRS, ALL_RELATIONS, RelationPairs } from '../lib/types';
 import {
   CatalogGraphApi,
@@ -22,6 +29,10 @@ import {
   DefaultRelationsExclude,
   DefaultRelationsInclude,
 } from './CatalogGraphApi';
+import {
+  CATALOG_FILTER_EXISTS,
+  EntityFilterQuery,
+} from '@backstage/catalog-client';
 
 /**
  * Options for the {@link DefaultCatalogGraphApi}.
@@ -30,6 +41,8 @@ import {
  */
 export interface DefaultCatalogGraphApiOptions {
   config: ConfigApi;
+  discoveryApi: DiscoveryApi;
+  fetchApi: FetchApi;
 
   /**
    * Known relations.
@@ -148,6 +161,9 @@ function concatRelationPairs(
  * @public
  */
 export class DefaultCatalogGraphApi implements CatalogGraphApi {
+  readonly #discoveryApi: DiscoveryApi;
+  readonly #fetchApi: FetchApi;
+
   readonly knownRelations: string[];
   readonly knownRelationPairs: [string, string][];
   readonly defaultRelations: string[];
@@ -155,12 +171,18 @@ export class DefaultCatalogGraphApi implements CatalogGraphApi {
 
   constructor({
     config,
+    discoveryApi,
+    fetchApi,
+
     knownRelations,
     additionalKnownRelations,
     knownRelationPairs,
     additionalKnownRelationPairs,
     defaultRelationTypes,
   }: DefaultCatalogGraphApiOptions) {
+    this.#discoveryApi = discoveryApi;
+    this.#fetchApi = fetchApi;
+
     this.knownRelations = concatRelations(
       knownRelations ??
         config.getOptionalStringArray('catalogGraph.knownRelations') ??
@@ -207,5 +229,47 @@ export class DefaultCatalogGraphApi implements CatalogGraphApi {
 
     const maxDepth = config.getOptionalNumber('catalogGraph.maxDepth');
     this.maxDepth = maxDepth ?? Number.POSITIVE_INFINITY;
+  }
+
+  // This is a copy from CatalogClient's implementation, to mimic the filter query
+  private getFilterValue(filter: EntityFilterQuery = []) {
+    const filters: string[] = [];
+    for (const filterItem of [filter].flat()) {
+      const filterParts: string[] = [];
+      for (const [key, value] of Object.entries(filterItem)) {
+        for (const v of [value].flat()) {
+          if (v === CATALOG_FILTER_EXISTS) {
+            filterParts.push(key);
+          } else if (typeof v === 'string') {
+            filterParts.push(`${key}=${v}`);
+          }
+        }
+      }
+
+      if (filterParts.length) {
+        filters.push(filterParts.join(','));
+      }
+    }
+    return filters;
+  }
+
+  async fetchGraph(request: GraphQueryRequest): Promise<GraphQueryResult> {
+    const baseUrl = await this.#discoveryApi.getBaseUrl('catalog');
+
+    const uriTemplate = `/graph/by-query{?rootEntityRefs,maxDepth,relations,fields,filter*}`;
+
+    const uri = parser.parse(uriTemplate).expand({
+      rootEntityRefs: request.rootEntityRefs,
+      maxDepth: request.maxDepth,
+      relations: request.relations,
+      fields: request.fields,
+      filter: request.filter ? this.getFilterValue(request.filter) : [],
+    });
+
+    const resp = await this.#fetchApi.fetch(`${baseUrl}${uri}`);
+
+    const graph = (await resp.json()) as GraphQueryResult;
+
+    return graph;
   }
 }

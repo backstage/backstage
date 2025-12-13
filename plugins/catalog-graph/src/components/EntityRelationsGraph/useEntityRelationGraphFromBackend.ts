@@ -14,19 +14,13 @@
  * limitations under the License.
  */
 
-import { useCallback, useMemo, useRef, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 
-import {
-  discoveryApiRef,
-  errorApiRef,
-  fetchApiRef,
-  useApi,
-} from '@backstage/core-plugin-api';
+import jsonStableStringify from 'fast-json-stable-stringify';
+
+import { errorApiRef, useApi } from '@backstage/core-plugin-api';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
-import {
-  GraphQueryParams,
-  GraphQueryResult,
-} from '@backstage/plugin-catalog-graph-common';
+import { GraphQueryRequest } from '@backstage/plugin-catalog-graph-common';
 
 import { useRelations } from '../../hooks';
 import { catalogGraphApiRef } from '../../api';
@@ -45,32 +39,19 @@ export interface UseBackendGraphResult {
   error?: Error;
 }
 
-function makeQueryParams(query: GraphQueryParams) {
-  const searchParams = new URLSearchParams();
-  for (const rootEntityRef of query.rootEntityRefs) {
-    searchParams.append('rootEntityRefs', rootEntityRef);
-  }
-  for (const relation of query.relations ?? []) {
-    searchParams.append('relations', relation);
-  }
-  for (const kind of query.kinds ?? []) {
-    searchParams.append('kinds', kind);
-  }
-  if (
-    typeof query.maxDepth === 'number' &&
-    query.maxDepth !== Number.POSITIVE_INFINITY
-  ) {
-    searchParams.append('maxDepth', query.maxDepth.toString(10));
-  }
-  return searchParams.toString();
+function getRequestSignature(request: GraphQueryRequest) {
+  const requestCopy = JSON.parse(JSON.stringify(request));
+  delete requestCopy.maxDepth;
+  return jsonStableStringify(requestCopy);
 }
 
 export function useEntityRelationGraphFromBackend(
-  query: GraphQueryParams,
+  query: GraphQueryRequest,
   { noFetch }: UseEntityRelationGraphFromBackendOptions,
 ): UseBackendGraphResult {
   const { relationsToInclude } = useRelations({ relations: query.relations });
-  const { maxDepth: systemMaxDepth } = useApi(catalogGraphApiRef);
+  const catalogGraphApi = useApi(catalogGraphApiRef);
+  const { maxDepth: systemMaxDepth } = catalogGraphApi;
 
   // maxDepth sent to the backend. For very small graphs, it's 1 above the query,
   // so that when maxDepth is increased in the UI, the data already there.
@@ -96,8 +77,6 @@ export function useEntityRelationGraphFromBackend(
   // re-used, if the depth is decreased.
   const depthRef = useRef<number | undefined>(undefined);
 
-  const discoveryApi = useApi(discoveryApiRef);
-  const { fetch } = useApi(fetchApiRef);
   const errorApi = useApi(errorApiRef);
 
   // A dummy state, that is updated when the entityStore changes, and a ref to
@@ -111,51 +90,36 @@ export function useEntityRelationGraphFromBackend(
     entities: { [ref: string]: Entity };
     lastFetched?: {
       maxDepth: number | undefined;
-      queryWithoutDepth: string;
+      requestSignature: string;
     };
   }>({
     loading: true,
     entities: {},
   });
 
-  const queryParamsWithoutDepth = useMemo(
-    () =>
-      makeQueryParams({
-        rootEntityRefs: query.rootEntityRefs,
-        kinds: query.kinds,
-        relations: relationsToInclude,
-      }),
-    [query.rootEntityRefs, query.kinds, relationsToInclude],
-  );
-  const queryParams = useMemo(
-    () =>
-      makeQueryParams({
-        rootEntityRefs: query.rootEntityRefs,
-        kinds: query.kinds,
-        maxDepth: fetchMaxDepth(query.maxDepth),
-        relations: relationsToInclude,
-      }),
-    [
-      query.rootEntityRefs,
-      query.kinds,
-      query.maxDepth,
-      relationsToInclude,
-      fetchMaxDepth,
-    ],
-  );
+  const currentRequest: GraphQueryRequest = {
+    rootEntityRefs: query.rootEntityRefs,
+    maxDepth: fetchMaxDepth(query.maxDepth),
+    relations: relationsToInclude,
+    filter: query.filter,
+    fields: query.fields,
+  };
+
+  const requestSignature = getRequestSignature(currentRequest);
 
   // Function to perform the graph query. It will only update the state if
   // <isActive> is still true, meaning the query hasn't changed while fetching.
   const queryGraph = useCallback(
-    ({ isActive, urlPath }: { isActive: () => boolean; urlPath: string }) => {
+    ({
+      isActive,
+      request,
+    }: {
+      isActive: () => boolean;
+      request: GraphQueryRequest;
+    }) => {
       const performQuery = async () => {
         try {
-          const baseUrl = await discoveryApi.getBaseUrl('catalog');
-
-          const url = new URL(`${baseUrl}${urlPath}`);
-
-          const resp = await fetch(url);
-          const graph = (await resp.json()) as GraphQueryResult;
+          const graph = await catalogGraphApi.fetchGraph(request);
 
           if (typeof graph.cutoff === 'number' && isActive()) {
             errorApi.post(
@@ -166,11 +130,6 @@ export function useEntityRelationGraphFromBackend(
           }
 
           if (isActive()) {
-            const searchParams = new URLSearchParams(url.searchParams);
-            const fetchedMaxDepth = searchParams.get('maxDepth');
-            searchParams.delete('maxDepth');
-            const fetchedQueryWithoutDepth = searchParams.toString();
-
             entityStore.current = {
               loading: false,
               error: undefined,
@@ -181,10 +140,8 @@ export function useEntityRelationGraphFromBackend(
                 ]),
               ),
               lastFetched: {
-                maxDepth: fetchedMaxDepth
-                  ? parseInt(fetchedMaxDepth, 10)
-                  : undefined,
-                queryWithoutDepth: fetchedQueryWithoutDepth,
+                maxDepth: request.maxDepth,
+                requestSignature: getRequestSignature(request),
               },
             };
             refresh({});
@@ -203,7 +160,7 @@ export function useEntityRelationGraphFromBackend(
 
       performQuery();
     },
-    [discoveryApi, fetch, errorApi],
+    [catalogGraphApi, errorApi],
   );
 
   if (noFetch) {
@@ -213,19 +170,19 @@ export function useEntityRelationGraphFromBackend(
   if (
     (query.maxDepth ?? Number.POSITIVE_INFINITY) >
       (depthRef.current ?? Number.POSITIVE_INFINITY) ||
-    queryRef.current !== queryParamsWithoutDepth
+    queryRef.current !== requestSignature
   ) {
     // maxDepth has increased or the rest of the query has changed, so
     // re-fetching for more data.
     // Because of an async call, set loading to true. When the value has
     // settled, loading will be set to false.
 
-    queryRef.current = queryParamsWithoutDepth;
+    queryRef.current = requestSignature;
     depthRef.current = query.maxDepth;
 
     const { lastFetched } = entityStore.current;
     if (
-      queryParamsWithoutDepth !== lastFetched?.queryWithoutDepth ||
+      requestSignature !== lastFetched?.requestSignature ||
       (query.maxDepth ?? Number.POSITIVE_INFINITY) >
         (lastFetched?.maxDepth ?? Number.POSITIVE_INFINITY)
     ) {
@@ -238,7 +195,7 @@ export function useEntityRelationGraphFromBackend(
     const lastCall = callRef.current;
     queryGraph({
       isActive: () => lastCall === callRef.current,
-      urlPath: `/graph?${queryParams}`,
+      request: currentRequest,
     });
   }
 

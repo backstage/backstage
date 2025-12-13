@@ -19,6 +19,8 @@ import {
   createFrontendPlugin,
   PageBlueprint,
   configApiRef,
+  discoveryApiRef,
+  fetchApiRef,
 } from '@backstage/frontend-plugin-api';
 import { EntityCardBlueprint } from '@backstage/plugin-catalog-react/alpha';
 import { catalogGraphRouteRef, catalogEntityRouteRef } from './routes';
@@ -90,8 +92,13 @@ const catalogGraphApi = ApiBlueprint.make({
   params: defineParams =>
     defineParams({
       api: catalogGraphApiRef,
-      deps: { config: configApiRef },
-      factory: ({ config }) => new DefaultCatalogGraphApi({ config }),
+      deps: {
+        config: configApiRef,
+        discoveryApi: discoveryApiRef,
+        fetchApi: fetchApiRef,
+      },
+      factory: ({ config, discoveryApi, fetchApi }) =>
+        new DefaultCatalogGraphApi({ config, discoveryApi, fetchApi }),
     }),
 });
 

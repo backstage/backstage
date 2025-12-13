@@ -15,7 +15,7 @@
  */
 
 import type {
-  GraphQueryParams,
+  GraphQueryRequest,
   GraphQueryResult,
 } from '@backstage/plugin-catalog-graph-common';
 import { CatalogService } from '@backstage/plugin-catalog-node';
@@ -28,6 +28,7 @@ import {
 } from '@backstage/catalog-model';
 
 import { GraphService } from './GraphService';
+import { getAllKindsFromFilter } from '../../lib/request';
 
 export class DefaultGraphService implements GraphService {
   readonly #catalog: CatalogService;
@@ -49,15 +50,22 @@ export class DefaultGraphService implements GraphService {
   }
 
   async fetchGraph(
-    query: GraphQueryParams,
+    request: GraphQueryRequest,
     credentials: BackstageCredentials,
   ): Promise<GraphQueryResult> {
     const {
       rootEntityRefs,
       relations,
-      kinds,
       maxDepth: userMaxDepth = Number.POSITIVE_INFINITY,
-    } = query;
+      fields,
+      filter,
+    } = request;
+
+    if (fields && fields.length > 0 && !fields.includes('relations')) {
+      fields.push('relations');
+    }
+
+    const kindsSet = getAllKindsFromFilter(filter ?? []);
 
     const maxDepth = Math.min(userMaxDepth, this.#maxDepth);
 
@@ -65,9 +73,6 @@ export class DefaultGraphService implements GraphService {
       ? (type: string) => relations.includes(type)
       : () => true;
 
-    const kindsSet = kinds
-      ? new Set(kinds.map(kind => kind.toLocaleLowerCase('en-US')))
-      : undefined;
     const includeKind = !kindsSet
       ? () => true
       : (kind: string) => kindsSet.has(kind.toLocaleLowerCase('en-US'));
@@ -98,7 +103,7 @@ export class DefaultGraphService implements GraphService {
       }
 
       const { items } = await this.#catalog.getEntitiesByRefs(
-        { entityRefs: entitiesToFetch },
+        { entityRefs: entitiesToFetch, fields, filter },
         { credentials },
       );
 

@@ -16,15 +16,22 @@
 import { mockErrorHandler, mockServices } from '@backstage/backend-test-utils';
 import express from 'express';
 import request from 'supertest';
+import * as parser from 'uri-template';
 
-import { GraphModule } from './GraphModule';
-import { DefaultGraphService, GraphService } from './services/GraphService';
 import {
-  GraphQueryParams,
+  catalogGraphApiSpec,
+  GraphQueryRequest,
   GraphQueryResult,
 } from '@backstage/plugin-catalog-graph-common';
 import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
 import { Entity } from '@backstage/catalog-model';
+import {
+  CATALOG_FILTER_EXISTS,
+  type EntityFilterQuery,
+} from '@backstage/catalog-client';
+
+import { GraphModule } from './GraphModule';
+import { DefaultGraphService, GraphService } from './services/GraphService';
 
 const entities: Entity[] = [
   {
@@ -87,35 +94,45 @@ describe('createRouter', () => {
     app.use(mockErrorHandler());
   });
 
-  const appendParams = (
-    urlSearchParams: URLSearchParams,
-    params: GraphQueryParams,
-  ) => {
-    for (const ref of params.rootEntityRefs) {
-      urlSearchParams.append('rootEntityRefs', ref);
+  // This is a copy from CatalogClient's implementation, to mimic the filter query
+  function getFilterValue(filter: EntityFilterQuery = []) {
+    const filters: string[] = [];
+    for (const filterItem of [filter].flat()) {
+      const filterParts: string[] = [];
+      for (const [key, value] of Object.entries(filterItem)) {
+        for (const v of [value].flat()) {
+          if (v === CATALOG_FILTER_EXISTS) {
+            filterParts.push(key);
+          } else if (typeof v === 'string') {
+            filterParts.push(`${key}=${v}`);
+          }
+        }
+      }
+
+      if (filterParts.length) {
+        filters.push(filterParts.join(','));
+      }
     }
-    if (params.maxDepth) {
-      urlSearchParams.append('maxDepth', params.maxDepth.toString());
-    }
-    for (const rel of params.relations ?? []) {
-      urlSearchParams.append('relations', rel);
-    }
-    for (const kind of params.kinds ?? []) {
-      urlSearchParams.append('kinds', kind);
-    }
+    return filters;
+  }
+
+  const getQueryParams = (params: GraphQueryRequest) => {
+    return parser.parse(catalogGraphApiSpec.urlTemplate).expand({
+      ...params,
+      filter: getFilterValue(params.filter),
+    });
   };
 
   it('should get a graph', async () => {
-    const params: GraphQueryParams = {
+    const params: GraphQueryRequest = {
       rootEntityRefs: ['c:d/a'],
       maxDepth: 2,
       relations: ['r1', 'r2'],
-      kinds: ['c', 'g'],
+      filter: [{ kind: 'c' }, { kind: 'g' }],
     };
 
-    const urlSearchParams = new URLSearchParams();
-    appendParams(urlSearchParams, params);
-    const response = await request(app).get(`/graph?${urlSearchParams}`);
+    const url = getQueryParams(params);
+    const response = await request(app).get(url);
 
     expect(response.status).toBe(200);
     expect(response.body).toEqual({
@@ -125,16 +142,15 @@ describe('createRouter', () => {
   });
 
   it('should get a smaller graph', async () => {
-    const params: GraphQueryParams = {
+    const params: GraphQueryRequest = {
       rootEntityRefs: ['c:d/a'],
       maxDepth: 1,
       relations: ['r1', 'r2'],
-      kinds: ['c', 'g'],
+      filter: [{ kind: 'c' }, { kind: 'g' }],
     };
 
-    const urlSearchParams = new URLSearchParams();
-    appendParams(urlSearchParams, params);
-    const response = await request(app).get(`/graph?${urlSearchParams}`);
+    const url = getQueryParams(params);
+    const response = await request(app).get(url);
 
     expect(response.status).toBe(200);
     expect(response.body).toEqual({

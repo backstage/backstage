@@ -20,4 +20,4 @@
  * @packageDocumentation
  */
 
-export type * from './api';
+export * from './api';

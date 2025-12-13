@@ -68,7 +68,14 @@ describe('<CatalogGraphCard/>', () => {
       [discoveryApiRef, mockApis.discovery()],
       [fetchApiRef, fetchApi],
       [catalogApiRef, catalogApiMock()],
-      [catalogGraphApiRef, new DefaultCatalogGraphApi({ config })],
+      [
+        catalogGraphApiRef,
+        new DefaultCatalogGraphApi({
+          config,
+          discoveryApi: mockApis.discovery(),
+          fetchApi,
+        }),
+      ],
     );
 
     wrapper = (

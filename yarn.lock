@@ -5160,15 +5160,19 @@ __metadata:
     "@backstage/backend-defaults": "workspace:^"
     "@backstage/backend-plugin-api": "workspace:^"
     "@backstage/backend-test-utils": "workspace:^"
+    "@backstage/catalog-client": "workspace:^"
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
     "@backstage/plugin-catalog-graph-common": "workspace:^"
     "@backstage/plugin-catalog-node": "workspace:^"
     "@types/express": "npm:^4.17.6"
     "@types/supertest": "npm:^2.0.8"
+    "@types/uri-templates": "npm:^0.1.34"
     express: "npm:^4.17.1"
     express-promise-router: "npm:^4.1.1"
     supertest: "npm:^6.2.4"
+    uri-template: "npm:^2.0.0"
+    uri-templates: "npm:^0.2.0"
   languageName: unknown
   linkType: soft
 
@@ -5391,6 +5395,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-catalog-graph-common@workspace:plugins/catalog-graph-common"
   dependencies:
+    "@backstage/catalog-client": "workspace:^"
     "@backstage/catalog-model": "workspace:^"
     "@backstage/cli": "workspace:^"
   languageName: unknown
@@ -5423,6 +5428,7 @@ __metadata:
     "@testing-library/user-event": "npm:^14.0.0"
     "@types/react": "npm:^18.0.0"
     classnames: "npm:^2.3.1"
+    fast-json-stable-stringify: "npm:^2.1.0"
     lodash: "npm:^4.17.15"
     p-limit: "npm:^3.1.0"
     qs: "npm:^6.9.4"
@@ -5430,6 +5436,7 @@ __metadata:
     react-dom: "npm:^18.0.2"
     react-router-dom: "npm:^6.30.2"
     react-use: "npm:^17.2.4"
+    uri-template: "npm:^2.0.0"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
@@ -22918,6 +22925,13 @@ __metadata:
   version: 2.0.6
   resolution: "@types/unist@npm:2.0.6"
   checksum: 10/25cb860ff10dde48b54622d58b23e66214211a61c84c0f15f88d38b61aa1b53d4d46e42b557924a93178c501c166aa37e28d7f6d994aba13d24685326272d5db
+  languageName: node
+  linkType: hard
+
+"@types/uri-templates@npm:^0.1.34":
+  version: 0.1.34
+  resolution: "@types/uri-templates@npm:0.1.34"
+  checksum: 10/4067dac3238c5cb7f26366764576f099350cb15916fc17a0dbb50813bea732d825caf39caea5dc6feaf10939a26ec48d25f4f5ca6b625e5edd7c7f28ad275e57
   languageName: node
   linkType: hard
 
@@ -50527,6 +50541,13 @@ __metadata:
   dependencies:
     pct-encode: "npm:~1.0.0"
   checksum: 10/99d520cd116171fb83f742508aa68e78559fc87ece5c3da1455a38e6105e9463c1f52c9f5b62c68659c85c98f66a68abaa61dc7290b0e54e7e893ffe12dbb3d1
+  languageName: node
+  linkType: hard
+
+"uri-templates@npm:^0.2.0":
+  version: 0.2.0
+  resolution: "uri-templates@npm:0.2.0"
+  checksum: 10/b4e6337303697ac5adcfd8556776deec7d693c431ee939c65e653605b2171010ed0312d2b3c9d19f8885c1cb233373582b35acc9bccefa27c004a63871173465
   languageName: node
   linkType: hard
 
