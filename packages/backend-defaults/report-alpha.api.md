@@ -7,6 +7,7 @@ import { ActionsRegistryService } from '@backstage/backend-plugin-api/alpha';
 import { ActionsService } from '@backstage/backend-plugin-api/alpha';
 import { MetricsService } from '@backstage/backend-plugin-api/alpha';
 import { RootMetricsService } from '@backstage/backend-plugin-api/alpha';
+import { RootSystemMetadataService } from '@backstage/backend-plugin-api/alpha';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 
 // @public (undocumented)
@@ -33,6 +34,13 @@ export const metricsServiceFactory: ServiceFactory<
 // @alpha
 export const rootMetricsServiceFactory: ServiceFactory<
   RootMetricsService,
+  'root',
+  'singleton'
+>;
+
+// @alpha
+export const rootSystemMetadataServiceFactory: ServiceFactory<
+  RootSystemMetadataService,
   'root',
   'singleton'
 >;

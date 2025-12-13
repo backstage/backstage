@@ -1,6 +1,3 @@
-> [!NOTE]
-> ✈️ From Monday November 10th through November 14rd, several maintainers and Spotify employees will be at KubeCon / BackstageCon! Expect the project to move a little slower than normal, and support to be limited. Normal service will resume after that! And do come visit our booth if you are there. ✈️
-
 [![headline](docs/assets/headline.png)](https://backstage.io/)
 
 # [Backstage](https://backstage.io)

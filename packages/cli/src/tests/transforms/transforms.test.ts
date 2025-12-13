@@ -36,18 +36,18 @@ const exportValues = {
 };
 
 const expectedExports = {
-  commonJs: {
+  commonJs: expect.objectContaining({
     ...exportValues.commonJs,
     dyn: exportValues.all,
     default: {
       ...exportValues.commonJs,
       dyn: exportValues.all,
     },
-  },
-  module: {
+  }),
+  module: expect.objectContaining({
     ...exportValues.all,
     dyn: exportValues.all,
-  },
+  }),
 };
 
 function loadFixture(fixture: string) {

@@ -20,3 +20,4 @@ export {
   metricsServiceFactory,
   rootMetricsServiceFactory,
 } from './entrypoints/metrics';
+export { rootSystemMetadataServiceFactory } from './entrypoints/rootSystemMetadata';

@@ -151,6 +151,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
     teamTransformer?: TeamTransformer;
     alwaysUseDefaultNamespace?: boolean;
     pageSizes?: Partial<GithubPageSizes>;
+    excludeSuspendedUsers?: boolean;
   });
   connect(connection: EntityProviderConnection): Promise<void>;
   // (undocumented)
@@ -166,6 +167,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
 export interface GithubMultiOrgEntityProviderOptions {
   alwaysUseDefaultNamespace?: boolean;
   events?: EventsService;
+  excludeSuspendedUsers?: boolean;
   githubCredentialsProvider?: GithubCredentialsProvider;
   githubUrl: string;
   id: string;
@@ -227,6 +229,8 @@ export class GithubOrgEntityProvider implements EntityProvider {
     githubCredentialsProvider?: GithubCredentialsProvider;
     userTransformer?: UserTransformer;
     teamTransformer?: TeamTransformer;
+    pageSizes?: Partial<GithubPageSizes>;
+    excludeSuspendedUsers?: boolean;
   });
   connect(connection: EntityProviderConnection): Promise<void>;
   // (undocumented)
@@ -244,10 +248,12 @@ export type GitHubOrgEntityProviderOptions = GithubOrgEntityProviderOptions;
 // @public
 export interface GithubOrgEntityProviderOptions {
   events?: EventsService;
+  excludeSuspendedUsers?: boolean;
   githubCredentialsProvider?: GithubCredentialsProvider;
   id: string;
   logger: LoggerService;
   orgUrl: string;
+  pageSizes?: Partial<GithubPageSizes>;
   schedule?: 'manual' | SchedulerServiceTaskRunner;
   teamTransformer?: TeamTransformer;
   userTransformer?: UserTransformer;
@@ -306,6 +312,7 @@ export type GithubUser = {
   email?: string;
   name?: string;
   organizationVerifiedDomainEmails?: string[];
+  suspendedAt?: string;
 };
 
 // @public

@@ -68,3 +68,14 @@ export const rootMetricsServiceRef = createServiceRef<
   id: 'alpha.core.rootMetrics',
   scope: 'root',
 });
+
+/**
+ * Read information about your current Backstage deployment.
+ * @alpha
+ */
+export const rootSystemMetadataServiceRef = createServiceRef<
+  import('./RootSystemMetadataService').RootSystemMetadataService
+>({
+  id: 'alpha.core.rootSystemMetadata',
+  scope: 'root',
+});
