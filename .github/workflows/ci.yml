@@ -121,6 +121,20 @@ jobs:
       - name: verify doc links
         run: node scripts/verify-links.js
 
+      - name: verify plugin directory files
+        run: |
+          if find ./microsite/data/plugins -maxdepth 1 -type f ! \( -name "*.yaml" \) | grep -q .; then
+              find ./microsite/data/plugins -maxdepth 1 -type f ! \( -name "*.yaml" \)
+              echo "Error: Non-YAML files found"
+              exit 1
+          else
+              echo "Success: All files in are YAML files (based on extension)."
+              exit 0
+          fi
+
+      - name: verify plugin directory schema
+        run: yarn ajv validate -s microsite/data/plugin-schema.json -d "microsite/data/plugins/*.yaml" -c ajv-formats
+
       - name: build all packages
         run: yarn backstage-cli repo build --all
 
