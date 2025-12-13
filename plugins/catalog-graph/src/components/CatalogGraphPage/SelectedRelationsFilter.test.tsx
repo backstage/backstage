@@ -34,6 +34,7 @@ import { catalogGraphApiRef, DefaultCatalogGraphApi } from '../../api';
 import { discoveryApiRef, fetchApiRef } from '@backstage/core-plugin-api';
 
 function GraphContext(props: PropsWithChildren<{}>) {
+  const fetchApi: typeof fetchApiRef.T = {} as any;
   return (
     <ApiProvider
       apis={TestApiRegistry.from(
@@ -41,10 +42,12 @@ function GraphContext(props: PropsWithChildren<{}>) {
           catalogGraphApiRef,
           new DefaultCatalogGraphApi({
             config: mockApis.config(),
+            discoveryApi: mockApis.discovery(),
+            fetchApi,
           }),
         ],
         [discoveryApiRef, mockApis.discovery()],
-        [fetchApiRef, {}],
+        [fetchApiRef, fetchApi],
       )}
     >
       {props.children}

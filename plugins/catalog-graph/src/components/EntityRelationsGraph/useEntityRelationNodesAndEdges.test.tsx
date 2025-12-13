@@ -144,7 +144,14 @@ function GraphContext(props: PropsWithChildren<{}>) {
   return (
     <ApiProvider
       apis={TestApiRegistry.from(
-        [catalogGraphApiRef, new DefaultCatalogGraphApi({ config })],
+        [
+          catalogGraphApiRef,
+          new DefaultCatalogGraphApi({
+            config,
+            discoveryApi: mockApis.discovery(),
+            fetchApi,
+          }),
+        ],
         [catalogApiRef, catalogApiMock()],
         [discoveryApiRef, mockApis.discovery()],
         [fetchApiRef, fetchApi],
@@ -226,6 +233,7 @@ describe('useEntityRelationNodesAndEdges', () => {
     await deferred;
     // Simulate rerendering as this is triggered automatically due to the mock
     for (let i = 0; i < 5; ++i) {
+      await new Promise(resolve => setTimeout(resolve, 1));
       rerender();
     }
 

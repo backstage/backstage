@@ -46,6 +46,7 @@
     "test": "backstage-cli package test"
   },
   "dependencies": {
+    "@backstage/catalog-client": "workspace:^",
     "@backstage/catalog-model": "workspace:^"
   },
   "devDependencies": {

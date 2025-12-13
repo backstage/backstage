@@ -18,10 +18,19 @@ import {
   HttpAuthService,
   HttpRouterService,
 } from '@backstage/backend-plugin-api';
-import type { GraphQueryParams } from '@backstage/plugin-catalog-graph-common';
+import {
+  catalogGraphApiSpec,
+  GraphQueryRequest,
+} from '@backstage/plugin-catalog-graph-common';
+import {
+  CATALOG_FILTER_EXISTS,
+  type EntityFilterQuery,
+} from '@backstage/catalog-client';
 
 import Router from 'express-promise-router';
+import uriTemplates from 'uri-templates';
 
+import { ensureArray } from './lib/array';
 import { GraphService } from './services/GraphService';
 
 export class GraphModule {
@@ -54,36 +63,42 @@ export class GraphModule {
 
   registerRoutes() {
     // Get the catalog entities that fulfill a catalog graph query
-    this.moduleRouter.get('/graph', async (req, res) => {
-      const query = parseQueryParams(
-        req.query as Record<string, string | string[]>,
-      );
-
+    this.moduleRouter.get('/graph/by-query', async (req, res) => {
       const credentials = await this.httpAuth.credentials(req);
-      const result = await this.graphService.fetchGraph(query, credentials);
+
+      const request = parseQueryRequest(req.url);
+
+      const result = await this.graphService.fetchGraph(request, credentials);
 
       res.status(200).json(result);
     });
   }
 }
 
-function ensureArray(value: string | string[]): string[] {
-  return Array.isArray(value) ? value : [value];
-}
+function parseQueryRequest(url: string): GraphQueryRequest {
+  const parsed =
+    uriTemplates(catalogGraphApiSpec.urlTemplate).fromUri(url) ?? {};
 
-function parseQueryParams(
-  params: Record<string, string | string[]>,
-): GraphQueryParams {
-  const ret: GraphQueryParams = {
-    rootEntityRefs: params.rootEntityRefs
-      ? ensureArray(params.rootEntityRefs)
-      : [],
-    relations: params.relations ? ensureArray(params.relations) : undefined,
-    kinds: params.kinds ? ensureArray(params.kinds) : undefined,
-    maxDepth: params.maxDepth
-      ? parseInt(params.maxDepth as string, 10)
-      : undefined,
-  };
+  const rootEntityRefs = ensureArray(parsed.rootEntityRefs ?? []);
+  const maxDepth = parsed.maxDepth ? parseInt(parsed.maxDepth, 10) : undefined;
+  const relations = parsed.relations ? ensureArray(parsed.relations) : [];
+  const fields = parsed.fields ? ensureArray(parsed.fields) : undefined;
+  const rawFilter = parsed.filter ? ensureArray(parsed.filter) : undefined;
 
-  return ret;
+  const filter = rawFilter?.map((filt): Exclude<EntityFilterQuery, any[]> => {
+    const parts = filt.split(',');
+    const map = new Map<string, (string | symbol)[]>();
+
+    for (const part of parts) {
+      const [key, value] = part.split('=');
+
+      const values = map.get(key) ?? [];
+      values.push(typeof value === 'undefined' ? CATALOG_FILTER_EXISTS : value);
+      map.set(key, values);
+    }
+
+    return Object.fromEntries(map.entries());
+  });
+
+  return { rootEntityRefs, maxDepth, relations, fields, filter };
 }
