@@ -621,20 +621,21 @@ With that in mind, here are some IDEs configurations to run backstage components
 
 #### VS Code
 
+1. Install the [Jest extension](https://marketplace.visualstudio.com/items?itemName=Orta.vscode-jest) for VS Code.
+2. Update `settings.json` in the `.vscode` folder with:
+
 ```jsonc
 {
   "jest.jestCommandLine": "yarn test",
   // In a large repo like the Backstage main repo you likely want to disable
   // watch mode and the initial test run too, leaving just manual and perhaps
   // on-save test runs in place.
-  "jest.autoRun": {
-    "watch": false,
-    "onSave": "test-src-file"
-  }
+  "jest.runMode": "on-save"
 }
 ```
 
-A complete launch configuration for VS Code debugging may look like this:
+3. Add a launch configuration for VS Code in `launch.json` in the `.vscode` folder.  
+   A complete configuration for debugging may look like this:
 
 ```jsonc
 {
@@ -653,10 +654,12 @@ A complete launch configuration for VS Code debugging may look like this:
   ],
   "console": "integratedTerminal",
   "internalConsoleOptions": "neverOpen",
-  "disableOptimisticBPs": true,
-  "program": "${workspaceFolder}/node_modules/.bin/backstage-cli"
+  "program": "${workspaceFolder}/node_modules/@backstage/cli/bin/backstage-cli"
 }
 ```
+
+4. The configuration is not for manual runs from the "Run and Debug" view.
+   Instead use the Jest test explorer or the [test's gutter menu](https://github.com/jest-community/vscode-jest#how-to-trigger-a-test-run).
 
 ## Publishing
 
