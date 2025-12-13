@@ -14,15 +14,6 @@
  * limitations under the License.
  */
 
-import { BackstageCredentials } from '@backstage/backend-plugin-api';
-import type {
-  GraphQueryRequest,
-  GraphQueryResult,
-} from '@backstage/plugin-catalog-graph-common';
-
-export interface GraphService {
-  fetchGraph(
-    request: GraphQueryRequest,
-    credentials: BackstageCredentials,
-  ): Promise<GraphQueryResult>;
+export function ensureArray<T>(value: T | T[]): T[] {
+  return Array.isArray(value) ? value : [value];
 }

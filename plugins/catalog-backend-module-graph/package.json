@@ -34,18 +34,22 @@
   },
   "dependencies": {
     "@backstage/backend-plugin-api": "workspace:^",
+    "@backstage/catalog-client": "workspace:^",
     "@backstage/catalog-model": "workspace:^",
+    "@backstage/plugin-catalog-graph-common": "workspace:^",
     "@backstage/plugin-catalog-node": "workspace:^",
-    "express-promise-router": "^4.1.1"
+    "express-promise-router": "^4.1.1",
+    "uri-templates": "^0.2.0"
   },
   "devDependencies": {
     "@backstage/backend-defaults": "workspace:^",
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
-    "@backstage/plugin-catalog-graph-common": "workspace:^",
     "@types/express": "^4.17.6",
     "@types/supertest": "^2.0.8",
+    "@types/uri-templates": "^0.1.34",
     "express": "^4.17.1",
-    "supertest": "^6.2.4"
+    "supertest": "^6.2.4",
+    "uri-template": "^2.0.0"
   }
 }

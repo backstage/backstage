@@ -15,18 +15,31 @@
  */
 
 import type { Entity } from '@backstage/catalog-model';
+import type { EntityFilterQuery } from '@backstage/catalog-client';
 
 /**
- * Parameters for a graph query, passed to the backend as query parameters.
+ * Query request for fetching a catalog graph
  *
  * @public
  */
-export interface GraphQueryParams {
+export type GraphQueryRequest = {
   rootEntityRefs: string[];
   maxDepth?: number;
   relations?: string[];
-  kinds?: string[];
-}
+  fields?: string[];
+  filter?: EntityFilterQuery;
+};
+
+/**
+ * URI template for querying the catalog graph by query parameters.
+ *
+ * @public
+ */
+export const catalogGraphApiSpec = {
+  path: '/graph/by-query',
+  urlTemplate:
+    '/graph/by-query{?rootEntityRefs,maxDepth,relations,fields,filter*}',
+};
 
 /**
  * Result of a graph query, as returned by the backend.
