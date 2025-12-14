@@ -186,11 +186,11 @@ export async function buildAzurePgConfig(
   const rawConfig = configReader.get() as Record<string, unknown>;
 
   const normalized = normalizeConnection(rawConfig.connection as any);
-  const sanitizedConnection = sanitizeConnectionValue(normalized, [
+  const sanitizedConnection = omit(normalized, [
     'type',
     'instance',
     'tokenCredential',
-  ]);
+  ]) as Partial<Knex.StaticConnectionConfig>;
 
   async function getConnectionConfig() {
     const token = (await credential.getToken(
@@ -447,14 +447,6 @@ function normalizeConnection(
   return typeof connection === 'string' || connection instanceof String
     ? parsePgConnectionString(connection as string)
     : connection;
-}
-
-function sanitizeConnectionValue(
-  rawConnection: unknown,
-  keys: string[],
-): Partial<Knex.StaticConnectionConfig> {
-  const normalized = normalizeConnection(rawConnection as any);
-  return omit(normalized, keys) as Partial<Knex.StaticConnectionConfig>;
 }
 
 export class PgConnector implements Connector {
