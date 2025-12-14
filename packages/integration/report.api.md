@@ -665,6 +665,7 @@ export type GithubAppConfig = {
   clientId: string;
   clientSecret: string;
   allowedInstallationOwners?: string[];
+  publicAccess?: boolean;
 };
 
 // @public
