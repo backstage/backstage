@@ -40,9 +40,7 @@
     }
 
     &[data-startCollapsed='true'] {
-      transition:
-        flex-basis 0.3s ease-in-out,
-        width 0.3s ease-in-out,
+      transition: flex-basis 0.3s ease-in-out, width 0.3s ease-in-out,
         max-width 0.3s ease-in-out;
       padding: 0;
       flex: 0 1 auto;
