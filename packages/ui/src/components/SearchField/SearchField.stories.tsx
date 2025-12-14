@@ -165,9 +165,12 @@ export const StartCollapsed: Story = {
   },
 
   render: args => (
-    <Flex direction="row" gap="4">
+    <Flex direction="column" gap="4">
+      <Flex direction="row" gap="4">
+        <SearchField {...args} size="small" />
+        <SearchField {...args} size="medium" />
+      </Flex>
       <SearchField {...args} size="small" />
-      <SearchField {...args} size="medium" />
     </Flex>
   ),
 };

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { forwardRef, useEffect, useState } from 'react';
+import { forwardRef, useEffect, useState, useRef } from 'react';
 import {
   Input,
   SearchField as AriaSearchField,
@@ -38,9 +38,6 @@ export const SearchField = forwardRef<HTMLDivElement, SearchFieldProps>(
       'aria-label': ariaLabel,
       'aria-labelledby': ariaLabelledBy,
     } = props;
-
-    const [isCollapsed, setIsCollapsed] = useState(false);
-    const [shouldCollapse, setShouldCollapse] = useState(true);
 
     useEffect(() => {
       if (!label && !ariaLabel && !ariaLabelledBy) {
@@ -71,6 +68,10 @@ export const SearchField = forwardRef<HTMLDivElement, SearchFieldProps>(
       ...rest
     } = cleanedProps;
 
+    const [isCollapsed, setIsCollapsed] = useState(startCollapsed);
+    const [shouldCollapse, setShouldCollapse] = useState(true);
+    const inputRef = useRef<HTMLInputElement>(null);
+
     // If a secondary label is provided, use it. Otherwise, use 'Required' if the field is required.
     const secondaryLabelText =
       secondaryLabel || (isRequired ? 'Required' : null);
@@ -79,10 +80,23 @@ export const SearchField = forwardRef<HTMLDivElement, SearchFieldProps>(
       props.onFocusChange?.(isFocused);
       if (shouldCollapse) {
         if (isFocused) {
-          setIsCollapsed(true);
-        } else {
+          // When focusing, expand the field
           setIsCollapsed(false);
+        } else {
+          // When blurring, collapse the field
+          setIsCollapsed(true);
         }
+      }
+    };
+
+    const handleContainerClick = () => {
+      // If the field is collapsed (small), expand it and focus the input
+      if (startCollapsed && isCollapsed) {
+        setIsCollapsed(false);
+        // Focus the input after state update
+        setTimeout(() => {
+          inputRef.current?.focus();
+        }, 0);
       }
     };
 
@@ -119,6 +133,7 @@ export const SearchField = forwardRef<HTMLDivElement, SearchFieldProps>(
             styles[classNames.inputWrapper],
           )}
           data-size={dataAttributes['data-size']}
+          onClick={handleContainerClick}
         >
           {icon !== false && (
             <div
@@ -133,6 +148,7 @@ export const SearchField = forwardRef<HTMLDivElement, SearchFieldProps>(
             </div>
           )}
           <Input
+            ref={inputRef}
             className={clsx(classNames.input, styles[classNames.input])}
             {...(icon !== false && { 'data-icon': true })}
             placeholder={placeholder}
