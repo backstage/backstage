@@ -27,7 +27,11 @@ export type {
 
 export type { ActionsService, ActionsServiceAction } from './ActionsService';
 
-export type { MetricsService, RootMetricsService } from './MetricsService';
+export type {
+  MetricsService,
+  MetricsServiceOptions,
+  RootMetricsService,
+} from './MetricsService';
 
 export {
   actionsRegistryServiceRef,

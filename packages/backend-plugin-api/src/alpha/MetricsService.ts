@@ -26,6 +26,26 @@ import {
 } from '@opentelemetry/api';
 
 /**
+ * Required options for creating a metrics service.
+ *
+ * @alpha
+ */
+export interface MetricsServiceOptions {
+  /**
+   * The service namespace applied to each instrument.
+   */
+  namespace: string;
+  /**
+   * The version of the instrumentation library.
+   */
+  version?: string;
+  /**
+   * The schema URL of the instrumentation library.
+   */
+  schemaUrl?: string;
+}
+
+/**
  * A service that provides a facility for emitting metrics.
  *
  * @alpha
@@ -121,20 +141,4 @@ export interface MetricsService {
  *
  * @alpha
  */
-export interface RootMetricsService extends MetricsService {
-  /**
-   * Creates a new metrics service for a given service.
-   *
-   * @param serviceId - The ID of the service.
-   * @returns The metrics service.
-   */
-  forService(serviceId: string): MetricsService;
-
-  /**
-   * Creates a new metrics service for a given plugin.
-   *
-   * @param pluginId - The ID of the plugin.
-   * @returns The metrics service.
-   */
-  forPlugin(pluginId: string): MetricsService;
-}
+export interface RootMetricsService extends MetricsService {}

@@ -14,28 +14,30 @@
  * limitations under the License.
  */
 
-import {
-  metricsServiceRef,
-  rootMetricsServiceRef,
-} from '@backstage/backend-plugin-api/alpha';
+import { metricsServiceRef } from '@backstage/backend-plugin-api/alpha';
 import {
   coreServices,
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
+import { DefaultMetricsService } from './DefaultMetricsService';
+import snakeCase from 'lodash/snakeCase';
 
 /**
  * Service factory for collecting plugin-scoped metrics.
- * This is the default metrics service for plugins.
  *
  * @alpha
  */
 export const metricsServiceFactory = createServiceFactory({
   service: metricsServiceRef,
   deps: {
-    rootMetrics: rootMetricsServiceRef,
     pluginMetadata: coreServices.pluginMetadata,
   },
-  factory: ({ pluginMetadata, rootMetrics }) => {
-    return rootMetrics.forPlugin(pluginMetadata.getId());
+  factory: ({ pluginMetadata }) => {
+    const normalizedPluginId = snakeCase(pluginMetadata.getId());
+    const namespace = `backstage.${normalizedPluginId}`;
+
+    return DefaultMetricsService.create({
+      namespace,
+    });
   },
 });

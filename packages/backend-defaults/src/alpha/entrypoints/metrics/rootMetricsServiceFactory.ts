@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 import { rootMetricsServiceRef } from '@backstage/backend-plugin-api/alpha';
-import { DefaultRootMetricsService } from './DefaultRootMetricsService';
 import { createServiceFactory } from '@backstage/backend-plugin-api';
+import { DefaultMetricsService } from './DefaultMetricsService';
 
 /**
  * Service factory responsible for creating the root metrics service
@@ -25,5 +25,11 @@ import { createServiceFactory } from '@backstage/backend-plugin-api';
 export const rootMetricsServiceFactory = createServiceFactory({
   service: rootMetricsServiceRef,
   deps: {},
-  factory: () => DefaultRootMetricsService.create(),
+  factory: () => {
+    const namespace = 'backstage';
+
+    return DefaultMetricsService.create({
+      namespace,
+    });
+  },
 });

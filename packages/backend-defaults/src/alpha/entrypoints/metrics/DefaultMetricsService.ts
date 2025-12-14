@@ -14,84 +14,112 @@
  * limitations under the License.
  */
 
-import { MetricsService } from '@backstage/backend-plugin-api/alpha';
 import {
-  Counter,
-  Histogram,
-  MetricOptions,
-  Gauge,
-  ObservableCounter,
-  ObservableUpDownCounter,
-  ObservableGauge,
-  UpDownCounter,
   Attributes,
+  Counter,
+  Gauge,
+  Histogram,
+  Meter,
+  MetricOptions,
   metrics,
+  ObservableCounter,
+  ObservableGauge,
+  ObservableUpDownCounter,
+  UpDownCounter,
 } from '@opentelemetry/api';
-import { InstrumentFactory } from './InstrumentFactory';
+import {
+  MetricsService,
+  MetricsServiceOptions,
+} from '@backstage/backend-plugin-api/alpha';
+import z from 'zod';
+
+const namespaceSchema = z
+  .string()
+  .min(1, 'Metric namespace is required and cannot be empty')
+  .startsWith('backstage.');
 
 /**
+ * Default implementation of the {@link MetricsService} interface.
+ *
+ * This implementation wraps the OpenTelemetry Meter API and automatically
+ * namespaces all metric names with the configured namespace prefix.
+ *
  * @alpha
  */
 export class DefaultMetricsService implements MetricsService {
-  private readonly instrumentFactory: InstrumentFactory;
+  private readonly meter: Meter;
+  private readonly namespace: string;
 
-  private constructor(namespace: string) {
-    this.instrumentFactory = new InstrumentFactory({
-      meter: metrics.getMeter(namespace),
-      namespace,
+  private constructor(opts: MetricsServiceOptions) {
+    this.namespace = namespaceSchema.parse(opts.namespace);
+    this.meter = metrics.getMeter(this.namespace, opts.version, {
+      schemaUrl: opts.schemaUrl,
     });
   }
 
-  static create(namespace: string): MetricsService {
-    return new DefaultMetricsService(namespace);
+  /**
+   * Creates a new {@link MetricsService} instance.
+   *
+   * @param opts - Configuration options including the namespace
+   * @returns A new MetricsService instance
+   */
+  static create(opts: MetricsServiceOptions): MetricsService {
+    return new DefaultMetricsService(opts);
+  }
+
+  private namespacedName(name: string): string {
+    return `${this.namespace}.${name}`;
   }
 
   createCounter<TAttributes extends Attributes = Attributes>(
     name: string,
     opts?: MetricOptions,
   ): Counter<TAttributes> {
-    return this.instrumentFactory.createCounter(name, opts);
+    return this.meter.createCounter(this.namespacedName(name), opts);
   }
 
   createUpDownCounter<TAttributes extends Attributes = Attributes>(
     name: string,
     opts?: MetricOptions,
   ): UpDownCounter<TAttributes> {
-    return this.instrumentFactory.createUpDownCounter(name, opts);
+    return this.meter.createUpDownCounter(this.namespacedName(name), opts);
   }
 
   createHistogram<TAttributes extends Attributes = Attributes>(
     name: string,
     opts?: MetricOptions,
   ): Histogram<TAttributes> {
-    return this.instrumentFactory.createHistogram(name, opts);
+    return this.meter.createHistogram(this.namespacedName(name), opts);
   }
 
   createGauge<TAttributes extends Attributes = Attributes>(
     name: string,
     opts?: MetricOptions,
   ): Gauge<TAttributes> {
-    return this.instrumentFactory.createGauge(name, opts);
+    return this.meter.createGauge(this.namespacedName(name), opts);
   }
 
   createObservableCounter<TAttributes extends Attributes = Attributes>(
     name: string,
-    options?: MetricOptions,
+    opts?: MetricOptions,
   ): ObservableCounter<TAttributes> {
-    return this.instrumentFactory.createObservableCounter(name, options);
+    return this.meter.createObservableCounter(this.namespacedName(name), opts);
   }
 
   createObservableUpDownCounter<TAttributes extends Attributes = Attributes>(
     name: string,
-    options?: MetricOptions,
+    opts?: MetricOptions,
   ): ObservableUpDownCounter<TAttributes> {
-    return this.instrumentFactory.createObservableUpDownCounter(name, options);
+    return this.meter.createObservableUpDownCounter(
+      this.namespacedName(name),
+      opts,
+    );
   }
 
   createObservableGauge<TAttributes extends Attributes = Attributes>(
     name: string,
-    options?: MetricOptions,
+    opts?: MetricOptions,
   ): ObservableGauge<TAttributes> {
-    return this.instrumentFactory.createObservableGauge(name, options);
+    return this.meter.createObservableGauge(this.namespacedName(name), opts);
   }
 }

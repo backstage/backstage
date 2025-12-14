@@ -52,8 +52,8 @@ export function createFetchRailsAction(options: {
             database?:
               | 'sqlite3'
               | 'mysql'
-              | 'postgresql'
               | 'oracle'
+              | 'postgresql'
               | 'sqlserver'
               | 'jdbcmysql'
               | 'jdbcsqlite3'

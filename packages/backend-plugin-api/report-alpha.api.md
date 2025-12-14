@@ -145,6 +145,13 @@ export interface MetricsService {
 }
 
 // @alpha
+export interface MetricsServiceOptions {
+  namespace: string;
+  schemaUrl?: string;
+  version?: string;
+}
+
+// @alpha
 export const metricsServiceRef: ServiceRef<
   MetricsService,
   'plugin',
@@ -152,10 +159,7 @@ export const metricsServiceRef: ServiceRef<
 >;
 
 // @alpha
-export interface RootMetricsService extends MetricsService {
-  forPlugin(pluginId: string): MetricsService;
-  forService(serviceId: string): MetricsService;
-}
+export interface RootMetricsService extends MetricsService {}
 
 // @alpha
 export const rootMetricsServiceRef: ServiceRef<
