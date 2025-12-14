@@ -182,6 +182,7 @@ describe('postgres', () => {
       });
       expect(connectionResult).not.toHaveProperty('allowedClockSkewMs');
       expect(connectionResult).not.toHaveProperty('type');
+      expect(connectionResult).not.toHaveProperty('tokenCredential');
     });
 
     it('uses the correct config when using azure managed identity', async () => {
@@ -229,6 +230,7 @@ describe('postgres', () => {
         expirationChecker: expect.any(Function),
       });
       expect(connectionResult).not.toHaveProperty('type');
+      expect(connectionResult).not.toHaveProperty('tokenCredential');
     });
 
     it('uses the correct config when using azure client secret credentials', async () => {
@@ -282,6 +284,31 @@ describe('postgres', () => {
         expirationChecker: expect.any(Function),
       });
       expect(connectionResult).not.toHaveProperty('type');
+      expect(connectionResult).not.toHaveProperty('tokenCredential');
+    });
+
+    it('removes tokenCredential from the final connection', async () => {
+      const { DefaultAzureCredential } = jest.requireMock(
+        '@azure/identity',
+      ) as jest.Mocked<typeof import('@azure/identity')>;
+      DefaultAzureCredential.prototype.getToken.mockResolvedValue({
+        token: 't',
+        expiresOnTimestamp: Date.now() + 1000,
+      });
+
+      const config = new ConfigReader({
+        client: 'pg',
+        connection: {
+          type: 'azure',
+          instance: 'unused',
+          tokenCredential: { clientId: 'x' },
+        },
+      });
+
+      const configResult = await buildPgDatabaseConfig(config);
+      const connection = await configResult.connection();
+
+      expect(connection).not.toHaveProperty('tokenCredential');
     });
 
     it('instructs knex to get a new connection object when the old azure token expires', async () => {
@@ -463,6 +490,47 @@ describe('postgres', () => {
         instanceConnectionName: 'project:region:instance',
         ipType: 'PUBLIC',
       });
+    });
+
+    it('passes configured ipType to connector.getOptions', async () => {
+      const { Connector } = jest.requireMock(
+        '@google-cloud/cloud-sql-connector',
+      ) as jest.Mocked<typeof import('@google-cloud/cloud-sql-connector')>;
+
+      const mockStream = (): any => {};
+      Connector.prototype.getOptions.mockResolvedValue({ stream: mockStream });
+
+      await buildPgDatabaseConfig(
+        new ConfigReader({
+          client: 'pg',
+          connection: {
+            type: 'cloudsql',
+            instance: 'proj:region:inst',
+            ipAddressType: 'PUBLIC',
+          },
+        }),
+      );
+
+      expect(Connector.prototype.getOptions).toHaveBeenCalledWith({
+        authType: 'IAM',
+        instanceConnectionName: 'proj:region:inst',
+        ipType: 'PUBLIC',
+      });
+    });
+
+    it('throws when connection.ipAddressType is invalid', async () => {
+      await expect(
+        buildPgDatabaseConfig(
+          new ConfigReader({
+            client: 'pg',
+            connection: {
+              type: 'cloudsql',
+              instance: 'proj:region:inst',
+              ipAddressType: 'INVALID',
+            },
+          }),
+        ),
+      ).rejects.toThrow(/Invalid connection.ipAddressType/);
     });
 
     it('passes ip settings to cloud-sql-connector', async () => {

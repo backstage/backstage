@@ -85,23 +85,31 @@ export async function buildPgDatabaseConfig(
     },
     overrides,
   );
-
-  const sanitizedConfig = JSON.parse(JSON.stringify(config));
-
-  // Trim additional properties from the connection object passed to knex
-  delete sanitizedConfig.connection.type;
-  delete sanitizedConfig.connection.instance;
-  delete sanitizedConfig.connection.tokenCredential;
+  const mergedConfigReader = new ConfigReader(config);
 
   if (config.connection.type === 'default' || !config.connection.type) {
-    return sanitizedConfig;
+    const connectionValue = config.connection;
+    const sanitizedConnection =
+      typeof connectionValue === 'string' || connectionValue instanceof String
+        ? connectionValue
+        : // connection is an object, omit config-only props
+          omit(connectionValue as Record<string, unknown>, [
+            'type',
+            'instance',
+            'tokenCredential',
+          ]);
+
+    return {
+      ...config,
+      connection: sanitizedConnection,
+    };
   }
 
   switch (config.connection.type) {
     case 'azure':
-      return buildAzurePgConfig(config, sanitizedConfig);
+      return buildAzurePgConfig(mergedConfigReader);
     case 'cloudsql':
-      return buildCloudSqlConfig(config, sanitizedConfig);
+      return buildCloudSqlConfig(mergedConfigReader);
     default:
       throw new Error(`Unknown connection type: ${config.connection.type}`);
   }
@@ -131,7 +139,9 @@ export type AzureTokenCredentialConfig = {
   tenantId?: string;
 };
 
-export async function buildAzurePgConfig(config: any, sanitizedConfig: any) {
+export async function buildAzurePgConfig(
+  configReader: ConfigReader,
+): Promise<Knex.Config> {
   const {
     DefaultAzureCredential,
     ManagedIdentityCredential,
@@ -139,8 +149,6 @@ export async function buildAzurePgConfig(config: any, sanitizedConfig: any) {
   } = require('@azure/identity');
 
   let tokenRenewalOffsetMs = 300_000;
-
-  const configReader = new ConfigReader(config);
   if (configReader.has('connection.tokenCredential.tokenRenewalOffsetTime')) {
     tokenRenewalOffsetMs = durationToMilliseconds(
       readDurationFromConfig(configReader, {
@@ -149,9 +157,9 @@ export async function buildAzurePgConfig(config: any, sanitizedConfig: any) {
     );
   }
 
-  let credential: TokenCredential;
   const tokenConfig = (configReader.getOptional('connection.tokenCredential') ??
     {}) as AzureTokenCredentialConfig;
+  let credential: TokenCredential;
 
   /**
    * Determine which TokenCredential to use based on provided config
@@ -175,13 +183,22 @@ export async function buildAzurePgConfig(config: any, sanitizedConfig: any) {
     credential = new DefaultAzureCredential();
   }
 
+  const rawConfig = configReader.get() as Record<string, unknown>;
+
+  const normalized = normalizeConnection(rawConfig.connection as any);
+  const sanitizedConnection = sanitizeConnectionValue(normalized, [
+    'type',
+    'instance',
+    'tokenCredential',
+  ]);
+
   async function getConnectionConfig() {
     const token = (await credential.getToken(
       'https://ossrdbms-aad.database.windows.net/.default',
     )) as AccessToken; // This cast is safe since we know all of our TokenCredential implementations return this type.
 
     const connectionConfig = {
-      ...sanitizedConfig.connection,
+      ...sanitizedConnection,
       password: token.token,
       expirationChecker: () =>
         /* return true if the token is within the renewal offset time */
@@ -192,17 +209,22 @@ export async function buildAzurePgConfig(config: any, sanitizedConfig: any) {
   }
 
   return {
-    ...sanitizedConfig,
+    ...(rawConfig as Record<string, unknown>),
     connection: getConnectionConfig,
   };
 }
 
-export async function buildCloudSqlConfig(config: any, sanitizedConfig: any) {
-  if (config.client !== 'pg') {
+export async function buildCloudSqlConfig(
+  configReader: ConfigReader,
+): Promise<Knex.Config> {
+  const client = configReader.getOptionalString('client');
+
+  if (client && client !== 'pg') {
     throw new Error('Cloud SQL only supports the pg client');
   }
 
-  if (!config.connection.instance) {
+  const instance = configReader.getOptionalString('connection.instance');
+  if (!instance) {
     throw new Error('Missing instance connection name for Cloud SQL');
   }
 
@@ -212,17 +234,44 @@ export async function buildCloudSqlConfig(config: any, sanitizedConfig: any) {
     AuthTypes,
   } = require('@google-cloud/cloud-sql-connector') as typeof import('@google-cloud/cloud-sql-connector');
   const connector = new CloudSqlConnector();
+
+  type IpType = (typeof IpAddressTypes)[keyof typeof IpAddressTypes];
+  const ipTypeRaw = configReader.getOptionalString('connection.ipAddressType');
+
+  let ipType: IpType | undefined;
+  if (ipTypeRaw !== undefined) {
+    if (
+      !(Object.values(IpAddressTypes) as Array<string | number>).includes(
+        ipTypeRaw as any,
+      )
+    ) {
+      throw new Error(
+        `Invalid connection.ipAddressType: ${ipTypeRaw}; valid values: ${Object.values(
+          IpAddressTypes,
+        ).join(', ')}`,
+      );
+    }
+    ipType = ipTypeRaw as unknown as IpType;
+  }
+
   const clientOpts = await connector.getOptions({
-    instanceConnectionName: config.connection.instance,
-    ipType: config.connection.ipAddressType ?? IpAddressTypes.PUBLIC,
+    instanceConnectionName: instance,
+    ipType: ipType ?? IpAddressTypes.PUBLIC,
     authType: AuthTypes.IAM,
   });
 
+  const rawConfig = configReader.get() as Record<string, unknown>;
+  const normalized = normalizeConnection(rawConfig.connection as any);
+  const sanitizedConnection = omit(normalized, [
+    'type',
+    'instance',
+  ]) as Partial<Knex.StaticConnectionConfig>;
+
   return {
-    ...sanitizedConfig,
+    ...(rawConfig as Record<string, unknown>),
     client: 'pg',
     connection: {
-      ...sanitizedConfig.connection,
+      ...sanitizedConnection,
       ...clientOpts,
     },
   };
@@ -398,6 +447,14 @@ function normalizeConnection(
   return typeof connection === 'string' || connection instanceof String
     ? parsePgConnectionString(connection as string)
     : connection;
+}
+
+function sanitizeConnectionValue(
+  rawConnection: unknown,
+  keys: string[],
+): Partial<Knex.StaticConnectionConfig> {
+  const normalized = normalizeConnection(rawConnection as any);
+  return omit(normalized, keys) as Partial<Knex.StaticConnectionConfig>;
 }
 
 export class PgConnector implements Connector {
