@@ -18,7 +18,6 @@ import { program } from 'commander';
 import chalk from 'chalk';
 import { registerCommands } from './commands';
 import { version } from '../package.json';
-import { exitWithError } from './lib/helpers';
 
 async function main(argv: string[]) {
   program.name('e2e-test').version(version);
@@ -36,4 +35,12 @@ async function main(argv: string[]) {
   program.parse(argv);
 }
 
-main(process.argv).catch(exitWithError);
+main(process.argv).catch(err => {
+  process.stdout.write(`${err.name}: ${err.stack || err.message}\n`);
+
+  if (typeof err.code === 'number') {
+    process.exit(err.code);
+  } else {
+    process.exit(1);
+  }
+});

@@ -1,5 +1,19 @@
 # @backstage/plugin-auth-node
 
+## 0.6.10-next.1
+
+### Patch Changes
+
+- de96a60: chore(deps): bump `express` from 4.21.2 to 4.22.0
+- e9dd634: fix flawed cookie removal logic with chunked tokens
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.0-next.1
+  - @backstage/catalog-client@1.12.1
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
 ## 0.6.10-next.0
 
 ### Patch Changes

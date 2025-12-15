@@ -308,7 +308,6 @@ const _default: OverridableFrontendPlugin<
         lineClamp: number;
         asLink: boolean;
         asListItem: boolean;
-      } & {
         noTrack: boolean;
       };
       configInput: {
@@ -316,7 +315,6 @@ const _default: OverridableFrontendPlugin<
         lineClamp?: number | undefined;
         asListItem?: boolean | undefined;
         asLink?: boolean | undefined;
-      } & {
         noTrack?: boolean | undefined;
       };
       output: ExtensionDataRef<
@@ -328,15 +326,7 @@ const _default: OverridableFrontendPlugin<
         'search.search-result-list-item.item',
         {}
       >;
-      inputs: {
-        [x: string]: ExtensionInput<
-          ExtensionDataRef,
-          {
-            singleton: boolean;
-            optional: boolean;
-          }
-        >;
-      };
+      inputs: {};
       kind: 'search-result-list-item';
       name: undefined;
       params: SearchResultListItemBlueprintParams;
@@ -352,7 +342,6 @@ export const techDocsSearchResultListItemExtension: OverridableExtensionDefiniti
     lineClamp: number;
     asLink: boolean;
     asListItem: boolean;
-  } & {
     noTrack: boolean;
   };
   configInput: {
@@ -360,7 +349,6 @@ export const techDocsSearchResultListItemExtension: OverridableExtensionDefiniti
     lineClamp?: number | undefined;
     asListItem?: boolean | undefined;
     asLink?: boolean | undefined;
-  } & {
     noTrack?: boolean | undefined;
   };
   output: ExtensionDataRef<
@@ -372,15 +360,7 @@ export const techDocsSearchResultListItemExtension: OverridableExtensionDefiniti
     'search.search-result-list-item.item',
     {}
   >;
-  inputs: {
-    [x: string]: ExtensionInput<
-      ExtensionDataRef,
-      {
-        singleton: boolean;
-        optional: boolean;
-      }
-    >;
-  };
+  inputs: {};
   kind: 'search-result-list-item';
   name: undefined;
   params: SearchResultListItemBlueprintParams;

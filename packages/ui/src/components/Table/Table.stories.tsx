@@ -24,7 +24,8 @@ import {
   TableBody,
   Row,
   Cell,
-  CellProfile as CellProfileBUI,
+  CellText,
+  CellProfile,
   useTable,
 } from '.';
 import { RadioGroup, Radio } from '../RadioGroup';
@@ -69,18 +70,18 @@ export const TableOnly: Story = {
         <TableBody>
           {data1.map(item => (
             <Row key={item.name}>
-              <Cell
+              <CellText
                 title={item.name}
                 leadingIcon={<RiCactusLine />}
                 description={item.description}
               />
-              <CellProfileBUI
+              <CellProfile
                 name={item.owner.name}
                 src={item.owner.profilePicture}
                 href={item.owner.link}
               />
-              <Cell title={item.type} />
-              <Cell title={item.lifecycle} />
+              <CellText title={item.type} />
+              <CellText title={item.lifecycle} />
             </Row>
           ))}
         </TableBody>
@@ -105,14 +106,14 @@ export const WithPaginationUncontrolled: Story = {
           <TableBody>
             {data?.map(item => (
               <Row key={item.name}>
-                <Cell
+                <CellText
                   title={item.name}
                   leadingIcon={<RiCactusLine />}
                   description={item.description}
                 />
-                <Cell title={item.owner.name} />
-                <Cell title={item.type} />
-                <Cell title={item.lifecycle} />
+                <CellText title={item.owner.name} />
+                <CellText title={item.type} />
+                <CellText title={item.lifecycle} />
               </Row>
             ))}
           </TableBody>
@@ -152,14 +153,14 @@ export const WithPaginationControlled: Story = {
           <TableBody>
             {data?.map(item => (
               <Row key={item.name}>
-                <CellProfileBUI
+                <CellProfile
                   name={item.name}
                   src={item.image}
                   href={item.website}
                 />
-                <Cell title={item.genre} />
-                <Cell title={item.yearFormed.toString()} />
-                <Cell title={item.albums.toString()} />
+                <CellText title={item.genre} />
+                <CellText title={item.yearFormed.toString()} />
+                <CellText title={item.albums.toString()} />
               </Row>
             ))}
           </TableBody>
@@ -188,18 +189,18 @@ export const Sorting: Story = {
         <TableBody>
           {data1.map(item => (
             <Row key={item.name}>
-              <Cell
+              <CellText
                 title={item.name}
                 leadingIcon={<RiCactusLine />}
                 description={item.description}
               />
-              <CellProfileBUI
+              <CellProfile
                 name={item.owner.name}
                 src={item.owner.profilePicture}
                 href={item.owner.link}
               />
-              <Cell title={item.type} />
-              <Cell title={item.lifecycle} />
+              <CellText title={item.type} />
+              <CellText title={item.lifecycle} />
             </Row>
           ))}
         </TableBody>
@@ -229,14 +230,14 @@ export const TableRockBand: Story = {
           <TableBody>
             {data?.map(item => (
               <Row key={item.name}>
-                <CellProfileBUI
+                <CellProfile
                   name={item.name}
                   src={item.image}
                   href={item.website}
                 />
-                <Cell title={item.genre} />
-                <Cell title={item.yearFormed.toString()} />
-                <Cell title={item.albums.toString()} />
+                <CellText title={item.genre} />
+                <CellText title={item.yearFormed.toString()} />
+                <CellText title={item.albums.toString()} />
               </Row>
             ))}
           </TableBody>
@@ -268,14 +269,14 @@ export const RowClick: Story = {
           <TableBody>
             {data?.map(item => (
               <Row key={item.name} onAction={() => alert('Row clicked')}>
-                <CellProfileBUI
+                <CellProfile
                   name={item.name}
                   src={item.image}
                   href={item.website}
                 />
-                <Cell title={item.genre} />
-                <Cell title={item.yearFormed.toString()} />
-                <Cell title={item.albums.toString()} />
+                <CellText title={item.genre} />
+                <CellText title={item.yearFormed.toString()} />
+                <CellText title={item.albums.toString()} />
               </Row>
             ))}
           </TableBody>
@@ -307,14 +308,14 @@ export const RowLink: Story = {
           <TableBody>
             {data?.map(item => (
               <Row key={item.name} href="/band">
-                <CellProfileBUI
+                <CellProfile
                   name={item.name}
                   src={item.image}
                   href={item.website}
                 />
-                <Cell title={item.genre} />
-                <Cell title={item.yearFormed.toString()} />
-                <Cell title={item.albums.toString()} />
+                <CellText title={item.genre} />
+                <CellText title={item.yearFormed.toString()} />
+                <CellText title={item.albums.toString()} />
               </Row>
             ))}
           </TableBody>
@@ -325,7 +326,38 @@ export const RowLink: Story = {
   },
 };
 
-export const CellText: Story = {
+export const CellComponent: Story = {
+  name: 'Cell',
+  render: () => {
+    return (
+      <Table>
+        <TableHeader>
+          <Column isRowHeader>Name</Column>
+        </TableHeader>
+        <TableBody>
+          <Row>
+            <Cell>Hello world</Cell>
+          </Row>
+          <Row>
+            <Cell>
+              This is a very long text that demonstrates how the Cell component
+              handles lengthy content. It should wrap appropriately and maintain
+              proper styling even when the text extends beyond the normal cell
+              width. This helps ensure that the table remains readable and
+              visually consistent regardless of the content length.
+            </Cell>
+          </Row>
+          <Row>
+            <Cell>Hello world</Cell>
+          </Row>
+        </TableBody>
+      </Table>
+    );
+  },
+};
+
+export const CellTextComponent: Story = {
+  name: 'CellText',
   render: () => {
     return (
       <Table>
@@ -335,10 +367,11 @@ export const CellText: Story = {
         <TableBody>
           {data2.map(item => (
             <Row key={item.name}>
-              <Cell
+              <CellText
                 title={item.name}
                 leadingIcon={item.icon}
                 description={item.description}
+                href={item.href}
               />
             </Row>
           ))}
@@ -348,7 +381,8 @@ export const CellText: Story = {
   },
 };
 
-export const CellProfile: Story = {
+export const CellProfileComponent: Story = {
+  name: 'CellProfile',
   render: () => {
     return (
       <Table>
@@ -358,7 +392,7 @@ export const CellProfile: Story = {
         <TableBody>
           {data3.map(item => (
             <Row key={item.name}>
-              <CellProfileBUI
+              <CellProfile
                 name={item.name}
                 src={item.profilePicture}
                 href={item.link}
@@ -390,19 +424,19 @@ export const SelectionSingleToggle: Story = {
         </TableHeader>
         <TableBody>
           <Row id="1">
-            <Cell title="Component Library" />
-            <Cell title="Design System" />
-            <Cell title="library" />
+            <CellText title="Component Library" />
+            <CellText title="Design System" />
+            <CellText title="library" />
           </Row>
           <Row id="2">
-            <Cell title="API Gateway" />
-            <Cell title="Platform" />
-            <Cell title="service" />
+            <CellText title="API Gateway" />
+            <CellText title="Platform" />
+            <CellText title="service" />
           </Row>
           <Row id="3">
-            <Cell title="Documentation Site" />
-            <Cell title="DevEx" />
-            <Cell title="website" />
+            <CellText title="Documentation Site" />
+            <CellText title="DevEx" />
+            <CellText title="website" />
           </Row>
         </TableBody>
       </Table>
@@ -428,19 +462,19 @@ export const SelectionMultiToggle: Story = {
         </TableHeader>
         <TableBody>
           <Row id="1">
-            <Cell title="Component Library" />
-            <Cell title="Design System" />
-            <Cell title="library" />
+            <CellText title="Component Library" />
+            <CellText title="Design System" />
+            <CellText title="library" />
           </Row>
           <Row id="2">
-            <Cell title="API Gateway" />
-            <Cell title="Platform" />
-            <Cell title="service" />
+            <CellText title="API Gateway" />
+            <CellText title="Platform" />
+            <CellText title="service" />
           </Row>
           <Row id="3">
-            <Cell title="Documentation Site" />
-            <Cell title="DevEx" />
-            <Cell title="website" />
+            <CellText title="Documentation Site" />
+            <CellText title="DevEx" />
+            <CellText title="website" />
           </Row>
         </TableBody>
       </Table>
@@ -466,19 +500,19 @@ export const SelectionSingleReplace: Story = {
         </TableHeader>
         <TableBody>
           <Row id="1">
-            <Cell title="Component Library" />
-            <Cell title="Design System" />
-            <Cell title="library" />
+            <CellText title="Component Library" />
+            <CellText title="Design System" />
+            <CellText title="library" />
           </Row>
           <Row id="2">
-            <Cell title="API Gateway" />
-            <Cell title="Platform" />
-            <Cell title="service" />
+            <CellText title="API Gateway" />
+            <CellText title="Platform" />
+            <CellText title="service" />
           </Row>
           <Row id="3">
-            <Cell title="Documentation Site" />
-            <Cell title="DevEx" />
-            <Cell title="website" />
+            <CellText title="Documentation Site" />
+            <CellText title="DevEx" />
+            <CellText title="website" />
           </Row>
         </TableBody>
       </Table>
@@ -504,19 +538,19 @@ export const SelectionMultiReplace: Story = {
         </TableHeader>
         <TableBody>
           <Row id="1">
-            <Cell title="Component Library" />
-            <Cell title="Design System" />
-            <Cell title="library" />
+            <CellText title="Component Library" />
+            <CellText title="Design System" />
+            <CellText title="library" />
           </Row>
           <Row id="2">
-            <Cell title="API Gateway" />
-            <Cell title="Platform" />
-            <Cell title="service" />
+            <CellText title="API Gateway" />
+            <CellText title="Platform" />
+            <CellText title="service" />
           </Row>
           <Row id="3">
-            <Cell title="Documentation Site" />
-            <Cell title="DevEx" />
-            <Cell title="website" />
+            <CellText title="Documentation Site" />
+            <CellText title="DevEx" />
+            <CellText title="website" />
           </Row>
         </TableBody>
       </Table>
@@ -543,19 +577,19 @@ export const SelectionToggleWithActions: Story = {
         </TableHeader>
         <TableBody>
           <Row id="1">
-            <Cell title="Component Library" />
-            <Cell title="Design System" />
-            <Cell title="library" />
+            <CellText title="Component Library" />
+            <CellText title="Design System" />
+            <CellText title="library" />
           </Row>
           <Row id="2">
-            <Cell title="API Gateway" />
-            <Cell title="Platform" />
-            <Cell title="service" />
+            <CellText title="API Gateway" />
+            <CellText title="Platform" />
+            <CellText title="service" />
           </Row>
           <Row id="3">
-            <Cell title="Documentation Site" />
-            <Cell title="DevEx" />
-            <Cell title="website" />
+            <CellText title="Documentation Site" />
+            <CellText title="DevEx" />
+            <CellText title="website" />
           </Row>
         </TableBody>
       </Table>
@@ -582,19 +616,19 @@ export const SelectionReplaceWithActions: Story = {
         </TableHeader>
         <TableBody>
           <Row id="1">
-            <Cell title="Component Library" />
-            <Cell title="Design System" />
-            <Cell title="library" />
+            <CellText title="Component Library" />
+            <CellText title="Design System" />
+            <CellText title="library" />
           </Row>
           <Row id="2">
-            <Cell title="API Gateway" />
-            <Cell title="Platform" />
-            <Cell title="service" />
+            <CellText title="API Gateway" />
+            <CellText title="Platform" />
+            <CellText title="service" />
           </Row>
           <Row id="3">
-            <Cell title="Documentation Site" />
-            <Cell title="DevEx" />
-            <Cell title="website" />
+            <CellText title="Documentation Site" />
+            <CellText title="DevEx" />
+            <CellText title="website" />
           </Row>
         </TableBody>
       </Table>
@@ -620,19 +654,19 @@ export const SelectionToggleWithLinks: Story = {
         </TableHeader>
         <TableBody>
           <Row id="1" href="https://example.com/library">
-            <Cell title="Component Library" />
-            <Cell title="Design System" />
-            <Cell title="library" />
+            <CellText title="Component Library" />
+            <CellText title="Design System" />
+            <CellText title="library" />
           </Row>
           <Row id="2" href="https://example.com/gateway">
-            <Cell title="API Gateway" />
-            <Cell title="Platform" />
-            <Cell title="service" />
+            <CellText title="API Gateway" />
+            <CellText title="Platform" />
+            <CellText title="service" />
           </Row>
           <Row id="3" href="https://example.com/docs">
-            <Cell title="Documentation Site" />
-            <Cell title="DevEx" />
-            <Cell title="website" />
+            <CellText title="Documentation Site" />
+            <CellText title="DevEx" />
+            <CellText title="website" />
           </Row>
         </TableBody>
       </Table>
@@ -658,19 +692,19 @@ export const SelectionReplaceWithLinks: Story = {
         </TableHeader>
         <TableBody>
           <Row id="1" href="https://example.com/library">
-            <Cell title="Component Library" />
-            <Cell title="Design System" />
-            <Cell title="library" />
+            <CellText title="Component Library" />
+            <CellText title="Design System" />
+            <CellText title="library" />
           </Row>
           <Row id="2" href="https://example.com/gateway">
-            <Cell title="API Gateway" />
-            <Cell title="Platform" />
-            <Cell title="service" />
+            <CellText title="API Gateway" />
+            <CellText title="Platform" />
+            <CellText title="service" />
           </Row>
           <Row id="3" href="https://example.com/docs">
-            <Cell title="Documentation Site" />
-            <Cell title="DevEx" />
-            <Cell title="website" />
+            <CellText title="Documentation Site" />
+            <CellText title="DevEx" />
+            <CellText title="website" />
           </Row>
         </TableBody>
       </Table>
@@ -697,19 +731,19 @@ export const SelectionWithDisabledRows: Story = {
         </TableHeader>
         <TableBody>
           <Row id="1">
-            <Cell title="Component Library" />
-            <Cell title="Design System" />
-            <Cell title="library" />
+            <CellText title="Component Library" />
+            <CellText title="Design System" />
+            <CellText title="library" />
           </Row>
           <Row id="2">
-            <Cell title="API Gateway (Disabled)" />
-            <Cell title="Platform" />
-            <Cell title="service" />
+            <CellText title="API Gateway (Disabled)" />
+            <CellText title="Platform" />
+            <CellText title="service" />
           </Row>
           <Row id="3">
-            <Cell title="Documentation Site" />
-            <Cell title="DevEx" />
-            <Cell title="website" />
+            <CellText title="Documentation Site" />
+            <CellText title="DevEx" />
+            <CellText title="website" />
           </Row>
         </TableBody>
       </Table>
@@ -744,9 +778,9 @@ export const SelectionWithPagination: Story = {
           <TableBody>
             {data?.map(item => (
               <Row key={item.name} id={item.name}>
-                <Cell title={item.name} />
-                <Cell title={item.owner.name} />
-                <Cell title={item.type} />
+                <CellText title={item.name} />
+                <CellText title={item.owner.name} />
+                <CellText title={item.type} />
               </Row>
             ))}
           </TableBody>
@@ -779,19 +813,19 @@ export const SelectionModePlayground: Story = {
           </TableHeader>
           <TableBody>
             <Row id="1">
-              <Cell title="Component Library" />
-              <Cell title="Design System" />
-              <Cell title="library" />
+              <CellText title="Component Library" />
+              <CellText title="Design System" />
+              <CellText title="library" />
             </Row>
             <Row id="2">
-              <Cell title="API Gateway" />
-              <Cell title="Platform" />
-              <Cell title="service" />
+              <CellText title="API Gateway" />
+              <CellText title="Platform" />
+              <CellText title="service" />
             </Row>
             <Row id="3">
-              <Cell title="Documentation Site" />
-              <Cell title="DevEx" />
-              <Cell title="website" />
+              <CellText title="Documentation Site" />
+              <CellText title="DevEx" />
+              <CellText title="website" />
             </Row>
           </TableBody>
         </Table>
@@ -839,19 +873,19 @@ export const SelectionBehaviorPlayground: Story = {
           </TableHeader>
           <TableBody>
             <Row id="1">
-              <Cell title="Component Library" />
-              <Cell title="Design System" />
-              <Cell title="library" />
+              <CellText title="Component Library" />
+              <CellText title="Design System" />
+              <CellText title="library" />
             </Row>
             <Row id="2">
-              <Cell title="API Gateway" />
-              <Cell title="Platform" />
-              <Cell title="service" />
+              <CellText title="API Gateway" />
+              <CellText title="Platform" />
+              <CellText title="service" />
             </Row>
             <Row id="3">
-              <Cell title="Documentation Site" />
-              <Cell title="DevEx" />
-              <Cell title="website" />
+              <CellText title="Documentation Site" />
+              <CellText title="DevEx" />
+              <CellText title="website" />
             </Row>
           </TableBody>
         </Table>

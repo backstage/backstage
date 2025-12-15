@@ -174,6 +174,14 @@ export interface GithubMultiOrgEntityProviderOptions {
    * Reduce these values if hitting RESOURCE_LIMITS_EXCEEDED errors.
    */
   pageSizes?: Partial<GithubPageSizes>;
+
+  /**
+   * Optionally exclude suspended users when querying organization users.
+   * @defaultValue false
+   * @remarks
+   * Only for GitHub Enterprise instances. Will error if used against GitHub.com API.
+   */
+  excludeSuspendedUsers?: boolean;
 }
 
 type CreateDeltaOperation = (entities: Entity[]) => {
@@ -221,6 +229,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       events: options.events,
       alwaysUseDefaultNamespace: options.alwaysUseDefaultNamespace,
       pageSizes: options.pageSizes,
+      excludeSuspendedUsers: options.excludeSuspendedUsers,
     });
 
     provider.schedule(options.schedule);
@@ -241,6 +250,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       teamTransformer?: TeamTransformer;
       alwaysUseDefaultNamespace?: boolean;
       pageSizes?: Partial<GithubPageSizes>;
+      excludeSuspendedUsers?: boolean;
     },
   ) {}
 
@@ -306,6 +316,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
         tokenType,
         this.options.userTransformer,
         pageSizes,
+        this.options.excludeSuspendedUsers,
       );
 
       const { teams } = await getOrganizationTeams(
@@ -458,6 +469,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       tokenType,
       this.options.userTransformer,
       pageSizes,
+      this.options.excludeSuspendedUsers,
     );
 
     const { teams } = await getOrganizationTeams(
@@ -519,7 +531,13 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
 
     const userTransformer =
       this.options.userTransformer || defaultUserTransformer;
-    const { name, avatar_url: avatarUrl, email, login } = event.membership.user;
+    const {
+      name,
+      avatar_url: avatarUrl,
+      email,
+      login,
+      node_id,
+    } = event.membership.user;
     const org = event.organization.login;
     const { headers } =
       await this.options.githubCredentialsProvider.getCredentials({
@@ -561,6 +579,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
         avatarUrl,
         login,
         email: email ?? undefined,
+        id: node_id,
       },
       {
         org,
@@ -692,6 +711,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       tokenType,
       this.options.userTransformer,
       pageSizes,
+      this.options.excludeSuspendedUsers,
     );
 
     const usersFromChangedGroup = isGroupEntity(team)
@@ -805,13 +825,14 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
 
     const userTransformer =
       this.options.userTransformer || defaultUserTransformer;
-    const { name, avatar_url: avatarUrl, email, login } = event.member;
+    const { name, avatar_url: avatarUrl, email, login, node_id } = event.member;
     const user = await userTransformer(
       {
         name,
         avatarUrl,
         login,
         email: email ?? undefined,
+        id: node_id,
       },
       {
         org,

@@ -1,5 +1,21 @@
 # @backstage/frontend-plugin-api
 
+## 0.13.2-next.1
+
+### Patch Changes
+
+- 75683ed: Added a new `errorPresentation` prop to `ExtensionBoundary` to control how errors are presented to the user. The default is `'error-display'`, which is the current behavior of showing the error in the `ErrorDisplay` component. The new option is `'error-api'`, posts errors to the `ErrorApi` and does not allow retries.
+
+  The `AppRootElementBlueprint` now wraps its element in an `ErrorBoundary` using the new `'error-api'` presentation mode.
+
+- f3f84f1: Made the return type of `.withOverrides` to be simplified.
+- Updated dependencies
+  - @backstage/core-components@0.18.4-next.2
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.11
+
 ## 0.13.2-next.0
 
 ### Patch Changes

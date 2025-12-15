@@ -46,6 +46,7 @@ export function readHelmetOptions(config?: Config): HelmetOptions {
     crossOriginOpenerPolicy: false,
     crossOriginResourcePolicy: false,
     originAgentCluster: false,
+    referrerPolicy: readReferrerPolicy(config),
   };
 }
 
@@ -108,6 +109,33 @@ export function applyCspDirectives(
       } else {
         result[kebabCaseKey] = value;
       }
+    }
+  }
+
+  return result;
+}
+
+type ReferrerPolicy = Record<string, string[]> | undefined;
+
+/**
+ * Attempts to read the ReferrerPolicy from the backend configuration object.
+ *
+ * @example
+ * ```yaml
+ * backend:
+ *   referrer:
+ *     policy: ["strict-origin-when-cross-origin"]
+ * ```
+ */
+function readReferrerPolicy(config?: Config): ReferrerPolicy {
+  const cc = config?.getOptionalConfig('referrer');
+  const result: Record<string, string[]> = {};
+
+  if (!cc) {
+    result.policy = ['no-referrer'];
+  } else {
+    for (const key of cc.keys()) {
+      result[key] = cc.getStringArray(key);
     }
   }
 
