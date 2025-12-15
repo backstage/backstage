@@ -72,6 +72,7 @@ This provider includes several resolvers out of the box that you can use:
 - `emailMatchingUserEntityProfileEmail`: Matches the email address from the auth provider with the User entity that has a matching `spec.profile.email`. If no match is found, it will throw a `NotFoundError`.
 - `emailLocalPartMatchingUserEntityName`: Matches the [local part](https://en.wikipedia.org/wiki/Email_address#Local-part) of the email address from the auth provider with the User entity that has a matching `name`. If no match is found, it will throw a `NotFoundError`.
 - `usernameMatchingUserEntityName`: Matches the username from the auth provider with the User entity that has a matching `name`. If no match is found, it will throw a `NotFoundError`.
+- `userIdMatchingUserEntityAnnotation`: Matches the GitLab user ID with the User entity that has a matching `gitlab.com/user-id` annotation (or `{integration-host}/user-id` for self-hosted GitLab instances). If no match is found, it will throw a `NotFoundError`.
 
 :::note Note
 
