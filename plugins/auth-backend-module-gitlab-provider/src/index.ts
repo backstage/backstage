@@ -20,6 +20,6 @@
  * @packageDocumentation
  */
 
-export { gitlabAuthenticator } from './authenticator';
+export { gitlabAuthenticator, type GitlabProfile } from './authenticator';
 export { authModuleGitlabProvider as default } from './module';
 export { gitlabSignInResolvers } from './resolvers';

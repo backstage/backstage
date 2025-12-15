@@ -45,6 +45,10 @@ export interface Config {
                   resolver: 'emailMatchingUserEntityProfileEmail';
                   dangerouslyAllowSignInWithoutUserInCatalog?: boolean;
                 }
+              | {
+                  resolver: 'userIdMatchingUserEntityAnnotation';
+                  dangerouslyAllowSignInWithoutUserInCatalog?: boolean;
+                }
             >;
           };
           sessionDuration?: HumanDuration | string;
