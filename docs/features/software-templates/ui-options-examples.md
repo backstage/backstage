@@ -488,7 +488,7 @@ repoUrl:
     host: github.com
 ```
 
-This value will be overriden if a different host is specified in a `RepoUrlPicker` field extension.
+This value will be overridden if a different host is specified in a `RepoUrlPicker` field extension.
 
 ### `excludedOwners`
 
