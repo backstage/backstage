@@ -38,12 +38,10 @@ export type DynamicFrontendFeaturesLoaderOptions = {
    * Additional module federation arguments for the Module Federation runtime initialization.
    */
   moduleFederation: {
+    shared?: UserOptions['shared'];
     shareStrategy?: ShareStrategy;
-    shared?: UserOptions['shared'] | (() => Promise<UserOptions['shared']>);
-    plugins?:
-      | Array<ModuleFederationRuntimePlugin>
-      | (() => Promise<Array<ModuleFederationRuntimePlugin>>);
-    instance?: ModuleFederation | (() => Promise<ModuleFederation>);
+    plugins?: Array<ModuleFederationRuntimePlugin>;
+    instance?: ModuleFederation;
   };
 };
 
@@ -105,11 +103,7 @@ export function dynamicFrontendFeaturesLoader(
       let instance: ModuleFederation;
       try {
         if (options?.moduleFederation?.instance) {
-          if (typeof options.moduleFederation.instance === 'function') {
-            instance = await options.moduleFederation.instance();
-          } else {
-            instance = options.moduleFederation.instance;
-          }
+          instance = options.moduleFederation.instance;
         } else {
           const { shared, errors } = await buildRuntimeSharedUserOption();
           for (const err of errors) {
@@ -137,21 +131,13 @@ export function dynamicFrontendFeaturesLoader(
         };
 
         if (options?.moduleFederation?.plugins) {
-          if (typeof options.moduleFederation.plugins === 'function') {
-            userOptions.plugins = await options.moduleFederation.plugins();
-          } else {
-            userOptions.plugins = options.moduleFederation.plugins;
-          }
+          userOptions.plugins = options.moduleFederation.plugins;
         }
         if (options?.moduleFederation?.shareStrategy) {
           userOptions.shareStrategy = options.moduleFederation.shareStrategy;
         }
         if (options?.moduleFederation?.shared) {
-          if (typeof options.moduleFederation.shared === 'function') {
-            userOptions.shared = await options.moduleFederation.shared();
-          } else {
-            userOptions.shared = options.moduleFederation.shared;
-          }
+          userOptions.shared = options.moduleFederation.shared;
         }
         userOptions.remotes = frontendPluginRemotes.map(remote => ({
           alias: remote.packageName,

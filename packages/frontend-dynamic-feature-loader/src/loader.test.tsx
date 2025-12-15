@@ -18,10 +18,7 @@ import { mockApis, registerMswTestHooks } from '@backstage/test-utils';
 import { dynamicFrontendFeaturesLoader } from './loader';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import {
-  createInstance,
-  ModuleFederationRuntimePlugin,
-} from '@module-federation/enhanced/runtime';
+import { ModuleFederationRuntimePlugin } from '@module-federation/enhanced/runtime';
 import { RemoteEntryExports } from '@module-federation/runtime/types';
 import { Module } from '@module-federation/sdk';
 import { createFrontendPlugin } from '@backstage/frontend-plugin-api';
@@ -1235,250 +1232,6 @@ describe('dynamicFrontendFeaturesLoader', () => {
     });
   });
 
-  it('should initialize module federation with shared as function', async () => {
-    server.use(
-      rest.get(
-        `${baseUrl}/.backstage/dynamic-features/remotes`,
-        (_, res, ctx) => res(ctx.json([])),
-      ),
-    );
-
-    const spyInit = jest.fn();
-    await (
-      dynamicFrontendFeaturesLoader({
-        moduleFederation: {
-          shared: async () => ({
-            react: {
-              version: '19.0.0',
-              lib: () => ({ default: {} }),
-              shareConfig: {
-                singleton: true,
-                requiredVersion: '*',
-              },
-              strategy: 'loaded-first',
-            },
-            newDep: {
-              version: '1.2.3',
-              lib: () => ({ default: {} }),
-              shareConfig: {
-                singleton: true,
-                requiredVersion: '*',
-              },
-            },
-          }),
-          plugins: [
-            {
-              name: 'spy-init',
-              init: args => {
-                spyInit(args);
-                return args;
-              },
-            },
-            ...testModuleFederationPlugins,
-          ],
-        },
-      }) as InternalFrontendFeatureLoader
-    ).loader({
-      config: mockDefaultConfig(),
-    });
-
-    const errorCalls = mocks.console.error.mock.calls.flatMap(e => e[0]);
-    expect(errorCalls).toEqual([]);
-    const warnCalls = mocks.console.warn.mock.calls.flatMap(e => e[0]);
-    expect(warnCalls).toEqual([]);
-    const infoCalls = mocks.console.info.mock.calls.flatMap(e => e[0]);
-    expect(infoCalls).toEqual([]);
-    const debugCalls = mocks.console.debug.mock.calls.flatMap(e => e[0]);
-    expect(debugCalls).toEqual([]);
-    expect(spyInit.mock.calls[0][0].options.shared).toMatchObject({
-      react: [
-        {
-          version: '18.3.1',
-          shareConfig: {
-            singleton: true,
-            requiredVersion: '*',
-          },
-          strategy: 'version-first',
-        },
-        {
-          version: '19.0.0',
-          shareConfig: {
-            singleton: true,
-            requiredVersion: '*',
-          },
-          strategy: 'loaded-first',
-        },
-      ],
-      newDep: [
-        {
-          version: '1.2.3',
-          shareConfig: {
-            singleton: true,
-            requiredVersion: '*',
-          },
-          strategy: 'version-first',
-        },
-      ],
-    });
-  });
-
-  it('should use a provided module federation instance provided as an async function, and complete it', async () => {
-    server.use(
-      rest.get(
-        `${baseUrl}/.backstage/dynamic-features/remotes`,
-        (_, res, ctx) =>
-          res(
-            ctx.json([
-              {
-                packageName: 'plugin-test-dynamic',
-                exposedModules: ['.'],
-                remoteInfo: {
-                  name: 'test_plugin',
-                  entry: `${baseUrl}/.backstage/dynamic-features/remotes/plugin-test-dynamic/mf-manifest.json`,
-                },
-              },
-            ]),
-          ),
-      ),
-      rest.get(
-        `${baseUrl}/.backstage/dynamic-features/remotes/plugin-test-dynamic/mf-manifest.json`,
-        (_, res, ctx) =>
-          res(
-            ctx.json({
-              name: 'test_plugin',
-              ...manifestDummyData,
-              exposes: [
-                {
-                  id: 'test_plugin:.',
-                  name: '.',
-                  path: '.',
-                  ...manifestExposedRemoteDummyData,
-                },
-              ],
-            }),
-          ),
-      ),
-    );
-
-    mocks.federation.get.mockReturnValue({
-      default: createFrontendPlugin({
-        pluginId: 'test-plugin',
-        extensions: [],
-      }),
-    });
-
-    const spyInit = jest.fn();
-    await (
-      dynamicFrontendFeaturesLoader({
-        moduleFederation: {
-          instance: async () =>
-            Promise.resolve(
-              createInstance({
-                name: 'MyExternalInstance',
-                remotes: [
-                  {
-                    name: 'myApplicationRemote',
-                    entry: 'myApplicationRemote.js',
-                  },
-                ],
-              }),
-            ),
-          shared: async () => ({
-            react: {
-              version: '19.0.0',
-              lib: () => ({ default: {} }),
-              shareConfig: {
-                singleton: true,
-                requiredVersion: '*',
-              },
-              strategy: 'loaded-first',
-            },
-            newDep: {
-              version: '1.2.3',
-              lib: () => ({ default: {} }),
-              shareConfig: {
-                singleton: true,
-                requiredVersion: '*',
-              },
-            },
-          }),
-          plugins: [
-            {
-              name: 'spy-init',
-              init: args => {
-                spyInit(args);
-                return args;
-              },
-            },
-            ...testModuleFederationPlugins,
-          ],
-        },
-      }) as InternalFrontendFeatureLoader
-    ).loader({
-      config: mockDefaultConfig(),
-    });
-
-    const errorCalls = mocks.console.error.mock.calls.flatMap(e => e[0]);
-    expect(errorCalls).toEqual([]);
-    const warnCalls = mocks.console.warn.mock.calls.flatMap(e => e[0]);
-    expect(warnCalls).toEqual([]);
-    const infoCalls = mocks.console.info.mock.calls.flatMap(e => e[0]);
-    expect(infoCalls).toEqual([
-      "Remote module 'test_plugin' of dynamic plugin 'plugin-test-dynamic' loaded from http://localhost:7007/.backstage/dynamic-features/remotes/plugin-test-dynamic/mf-manifest.json",
-    ]);
-    const debugCalls = mocks.console.debug.mock.calls.flatMap(e => e[0]);
-    expect(debugCalls).toEqual([
-      "Loading dynamic plugin 'plugin-test-dynamic' from 'http://localhost:7007/.backstage/dynamic-features/remotes/plugin-test-dynamic/mf-manifest.json'",
-    ]);
-    expect(mocks.federation.get.mock.calls.flatMap(e => e[0])).toEqual([
-      {
-        id: '.',
-        name: 'test_plugin',
-      },
-    ]);
-    expect(spyInit.mock.calls[0][0].options).toMatchObject({
-      name: 'MyExternalInstance',
-      remotes: [
-        {
-          entry: 'http://localhost/myApplicationRemote.js',
-          name: 'myApplicationRemote',
-          shareScope: 'default',
-          type: 'global',
-        },
-        {
-          alias: 'plugin-test-dynamic',
-          entry:
-            'http://localhost:7007/.backstage/dynamic-features/remotes/plugin-test-dynamic/mf-manifest.json',
-          name: 'test_plugin',
-          shareScope: 'default',
-          type: 'global',
-        },
-      ],
-      shared: {
-        react: [
-          {
-            version: '19.0.0',
-            shareConfig: {
-              singleton: true,
-              requiredVersion: '*',
-            },
-            strategy: 'loaded-first',
-          },
-        ],
-        newDep: [
-          {
-            version: '1.2.3',
-            shareConfig: {
-              singleton: true,
-              requiredVersion: '*',
-            },
-            strategy: 'version-first',
-          },
-        ],
-      },
-    });
-  });
-
   it('should return an empty list of features if module federation initialization fails', async () => {
     server.use(
       rest.get(
@@ -1527,10 +1280,15 @@ describe('dynamicFrontendFeaturesLoader', () => {
     const features = await (
       dynamicFrontendFeaturesLoader({
         moduleFederation: {
-          shared: async () => {
-            throw new Error('An initialization error');
-          },
-          plugins: testModuleFederationPlugins,
+          plugins: [
+            ...testModuleFederationPlugins,
+            {
+              name: 'fail-init',
+              init: () => {
+                throw new Error('An initialization error');
+              },
+            },
+          ],
         },
       }) as InternalFrontendFeatureLoader
     ).loader({
