@@ -19,12 +19,25 @@ import { AppLanguageSelector } from '../../../../packages/core-app-api/src/apis/
 import { appLanguageApiRef } from '@backstage/core-plugin-api/alpha';
 import { ApiBlueprint } from '@backstage/frontend-plugin-api';
 
-export const AppLanguageApi = ApiBlueprint.make({
+export const AppLanguageApi = ApiBlueprint.makeWithOverrides({
   name: 'app-language',
-  params: defineParams =>
-    defineParams({
-      api: appLanguageApiRef,
-      deps: {},
-      factory: () => AppLanguageSelector.createWithStorage(),
-    }),
+  config: {
+    schema: {
+      defaultLanguage: z => z.string().optional(),
+      availableLanguages: z => z.array(z.string()).optional(),
+    },
+  },
+  factory(originalFactory, { config }) {
+    return originalFactory(defineParams =>
+      defineParams({
+        api: appLanguageApiRef,
+        deps: {},
+        factory: () =>
+          AppLanguageSelector.createWithStorage({
+            defaultLanguage: config.defaultLanguage,
+            availableLanguages: config.availableLanguages,
+          }),
+      }),
+    );
+  },
 });

@@ -17,20 +17,35 @@
 import { AlertApi, AlertMessage } from '@backstage/core-plugin-api';
 import { Observable } from '@backstage/types';
 import { PublishSubject } from '../../../lib/subjects';
+import ObservableImpl from 'zen-observable';
 
 /**
  * Base implementation for the AlertApi that simply forwards alerts to consumers.
+ *
+ * Recent alerts are buffered and replayed to new subscribers to prevent
+ * missing alerts that were posted before subscription.
  *
  * @public
  */
 export class AlertApiForwarder implements AlertApi {
   private readonly subject = new PublishSubject<AlertMessage>();
+  private readonly recentAlerts: AlertMessage[] = [];
+  private readonly maxBufferSize = 10;
 
   post(alert: AlertMessage) {
+    this.recentAlerts.push(alert);
+    if (this.recentAlerts.length > this.maxBufferSize) {
+      this.recentAlerts.shift();
+    }
     this.subject.next(alert);
   }
 
   alert$(): Observable<AlertMessage> {
-    return this.subject;
+    return new ObservableImpl<AlertMessage>(subscriber => {
+      for (const alert of this.recentAlerts) {
+        subscriber.next(alert);
+      }
+      return this.subject.subscribe(subscriber);
+    });
   }
 }

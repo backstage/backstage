@@ -19,6 +19,22 @@ import { SlackNotificationProcessor } from './SlackNotificationProcessor';
 import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
 import { WebClient } from '@slack/web-api';
 import { Entity } from '@backstage/catalog-model';
+import pThrottle from 'p-throttle';
+import { durationToMilliseconds } from '@backstage/types';
+
+const throttleConfigs: Array<{ limit: number; interval: number }> = [];
+
+jest.mock('p-throttle', () => ({
+  __esModule: true,
+  default: jest.fn((config: { limit: number; interval: number }) => {
+    throttleConfigs.push(config);
+    return <T extends (...args: any[]) => Promise<any> | any>(fn: T) =>
+      (...args: Parameters<T>) =>
+        Promise.resolve(fn(...args));
+  }),
+}));
+
+const mockedPThrottle = pThrottle as jest.MockedFunction<typeof pThrottle>;
 
 jest.mock('@slack/web-api', () => {
   const mockSlack = {
@@ -128,6 +144,8 @@ describe('SlackNotificationProcessor', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
+    throttleConfigs.length = 0;
+    mockedPThrottle.mockClear();
   });
 
   it('should send a notification to a group', async () => {
@@ -1407,6 +1425,83 @@ describe('SlackNotificationProcessor', () => {
       expect(slack.chat.postMessage).toHaveBeenCalledWith(
         createBaseMessage('Hello world'),
       );
+    });
+  });
+
+  describe('when throttling is not configured', () => {
+    it('should use default concurrency limit of 10 per minute', async () => {
+      const slack = new WebClient();
+
+      const processor = SlackNotificationProcessor.fromConfig(config, {
+        auth,
+        logger,
+        catalog: catalogServiceMock({
+          entities: DEFAULT_ENTITIES_RESPONSE.items,
+        }),
+        slack,
+      })[0];
+
+      await processor.processOptions({
+        recipients: { type: 'entity', entityRef: 'group:default/mock' },
+        payload: { title: 'notification' },
+      });
+
+      expect(slack.chat.postMessage).toHaveBeenCalled();
+      expect(throttleConfigs).toEqual([
+        {
+          limit: 10,
+          interval: durationToMilliseconds({ minutes: 1 }),
+        },
+      ]);
+    });
+  });
+
+  describe('when throttling is configured', () => {
+    it('should use custom concurrency limit and interval values', async () => {
+      const slack = new WebClient();
+      const throttlingConfig = mockServices.rootConfig({
+        data: {
+          app: {
+            baseUrl: 'https://example.org',
+          },
+          notifications: {
+            processors: {
+              slack: [
+                {
+                  token: 'mock-token',
+                  concurrencyLimit: 5,
+                  throttleInterval: 'PT30S',
+                },
+              ],
+            },
+          },
+        },
+      });
+
+      const processor = SlackNotificationProcessor.fromConfig(
+        throttlingConfig,
+        {
+          auth,
+          logger,
+          catalog: catalogServiceMock({
+            entities: DEFAULT_ENTITIES_RESPONSE.items,
+          }),
+          slack,
+        },
+      )[0];
+
+      await processor.processOptions({
+        recipients: { type: 'entity', entityRef: 'group:default/mock' },
+        payload: { title: 'notification' },
+      });
+
+      expect(slack.chat.postMessage).toHaveBeenCalled();
+      expect(throttleConfigs).toEqual([
+        {
+          limit: 5,
+          interval: durationToMilliseconds({ seconds: 30 }),
+        },
+      ]);
     });
   });
 });

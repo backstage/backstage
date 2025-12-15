@@ -21,7 +21,7 @@ import {
   parseEntityRef,
   UserEntity,
 } from '@backstage/catalog-model';
-import { Config } from '@backstage/config';
+import { Config, readDurationFromConfig } from '@backstage/config';
 import { NotFoundError } from '@backstage/errors';
 import { Notification } from '@backstage/plugin-notifications-common';
 import {
@@ -52,6 +52,8 @@ export class SlackNotificationProcessor implements NotificationProcessor {
   private readonly broadcastRoutes?: BroadcastRoute[];
   private readonly entityLoader: DataLoader<string, Entity | undefined>;
   private readonly username?: string;
+  private readonly concurrencyLimit: number;
+  private readonly throttleInterval: number;
 
   static fromConfig(
     config: Config,
@@ -74,11 +76,19 @@ export class SlackNotificationProcessor implements NotificationProcessor {
       const broadcastRoutes = broadcastRoutesConfig?.map(route =>
         this.parseBroadcastRoute(route),
       );
+      const concurrencyLimit = c.getOptionalNumber('concurrencyLimit') ?? 10;
+      const throttleInterval = c.has('throttleInterval')
+        ? durationToMilliseconds(
+            readDurationFromConfig(c, { key: 'throttleInterval' }),
+          )
+        : durationToMilliseconds({ minutes: 1 });
       return new SlackNotificationProcessor({
         slack,
         broadcastChannels,
         broadcastRoutes,
         username,
+        concurrencyLimit,
+        throttleInterval,
         ...options,
       });
     });
@@ -92,6 +102,8 @@ export class SlackNotificationProcessor implements NotificationProcessor {
     broadcastChannels?: string[];
     broadcastRoutes?: BroadcastRoute[];
     username?: string;
+    concurrencyLimit?: number;
+    throttleInterval?: number;
   }) {
     const {
       auth,
@@ -101,6 +113,8 @@ export class SlackNotificationProcessor implements NotificationProcessor {
       broadcastChannels,
       broadcastRoutes,
       username,
+      concurrencyLimit,
+      throttleInterval,
     } = options;
     this.logger = logger;
     this.catalog = catalog;
@@ -109,6 +123,9 @@ export class SlackNotificationProcessor implements NotificationProcessor {
     this.broadcastChannels = broadcastChannels;
     this.broadcastRoutes = broadcastRoutes;
     this.username = username;
+    this.concurrencyLimit = concurrencyLimit ?? 10;
+    this.throttleInterval =
+      throttleInterval ?? durationToMilliseconds({ minutes: 1 });
 
     this.entityLoader = new DataLoader<string, Entity | undefined>(
       async entityRefs => {
@@ -150,8 +167,8 @@ export class SlackNotificationProcessor implements NotificationProcessor {
     );
 
     const throttle = pThrottle({
-      limit: 10,
-      interval: durationToMilliseconds({ minutes: 1 }),
+      limit: this.concurrencyLimit,
+      interval: this.throttleInterval,
     });
     const throttled = throttle((opts: ChatPostMessageArguments) =>
       this.sendNotification(opts),

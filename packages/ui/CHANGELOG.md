@@ -1,5 +1,57 @@
 # @backstage/ui
 
+## 0.10.0-next.1
+
+### Minor Changes
+
+- 16543fa: **Breaking change** The `Cell` component has been refactored to be a generic wrapper component that accepts `children` for custom cell content. The text-specific functionality (previously part of `Cell`) has been moved to a new `CellText` component.
+
+  ### Migration Guide
+
+  If you were using `Cell` with text-specific props (`title`, `description`, `leadingIcon`, `href`), you need to update your code to use `CellText` instead:
+
+  **Before:**
+
+  ```tsx
+  <Cell
+    title="My Title"
+    description="My description"
+    leadingIcon={<Icon />}
+    href="/path"
+  />
+  ```
+
+  **After:**
+
+  ```tsx
+  <CellText
+    title="My Title"
+    description="My description"
+    leadingIcon={<Icon />}
+    href="/path"
+  />
+  ```
+
+  For custom cell content, use the new generic `Cell` component:
+
+  ```tsx
+  <Cell>{/* Your custom content */}</Cell>
+  ```
+
+### Patch Changes
+
+- 50b7927: Fixed Checkbox indicator showing checkmark color when unchecked.
+
+  Affected components: Checkbox
+
+- 5bacf55: Fixed `ButtonIcon` incorrectly applying `className` to inner elements instead of only the root element.
+
+  Affected components: ButtonIcon
+
+- a20d317: Added row selection support with visual state styling for hover, selected, and pressed states. Fixed checkbox rendering to only show for multi-select toggle mode.
+
+  Affected components: Table, TableHeader, Row, Column
+
 ## 0.9.1-next.0
 
 ### Patch Changes

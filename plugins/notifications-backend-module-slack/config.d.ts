@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { HumanDuration } from '@backstage/types';
+
 export interface Config {
   notifications?: {
     processors?: {
@@ -52,6 +54,13 @@ export interface Config {
            */
           channel: string | string[];
         }>;
+         * Concurrency limit for Slack notifications per backend instance of the notifications plugin, defaults to 10.
+         */
+        concurrencyLimit?: number;
+        /**
+         * Throttle duration between Slack notifications per backend instance of the notifications plugin, defaults to 1 minute.
+         */
+        throttleInterval?: HumanDuration | string;
       }>;
     };
   };

@@ -8,6 +8,7 @@ import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { CustomResource as CustomResource_2 } from '@backstage/plugin-kubernetes-node';
 import { CustomResourceMatcher } from '@backstage/plugin-kubernetes-common';
 import { Entity } from '@backstage/catalog-model';
+import type express from 'express';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { FetchResponse } from '@backstage/plugin-kubernetes-common';
 import { JsonObject } from '@backstage/types';
@@ -198,6 +199,7 @@ export type KubernetesObjectsProviderFactory = (opts: {
   getDefault: () => Promise<KubernetesObjectsProvider_2>;
   clusterSupplier: KubernetesClustersSupplier_2;
   serviceLocator: KubernetesServiceLocator_2;
+  fetcher: KubernetesFetcher_2;
   customResources: CustomResource_2[];
   objectTypesToFetch?: ObjectToFetch_2[];
   authStrategy: AuthenticationStrategy_2;
@@ -220,6 +222,25 @@ export type KubernetesObjectTypes =
   | 'statefulsets'
   | 'daemonsets'
   | 'secrets';
+
+// @public
+export interface KubernetesRouterExtensionPoint {
+  // (undocumented)
+  addRouter(router: KubernetesRouterFactory): void;
+}
+
+// @public
+export const kubernetesRouterExtensionPoint: ExtensionPoint<KubernetesRouterExtensionPoint>;
+
+// @public
+export type KubernetesRouterFactory = (opts: {
+  getDefault: () => express.Router;
+  objectsProvider: KubernetesObjectsProvider_2;
+  clusterSupplier: KubernetesClustersSupplier_2;
+  authStrategyMap: {
+    [key: string]: AuthenticationStrategy_2;
+  };
+}) => express.Router;
 
 // @public
 export interface KubernetesServiceLocator {

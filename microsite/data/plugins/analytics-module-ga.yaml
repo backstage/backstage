@@ -6,5 +6,5 @@ category: Monitoring
 description: Track usage of your Backstage instance using Google Analytics 4.
 documentation: https://github.com/backstage/community-plugins/tree/main/workspaces/analytics/plugins/analytics-module-ga4#readme
 iconUrl: /img/ga-icon.png
-npmPackageName: '@backstage/plugin-analytics-module-ga4'
+npmPackageName: '@backstage-community/plugin-analytics-module-ga4'
 addedDate: '2021-10-07'

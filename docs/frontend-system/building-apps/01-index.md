@@ -14,16 +14,16 @@ A Backstage App is a monorepo setup that includes everything you need to run Bac
 To create a new Backstage app we recommend using the `@backstage/create-app` command line, and the easiest way to run this package is with `npx`:
 
 :::note
-The create-app CLI requires Node.js Active LTS Release.
+The create-app CLI requires Node.js Active LTS Release, see the [prerequisites documentation](../../getting-started/index.md) for all the details.
 :::
 
 ```sh
 # The command bellow creates a Backstage App inside the current folder.
 # The name of the app-folder is the name that was provided when prompted.
-npx @backstage/create-app@latest
+npx @backstage/create-app@latest --next
 ```
 
-The created-app is currently templated for legacy frontend system applications, so the app wiring code it creates needs to be migrated, see [the app instance](#the-app-instance) section for an example.
+Using the `--next` flag will result in a Backstage app using the New Frontend System which will be further explained in the sections below.
 
 ## The app instance
 
