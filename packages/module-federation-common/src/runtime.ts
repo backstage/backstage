@@ -15,7 +15,6 @@
  */
 
 import { Host, Runtime, SharedDependencies } from './types';
-import { default as serialize } from 'serialize-javascript';
 import type { UserOptions } from '@module-federation/runtime/types';
 import { ForwardedError } from '@backstage/errors';
 
@@ -37,7 +36,8 @@ const BACKSTAGE_RUNTIME_SHARED_DEPENDENCIES_GLOBAL =
 export function prepareRuntimeSharedDependenciesScript(
   hostSharedDependencies: SharedDependencies<Host & { version: string }>,
 ) {
-  const runtimeSharedDependencies: SharedDependencies<Host & Runtime> =
+  type StringModule = Omit<Runtime, 'module'> & { module: string };
+  const runtimeSharedDependencies: SharedDependencies<Host & StringModule> =
     Object.fromEntries(
       Object.entries(hostSharedDependencies).map(([name, sharedDep]) => [
         name,
@@ -48,20 +48,18 @@ export function prepareRuntimeSharedDependenciesScript(
             ? { singleton: sharedDep.singleton }
             : {}),
           ...(sharedDep.eager !== undefined ? { eager: sharedDep.eager } : {}),
-          // eslint-disable-next-line no-new-func
-          module: new Function(
-            `return () => import('${name}')`,
-          )() as () => Promise<any>,
+          module: `() => import('${name}')`,
         },
       ]),
     );
 
-  return `window['${BACKSTAGE_RUNTIME_SHARED_DEPENDENCIES_GLOBAL}'] = ${serialize(
+  return `window['${BACKSTAGE_RUNTIME_SHARED_DEPENDENCIES_GLOBAL}'] = ${JSON.stringify(
     runtimeSharedDependencies,
-    {
-      space: 2,
-      unsafe: true,
-    },
+    null,
+    2,
+  ).replace(
+    /(^\s+"module":\s*)"([^"]+)"$/gm,
+    (_, start, unquoted) => `${start}${unquoted}`,
   )};`;
 }
 
