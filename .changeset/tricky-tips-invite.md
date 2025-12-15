@@ -2,4 +2,4 @@
 '@backstage/plugin-scaffolder': patch
 ---
 
-Fix in RepoUrlPicker autocomplete for repo names
+Fixed bug in RepoUrlPickerComponent component where repository names were not being autocompleted.
