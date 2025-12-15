@@ -114,7 +114,8 @@ export async function loadRemote(
 
 ### Integration with Feature Loaders
 
-Integration with frontend feature loaders is straightforward:
+Standard Module Federation runtime API integrates very well with frontend feature loaders,
+as shown in the example below:
 
 ```typescript title="packages/app/src/App.tsx"
 import { createInstance } from '@module-federation/enhanced/runtime';
@@ -166,7 +167,9 @@ const app = createApp({
 export default app.createRoot();
 ```
 
-The [`dynamicFrontendFeaturesLoader`](https://github.com/backstage/backstage/blob/master/packages/frontend-dynamic-feature-loader/src/loader.ts) provided in the [`@backstage/frontend-dynamic-feature-loader`](https://github.com/backstage/backstage/blob/master/packages/frontend-dynamic-feature-loader/README.md) package, which provides an integrated solution to load module federation remotes as dynamic frontend plugins, is a more complete example of a feature loader based on the module federation support.
+Note that, on top of the standard API, we plan to provide a more simplified way to configure module federation remotes.
+
+Additionally, the [`dynamicFrontendFeaturesLoader`](https://github.com/backstage/backstage/blob/master/packages/frontend-dynamic-feature-loader/src/loader.ts) provided in the [`@backstage/frontend-dynamic-feature-loader`](https://github.com/backstage/backstage/blob/master/packages/frontend-dynamic-feature-loader/README.md) package, which provides an integrated solution to load module federation remotes as dynamic frontend plugins, is a more complete example of a feature loader based on the module federation support.
 
 ## Default Shared Dependencies
 
