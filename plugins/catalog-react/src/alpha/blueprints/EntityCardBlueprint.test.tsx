@@ -70,12 +70,6 @@ describe('EntityCardBlueprint', () => {
                                   ],
                                 },
                                 {
-                                  "items": {
-                                    "$ref": "#/properties/filter/anyOf/1/anyOf/0/anyOf/0/additionalProperties/anyOf/0",
-                                  },
-                                  "type": "array",
-                                },
-                                {
                                   "additionalProperties": false,
                                   "properties": {
                                     "$exists": {
@@ -106,14 +100,7 @@ describe('EntityCardBlueprint', () => {
                                   "additionalProperties": false,
                                   "properties": {
                                     "$contains": {
-                                      "anyOf": [
-                                        {
-                                          "$ref": "#/properties/filter/anyOf/1/anyOf/0",
-                                        },
-                                        {
-                                          "type": "string",
-                                        },
-                                      ],
+                                      "$ref": "#/properties/filter/anyOf/1",
                                     },
                                   },
                                   "required": [
@@ -141,12 +128,6 @@ describe('EntityCardBlueprint', () => {
                       },
                       {
                         "$ref": "#/properties/filter/anyOf/1/anyOf/0/anyOf/0/additionalProperties/anyOf/0",
-                      },
-                      {
-                        "items": {
-                          "not": {},
-                        },
-                        "type": "array",
                       },
                       {
                         "additionalProperties": false,

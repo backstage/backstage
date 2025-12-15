@@ -83,12 +83,6 @@ describe('EntityContextMenuItemBlueprint', () => {
                               ],
                             },
                             {
-                              "items": {
-                                "$ref": "#/properties/filter/anyOf/0/anyOf/0/additionalProperties/anyOf/0",
-                              },
-                              "type": "array",
-                            },
-                            {
                               "additionalProperties": false,
                               "properties": {
                                 "$exists": {
@@ -119,14 +113,7 @@ describe('EntityContextMenuItemBlueprint', () => {
                               "additionalProperties": false,
                               "properties": {
                                 "$contains": {
-                                  "anyOf": [
-                                    {
-                                      "$ref": "#/properties/filter/anyOf/0",
-                                    },
-                                    {
-                                      "type": "string",
-                                    },
-                                  ],
+                                  "$ref": "#/properties/filter",
                                 },
                               },
                               "required": [
@@ -154,12 +141,6 @@ describe('EntityContextMenuItemBlueprint', () => {
                   },
                   {
                     "$ref": "#/properties/filter/anyOf/0/anyOf/0/additionalProperties/anyOf/0",
-                  },
-                  {
-                    "items": {
-                      "not": {},
-                    },
-                    "type": "array",
                   },
                   {
                     "additionalProperties": false,

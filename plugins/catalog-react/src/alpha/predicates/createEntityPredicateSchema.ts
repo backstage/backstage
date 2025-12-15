@@ -30,8 +30,6 @@ export function createEntityPredicateSchema(z: typeof zImpl) {
     z.boolean(),
   ]) as ZodType<EntityPredicatePrimitive>;
 
-  const onlyEmptyArraySchema = z.array(z.never()) as ZodType<never[]>;
-
   // eslint-disable-next-line prefer-const
   let valuePredicateSchema: ZodType<EntityPredicateValue>;
 
@@ -46,7 +44,6 @@ export function createEntityPredicateSchema(z: typeof zImpl) {
     z.union([
       expressionSchema,
       primitiveSchema,
-      onlyEmptyArraySchema,
       z.object({ $all: z.array(predicateSchema) }),
       z.object({ $any: z.array(predicateSchema) }),
       z.object({ $not: predicateSchema }),
@@ -55,10 +52,9 @@ export function createEntityPredicateSchema(z: typeof zImpl) {
 
   valuePredicateSchema = z.union([
     primitiveSchema,
-    z.array(primitiveSchema),
     z.object({ $exists: z.boolean() }),
     z.object({ $in: z.array(primitiveSchema) }),
-    z.object({ $contains: z.union([expressionSchema, z.string()]) }),
+    z.object({ $contains: predicateSchema }),
   ]) as ZodType<EntityPredicateValue>;
 
   return predicateSchema;

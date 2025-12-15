@@ -25,17 +25,16 @@ describe('createEntityPredicateSchema', () => {
     const predicates: EntityPredicate[] = [
       'string',
       '',
-      [],
       1,
       { kind: 'component', 'spec.type': 'service' },
       { 'metadata.tags': { $in: ['java'] } },
+      { 'metadata.tags': { $contains: 'java' } },
       {
         $all: [
           { 'metadata.tags': { $contains: 'java' } },
           { 'metadata.tags': { $contains: 'spring' } },
         ],
       },
-      { 'metadata.tags': ['java', 'spring'] },
       { 'metadata.tags': { $in: ['go'] } },
       { 'metadata.tags.0': 'java' },
       { $not: { 'metadata.tags': { $in: ['java'] } } },
@@ -91,7 +90,8 @@ describe('createEntityPredicateSchema', () => {
     const predicates: Array<
       Exclude<EntityPredicate | unknown, EntityPredicate>
     > = [
-      ['service', 'website'],
+      [],
+      ['foo', 'bar'],
       { kind: { 1: 'foo' } },
       { kind: { foo: 'bar' } },
       { kind: { $unknown: 'foo' } },
@@ -104,6 +104,7 @@ describe('createEntityPredicateSchema', () => {
       { $not: { x: { $unknown: true } } },
       { $not: { $all: [{ x: { $unknown: true } }] } },
       { $unknown: 'foo' },
+      { 'metadata.tags': ['foo', 'bar'] },
     ];
 
     it.each(predicates)('should reject invalid predicate %j', predicate => {
