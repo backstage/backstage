@@ -54,6 +54,7 @@ export interface Config {
            */
           channel: string | string[];
         }>;
+        /**
          * Concurrency limit for Slack notifications per backend instance of the notifications plugin, defaults to 10.
          */
         concurrencyLimit?: number;
