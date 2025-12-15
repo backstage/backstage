@@ -307,6 +307,7 @@ export type GithubTeam = {
 // @public
 export type GithubUser = {
   login: string;
+  id?: string;
   bio?: string;
   avatarUrl?: string;
   email?: string;
