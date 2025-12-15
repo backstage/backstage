@@ -69,7 +69,7 @@ export function createHandleAutocompleteRequest(options: {
           client.rest.orgs.listForAuthenticatedUser,
         );
 
-        const results = branches.map(r => ({ id: r.login }));
+        const results = orgs.map(r => ({ id: r.login }));
 
         return { results };
       }
