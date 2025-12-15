@@ -4059,11 +4059,9 @@ __metadata:
     "@backstage/types": "workspace:^"
     "@module-federation/runtime": "npm:^0.21.6"
     "@types/react": "npm:^18.0.0"
-    "@types/serialize-javascript": "npm:^5.0.4"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
     react-router-dom: "npm:^6.3.0"
-    serialize-javascript: "npm:^6.0.0"
   peerDependencies:
     "@emotion/react": ^11.10.5
     "@material-ui/core": ^4.12.2
@@ -22047,13 +22045,6 @@ __metadata:
     "@types/mime": "npm:^1"
     "@types/node": "npm:*"
   checksum: 10/4948ab32ab84a81a0073f8243dd48ee766bc80608d5391060360afd1249f83c08a7476f142669ac0b0b8831c89d909a88bcb392d1b39ee48b276a91b50f3d8d1
-  languageName: node
-  linkType: hard
-
-"@types/serialize-javascript@npm:^5.0.4":
-  version: 5.0.4
-  resolution: "@types/serialize-javascript@npm:5.0.4"
-  checksum: 10/c342a4d151736c1ba4913e6d9b00537bcf62401a06e3489dcf96b7d51a4ab147efcf3fe20ca9491b1349ee7e55c6d69606682e1630f2e076e2828eaee3764f94
   languageName: node
   linkType: hard
 
@@ -46061,7 +46052,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"serialize-javascript@npm:^6.0.0, serialize-javascript@npm:^6.0.2":
+"serialize-javascript@npm:^6.0.2":
   version: 6.0.2
   resolution: "serialize-javascript@npm:6.0.2"
   dependencies:

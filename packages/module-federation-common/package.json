@@ -39,14 +39,12 @@
     "@backstage/config": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@backstage/types": "workspace:^",
-    "@module-federation/runtime": "^0.21.6",
-    "serialize-javascript": "^6.0.0"
+    "@module-federation/runtime": "^0.21.6"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@backstage/test-utils": "workspace:^",
     "@types/react": "^18.0.0",
-    "@types/serialize-javascript": "^5.0.4",
     "react": "^18.0.2",
     "react-dom": "^18.0.2",
     "react-router-dom": "^6.3.0"
