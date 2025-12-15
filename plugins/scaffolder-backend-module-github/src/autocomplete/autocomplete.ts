@@ -65,7 +65,7 @@ export function createHandleAutocompleteRequest(options: {
         return { results };
       }
       case 'owners': {
-        const branches = await client.paginate(
+        const orgs = await client.paginate(
           client.rest.orgs.listForAuthenticatedUser,
         );
 
