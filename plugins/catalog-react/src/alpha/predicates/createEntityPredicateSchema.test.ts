@@ -25,18 +25,15 @@ describe('createEntityPredicateSchema', () => {
     const predicates: EntityPredicate[] = [
       'string',
       '',
-      [],
       1,
       { kind: 'component', 'spec.type': 'service' },
-      { 'metadata.tags': { $in: ['java'] } },
       {
         $all: [
           { 'metadata.tags': { $contains: 'java' } },
           { 'metadata.tags': { $contains: 'spring' } },
         ],
       },
-      { 'metadata.tags': ['java', 'spring'] },
-      { 'metadata.tags': { $in: ['go'] } },
+      { kind: { $in: ['user', 'group'] } },
       { 'metadata.tags.0': 'java' },
       { $not: { 'metadata.tags': { $in: ['java'] } } },
       {

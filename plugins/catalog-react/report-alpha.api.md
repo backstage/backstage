@@ -478,7 +478,6 @@ export const EntityIconLinkBlueprint: ExtensionBlueprint<{
 export type EntityPredicate =
   | EntityPredicateExpression
   | EntityPredicatePrimitive
-  | never[]
   | {
       $all: EntityPredicate[];
     }
@@ -507,7 +506,6 @@ export function entityPredicateToFilterFunction<T extends JsonValue>(
 // @alpha (undocumented)
 export type EntityPredicateValue =
   | EntityPredicatePrimitive
-  | EntityPredicatePrimitive[]
   | {
       $exists: boolean;
     }
@@ -515,7 +513,7 @@ export type EntityPredicateValue =
       $in: EntityPredicatePrimitive[];
     }
   | {
-      $contains: EntityPredicateExpression | string;
+      $contains: EntityPredicate;
     };
 
 // @alpha
