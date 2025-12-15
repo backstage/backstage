@@ -34,7 +34,7 @@ export const createUnregisterCatalogEntitiesAction = ({
     },
     description: `Unregisters a Location entity and all entities it owns from the Backstage catalog.
 
-This action is similar to the "Unregister location" function in the Backstage UI, where you provide the unique identifier (locationId) of a Location entity. The action will remove the specified Location from the catalog as well as all entities that were created when the Location was imported.
+This action is similar to the "Unregister location" function in the Backstage UI, where you provide the unique identifier (locationId) of a Location entity. Alternatively, you can provide the URL used to register the location. The action will remove the specified Location from the catalog as well as all entities that were created when the Location was imported.
 
 Once completed, all entities associated with the Location will be deleted from the catalog.
 `,
