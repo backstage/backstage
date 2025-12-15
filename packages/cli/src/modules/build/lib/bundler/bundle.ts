@@ -28,7 +28,7 @@ import { BuildOptions } from './types';
 import { resolveBundlingPaths, resolveOptionalBundlingPaths } from './paths';
 import chalk from 'chalk';
 import { createDetectedModulesEntryPoint } from './packageDetection';
-import { createRuntimeSharedDependeciesEntryPoint } from './moduleFederation';
+import { createRuntimeSharedDependenciesEntryPoint } from './moduleFederation';
 
 // TODO(Rugvip): Limits from CRA, we might want to tweak these though.
 const WARN_AFTER_BUNDLE_GZIP_SIZE = 512 * 1024;
@@ -66,7 +66,7 @@ export async function buildBundle(options: BuildOptions) {
     });
 
     const moduleFederationSharedDependenciesEntryPoint =
-      await createRuntimeSharedDependeciesEntryPoint({
+      await createRuntimeSharedDependenciesEntryPoint({
         targetPath: paths.targetPath,
       });
 
