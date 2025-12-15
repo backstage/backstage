@@ -17,12 +17,10 @@ export function dynamicFrontendFeaturesLoader(
 // @public (undocumented)
 export type DynamicFrontendFeaturesLoaderOptions = {
   moduleFederation: {
+    shared?: UserOptions['shared'];
     shareStrategy?: ShareStrategy;
-    shared?: UserOptions['shared'] | (() => Promise<UserOptions['shared']>);
-    plugins?:
-      | Array<ModuleFederationRuntimePlugin>
-      | (() => Promise<Array<ModuleFederationRuntimePlugin>>);
-    instance?: ModuleFederation | (() => Promise<ModuleFederation>);
+    plugins?: Array<ModuleFederationRuntimePlugin>;
+    instance?: ModuleFederation;
   };
 };
 ```
