@@ -61,8 +61,15 @@ import {
   convertGlobalsToRecord,
 } from './util/templating';
 import {
+<<<<<<< HEAD
   actionsServiceRef,
   actionsRegistryServiceRef,
+||||||| parent of 80850f963141 (feat(scaffolder): Create basic scaffolder task query action)
+import { actionsServiceRef } from '@backstage/backend-plugin-api/alpha';
+=======
+  actionsRegistryServiceRef,
+  actionsServiceRef,
+>>>>>>> 80850f963141 (feat(scaffolder): Create basic scaffolder task query action)
 } from '@backstage/backend-plugin-api/alpha';
 import { createScaffolderActions } from './actions';
 
@@ -143,6 +150,7 @@ export const scaffolderPlugin = createBackendPlugin({
         permissions: coreServices.permissions,
         database: coreServices.database,
         auth: coreServices.auth,
+        discovery: coreServices.discovery,
         httpRouter: coreServices.httpRouter,
         httpAuth: coreServices.httpAuth,
         auditor: coreServices.auditor,
@@ -159,6 +167,7 @@ export const scaffolderPlugin = createBackendPlugin({
         reader,
         database,
         auth,
+        discovery,
         httpRouter,
         httpAuth,
         catalog,
@@ -223,6 +232,9 @@ export const scaffolderPlugin = createBackendPlugin({
         createScaffolderActions({
           actionsRegistry: actionsRegistryService,
           scaffolderService,
+          auth,
+          discovery,
+          scmIntegrations: integrations,
         });
 
         const router = await createRouter({
