@@ -149,7 +149,7 @@ function resolveSharedDependencyVersions(
   );
 }
 
-export async function createRuntimeSharedDependeciesEntryPoint(options: {
+export async function createRuntimeSharedDependenciesEntryPoint(options: {
   targetPath: string;
   watch?: () => void;
 }): Promise<string[]> {

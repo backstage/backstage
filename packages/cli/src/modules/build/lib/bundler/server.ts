@@ -28,7 +28,7 @@ import { createConfig, resolveBaseUrl, resolveEndpoint } from './config';
 import { createDetectedModulesEntryPoint } from './packageDetection';
 import { resolveBundlingPaths, resolveOptionalBundlingPaths } from './paths';
 import { ServeOptions } from './types';
-import { createRuntimeSharedDependeciesEntryPoint } from './moduleFederation';
+import { createRuntimeSharedDependenciesEntryPoint } from './moduleFederation';
 
 export async function serveBundle(options: ServeOptions) {
   const paths = resolveBundlingPaths(options);
@@ -124,7 +124,7 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
   });
 
   const moduleFederationSharedDependenciesEntryPoint =
-    await createRuntimeSharedDependeciesEntryPoint({
+    await createRuntimeSharedDependenciesEntryPoint({
       targetPath: paths.targetPath,
       watch() {
         triggerReload();
