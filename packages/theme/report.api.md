@@ -389,6 +389,80 @@ export const palettes: {
       indicator: string;
     };
   };
+  highContrastDark: {
+    type: 'dark';
+    mode: 'dark';
+    background: {
+      default: string;
+      paper: string;
+    };
+    status: {
+      ok: string;
+      warning: string;
+      error: string;
+      running: string;
+      pending: string;
+      aborted: string;
+    };
+    bursts: {
+      fontColor: string;
+      slackChannelText: string;
+      backgroundColor: {
+        default: string;
+      };
+      gradient: {
+        linear: string;
+      };
+    };
+    primary: {
+      main: string;
+      dark: string;
+    };
+    secondary: {
+      main: string;
+    };
+    banner: {
+      info: string;
+      error: string;
+      text: string;
+      link: string;
+      closeButtonColor: string;
+      warning: string;
+    };
+    border: string;
+    textContrast: string;
+    textVerySubtle: string;
+    textSubtle: string;
+    highlight: string;
+    errorBackground: string;
+    warningBackground: string;
+    infoBackground: string;
+    errorText: string;
+    infoText: string;
+    warningText: string;
+    linkHover: string;
+    link: string;
+    gold: string;
+    navigation: {
+      background: string;
+      indicator: string;
+      color: string;
+      selectedColor: string;
+      navItem: {
+        hoverBackground: string;
+      };
+      submenu: {
+        background: string;
+      };
+    };
+    pinSidebarButton: {
+      icon: string;
+      background: string;
+    };
+    tabbar: {
+      indicator: string;
+    };
+  };
 };
 
 // @public
@@ -414,6 +488,7 @@ export type SupportedVersions = 'v4' | 'v5';
 export const themes: {
   light: UnifiedTheme_2;
   dark: UnifiedTheme_2;
+  highContrastDark: UnifiedTheme_2;
 };
 
 // @public
