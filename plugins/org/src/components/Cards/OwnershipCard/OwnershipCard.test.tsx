@@ -45,6 +45,26 @@ const items = [
     ],
   },
   {
+    kind: 'Resource',
+    metadata: {
+      name: 'my-resource',
+    },
+    spec: {
+      type: 'database',
+    },
+    relations: [
+      {
+        type: 'ownedBy',
+        targetRef: 'group:default/my-team',
+        target: {
+          name: 'my-team',
+          namespace: 'default',
+          kind: 'group',
+        },
+      },
+    ],
+  },
+  {
     kind: 'Component',
     metadata: {
       name: 'my-service',
@@ -160,7 +180,7 @@ describe('OwnershipCard', () => {
     expect(mockedGetEntities).toHaveBeenCalledWith({
       filter: [
         {
-          kind: ['Component', 'API', 'System'],
+          kind: ['Component', 'API', 'System', 'Resource'],
           'relations.ownedBy': ['group:default/my-team'],
         },
       ],
