@@ -456,6 +456,59 @@ describe('actionsServiceFactory', () => {
         // Only my-plugin:safe-read matches: my-plugin:* pattern AND destructive: false
         expect(actions.map(a => a.id)).toEqual(['my-plugin:safe-read']);
       });
+
+      it('should return all actions when no filter config is provided', async () => {
+        const multipleActions: ActionsServiceAction[] = [
+          {
+            ...mockActionsDefinition,
+            id: 'my-plugin:action-one',
+            name: 'action-one',
+          },
+          {
+            ...mockActionsDefinition,
+            id: 'my-plugin:action-two',
+            name: 'action-two',
+          },
+        ];
+
+        server.use(
+          rest.get(
+            'http://localhost:0/api/my-plugin/.backstage/actions/v1/actions',
+            (_req, res, ctx) => res(ctx.json({ actions: multipleActions })),
+          ),
+        );
+
+        const subject = await ServiceFactoryTester.from(actionsServiceFactory, {
+          dependencies: [
+            mockServices.rootConfig.factory({
+              data: {
+                backend: {
+                  actions: {
+                    pluginSources: ['my-plugin'],
+                    // No filter config
+                  },
+                },
+              },
+            }),
+            actionsServiceFactory,
+            httpRouterServiceFactory,
+            mockServices.httpAuth.factory({
+              defaultCredentials: mockCredentials.service('user:default/mock'),
+            }),
+            mockServices.discovery.factory(),
+            actionsRegistryServiceFactory,
+          ],
+        }).getSubject();
+
+        const { actions } = await subject.list({
+          credentials: mockCredentials.service('user:default/mock'),
+        });
+
+        expect(actions.map(a => a.id)).toEqual([
+          'my-plugin:action-one',
+          'my-plugin:action-two',
+        ]);
+      });
     });
 
     describe('invoke', () => {
