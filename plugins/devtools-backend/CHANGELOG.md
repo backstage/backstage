@@ -1,5 +1,19 @@
 # @backstage/plugin-devtools-backend
 
+## 0.5.12
+
+### Patch Changes
+
+- de96a60: chore(deps): bump `express` from 4.21.2 to 4.22.0
+- 291bf9d: Added scheduled tasks UI feature for the DevTools plugin
+- Updated dependencies
+  - @backstage/backend-defaults@0.14.0
+  - @backstage/plugin-permission-node@0.10.7
+  - @backstage/backend-plugin-api@1.6.0
+  - @backstage/cli-common@0.1.16
+  - @backstage/config-loader@1.10.7
+  - @backstage/plugin-devtools-common@0.1.20
+
 ## 0.5.12-next.1
 
 ### Patch Changes

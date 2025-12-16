@@ -1,5 +1,15 @@
 # @backstage/plugin-events-backend
 
+## 0.5.9
+
+### Patch Changes
+
+- de96a60: chore(deps): bump `express` from 4.21.2 to 4.22.0
+- Updated dependencies
+  - @backstage/backend-openapi-utils@0.6.4
+  - @backstage/plugin-events-node@0.4.18
+  - @backstage/backend-plugin-api@1.6.0
+
 ## 0.5.9-next.1
 
 ### Patch Changes

@@ -1,5 +1,19 @@
 # @backstage/plugin-techdocs-backend
 
+## 2.1.3
+
+### Patch Changes
+
+- de96a60: chore(deps): bump `express` from 4.21.2 to 4.22.0
+- 2bae83a: Corrected `ErrorCallback` type to work with Node 22 types
+- 592361e: The `techdocs` config is now marked as optional.
+- Updated dependencies
+  - @backstage/integration@1.19.0
+  - @backstage/backend-defaults@0.14.0
+  - @backstage/plugin-techdocs-node@1.13.10
+  - @backstage/backend-plugin-api@1.6.0
+  - @backstage/plugin-catalog-node@1.20.1
+
 ## 2.1.3-next.2
 
 ### Patch Changes
