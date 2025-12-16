@@ -175,6 +175,15 @@ export const StartCollapsed: Story = {
   ),
 };
 
+export const StartCollapsedWithValue: Story = {
+  args: {
+    ...StartCollapsed.args,
+    defaultValue: 'https://example.com',
+  },
+
+  render: args => <SearchField {...args} size="small" />,
+};
+
 export const InHeader: Story = {
   decorators: [
     Story => (

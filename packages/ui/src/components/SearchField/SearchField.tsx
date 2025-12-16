@@ -68,19 +68,35 @@ export const SearchField = forwardRef<HTMLDivElement, SearchFieldProps>(
       ...rest
     } = cleanedProps;
 
-    const [isCollapsed, setIsCollapsed] = useState(startCollapsed);
-    const [shouldCollapse, setShouldCollapse] = useState(true);
+    const hasProvidedValue = props.value || props.defaultValue;
+    const initialCollapsed = !!startCollapsed && !hasProvidedValue;
     const inputRef = useRef<HTMLInputElement>(null);
+    const [isCollapsed, setIsCollapsed] = useState(initialCollapsed);
+    const [shouldCollapse, setShouldCollapse] = useState(!hasProvidedValue);
+
+    // If a value becomes available (controlled or defaultValue), force expand so the user can see it.
+    // If it becomes empty again and startCollapsed is enabled, allow collapse behavior again.
+    useEffect(() => {
+      if (hasProvidedValue) {
+        setShouldCollapse(false);
+        setIsCollapsed(false);
+      } else {
+        setShouldCollapse(true);
+        if (startCollapsed) {
+          setIsCollapsed(true);
+        }
+      }
+    }, [hasProvidedValue, startCollapsed]);
 
     // If a secondary label is provided, use it. Otherwise, use 'Required' if the field is required.
     const secondaryLabelText =
       secondaryLabel || (isRequired ? 'Required' : null);
 
-    const handleClick = (isFocused: boolean) => {
+    const handleFocusChange = (isFocused: boolean) => {
       props.onFocusChange?.(isFocused);
       if (shouldCollapse) {
         if (isFocused) {
-          // When focusing, expand the field
+          // When focusing, expand the field (unless startCollapsed + a value/defaultValue is provided)
           setIsCollapsed(false);
         } else {
           // When blurring, collapse the field
@@ -90,9 +106,7 @@ export const SearchField = forwardRef<HTMLDivElement, SearchFieldProps>(
     };
 
     const handleContainerClick = () => {
-      // If the field is collapsed (small), expand it and focus the input
       if (startCollapsed && isCollapsed) {
-        setIsCollapsed(false);
         // Focus the input after state update
         setTimeout(() => {
           inputRef.current?.focus();
@@ -116,7 +130,7 @@ export const SearchField = forwardRef<HTMLDivElement, SearchFieldProps>(
         aria-label={ariaLabel}
         aria-labelledby={ariaLabelledBy}
         data-collapsed={isCollapsed}
-        onFocusChange={handleClick}
+        onFocusChange={handleFocusChange}
         onChange={handleChange}
         style={style}
         {...rest}
