@@ -77,7 +77,7 @@ describe('KubernetesFetcher', () => {
     return {};
   };
   const withTokenCheck =
-    (token: string, handler: (request: Request) => HttpResponse) =>
+    (token: string, handler: (request: Request) => Response) =>
     ({ request }: { request: Request }) => {
       if (request.headers.get('Authorization') !== `Bearer ${token}`) {
         return HttpResponse.json(
@@ -479,7 +479,7 @@ describe('KubernetesFetcher', () => {
           'http://localhost:9999/api/v1/services',
           withTokenCheck(
             'other-token',
-            request => new HttpResponse(null, { status: 200 }),
+            () => new HttpResponse(null, { status: 200 }),
           ),
         ),
       );

@@ -37,11 +37,7 @@ jest.mock('http-proxy-middleware', () => {
 });
 
 import { ClusterDetails } from '../types';
-import {
-  mockServices,
-  registerMswTestHooks,
-  startTestBackend,
-} from '@backstage/backend-test-utils';
+import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
 import { createBackendModule } from '@backstage/backend-plugin-api';
 import {
   kubernetesAuthStrategyExtensionPoint,
