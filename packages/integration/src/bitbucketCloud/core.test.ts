@@ -25,13 +25,6 @@ import {
   getBitbucketCloudRequestOptions,
 } from './core';
 
-// Mock cross-fetch to delegate to native fetch, which MSW v2 can intercept
-jest.mock('cross-fetch', () => ({
-  __esModule: true,
-  default: (...args: Parameters<typeof fetch>) => fetch(...args),
-  Response: global.Response,
-}));
-
 // Mock constants
 const BITBUCKET_CLOUD_HOST = 'bitbucket.org';
 const BITBUCKET_CLOUD_API_BASE_URL = 'https://api.bitbucket.org/2.0';

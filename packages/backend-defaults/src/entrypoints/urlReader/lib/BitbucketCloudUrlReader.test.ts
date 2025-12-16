@@ -32,12 +32,6 @@ import { BitbucketCloudUrlReader } from './BitbucketCloudUrlReader';
 import { DefaultReadTreeResponseFactory } from './tree';
 import getRawBody from 'raw-body';
 
-jest.mock('cross-fetch', () => ({
-  __esModule: true,
-  default: (...args: Parameters<typeof fetch>) => fetch(...args),
-  Response: global.Response,
-}));
-
 const mockDir = createMockDirectory({ mockOsTmpDir: true });
 
 const treeResponseFactory = DefaultReadTreeResponseFactory.create({

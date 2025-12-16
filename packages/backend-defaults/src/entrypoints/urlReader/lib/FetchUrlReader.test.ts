@@ -25,12 +25,6 @@ import { setupServer } from 'msw/node';
 import { FetchUrlReader } from './FetchUrlReader';
 import { DefaultReadTreeResponseFactory } from './tree';
 
-jest.mock('cross-fetch', () => ({
-  __esModule: true,
-  default: (...args: Parameters<typeof fetch>) => fetch(...args),
-  Response: global.Response,
-}));
-
 const fetchUrlReader = new FetchUrlReader();
 
 describe('FetchUrlReader', () => {

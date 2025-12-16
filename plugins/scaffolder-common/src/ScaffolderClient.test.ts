@@ -25,12 +25,6 @@ import { setupServer } from 'msw/node';
 import { ScaffolderClient } from './ScaffolderClient';
 import { fetchEventSource } from '@microsoft/fetch-event-source';
 
-jest.mock('cross-fetch', () => ({
-  __esModule: true,
-  default: (...args: Parameters<typeof fetch>) => fetch(...args),
-  Response: global.Response,
-}));
-
 jest.mock('@microsoft/fetch-event-source');
 const mockFetchEventSource = fetchEventSource as jest.MockedFunction<
   typeof fetchEventSource

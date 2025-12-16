@@ -40,11 +40,6 @@ import {
 } from '@backstage/plugin-scaffolder-node';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 
-jest.mock('cross-fetch', () => ({
-  __esModule: true,
-  default: global.fetch,
-}));
-
 describe('publish:bitbucketServer', () => {
   const config = new ConfigReader({
     integrations: {

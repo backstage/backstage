@@ -26,12 +26,6 @@ import {
 import { DiscoveryApi } from './types/discovery';
 import { GetLocations200ResponseInner } from './schema/openapi';
 
-jest.mock('cross-fetch', () => ({
-  __esModule: true,
-  default: (...args: Parameters<typeof fetch>) => fetch(...args),
-  Response: global.Response,
-}));
-
 const server = setupServer();
 const token = 'fake-token';
 const mockBaseUrl = 'http://backstage:9191/i-am-a-mock-base';

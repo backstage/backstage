@@ -31,12 +31,6 @@ import { NotFoundError, NotModifiedError } from '@backstage/errors';
 import fs from 'fs-extra';
 import path from 'path';
 
-jest.mock('cross-fetch', () => ({
-  __esModule: true,
-  default: (...args: Parameters<typeof fetch>) => fetch(...args),
-  Response: global.Response,
-}));
-
 const treeResponseFactory = DefaultReadTreeResponseFactory.create({
   config: new ConfigReader({}),
 });

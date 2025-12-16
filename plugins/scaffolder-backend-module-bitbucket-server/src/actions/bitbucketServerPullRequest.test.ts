@@ -22,12 +22,6 @@ import { ScmIntegrations } from '@backstage/integration';
 import { ConfigReader } from '@backstage/config';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 
-jest.mock('cross-fetch', () => ({
-  __esModule: true,
-  default: (...args: Parameters<typeof fetch>) => fetch(...args),
-  Response: global.Response,
-}));
-
 jest.mock('@backstage/plugin-scaffolder-node', () => {
   return {
     ...jest.requireActual('@backstage/plugin-scaffolder-node'),

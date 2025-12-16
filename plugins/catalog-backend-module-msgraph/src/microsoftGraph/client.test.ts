@@ -20,12 +20,6 @@ import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import { MicrosoftGraphClient } from './client';
 
-jest.mock('cross-fetch', () => ({
-  __esModule: true,
-  default: (...args: Parameters<typeof fetch>) => fetch(...args),
-  Response: global.Response,
-}));
-
 describe('MicrosoftGraphClient', () => {
   const tokenCredential: jest.Mocked<TokenCredential> = {
     getToken: jest.fn(),

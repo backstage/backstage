@@ -22,12 +22,6 @@ import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 
-jest.mock('cross-fetch', () => ({
-  __esModule: true,
-  default: (...args: Parameters<typeof fetch>) => fetch(...args),
-  Response: global.Response,
-}));
-
 describe('bitbucket:pipelines:run', () => {
   const config = new ConfigReader({
     integrations: {

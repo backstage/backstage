@@ -25,12 +25,6 @@ import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import { ANNOTATION_PUPPET_CERTNAME, ENDPOINT_FACTSETS } from './constants';
 
-jest.mock('cross-fetch', () => ({
-  __esModule: true,
-  default: (...args: Parameters<typeof fetch>) => fetch(...args),
-  Response: global.Response,
-}));
-
 describe('readPuppetNodes', () => {
   const worker = setupServer();
   registerMswTestHooks(worker);

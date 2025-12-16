@@ -13,15 +13,3 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { TextEncoder, TextDecoder } from 'util';
-import { TransformStream } from 'stream/web';
-import { BroadcastChannel } from 'worker_threads';
-
-// MSW v2 requires these globals
-Object.assign(global, {
-  TextEncoder,
-  TextDecoder,
-  TransformStream,
-  BroadcastChannel,
-});

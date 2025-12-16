@@ -29,13 +29,6 @@ import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import { UserSettingsStorage } from './UserSettingsStorage';
 
-// Mock cross-fetch to delegate to native fetch, which MSW v2 can intercept
-jest.mock('cross-fetch', () => ({
-  __esModule: true,
-  default: (...args: Parameters<typeof fetch>) => fetch(...args),
-  Response: global.Response,
-}));
-
 describe('Persistent Storage API', () => {
   const server = setupServer();
   registerMswTestHooks(server);

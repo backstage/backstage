@@ -30,12 +30,6 @@ import {
 } from './types';
 import { NotFoundError } from '@backstage/errors';
 
-jest.mock('cross-fetch', () => ({
-  __esModule: true,
-  default: (...args: Parameters<typeof fetch>) => fetch(...args),
-  Response: global.Response,
-}));
-
 const server = setupServer();
 
 const catalogInfoFile = `

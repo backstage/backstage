@@ -16,21 +16,6 @@
 
 import '@testing-library/jest-dom';
 
-// eslint-disable-next-line no-restricted-imports
-import { TextEncoder, TextDecoder } from 'util';
-// eslint-disable-next-line no-restricted-imports
-import { BroadcastChannel } from 'worker_threads';
-// eslint-disable-next-line no-restricted-imports
-import { TransformStream } from 'stream/web';
-
-// MSW v2 requires these Node.js globals in jsdom environment
-Object.assign(global, {
-  TextEncoder,
-  TextDecoder,
-  BroadcastChannel,
-  TransformStream,
-});
-
 // eslint-disable-next-line no-console
 const originalConsoleWarn = console.warn;
 // eslint-disable-next-line no-console

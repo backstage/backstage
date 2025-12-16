@@ -43,12 +43,6 @@ import { BitbucketServerEvents } from '../lib/index';
 import { DefaultEventsService } from '@backstage/plugin-events-node';
 import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
 
-jest.mock('cross-fetch', () => ({
-  __esModule: true,
-  default: (...args: Parameters<typeof fetch>) => fetch(...args),
-  Response: global.Response,
-}));
-
 class PersistingTaskRunner implements SchedulerServiceTaskRunner {
   private tasks: SchedulerServiceTaskInvocationDefinition[] = [];
 

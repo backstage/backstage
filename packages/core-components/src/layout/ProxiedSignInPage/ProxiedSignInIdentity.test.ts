@@ -23,13 +23,6 @@ import {
   tokenToExpiry,
 } from './ProxiedSignInIdentity';
 
-// Mock cross-fetch to delegate to native fetch, which MSW v2 can intercept
-jest.mock('cross-fetch', () => ({
-  __esModule: true,
-  default: (...args: Parameters<typeof fetch>) => fetch(...args),
-  Response: global.Response,
-}));
-
 const validBackstageTokenExpClaim = 1641216199;
 const validBackstageToken =
   'eyJhbGciOiJFUzI1NiIsImtpZCI6ImMxNTMzNDRiLWZjYzktNGIwOS1iN2ZhLTU3ZmM5MDhjMjBiNiJ9.eyJpc3MiOiJodHRwOi8vbG9jYWxob3N0OjcwMDcvYXBpL2F1dGgiLCJzdWIiOiJmcmViZW4iLCJhdWQiOiJiYWNrc3RhZ2UiLCJpYXQiOjE2NDEyMTI1OTksImV4cCI6MTY0MTIxNjE5OSwiZW50IjpbInVzZXI6ZGVmYXVsdC9mcmViZW4iXX0.4nOTmPHPwhzaKTzikgUsHcszfcP-JamcojMnRfyfsKhyHCCEywe6uLFlvvmK5NbaX5Z7IIji-kg7bxKU58kwoQ';

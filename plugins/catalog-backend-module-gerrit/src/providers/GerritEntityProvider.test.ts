@@ -31,12 +31,6 @@ import { setupServer } from 'msw/node';
 import path from 'path';
 import { GerritEntityProvider } from './GerritEntityProvider';
 
-jest.mock('cross-fetch', () => ({
-  __esModule: true,
-  default: (...args: Parameters<typeof fetch>) => fetch(...args),
-  Response: global.Response,
-}));
-
 const server = setupServer();
 
 const getJsonFixture = (fileName: string) =>

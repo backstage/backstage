@@ -24,12 +24,6 @@ import {
 } from '@backstage/integration';
 import { ConfigReader } from '@backstage/config';
 
-jest.mock('cross-fetch', () => ({
-  __esModule: true,
-  default: (...args: Parameters<typeof fetch>) => fetch(...args),
-  Response: global.Response,
-}));
-
 describe('azure', () => {
   const server = setupServer();
   registerMswTestHooks(server);

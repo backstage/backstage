@@ -30,12 +30,6 @@ import {
 import { DiscoveryApi } from './types/discovery';
 import { createPermission } from './permissions';
 
-jest.mock('cross-fetch', () => ({
-  __esModule: true,
-  default: (...args: Parameters<typeof fetch>) => fetch(...args),
-  Response: global.Response,
-}));
-
 const server = setupServer();
 const token = 'fake-token';
 

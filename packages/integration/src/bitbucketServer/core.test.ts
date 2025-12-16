@@ -25,13 +25,6 @@ import {
   getBitbucketServerRequestOptions,
 } from './core';
 
-// Mock cross-fetch to delegate to native fetch, which MSW v2 can intercept
-jest.mock('cross-fetch', () => ({
-  __esModule: true,
-  default: (...args: Parameters<typeof fetch>) => fetch(...args),
-  Response: global.Response,
-}));
-
 describe('bitbucketServer core', () => {
   const worker = setupServer();
   registerMswTestHooks(worker);

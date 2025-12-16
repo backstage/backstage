@@ -14,21 +14,6 @@
  * limitations under the License.
  */
 
-// eslint-disable-next-line no-restricted-imports
-import { TextEncoder, TextDecoder } from 'util';
-// eslint-disable-next-line no-restricted-imports
-import { BroadcastChannel } from 'worker_threads';
-// eslint-disable-next-line no-restricted-imports
-import { TransformStream } from 'stream/web';
-
-// MSW v2 requires these Node.js globals in jsdom environment
-Object.assign(global, {
-  TextEncoder,
-  TextDecoder,
-  BroadcastChannel,
-  TransformStream,
-});
-
 // Mock cross-fetch to use global fetch which MSW can intercept
 jest.mock('cross-fetch', () => ({
   __esModule: true,

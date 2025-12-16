@@ -36,12 +36,6 @@ import { NotModifiedError } from '@backstage/errors';
 import { AzureUrlReader } from './AzureUrlReader';
 import { DefaultReadTreeResponseFactory } from './tree';
 
-jest.mock('cross-fetch', () => ({
-  __esModule: true,
-  default: (...args: Parameters<typeof fetch>) => fetch(...args),
-  Response: global.Response,
-}));
-
 type AzureIntegrationConfigLike = Partial<
   Omit<AzureIntegrationConfig, 'credential' | 'credentials'>
 > & {

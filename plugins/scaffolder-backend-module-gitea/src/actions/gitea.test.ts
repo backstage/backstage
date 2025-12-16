@@ -22,12 +22,6 @@ import { registerMswTestHooks } from '@backstage/backend-test-utils';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { setupServer } from 'msw/node';
 
-jest.mock('cross-fetch', () => ({
-  __esModule: true,
-  default: (...args: Parameters<typeof fetch>) => fetch(...args),
-  Response: global.Response,
-}));
-
 jest.mock('@backstage/plugin-scaffolder-node', () => {
   return {
     ...jest.requireActual('@backstage/plugin-scaffolder-node'),

@@ -19,13 +19,6 @@ import { setupServer } from 'msw/node';
 import { GitLabIntegrationConfig } from './config';
 import { getGitLabFileFetchUrl, getGitLabRequestOptions } from './core';
 
-// Mock cross-fetch to delegate to native fetch, which MSW v2 can intercept
-jest.mock('cross-fetch', () => ({
-  __esModule: true,
-  default: (...args: Parameters<typeof fetch>) => fetch(...args),
-  Response: global.Response,
-}));
-
 const worker = setupServer();
 
 describe('gitlab core', () => {

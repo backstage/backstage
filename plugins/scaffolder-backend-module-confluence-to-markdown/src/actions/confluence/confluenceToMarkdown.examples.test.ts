@@ -29,12 +29,6 @@ import { ActionContext } from '@backstage/plugin-scaffolder-node';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
 
-jest.mock('cross-fetch', () => ({
-  __esModule: true,
-  default: (...args: Parameters<typeof fetch>) => fetch(...args),
-  Response: global.Response,
-}));
-
 describe('confluence:transform:markdown examples', () => {
   const baseUrl = `https://confluence.example.com`;
   const worker = setupServer();

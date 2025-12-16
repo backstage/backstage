@@ -29,12 +29,6 @@ import { v4 as uuid } from 'uuid';
 import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 
-jest.mock('cross-fetch', () => ({
-  __esModule: true,
-  default: (...args: Parameters<typeof fetch>) => fetch(...args),
-  Response: global.Response,
-}));
-
 // Simplified copy of TokenFactory in @backstage/plugin-auth-backend
 interface AnyJWK extends Record<string, string> {
   use: 'sig';

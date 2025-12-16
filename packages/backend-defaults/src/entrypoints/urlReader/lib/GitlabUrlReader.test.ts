@@ -33,12 +33,6 @@ import {
 } from '@backstage/integration';
 import { UrlReaderServiceReadUrlResponse } from '@backstage/backend-plugin-api';
 
-jest.mock('cross-fetch', () => ({
-  __esModule: true,
-  default: (...args: Parameters<typeof fetch>) => fetch(...args),
-  Response: global.Response,
-}));
-
 const logger = mockServices.logger.mock();
 
 const mockDir = createMockDirectory({ mockOsTmpDir: true });
