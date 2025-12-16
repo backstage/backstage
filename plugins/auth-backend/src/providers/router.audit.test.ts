@@ -76,7 +76,7 @@ describe('bindProviderRouters auditing', () => {
 
     expect(auditor.createEvent).toHaveBeenCalledWith(
       expect.objectContaining({
-        eventId: 'user-login',
+        eventId: 'auth-login',
         request: expect.any(Object),
         meta: { providerId: 'mock', actionType: 'start' },
       }),
@@ -84,7 +84,7 @@ describe('bindProviderRouters auditing', () => {
     const event = await (auditor.createEvent as jest.Mock).mock.results[0]
       .value;
     expect(event.success).toHaveBeenCalledWith({
-      meta: { actionType: 'success' },
+      meta: { outcome: 'success' },
     });
   });
 
@@ -104,14 +104,14 @@ describe('bindProviderRouters auditing', () => {
 
     expect(auditor.createEvent).toHaveBeenCalledWith(
       expect.objectContaining({
-        eventId: 'user-login',
-        meta: { providerId: 'mock', actionType: 'complete', status: 'success' },
+        eventId: 'auth-login',
+        meta: { providerId: 'mock', actionType: 'complete' },
       }),
     );
     const event = await (auditor.createEvent as jest.Mock).mock.results[0]
       .value;
     expect(event.success).toHaveBeenCalledWith({
-      meta: { actionType: 'success' },
+      meta: { outcome: 'success' },
     });
   });
 
@@ -132,15 +132,15 @@ describe('bindProviderRouters auditing', () => {
 
     expect(auditor.createEvent).toHaveBeenCalledWith(
       expect.objectContaining({
-        eventId: 'user-login',
-        meta: { providerId: 'mock', actionType: 'complete', status: 'failure' },
+        eventId: 'auth-login',
+        meta: { providerId: 'mock', actionType: 'complete' },
       }),
     );
     const event = await (auditor.createEvent as jest.Mock).mock.results[0]
       .value;
     expect(event.fail).toHaveBeenCalled();
     const failArg = (event.fail as jest.Mock).mock.calls[0][0];
-    expect(failArg.meta).toEqual({ actionType: 'failure' });
+    expect(failArg.meta).toEqual({ outcome: 'failure' });
     expect(failArg.error).toBeInstanceOf(Error);
     expect((failArg.error as Error).message).toBe('boom');
   });
@@ -163,12 +163,12 @@ describe('bindProviderRouters auditing', () => {
     const eventGet = await (auditor.createEvent as jest.Mock).mock.results[0]
       .value;
     expect(eventGet.success).toHaveBeenCalledWith({
-      meta: { actionType: 'success' },
+      meta: { outcome: 'success' },
     });
     expect(auditor.createEvent).toHaveBeenCalledWith(
       expect.objectContaining({
-        eventId: 'user-token-refresh',
-        meta: { providerId: 'mock', actionType: 'refresh', status: 'success' },
+        eventId: 'auth-token-refresh',
+        meta: { providerId: 'mock' },
       }),
     );
 
@@ -179,12 +179,12 @@ describe('bindProviderRouters auditing', () => {
     const eventPost = await (auditor.createEvent as jest.Mock).mock.results[0]
       .value;
     expect(eventPost.success).toHaveBeenCalledWith({
-      meta: { actionType: 'success' },
+      meta: { outcome: 'success' },
     });
     expect(auditor.createEvent).toHaveBeenCalledWith(
       expect.objectContaining({
-        eventId: 'user-token-refresh',
-        meta: { providerId: 'mock', actionType: 'refresh', status: 'success' },
+        eventId: 'auth-token-refresh',
+        meta: { providerId: 'mock' },
       }),
     );
   });
@@ -207,14 +207,14 @@ describe('bindProviderRouters auditing', () => {
 
     expect(auditor.createEvent).toHaveBeenCalledWith(
       expect.objectContaining({
-        eventId: 'user-logout',
-        meta: { providerId: 'mock', actionType: 'logout', status: 'success' },
+        eventId: 'auth-logout',
+        meta: { providerId: 'mock' },
       }),
     );
     const event = await (auditor.createEvent as jest.Mock).mock.results[0]
       .value;
     expect(event.success).toHaveBeenCalledWith({
-      meta: { actionType: 'success' },
+      meta: { outcome: 'success' },
     });
   });
 });

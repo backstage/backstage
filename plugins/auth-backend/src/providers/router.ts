@@ -95,10 +95,10 @@ export function bindProviderRouters(
       });
       try {
         await handler(req, res, next);
-        await event.success({ meta: { status: 'success' } });
+        await event.success({ meta: { outcome: 'success' } });
       } catch (e) {
         const error = e as Error;
-        await event.fail({ error, meta: { status: 'failure' } });
+        await event.fail({ error, meta: { outcome: 'failure' } });
         throw e;
       }
     };
