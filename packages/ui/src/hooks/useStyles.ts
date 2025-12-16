@@ -17,6 +17,13 @@ import { useBreakpoint, breakpoints } from './useBreakpoint';
 import type { ComponentDefinition } from '../types';
 import { utilityClassMap } from '../utils/utilityClassMap';
 
+function toKebabCase(str: string): string {
+  return str
+    .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
+    .replace(/_/g, '-')
+    .toLocaleLowerCase('en-US');
+}
+
 /**
  * Resolve a responsive value based on the current breakpoint
  * @param value - The responsive value (string or object with breakpoint keys)
@@ -92,13 +99,14 @@ export function useStyles<
   for (const key of dataAttributeNames) {
     const value = props[key];
     if (value !== undefined && value !== null) {
+      const dataAttrName = `data-${toKebabCase(key)}`;
       // Handle boolean and number values directly
       if (typeof value === 'boolean' || typeof value === 'number') {
-        dataAttributes[`data-${key}`] = String(value);
+        dataAttributes[dataAttrName] = String(value);
       } else {
         const resolvedValue = resolveResponsiveValue(value, breakpoint);
         if (resolvedValue !== undefined) {
-          dataAttributes[`data-${key}`] = resolvedValue;
+          dataAttributes[dataAttrName] = resolvedValue;
         }
       }
     }

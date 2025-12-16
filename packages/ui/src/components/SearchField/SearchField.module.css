@@ -39,7 +39,7 @@
       }
     }
 
-    &[data-startCollapsed='true'] {
+    &[data-start-collapsed='true'] {
       transition: flex-basis 0.3s ease-in-out;
       padding: 0;
       flex: 0 1 auto;
