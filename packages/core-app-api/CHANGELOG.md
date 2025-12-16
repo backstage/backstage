@@ -1,5 +1,14 @@
 # @backstage/core-app-api
 
+## 1.19.3
+
+### Patch Changes
+
+- 75683ed: Added replay functionality to `AlertApiForwarder` to buffer and replay recent alerts to new subscribers, preventing missed alerts that were posted before subscription.
+- 97cd16f: Internal update of translation imports.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.1
+
 ## 1.19.3-next.1
 
 ### Patch Changes

@@ -1,5 +1,14 @@
 # @backstage/plugin-gateway-backend
 
+## 1.1.1
+
+### Patch Changes
+
+- de96a60: chore(deps): bump `express` from 4.21.2 to 4.22.0
+- 7e860dd: Updated dependency `eventsource` to `^4.0.0`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.0
+
 ## 1.1.1-next.1
 
 ### Patch Changes

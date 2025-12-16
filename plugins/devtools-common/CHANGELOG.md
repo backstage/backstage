@@ -1,5 +1,11 @@
 # @backstage/plugin-devtools-common
 
+## 0.1.20
+
+### Patch Changes
+
+- 291bf9d: Added scheduled tasks UI feature for the DevTools plugin
+
 ## 0.1.19
 
 ### Patch Changes

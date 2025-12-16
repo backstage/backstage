@@ -1,5 +1,17 @@
 # @backstage/plugin-search-backend
 
+## 2.0.9
+
+### Patch Changes
+
+- de96a60: chore(deps): bump `express` from 4.21.2 to 4.22.0
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@1.4.0
+  - @backstage/backend-defaults@0.14.0
+  - @backstage/backend-openapi-utils@0.6.4
+  - @backstage/plugin-permission-node@0.10.7
+  - @backstage/backend-plugin-api@1.6.0
+
 ## 2.0.9-next.1
 
 ### Patch Changes

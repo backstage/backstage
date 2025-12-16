@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-gateway-backend",
-  "version": "1.1.1-next.1",
+  "version": "1.1.1",
   "backstage": {
     "role": "backend-plugin",
     "pluginId": "gateway",
