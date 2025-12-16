@@ -34,6 +34,7 @@ export type ActionsServiceAction = {
     destructive: boolean;
     idempotent: boolean;
   };
+  authorized: boolean;
 };
 
 /**

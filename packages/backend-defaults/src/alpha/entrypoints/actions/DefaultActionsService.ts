@@ -86,7 +86,15 @@ export class DefaultActionsService implements ActionsService {
       }),
     );
 
-    return { actions: remoteActionsList.flat() };
+    return {
+      actions: remoteActionsList.flat().filter(action => {
+        return (
+          this.config.getOptionalBoolean(
+            `backend.actions.actionConfig.${action.id}.disabled`,
+          ) !== true
+        );
+      }),
+    };
   }
 
   async invoke(opts: {

@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { z, AnyZodObject } from 'zod';
+import { AnyZodObject, z } from 'zod';
 import {
-  LoggerService,
   BackstageCredentials,
+  LoggerService,
 } from '@backstage/backend-plugin-api';
+import { DefinitivePolicyDecision } from '@backstage/plugin-permission-common';
 
 /**
  * @alpha
@@ -27,6 +28,15 @@ export type ActionsRegistryActionContext<TInputSchema extends AnyZodObject> = {
   logger: LoggerService;
   credentials: BackstageCredentials;
 };
+
+/**
+ * @alpha
+ */
+export type ActionsRegistryAuthorizeContext<TInputSchema extends AnyZodObject> =
+  {
+    credentials: BackstageCredentials;
+    input?: z.infer<TInputSchema>;
+  };
 
 /**
  * @alpha
@@ -47,6 +57,9 @@ export type ActionsRegistryActionOptions<
     idempotent?: boolean;
     readOnly?: boolean;
   };
+  authorize?: (
+    context: ActionsRegistryAuthorizeContext<TInputSchema>,
+  ) => Promise<DefinitivePolicyDecision>;
   action: (
     context: ActionsRegistryActionContext<TInputSchema>,
   ) => Promise<
