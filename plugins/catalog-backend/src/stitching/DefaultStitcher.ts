@@ -62,16 +62,16 @@ export class DefaultStitcher implements Stitcher {
     return new DefaultStitcher({
       knex: options.knex,
       logger: options.logger,
-      strategy: stitchingStrategyFromConfig(config),
       metrics: options.metrics,
+      strategy: stitchingStrategyFromConfig(config),
     });
   }
 
   constructor(options: {
     knex: Knex;
     logger: LoggerService;
-    strategy: StitchingStrategy;
     metrics: MetricsService;
+    strategy: StitchingStrategy;
   }) {
     this.knex = options.knex;
     this.logger = options.logger;

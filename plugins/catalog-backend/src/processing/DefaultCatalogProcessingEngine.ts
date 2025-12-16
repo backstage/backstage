@@ -388,7 +388,7 @@ export class DefaultCatalogProcessingEngine {
 }
 
 // Helps wrap the timing and logging behaviors
-function progressTracker(metricsService: MetricsService) {
+function progressTracker(metrics: MetricsService) {
   // prom-client metrics are deprecated in favour of OpenTelemetry metrics.
   const promProcessedEntities = createCounterMetric({
     name: 'catalog_processed_entities_count',
@@ -410,29 +410,30 @@ function progressTracker(metricsService: MetricsService) {
     help: 'The amount of delay between being scheduled for processing, and the start of actually being processed, DEPRECATED, use OpenTelemetry metrics instead',
   });
 
-  const processedEntities = metricsService.createCounter(
-    'processed.entities.count',
+  // const meter = metrics.getMeter('default');
+  const processedEntities = metrics.createCounter(
+    'catalog.processed.entities.count',
     { description: 'Amount of entities processed' },
   );
 
-  const processingDuration = metricsService.createHistogram(
-    'processing.duration',
+  const processingDuration = metrics.createHistogram(
+    'catalog.processing.duration',
     {
       description: 'Time spent executing the full processing flow',
       unit: 'seconds',
     },
   );
 
-  const processorsDuration = metricsService.createHistogram(
-    'processors.duration',
+  const processorsDuration = metrics.createHistogram(
+    'catalog.processors.duration',
     {
       description: 'Time spent executing catalog processors',
       unit: 'seconds',
     },
   );
 
-  const processingQueueDelay = metricsService.createHistogram(
-    'processing.queue.delay',
+  const processingQueueDelay = metrics.createHistogram(
+    'catalog.processing.queue.delay',
     {
       description:
         'The amount of delay between being scheduled for processing, and the start of actually being processed',

@@ -26,7 +26,7 @@ import { MetricsService } from '@backstage/backend-plugin-api/alpha';
 export function progressTracker(
   knex: Knex,
   logger: LoggerService,
-  metricsService: MetricsService,
+  metrics: MetricsService,
 ) {
   // prom-client metrics are deprecated in favour of OpenTelemetry metrics.
   const promStitchedEntities = createCounterMetric({
@@ -34,23 +34,23 @@ export function progressTracker(
     help: 'Amount of entities stitched. DEPRECATED, use OpenTelemetry metrics instead',
   });
 
-  const stitchedEntities = metricsService.createCounter(
-    'stitched.entities.count',
+  const stitchedEntities = metrics.createCounter(
+    'catalog.stitched.entities.count',
     {
       description: 'Amount of entities stitched',
     },
   );
 
-  const stitchingDuration = metricsService.createHistogram(
-    'stitching.duration',
+  const stitchingDuration = metrics.createHistogram(
+    'catalog.stitching.duration',
     {
       description: 'Time spent executing the full stitching flow',
       unit: 'seconds',
     },
   );
 
-  const stitchingQueueCount = metricsService.createObservableGauge(
-    'stitching.queue.length',
+  const stitchingQueueCount = metrics.createObservableGauge(
+    'catalog.stitching.queue.length',
     { description: 'Number of entities currently in the stitching queue' },
   );
   stitchingQueueCount.addCallback(async result => {
@@ -60,8 +60,8 @@ export function progressTracker(
     result.observe(Number(total[0].count));
   });
 
-  const stitchingQueueDelay = metricsService.createHistogram(
-    'stitching.queue.delay',
+  const stitchingQueueDelay = metrics.createHistogram(
+    'catalog.stitching.queue.delay',
     {
       description:
         'The amount of delay between being scheduled for stitching, and the start of actually being stitched',

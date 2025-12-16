@@ -31,12 +31,6 @@ import {
   MetricsService,
   MetricsServiceOptions,
 } from '@backstage/backend-plugin-api/alpha';
-import z from 'zod';
-
-const namespaceSchema = z
-  .string()
-  .min(1, 'Metric namespace is required and cannot be empty')
-  .startsWith('backstage.');
 
 /**
  * Default implementation of the {@link MetricsService} interface.
@@ -48,11 +42,9 @@ const namespaceSchema = z
  */
 export class DefaultMetricsService implements MetricsService {
   private readonly meter: Meter;
-  private readonly namespace: string;
 
   private constructor(opts: MetricsServiceOptions) {
-    this.namespace = namespaceSchema.parse(opts.namespace);
-    this.meter = metrics.getMeter(this.namespace, opts.version, {
+    this.meter = metrics.getMeter(opts.namespace, opts.version, {
       schemaUrl: opts.schemaUrl,
     });
   }
@@ -67,59 +59,52 @@ export class DefaultMetricsService implements MetricsService {
     return new DefaultMetricsService(opts);
   }
 
-  private namespacedName(name: string): string {
-    return `${this.namespace}.${name}`;
-  }
-
   createCounter<TAttributes extends Attributes = Attributes>(
     name: string,
     opts?: MetricOptions,
   ): Counter<TAttributes> {
-    return this.meter.createCounter(this.namespacedName(name), opts);
+    return this.meter.createCounter(name, opts);
   }
 
   createUpDownCounter<TAttributes extends Attributes = Attributes>(
     name: string,
     opts?: MetricOptions,
   ): UpDownCounter<TAttributes> {
-    return this.meter.createUpDownCounter(this.namespacedName(name), opts);
+    return this.meter.createUpDownCounter(name, opts);
   }
 
   createHistogram<TAttributes extends Attributes = Attributes>(
     name: string,
     opts?: MetricOptions,
   ): Histogram<TAttributes> {
-    return this.meter.createHistogram(this.namespacedName(name), opts);
+    return this.meter.createHistogram(name, opts);
   }
 
   createGauge<TAttributes extends Attributes = Attributes>(
     name: string,
     opts?: MetricOptions,
   ): Gauge<TAttributes> {
-    return this.meter.createGauge(this.namespacedName(name), opts);
+    return this.meter.createGauge(name, opts);
   }
 
   createObservableCounter<TAttributes extends Attributes = Attributes>(
     name: string,
     opts?: MetricOptions,
   ): ObservableCounter<TAttributes> {
-    return this.meter.createObservableCounter(this.namespacedName(name), opts);
+    return this.meter.createObservableCounter(name, opts);
   }
 
   createObservableUpDownCounter<TAttributes extends Attributes = Attributes>(
     name: string,
     opts?: MetricOptions,
   ): ObservableUpDownCounter<TAttributes> {
-    return this.meter.createObservableUpDownCounter(
-      this.namespacedName(name),
-      opts,
-    );
+    return this.meter.createObservableUpDownCounter(name, opts);
   }
 
   createObservableGauge<TAttributes extends Attributes = Attributes>(
     name: string,
     opts?: MetricOptions,
   ): ObservableGauge<TAttributes> {
-    return this.meter.createObservableGauge(this.namespacedName(name), opts);
+    return this.meter.createObservableGauge(name, opts);
   }
 }

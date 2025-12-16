@@ -61,6 +61,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
     logger: LoggerService;
     refreshInterval: ProcessingIntervalFunction;
     events: EventsService;
+    metrics: MetricsService;
   };
 
   constructor(options: {

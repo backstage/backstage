@@ -20,7 +20,6 @@ import {
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
 import { DefaultMetricsService } from './DefaultMetricsService';
-import snakeCase from 'lodash/snakeCase';
 
 /**
  * Service factory for collecting plugin-scoped metrics.
@@ -32,9 +31,8 @@ export const metricsServiceFactory = createServiceFactory({
   deps: {
     pluginMetadata: coreServices.pluginMetadata,
   },
-  factory: ({ pluginMetadata }) => {
-    const normalizedPluginId = snakeCase(pluginMetadata.getId());
-    const namespace = `backstage.${normalizedPluginId}`;
+  factory: () => {
+    const namespace = 'default';
 
     return DefaultMetricsService.create({
       namespace,
