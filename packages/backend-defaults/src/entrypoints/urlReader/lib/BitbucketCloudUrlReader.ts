@@ -68,7 +68,15 @@ export class BitbucketCloudUrlReader implements UrlReaderService {
   ) {
     this.integration = integration;
     this.deps = deps;
-    const { host, username, appPassword, token } = integration.config;
+    const { host, username, appPassword, token, clientId, clientSecret } =
+      integration.config;
+
+    // Validate: OAuth requires both clientId and clientSecret
+    if ((clientId && !clientSecret) || (clientSecret && !clientId)) {
+      throw new Error(
+        `Bitbucket Cloud integration has incomplete OAuth configuration. Both clientId and clientSecret are required.`,
+      );
+    }
 
     if (username && !token && !appPassword) {
       throw new Error(
@@ -91,7 +99,7 @@ export class BitbucketCloudUrlReader implements UrlReaderService {
       url,
       this.integration.config,
     );
-    const requestOptions = getBitbucketCloudRequestOptions(
+    const requestOptions = await getBitbucketCloudRequestOptions(
       this.integration.config,
     );
 
@@ -149,7 +157,7 @@ export class BitbucketCloudUrlReader implements UrlReaderService {
     );
     const archiveResponse = await fetch(
       downloadUrl,
-      getBitbucketCloudRequestOptions(this.integration.config),
+      await getBitbucketCloudRequestOptions(this.integration.config),
     );
     if (!archiveResponse.ok) {
       const message = `Failed to read tree from ${url}, ${archiveResponse.status} ${archiveResponse.statusText}`;
@@ -250,7 +258,7 @@ export class BitbucketCloudUrlReader implements UrlReaderService {
 
     const commitsResponse = await fetch(
       commitsApiUrl,
-      getBitbucketCloudRequestOptions(this.integration.config),
+      await getBitbucketCloudRequestOptions(this.integration.config),
     );
     if (!commitsResponse.ok) {
       const message = `Failed to retrieve commits from ${commitsApiUrl}, ${commitsResponse.status} ${commitsResponse.statusText}`;
