@@ -55,7 +55,7 @@ const preview: Preview = {
     layout: 'fullscreen',
 
     backgrounds: {
-      disable: true,
+      disabled: true,
     },
 
     controls: {
@@ -72,7 +72,7 @@ const preview: Preview = {
     },
 
     viewport: {
-      viewports: {
+      options: {
         initial: {
           name: 'Initial',
           styles: { width: '320px', height: '100%' },
