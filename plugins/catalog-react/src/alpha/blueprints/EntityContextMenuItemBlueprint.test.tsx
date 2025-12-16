@@ -133,7 +133,7 @@ describe('EntityContextMenuItemBlueprint', () => {
                           "not": {},
                         },
                         "propertyNames": {
-                          "pattern": "(?!\\$)+",
+                          "pattern": "^\\$",
                         },
                         "type": "object",
                       },

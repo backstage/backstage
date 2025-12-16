@@ -120,7 +120,7 @@ describe('EntityCardBlueprint', () => {
                               "not": {},
                             },
                             "propertyNames": {
-                              "pattern": "(?!\\$)+",
+                              "pattern": "^\\$",
                             },
                             "type": "object",
                           },

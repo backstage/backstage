@@ -122,7 +122,7 @@ describe('EntityContentBlueprint', () => {
                               "not": {},
                             },
                             "propertyNames": {
-                              "pattern": "(?!\\$)+",
+                              "pattern": "^\\$",
                             },
                             "type": "object",
                           },

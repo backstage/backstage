@@ -36,7 +36,7 @@ export function createEntityPredicateSchema(z: typeof zImpl) {
   const expressionSchema = z.lazy(() =>
     z.union([
       z.record(z.string().regex(/^(?!\$).*$/), valuePredicateSchema),
-      z.record(z.string().regex(/(?!\$)+/), z.never()),
+      z.record(z.string().regex(/^\$/), z.never()),
     ]),
   ) as ZodType<EntityPredicateExpression>;
 
