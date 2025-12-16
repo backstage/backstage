@@ -35,8 +35,7 @@ import {
 /**
  * Default implementation of the {@link MetricsService} interface.
  *
- * This implementation wraps the OpenTelemetry Meter API and automatically
- * namespaces all metric names with the configured namespace prefix.
+ * This implementation provides a thin wrapper around the OpenTelemetry Meter API.
  *
  * @alpha
  */
