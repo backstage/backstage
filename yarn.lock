@@ -5814,7 +5814,7 @@ __metadata:
     "@opentelemetry/api": "npm:^1.9.0"
     "@opentelemetry/core": "npm:^1.29.0"
     "@types/express": "npm:^4.17.6"
-    eventsource: "npm:^3.0.6"
+    eventsource: "npm:^4.0.0"
     express: "npm:^4.22.0"
     http-proxy-middleware: "npm:^3.0.3"
     wait-for-expect: "npm:^3.0.2"
@@ -30432,12 +30432,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"eventsource@npm:^3.0.2, eventsource@npm:^3.0.6":
+"eventsource@npm:^3.0.2":
   version: 3.0.7
   resolution: "eventsource@npm:3.0.7"
   dependencies:
     eventsource-parser: "npm:^3.0.1"
   checksum: 10/e034915bc97068d1d38617951afd798e6776d6a3a78e36a7569c235b177c7afc2625c9fe82656f7341ab72c7eeecb3fd507b7f88e9328f2448872ff9c4742bb6
+  languageName: node
+  linkType: hard
+
+"eventsource@npm:^4.0.0":
+  version: 4.1.0
+  resolution: "eventsource@npm:4.1.0"
+  dependencies:
+    eventsource-parser: "npm:^3.0.1"
+  checksum: 10/d23b1c2a56a1dd7344a151ca57d70ebc624972150395c1c82110bda1d2918487260e8ec76c1c79677406184ecb1847509a675d4ee5367925ef77f03c9cae594d
   languageName: node
   linkType: hard
 
