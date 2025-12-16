@@ -34,13 +34,11 @@ import {
  *
  * @param url - A URL pointing to a file
  * @param config - The relevant provider config
- * @param _token - Unused, kept for backward compatibility
  * @public
  */
 export function getGitLabFileFetchUrl(
   url: string,
   config: GitLabIntegrationConfig,
-  _token?: string,
 ): string {
   const projectPath = extractProjectPath(url, config);
   return buildProjectUrl(url, projectPath, config).toString();

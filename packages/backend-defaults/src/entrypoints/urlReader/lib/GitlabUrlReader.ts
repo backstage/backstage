@@ -79,7 +79,7 @@ export class GitlabUrlReader implements UrlReaderService {
   ): Promise<UrlReaderServiceReadUrlResponse> {
     const { etag, lastModifiedAfter, signal, token } = options ?? {};
     const isArtifact = url.includes('/-/jobs/artifacts/');
-    const builtUrl = await this.getGitlabFetchUrl(url, token);
+    const builtUrl = await this.getGitlabFetchUrl(url);
 
     let response: Response;
     try {
@@ -328,10 +328,7 @@ export class GitlabUrlReader implements UrlReaderService {
     return `gitlab{host=${host},authed=${Boolean(token)}}`;
   }
 
-  private async getGitlabFetchUrl(
-    target: string,
-    token?: string,
-  ): Promise<string> {
+  private async getGitlabFetchUrl(target: string): Promise<string> {
     // If the target is for a job artifact then go down that path
     const targetUrl = new URL(target);
     if (targetUrl.pathname.includes('/-/jobs/artifacts/')) {
@@ -340,7 +337,7 @@ export class GitlabUrlReader implements UrlReaderService {
       );
     }
     // Default to the optimized behavior - no API call needed for file URLs
-    return getGitLabFileFetchUrl(target, this.integration.config, token);
+    return getGitLabFileFetchUrl(target, this.integration.config);
   }
 
   // convert urls of the form:
