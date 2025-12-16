@@ -570,12 +570,13 @@ Similar to the repository picker, there is a picker for owners to support autoco
       ui:field: RepoOwnerPicker
       ui:options:
         host: github.com
+        excludedOwners:
+          - backstage
         requestUserCredentials:
           secretsKey: USER_OAUTH_TOKEN
 ```
 
-Passing the `requestUserCredentials` and `host` properties is required for autocompletion to work. Only if the template contains a `RepoUrlPicker` field extension, `host` can be omitted as it will use the host specified in the field extension.
-For more information regarding the `requestUserCredentials` object, please refer to the [Using the Users `oauth` token](#using-the-users-oauth-token) section under [The Repository Picker](#the-repository-picker).
+Passing the `requestUserCredentials` and `host` properties is required for autocompletion to work. For more information regarding the `requestUserCredentials` object, please refer to the [Using the Users `oauth` token](#using-the-users-oauth-token) section under [The Repository Picker](#the-repository-picker).
 
 For a list of all possible `ui:options` input props for `RepoOwnerPicker`, please visit [here](./ui-options-examples.md#repoownerpicker).
 
