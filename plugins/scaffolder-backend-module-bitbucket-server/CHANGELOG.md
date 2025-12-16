@@ -1,5 +1,15 @@
 # @backstage/plugin-scaffolder-backend-module-bitbucket-server
 
+## 0.2.16
+
+### Patch Changes
+
+- 5a6aca2: Improve error message when provided target branch is missing
+- Updated dependencies
+  - @backstage/integration@1.19.0
+  - @backstage/backend-plugin-api@1.6.0
+  - @backstage/plugin-scaffolder-node@0.12.2
+
 ## 0.2.16-next.1
 
 ### Patch Changes

@@ -1,5 +1,17 @@
 # @backstage/plugin-mcp-actions-backend
 
+## 0.1.6
+
+### Patch Changes
+
+- e83e038: Added `@cfworker/json-schema` as a dependency to this package part of the `@modelcontextprotocol/sdk` bump as it's required in the types
+- de96a60: chore(deps): bump `express` from 4.21.2 to 4.22.0
+- 79ef471: Clarify error handling in readme and update handleError.ts to include all backstage/errors
+- Updated dependencies
+  - @backstage/backend-defaults@0.14.0
+  - @backstage/backend-plugin-api@1.6.0
+  - @backstage/plugin-catalog-node@1.20.1
+
 ## 0.1.6-next.1
 
 ### Patch Changes

@@ -1,5 +1,26 @@
 # @backstage/backend-dynamic-feature-service
 
+## 0.7.7
+
+### Patch Changes
+
+- de96a60: chore(deps): bump `express` from 4.21.2 to 4.22.0
+- Updated dependencies
+  - @backstage/cli-node@0.2.16
+  - @backstage/plugin-search-backend-node@1.4.0
+  - @backstage/plugin-auth-node@0.6.10
+  - @backstage/backend-defaults@0.14.0
+  - @backstage/backend-openapi-utils@0.6.4
+  - @backstage/plugin-app-node@0.1.40
+  - @backstage/plugin-catalog-backend@3.3.0
+  - @backstage/plugin-events-backend@0.5.9
+  - @backstage/plugin-events-node@0.4.18
+  - @backstage/plugin-permission-node@0.10.7
+  - @backstage/backend-plugin-api@1.6.0
+  - @backstage/cli-common@0.1.16
+  - @backstage/config-loader@1.10.7
+  - @backstage/plugin-scaffolder-node@0.12.2
+
 ## 0.7.7-next.1
 
 ### Patch Changes

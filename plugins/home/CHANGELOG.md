@@ -1,5 +1,23 @@
 # @backstage/plugin-home
 
+## 0.8.15
+
+### Patch Changes
+
+- d02db50: Remove unnecessary use of `compatWrapper` and `convertLegacyRouteRef`(s) for the new frontend system.
+- be21c5c: Updated dependency `@rjsf/utils` to `5.24.13`.
+  Updated dependency `@rjsf/core` to `5.24.13`.
+  Updated dependency `@rjsf/material-ui` to `5.24.13`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.24.13`.
+- Updated dependencies
+  - @backstage/core-app-api@1.19.3
+  - @backstage/frontend-plugin-api@0.13.2
+  - @backstage/core-components@0.18.4
+  - @backstage/plugin-catalog-react@1.21.4
+  - @backstage/core-plugin-api@1.12.1
+  - @backstage/plugin-home-react@0.1.33
+  - @backstage/theme@0.7.1
+
 ## 0.8.15-next.1
 
 ### Patch Changes

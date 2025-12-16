@@ -1,5 +1,20 @@
 # @backstage/plugin-app
 
+## 0.3.3
+
+### Patch Changes
+
+- f3f84f1: Minor extension type updates after frontend API bump
+- f7bc228: Support to set `defaultLanguage` and `availableLanguages` for the app language API in the new frontend system
+- d02db50: Remove unnecessary use of `compatWrapper` and `convertLegacyRouteRef`(s) for the new frontend system.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.2
+  - @backstage/core-components@0.18.4
+  - @backstage/core-plugin-api@1.12.1
+  - @backstage/theme@0.7.1
+  - @backstage/integration-react@1.2.13
+  - @backstage/plugin-permission-react@0.4.39
+
 ## 0.3.3-next.1
 
 ### Patch Changes

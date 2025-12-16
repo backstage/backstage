@@ -1,5 +1,15 @@
 # @backstage/plugin-auth-backend
 
+## 0.25.7
+
+### Patch Changes
+
+- de96a60: chore(deps): bump `express` from 4.21.2 to 4.22.0
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.10
+  - @backstage/backend-plugin-api@1.6.0
+  - @backstage/plugin-catalog-node@1.20.1
+
 ## 0.25.7-next.1
 
 ### Patch Changes

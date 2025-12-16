@@ -1,5 +1,20 @@
 # @backstage/plugin-notifications-backend-module-slack
 
+## 0.3.0
+
+### Minor Changes
+
+- f95a516: Enables optional routes to Slack channels for broadcast notifications based on origin and/or topics.
+
+### Patch Changes
+
+- b80857a: Slack notification handler throttling can now be configured with the `concurrencyLimit` and `throttleInterval` options.
+- f8230e4: Updated dependency `@faker-js/faker` to `^10.0.0`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.0
+  - @backstage/plugin-catalog-node@1.20.1
+  - @backstage/plugin-notifications-node@0.2.22
+
 ## 0.2.2-next.1
 
 ### Patch Changes
