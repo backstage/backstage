@@ -67,9 +67,6 @@ describe('RepoOwnerPicker', () => {
                 RepoOwnerPicker: RepoOwnerPicker as ScaffolderRJSFField<string>,
               }}
               onSubmit={onSubmit}
-              formContext={{
-                formData: {},
-              }}
             />
           </SecretsContextProvider>
         </TestApiProvider>,
@@ -113,9 +110,6 @@ describe('RepoOwnerPicker', () => {
                 RepoOwnerPicker: RepoOwnerPicker as ScaffolderRJSFField<string>,
               }}
               onSubmit={onSubmit}
-              formContext={{
-                formData: { repoUrl: 'github.com' },
-              }}
             />
           </SecretsContextProvider>
         </TestApiProvider>,
@@ -148,11 +142,6 @@ describe('RepoOwnerPicker', () => {
               }}
               fields={{
                 RepoOwnerPicker: RepoOwnerPicker as ScaffolderRJSFField<string>,
-              }}
-              formContext={{
-                formData: {
-                  repoUrl: 'github.com',
-                },
               }}
             />
           </SecretsContextProvider>
@@ -189,6 +178,7 @@ describe('RepoOwnerPicker', () => {
               uiSchema={{
                 'ui:field': 'RepoOwnerPicker',
                 'ui:options': {
+                  host: 'github.com',
                   requestUserCredentials: {
                     secretsKey,
                     additionalScopes: { github: ['workflow'] },
@@ -197,11 +187,6 @@ describe('RepoOwnerPicker', () => {
               }}
               fields={{
                 RepoOwnerPicker: RepoOwnerPicker as ScaffolderRJSFField<string>,
-              }}
-              formContext={{
-                formData: {
-                  repoUrl: 'github.com',
-                },
               }}
             />
             <SecretsComponent />
@@ -243,6 +228,7 @@ describe('RepoOwnerPicker', () => {
               uiSchema={{
                 'ui:field': 'RepoOwnerPicker',
                 'ui:options': {
+                  host: 'github.com',
                   requestUserCredentials: {
                     secretsKey: 'testKey',
                   },
@@ -250,11 +236,6 @@ describe('RepoOwnerPicker', () => {
               }}
               fields={{
                 RepoOwnerPicker: RepoOwnerPicker as ScaffolderRJSFField<string>,
-              }}
-              formContext={{
-                formData: {
-                  repoUrl: 'gitlab.example.com',
-                },
               }}
             />
           </SecretsContextProvider>
@@ -267,7 +248,7 @@ describe('RepoOwnerPicker', () => {
       });
 
       expect(mockScmAuthApi.getCredentials).toHaveBeenCalledWith({
-        url: 'https://gitlab.example.com',
+        url: 'https://github.com',
         additionalScope: {
           repoWrite: true,
         },
@@ -306,11 +287,6 @@ describe('RepoOwnerPicker', () => {
               }}
               fields={{
                 RepoOwnerPicker: RepoOwnerPicker as ScaffolderRJSFField<string>,
-              }}
-              formContext={{
-                formData: {
-                  repoUrl: 'github.com',
-                },
               }}
             />
             <SecretsComponent />
