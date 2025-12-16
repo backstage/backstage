@@ -6,7 +6,6 @@
 import { ActionsRegistryService } from '@backstage/backend-plugin-api/alpha';
 import { ActionsService } from '@backstage/backend-plugin-api/alpha';
 import { MetricsService } from '@backstage/backend-plugin-api/alpha';
-import { RootMetricsService } from '@backstage/backend-plugin-api/alpha';
 import { RootSystemMetadataService } from '@backstage/backend-plugin-api/alpha';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 
@@ -28,13 +27,6 @@ export const actionsServiceFactory: ServiceFactory<
 export const metricsServiceFactory: ServiceFactory<
   MetricsService,
   'plugin',
-  'singleton'
->;
-
-// @alpha
-export const rootMetricsServiceFactory: ServiceFactory<
-  RootMetricsService,
-  'root',
   'singleton'
 >;
 

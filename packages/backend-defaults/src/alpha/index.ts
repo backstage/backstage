@@ -16,8 +16,5 @@
 
 export { actionsRegistryServiceFactory } from './entrypoints/actionsRegistry';
 export { actionsServiceFactory } from './entrypoints/actions';
-export {
-  metricsServiceFactory,
-  rootMetricsServiceFactory,
-} from './entrypoints/metrics';
+export { metricsServiceFactory } from './entrypoints/metrics';
 export { rootSystemMetadataServiceFactory } from './entrypoints/rootSystemMetadata';

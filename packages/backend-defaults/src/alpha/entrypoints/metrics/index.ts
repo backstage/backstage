@@ -14,4 +14,3 @@
  * limitations under the License.
  */
 export { metricsServiceFactory } from './metricsServiceFactory';
-export { rootMetricsServiceFactory } from './rootMetricsServiceFactory';

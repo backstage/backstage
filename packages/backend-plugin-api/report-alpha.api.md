@@ -158,16 +158,6 @@ export const metricsServiceRef: ServiceRef<
   'singleton'
 >;
 
-// @alpha
-export interface RootMetricsService extends MetricsService {}
-
-// @alpha
-export const rootMetricsServiceRef: ServiceRef<
-  RootMetricsService,
-  'root',
-  'singleton'
->;
-
 // @public (undocumented)
 export interface RootSystemMetadataService {
   // (undocumented)

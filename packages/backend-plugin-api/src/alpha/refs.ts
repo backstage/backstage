@@ -47,29 +47,6 @@ export const actionsRegistryServiceRef = createServiceRef<
 });
 
 /**
- * Service for managing metrics.
- *
- * @alpha
- */
-export const metricsServiceRef = createServiceRef<
-  import('./MetricsService').MetricsService
->({
-  id: 'alpha.core.metrics',
-});
-
-/**
- * Service for managing metrics for root scoped services.
- *
- * @alpha
- */
-export const rootMetricsServiceRef = createServiceRef<
-  import('./MetricsService').RootMetricsService
->({
-  id: 'alpha.core.rootMetrics',
-  scope: 'root',
-});
-
-/**
  * Read information about your current Backstage deployment.
  * @alpha
  */
@@ -78,4 +55,15 @@ export const rootSystemMetadataServiceRef = createServiceRef<
 >({
   id: 'alpha.core.rootSystemMetadata',
   scope: 'root',
+});
+
+/**
+ * Service for managing metrics.
+ *
+ * @alpha
+ */
+export const metricsServiceRef = createServiceRef<
+  import('./MetricsService').MetricsService
+>({
+  id: 'alpha.core.metrics',
 });

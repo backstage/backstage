@@ -135,10 +135,3 @@ export interface MetricsService {
     opts?: MetricOptions,
   ): ObservableGauge<TAttributes>;
 }
-
-/**
- * A service that provides a facility for emitting root-scoped metrics.
- *
- * @alpha
- */
-export interface RootMetricsService extends MetricsService {}
