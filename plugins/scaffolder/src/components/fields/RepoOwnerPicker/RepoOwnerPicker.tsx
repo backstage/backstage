@@ -35,19 +35,7 @@ import { GitHubRepoOwnerPicker } from './GitHubRepoOwnerPicker';
  * @public
  */
 export const RepoOwnerPicker = (props: RepoOwnerPickerProps) => {
-  const {
-    uiSchema,
-    onChange,
-    rawErrors,
-    formData,
-    schema,
-    formContext,
-    required,
-  } = props;
-  const {
-    formData: { repoUrl },
-  } = formContext;
-
+  const { uiSchema, onChange, rawErrors, formData, schema, required } = props;
   const [state, setState] = useState<RepoOwnerPickerState>({
     owner: formData || '',
   });
@@ -95,18 +83,11 @@ export const RepoOwnerPicker = (props: RepoOwnerPickerProps) => {
   );
 
   useEffect(() => {
-    if (repoUrl) {
-      const url = new URL(`https://${repoUrl}`);
-
-      setState(prevState => ({
-        ...prevState,
-        host: url.host,
-      }));
-    } else if (uiSchema?.['ui:options']?.host) {
-      const hardcodedHost = uiSchema['ui:options'].host;
-      setState(prevState => ({ ...prevState, host: hardcodedHost }));
+    if (uiSchema?.['ui:options']?.host) {
+      const hostUiOption = uiSchema['ui:options'].host;
+      setState(prevState => ({ ...prevState, host: hostUiOption }));
     }
-  }, [repoUrl, uiSchema]);
+  }, [uiSchema]);
 
   useEffect(() => {
     onChange(owner);

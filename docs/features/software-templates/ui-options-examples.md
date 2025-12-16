@@ -488,8 +488,6 @@ repoUrl:
     host: github.com
 ```
 
-This value will be overridden if a different host is specified in a `RepoUrlPicker` field extension.
-
 ### `excludedOwners`
 
 List of owners that should be excluded from autocompletion.
