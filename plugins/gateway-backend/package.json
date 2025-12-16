@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-gateway-backend",
-  "version": "1.1.1-next.1",
+  "version": "1.1.1",
   "backstage": {
     "role": "backend-plugin",
     "pluginId": "gateway",
@@ -46,7 +46,7 @@
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@types/express": "^4.17.6",
-    "eventsource": "^3.0.6",
+    "eventsource": "^4.0.0",
     "wait-for-expect": "^3.0.2"
   }
 }

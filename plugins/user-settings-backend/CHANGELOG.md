@@ -1,5 +1,16 @@
 # @backstage/plugin-user-settings-backend
 
+## 0.3.9
+
+### Patch Changes
+
+- de96a60: chore(deps): bump `express` from 4.21.2 to 4.22.0
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.10
+  - @backstage/backend-defaults@0.14.0
+  - @backstage/plugin-signals-node@0.1.27
+  - @backstage/backend-plugin-api@1.6.0
+
 ## 0.3.9-next.1
 
 ### Patch Changes

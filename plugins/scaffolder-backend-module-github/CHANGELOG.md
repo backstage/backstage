@@ -1,5 +1,16 @@
 # @backstage/plugin-scaffolder-backend-module-github
 
+## 0.9.3
+
+### Patch Changes
+
+- dab3d3f: Added autocompletion resource `owners` for retrieving GitHub repository owners.
+- Updated dependencies
+  - @backstage/integration@1.19.0
+  - @backstage/backend-plugin-api@1.6.0
+  - @backstage/plugin-catalog-node@1.20.1
+  - @backstage/plugin-scaffolder-node@0.12.2
+
 ## 0.9.3-next.1
 
 ### Patch Changes

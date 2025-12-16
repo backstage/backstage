@@ -31,6 +31,9 @@ const mockOctokit = {
       listForAuthenticatedUser: jest.fn(),
       listBranches: jest.fn(),
     },
+    orgs: {
+      listForAuthenticatedUser: jest.fn(),
+    },
   },
 };
 jest.mock('octokit', () => ({
@@ -92,6 +95,30 @@ describe('handleAutocompleteRequest', () => {
 
     expect(result).toEqual({
       results: [{ id: 'main' }],
+    });
+  });
+
+  it('should return owners', async () => {
+    const handleAutocompleteRequest = createHandleAutocompleteRequest({
+      integrations: mockIntegrations,
+    });
+
+    mockOctokit.rest.orgs.listForAuthenticatedUser.mockResolvedValue({
+      data: [
+        {
+          login: 'backstage',
+        },
+      ],
+    });
+
+    const result = await handleAutocompleteRequest({
+      resource: 'owners',
+      token: 'token',
+      context: {},
+    });
+
+    expect(result).toEqual({
+      results: [{ id: 'backstage' }],
     });
   });
 

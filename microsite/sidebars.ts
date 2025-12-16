@@ -669,6 +669,7 @@ export default {
           'architecture-decisions/adrs-adr012',
           'architecture-decisions/adrs-adr013',
           'architecture-decisions/adrs-adr014',
+          'architecture-decisions/adrs-adr015',
         ],
       },
       'api/deprecations',
