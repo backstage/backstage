@@ -26,6 +26,7 @@ import {
   ActionsService,
   ActionsServiceAction,
 } from '@backstage/backend-plugin-api/alpha';
+import { Minimatch } from 'minimatch';
 
 export class DefaultActionsService implements ActionsService {
   private readonly discovery: DiscoveryService;
@@ -86,7 +87,7 @@ export class DefaultActionsService implements ActionsService {
       }),
     );
 
-    return { actions: remoteActionsList.flat() };
+    return { actions: this.applyFilters(remoteActionsList.flat()) };
   }
 
   async invoke(opts: {
@@ -147,5 +148,60 @@ export class DefaultActionsService implements ActionsService {
       throw new Error(`Invalid action id: ${id}`);
     }
     return id.substring(0, colonIndex);
+  }
+
+  private applyFilters(
+    actions: ActionsServiceAction[],
+  ): ActionsServiceAction[] {
+    const includePatterns = this.config.getOptionalStringArray(
+      'backend.actions.filter.include',
+    ) ?? ['*'];
+    const excludePatterns =
+      this.config.getOptionalStringArray('backend.actions.filter.exclude') ??
+      [];
+    const attributesConfig = this.config.getOptionalConfig(
+      'backend.actions.filter.attributes',
+    );
+
+    // Pre-compile matchers for efficiency
+    const includeMatchers = includePatterns.map(p => new Minimatch(p));
+    const excludeMatchers = excludePatterns.map(p => new Minimatch(p));
+
+    // Build attribute constraints
+    const attributeConstraints: Array<{
+      key: 'destructive' | 'readOnly' | 'idempotent';
+      value: boolean;
+    }> = [];
+    if (attributesConfig) {
+      for (const key of ['destructive', 'readOnly', 'idempotent'] as const) {
+        const value = attributesConfig.getOptionalBoolean(key);
+        if (value !== undefined) {
+          attributeConstraints.push({ key, value });
+        }
+      }
+    }
+
+    return actions.filter(action => {
+      // Must match at least one include pattern
+      const included = includeMatchers.some(m => m.match(action.id));
+      if (!included) {
+        return false;
+      }
+
+      // Must not match any exclude pattern
+      const excluded = excludeMatchers.some(m => m.match(action.id));
+      if (excluded) {
+        return false;
+      }
+
+      // Must satisfy all attribute constraints
+      for (const { key, value } of attributeConstraints) {
+        if (action.attributes[key] !== value) {
+          return false;
+        }
+      }
+
+      return true;
+    });
   }
 }
