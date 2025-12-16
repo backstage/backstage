@@ -6,15 +6,15 @@ description: Tracking access to your Scaffolder.
 
 The Scaffolder backend emits audit events for various operations. Events are grouped logically by `eventId`, with `subEventId` providing further distinction when needed.
 
-**Template Events:**
+## Template Events
 
 - **`template-parameter-schema`**: Retrieves template parameter schemas. (GET `/v2/templates/:namespace/:kind/:name/parameter-schema`)
 
-**Action Events:**
+## Action Events
 
 - **`action-fetch`**: Retrieves installed actions. (GET `/v2/actions`)
 
-**Task Events:**
+## Task Events
 
 - **`task`**: Operations related to Scaffolder tasks.
 
