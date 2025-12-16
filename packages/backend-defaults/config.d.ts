@@ -154,6 +154,53 @@ export interface Config {
        * List of plugin sources to load actions from.
        */
       pluginSources?: string[];
+
+      /**
+       * Filter configuration for actions. Allows controlling which actions
+       * are exposed to consumers based on patterns and attributes.
+       */
+      filter?: {
+        /**
+         * Glob patterns for action IDs to include.
+         * An action must match at least one pattern to be included.
+         * Action IDs have the format `{pluginId}:{actionName}`.
+         * @default ['*']
+         * @example ['catalog:*', 'scaffolder:create-*']
+         */
+        include?: string[];
+
+        /**
+         * Glob patterns for action IDs to exclude.
+         * Exclusions take precedence over inclusions.
+         * @default []
+         * @example ['*:delete-*']
+         */
+        exclude?: string[];
+
+        /**
+         * Attribute constraints. All specified attributes must match.
+         * Actions are compared against their resolved attributes (with defaults applied).
+         */
+        attributes?: {
+          /**
+           * If specified, only include actions where destructive matches this value.
+           * Actions default to destructive: true if not explicitly set.
+           */
+          destructive?: boolean;
+
+          /**
+           * If specified, only include actions where readOnly matches this value.
+           * Actions default to readOnly: false if not explicitly set.
+           */
+          readOnly?: boolean;
+
+          /**
+           * If specified, only include actions where idempotent matches this value.
+           * Actions default to idempotent: false if not explicitly set.
+           */
+          idempotent?: boolean;
+        };
+      };
     };
 
     /**
