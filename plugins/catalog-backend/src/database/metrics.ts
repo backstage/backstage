@@ -17,12 +17,14 @@
 import { Knex } from 'knex';
 import { createGaugeMetric } from '../util/metrics';
 import { DbRelationsRow, DbLocationsRow, DbSearchRow } from './tables';
-import { metrics } from '@opentelemetry/api';
+import { MetricsService } from '@backstage/backend-plugin-api/alpha';
 
-export function initDatabaseMetrics(knex: Knex) {
+export function initDatabaseMetrics(
+  knex: Knex,
+  metricsService: MetricsService,
+) {
   const seenProm = new Set<string>();
   const seen = new Set<string>();
-  const meter = metrics.getMeter('default');
   return {
     entities_count_prom: createGaugeMetric({
       name: 'catalog_entities_count',
@@ -69,8 +71,8 @@ export function initDatabaseMetrics(knex: Knex) {
         this.set(Number(total[0].count));
       },
     }),
-    entities_count: meter
-      .createObservableGauge('catalog_entities_count', {
+    entities_count: metricsService
+      .createObservableGauge('entities.count', {
         description: 'Total amount of entities in the catalog',
       })
       .addCallback(async gauge => {
@@ -93,8 +95,8 @@ export function initDatabaseMetrics(knex: Knex) {
           }
         });
       }),
-    registered_locations: meter
-      .createObservableGauge('catalog_registered_locations_count', {
+    registered_locations: metricsService
+      .createObservableGauge('registered.locations.count', {
         description: 'Total amount of registered locations in the catalog',
       })
       .addCallback(async gauge => {
@@ -113,8 +115,8 @@ export function initDatabaseMetrics(knex: Knex) {
           gauge.observe(Number(total[0].count));
         }
       }),
-    relations: meter
-      .createObservableGauge('catalog_relations_count', {
+    relations: metricsService
+      .createObservableGauge('relations.count', {
         description: 'Total amount of relations between entities',
       })
       .addCallback(async gauge => {

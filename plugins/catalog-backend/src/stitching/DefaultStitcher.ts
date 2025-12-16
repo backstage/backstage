@@ -31,6 +31,7 @@ import {
   stitchingStrategyFromConfig,
 } from './types';
 import { LoggerService } from '@backstage/backend-plugin-api';
+import { MetricsService } from '@backstage/backend-plugin-api/alpha';
 
 type DeferredStitchItem = Awaited<
   ReturnType<typeof getDeferredStitchableEntities>
@@ -55,12 +56,14 @@ export class DefaultStitcher implements Stitcher {
     options: {
       knex: Knex;
       logger: LoggerService;
+      metrics: MetricsService;
     },
   ): DefaultStitcher {
     return new DefaultStitcher({
       knex: options.knex,
       logger: options.logger,
       strategy: stitchingStrategyFromConfig(config),
+      metrics: options.metrics,
     });
   }
 
@@ -68,11 +71,16 @@ export class DefaultStitcher implements Stitcher {
     knex: Knex;
     logger: LoggerService;
     strategy: StitchingStrategy;
+    metrics: MetricsService;
   }) {
     this.knex = options.knex;
     this.logger = options.logger;
     this.strategy = options.strategy;
-    this.tracker = progressTracker(options.knex, options.logger);
+    this.tracker = progressTracker(
+      options.knex,
+      options.logger,
+      options.metrics,
+    );
   }
 
   async stitch(options: {

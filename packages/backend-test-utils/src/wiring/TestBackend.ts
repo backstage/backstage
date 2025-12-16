@@ -43,6 +43,7 @@ import { HostDiscovery } from '@backstage/backend-defaults/discovery';
 import {
   actionsRegistryServiceMock,
   actionsServiceMock,
+  metricsServiceMock,
 } from '../alpha/services';
 
 /** @public */
@@ -92,6 +93,7 @@ export const defaultServiceFactories = [
   // Alpha services
   actionsRegistryServiceMock.factory(),
   actionsServiceMock.factory(),
+  metricsServiceMock.factory(),
 ];
 
 /**

@@ -38,6 +38,7 @@ import { DefaultRefreshService } from './DefaultRefreshService';
 import { ConfigReader } from '@backstage/config';
 import { DefaultStitcher } from '../stitching/DefaultStitcher';
 import { LoggerService } from '@backstage/backend-plugin-api';
+import { metricsServiceMock } from '@backstage/backend-test-utils/alpha';
 
 jest.setTimeout(60_000);
 
@@ -58,6 +59,7 @@ describe('DefaultRefreshService', () => {
         logger,
         refreshInterval: () => 100,
         events: mockServices.events.mock(),
+        metrics: metricsServiceMock.mock(),
       }),
       catalogDb: new DefaultCatalogDatabase({
         database: knex,
@@ -115,6 +117,7 @@ describe('DefaultRefreshService', () => {
     const stitcher = DefaultStitcher.fromConfig(new ConfigReader({}), {
       knex,
       logger: defaultLogger,
+      metrics: metricsServiceMock.mock(),
     });
     const engine = new DefaultCatalogProcessingEngine({
       config: new ConfigReader({}),
@@ -164,6 +167,7 @@ describe('DefaultRefreshService', () => {
       createHash: () => createHash('sha1'),
       pollingIntervalMs: 50,
       events: mockServices.events.mock(),
+      metrics: metricsServiceMock.mock(),
     });
 
     return engine;

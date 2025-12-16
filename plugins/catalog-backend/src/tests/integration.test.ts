@@ -56,6 +56,7 @@ import { mockServices, TestDatabases } from '@backstage/backend-test-utils';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { entitiesResponseToObjects } from '../service/response';
 import { deleteOrphanedEntities } from '../database/operations/util/deleteOrphanedEntities';
+import { metricsServiceMock } from '@backstage/backend-test-utils/alpha';
 
 const voidLogger = mockServices.logger.mock();
 
@@ -248,6 +249,7 @@ class TestHarness {
       logger,
       events: mockServices.events.mock(),
       refreshInterval: () => 0.05,
+      metrics: metricsServiceMock.mock(),
     });
 
     const integrations = ScmIntegrations.fromConfig(config);
@@ -280,6 +282,7 @@ class TestHarness {
     const stitcher = DefaultStitcher.fromConfig(config, {
       knex: options.db,
       logger,
+      metrics: metricsServiceMock.mock(),
     });
     const catalog = new DefaultEntitiesCatalog({
       database: options.db,
@@ -306,6 +309,7 @@ class TestHarness {
       },
       tracker: proxyProgressTracker,
       events: mockServices.events.mock(),
+      metrics: metricsServiceMock.mock(),
     });
 
     const refresh = new DefaultRefreshService({ database: catalogDatabase });
