@@ -14,8 +14,25 @@
  * limitations under the License.
  */
 
-import { palettes } from '../base';
+import { palettes, pageTheme, genPageTheme, shapes } from '../base';
 import { createUnifiedTheme } from './UnifiedTheme';
+
+const highContrastDarkPageTheme = {
+  ...pageTheme,
+  home: genPageTheme({ colors: ['#000000', '#1A1A1A'], shape: shapes.wave }),
+  documentation: genPageTheme({
+    colors: ['#000000', '#1A1A1A'],
+    shape: shapes.wave2,
+  }),
+  tool: genPageTheme({ colors: ['#000000', '#1A1A1A'], shape: shapes.round }),
+  service: genPageTheme({ colors: ['#000000', '#1A1A1A'], shape: shapes.wave }),
+  website: genPageTheme({ colors: ['#000000', '#1A1A1A'], shape: shapes.wave }),
+  library: genPageTheme({ colors: ['#000000', '#1A1A1A'], shape: shapes.wave }),
+  other: genPageTheme({ colors: ['#000000', '#1A1A1A'], shape: shapes.wave }),
+  app: genPageTheme({ colors: ['#000000', '#1A1A1A'], shape: shapes.wave }),
+  apis: genPageTheme({ colors: ['#000000', '#1A1A1A'], shape: shapes.wave2 }),
+  card: genPageTheme({ colors: ['#000000', '#1A1A1A'], shape: shapes.wave }),
+};
 
 /**
  * Built-in Backstage Material UI themes.
@@ -25,4 +42,9 @@ import { createUnifiedTheme } from './UnifiedTheme';
 export const themes = {
   light: createUnifiedTheme({ palette: palettes.light }),
   dark: createUnifiedTheme({ palette: palettes.dark }),
+  highContrastDark: createUnifiedTheme({
+    palette: palettes.highContrastDark,
+    pageTheme: highContrastDarkPageTheme,
+    defaultPageTheme: 'home',
+  }),
 };
