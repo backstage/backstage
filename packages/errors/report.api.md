@@ -85,6 +85,9 @@ export class InputError extends CustomErrorBase {
 }
 
 // @public
+export function isCustomError(err: unknown): err is CustomErrorBase;
+
+// @public
 export function isError(value: unknown): value is ErrorLike;
 
 // @public
