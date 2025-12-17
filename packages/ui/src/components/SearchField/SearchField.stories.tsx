@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { SearchField } from './SearchField';
 import { Form } from 'react-aria-components';
@@ -165,11 +166,23 @@ export const StartCollapsed: Story = {
   },
 
   render: args => (
-    <Flex direction="row" gap="4">
+    <Flex direction="column" gap="4">
+      <Flex direction="row" gap="4">
+        <SearchField {...args} size="small" />
+        <SearchField {...args} size="medium" />
+      </Flex>
       <SearchField {...args} size="small" />
-      <SearchField {...args} size="medium" />
     </Flex>
   ),
+};
+
+export const StartCollapsedWithValue: Story = {
+  args: {
+    ...StartCollapsed.args,
+    defaultValue: 'https://example.com',
+  },
+
+  render: args => <SearchField {...args} size="small" />,
 };
 
 export const InHeader: Story = {
@@ -289,6 +302,44 @@ export const StartCollapsedWithOnChange: Story = {
         style={{ width: '100%', maxWidth: '600px' }}
       >
         <SearchField {...args} onChange={handleChange} size="small" />
+      </Flex>
+    );
+  },
+};
+
+export const StartCollapsedControlledEmpty: Story = {
+  args: {
+    ...StartCollapsed.args,
+  },
+  render: function Render(args) {
+    const [value, setValue] = useState('');
+
+    return (
+      <Flex
+        direction="row"
+        gap="2"
+        style={{ width: '100%', maxWidth: '600px' }}
+      >
+        <SearchField {...args} size="small" value={value} onChange={setValue} />
+      </Flex>
+    );
+  },
+};
+
+export const StartCollapsedControlledWithValue: Story = {
+  args: {
+    ...StartCollapsed.args,
+  },
+  render: function Render(args) {
+    const [value, setValue] = useState('Component');
+
+    return (
+      <Flex
+        direction="row"
+        gap="2"
+        style={{ width: '100%', maxWidth: '600px' }}
+      >
+        <SearchField {...args} size="small" value={value} onChange={setValue} />
       </Flex>
     );
   },
