@@ -15,13 +15,10 @@
  */
 
 import { Request, Response, NextFunction } from 'express';
-import {
-  OpenAPIObject,
-  PathItemObject,
-  OperationObject,
-} from 'openapi3-ts';
+import { OperationObject } from 'openapi3-ts';
 import type { AuditorService } from '@backstage/backend-plugin-api';
 import type { JsonObject } from '@backstage/types';
+import { ForwardedError } from '@backstage/errors';
 
 type AuditorExtension = {
   eventId: string;
@@ -38,20 +35,6 @@ type AuditorExtension = {
   };
 };
 
-type PathMatcher = {
-  regex: RegExp;
-  path: string;
-  pathItem: PathItemObject;
-};
-
-function convertPathToRegex(path: string): RegExp {
-  // Convert OpenAPI path like /users/{id} to regex
-  const regexStr = path
-    .replace(/\{[^}]+\}/g, '([^/]+)') // Replace {param} with capture group
-    .replace(/\//g, '\\/'); // Escape slashes
-  return new RegExp(`^${regexStr}$`);
-}
-
 function extractValueFromObject(obj: any, path: string): any {
   const parts = path.split('.');
   let current = obj;
@@ -65,41 +48,50 @@ function extractValueFromObject(obj: any, path: string): any {
   return current;
 }
 
-export function auditorMiddlewareFactory(
-  apiSpec: OpenAPIObject,
-  auditor: AuditorService,
-) {
-  // Pre-compile path matchers for efficiency
-  const pathMatchers: PathMatcher[] = [];
-  for (const [path, pathItem] of Object.entries(apiSpec.paths || {})) {
-    if (pathItem) {
-      pathMatchers.push({
-        regex: convertPathToRegex(path),
-        path,
-        pathItem,
-      });
-    }
-  }
+function waitForResponseToFinish(res: Response): Promise<void> {
+  return new Promise(resolve => {
+    res.on('finish', () => resolve());
+  });
+}
 
-  function baseHandler(req: Request, res: Response): {
-    captureMetadata: () => JsonObject;
-    auditorConfig: AuditorExtension;
-  } | undefined {
-    // Find matching path
-    const requestPath = req.path;
-    const matcher = pathMatchers.find(m => m.regex.test(requestPath));
+interface WithOpenapi {
+  openapi?: {
+    expressRoute: string;
+    openApiRoute: string;
+    pathParams: Record<string, string>;
+    schema: OperationObject; // This is the operation schema for the matched route
+    serial: number;
+  };
+}
 
-    if (!matcher) {
+const AUDITOR_SYMBOL = Symbol('auditor');
+const CAPTURED_RESPONSE_BODY_SYMBOL = Symbol('capturedResponseBody');
+
+interface WithAuditorEvent {
+  [AUDITOR_SYMBOL]?: Awaited<ReturnType<AuditorService['createEvent']>>;
+}
+
+interface WithCapturedResponseBody {
+  [CAPTURED_RESPONSE_BODY_SYMBOL]?: JsonObject;
+}
+
+export function auditorMiddlewareFactory(auditor: AuditorService) {
+  function baseHandler(
+    req: Request & WithOpenapi,
+    res: Response,
+  ):
+    | {
+        captureRequestMetadata: () => JsonObject;
+        captureResponseMetadata: () => JsonObject;
+        auditorConfig: AuditorExtension;
+      }
+    | undefined {
+    if (!req.openapi) {
       return undefined;
     }
-
-    // Get operation for the HTTP method
-    const method = req.method.toLowerCase();
-    const operation = matcher.pathItem[
-      method as keyof PathItemObject
-    ] as OperationObject;
-
+    const operation = req.openapi.schema; // schema is actually the operation object
     if (!operation) {
+      console.log('No operation schema found in request.openapi');
       return undefined;
     }
 
@@ -109,6 +101,7 @@ export function auditorMiddlewareFactory(
       | undefined;
 
     if (!auditorConfig) {
+      console.log('No x-backstage-auditor extension found');
       return undefined;
     }
 
@@ -116,8 +109,8 @@ export function auditorMiddlewareFactory(
     const { captureFromRequest, captureFromResponse, ...staticMeta } =
       auditorConfig.meta || {};
 
-    // Capture metadata from request - some may not be available yet (params)
-    const captureMetadata = (): JsonObject => {
+    // Capture metadata from request
+    const captureRequestMetadata = (): JsonObject => {
       const meta: JsonObject = { ...staticMeta };
 
       if (captureFromRequest) {
@@ -134,7 +127,8 @@ export function auditorMiddlewareFactory(
 
         if (params) {
           for (const field of params) {
-            const value = req.params[field];
+            // Use pathParams from openapi, fallback to req.params
+            const value = req.openapi?.pathParams[field] ?? req.params[field];
             if (value !== undefined) {
               meta[field] = value;
             }
@@ -154,64 +148,143 @@ export function auditorMiddlewareFactory(
       return meta;
     };
 
-    return {captureMetadata, auditorConfig};
+    const captureResponseMetadata = (): JsonObject => {
+      const meta: JsonObject = {};
+      if (captureFromResponse) {
+        const { body } = captureFromResponse;
+
+        if (body) {
+          // Access captured response body from res.locals
+          const locals = res.locals as Response['locals'] &
+            WithCapturedResponseBody;
+          const responseBody = locals[CAPTURED_RESPONSE_BODY_SYMBOL];
+          if (responseBody) {
+            for (const field of body) {
+              const value = extractValueFromObject(responseBody, field);
+              if (value !== undefined) {
+                meta[field] = value;
+              }
+            }
+          }
+        }
+      }
+      return meta;
+    };
+
+    return { captureRequestMetadata, captureResponseMetadata, auditorConfig };
   }
 
-  const success = (req: Request, res: Response, next: NextFunction) => {
+  const success = async (
+    req: Request & WithOpenapi & WithAuditorEvent,
+    res: Response,
+    next: NextFunction,
+  ) => {
     const result = baseHandler(req, res);
     if (!result) {
       next();
       return;
     }
-    const { captureMetadata, auditorConfig } = result;
+    const { captureRequestMetadata, captureResponseMetadata, auditorConfig } =
+      result;
 
-    res.on('finish', () => {
-      if(res.statusCode >= 200 && res.statusCode < 300) {
-        // Create audit event - capture metadata after route matching
-        auditor
-          .createEvent({
-            eventId: auditorConfig.eventId,
-            severityLevel: auditorConfig.severityLevel,
-            meta: captureMetadata(),
-            request: req,
-          })
-          .then(auditorEvent => {
-            // Only mark as success for 2xx responses
-            // For errors, the handler should catch and call auditorEvent.fail()
-            if (res.statusCode >= 200 && res.statusCode < 300) {
-              auditorEvent.success().catch(() => {});
-            }
-          })
-          .catch(() => {
-            // If audit event creation fails, don't block the request
-          });
-      }
-    });
+    // Intercept response body if we need to capture from it
+    const captureFromResponse = auditorConfig.meta?.captureFromResponse;
+    if (captureFromResponse?.body) {
+      const originalJson = res.json.bind(res);
+      const originalSend = res.send.bind(res);
 
+      const locals = res.locals as Response['locals'] &
+        WithCapturedResponseBody;
+      res.json = function overridenJson(body: any) {
+        console.log('json', body);
+        locals[CAPTURED_RESPONSE_BODY_SYMBOL] = body;
+        return originalJson(body);
+      };
+
+      res.send = function overriddenSend(body: any) {
+        console.log('send', body);
+        if (typeof body === 'string') {
+          // Do nothing.
+        } else {
+          locals[CAPTURED_RESPONSE_BODY_SYMBOL] = body;
+        }
+        return originalSend(body);
+      };
+    }
+
+    try {
+      const auditorEvent = await auditor.createEvent({
+        eventId: auditorConfig.eventId,
+        severityLevel: auditorConfig.severityLevel,
+        meta: captureRequestMetadata(),
+        request: req,
+      });
+      req[AUDITOR_SYMBOL] = auditorEvent;
+    } catch (err) {
+      next(new ForwardedError('Auditor middleware failed', err));
+      return;
+    }
+
+    const responseFinished = waitForResponseToFinish(res);
+
+    // Yield to next middleware / route handler
     next();
+
+    // Wait for response to finish (res.send/res.json)
+    await responseFinished;
+
+    if (!req[AUDITOR_SYMBOL]) {
+      return;
+    }
+
+    const auditorEvent = req[AUDITOR_SYMBOL];
+
+    // Create audit event after response finishes so captureMetadata can access response body
+    try {
+      if (res.statusCode >= 200 && res.statusCode < 300) {
+        await auditorEvent.success({ meta: captureResponseMetadata() });
+      } else {
+        await auditorEvent.fail({
+          error: new Error(
+            `Response returned with status code ${res.statusCode}`,
+          ),
+          meta: captureResponseMetadata(),
+        });
+      }
+      delete req[AUDITOR_SYMBOL];
+    } catch (err) {
+      next(new ForwardedError('Auditor middleware failed', err));
+      return;
+    }
   };
 
-  const error = (err: Error, req: Request, res: Response, next: NextFunction) => {
-    const result = baseHandler(req, res);
+  const error = async (
+    err: Error,
+    req: Request & WithOpenapi & WithAuditorEvent,
+    _res: Response,
+    next: NextFunction,
+  ) => {
+    if (!req[AUDITOR_SYMBOL]) {
+      next(err);
+      return;
+    }
+    const result = baseHandler(req, _res);
     if (!result) {
       next(err);
       return;
     }
-    const { captureMetadata, auditorConfig } = result;
+    const { captureResponseMetadata } = result;
     // Create audit event - capture metadata after route matching
-    auditor
-      .createEvent({
-        eventId: auditorConfig.eventId,
-        severityLevel: auditorConfig.severityLevel,
-        meta: captureMetadata(),
-        request: req,
-      })
-      .then(auditorEvent => {
-        auditorEvent.fail({error: err}).catch(() => {})
-      })
-      .catch(() => {
-        // If audit event creation fails, don't block the request
+    try {
+      await req[AUDITOR_SYMBOL].fail({
+        error: err,
+        meta: captureResponseMetadata(),
       });
+      delete req[AUDITOR_SYMBOL];
+    } catch {
+      next(new ForwardedError('Auditor middleware failed', err));
+      return;
+    }
 
     next(err);
   };
