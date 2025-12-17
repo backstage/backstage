@@ -206,7 +206,7 @@ export const WithEverything = meta.story({
 });
 
 export const WithLayout = WithEverything.extend({
-  decorators: [withRouter, ...layoutDecorator],
+  decorators: [...layoutDecorator],
 });
 
 export const WithTabsMatchingStrategies = meta.story({
