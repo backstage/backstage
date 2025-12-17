@@ -1,4 +1,5 @@
 ---
+'@backstage/plugin-auth-node': minor
 '@backstage/plugin-auth-backend': minor
 ---
 
