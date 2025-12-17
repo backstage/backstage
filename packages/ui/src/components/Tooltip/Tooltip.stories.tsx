@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import preview from '../../../../../.storybook/preview';
-import { Placement } from '@react-types/overlays';
 import { TooltipTrigger, Tooltip } from './Tooltip';
 import { Button } from '../Button/Button';
 
@@ -29,10 +28,6 @@ const meta = preview.meta({
     isDisabled: {
       control: { type: 'boolean' },
     },
-    placement: {
-      options: ['top', 'right', 'bottom', 'left'],
-      control: { type: 'inline-radio' },
-    },
     delay: {
       control: { type: 'number' },
     },
@@ -40,7 +35,7 @@ const meta = preview.meta({
       control: { type: 'number' },
     },
   },
-  render: ({ children, isOpen, isDisabled, placement, delay, closeDelay }) => (
+  render: ({ children, isOpen, isDisabled, delay, closeDelay }) => (
     <TooltipTrigger
       isOpen={isOpen}
       isDisabled={isDisabled}
@@ -48,7 +43,7 @@ const meta = preview.meta({
       closeDelay={closeDelay}
     >
       <Button>Button</Button>
-      <Tooltip placement={placement}>{children ?? 'I am a tooltip'}</Tooltip>
+      <Tooltip>{children ?? 'I am a tooltip'}</Tooltip>
     </TooltipTrigger>
   ),
 });

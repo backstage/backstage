@@ -1,4 +1,3 @@
-import preview from '../../../../../.storybook/preview';
 /*
  * Copyright 2024 The Backstage Authors
  *
@@ -15,7 +14,7 @@ import preview from '../../../../../.storybook/preview';
  * limitations under the License.
  */
 
-import type { StoryObj } from '@storybook/react-vite';
+import preview from '../../../../../.storybook/preview';
 import { Text } from './Text';
 import { Flex } from '../Flex';
 
@@ -26,8 +25,6 @@ const meta = preview.meta({
     children: 'Text',
   },
 });
-
-type Story = StoryObj<typeof meta>;
 
 export const Default = meta.story({
   args: {

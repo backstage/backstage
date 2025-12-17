@@ -1,4 +1,3 @@
-import preview from '../../../../../.storybook/preview';
 /*
  * Copyright 2025 The Backstage Authors
  *
@@ -15,8 +14,9 @@ import preview from '../../../../../.storybook/preview';
  * limitations under the License.
  */
 
+import preview from '../../../../../.storybook/preview';
 import { useState } from 'react';
-import type { StoryFn, StoryObj } from '@storybook/react-vite';
+import type { StoryFn } from '@storybook/react-vite';
 import { type Selection } from 'react-aria-components';
 import {
   Table,
@@ -54,8 +54,6 @@ const meta = preview.meta({
 // Added this fix to fix Chromatic timeout error. This bug is due to rerendering the table with too many rows.
 // Work in progress to fix it here - https://github.com/backstage/backstage/pull/30687
 const data1 = data1Raw.slice(0, 10);
-
-type Story = StoryObj<typeof meta>;
 
 export const TableOnly = meta.story({
   render: () => {

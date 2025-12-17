@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import preview from '../../../../../.storybook/preview';
 import {
   Dialog,
@@ -61,12 +62,10 @@ export const Default = meta.story({
   },
 });
 
-export const Open = meta.story({
+export const Open = Default.extend({
   args: {
-    ...Default.input.args,
     defaultOpen: true,
   },
-  render: Default.input.render,
 });
 
 export const NoTrigger = meta.story({

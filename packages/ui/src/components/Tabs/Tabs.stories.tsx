@@ -1,4 +1,3 @@
-import preview from '../../../../../.storybook/preview';
 /*
  * Copyright 2024 The Backstage Authors
  *
@@ -15,7 +14,8 @@ import preview from '../../../../../.storybook/preview';
  * limitations under the License.
  */
 
-import type { StoryFn, StoryObj } from '@storybook/react-vite';
+import preview from '../../../../../.storybook/preview';
+import type { StoryFn } from '@storybook/react-vite';
 import { Tabs, TabList, Tab, TabPanel } from './Tabs';
 import { MemoryRouter } from 'react-router-dom';
 import { Box } from '../Box';
@@ -25,8 +25,6 @@ const meta = preview.meta({
   title: 'Backstage UI/Tabs',
   component: Tabs,
 });
-
-type Story = StoryObj<typeof meta>;
 
 const withRouter = (Story: StoryFn) => (
   <MemoryRouter>

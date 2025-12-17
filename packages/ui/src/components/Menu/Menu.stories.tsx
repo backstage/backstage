@@ -1,4 +1,3 @@
-import preview from '../../../../../.storybook/preview';
 /*
  * Copyright 2025 The Backstage Authors
  *
@@ -15,7 +14,7 @@ import preview from '../../../../../.storybook/preview';
  * limitations under the License.
  */
 
-import type { StoryObj } from '@storybook/react-vite';
+import preview from '../../../../../.storybook/preview';
 import {
   MenuTrigger,
   SubmenuTrigger,
@@ -50,8 +49,6 @@ const meta = preview.meta({
     ),
   ],
 });
-
-type Story = StoryObj<typeof meta>;
 
 const options = [
   { label: 'Apple', value: 'apple' },

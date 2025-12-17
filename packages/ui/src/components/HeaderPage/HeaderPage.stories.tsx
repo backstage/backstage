@@ -15,7 +15,7 @@ import preview from '../../../../../.storybook/preview';
  * limitations under the License.
  */
 
-import type { StoryObj, StoryFn } from '@storybook/react-vite';
+import type { StoryFn } from '@storybook/react-vite';
 import { HeaderPage } from './HeaderPage';
 import type { HeaderTab } from '../Header/types';
 import { MemoryRouter } from 'react-router-dom';
@@ -37,8 +37,6 @@ const meta = preview.meta({
     layout: 'fullscreen',
   },
 });
-
-type Story = StoryObj<typeof meta>;
 
 const tabs: HeaderTab[] = [
   {
@@ -207,12 +205,8 @@ export const WithEverything = meta.story({
   ),
 });
 
-export const WithLayout = meta.story({
-  args: {
-    ...WithEverything.input.args,
-  },
+export const WithLayout = WithEverything.extend({
   decorators: [withRouter, ...layoutDecorator],
-  render: WithEverything.input.render,
 });
 
 export const WithTabsMatchingStrategies = meta.story({

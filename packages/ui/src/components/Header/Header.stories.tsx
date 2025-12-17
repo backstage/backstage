@@ -1,4 +1,3 @@
-import preview from '../../../../../.storybook/preview';
 /*
  * Copyright 2025 The Backstage Authors
  *
@@ -15,7 +14,8 @@ import preview from '../../../../../.storybook/preview';
  * limitations under the License.
  */
 
-import type { StoryObj, StoryFn } from '@storybook/react-vite';
+import preview from '../../../../../.storybook/preview';
+import type { StoryFn } from '@storybook/react-vite';
 import { Header } from './Header';
 import type { HeaderTab } from './types';
 import {
@@ -44,8 +44,6 @@ const meta = preview.meta({
     layout: 'fullscreen',
   },
 });
-
-type Story = StoryObj<typeof meta>;
 
 const withRouter = (Story: StoryFn) => (
   <MemoryRouter>

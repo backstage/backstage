@@ -1,4 +1,3 @@
-import preview from '../../../../../.storybook/preview';
 /*
  * Copyright 2025 The Backstage Authors
  *
@@ -15,8 +14,8 @@ import preview from '../../../../../.storybook/preview';
  * limitations under the License.
  */
 
+import preview from '../../../../../.storybook/preview';
 import { useState } from 'react';
-import type { StoryObj } from '@storybook/react-vite';
 import { TagGroup, Tag } from '.';
 import type { Selection } from 'react-aria-components';
 import { Flex } from '../../';
@@ -56,8 +55,6 @@ const meta = preview.meta({
     ),
   ],
 });
-
-type Story = StoryObj<typeof meta>;
 
 const initialList: ListItem[] = [
   { id: 'banana', name: 'Banana', icon: <RiBugLine /> },

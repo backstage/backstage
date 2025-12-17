@@ -1,4 +1,3 @@
-import preview from '../../../../../.storybook/preview';
 /*
  * Copyright 2024 The Backstage Authors
  *
@@ -15,7 +14,8 @@ import preview from '../../../../../.storybook/preview';
  * limitations under the License.
  */
 
-import type { StoryFn, StoryObj } from '@storybook/react-vite';
+import preview from '../../../../../.storybook/preview';
+import type { StoryFn } from '@storybook/react-vite';
 import { ButtonLink } from './ButtonLink';
 import { Flex } from '../Flex';
 import { MemoryRouter } from 'react-router-dom';
@@ -42,8 +42,6 @@ const meta = preview.meta({
     },
   },
 });
-
-type Story = StoryObj<typeof meta>;
 
 export const Default = meta.story({
   args: {
