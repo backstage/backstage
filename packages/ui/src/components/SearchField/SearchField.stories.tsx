@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { useState } from 'react';
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { SearchField } from './SearchField';
 import { Form } from 'react-aria-components';
@@ -301,6 +302,25 @@ export const StartCollapsedWithOnChange: Story = {
         style={{ width: '100%', maxWidth: '600px' }}
       >
         <SearchField {...args} onChange={handleChange} size="small" />
+      </Flex>
+    );
+  },
+};
+
+export const StartCollapsedControlled: Story = {
+  args: {
+    ...StartCollapsed.args,
+  },
+  render: function Render(args) {
+    const [value, setValue] = useState('');
+
+    return (
+      <Flex
+        direction="row"
+        gap="2"
+        style={{ width: '100%', maxWidth: '600px' }}
+      >
+        <SearchField {...args} size="small" value={value} onChange={setValue} />
       </Flex>
     );
   },
