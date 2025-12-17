@@ -1,0 +1,1 @@
+Ensures that the Jest migration appears in the microsite sidebar
