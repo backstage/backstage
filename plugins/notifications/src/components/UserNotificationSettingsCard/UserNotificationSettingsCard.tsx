@@ -20,7 +20,7 @@ import { useNotificationsApi } from '../../hooks';
 import { NotificationSettings } from '@backstage/plugin-notifications-common';
 import { notificationsApiRef } from '../../api';
 import { useApi } from '@backstage/core-plugin-api';
-import { useTranslationRef as useTranslationRefAlpha } from '@backstage/core-plugin-api/alpha';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { notificationsTranslationRef } from '../../translation';
 import { UserNotificationSettingsPanel } from './UserNotificationSettingsPanel';
 import { capitalize } from 'lodash';
@@ -35,7 +35,7 @@ const NotificationFormatContext = createContext<FormatContextType | undefined>(
 );
 
 export const useNotificationFormat = () => {
-  const { t } = useTranslationRefAlpha(notificationsTranslationRef);
+  const { t } = useTranslationRef(notificationsTranslationRef);
   const context = useContext(NotificationFormatContext);
   if (!context) throw new Error(t('settings.errors.useNotificationFormat'));
   return context;
@@ -83,7 +83,7 @@ export const UserNotificationSettingsCard = (props: {
   originNames?: Record<string, string>;
   topicNames?: Record<string, string>;
 }) => {
-  const { t } = useTranslationRefAlpha(notificationsTranslationRef);
+  const { t } = useTranslationRef(notificationsTranslationRef);
   const [settings, setNotificationSettings] = useState<
     NotificationSettings | undefined
   >(undefined);
