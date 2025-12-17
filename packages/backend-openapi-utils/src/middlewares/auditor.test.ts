@@ -21,8 +21,7 @@ import type { AuditorService } from '@backstage/backend-plugin-api';
 import { MiddlewareFactory } from '@backstage/backend-defaults/rootHttpRouter';
 import { mockServices } from '@backstage/backend-test-utils';
 import { InputError } from '@backstage/errors';
-
-const Router = express;
+import { createValidatedOpenApiRouterFromGeneratedEndpointMap } from '../stub';
 
 const middleware = MiddlewareFactory.create({
   logger: mockServices.logger.mock(),
@@ -133,25 +132,45 @@ describe('auditorMiddleware', () => {
           },
         },
       },
+
+      '/nested-fields': {
+        post: {
+          operationId: 'test',
+          'x-backstage-auditor': {
+            eventId: 'test-event',
+            meta: {
+              captureFromRequest: {
+                body: ['user.id', 'user.email'],
+              },
+            },
+          },
+          responses: { '200': { description: 'OK' } },
+        },
+      },
     },
   } as const;
 
-  let app: express.Express;
+  let app: express.Router;
+  let router: express.Router;
+  let mockAuditor: ReturnType<typeof createMockAuditor>;
+  let errorMiddleware: express.ErrorRequestHandler;
   beforeEach(() => {
-    app = Router();
+    router =
+      createValidatedOpenApiRouterFromGeneratedEndpointMap(specWithAuditor);
+    app = express().use(router);
+    mockAuditor = createMockAuditor();
+    const { success, error } = auditorMiddlewareFactory(mockAuditor.auditor);
+    errorMiddleware = error;
     app.use(express.json());
-  })
+    router.use(success);
+  });
 
   it('creates audit event and calls success on 2xx response', async () => {
-    const { auditor, mockCreateEvent, mockSuccess } = createMockAuditor();
-    const { success, error } = auditorMiddlewareFactory(specWithAuditor as any, auditor);
-    app.use(success);
-
-    app.post('/entities/refresh', (_req, res) => {
+    const { mockCreateEvent, mockSuccess } = mockAuditor;
+    router.post('/entities/refresh', (_req, res) => {
       res.json({ success: true });
     });
-    app.use(error);
-
+    router.use(errorMiddleware);
     await request(app)
       .post('/entities/refresh')
       .send({ entityRef: 'component:default/test' })
@@ -172,26 +191,22 @@ describe('auditorMiddleware', () => {
   });
 
   it('captures request params and query parameters', async () => {
-    const { auditor, mockCreateEvent, mockSuccess } = createMockAuditor();
-    const {success, error } = auditorMiddlewareFactory(specWithAuditor as any, auditor);
-    app.use(success);
+    const { mockCreateEvent, mockSuccess } = mockAuditor;
 
-    app.get('/users/:userId', (req, res) => {
+    router.get('/users/:userId', (req, res) => {
       res.json({ id: req.params.userId });
     });
 
-    app.use(error);
+    router.use(errorMiddleware);
 
-    await request(app)
-      .get('/users/user123?includeDetails=true')
-      .expect(200);
+    await request(app).get('/users/user123?includeDetails=true').expect(200);
 
     expect(mockCreateEvent).toHaveBeenCalledWith(
       expect.objectContaining({
         eventId: 'user-fetch',
         severityLevel: 'low',
         meta: expect.objectContaining({
-          includeDetails: 'true',
+          includeDetails: true, // Parsed as boolean by OpenAPI validator
           userId: 'user123',
         }),
       }),
@@ -201,16 +216,14 @@ describe('auditorMiddleware', () => {
   });
 
   it('calls fail on non-2xx status codes', async () => {
-    const { auditor, mockCreateEvent, mockFail } = createMockAuditor();
-    const {success, error} = auditorMiddlewareFactory(specWithAuditor as any, auditor);
-    app.use(success);
+    const { mockCreateEvent, mockFail } = mockAuditor;
 
-    app.post('/entities/refresh', (_req, res) => {
+    router.post('/entities/refresh', _req => {
       throw new InputError('Invalid entityRef');
     });
 
-    app.use(error);
-    app.use(middleware.error());
+    router.use(errorMiddleware);
+    router.use(middleware.error());
 
     await request(app)
       .post('/entities/refresh')
@@ -230,18 +243,17 @@ describe('auditorMiddleware', () => {
     );
     expect(mockFail).toHaveBeenCalledWith({
       error: expect.any(Error),
+      meta: {},
     });
   });
 
   it('does not create audit event for routes without x-backstage-auditor', async () => {
-    const { auditor, mockCreateEvent } = createMockAuditor();
-      const {success, error } = auditorMiddlewareFactory(specWithAuditor as any, auditor);
-    app.use(success);
+    const { mockCreateEvent } = createMockAuditor();
 
-    app.get('/no-audit', (_req, res) => {
+    router.get('/no-audit', (_req, res) => {
       res.json({ success: true });
     });
-    app.use(error);
+    router.use(errorMiddleware);
 
     await request(app).get('/no-audit').expect(200);
 
@@ -249,38 +261,15 @@ describe('auditorMiddleware', () => {
   });
 
   it('handles nested field extraction from request body', async () => {
-    const specWithNestedFields = {
-      openapi: '3.0.2',
-      info: { title: 'Test', version: '1.0.0' },
-      paths: {
-        '/test': {
-          post: {
-            operationId: 'test',
-            'x-backstage-auditor': {
-              eventId: 'test-event',
-              meta: {
-                captureFromRequest: {
-                  body: ['user.id', 'user.email'],
-                },
-              },
-            },
-            responses: { '200': { description: 'OK' } },
-          },
-        },
-      },
-    };
+    const { mockCreateEvent } = mockAuditor;
 
-    const { auditor, mockCreateEvent } = createMockAuditor();
-    const {success, error } = auditorMiddlewareFactory(specWithNestedFields as any, auditor)
-    app.use(success);
-
-    app.post('/test', (_req, res) => {
+    router.post('/nested-fields', (_req, res) => {
       res.json({ success: true });
     });
-    app.use(error);
+    router.use(errorMiddleware);
 
     await request(app)
-      .post('/test')
+      .post('/nested-fields')
       .send({
         user: {
           id: 'user123',
@@ -295,6 +284,67 @@ describe('auditorMiddleware', () => {
         meta: expect.objectContaining({
           'user.id': 'user123',
           'user.email': 'test@example.com',
+        }),
+      }),
+    );
+  });
+
+  it('captures metadata from response body', async () => {
+    const specWithResponseCapture = {
+      openapi: '3.0.2',
+      info: { title: 'Test', version: '1.0.0' },
+      paths: {
+        '/process': {
+          post: {
+            operationId: 'processData',
+            'x-backstage-auditor': {
+              eventId: 'data-process',
+              severityLevel: 'medium',
+              meta: {
+                captureFromResponse: {
+                  body: ['resultId', 'processedCount'],
+                },
+              },
+            },
+            responses: { '200': { description: 'OK' } },
+          },
+        },
+      },
+    };
+
+    const { auditor, mockCreateEvent, mockSuccess } = createMockAuditor();
+    const { success, error } = auditorMiddlewareFactory(auditor);
+    const testRouter = createValidatedOpenApiRouterFromGeneratedEndpointMap(
+      specWithResponseCapture as any,
+    );
+    testRouter.use(success);
+
+    testRouter.post('/process', (_req, res) => {
+      // Return response with data that should be captured
+      res.json({
+        success: true,
+        resultId: 'result-456',
+        processedCount: 42,
+      });
+    });
+    testRouter.use(error);
+    const testApp = express().use(testRouter);
+
+    await request(testApp).post('/process').send({ data: 'test' }).expect(200);
+
+    expect(mockCreateEvent).toHaveBeenCalledWith(
+      expect.objectContaining({
+        eventId: 'data-process',
+        severityLevel: 'medium',
+      }),
+    );
+
+    expect(mockSuccess).toHaveBeenCalledTimes(1);
+    expect(mockSuccess).toHaveBeenCalledWith(
+      expect.objectContaining({
+        meta: expect.objectContaining({
+          resultId: 'result-456',
+          processedCount: 42,
         }),
       }),
     );
