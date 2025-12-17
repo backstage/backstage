@@ -68,25 +68,8 @@ export const SearchField = forwardRef<HTMLDivElement, SearchFieldProps>(
       ...rest
     } = cleanedProps;
 
-    const hasProvidedValue = props.value || props.defaultValue;
-    const initialCollapsed = !!startCollapsed && !hasProvidedValue;
+    const [isFocused, setIsFocused] = useState(false);
     const inputRef = useRef<HTMLInputElement>(null);
-    const [isCollapsed, setIsCollapsed] = useState(initialCollapsed);
-    const [shouldCollapse, setShouldCollapse] = useState(!hasProvidedValue);
-
-    // If a value becomes available (controlled or defaultValue), force expand so the user can see it.
-    // If it becomes empty again and startCollapsed is enabled, allow collapse behavior again.
-    useEffect(() => {
-      if (hasProvidedValue) {
-        setShouldCollapse(false);
-        setIsCollapsed(false);
-      } else {
-        setShouldCollapse(true);
-        if (startCollapsed) {
-          setIsCollapsed(true);
-        }
-      }
-    }, [hasProvidedValue, startCollapsed]);
 
     // If a secondary label is provided, use it. Otherwise, use 'Required' if the field is required.
     const secondaryLabelText =
@@ -94,34 +77,23 @@ export const SearchField = forwardRef<HTMLDivElement, SearchFieldProps>(
 
     const handleFocusChange = (isFocused: boolean) => {
       props.onFocusChange?.(isFocused);
-      if (shouldCollapse) {
-        if (isFocused) {
-          // When focusing, expand the field (unless startCollapsed + a value/defaultValue is provided)
-          setIsCollapsed(false);
-        } else {
-          // When blurring, collapse the field
-          setIsCollapsed(true);
-        }
-      }
+      setIsFocused(isFocused);
     };
 
     const handleContainerClick = () => {
-      if (startCollapsed && isCollapsed) {
-        // Focus the input after state update
-        setTimeout(() => {
-          inputRef.current?.focus();
-        }, 0);
-      }
+      inputRef.current?.focus();
     };
 
     const handleChange = (value: string) => {
       props.onChange?.(value);
-      if (value.length > 0) {
-        setShouldCollapse(false);
-      } else {
-        setShouldCollapse(true);
-      }
     };
+
+    const hasInputRef = !!inputRef.current;
+    const hasValue = !!inputRef.current?.value;
+
+    const isCollapsed = hasInputRef
+      ? startCollapsed && !hasValue && !isFocused
+      : startCollapsed && !rest.value && !rest.defaultValue && !isFocused;
 
     return (
       <AriaSearchField

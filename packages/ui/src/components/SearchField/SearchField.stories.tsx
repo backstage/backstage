@@ -307,12 +307,31 @@ export const StartCollapsedWithOnChange: Story = {
   },
 };
 
-export const StartCollapsedControlled: Story = {
+export const StartCollapsedControlledEmpty: Story = {
   args: {
     ...StartCollapsed.args,
   },
   render: function Render(args) {
     const [value, setValue] = useState('');
+
+    return (
+      <Flex
+        direction="row"
+        gap="2"
+        style={{ width: '100%', maxWidth: '600px' }}
+      >
+        <SearchField {...args} size="small" value={value} onChange={setValue} />
+      </Flex>
+    );
+  },
+};
+
+export const StartCollapsedControlledWithValue: Story = {
+  args: {
+    ...StartCollapsed.args,
+  },
+  render: function Render(args) {
+    const [value, setValue] = useState('Component');
 
     return (
       <Flex
