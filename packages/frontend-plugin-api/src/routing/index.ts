@@ -14,6 +14,45 @@
  * limitations under the License.
  */
 
+export type {
+  Location,
+  Path,
+  To,
+  NavigateOptions,
+  NavigateFunction,
+  RouteObject,
+  RouteMatch,
+  LinkProps,
+  NavLinkProps,
+  RouteProps,
+  NavigateProps,
+} from './routerTypes';
+
+export {
+  useLocation,
+  useParams,
+  useNavigate,
+  useSearchParams,
+  useResolvedPath,
+  useHref,
+  useOutlet,
+  useRoutes,
+  resolvePath,
+  matchRoutes,
+  generatePath,
+} from './hooks';
+
+export {
+  Link,
+  NavLink,
+  Outlet,
+  Route,
+  Routes,
+  Navigate,
+  createRoutesFromChildren,
+  type RoutesProps,
+} from './components';
+
 export type { AnyRouteRefParams } from './types';
 export { createRouteRef, type RouteRef } from './RouteRef';
 export { createSubRouteRef, type SubRouteRef } from './SubRouteRef';

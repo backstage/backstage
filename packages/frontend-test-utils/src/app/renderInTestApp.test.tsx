@@ -20,8 +20,12 @@ import {
   MockAnalyticsApi,
   TestApiProvider,
 } from '@backstage/frontend-test-utils';
-import { analyticsApiRef, useAnalytics } from '@backstage/frontend-plugin-api';
-import { Routes, Route } from 'react-router-dom';
+import {
+  analyticsApiRef,
+  useAnalytics,
+  Routes,
+  Route,
+} from '@backstage/frontend-plugin-api';
 import { renderInTestApp } from './renderInTestApp';
 
 describe('renderInTestApp', () => {

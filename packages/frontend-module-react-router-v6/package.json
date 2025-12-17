@@ -1,6 +1,7 @@
 {
-  "name": "@backstage/frontend-defaults",
-  "version": "0.3.4",
+  "name": "@backstage/frontend-module-react-router-v6",
+  "version": "0.0.0",
+  "description": "React Router 6 implementation of the RouterApi for Backstage frontend",
   "backstage": {
     "role": "web-library"
   },
@@ -12,7 +13,7 @@
   "repository": {
     "type": "git",
     "url": "https://github.com/backstage/backstage",
-    "directory": "packages/frontend-defaults"
+    "directory": "packages/frontend-module-react-router-v6"
   },
   "license": "Apache-2.0",
   "sideEffects": false,
@@ -31,20 +32,11 @@
     "test": "backstage-cli package test"
   },
   "dependencies": {
-    "@backstage/config": "workspace:^",
-    "@backstage/core-components": "workspace:^",
-    "@backstage/errors": "workspace:^",
-    "@backstage/frontend-app-api": "workspace:^",
-    "@backstage/frontend-plugin-api": "workspace:^",
-    "@backstage/plugin-app": "workspace:^",
-    "@react-hookz/web": "^24.0.0"
+    "react-router-dom": "^6.3.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
-    "@backstage/core-plugin-api": "workspace:^",
-    "@backstage/test-utils": "workspace:^",
-    "@testing-library/jest-dom": "^6.0.0",
-    "@testing-library/react": "^16.0.0",
+    "@backstage/frontend-plugin-api": "workspace:^",
     "@types/react": "^18.0.0",
     "react": "^18.0.2",
     "react-dom": "^18.0.2"
