@@ -28,10 +28,10 @@ import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { notificationsTranslationRef } from '../../translation';
 
 const TableTitleKeys = {
-  all: 'notificationsPage.tableTitle.all' as const,
-  saved: 'notificationsPage.tableTitle.saved' as const,
-  unread: 'notificationsPage.tableTitle.unread' as const,
-  read: 'notificationsPage.tableTitle.read' as const,
+  all: 'notificationsPage.tableTitle.all',
+  saved: 'notificationsPage.tableTitle.saved',
+  unread: 'notificationsPage.tableTitle.unread',
+  read: 'notificationsPage.tableTitle.read',
 } as const;
 
 import { NotificationsTable } from '../NotificationsTable';

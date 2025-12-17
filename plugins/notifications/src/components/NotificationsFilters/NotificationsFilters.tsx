@@ -52,43 +52,43 @@ type TranslationKey = keyof (typeof notificationsTranslationRef)['T'];
 
 export const CreatedAfterOptions = {
   last24h: {
-    labelKey: 'filters.createdAfter.last24h' as const satisfies TranslationKey,
+    labelKey: 'filters.createdAfter.last24h' satisfies TranslationKey,
     getDate: () => new Date(Date.now() - 24 * 3600 * 1000),
   },
   lastWeek: {
-    labelKey: 'filters.createdAfter.lastWeek' as const satisfies TranslationKey,
+    labelKey: 'filters.createdAfter.lastWeek' satisfies TranslationKey,
     getDate: () => new Date(Date.now() - 7 * 24 * 3600 * 1000),
   },
   all: {
-    labelKey: 'filters.createdAfter.anyTime' as const satisfies TranslationKey,
+    labelKey: 'filters.createdAfter.anyTime' satisfies TranslationKey,
     getDate: () => new Date(0),
   },
 } as const;
 
 export const SortByOptions = {
   newest: {
-    labelKey: 'filters.sortBy.newest' as const satisfies TranslationKey,
+    labelKey: 'filters.sortBy.newest' satisfies TranslationKey,
     sortBy: {
       sort: 'created' as const,
       sortOrder: 'desc' as const,
     },
   },
   oldest: {
-    labelKey: 'filters.sortBy.oldest' as const satisfies TranslationKey,
+    labelKey: 'filters.sortBy.oldest' satisfies TranslationKey,
     sortBy: {
       sort: 'created' as const,
       sortOrder: 'asc' as const,
     },
   },
   topic: {
-    labelKey: 'filters.sortBy.topic' as const satisfies TranslationKey,
+    labelKey: 'filters.sortBy.topic' satisfies TranslationKey,
     sortBy: {
       sort: 'topic' as const,
       sortOrder: 'asc' as const,
     },
   },
   origin: {
-    labelKey: 'filters.sortBy.origin' as const satisfies TranslationKey,
+    labelKey: 'filters.sortBy.origin' satisfies TranslationKey,
     sortBy: {
       sort: 'origin' as const,
       sortOrder: 'asc' as const,
