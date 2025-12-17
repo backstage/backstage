@@ -434,7 +434,7 @@ export default {
       {
         type: 'category',
         label: 'Testing',
-        items: ['plugins/testing'],
+        items: ['plugins/testing', 'plugins/playwright'],
       },
       {
         type: 'category',
