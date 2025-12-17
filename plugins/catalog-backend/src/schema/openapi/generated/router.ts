@@ -853,6 +853,16 @@ export const spec = {
         operationId: 'RefreshEntity',
         tags: ['Entity'],
         description: 'Refresh the entity related to entityRef.',
+        'x-backstage-auditor': {
+          eventId: 'entity-mutate',
+          severityLevel: 'medium',
+          meta: {
+            queryType: 'refresh',
+            captureFromRequest: {
+              body: ['entityRef'],
+            },
+          },
+        },
         responses: {
           '200': {
             description: 'Refreshed',
@@ -902,6 +912,12 @@ export const spec = {
         operationId: 'GetEntities',
         tags: ['Entity'],
         description: 'Get all entities matching a given filter.',
+        'x-backstage-auditor': {
+          eventId: 'entity-fetch',
+          meta: {
+            queryType: 'all',
+          },
+        },
         responses: {
           '200': {
             description: '',
@@ -965,6 +981,15 @@ export const spec = {
         operationId: 'GetEntityByUid',
         tags: ['Entity'],
         description: 'Get a single entity by the UID.',
+        'x-backstage-auditor': {
+          eventId: 'entity-fetch',
+          meta: {
+            queryType: 'by-uid',
+            captureFromRequest: {
+              params: ['uid'],
+            },
+          },
+        },
         responses: {
           '200': {
             description: 'Ok',
@@ -999,6 +1024,16 @@ export const spec = {
         operationId: 'DeleteEntityByUid',
         tags: ['Entity'],
         description: 'Delete a single entity by UID.',
+        'x-backstage-auditor': {
+          eventId: 'entity-mutate',
+          severityLevel: 'medium',
+          meta: {
+            actionType: 'delete',
+            captureFromRequest: {
+              params: ['uid'],
+            },
+          },
+        },
         responses: {
           '204': {
             description: 'Deleted successfully.',
@@ -1028,6 +1063,15 @@ export const spec = {
         operationId: 'GetEntityByName',
         tags: ['Entity'],
         description: 'Get an entity by an entity ref.',
+        'x-backstage-auditor': {
+          eventId: 'entity-fetch',
+          meta: {
+            queryType: 'by-name',
+            captureFromRequest: {
+              params: ['kind', 'namespace', 'name'],
+            },
+          },
+        },
         responses: {
           '200': {
             description: 'Ok',
@@ -1070,6 +1114,15 @@ export const spec = {
         operationId: 'GetEntityAncestryByName',
         tags: ['Entity'],
         description: "Get an entity's ancestry by entity ref.",
+        'x-backstage-auditor': {
+          eventId: 'entity-fetch',
+          meta: {
+            actionType: 'ancestry',
+            captureFromRequest: {
+              params: ['kind', 'namespace', 'name'],
+            },
+          },
+        },
         responses: {
           '200': {
             description: 'Ok',
@@ -1113,6 +1166,12 @@ export const spec = {
         tags: ['Entity'],
         description:
           'Get a batch set of entities given an array of entityRefs.',
+        'x-backstage-auditor': {
+          eventId: 'entity-fetch',
+          meta: {
+            queryType: 'by-refs',
+          },
+        },
         responses: {
           '200': {
             description: 'Ok',
@@ -1193,6 +1252,12 @@ export const spec = {
         operationId: 'GetEntitiesByQuery',
         tags: ['Entity'],
         description: 'Search for entities by a given query.',
+        'x-backstage-auditor': {
+          eventId: 'entity-fetch',
+          meta: {
+            queryType: 'by-query',
+          },
+        },
         responses: {
           '200': {
             description: 'Ok',
@@ -1368,6 +1433,9 @@ export const spec = {
         operationId: 'GetEntityFacets',
         tags: ['Entity'],
         description: 'Get all entity facets that match the given filters.',
+        'x-backstage-auditor': {
+          eventId: 'entity-facets',
+        },
         responses: {
           '200': {
             description: 'Ok',
@@ -1475,6 +1543,17 @@ export const spec = {
         operationId: 'CreateLocation',
         tags: ['Locations'],
         description: 'Create a location for a given target.',
+        'x-backstage-auditor': {
+          eventId: 'location-mutate',
+          severityLevel: 'medium',
+          meta: {
+            actionType: 'create',
+            captureFromRequest: {
+              body: ['type', 'target'],
+              query: ['dryRun'],
+            },
+          },
+        },
         responses: {
           '201': {
             description: 'Created',
@@ -1561,6 +1640,12 @@ export const spec = {
         operationId: 'GetLocations',
         tags: ['Locations'],
         description: 'Get all locations',
+        'x-backstage-auditor': {
+          eventId: 'location-fetch',
+          meta: {
+            queryType: 'all',
+          },
+        },
         responses: {
           '200': {
             description: 'Ok',
@@ -1648,6 +1733,15 @@ export const spec = {
         operationId: 'GetLocation',
         tags: ['Locations'],
         description: 'Get a location by id.',
+        'x-backstage-auditor': {
+          eventId: 'location-fetch',
+          meta: {
+            queryType: 'by-id',
+            captureFromRequest: {
+              params: ['id'],
+            },
+          },
+        },
         responses: {
           '200': {
             description: 'Ok',
@@ -1731,6 +1825,16 @@ export const spec = {
         operationId: 'DeleteLocation',
         tags: ['Locations'],
         description: 'Delete a location by id.',
+        'x-backstage-auditor': {
+          eventId: 'location-mutate',
+          severityLevel: 'medium',
+          meta: {
+            actionType: 'delete',
+            captureFromRequest: {
+              params: ['id'],
+            },
+          },
+        },
         responses: {
           '204': {
             description: 'No content',
@@ -1765,6 +1869,15 @@ export const spec = {
         operationId: 'getLocationByEntity',
         tags: ['Locations'],
         description: 'Get a location for entity.',
+        'x-backstage-auditor': {
+          eventId: 'location-fetch',
+          meta: {
+            queryType: 'by-entity',
+            captureFromRequest: {
+              params: ['kind', 'namespace', 'name'],
+            },
+          },
+        },
         responses: {
           '200': {
             description: 'Ok',
@@ -1819,6 +1932,9 @@ export const spec = {
         operationId: 'AnalyzeLocation',
         tags: ['Locations'],
         description: 'Validate a given location.',
+        'x-backstage-auditor': {
+          eventId: 'location-analyze',
+        },
         responses: {
           '200': {
             description: 'Ok',
@@ -1871,6 +1987,9 @@ export const spec = {
         tags: ['Entity'],
         description:
           'Validate that a passed in entity has no errors in schema.',
+        'x-backstage-auditor': {
+          eventId: 'entity-validate',
+        },
         responses: {
           '200': {
             description: 'Ok',
