@@ -328,6 +328,7 @@ export interface VisitsApi {
   list(queryParams?: VisitsApiQueryParams): Promise<Visit[]>;
   save(saveParams: VisitsApiSaveParams): Promise<Visit>;
   transformPathname?(pathname: string): string;
+  updateName?(pathname: string, name: string): Promise<void>;
 }
 
 // @public
@@ -361,6 +362,7 @@ export class VisitsStorageApi implements VisitsApi {
   list(queryParams?: VisitsApiQueryParams): Promise<Visit[]>;
   save(saveParams: VisitsApiSaveParams): Promise<Visit>;
   transformPathname(pathname: string): string;
+  updateName(pathname: string, name: string): Promise<void>;
 }
 
 // @public (undocumented)

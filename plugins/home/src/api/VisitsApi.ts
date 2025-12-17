@@ -144,6 +144,12 @@ export interface VisitsApi {
   enrichVisit?(
     visit: VisitInput,
   ): Promise<Record<string, any>> | Record<string, any>;
+  /**
+   * Update the name of an existing visit without affecting hit count.
+   * @param pathname - the pathname of the visit to update
+   * @param name - the new name for the visit
+   */
+  updateName?(pathname: string, name: string): Promise<void>;
 }
 
 /** @public */
