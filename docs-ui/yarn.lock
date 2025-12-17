@@ -1618,8 +1618,8 @@ __metadata:
   linkType: hard
 
 "@uiw/codemirror-themes@npm:^4.23.7":
-  version: 4.25.3
-  resolution: "@uiw/codemirror-themes@npm:4.25.3"
+  version: 4.25.4
+  resolution: "@uiw/codemirror-themes@npm:4.25.4"
   dependencies:
     "@codemirror/language": "npm:^6.0.0"
     "@codemirror/state": "npm:^6.0.0"
@@ -1628,7 +1628,7 @@ __metadata:
     "@codemirror/language": ">=6.0.0"
     "@codemirror/state": ">=6.0.0"
     "@codemirror/view": ">=6.0.0"
-  checksum: 10/f808ac3c4763f623ed6ea6215cc1421bb87234e0a05e7b6d9e917ab304fc6a4977c238996ca538e22093af8136c02bb27512aeeac653cb8fe82b4917ba1668a3
+  checksum: 10/aab62e2c16a10dbde4592cef704d386c1a9e3caece4ff0eed85e9d9a5acdeaf3fd8717e2cb6a6795e12e890b8600956effb52d453aacbc618934e7ae8c3e59e3
   languageName: node
   linkType: hard
 
