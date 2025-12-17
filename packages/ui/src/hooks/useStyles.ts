@@ -86,17 +86,17 @@ export function useStyles<
       ? componentDefinition.utilityProps
       : []) || [];
 
-  // Extract data attribute names from component definition
-  const dataAttributeNames =
-    'dataAttributes' in componentDefinition
-      ? Object.keys(componentDefinition.dataAttributes || {})
-      : [];
-
   // Extract existing style from props
   const incomingStyle = props.style || {};
 
   // Generate data attributes from component definition
   const dataAttributes: Record<string, string> = useMemo(() => {
+    // Extract data attribute names from component definition
+    const dataAttributeNames =
+      'dataAttributes' in componentDefinition
+        ? Object.keys(componentDefinition.dataAttributes || {})
+        : [];
+
     const result: Record<string, string> = {};
     for (const key of dataAttributeNames) {
       const value = props[key];
@@ -114,7 +114,7 @@ export function useStyles<
       }
     }
     return result;
-  }, [dataAttributeNames, props, breakpoint]);
+  }, [componentDefinition, props, breakpoint]);
 
   // Generate utility classes and custom styles from component's allowed utility props
   const utilityClassList: string[] = [];
