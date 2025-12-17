@@ -84,10 +84,6 @@ export const SearchField = forwardRef<HTMLDivElement, SearchFieldProps>(
       inputRef.current?.focus();
     };
 
-    const handleChange = (value: string) => {
-      props.onChange?.(value);
-    };
-
     const hasInputRef = !!inputRef.current;
     const hasValue = !!inputRef.current?.value;
 
@@ -102,10 +98,9 @@ export const SearchField = forwardRef<HTMLDivElement, SearchFieldProps>(
         aria-label={ariaLabel}
         aria-labelledby={ariaLabelledBy}
         data-collapsed={isCollapsed}
-        onFocusChange={handleFocusChange}
-        onChange={handleChange}
         style={style}
         {...rest}
+        onFocusChange={handleFocusChange}
         ref={ref}
       >
         <FieldLabel
