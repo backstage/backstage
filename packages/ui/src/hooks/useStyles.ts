@@ -13,9 +13,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { useMemo } from 'react';
 import { useBreakpoint, breakpoints } from './useBreakpoint';
 import type { ComponentDefinition } from '../types';
 import { utilityClassMap } from '../utils/utilityClassMap';
+
+function toKebabCase(str: string): string {
+  return str
+    .replace(/([a-z0-9])([A-Z])/g, '$1-$2')
+    .replace(/_/g, '-')
+    .toLocaleLowerCase('en-US');
+}
 
 /**
  * Resolve a responsive value based on the current breakpoint
@@ -78,31 +86,35 @@ export function useStyles<
       ? componentDefinition.utilityProps
       : []) || [];
 
-  // Extract data attribute names from component definition
-  const dataAttributeNames =
-    'dataAttributes' in componentDefinition
-      ? Object.keys(componentDefinition.dataAttributes || {})
-      : [];
-
   // Extract existing style from props
   const incomingStyle = props.style || {};
 
   // Generate data attributes from component definition
-  const dataAttributes: Record<string, string> = {};
-  for (const key of dataAttributeNames) {
-    const value = props[key];
-    if (value !== undefined && value !== null) {
-      // Handle boolean and number values directly
-      if (typeof value === 'boolean' || typeof value === 'number') {
-        dataAttributes[`data-${key}`] = String(value);
-      } else {
-        const resolvedValue = resolveResponsiveValue(value, breakpoint);
-        if (resolvedValue !== undefined) {
-          dataAttributes[`data-${key}`] = resolvedValue;
+  const dataAttributes: Record<string, string> = useMemo(() => {
+    // Extract data attribute names from component definition
+    const dataAttributeNames =
+      'dataAttributes' in componentDefinition
+        ? Object.keys(componentDefinition.dataAttributes || {})
+        : [];
+
+    const result: Record<string, string> = {};
+    for (const key of dataAttributeNames) {
+      const value = props[key];
+      if (value !== undefined && value !== null) {
+        const dataAttrName = `data-${toKebabCase(key)}`;
+        // Handle boolean and number values directly
+        if (typeof value === 'boolean' || typeof value === 'number') {
+          result[dataAttrName] = String(value);
+        } else {
+          const resolvedValue = resolveResponsiveValue(value, breakpoint);
+          if (resolvedValue !== undefined) {
+            result[dataAttrName] = resolvedValue;
+          }
         }
       }
     }
-  }
+    return result;
+  }, [componentDefinition, props, breakpoint]);
 
   // Generate utility classes and custom styles from component's allowed utility props
   const utilityClassList: string[] = [];
