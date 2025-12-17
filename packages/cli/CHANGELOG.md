@@ -1,5 +1,11 @@
 # @backstage/cli
 
+## 0.35.1
+
+### Patch Changes
+
+- 6abd191: Bump `@swc/core` to support `ES2023` and `ES2024`
+
 ## 0.35.0
 
 ### Minor Changes
