@@ -16,7 +16,6 @@
 
 import {
   AuditorService,
-  AuditorServiceEventSeverityLevel,
   AuthService,
   LoggerService,
 } from '@backstage/backend-plugin-api';
@@ -33,7 +32,6 @@ import { Minimatch } from 'minimatch';
 import { CatalogAuthResolverContext } from '../lib/resolvers/CatalogAuthResolverContext';
 import { TokenIssuer } from '../identity/types';
 import { UserInfoDatabase } from '../database/UserInfoDatabase';
-import type { JsonObject } from '@backstage/types';
 
 export type ProviderFactories = { [s: string]: AuthProviderFactory };
 
@@ -71,38 +69,6 @@ export function bindProviderRouters(
 
   const isOriginAllowed = createOriginFilter(config);
 
-  const withAudit =
-    (
-      eventId: string,
-      handler: (
-        req: express.Request,
-        res: express.Response,
-        next: express.NextFunction,
-      ) => unknown | Promise<unknown>,
-      meta: JsonObject,
-      severityLevel: AuditorServiceEventSeverityLevel = 'low',
-    ) =>
-    async (
-      req: express.Request,
-      res: express.Response,
-      next: express.NextFunction,
-    ) => {
-      const event = await auditor.createEvent({
-        eventId,
-        request: req,
-        meta,
-        severityLevel,
-      });
-      try {
-        await handler(req, res, next);
-        await event.success({ meta: { outcome: 'success' } });
-      } catch (e) {
-        const error = e as Error;
-        await event.fail({ error, meta: { outcome: 'failure' } });
-        throw e;
-      }
-    };
-
   for (const [providerId, providerFactory] of Object.entries(providers)) {
     if (providersConfig?.has(providerId)) {
       logger.info(`Configuring auth provider: ${providerId}`);
@@ -127,49 +93,20 @@ export function bindProviderRouters(
             ownershipResolver,
             userInfo,
           }),
+          auditor,
         });
 
         const r = Router();
 
-        r.get(
-          '/start',
-          withAudit('auth-login', provider.start.bind(provider), {
-            providerId,
-            actionType: 'start',
-          }),
-        );
-        const frameHandler = provider.frameHandler.bind(provider);
-        r.get(
-          '/handler/frame',
-          withAudit('auth-login', frameHandler, {
-            providerId,
-            actionType: 'complete',
-          }),
-        );
-        r.post(
-          '/handler/frame',
-          withAudit('auth-login', frameHandler, {
-            providerId,
-            actionType: 'complete',
-          }),
-        );
+        r.get('/start', provider.start.bind(provider));
+        r.get('/handler/frame', provider.frameHandler.bind(provider));
+        r.post('/handler/frame', provider.frameHandler.bind(provider));
         if (provider.logout) {
-          const logoutHandler = provider.logout.bind(provider);
-          r.post(
-            '/logout',
-            withAudit('auth-logout', logoutHandler, { providerId }),
-          );
+          r.post('/logout', provider.logout.bind(provider));
         }
         if (provider.refresh) {
-          const refreshHandler = provider.refresh.bind(provider);
-          r.get(
-            '/refresh',
-            withAudit('auth-token-refresh', refreshHandler, { providerId }),
-          );
-          r.post(
-            '/refresh',
-            withAudit('auth-token-refresh', refreshHandler, { providerId }),
-          );
+          r.get('/refresh', provider.refresh.bind(provider));
+          r.post('/refresh', provider.refresh.bind(provider));
         }
 
         targetRouter.use(`/${providerId}`, r);

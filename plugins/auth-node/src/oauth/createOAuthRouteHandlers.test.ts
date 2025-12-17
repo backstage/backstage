@@ -31,6 +31,15 @@ import { PassportProfile } from '../passport';
 import { parseWebMessageResponse } from '../flow/__testUtils__/parseWebMessageResponse';
 import { MiddlewareFactory } from '@backstage/backend-defaults/rootHttpRouter';
 import { mockServices } from '@backstage/backend-test-utils';
+import { emitAuditEvent } from '../audit';
+
+jest.mock('../audit', () => ({
+  emitAuditEvent: jest.fn(),
+}));
+
+const mockEmitAuditEvent = emitAuditEvent as jest.MockedFunction<
+  typeof emitAuditEvent
+>;
 
 const mockAuthenticator: jest.Mocked<OAuthAuthenticator<unknown, unknown>> = {
   initialize: jest.fn(_r => ({ ctx: 'authenticator' })),
@@ -662,6 +671,7 @@ describe('createOAuthRouteHandlers', () => {
     });
 
     it('should authenticate with sign-in, profile transform, and persisted scopes', async () => {
+      const mockAuditor = {} as any;
       const agent = request.agent(
         wrapInApp(
           createOAuthRouteHandlers({
@@ -672,6 +682,7 @@ describe('createOAuthRouteHandlers', () => {
             },
             profileTransform: async () => ({ profile: { email: 'em@i.l' } }),
             signInResolver: async () => ({ token: mockBackstageToken }),
+            auditor: mockAuditor,
           }),
         ),
       );
@@ -720,6 +731,19 @@ describe('createOAuthRouteHandlers', () => {
       expect(getRefreshTokenCookie(agent).value).toBe('refresh-token');
       expect(getGrantedScopesCookie(agent).value).toBe(
         'my-scope%20my-other-scope',
+      );
+
+      expect(mockEmitAuditEvent).toHaveBeenCalledWith(
+        mockAuditor,
+        expect.objectContaining({
+          eventId: 'auth-login',
+          severityLevel: 'medium',
+          meta: {
+            providerId: 'my-provider',
+            userEntityRef: 'user:default/mock',
+            email: 'em@i.l',
+          },
+        }),
       );
     });
 
@@ -1008,6 +1032,7 @@ describe('createOAuthRouteHandlers', () => {
     });
 
     it('should refresh with sign-in, profile transform, and persisted scopes', async () => {
+      const mockAuditor = {} as any;
       const agent = request.agent(
         wrapInApp(
           createOAuthRouteHandlers({
@@ -1018,6 +1043,7 @@ describe('createOAuthRouteHandlers', () => {
             },
             profileTransform: async () => ({ profile: { email: 'em@i.l' } }),
             signInResolver: async () => ({ token: mockBackstageToken }),
+            auditor: mockAuditor,
           }),
         ),
       );
@@ -1071,11 +1097,28 @@ describe('createOAuthRouteHandlers', () => {
         },
       });
       expect(getRefreshTokenCookie(agent).value).toBe('new-refresh-token');
+
+      expect(mockEmitAuditEvent).toHaveBeenCalledWith(
+        mockAuditor,
+        expect.objectContaining({
+          eventId: 'auth-login',
+          severityLevel: 'low',
+          meta: {
+            providerId: 'my-provider',
+            actionType: 'token-refresh',
+            userEntityRef: 'user:default/mock',
+            email: 'em@i.l',
+          },
+        }),
+      );
     });
 
-    it('should forward errors', async () => {
+    it('should forward errors and emit failure audit event', async () => {
+      const mockAuditor = {} as any;
       const agent = request.agent(
-        wrapInApp(createOAuthRouteHandlers(baseConfig)),
+        wrapInApp(
+          createOAuthRouteHandlers({ ...baseConfig, auditor: mockAuditor }),
+        ),
       );
 
       agent.jar.setCookie(
@@ -1097,6 +1140,19 @@ describe('createOAuthRouteHandlers', () => {
           message: 'Refresh failed; caused by Error: NOPE',
         },
       });
+
+      expect(mockEmitAuditEvent).toHaveBeenCalledWith(
+        mockAuditor,
+        expect.objectContaining({
+          eventId: 'auth-login',
+          severityLevel: 'low',
+          meta: {
+            providerId: 'my-provider',
+            actionType: 'token-refresh',
+          },
+          error: expect.any(Error),
+        }),
+      );
     });
 
     it('should require refresh cookie', async () => {
@@ -1214,8 +1270,11 @@ describe('createOAuthRouteHandlers', () => {
 
   describe('logout', () => {
     it('should log out', async () => {
+      const mockAuditor = {} as any;
       const agent = request.agent(
-        wrapInApp(createOAuthRouteHandlers(baseConfig)),
+        wrapInApp(
+          createOAuthRouteHandlers({ ...baseConfig, auditor: mockAuditor }),
+        ),
       );
 
       agent.jar.setCookie(
@@ -1234,6 +1293,18 @@ describe('createOAuthRouteHandlers', () => {
       expect(res.body).toEqual({});
 
       expect(getRefreshTokenCookie(agent)).toBeUndefined();
+
+      expect(mockEmitAuditEvent).toHaveBeenCalledWith(
+        mockAuditor,
+        expect.objectContaining({
+          eventId: 'auth-logout',
+          severityLevel: 'low',
+          meta: {
+            providerId: 'my-provider',
+            actionType: 'logout',
+          },
+        }),
+      );
     });
 
     it('should reject requests without CSRF header', async () => {
