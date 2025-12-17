@@ -1,3 +1,4 @@
+import preview from '../../../../../.storybook/preview';
 /*
  * Copyright 2025 The Backstage Authors
  *
@@ -14,7 +15,7 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryObj, StoryFn } from '@storybook/react-vite';
+import type { StoryObj, StoryFn } from '@storybook/react-vite';
 import { HeaderPage } from './HeaderPage';
 import type { HeaderTab } from '../Header/types';
 import { MemoryRouter } from 'react-router-dom';
@@ -29,15 +30,14 @@ import {
 } from '../../';
 import { RiMore2Line } from '@remixicon/react';
 
-const meta = {
+const meta = preview.meta({
   title: 'Backstage UI/HeaderPage',
   component: HeaderPage,
   parameters: {
     layout: 'fullscreen',
   },
-} satisfies Meta<typeof HeaderPage>;
+});
 
-export default meta;
 type Story = StoryObj<typeof meta>;
 
 const tabs: HeaderTab[] = [
@@ -130,25 +130,25 @@ const layoutDecorator = [
   ),
 ];
 
-export const Default: Story = {
+export const Default = meta.story({
   args: {
     title: 'Page Title',
   },
-};
+});
 
-export const WithTabs: Story = {
+export const WithTabs = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
     tabs,
   },
   decorators: [withRouter],
-};
+});
 
-export const WithCustomActions: Story = {
+export const WithCustomActions = meta.story({
   decorators: [withRouter],
   render: () => (
     <HeaderPage
-      {...Default.args}
+      {...Default.input.args}
       customActions={
         <>
           <Button>Custom action</Button>
@@ -174,48 +174,48 @@ export const WithCustomActions: Story = {
       }
     />
   ),
-};
+});
 
-export const WithBreadcrumbs: Story = {
+export const WithBreadcrumbs = meta.story({
   decorators: [withRouter],
   args: {
-    ...Default.args,
+    ...Default.input.args,
     breadcrumbs: [{ label: 'Home', href: '/' }],
   },
-};
+});
 
-export const WithLongBreadcrumbs: Story = {
+export const WithLongBreadcrumbs = meta.story({
   decorators: [withRouter],
   args: {
-    ...Default.args,
+    ...Default.input.args,
     breadcrumbs: [
       { label: 'Home', href: '/' },
       { label: 'Long Breadcrumb Name', href: '/long-breadcrumb' },
     ],
   },
-};
+});
 
-export const WithEverything: Story = {
+export const WithEverything = meta.story({
   decorators: [withRouter],
   render: () => (
     <HeaderPage
-      {...Default.args}
+      {...Default.input.args}
       tabs={tabs}
       customActions={<Button>Custom action</Button>}
       breadcrumbs={[{ label: 'Home', href: '/' }]}
     />
   ),
-};
+});
 
-export const WithLayout: Story = {
+export const WithLayout = meta.story({
   args: {
-    ...WithEverything.args,
+    ...WithEverything.input.args,
   },
   decorators: [withRouter, ...layoutDecorator],
-  render: WithEverything.render,
-};
+  render: WithEverything.input.render,
+});
 
-export const WithTabsMatchingStrategies: Story = {
+export const WithTabsMatchingStrategies = meta.story({
   args: {
     title: 'Route Matching Demo',
     tabs: [
@@ -273,9 +273,9 @@ export const WithTabsMatchingStrategies: Story = {
       </Container>
     </MemoryRouter>
   ),
-};
+});
 
-export const WithTabsExactMatching: Story = {
+export const WithTabsExactMatching = meta.story({
   args: {
     title: 'Exact Matching Demo',
     tabs: [
@@ -312,9 +312,9 @@ export const WithTabsExactMatching: Story = {
       </Container>
     </MemoryRouter>
   ),
-};
+});
 
-export const WithTabsPrefixMatchingDeep: Story = {
+export const WithTabsPrefixMatchingDeep = meta.story({
   args: {
     title: 'Deep Nesting Demo',
     tabs: [
@@ -364,4 +364,4 @@ export const WithTabsPrefixMatchingDeep: Story = {
       </Container>
     </MemoryRouter>
   ),
-};
+});

@@ -1,3 +1,4 @@
+import preview from '../../../../../.storybook/preview';
 /*
  * Copyright 2025 The Backstage Authors
  *
@@ -14,7 +15,7 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryObj } from '@storybook/react-vite';
+import type { StoryObj } from '@storybook/react-vite';
 import {
   MenuTrigger,
   SubmenuTrigger,
@@ -26,7 +27,7 @@ import { Button } from '../..';
 import { useState, useEffect } from 'react';
 import { MemoryRouter } from 'react-router-dom';
 
-const meta = {
+const meta = preview.meta({
   title: 'Backstage UI/MenuAutocomplete',
   component: MenuTrigger,
   decorators: [
@@ -36,9 +37,8 @@ const meta = {
       </MemoryRouter>
     ),
   ],
-} satisfies Meta<typeof MenuTrigger>;
+});
 
-export default meta;
 type Story = StoryObj<typeof meta>;
 
 const options = [
@@ -53,7 +53,7 @@ const options = [
   { label: 'Honeydew', value: 'honeydew' },
 ];
 
-export const Default: Story = {
+export const Default = meta.story({
   args: {
     children: null,
   },
@@ -72,11 +72,11 @@ export const Default: Story = {
       </MenuAutocomplete>
     </MenuTrigger>
   ),
-};
+});
 
-export const PreviewAutocompleteMenu: Story = {
+export const PreviewAutocompleteMenu = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
   },
   render: () => (
     <MenuTrigger>
@@ -93,11 +93,11 @@ export const PreviewAutocompleteMenu: Story = {
       </MenuAutocomplete>
     </MenuTrigger>
   ),
-};
+});
 
-export const Virtualized: Story = {
+export const Virtualized = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
   },
   render: () => {
     const [pokemon, setPokemon] = useState<
@@ -132,11 +132,11 @@ export const Virtualized: Story = {
       </MenuTrigger>
     );
   },
-};
+});
 
-export const VirtualizedMaxHeight: Story = {
+export const VirtualizedMaxHeight = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
   },
   render: () => {
     const [pokemon, setPokemon] = useState<
@@ -172,11 +172,11 @@ export const VirtualizedMaxHeight: Story = {
       </MenuTrigger>
     );
   },
-};
+});
 
-export const Submenu: Story = {
+export const Submenu = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
   },
   render: () => (
     <MenuTrigger isOpen>
@@ -197,4 +197,4 @@ export const Submenu: Story = {
       </Menu>
     </MenuTrigger>
   ),
-};
+});

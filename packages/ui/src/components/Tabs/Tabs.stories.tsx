@@ -1,3 +1,4 @@
+import preview from '../../../../../.storybook/preview';
 /*
  * Copyright 2024 The Backstage Authors
  *
@@ -14,18 +15,17 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryFn, StoryObj } from '@storybook/react-vite';
+import type { StoryFn, StoryObj } from '@storybook/react-vite';
 import { Tabs, TabList, Tab, TabPanel } from './Tabs';
 import { MemoryRouter } from 'react-router-dom';
 import { Box } from '../Box';
 import { Text } from '../Text';
 
-const meta = {
+const meta = preview.meta({
   title: 'Backstage UI/Tabs',
   component: Tabs,
-} satisfies Meta<typeof Tabs>;
+});
 
-export default meta;
 type Story = StoryObj<typeof meta>;
 
 const withRouter = (Story: StoryFn) => (
@@ -34,7 +34,7 @@ const withRouter = (Story: StoryFn) => (
   </MemoryRouter>
 );
 
-export const Default: Story = {
+export const Default = meta.story({
   args: {
     children: '',
   },
@@ -48,9 +48,9 @@ export const Default: Story = {
       </TabList>
     </Tabs>
   ),
-};
+});
 
-export const WithTabPanels: Story = {
+export const WithTabPanels = meta.story({
   args: {
     children: '',
   },
@@ -73,9 +73,9 @@ export const WithTabPanels: Story = {
       </TabPanel>
     </Tabs>
   ),
-};
+});
 
-export const WithMockedURLTab2: Story = {
+export const WithMockedURLTab2 = meta.story({
   args: {
     children: '',
   },
@@ -105,9 +105,9 @@ export const WithMockedURLTab2: Story = {
       </Box>
     </MemoryRouter>
   ),
-};
+});
 
-export const WithMockedURLTab3: Story = {
+export const WithMockedURLTab3 = meta.story({
   args: {
     children: '',
   },
@@ -137,9 +137,9 @@ export const WithMockedURLTab3: Story = {
       </Box>
     </MemoryRouter>
   ),
-};
+});
 
-export const WithMockedURLNoMatch: Story = {
+export const WithMockedURLNoMatch = meta.story({
   args: {
     children: '',
   },
@@ -173,11 +173,11 @@ export const WithMockedURLNoMatch: Story = {
       </Box>
     </MemoryRouter>
   ),
-};
+});
 
 // New stories for testing match strategies
 
-export const ExactMatchingDefault: Story = {
+export const ExactMatchingDefault = meta.story({
   args: {
     children: '',
   },
@@ -211,9 +211,9 @@ export const ExactMatchingDefault: Story = {
       </Box>
     </MemoryRouter>
   ),
-};
+});
 
-export const PrefixMatchingForNestedRoutes: Story = {
+export const PrefixMatchingForNestedRoutes = meta.story({
   args: {
     children: '',
   },
@@ -251,9 +251,9 @@ export const PrefixMatchingForNestedRoutes: Story = {
       </Box>
     </MemoryRouter>
   ),
-};
+});
 
-export const PrefixMatchingDeepNesting: Story = {
+export const PrefixMatchingDeepNesting = meta.story({
   args: {
     children: '',
   },
@@ -286,9 +286,9 @@ export const PrefixMatchingDeepNesting: Story = {
       </Box>
     </MemoryRouter>
   ),
-};
+});
 
-export const MixedMatchingStrategies: Story = {
+export const MixedMatchingStrategies = meta.story({
   args: {
     children: '',
   },
@@ -337,9 +337,9 @@ export const MixedMatchingStrategies: Story = {
       </Box>
     </MemoryRouter>
   ),
-};
+});
 
-export const PrefixMatchingEdgeCases: Story = {
+export const PrefixMatchingEdgeCases = meta.story({
   args: {
     children: '',
   },
@@ -379,9 +379,9 @@ export const PrefixMatchingEdgeCases: Story = {
       </Box>
     </MemoryRouter>
   ),
-};
+});
 
-export const PrefixMatchingWithSlash: Story = {
+export const PrefixMatchingWithSlash = meta.story({
   args: {
     children: '',
   },
@@ -420,9 +420,9 @@ export const PrefixMatchingWithSlash: Story = {
       </Box>
     </MemoryRouter>
   ),
-};
+});
 
-export const RootPathMatching: Story = {
+export const RootPathMatching = meta.story({
   args: {
     children: '',
   },
@@ -454,9 +454,9 @@ export const RootPathMatching: Story = {
       </Box>
     </MemoryRouter>
   ),
-};
+});
 
-export const AutoSelectionOfTabs: Story = {
+export const AutoSelectionOfTabs = meta.story({
   args: {
     children: '',
   },
@@ -511,4 +511,4 @@ export const AutoSelectionOfTabs: Story = {
       </div>
     </MemoryRouter>
   ),
-};
+});

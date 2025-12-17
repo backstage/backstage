@@ -13,12 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import type { Meta, StoryObj } from '@storybook/react-vite';
+import preview from '../../../../../.storybook/preview';
 import { Skeleton } from './Skeleton';
 import { Flex } from '../Flex';
 
-const meta = {
+const meta = preview.meta({
   title: 'Backstage UI/Skeleton',
   component: Skeleton,
   argTypes: {
@@ -37,24 +36,21 @@ const meta = {
     height: 24,
     rounded: false,
   },
-} satisfies Meta<typeof Skeleton>;
+});
 
-export default meta;
-type Story = StoryObj<typeof meta>;
-
-export const Default: Story = {
+export const Default = meta.story({
   args: {},
-};
+});
 
-export const Rounded: Story = {
+export const Rounded = meta.story({
   args: {
     rounded: true,
     width: 48,
     height: 48,
   },
-};
+});
 
-export const Demo1: Story = {
+export const Demo1 = meta.story({
   render: () => (
     <Flex gap="4">
       <Skeleton rounded width={48} height={48} />
@@ -69,9 +65,9 @@ export const Demo1: Story = {
       </Flex>
     </Flex>
   ),
-};
+});
 
-export const Demo2: Story = {
+export const Demo2 = meta.story({
   render: () => (
     <Flex direction="column" gap="4">
       <Skeleton width={400} height={160} />
@@ -79,4 +75,4 @@ export const Demo2: Story = {
       <Skeleton width={240} height={12} />
     </Flex>
   ),
-};
+});

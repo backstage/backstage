@@ -1,3 +1,4 @@
+import preview from '../../../../../.storybook/preview';
 /*
  * Copyright 2025 The Backstage Authors
  *
@@ -14,14 +15,14 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryObj } from '@storybook/react-vite';
+import type { StoryObj } from '@storybook/react-vite';
 import { MenuTrigger, MenuListBox, MenuListBoxItem } from './index';
 import { Button, Flex, Text } from '../..';
 import { useEffect, useState } from 'react';
 import { Selection } from 'react-aria-components';
 import { MemoryRouter } from 'react-router-dom';
 
-const meta = {
+const meta = preview.meta({
   title: 'Backstage UI/MenuListBox',
   component: MenuTrigger,
   decorators: [
@@ -31,12 +32,11 @@ const meta = {
       </MemoryRouter>
     ),
   ],
-} satisfies Meta<typeof MenuTrigger>;
+});
 
-export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Default: Story = {
+export const Default = meta.story({
   args: {
     children: null,
   },
@@ -50,11 +50,11 @@ export const Default: Story = {
       </MenuListBox>
     </MenuTrigger>
   ),
-};
+});
 
-export const Controlled: Story = {
+export const Controlled = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
   },
   render: () => {
     const [selected, setSelected] = useState<Selection>(new Set(['paul']));
@@ -86,11 +86,11 @@ export const Controlled: Story = {
       </Flex>
     );
   },
-};
+});
 
-export const Virtualized: Story = {
+export const Virtualized = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
   },
   render: () => {
     const [pokemon, setPokemon] = useState<
@@ -121,11 +121,11 @@ export const Virtualized: Story = {
       </MenuTrigger>
     );
   },
-};
+});
 
-export const VirtualizedMaxHeight: Story = {
+export const VirtualizedMaxHeight = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
   },
   render: () => {
     const [pokemon, setPokemon] = useState<
@@ -156,4 +156,4 @@ export const VirtualizedMaxHeight: Story = {
       </MenuTrigger>
     );
   },
-};
+});

@@ -1,3 +1,4 @@
+import preview from '../../../../../.storybook/preview';
 /*
  * Copyright 2025 The Backstage Authors
  *
@@ -15,7 +16,7 @@
  */
 
 import { useState } from 'react';
-import type { Meta, StoryFn, StoryObj } from '@storybook/react-vite';
+import type { StoryFn, StoryObj } from '@storybook/react-vite';
 import { type Selection } from 'react-aria-components';
 import {
   Table,
@@ -39,7 +40,7 @@ import { RiCactusLine } from '@remixicon/react';
 import { TablePagination } from '../TablePagination';
 import { Text } from '../Text';
 
-const meta = {
+const meta = preview.meta({
   title: 'Backstage UI/Table',
   decorators: [
     (Story: StoryFn) => (
@@ -48,16 +49,15 @@ const meta = {
       </MemoryRouter>
     ),
   ],
-} satisfies Meta;
+});
 
 // Added this fix to fix Chromatic timeout error. This bug is due to rerendering the table with too many rows.
 // Work in progress to fix it here - https://github.com/backstage/backstage/pull/30687
 const data1 = data1Raw.slice(0, 10);
 
-export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const TableOnly: Story = {
+export const TableOnly = meta.story({
   render: () => {
     return (
       <Table>
@@ -88,9 +88,9 @@ export const TableOnly: Story = {
       </Table>
     );
   },
-};
+});
 
-export const WithPaginationUncontrolled: Story = {
+export const WithPaginationUncontrolled = meta.story({
   render: () => {
     const { data, paginationProps } = useTable({ data: data1 });
 
@@ -122,9 +122,9 @@ export const WithPaginationUncontrolled: Story = {
       </>
     );
   },
-};
+});
 
-export const WithPaginationControlled: Story = {
+export const WithPaginationControlled = meta.story({
   render: () => {
     const [offset, setOffset] = useState(0);
     const [pageSize, setPageSize] = useState(5);
@@ -172,9 +172,9 @@ export const WithPaginationControlled: Story = {
       </>
     );
   },
-};
+});
 
-export const Sorting: Story = {
+export const Sorting = meta.story({
   render: () => {
     return (
       <Table>
@@ -207,9 +207,9 @@ export const Sorting: Story = {
       </Table>
     );
   },
-};
+});
 
-export const TableRockBand: Story = {
+export const TableRockBand = meta.story({
   render: () => {
     const { data, paginationProps } = useTable({
       data: data4,
@@ -246,9 +246,9 @@ export const TableRockBand: Story = {
       </>
     );
   },
-};
+});
 
-export const RowClick: Story = {
+export const RowClick = meta.story({
   render: () => {
     const { data, paginationProps } = useTable({
       data: data4,
@@ -285,9 +285,9 @@ export const RowClick: Story = {
       </>
     );
   },
-};
+});
 
-export const RowLink: Story = {
+export const RowLink = meta.story({
   render: () => {
     const { data, paginationProps } = useTable({
       data: data4,
@@ -324,9 +324,9 @@ export const RowLink: Story = {
       </>
     );
   },
-};
+});
 
-export const CellComponent: Story = {
+export const CellComponent = meta.story({
   name: 'Cell',
   render: () => {
     return (
@@ -354,9 +354,9 @@ export const CellComponent: Story = {
       </Table>
     );
   },
-};
+});
 
-export const CellTextComponent: Story = {
+export const CellTextComponent = meta.story({
   name: 'CellText',
   render: () => {
     return (
@@ -379,9 +379,9 @@ export const CellTextComponent: Story = {
       </Table>
     );
   },
-};
+});
 
-export const CellProfileComponent: Story = {
+export const CellProfileComponent = meta.story({
   name: 'CellProfile',
   render: () => {
     return (
@@ -404,9 +404,9 @@ export const CellProfileComponent: Story = {
       </Table>
     );
   },
-};
+});
 
-export const SelectionSingleToggle: Story = {
+export const SelectionSingleToggle = meta.story({
   render: () => {
     const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set([]));
 
@@ -442,9 +442,9 @@ export const SelectionSingleToggle: Story = {
       </Table>
     );
   },
-};
+});
 
-export const SelectionMultiToggle: Story = {
+export const SelectionMultiToggle = meta.story({
   render: () => {
     const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set([]));
 
@@ -480,9 +480,9 @@ export const SelectionMultiToggle: Story = {
       </Table>
     );
   },
-};
+});
 
-export const SelectionSingleReplace: Story = {
+export const SelectionSingleReplace = meta.story({
   render: () => {
     const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set([]));
 
@@ -518,9 +518,9 @@ export const SelectionSingleReplace: Story = {
       </Table>
     );
   },
-};
+});
 
-export const SelectionMultiReplace: Story = {
+export const SelectionMultiReplace = meta.story({
   render: () => {
     const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set([]));
 
@@ -556,9 +556,9 @@ export const SelectionMultiReplace: Story = {
       </Table>
     );
   },
-};
+});
 
-export const SelectionToggleWithActions: Story = {
+export const SelectionToggleWithActions = meta.story({
   render: () => {
     const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set([]));
 
@@ -595,9 +595,9 @@ export const SelectionToggleWithActions: Story = {
       </Table>
     );
   },
-};
+});
 
-export const SelectionReplaceWithActions: Story = {
+export const SelectionReplaceWithActions = meta.story({
   render: () => {
     const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set([]));
 
@@ -634,9 +634,9 @@ export const SelectionReplaceWithActions: Story = {
       </Table>
     );
   },
-};
+});
 
-export const SelectionToggleWithLinks: Story = {
+export const SelectionToggleWithLinks = meta.story({
   render: () => {
     const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set([]));
 
@@ -672,9 +672,9 @@ export const SelectionToggleWithLinks: Story = {
       </Table>
     );
   },
-};
+});
 
-export const SelectionReplaceWithLinks: Story = {
+export const SelectionReplaceWithLinks = meta.story({
   render: () => {
     const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set([]));
 
@@ -710,9 +710,9 @@ export const SelectionReplaceWithLinks: Story = {
       </Table>
     );
   },
-};
+});
 
-export const SelectionWithDisabledRows: Story = {
+export const SelectionWithDisabledRows = meta.story({
   render: () => {
     const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set([]));
 
@@ -749,9 +749,9 @@ export const SelectionWithDisabledRows: Story = {
       </Table>
     );
   },
-};
+});
 
-export const SelectionWithPagination: Story = {
+export const SelectionWithPagination = meta.story({
   render: () => {
     const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set([]));
 
@@ -789,9 +789,9 @@ export const SelectionWithPagination: Story = {
       </>
     );
   },
-};
+});
 
-export const SelectionModePlayground: Story = {
+export const SelectionModePlayground = meta.story({
   render: () => {
     const [selectionMode, setSelectionMode] = useState<'single' | 'multiple'>(
       'multiple',
@@ -849,9 +849,9 @@ export const SelectionModePlayground: Story = {
       </Flex>
     );
   },
-};
+});
 
-export const SelectionBehaviorPlayground: Story = {
+export const SelectionBehaviorPlayground = meta.story({
   render: () => {
     const [selectionBehavior, setSelectionBehavior] = useState<
       'toggle' | 'replace'
@@ -909,4 +909,4 @@ export const SelectionBehaviorPlayground: Story = {
       </Flex>
     );
   },
-};
+});

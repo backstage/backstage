@@ -1,3 +1,4 @@
+import preview from '../../../../../.storybook/preview';
 /*
  * Copyright 2025 The Backstage Authors
  *
@@ -14,7 +15,7 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryObj } from '@storybook/react-vite';
+import type { StoryObj } from '@storybook/react-vite';
 import {
   MenuTrigger,
   MenuAutocompleteListbox,
@@ -28,7 +29,7 @@ import { useEffect, useState } from 'react';
 import { Selection } from 'react-aria-components';
 import { MemoryRouter } from 'react-router-dom';
 
-const meta = {
+const meta = preview.meta({
   title: 'Backstage UI/MenuAutocompleteListBox',
   component: MenuTrigger,
   decorators: [
@@ -38,9 +39,8 @@ const meta = {
       </MemoryRouter>
     ),
   ],
-} satisfies Meta<typeof MenuTrigger>;
+});
 
-export default meta;
 type Story = StoryObj<typeof meta>;
 
 const options = [
@@ -55,7 +55,7 @@ const options = [
   { label: 'Honeydew', value: 'honeydew' },
 ];
 
-export const Default: Story = {
+export const Default = meta.story({
   args: {
     children: null,
   },
@@ -83,11 +83,11 @@ export const Default: Story = {
       </Flex>
     );
   },
-};
+});
 
-export const PreviewListbox: Story = {
+export const PreviewListbox = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
   },
   render: () => {
     const [selected, setSelected] = useState<Selection>(
@@ -113,11 +113,11 @@ export const PreviewListbox: Story = {
       </Flex>
     );
   },
-};
+});
 
-export const PreviewListboxMultiple: Story = {
+export const PreviewListboxMultiple = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
   },
   render: () => {
     const [selected, setSelected] = useState<Selection>(
@@ -144,11 +144,11 @@ export const PreviewListboxMultiple: Story = {
       </Flex>
     );
   },
-};
+});
 
-export const Submenu: Story = {
+export const Submenu = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
   },
   render: () => {
     const [selected, setSelected] = useState<Selection>(
@@ -182,11 +182,11 @@ export const Submenu: Story = {
       </Flex>
     );
   },
-};
+});
 
-export const Virtualized: Story = {
+export const Virtualized = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
   },
   render: () => {
     const [pokemon, setPokemon] = useState<
@@ -221,11 +221,11 @@ export const Virtualized: Story = {
       </MenuTrigger>
     );
   },
-};
+});
 
-export const VirtualizedMaxHeight: Story = {
+export const VirtualizedMaxHeight = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
   },
   render: () => {
     const [pokemon, setPokemon] = useState<
@@ -261,4 +261,4 @@ export const VirtualizedMaxHeight: Story = {
       </MenuTrigger>
     );
   },
-};
+});
