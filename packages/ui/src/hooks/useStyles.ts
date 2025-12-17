@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { useMemo } from 'react';
 import { useBreakpoint, breakpoints } from './useBreakpoint';
 import type { ComponentDefinition } from '../types';
 import { utilityClassMap } from '../utils/utilityClassMap';
@@ -95,22 +96,25 @@ export function useStyles<
   const incomingStyle = props.style || {};
 
   // Generate data attributes from component definition
-  const dataAttributes: Record<string, string> = {};
-  for (const key of dataAttributeNames) {
-    const value = props[key];
-    if (value !== undefined && value !== null) {
-      const dataAttrName = `data-${toKebabCase(key)}`;
-      // Handle boolean and number values directly
-      if (typeof value === 'boolean' || typeof value === 'number') {
-        dataAttributes[dataAttrName] = String(value);
-      } else {
-        const resolvedValue = resolveResponsiveValue(value, breakpoint);
-        if (resolvedValue !== undefined) {
-          dataAttributes[dataAttrName] = resolvedValue;
+  const dataAttributes: Record<string, string> = useMemo(() => {
+    const result: Record<string, string> = {};
+    for (const key of dataAttributeNames) {
+      const value = props[key];
+      if (value !== undefined && value !== null) {
+        const dataAttrName = `data-${toKebabCase(key)}`;
+        // Handle boolean and number values directly
+        if (typeof value === 'boolean' || typeof value === 'number') {
+          result[dataAttrName] = String(value);
+        } else {
+          const resolvedValue = resolveResponsiveValue(value, breakpoint);
+          if (resolvedValue !== undefined) {
+            result[dataAttrName] = resolvedValue;
+          }
         }
       }
     }
-  }
+    return result;
+  }, [dataAttributeNames, props, breakpoint]);
 
   // Generate utility classes and custom styles from component's allowed utility props
   const utilityClassList: string[] = [];
