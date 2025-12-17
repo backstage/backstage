@@ -87,6 +87,16 @@ const config: Config = {
   },
   onBrokenLinks: 'log',
   onBrokenMarkdownLinks: 'log',
+  future: {
+    v4: {
+      removeLegacyPostBuildHeadAttribute: true,
+    },
+    experimental_faster: {
+      rspackBundler: true,
+      rspackPersistentCache: true,
+      ssgWorkerThreads: true,
+    },
+  },
   presets: [
     [
       '@docusaurus/preset-classic',
@@ -172,6 +182,18 @@ const config: Config = {
   },
   plugins: [
     'docusaurus-plugin-sass',
+    function disableExpensiveBundlerOptimizationPlugin() {
+      return {
+        name: 'disable-expensive-bundler-optimizations',
+        configureWebpack(_config) {
+          return {
+            optimization: {
+              concatenateModules: false,
+            },
+          };
+        },
+      };
+    },
     () => ({
       name: 'yaml-loader',
       configureWebpack() {
