@@ -1,6 +1,13 @@
+// This file has been automatically migrated to valid ESM format by Storybook.
+import { fileURLToPath } from 'node:url';
+import { createRequire } from 'node:module';
 import type { StorybookConfig } from '@storybook/react-vite';
 
 import { join, dirname, posix } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const require = createRequire(import.meta.url);
 
 const isChromatic = process.env.STORYBOOK_STORY_SET === 'chromatic';
 
@@ -42,6 +49,7 @@ const config: StorybookConfig = {
     getAbsolutePath('@storybook/addon-themes'),
     getAbsolutePath('@storybook/addon-docs'),
     getAbsolutePath('@storybook/addon-a11y'),
+    getAbsolutePath('@storybook/addon-vitest'),
   ],
   framework: {
     name: getAbsolutePath('@storybook/react-vite'),
