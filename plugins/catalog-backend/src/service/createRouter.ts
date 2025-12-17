@@ -37,7 +37,7 @@ import { z } from 'zod/v3';
 import { Cursor, EntitiesCatalog } from '../catalog/types';
 import { CatalogProcessingOrchestrator } from '../processing/types';
 import { validateEntityEnvelope } from '../processing/util';
-import { createOpenApiRouter, spec } from '../schema/openapi';
+import { createOpenApiRouter } from '../schema/openapi';
 import { AuthorizedValidationService } from './AuthorizedValidationService';
 import { auditorMiddlewareFactory } from '@backstage/backend-openapi-utils';
 import {
@@ -116,7 +116,7 @@ export async function createRouter(
     enableRelationsCompatibility = false,
   } = options;
 
-  const { success, error } = auditorMiddlewareFactory(spec as any, auditor);
+  const { success, error } = auditorMiddlewareFactory(auditor);
   // Apply auditor middleware for automatic auditing based on OpenAPI annotations
   router.use(success);
 

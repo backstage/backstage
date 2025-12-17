@@ -147,6 +147,22 @@ describe('auditorMiddleware', () => {
           responses: { '200': { description: 'OK' } },
         },
       },
+
+      '/with-response': {
+        post: {
+          operationId: 'processData',
+          'x-backstage-auditor': {
+            eventId: 'data-process',
+            severityLevel: 'medium',
+            meta: {
+              captureFromResponse: {
+                body: ['resultId', 'processedCount'],
+              },
+            },
+          },
+          responses: { '200': { description: 'OK' } },
+        },
+      },
     },
   } as const;
 
@@ -290,47 +306,21 @@ describe('auditorMiddleware', () => {
   });
 
   it('captures metadata from response body', async () => {
-    const specWithResponseCapture = {
-      openapi: '3.0.2',
-      info: { title: 'Test', version: '1.0.0' },
-      paths: {
-        '/process': {
-          post: {
-            operationId: 'processData',
-            'x-backstage-auditor': {
-              eventId: 'data-process',
-              severityLevel: 'medium',
-              meta: {
-                captureFromResponse: {
-                  body: ['resultId', 'processedCount'],
-                },
-              },
-            },
-            responses: { '200': { description: 'OK' } },
-          },
-        },
-      },
-    };
+    const { mockCreateEvent, mockSuccess } = mockAuditor;
 
-    const { auditor, mockCreateEvent, mockSuccess } = createMockAuditor();
-    const { success, error } = auditorMiddlewareFactory(auditor);
-    const testRouter = createValidatedOpenApiRouterFromGeneratedEndpointMap(
-      specWithResponseCapture as any,
-    );
-    testRouter.use(success);
-
-    testRouter.post('/process', (_req, res) => {
-      // Return response with data that should be captured
+    router.post('/with-response', (_req, res) => {
       res.json({
         success: true,
         resultId: 'result-456',
         processedCount: 42,
       });
     });
-    testRouter.use(error);
-    const testApp = express().use(testRouter);
+    router.use(errorMiddleware);
 
-    await request(testApp).post('/process').send({ data: 'test' }).expect(200);
+    await request(app)
+      .post('/with-response')
+      .send({ data: 'test' })
+      .expect(200);
 
     expect(mockCreateEvent).toHaveBeenCalledWith(
       expect.objectContaining({
