@@ -211,6 +211,8 @@ export const SearchModal = (props: SearchModalProps) => {
 
   const classes = useStyles();
 
+  const isDialogOpen = open && !hidden;
+
   return (
     <Dialog
       classes={{
@@ -221,10 +223,9 @@ export const SearchModal = (props: SearchModalProps) => {
       aria-modal="true"
       fullWidth
       maxWidth="lg"
-      open={open}
-      hidden={hidden}
+      open={isDialogOpen}
     >
-      {open && (
+      {isDialogOpen && (
         <SearchContextProvider inheritParentContextIfAvailable>
           {(children &&
             children({
