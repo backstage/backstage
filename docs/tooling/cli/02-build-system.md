@@ -270,6 +270,12 @@ that are exported from the package, leaving a much cleaner type definition file
 and making sure that the type definitions are in sync with the generated
 JavaScript.
 
+### Building Module Federation Remotes
+
+Frontend plugin packages can be built as module federation remotes, which allows them to be loaded dynamically at runtime by a module federation host (typically your main frontend app). To build a package as a module federation remote, use the `--module-federation` option with the `package build` command.
+
+More details are given in the [Module Federation](../../frontend-system/building-apps/07-module-federation.md#building-module-federation-remotes) documentation.
+
 ## Bundling
 
 The goal of the bundling process is to combine multiple packages together into a
