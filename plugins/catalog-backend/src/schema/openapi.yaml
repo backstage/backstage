@@ -827,6 +827,9 @@ paths:
       operationId: RefreshEntity
       tags:
         - Entity
+      x-backstage-permissions:
+        permission: catalog.entity.refresh
+        onDeny: 403
       description: Refresh the entity related to entityRef.
       responses:
         '200':
@@ -1116,6 +1119,9 @@ paths:
       operationId: CreateLocation
       tags:
         - Locations
+      x-backstage-permissions:
+        permission: catalog.locations.create
+        onDeny: 403
       description: Create a location for a given target.
       responses:
         '201':
@@ -1168,6 +1174,9 @@ paths:
       operationId: GetLocations
       tags:
         - Locations
+      x-backstage-permissions:
+        permission: catalog.locations.read
+        validateManually: true
       description: Get all locations
       responses:
         '200':
@@ -1192,6 +1201,9 @@ paths:
   /locations/{id}:
     get:
       operationId: GetLocation
+      x-backstage-permissions:
+        permission: catalog.locations.read
+        onDeny: 404
       tags:
         - Locations
       description: Get a location by id.
@@ -1216,6 +1228,8 @@ paths:
             type: string
     delete:
       operationId: DeleteLocation
+      x-backstage-permissions:
+        permission: catalog.locations.delete
       tags:
         - Locations
       description: Delete a location by id.
@@ -1242,6 +1256,9 @@ paths:
       tags:
         - Locations
       description: Get a location for entity.
+      x-backstage-permissions:
+        permission: catalog.locations.read
+        onDeny: 404
       responses:
         '200':
           description: Ok
