@@ -95,15 +95,15 @@ export function permissionsMiddlewareFactory(dependencies: {
       );
     }
 
+    if (permissionsConfig.validateManually) {
+      next();
+      return;
+    }
+
     if (permission.type !== 'basic') {
       throw new Error(
         `Permission '${permissionsConfig.permission}' is not a basic permission and cannot be used in the OpenAPI permissions middleware`,
       );
-    }
-
-    if (permissionsConfig.validateManually) {
-      next();
-      return;
     }
 
     try {
