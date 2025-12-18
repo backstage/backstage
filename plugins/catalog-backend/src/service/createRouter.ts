@@ -116,7 +116,7 @@ export async function createRouter(
     enableRelationsCompatibility = false,
   } = options;
 
-  const { success, error } = auditorMiddlewareFactory(auditor);
+  const { success, error } = auditorMiddlewareFactory({ auditor, logger });
   // Apply auditor middleware for automatic auditing based on OpenAPI annotations
   router.use(success);
 

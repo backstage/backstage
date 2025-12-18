@@ -175,7 +175,10 @@ describe('auditorMiddleware', () => {
       createValidatedOpenApiRouterFromGeneratedEndpointMap(specWithAuditor);
     app = express().use(router);
     mockAuditor = createMockAuditor();
-    const { success, error } = auditorMiddlewareFactory(mockAuditor.auditor);
+    const { success, error } = auditorMiddlewareFactory({
+      auditor: mockAuditor.auditor,
+      logger: mockServices.logger.mock(),
+    });
     errorMiddleware = error;
     app.use(express.json());
     router.use(success);

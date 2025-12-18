@@ -16,7 +16,10 @@
 
 import { Request, Response, NextFunction } from 'express';
 import { OperationObject } from 'openapi3-ts';
-import type { AuditorService } from '@backstage/backend-plugin-api';
+import type {
+  AuditorService,
+  LoggerService,
+} from '@backstage/backend-plugin-api';
 import type { JsonObject } from '@backstage/types';
 import { ForwardedError } from '@backstage/errors';
 
@@ -75,7 +78,12 @@ interface WithCapturedResponseBody {
   [CAPTURED_RESPONSE_BODY_SYMBOL]?: JsonObject;
 }
 
-export function auditorMiddlewareFactory(auditor: AuditorService) {
+export function auditorMiddlewareFactory(dependencies: {
+  auditor: AuditorService;
+  logger: LoggerService;
+}) {
+  const { auditor, logger } = dependencies;
+
   function baseHandler(
     req: Request & WithOpenapi,
     res: Response,
@@ -91,7 +99,7 @@ export function auditorMiddlewareFactory(auditor: AuditorService) {
     }
     const operation = req.openapi.schema; // schema is actually the operation object
     if (!operation) {
-      console.log('No operation schema found in request.openapi');
+      logger.debug('No operation schema found in request.openapi');
       return undefined;
     }
 
@@ -101,7 +109,7 @@ export function auditorMiddlewareFactory(auditor: AuditorService) {
       | undefined;
 
     if (!auditorConfig) {
-      console.log('No x-backstage-auditor extension found');
+      logger.debug('No x-backstage-auditor extension found');
       return undefined;
     }
 
@@ -196,13 +204,11 @@ export function auditorMiddlewareFactory(auditor: AuditorService) {
       const locals = res.locals as Response['locals'] &
         WithCapturedResponseBody;
       res.json = function overridenJson(body: any) {
-        console.log('json', body);
         locals[CAPTURED_RESPONSE_BODY_SYMBOL] = body;
         return originalJson(body);
       };
 
       res.send = function overriddenSend(body: any) {
-        console.log('send', body);
         if (typeof body === 'string') {
           // Do nothing.
         } else {
