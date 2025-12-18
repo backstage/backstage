@@ -18,8 +18,8 @@ import { SHADOW_DOM_STYLE_LOAD_EVENT } from '@backstage/plugin-techdocs-react';
 import type { Transformer } from './transformer';
 
 type OnCssReadyOptions = {
-  onLoading: () => void;
-  onLoaded: () => void;
+  onLoading: (transformedElement: Element) => void;
+  onLoaded: (transformedElement: Element) => void;
 };
 
 export const onCssReady = ({
@@ -27,11 +27,11 @@ export const onCssReady = ({
   onLoaded,
 }: OnCssReadyOptions): Transformer => {
   return dom => {
-    onLoading();
+    onLoading(dom);
     dom.addEventListener(
       SHADOW_DOM_STYLE_LOAD_EVENT,
       function handleShadowDomStyleLoad() {
-        onLoaded();
+        onLoaded(dom);
         dom.removeEventListener(
           SHADOW_DOM_STYLE_LOAD_EVENT,
           handleShadowDomStyleLoad,

@@ -18,6 +18,7 @@ import {
   useCallback,
   useEffect,
   useLayoutEffect,
+  useMemo,
   // useRef,
   useState,
 } from 'react';
@@ -32,26 +33,16 @@ import { scmIntegrationsApiRef } from '@backstage/integration-react';
 import {
   techdocsStorageApiRef,
   useShadowDomStylesLoading,
+  useTechDocsReaderPage,
 } from '@backstage/plugin-techdocs-react';
 
 import { useTechDocsReader } from '../TechDocsReaderProvider';
 
 import {
-  addBaseUrl,
-  addGitFeedbackLink,
-  addLinkClickListener,
-  addSidebarToggle,
-  onCssReady,
-  removeMkdocsHeader,
-  rewriteDocLinks,
-  simplifyMkdocsFooter,
-  scrollIntoNavigation,
   transform as transformer,
-  copyToClipboard,
   useSanitizerTransformer,
   useStylesTransformer,
-  handleMetaRedirects,
-  addNavLinkKeyboardToggle,
+  getDefaultTransformers,
 } from '../../transformers';
 import { useNavigateUrl } from './useNavigateUrl';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
@@ -94,6 +85,7 @@ export const useTechDocsReaderDom = (
   const configApi = useApi(configApiRef);
 
   const { state, path, content: rawPage } = useTechDocsReader();
+  const { transformersApi } = useTechDocsReaderPage();
   const { '*': currPath = '' } = useParams();
 
   const [dom, setDom] = useState<HTMLElement | null>(null);
@@ -184,117 +176,71 @@ export const useTechDocsReaderDom = (
     updateSidebarPositionAndHeight,
   ]);
 
-  // a function that performs transformations that are executed prior to adding it to the DOM
-  const preRender = useCallback(
-    (rawContent: string, contentPath: string) =>
-      transformer(rawContent, [
-        sanitizerTransformer,
-        addBaseUrl({
-          techdocsStorageApi,
-          entityId: entityRef,
-          path: contentPath,
-        }),
-        rewriteDocLinks(),
-        addSidebarToggle(),
-        removeMkdocsHeader(),
-        simplifyMkdocsFooter(),
-        addGitFeedbackLink(scmIntegrationsApi),
-        stylesTransformer,
-      ]),
-    [
-      // only add dependencies that are in state or memorized variables to avoid unnecessary calls between re-renders
-      entityRef,
-      scmIntegrationsApi,
-      techdocsStorageApi,
+  // Compute defaults and let the API customize them
+  const allTransformers = useMemo(() => {
+    const defaults = getDefaultTransformers({
       sanitizerTransformer,
       stylesTransformer,
-    ],
+      techdocsStorageApi,
+      scmIntegrationsApi,
+      entityRef,
+      contentPath: path,
+      theme,
+      navigate,
+      analytics,
+      configApi,
+    });
+
+    // If no transformers API, just use defaults
+    if (!transformersApi) {
+      return defaults;
+    }
+
+    // Let the API customize/filter defaults and add custom transformers
+    const transformed = transformersApi.getTransformers(defaults);
+
+    // Sort by priority
+    transformed.sort((a, b) => (a.priority ?? 50) - (b.priority ?? 50));
+    return transformed;
+  }, [
+    sanitizerTransformer,
+    stylesTransformer,
+    techdocsStorageApi,
+    scmIntegrationsApi,
+    entityRef,
+    path,
+    theme,
+    navigate,
+    analytics,
+    configApi,
+    transformersApi,
+  ]);
+
+  // Split transformers by phase
+  const preRenderTransformers = useMemo(
+    () =>
+      allTransformers.filter(t => t.phase === 'pre').map(t => t.transformer),
+    [allTransformers],
+  );
+
+  const postRenderTransformers = useMemo(
+    () =>
+      allTransformers.filter(t => t.phase === 'post').map(t => t.transformer),
+    [allTransformers],
+  );
+
+  // a function that performs transformations that are executed prior to adding it to the DOM
+  const preRender = useCallback(
+    (rawContent: string, _contentPath: string) =>
+      transformer(rawContent, preRenderTransformers),
+    [preRenderTransformers],
   );
 
   // a function that performs transformations that are executed after adding it to the DOM
   const postRender = useCallback(
     async (transformedElement: Element) =>
-      transformer(transformedElement, [
-        handleMetaRedirects(navigate, entityRef.name),
-        scrollIntoNavigation(),
-        copyToClipboard(theme),
-        addLinkClickListener({
-          baseUrl:
-            configApi.getOptionalString('app.baseUrl') ||
-            window.location.origin,
-          onClick: (event: MouseEvent, url: string) => {
-            // detect if CTRL or META keys are pressed so that links can be opened in a new tab with `window.open`
-            const modifierActive = event.ctrlKey || event.metaKey;
-            const parsedUrl = new URL(url);
-
-            // capture link clicks within documentation
-            const linkText =
-              (event.target as HTMLAnchorElement | undefined)?.innerText || url;
-            const to = url.replace(window.location.origin, '');
-            analytics.captureEvent('click', linkText, { attributes: { to } });
-
-            // hash exists when anchor is clicked on secondary sidebar
-            if (parsedUrl.hash) {
-              if (modifierActive) {
-                window.open(url, '_blank');
-              } else {
-                // If it's in a different page, we navigate to it
-                if (window.location.pathname !== parsedUrl.pathname) {
-                  navigate(url);
-                } else {
-                  // If it's in the same page we avoid using navigate that causes
-                  // the page to rerender.
-                  window.history.pushState(
-                    null,
-                    document.title,
-                    parsedUrl.hash,
-                  );
-                }
-                // Scroll to hash if it's on the current page
-                transformedElement
-                  ?.querySelector(`[id="${parsedUrl.hash.slice(1)}"]`)
-                  ?.scrollIntoView();
-
-                // Focus first focusable element in the target section
-                (
-                  transformedElement
-                    ?.querySelector(`[id="${parsedUrl.hash.slice(1)}"]`)
-                    ?.querySelector('a, button, [tabindex]') as HTMLElement
-                )?.focus();
-              }
-            } else {
-              if (modifierActive) {
-                window.open(url, '_blank');
-              } else {
-                navigate(url);
-              }
-            }
-          },
-        }),
-        // disable MkDocs drawer toggling ('for' attribute => checkbox mechanism)
-        onCssReady({
-          onLoading: () => {},
-          onLoaded: () => {
-            transformedElement
-              .querySelector('.md-nav__title')
-              ?.removeAttribute('for');
-          },
-        }),
-        // hide sidebars until their positions are updated
-        onCssReady({
-          onLoading: () => {
-            const sidebars = Array.from(
-              transformedElement.querySelectorAll<HTMLElement>('.md-sidebar'),
-            );
-            sidebars.forEach(element => {
-              element.style.setProperty('opacity', '0');
-            });
-          },
-          onLoaded: () => {},
-        }),
-        addNavLinkKeyboardToggle(),
-      ]),
-    [theme, navigate, analytics, entityRef.name, configApi],
+      transformer(transformedElement, postRenderTransformers),
+    [postRenderTransformers],
   );
 
   useEffect(() => {
