@@ -30,6 +30,19 @@ import { OidcDatabase } from '../database/OidcDatabase';
 import { UserInfoDatabase } from '../database/UserInfoDatabase';
 import crypto from 'node:crypto';
 import { AnyJWK, TokenIssuer } from '../identity/types';
+import { CimdClientInfo } from './CimdClient';
+
+jest.mock('./CimdClient', () => ({
+  ...jest.requireActual('./CimdClient'),
+  fetchCimdMetadata: jest.fn(),
+}));
+
+import * as CimdClient from './CimdClient';
+
+const mockFetchCimdMetadata =
+  CimdClient.fetchCimdMetadata as jest.MockedFunction<
+    typeof CimdClient.fetchCimdMetadata
+  >;
 
 jest.setTimeout(60_000);
 
@@ -827,6 +840,310 @@ describe('OidcService', () => {
             expiresIn: 3600,
           }),
         ).rejects.toThrow('Invalid code verifier');
+      });
+    });
+
+    describe('CIMD (Client ID Metadata Document) support', () => {
+      const cimdClientId = 'https://example.com/oauth-metadata.json';
+      const cimdMetadata: CimdClientInfo = {
+        clientId: cimdClientId,
+        clientName: 'CIMD Test Client',
+        redirectUris: ['http://localhost:8080/callback'],
+        responseTypes: ['code'],
+        grantTypes: ['authorization_code'],
+        scope: 'openid',
+      };
+
+      beforeEach(() => {
+        mockFetchCimdMetadata.mockResolvedValue(cimdMetadata);
+      });
+
+      afterEach(() => {
+        mockFetchCimdMetadata.mockReset();
+      });
+
+      describe('getConfiguration', () => {
+        it('should include client_id_metadata_document_supported when CIMD is enabled', async () => {
+          const { service, mocks } = await createOidcService(databaseId);
+          mocks.config.getOptionalBoolean.mockImplementation((key: string) => {
+            if (key === 'auth.experimentalClientIdMetadataDocuments.enabled') {
+              return true;
+            }
+            return undefined;
+          });
+
+          const config = service.getConfiguration();
+
+          expect(config.client_id_metadata_document_supported).toBe(true);
+        });
+
+        it('should not include client_id_metadata_document_supported when CIMD is disabled', async () => {
+          const { service, mocks } = await createOidcService(databaseId);
+          mocks.config.getOptionalBoolean.mockReturnValue(false);
+
+          const config = service.getConfiguration();
+
+          expect(config).not.toHaveProperty(
+            'client_id_metadata_document_supported',
+          );
+        });
+      });
+
+      describe('createAuthorizationSession with CIMD', () => {
+        it('should create authorization session for CIMD client', async () => {
+          const { service, mocks } = await createOidcService(databaseId);
+          mocks.config.getOptionalBoolean.mockImplementation((key: string) => {
+            if (key === 'auth.experimentalClientIdMetadataDocuments.enabled') {
+              return true;
+            }
+            return undefined;
+          });
+
+          const authSession = await service.createAuthorizationSession({
+            clientId: cimdClientId,
+            redirectUri: 'http://localhost:8080/callback',
+            responseType: 'code',
+            scope: 'openid',
+          });
+
+          expect(authSession).toEqual({
+            id: expect.any(String),
+            clientName: 'CIMD Test Client',
+            scope: 'openid',
+            redirectUri: 'http://localhost:8080/callback',
+          });
+          expect(mockFetchCimdMetadata).toHaveBeenCalledWith(cimdClientId);
+        });
+
+        it('should throw error when CIMD is disabled but URL client_id is provided', async () => {
+          const { service, mocks } = await createOidcService(databaseId);
+          mocks.config.getOptionalBoolean.mockReturnValue(false);
+
+          await expect(
+            service.createAuthorizationSession({
+              clientId: cimdClientId,
+              redirectUri: 'http://localhost:8080/callback',
+              responseType: 'code',
+            }),
+          ).rejects.toThrow('Client ID metadata documents not enabled');
+        });
+
+        it('should throw error for redirect_uri not in CIMD metadata', async () => {
+          const { service, mocks } = await createOidcService(databaseId);
+          mocks.config.getOptionalBoolean.mockImplementation((key: string) => {
+            if (key === 'auth.experimentalClientIdMetadataDocuments.enabled') {
+              return true;
+            }
+            return undefined;
+          });
+
+          await expect(
+            service.createAuthorizationSession({
+              clientId: cimdClientId,
+              redirectUri: 'http://unauthorized.com/callback',
+              responseType: 'code',
+            }),
+          ).rejects.toThrow('Redirect URI not registered');
+        });
+
+        it('should throw error when redirect_uri does not match allowedRedirectUriPatterns', async () => {
+          const { service, mocks } = await createOidcService(databaseId);
+          mocks.config.getOptionalBoolean.mockImplementation((key: string) => {
+            if (key === 'auth.experimentalClientIdMetadataDocuments.enabled') {
+              return true;
+            }
+            return undefined;
+          });
+          mocks.config.getOptionalStringArray.mockImplementation(
+            (key: string) => {
+              if (
+                key ===
+                'auth.experimentalClientIdMetadataDocuments.allowedRedirectUriPatterns'
+              ) {
+                return ['https://*.example.com/*'];
+              }
+              return undefined;
+            },
+          );
+
+          await expect(
+            service.createAuthorizationSession({
+              clientId: cimdClientId,
+              redirectUri: 'http://localhost:8080/callback',
+              responseType: 'code',
+            }),
+          ).rejects.toThrow('Invalid redirect_uri');
+        });
+      });
+
+      describe('getAuthorizationSession with CIMD', () => {
+        it('should return session details for CIMD client', async () => {
+          const { service, mocks } = await createOidcService(databaseId);
+          mocks.config.getOptionalBoolean.mockImplementation((key: string) => {
+            if (key === 'auth.experimentalClientIdMetadataDocuments.enabled') {
+              return true;
+            }
+            return undefined;
+          });
+
+          const authSession = await service.createAuthorizationSession({
+            clientId: cimdClientId,
+            redirectUri: 'http://localhost:8080/callback',
+            responseType: 'code',
+            scope: 'openid',
+            state: 'test-state',
+          });
+
+          const details = await service.getAuthorizationSession({
+            sessionId: authSession.id,
+          });
+
+          expect(details).toEqual(
+            expect.objectContaining({
+              id: authSession.id,
+              clientId: cimdClientId,
+              clientName: 'CIMD Test Client',
+              redirectUri: 'http://localhost:8080/callback',
+              scope: 'openid',
+              state: 'test-state',
+            }),
+          );
+        });
+      });
+
+      describe('full CIMD authorization flow', () => {
+        it('should complete full authorization flow for CIMD client', async () => {
+          const { service, mocks } = await createOidcService(databaseId);
+          const mockToken = 'mock-jwt-token';
+          mocks.tokenIssuer.issueToken.mockResolvedValue({ token: mockToken });
+          mocks.config.getOptionalBoolean.mockImplementation((key: string) => {
+            if (key === 'auth.experimentalClientIdMetadataDocuments.enabled') {
+              return true;
+            }
+            return undefined;
+          });
+
+          // Create authorization session
+          const authSession = await service.createAuthorizationSession({
+            clientId: cimdClientId,
+            redirectUri: 'http://localhost:8080/callback',
+            responseType: 'code',
+            scope: 'openid',
+          });
+
+          // Approve the session
+          const approveResult = await service.approveAuthorizationSession({
+            sessionId: authSession.id,
+            userEntityRef: 'user:default/test',
+          });
+
+          expect(approveResult.redirectUrl).toMatch(
+            /^http:\/\/localhost:8080\/callback\?code=.+$/,
+          );
+
+          // Exchange code for token
+          const code = new URL(approveResult.redirectUrl).searchParams.get(
+            'code',
+          )!;
+          const tokenResult = await service.exchangeCodeForToken({
+            code,
+            redirectUri: 'http://localhost:8080/callback',
+            grantType: 'authorization_code',
+            expiresIn: 3600,
+          });
+
+          expect(tokenResult).toEqual({
+            accessToken: mockToken,
+            tokenType: 'Bearer',
+            expiresIn: 3600,
+            idToken: mockToken,
+            scope: 'openid',
+          });
+        });
+
+        it('should complete CIMD flow with PKCE', async () => {
+          const { service, mocks } = await createOidcService(databaseId);
+          const mockToken = 'mock-jwt-token';
+          mocks.tokenIssuer.issueToken.mockResolvedValue({ token: mockToken });
+          mocks.config.getOptionalBoolean.mockImplementation((key: string) => {
+            if (key === 'auth.experimentalClientIdMetadataDocuments.enabled') {
+              return true;
+            }
+            return undefined;
+          });
+
+          const codeVerifier = 'test-code-verifier-for-pkce';
+          const codeChallenge = crypto
+            .createHash('sha256')
+            .update(codeVerifier)
+            .digest('base64url');
+
+          // Create authorization session with PKCE
+          const authSession = await service.createAuthorizationSession({
+            clientId: cimdClientId,
+            redirectUri: 'http://localhost:8080/callback',
+            responseType: 'code',
+            codeChallenge,
+            codeChallengeMethod: 'S256',
+          });
+
+          // Approve the session
+          const approveResult = await service.approveAuthorizationSession({
+            sessionId: authSession.id,
+            userEntityRef: 'user:default/test',
+          });
+
+          // Exchange code for token with verifier
+          const code = new URL(approveResult.redirectUrl).searchParams.get(
+            'code',
+          )!;
+          const tokenResult = await service.exchangeCodeForToken({
+            code,
+            redirectUri: 'http://localhost:8080/callback',
+            grantType: 'authorization_code',
+            codeVerifier,
+            expiresIn: 3600,
+          });
+
+          expect(tokenResult.accessToken).toBe(mockToken);
+        });
+      });
+
+      describe('coexistence of CIMD and DCR', () => {
+        it('should use DCR for non-URL client_id when both are enabled', async () => {
+          const { service, mocks } = await createOidcService(databaseId);
+          mocks.config.getOptionalBoolean.mockReturnValue(true);
+
+          // Register a DCR client
+          const dcrClient = await service.registerClient({
+            clientName: 'DCR Client',
+            redirectUris: ['https://example.com/callback'],
+          });
+
+          // Create session with DCR client
+          const authSession = await service.createAuthorizationSession({
+            clientId: dcrClient.clientId,
+            redirectUri: 'https://example.com/callback',
+            responseType: 'code',
+          });
+
+          expect(authSession.clientName).toBe('DCR Client');
+          expect(mockFetchCimdMetadata).not.toHaveBeenCalled();
+        });
+
+        it('should use CIMD for URL client_id when both are enabled', async () => {
+          const { service, mocks } = await createOidcService(databaseId);
+          mocks.config.getOptionalBoolean.mockReturnValue(true);
+
+          const authSession = await service.createAuthorizationSession({
+            clientId: cimdClientId,
+            redirectUri: 'http://localhost:8080/callback',
+            responseType: 'code',
+          });
+
+          expect(authSession.clientName).toBe('CIMD Test Client');
+          expect(mockFetchCimdMetadata).toHaveBeenCalledWith(cimdClientId);
+        });
       });
     });
   });
