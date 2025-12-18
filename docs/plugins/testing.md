@@ -6,7 +6,7 @@ description: Documentation on How to do unit testing with Jest
 
 :::note Note
 
-You may want to consider migrating to Jest 30, to do this, you can follow this guide [Migrating to Jest 30](../tutorials/jest30-migration.md)
+You may want to consider migrating to Jest 30, to do this, you can follow this guide: [Migrating to Jest 30](../tutorials/jest30-migration.md)
 
 :::
 
