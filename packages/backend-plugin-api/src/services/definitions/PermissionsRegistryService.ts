@@ -151,4 +151,9 @@ export interface PermissionsRegistryService {
   getPermissionRuleset<TResourceType extends string, TResource, TQuery>(
     resourceRef: PermissionResourceRef<TResource, TQuery, TResourceType>,
   ): PermissionRuleset<TResource, TQuery, TResourceType>;
+
+  /**
+   * Lists all registered permissions for this plugin.
+   */
+  listPermissions(): Permission[];
 }

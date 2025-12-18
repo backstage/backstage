@@ -461,6 +461,7 @@ export function createPermissionIntegrationRouter<
   getPermissionRuleset<TResource, TQuery, TResourceType extends string>(
     resourceRef: PermissionResourceRef<TResource, TQuery, TResourceType>,
   ): PermissionRuleset<TResource, TQuery, TResourceType>;
+  listPermissions(): Permission[];
 } {
   const store = new PermissionIntegrationMetadataStore();
 
@@ -563,6 +564,9 @@ export function createPermissionIntegrationRouter<
       return {
         getRuleByName: store.getRuleMapper(resourceRef.resourceType),
       } as PermissionRuleset<TResource, TQuery, TResourceType>;
+    },
+    listPermissions(): Permission[] {
+      return store.getSerializedMetadata().permissions ?? [];
     },
   });
 }
