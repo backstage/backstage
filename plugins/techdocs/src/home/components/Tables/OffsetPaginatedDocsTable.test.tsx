@@ -52,6 +52,8 @@ describe('OffsetPaginatedDocsTable', () => {
     },
   ];
 
+  const tableTitle = 'All Docs';
+
   const wrapInContext = (
     node: ReactNode,
     value?: Partial<EntityListContextProps<DefaultEntityFilters>>,
@@ -66,7 +68,11 @@ describe('OffsetPaginatedDocsTable', () => {
   it('should display all the items', async () => {
     await renderInTestApp(
       wrapInContext(
-        <OffsetPaginatedDocsTable data={data} columns={columns} />,
+        <OffsetPaginatedDocsTable
+          data={data}
+          columns={columns}
+          title={tableTitle}
+        />,
         {
           setOffset: jest.fn(),
           limit: Number.MAX_SAFE_INTEGER,
@@ -75,6 +81,8 @@ describe('OffsetPaginatedDocsTable', () => {
         },
       ),
     );
+
+    expect(screen.getByText(tableTitle)).toBeInTheDocument();
 
     for (const item of data) {
       expect(screen.queryByText(item.entity.metadata.name)).toBeInTheDocument();
