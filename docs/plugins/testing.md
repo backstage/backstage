@@ -191,7 +191,7 @@ loading is broken, not that the loading indicator is broken.
 
 ## Examples
 
-For more specific examples of how to test your Backstage **backend plugins** and **modules** or **frontend plugins** you can checkout the following guides:
+For more specific examples of how to test your Backstage **backend plugins** and **modules** or **frontend plugins** you can check out the following guides:
 
 - [Testing Backend Plugins and Modules](../backend-system/building-plugins-and-modules/02-testing.md)
 - [Testing Frontend Plugins](../frontend-system/building-plugins/02-testing.md)

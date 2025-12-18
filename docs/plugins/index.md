@@ -26,6 +26,6 @@ Should your plugin complement the Software Catalog rather than exist as a standa
 
 ## Existing Plugins
 
-There is a plethora of existing community made plugins which can be found by going to the [Backstage Plugin Directory](https://backstage.io/plugins)
+There are a plethora of existing community made plugins which can be found by going to the [Backstage Plugin Directory](https://backstage.io/plugins)
 
-You can read more about it in this blog post [The Plugin Directory is now open](https://backstage.io/blog/2020/09/30/plugin-marketplace/)
+You can read more about it in this blog post: [The Plugin Directory is now open](https://backstage.io/blog/2020/09/30/plugin-marketplace/)
