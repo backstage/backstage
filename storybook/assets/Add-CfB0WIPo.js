@@ -1,1 +1,0 @@
-import{am as o,an as v,ao as n,ap as c,a3 as l}from"./iframe-BNEamOZA.js";var e={},r;function f(){if(r)return e;r=1;var a=o(),t=v();Object.defineProperty(e,"__esModule",{value:!0}),e.default=void 0;var d=t(n()),u=a(c()),i=(0,u.default)(d.createElement("path",{d:"M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"}),"Add");return e.default=i,e}var p=f();const q=l(p);export{q as A};
