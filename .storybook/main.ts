@@ -1,7 +1,6 @@
-// This file has been automatically migrated to valid ESM format by Storybook.
+import { defineMain } from '@storybook/react-vite/node';
 import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
-import type { StorybookConfig } from '@storybook/react-vite';
 
 import { join, dirname, posix } from 'path';
 
@@ -42,7 +41,7 @@ function getAbsolutePath(value: string): any {
   return dirname(require.resolve(join(value, 'package.json')));
 }
 
-const config: StorybookConfig = {
+export default defineMain({
   stories,
   addons: [
     getAbsolutePath('@storybook/addon-links'),
@@ -130,6 +129,4 @@ const config: StorybookConfig = {
 
     return config;
   },
-};
-
-export default config;
+});

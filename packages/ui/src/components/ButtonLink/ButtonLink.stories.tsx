@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryFn, StoryObj } from '@storybook/react-vite';
+import preview from '../../../../../.storybook/preview';
+import type { StoryFn } from '@storybook/react-vite';
 import { ButtonLink } from './ButtonLink';
 import { Flex } from '../Flex';
 import { MemoryRouter } from 'react-router-dom';
 import { RiArrowRightSLine, RiCloudLine } from '@remixicon/react';
 
-const meta = {
+const meta = preview.meta({
   title: 'Backstage UI/ButtonLink',
   component: ButtonLink,
   decorators: [
@@ -40,18 +41,15 @@ const meta = {
       options: ['primary', 'secondary'],
     },
   },
-} satisfies Meta<typeof ButtonLink>;
+});
 
-export default meta;
-type Story = StoryObj<typeof meta>;
-
-export const Default: Story = {
+export const Default = meta.story({
   args: {
     children: 'Button',
   },
-};
+});
 
-export const Variants: Story = {
+export const Variants = meta.story({
   render: () => (
     <Flex align="center">
       <ButtonLink
@@ -80,9 +78,9 @@ export const Variants: Story = {
       </ButtonLink>
     </Flex>
   ),
-};
+});
 
-export const Sizes: Story = {
+export const Sizes = meta.story({
   args: {
     children: 'Button',
   },
@@ -96,9 +94,9 @@ export const Sizes: Story = {
       </ButtonLink>
     </Flex>
   ),
-};
+});
 
-export const WithIcons: Story = {
+export const WithIcons = meta.story({
   args: {
     children: 'Button',
   },
@@ -113,9 +111,9 @@ export const WithIcons: Story = {
       />
     </Flex>
   ),
-};
+});
 
-export const FullWidth: Story = {
+export const FullWidth = meta.story({
   args: {
     children: 'Button',
   },
@@ -130,9 +128,9 @@ export const FullWidth: Story = {
       />
     </Flex>
   ),
-};
+});
 
-export const Disabled: Story = {
+export const Disabled = meta.story({
   render: () => (
     <Flex direction="row" gap="4">
       <ButtonLink variant="primary" isDisabled>
@@ -146,9 +144,9 @@ export const Disabled: Story = {
       </ButtonLink>
     </Flex>
   ),
-};
+});
 
-export const Responsive: Story = {
+export const Responsive = meta.story({
   args: {
     children: 'Button',
     variant: {
@@ -160,4 +158,4 @@ export const Responsive: Story = {
       sm: 'medium',
     },
   },
-};
+});

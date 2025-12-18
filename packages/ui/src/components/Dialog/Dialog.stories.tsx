@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { Meta, StoryObj } from '@storybook/react-vite';
+
+import preview from '../../../../../.storybook/preview';
 import {
   Dialog,
   DialogTrigger,
@@ -24,7 +25,7 @@ import {
 import { Button, Flex, Text, TextField, Select } from '@backstage/ui';
 import { useArgs } from 'storybook/preview-api';
 
-const meta = {
+const meta = preview.meta({
   title: 'Backstage UI/Dialog',
   component: Dialog,
   args: {
@@ -35,12 +36,9 @@ const meta = {
     isOpen: { control: 'boolean' },
     defaultOpen: { control: 'boolean' },
   },
-} satisfies Meta<typeof Dialog>;
+});
 
-export default meta;
-type Story = StoryObj<typeof meta>;
-
-export const Default: Story = {
+export const Default = meta.story({
   render: args => {
     return (
       <DialogTrigger>
@@ -62,17 +60,15 @@ export const Default: Story = {
       </DialogTrigger>
     );
   },
-};
+});
 
-export const Open: Story = {
+export const Open = Default.extend({
   args: {
-    ...Default.args,
     defaultOpen: true,
   },
-  render: Default.render,
-};
+});
 
-export const NoTrigger: Story = {
+export const NoTrigger = meta.story({
   args: {
     isOpen: true,
   },
@@ -100,9 +96,9 @@ export const NoTrigger: Story = {
       </Dialog>
     );
   },
-};
+});
 
-export const FixedWidth: Story = {
+export const FixedWidth = meta.story({
   args: {
     defaultOpen: true,
     width: 600,
@@ -145,35 +141,35 @@ export const FixedWidth: Story = {
       </Dialog>
     </DialogTrigger>
   ),
-};
+});
 
-export const FixedHeight: Story = {
+export const FixedHeight = meta.story({
   args: {
     defaultOpen: true,
     height: 500,
   },
-  render: FixedWidth.render,
-};
+  render: FixedWidth.input.render,
+});
 
-export const FixedWidthAndHeight: Story = {
+export const FixedWidthAndHeight = meta.story({
   args: {
     defaultOpen: true,
     width: 600,
     height: 400,
   },
-  render: FixedWidth.render,
-};
+  render: FixedWidth.input.render,
+});
 
-export const FullWidthAndHeight: Story = {
+export const FullWidthAndHeight = meta.story({
   args: {
     defaultOpen: true,
     width: '100%',
     height: '100%',
   },
-  render: FixedWidth.render,
-};
+  render: FixedWidth.input.render,
+});
 
-export const Confirmation: Story = {
+export const Confirmation = meta.story({
   args: {
     isOpen: true,
   },
@@ -199,9 +195,9 @@ export const Confirmation: Story = {
       </Dialog>
     </DialogTrigger>
   ),
-};
+});
 
-export const WithForm: Story = {
+export const WithForm = meta.story({
   args: {
     isOpen: true,
   },
@@ -235,20 +231,20 @@ export const WithForm: Story = {
       </Dialog>
     </DialogTrigger>
   ),
-};
+});
 
-export const PreviewFixedWidthAndHeight: Story = {
+export const PreviewFixedWidthAndHeight = meta.story({
   args: {
     defaultOpen: undefined,
     width: 600,
     height: 400,
   },
-  render: FixedWidth.render,
-};
+  render: FixedWidth.input.render,
+});
 
-export const PreviewWithForm: Story = {
+export const PreviewWithForm = meta.story({
   args: {
     defaultOpen: undefined,
   },
-  render: WithForm.render,
-};
+  render: WithForm.input.render,
+});

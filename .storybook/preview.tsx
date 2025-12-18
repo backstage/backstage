@@ -1,8 +1,12 @@
-import React, { useEffect } from 'react';
+import addonA11y from '@storybook/addon-a11y';
+import addonDocs from '@storybook/addon-docs';
+import addonThemes from '@storybook/addon-themes';
+import addonLinks from '@storybook/addon-links';
+import { definePreview } from '@storybook/react-vite';
+import { useEffect } from 'react';
 import { TestApiProvider } from '@backstage/test-utils';
 import { Content, AlertDisplay } from '@backstage/core-components';
 import { apis } from './support/apis';
-import type { Decorator, Preview } from '@storybook/react-vite';
 import { useGlobals } from 'storybook/preview-api';
 import { UnifiedThemeProvider, themes } from '@backstage/theme';
 import { allModes } from './modes';
@@ -16,7 +20,7 @@ import './storybook.css';
 // Custom themes
 import './themes/spotify.css';
 
-const preview: Preview = {
+export default definePreview({
   globalTypes: {
     themeMode: {
       name: 'Theme Mode',
@@ -47,15 +51,17 @@ const preview: Preview = {
       },
     },
   },
+
   initialGlobals: {
     themeMode: 'light',
     themeName: 'backstage',
   },
+
   parameters: {
     layout: 'fullscreen',
 
     backgrounds: {
-      disabled: true,
+      disable: true,
     },
 
     controls: {
@@ -102,6 +108,7 @@ const preview: Preview = {
       },
     },
   },
+
   decorators: [
     Story => {
       const [globals] = useGlobals();
@@ -140,6 +147,6 @@ const preview: Preview = {
       );
     },
   ],
-};
 
-export default preview;
+  addons: [addonLinks(), addonThemes(), addonDocs(), addonA11y()],
+});
