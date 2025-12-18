@@ -239,6 +239,6 @@ export const PreviewFixedWidthAndHeight = FixedWidth.extend({
 
 export const PreviewWithForm = WithForm.extend({
   args: {
-    defaultOpen: undefined,
+    isOpen: undefined,
   },
 });
