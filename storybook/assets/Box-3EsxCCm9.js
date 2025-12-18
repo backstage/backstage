@@ -1,0 +1,1 @@
+import{t as o,ae as r,af as n}from"./iframe-BNEamOZA.js";import{s as i,a as d,c as p,b as l,d as f,f as m,g as u,p as c,e as x,h as y,i as g,t as h}from"./styled-vJQyp9py.js";var v=function(a){var s=i(a);return function(e,t){return s(e,o({defaultTheme:r},t))}},b=d(p(l,f,m,u,c,x,y,g,n,h)),T=v("div")(b,{name:"MuiBox"});export{T as B,b as a,v as s};

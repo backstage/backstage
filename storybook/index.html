@@ -55,6 +55,8 @@
     <link href="./sb-addons/docs-3/manager-bundle.js" rel="modulepreload" />
     
     <link href="./sb-addons/a11y-4/manager-bundle.js" rel="modulepreload" />
+    
+    <link href="./sb-addons/vitest-5/manager-bundle.js" rel="modulepreload" />
        
 
     <style>
@@ -110,30 +112,21 @@
         
       
         
-          window['TAGS_OPTIONS'] = {
-  "dev-only": {
-    "excludeFromDocsStories": true
-  },
-  "docs-only": {
-    "excludeFromSidebar": true
-  },
-  "test-only": {
-    "excludeFromSidebar": true,
-    "excludeFromDocsStories": true
-  }
-};
+          window['TAGS_OPTIONS'] = {};
+        
+      
+        
+          window['STORYBOOK_BUILDER'] = "vite";
+        
+      
+        
+          window['STORYBOOK_FRAMEWORK'] = "react-vite";
         
       
         
           window['STORYBOOK_RENDERER'] = "react";
         
       
-        
-          window['STORYBOOK_BUILDER'] = "@storybook/builder-vite";
-        
-      
-        
-          window['STORYBOOK_FRAMEWORK'] = "/home/runner/work/backstage/backstage/node_modules/@storybook/react-vite";
         
       
     </script>
@@ -152,6 +145,8 @@
         import './sb-addons/docs-3/manager-bundle.js';
       
         import './sb-addons/a11y-4/manager-bundle.js';
+      
+        import './sb-addons/vitest-5/manager-bundle.js';
       
 
       import './sb-manager/runtime.js';

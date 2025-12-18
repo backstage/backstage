@@ -1,12 +1,7 @@
-import ESM_COMPAT_Module from "node:module";
-import { fileURLToPath as ESM_COMPAT_fileURLToPath } from 'node:url';
-import { dirname as ESM_COMPAT_dirname } from 'node:path';
-const __filename = ESM_COMPAT_fileURLToPath(import.meta.url);
-const __dirname = ESM_COMPAT_dirname(__filename);
-const require = ESM_COMPAT_Module.createRequire(import.meta.url);
+import "../_browser-chunks/chunk-A242L54C.js";
 
 // src/manager/globals/globals.ts
-var _ = {
+var globalsNameReferenceMap = {
   react: "__REACT__",
   "react-dom": "__REACT_DOM__",
   "react-dom/client": "__REACT_DOM_CLIENT__",
@@ -18,17 +13,12 @@ var _ = {
   "storybook/internal/channels": "__STORYBOOK_CHANNELS__",
   "storybook/internal/client-logger": "__STORYBOOK_CLIENT_LOGGER__",
   "storybook/internal/components": "__STORYBOOK_COMPONENTS__",
-  "storybook/internal/core-errors": "__STORYBOOK_CORE_EVENTS__",
   "storybook/internal/core-events": "__STORYBOOK_CORE_EVENTS__",
   "storybook/internal/manager-errors": "__STORYBOOK_CORE_EVENTS_MANAGER_ERRORS__",
   "storybook/internal/router": "__STORYBOOK_ROUTER__",
-  "storybook/internal/types": "__STORYBOOK_TYPES__",
-  // @deprecated TODO: delete in 9.1
-  "storybook/internal/manager-api": "__STORYBOOK_API__",
-  "storybook/internal/theming": "__STORYBOOK_THEMING__",
-  "storybook/internal/theming/create": "__STORYBOOK_THEMING_CREATE__"
-}, o = Object.keys(_);
+  "storybook/internal/types": "__STORYBOOK_TYPES__"
+}, globalPackages = Object.keys(globalsNameReferenceMap);
 export {
-  o as globalPackages,
-  _ as globalsNameReferenceMap
+  globalPackages,
+  globalsNameReferenceMap
 };
