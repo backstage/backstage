@@ -153,6 +153,8 @@ const handleRequest = async (
       policy
         .handle({ permission: request.permission }, user)
         .then(async decision => {
+          console.log('Permission request:', request);
+          console.log('Permission policy decision:', decision);
           if (decision.result !== AuthorizeResult.CONDITIONAL) {
             return {
               id: request.id,

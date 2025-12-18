@@ -18,6 +18,7 @@ import { Request, Response, NextFunction } from 'express';
 import { OperationObject } from 'openapi3-ts';
 import type {
   HttpAuthService,
+  PermissionsRegistryService,
   PermissionsService,
 } from '@backstage/backend-plugin-api';
 import type { BasicPermission } from '@backstage/plugin-permission-common';
@@ -51,14 +52,13 @@ export interface PermissionsMiddlewareOptions {
   permissions: Record<string, BasicPermission>;
 }
 
-export function permissionsMiddlewareFactory(
-  dependencies: {
-    permissions: PermissionsService;
-    httpAuth: HttpAuthService;
-  },
-  options: PermissionsMiddlewareOptions,
-) {
-  const { permissions } = options;
+export function permissionsMiddlewareFactory(dependencies: {
+  permissions: PermissionsService;
+  permissionsRegistry: PermissionsRegistryService;
+  httpAuth: HttpAuthService;
+}) {
+  const { permissionsRegistry } = dependencies;
+  const registeredPermissions = permissionsRegistry.listPermissions();
   const { permissions: permissionsService, httpAuth } = dependencies;
 
   return async (
@@ -86,10 +86,18 @@ export function permissionsMiddlewareFactory(
       return;
     }
 
-    const permission = permissions[permissionsConfig.permission];
+    const permission = registeredPermissions.find(
+      p => p.name === permissionsConfig.permission,
+    );
     if (!permission) {
       throw new Error(
         `Permission '${permissionsConfig.permission}' not found in permissions registry`,
+      );
+    }
+
+    if (permission.type !== 'basic') {
+      throw new Error(
+        `Permission '${permissionsConfig.permission}' is not a basic permission and cannot be used in the OpenAPI permissions middleware`,
       );
     }
 

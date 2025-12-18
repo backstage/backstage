@@ -114,6 +114,9 @@ export const permissionsRegistryServiceFactory = createServiceFactory({
         assertRefPluginId(resourceRef, pluginId);
         return router.getPermissionRuleset(resourceRef);
       },
+      listPermissions() {
+        return router.listPermissions();
+      },
     } satisfies PermissionsRegistryService;
   },
 });

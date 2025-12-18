@@ -962,6 +962,9 @@ paths:
       operationId: GetEntityAncestryByName
       tags:
         - Entity
+      x-backstage-permissions:
+        permission: catalog.entity.read
+        validateManually: true
       description: Get an entity's ancestry by entity ref.
       responses:
         '200':
