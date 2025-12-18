@@ -355,6 +355,48 @@ export class PgConnector implements Connector {
     return client;
   }
 
+  async getStuff(pluginId: string) {
+    const baseConfigRoot = this.config;
+    const pluginConfigRoot = this.config.getOptionalConfig(
+      `plugin.${pluginId}`,
+    );
+
+    // Some basic settings
+    const prefix =
+      baseConfigRoot.getOptionalString('prefix') ?? 'backstage_plugin_';
+    const pluginDivisionMode =
+      baseConfigRoot.getOptionalString('pluginDivisionMode') ?? 'database';
+    const ensureExists =
+      pluginConfigRoot?.getOptionalBoolean('ensureExists') ??
+      baseConfigRoot.getOptionalBoolean('ensureExists') ??
+      true;
+    const ensureSchemaExists =
+      pluginConfigRoot?.getOptionalBoolean('ensureSchemaExists') ??
+      baseConfigRoot.getOptionalBoolean('ensureSchemaExists') ??
+      false;
+    const role =
+      pluginConfigRoot?.getOptionalString('role') ??
+      baseConfigRoot.getOptionalString('role') ??
+      undefined;
+    const skipMigrations =
+      pluginConfigRoot?.getOptionalBoolean('skipMigrations') ??
+      baseConfigRoot.getOptionalBoolean('skipMigrations') ??
+      false;
+    const extraKnexConfig = merge(
+      baseConfigRoot.getOptionalConfig('knexConfig')?.get<JsonObject>(),
+      pluginConfigRoot?.getOptionalConfig('knexConfig')?.get<JsonObject>(),
+    );
+
+    // What client and connection are we using?
+    const baseClient = baseConfigRoot.getString('client');
+    const pluginClient = pluginConfigRoot?.getOptionalString('client');
+    const client = pluginClient ?? baseClient;
+    const clientWasAnOverride = client !== baseClient;
+    const connectionRaw =
+      pluginConfigRoot?.getOptional('connection') ??
+      baseConfigRoot.get('connection');
+  }
+
   /**
    * Provides the canonical database name for a given plugin.
    *
