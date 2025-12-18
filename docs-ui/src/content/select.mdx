@@ -14,6 +14,7 @@ import {
   selectSearchableSnippet,
   selectMultipleSnippet,
   selectSearchableMultipleSnippet,
+  selectDisabledOptionsSnippet,
 } from './select.props';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
@@ -91,6 +92,19 @@ Here's a view when the select is disabled.
   code={selectDisabledSnippet}
 />
 
+### Disabled options
+
+You can disable specific options within the Select component using `disabledKeys`.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<SelectSnippet story="DisabledOption" />}
+  code={selectDisabledOptionsSnippet}
+/>
+
+
 ### Searchable
 
 Here's a view when the select has searchable filtering.
@@ -127,6 +141,7 @@ Here's a view when the select combines search and multiple selection.
   code={selectSearchableMultipleSnippet}
 />
 
+
 ### Responsive
 
 Here's a view when the select is responsive.
@@ -136,3 +151,4 @@ Here's a view when the select is responsive.
 <Theming definition={SelectDefinition} />
 
 <ChangelogComponent component="select" />
+
