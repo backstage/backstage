@@ -551,6 +551,7 @@ export class CatalogBuilder {
       auth,
       httpAuth,
       permissionsService: permissions,
+      permissionsRegistry,
       auditor,
       enableRelationsCompatibility,
     });

@@ -19,6 +19,7 @@ import {
   AuthService,
   HttpAuthService,
   LoggerService,
+  PermissionsRegistryService,
   PermissionsService,
 } from '@backstage/backend-plugin-api';
 import {
@@ -67,6 +68,7 @@ import {
   parseLocationQuery,
 } from './request/parseLocationQuery';
 import { parseEntityQuery } from './request/parseEntityQuery';
+import { permissionsMiddlewareFactory } from '@backstage/backend-openapi-utils';
 
 /**
  * Options used by {@link createRouter}.
@@ -79,6 +81,7 @@ export interface RouterOptions {
   refreshService?: RefreshService;
   logger: LoggerService;
   config: Config;
+  permissionsRegistry?: PermissionsRegistryService;
   auth: AuthService;
   httpAuth: HttpAuthService;
   permissionsService: PermissionsService;
@@ -108,11 +111,22 @@ export async function createRouter(
     config,
     logger,
     permissionsService,
+    permissionsRegistry,
     auth,
     httpAuth,
     auditor,
     enableRelationsCompatibility = false,
   } = options;
+
+  if (permissionsRegistry) {
+    router.use(
+      permissionsMiddlewareFactory({
+        permissions: permissionsService,
+        httpAuth,
+        permissionsRegistry,
+      }),
+    );
+  }
 
   const readonlyEnabled =
     config.getOptionalBoolean('catalog.readonly') || false;

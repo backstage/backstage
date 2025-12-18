@@ -854,7 +854,7 @@ export const spec = {
         tags: ['Entity'],
         'x-backstage-permissions': {
           permission: 'catalog.entity.refresh',
-          onDeny: 403,
+          validateManually: true,
         },
         description: 'Refresh the entity related to entityRef.',
         responses: {
