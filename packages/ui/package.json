@@ -58,7 +58,7 @@
     "react": "^18.0.2",
     "react-dom": "^18.0.2",
     "react-router-dom": "^6.3.0",
-    "storybook": "^10.1.9"
+    "storybook": "^10.1.10"
   },
   "peerDependencies": {
     "@types/react": "^17.0.0 || ^18.0.0",
