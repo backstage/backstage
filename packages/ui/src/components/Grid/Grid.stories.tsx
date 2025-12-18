@@ -22,6 +22,8 @@ import { Flex } from '../Flex';
 const meta = preview.meta({
   title: 'Backstage UI/Grid',
   component: Grid.Root,
+  // We will add this story in the manifest when the component is not composed.
+  tags: ['!manifest'],
 });
 
 const FakeBox = () => (
