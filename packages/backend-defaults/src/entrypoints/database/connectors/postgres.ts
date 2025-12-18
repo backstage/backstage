@@ -277,13 +277,13 @@ export async function dropPgDatabase(
 /**
  * Provides a config lookup path for a plugin's config block.
  */
-function pluginPath(pluginId: string): string {
-  return `plugin.${pluginId}`;
-}
+// function pluginPath(pluginId: string): string {
+//   return `plugin.${pluginId}`;
+// }
 
 function normalizeConnection(
-  connection: Knex.StaticConnectionConfig | JsonObject | string | undefined,
-): Partial<Knex.StaticConnectionConfig> {
+  connection: Knex.PgConnectionConfig | JsonObject | string | undefined,
+): Partial<Knex.PgConnectionConfig> {
   if (typeof connection === 'undefined' || connection === null) {
     return {};
   }
@@ -355,6 +355,86 @@ export class PgConnector implements Connector {
     return client;
   }
 
+  async getStuff(pluginId: string) {
+    const baseConfigRoot = this.config;
+    const pluginConfigRoot = this.config.getOptionalConfig(
+      `plugin.${pluginId}`,
+    );
+
+    // Some basic settings
+    const prefix =
+      baseConfigRoot.getOptionalString('prefix') ?? 'backstage_plugin_';
+    const pluginDivisionMode =
+      baseConfigRoot.getOptionalString('pluginDivisionMode') ?? 'database';
+    const ensureExists =
+      pluginConfigRoot?.getOptionalBoolean('ensureExists') ??
+      baseConfigRoot.getOptionalBoolean('ensureExists') ??
+      true;
+    const ensureSchemaExists =
+      pluginConfigRoot?.getOptionalBoolean('ensureSchemaExists') ??
+      baseConfigRoot.getOptionalBoolean('ensureSchemaExists') ??
+      false;
+    const role =
+      pluginConfigRoot?.getOptionalString('role') ??
+      baseConfigRoot.getOptionalString('role') ??
+      undefined;
+    const skipMigrations =
+      pluginConfigRoot?.getOptionalBoolean('skipMigrations') ??
+      baseConfigRoot.getOptionalBoolean('skipMigrations') ??
+      false;
+    const extraKnexConfig = merge(
+      baseConfigRoot.getOptionalConfig('knexConfig')?.get<JsonObject>(),
+      pluginConfigRoot?.getOptionalConfig('knexConfig')?.get<JsonObject>(),
+    );
+
+    // What client are we using?
+    const baseClient = baseConfigRoot.getString('client');
+    const pluginClient = pluginConfigRoot?.getOptionalString('client');
+    const client = pluginClient ?? baseClient;
+    const clientWasAnOverride = client !== baseClient;
+
+    // Base connection settings
+    let baseConnection = normalizeConnection(
+      baseConfigRoot.get<JsonObject | string>('connection'),
+    );
+    if (pluginDivisionMode !== 'schema') {
+      baseConnection = omit(baseConnection, 'database');
+    }
+
+    // Plugin specific connection settings
+    const pluginConnection = normalizeConnection(
+      pluginConfigRoot?.getOptional<JsonObject | string>('connection'),
+    );
+
+    // Merge the connection settings
+    const connection: Knex.PgConnectionConfig = {
+      application_name: `backstage_plugin_${pluginId}`,
+      ...(clientWasAnOverride ? {} : baseConnection), // Merging does not make sense across database engines
+      ...pluginConnection,
+    };
+
+    // Build the full knex config object
+    const knexConfig: Knex.Config = {
+      ...extraKnexConfig,
+      client,
+      connection,
+      ...(role && { role }),
+    };
+
+    return {
+      prefix,
+      pluginDivisionMode,
+      ensureExists,
+      ensureSchemaExists,
+      role,
+      skipMigrations,
+      extraKnexConfig,
+      client,
+      clientWasAnOverride,
+      connectionRaw,
+    };
+  }
+
   /**
    * Provides the canonical database name for a given plugin.
    *
@@ -392,28 +472,28 @@ export class PgConnector implements Connector {
    *          representing whether or not the client was overridden as
    *          `overridden`
    */
-  private getClientType(pluginId: string): {
-    client: string;
-    overridden: boolean;
-  } {
-    const pluginClient = this.config.getOptionalString(
-      `${pluginPath(pluginId)}.client`,
-    );
+  // private getClientType(pluginId: string): {
+  //   client: string;
+  //   overridden: boolean;
+  // } {
+  //   const pluginClient = this.config.getOptionalString(
+  //     `${pluginPath(pluginId)}.client`,
+  //   );
 
-    const baseClient = this.config.getString('client');
-    const client = pluginClient ?? baseClient;
-    return {
-      client,
-      overridden: client !== baseClient,
-    };
-  }
+  //   const baseClient = this.config.getString('client');
+  //   const client = pluginClient ?? baseClient;
+  //   return {
+  //     client,
+  //     overridden: client !== baseClient,
+  //   };
+  // }
 
-  private getRoleConfig(pluginId: string): string | undefined {
-    return (
-      this.config.getOptionalString(`${pluginPath(pluginId)}.role`) ??
-      this.config.getOptionalString('role')
-    );
-  }
+  // private getRoleConfig(pluginId: string): string | undefined {
+  //   return (
+  //     this.config.getOptionalString(`${pluginPath(pluginId)}.role`) ??
+  //     this.config.getOptionalString('role')
+  //   );
+  // }
 
   /**
    * Provides the knexConfig which should be used for a given plugin.
@@ -421,39 +501,39 @@ export class PgConnector implements Connector {
    * @param pluginId - Plugin to get the knexConfig for
    * @returns The merged knexConfig value or undefined if it isn't specified
    */
-  private getAdditionalKnexConfig(pluginId: string): JsonObject | undefined {
-    const pluginConfig = this.config
-      .getOptionalConfig(`${pluginPath(pluginId)}.knexConfig`)
-      ?.get<JsonObject>();
+  // private getAdditionalKnexConfig(pluginId: string): JsonObject | undefined {
+  //   const pluginConfig = this.config
+  //     .getOptionalConfig(`${pluginPath(pluginId)}.knexConfig`)
+  //     ?.get<JsonObject>();
 
-    const baseConfig = this.config
-      .getOptionalConfig('knexConfig')
-      ?.get<JsonObject>();
+  //   const baseConfig = this.config
+  //     .getOptionalConfig('knexConfig')
+  //     ?.get<JsonObject>();
 
-    return merge(baseConfig, pluginConfig);
-  }
+  //   return merge(baseConfig, pluginConfig);
+  // }
 
-  private getEnsureExistsConfig(pluginId: string): boolean {
-    const baseConfig = this.config.getOptionalBoolean('ensureExists') ?? true;
-    return (
-      this.config.getOptionalBoolean(`${pluginPath(pluginId)}.ensureExists`) ??
-      baseConfig
-    );
-  }
+  // private getEnsureExistsConfig(pluginId: string): boolean {
+  //   const baseConfig = this.config.getOptionalBoolean('ensureExists') ?? true;
+  //   return (
+  //     this.config.getOptionalBoolean(`${pluginPath(pluginId)}.ensureExists`) ??
+  //     baseConfig
+  //   );
+  // }
 
-  private getEnsureSchemaExistsConfig(pluginId: string): boolean {
-    const baseConfig =
-      this.config.getOptionalBoolean('ensureSchemaExists') ?? false;
-    return (
-      this.config.getOptionalBoolean(
-        `${pluginPath(pluginId)}.getEnsureSchemaExistsConfig`,
-      ) ?? baseConfig
-    );
-  }
+  // private getEnsureSchemaExistsConfig(pluginId: string): boolean {
+  //   const baseConfig =
+  //     this.config.getOptionalBoolean('ensureSchemaExists') ?? false;
+  //   return (
+  //     this.config.getOptionalBoolean(
+  //       `${pluginPath(pluginId)}.getEnsureSchemaExistsConfig`,
+  //     ) ?? baseConfig
+  //   );
+  // }
 
-  private getPluginDivisionModeConfig(): string {
-    return this.config.getOptionalString('pluginDivisionMode') ?? 'database';
-  }
+  // private getPluginDivisionModeConfig(): string {
+  //   return this.config.getOptionalString('pluginDivisionMode') ?? 'database';
+  // }
 
   /**
    * Provides a Knex connection plugin config by combining base and plugin
@@ -465,33 +545,33 @@ export class PgConnector implements Connector {
    * connection take precedence over the base. Base database name is omitted
    * unless `pluginDivisionMode` is set to `schema`.
    */
-  private getConnectionConfig(pluginId: string): Knex.StaticConnectionConfig {
-    const { overridden } = this.getClientType(pluginId);
+  // private getConnectionConfig(pluginId: string): Knex.StaticConnectionConfig {
+  //   const { overridden } = this.getClientType(pluginId);
 
-    let baseConnection = normalizeConnection(this.config.get('connection'));
+  //   let baseConnection = normalizeConnection(this.config.get('connection'));
 
-    // Databases cannot be shared unless the `pluginDivisionMode` is set to `schema`. The
-    // `database` property from the base connection is omitted unless `pluginDivisionMode`
-    // is set to `schema`.
-    if (this.getPluginDivisionModeConfig() !== 'schema') {
-      baseConnection = omit(baseConnection, 'database');
-    }
+  //   // Databases cannot be shared unless the `pluginDivisionMode` is set to `schema`. The
+  //   // `database` property from the base connection is omitted unless `pluginDivisionMode`
+  //   // is set to `schema`.
+  //   if (this.getPluginDivisionModeConfig() !== 'schema') {
+  //     baseConnection = omit(baseConnection, 'database');
+  //   }
 
-    // get and normalize optional plugin specific database connection
-    const connection = normalizeConnection(
-      this.config.getOptional(`${pluginPath(pluginId)}.connection`),
-    );
+  //   // get and normalize optional plugin specific database connection
+  //   const connection = normalizeConnection(
+  //     this.config.getOptional(`${pluginPath(pluginId)}.connection`),
+  //   );
 
-    (
-      baseConnection as Knex.PgConnectionConfig
-    ).application_name ||= `backstage_plugin_${pluginId}`;
+  //   (
+  //     baseConnection as Knex.PgConnectionConfig
+  //   ).application_name ||= `backstage_plugin_${pluginId}`;
 
-    return {
-      // include base connection if client type has not been overridden
-      ...(overridden ? {} : baseConnection),
-      ...connection,
-    } as Knex.StaticConnectionConfig;
-  }
+  //   return {
+  //     // include base connection if client type has not been overridden
+  //     ...(overridden ? {} : baseConnection),
+  //     ...connection,
+  //   } as Knex.StaticConnectionConfig;
+  // }
 
   /**
    * Provides a Knex database config for a given plugin.
@@ -501,17 +581,17 @@ export class PgConnector implements Connector {
    *
    * @param pluginId - The plugin that the database config should correspond with
    */
-  private getConfigForPlugin(pluginId: string): Knex.Config {
-    const { client } = this.getClientType(pluginId);
-    const role = this.getRoleConfig(pluginId);
+  // private getConfigForPlugin(pluginId: string): Knex.Config {
+  //   const { client } = this.getClientType(pluginId);
+  //   const role = this.getRoleConfig(pluginId);
 
-    return {
-      ...this.getAdditionalKnexConfig(pluginId),
-      client,
-      connection: this.getConnectionConfig(pluginId),
-      ...(role && { role }),
-    };
-  }
+  //   return {
+  //     ...this.getAdditionalKnexConfig(pluginId),
+  //     client,
+  //     connection: this.getConnectionConfig(pluginId),
+  //     ...(role && { role }),
+  //   };
+  // }
 
   /**
    * Provides a partial `Knex.Config`• database name override for a given plugin.
