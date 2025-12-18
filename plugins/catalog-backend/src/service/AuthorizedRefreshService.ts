@@ -14,36 +14,17 @@
  * limitations under the License.
  */
 
-import { NotAllowedError } from '@backstage/errors';
-import { catalogEntityRefreshPermission } from '@backstage/plugin-catalog-common/alpha';
-import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { RefreshOptions, RefreshService } from './types';
 import { PermissionsService } from '@backstage/backend-plugin-api';
 
 export class AuthorizedRefreshService implements RefreshService {
   private readonly service: RefreshService;
-  private readonly permissionApi: PermissionsService;
 
-  constructor(service: RefreshService, permissionApi: PermissionsService) {
+  constructor(service: RefreshService, _permissionApi: PermissionsService) {
     this.service = service;
-    this.permissionApi = permissionApi;
   }
 
   async refresh(options: RefreshOptions) {
-    const authorizeDecision = (
-      await this.permissionApi.authorize(
-        [
-          {
-            permission: catalogEntityRefreshPermission,
-            resourceRef: options.entityRef,
-          },
-        ],
-        { credentials: options.credentials },
-      )
-    )[0];
-    if (authorizeDecision.result !== AuthorizeResult.ALLOW) {
-      throw new NotAllowedError();
-    }
     await this.service.refresh(options);
   }
 }
