@@ -21,6 +21,7 @@ import './storybook.css';
 import './themes/spotify.css';
 
 export default definePreview({
+  tags: ['manifest'],
   globalTypes: {
     themeMode: {
       name: 'Theme Mode',
