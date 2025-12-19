@@ -72,8 +72,8 @@ describe('bitbucketCloud core', () => {
     it('handles OAuth token fetch errors', async () => {
       // Test error handling
       worker.use(
-        rest.post(BITBUCKET_CLOUD_OAUTH_TOKEN_URL, (_, res, ctx) =>
-          res(ctx.status(401), ctx.json({ error: 'invalid_client' })),
+        http.post(BITBUCKET_CLOUD_OAUTH_TOKEN_URL, () =>
+          HttpResponse.json({ error: 'invalid_client' }, { status: 401 }),
         ),
       );
 
@@ -93,15 +93,12 @@ describe('bitbucketCloud core', () => {
       // Test OAuth + caching
       let callCount = 0;
       worker.use(
-        rest.post(BITBUCKET_CLOUD_OAUTH_TOKEN_URL, (_, res, ctx) => {
+        http.post(BITBUCKET_CLOUD_OAUTH_TOKEN_URL, () => {
           callCount++;
-          return res(
-            ctx.status(200),
-            ctx.json({
-              access_token: 'test-oauth-token',
-              expires_in: 3600,
-            }),
-          );
+          return HttpResponse.json({
+            access_token: 'test-oauth-token',
+            expires_in: 3600,
+          });
         }),
       );
 
