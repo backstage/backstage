@@ -100,6 +100,7 @@ export const AutocompleteWithLabels = () => {
       <SearchFilter.Autocomplete
         name="autocomplete"
         label="Autocomplete Filter With Labels"
+        multiple
         values={[
           { value: 'value1', label: 'Label 1' },
           { value: 'value2', label: 'Label 2' },

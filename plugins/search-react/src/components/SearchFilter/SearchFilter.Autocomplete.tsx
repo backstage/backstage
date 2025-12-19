@@ -67,7 +67,12 @@ export const AutocompleteFilter = (props: SearchAutocompleteFilterProps) => {
   );
   const { filters, setFilters } = useSearch();
   const filterValueWithLabel = ensureFilterValueWithLabel(
-    filters[name] as string | string[] | undefined,
+    filters[name] as
+      | string
+      | string[]
+      | FilterValueWithLabel
+      | FilterValueWithLabel[]
+      | undefined,
   );
   const filterValue = useMemo(
     () => filterValueWithLabel || (multiple ? [] : null),
@@ -85,9 +90,7 @@ export const AutocompleteFilter = (props: SearchAutocompleteFilterProps) => {
       if (newValue) {
         return {
           ...others,
-          [name]: Array.isArray(newValue)
-            ? newValue.map(v => v.value)
-            : newValue.value,
+          [name]: newValue,
         };
       }
       return { ...others };
@@ -127,6 +130,7 @@ export const AutocompleteFilter = (props: SearchAutocompleteFilterProps) => {
       onChange={handleChange}
       onInputChange={(_, newValue) => setInputValue(newValue)}
       getOptionLabel={option => option.label}
+      renderOption={option => option.label}
       renderInput={renderInput}
       renderTags={renderTags}
     />
