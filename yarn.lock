@@ -7952,7 +7952,7 @@ __metadata:
     react-aria-components: "npm:^1.13.0"
     react-dom: "npm:^18.0.2"
     react-router-dom: "npm:^6.3.0"
-    storybook: "npm:^10.1.9"
+    storybook: "npm:^10.1.10"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
@@ -45147,7 +45147,7 @@ __metadata:
     shx: "npm:^0.4.0"
     sloc: "npm:^0.3.1"
     sort-package-json: "npm:^2.8.0"
-    storybook: "npm:^10.1.9"
+    storybook: "npm:^10.1.10"
     ts-morph: "npm:^24.0.0"
     typedoc: "npm:^0.28.0"
     typescript: "npm:~5.7.0"
@@ -46614,9 +46614,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"storybook@npm:^10.1.9":
-  version: 10.1.9
-  resolution: "storybook@npm:10.1.9"
+"storybook@npm:^10.1.10":
+  version: 10.1.10
+  resolution: "storybook@npm:10.1.10"
   dependencies:
     "@storybook/global": "npm:^5.0.0"
     "@storybook/icons": "npm:^2.0.0"
@@ -46637,7 +46637,7 @@ __metadata:
       optional: true
   bin:
     storybook: ./dist/bin/dispatcher.js
-  checksum: 10/136abb6a2654d9a3ea223712e3a96ec19443f0a042b02c747288f8e79cdab1e7d4b0ea3a3d5c5d6e06701cea333a1218c480d190fc439687a9ba479ff6f14017
+  checksum: 10/c1f01c7ab57e80d2f2ef3a5c49baad5904e77c8e079199ad134e98a7ae455d52422390cd704e64142b36668874c055670dbffe0e334e1f4d541ebd4384052dd7
   languageName: node
   linkType: hard
 
