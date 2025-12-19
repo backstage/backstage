@@ -227,7 +227,8 @@ export function auditorMiddlewareFactory(dependencies: {
       });
       req[AUDITOR_SYMBOL] = auditorEvent;
     } catch (err) {
-      next(new ForwardedError('Auditor middleware failed', err));
+      logger.error(`Failed to create auditor event: ${err}`);
+      next();
       return;
     }
 
@@ -259,7 +260,9 @@ export function auditorMiddlewareFactory(dependencies: {
       }
       delete req[AUDITOR_SYMBOL];
     } catch (err) {
-      next(new ForwardedError('Auditor middleware failed', err));
+      logger.error(`Failed to finalize auditor event`, err);
+      // Don't fail the request if auditing fails after the response is sent.
+      next();
       return;
     }
   };
