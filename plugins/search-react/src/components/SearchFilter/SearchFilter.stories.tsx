@@ -94,6 +94,22 @@ export const Autocomplete = () => {
   );
 };
 
+export const AutocompleteWithLabels = () => {
+  return (
+    <Paper style={{ padding: 10 }}>
+      <SearchFilter.Autocomplete
+        name="autocomplete"
+        label="Autocomplete Filter With Labels"
+        values={[
+          { value: 'value1', label: 'Label 1' },
+          { value: 'value2', label: 'Label 2' },
+          { value: 'value3', label: 'Label 3' },
+        ]}
+      />
+    </Paper>
+  );
+};
+
 export const MultiSelectAutocomplete = () => {
   return (
     <Paper style={{ padding: 10 }}>
