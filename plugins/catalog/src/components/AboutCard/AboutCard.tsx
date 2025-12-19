@@ -241,7 +241,7 @@ export function InternalAboutCard(props: InternalAboutCardProps) {
           <>
             {allowRefresh && canRefresh && (
               <IconButton
-                aria-label="Refresh"
+                aria-label={t('aboutCard.refreshButtonAriaLabel')}
                 title={t('aboutCard.refreshButtonTitle')}
                 onClick={refreshEntity}
               >
@@ -250,7 +250,7 @@ export function InternalAboutCard(props: InternalAboutCardProps) {
             )}
             <IconButton
               component={Link}
-              aria-label="Edit"
+              aria-label={t('aboutCard.editButtonAriaLabel')}
               disabled={!entityMetadataEditUrl}
               title={t('aboutCard.editButtonTitle')}
               to={entityMetadataEditUrl ?? '#'}
