@@ -27,6 +27,7 @@ import { EntityStatus } from './EntityStatus';
  * Available via the `@backstage/catalog-model/alpha` import.
  *
  * @alpha
+ * @deprecated use `Entity` from `@backstage/catalog-model` instead. The `status` field is now stable.
  */
 export interface AlphaEntity extends Entity {
   /**

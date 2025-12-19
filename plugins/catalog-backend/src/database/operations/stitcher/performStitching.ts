@@ -18,9 +18,11 @@ import { ENTITY_STATUS_CATALOG_PROCESSING_TYPE } from '@backstage/catalog-client
 import {
   ANNOTATION_EDIT_URL,
   ANNOTATION_VIEW_URL,
+  Entity,
   EntityRelation,
+  EntityStatusItem,
+  EntityStatusLevel,
 } from '@backstage/catalog-model';
-import { AlphaEntity, EntityStatusItem } from '@backstage/catalog-model/alpha';
 import { SerializedError } from '@backstage/errors';
 import { Knex } from 'knex';
 import { v4 as uuid } from 'uuid';
@@ -34,8 +36,8 @@ import { buildEntitySearch } from './buildEntitySearch';
 import { markDeferredStitchCompleted } from './markDeferredStitchCompleted';
 import { BATCH_SIZE, generateStableHash } from './util';
 import {
-  LoggerService,
   isDatabaseConflictError,
+  LoggerService,
 } from '@backstage/backend-plugin-api';
 
 // See https://github.com/facebook/react/blob/f0cf832e1d0c8544c36aa8b310960885a11a847c/packages/react-dom-bindings/src/shared/sanitizeURL.js
@@ -166,7 +168,7 @@ export async function performStitching(options: {
 
     // Grab the processed entity and stitch all of the relevant data into
     // it
-    const entity = JSON.parse(processedEntity) as AlphaEntity;
+    const entity = JSON.parse(processedEntity) as Entity;
     const isOrphan = Number(incomingReferenceCount) === 0;
     let statusItems: EntityStatusItem[] = [];
 
@@ -205,10 +207,17 @@ export async function performStitching(options: {
         type: row.relationType!,
         targetRef: row.relationTarget!,
       }));
-    if (statusItems.length) {
+    if (entity.status || statusItems.length) {
+      const order: Record<EntityStatusLevel, number> = {
+        error: 1,
+        warning: 2,
+        info: 3,
+      };
       entity.status = {
         ...entity.status,
-        items: [...(entity.status?.items ?? []), ...statusItems],
+        items: [...(entity.status?.items ?? []), ...statusItems].sort(
+          (a, b) => order[a.level] - order[b.level],
+        ),
       };
     }
 

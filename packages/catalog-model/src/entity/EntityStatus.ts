@@ -19,7 +19,7 @@ import { SerializedError } from '@backstage/errors';
 /**
  * The current status of the entity, as claimed by various sources.
  *
- * @alpha
+ * @public
  */
 export type EntityStatus = {
   /**
@@ -30,7 +30,7 @@ export type EntityStatus = {
 
 /**
  * A specific status item on a well known format.
- * @alpha
+ * @public
  */
 export type EntityStatusItem = {
   /**
@@ -56,7 +56,7 @@ export type EntityStatusItem = {
 
 /**
  * Each entity status item has a level, describing its severity.
- * @alpha
+ * @public
  */
 export type EntityStatusLevel =
   | 'info' // Only informative data

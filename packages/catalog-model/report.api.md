@@ -4,6 +4,7 @@
 
 ```ts
 import { JsonObject } from '@backstage/types';
+import { SerializedError } from '@backstage/errors';
 
 // @public
 export const ANNOTATION_EDIT_URL = 'backstage.io/edit-url';
@@ -140,6 +141,7 @@ export type Entity = {
   metadata: EntityMeta;
   spec?: JsonObject;
   relations?: EntityRelation[];
+  status?: EntityStatus;
 };
 
 // @public
@@ -205,6 +207,22 @@ export type EntityRelation = {
 export function entitySchemaValidator<T extends Entity = Entity>(
   schema?: unknown,
 ): (data: unknown) => T;
+
+// @public
+export type EntityStatus = {
+  items?: EntityStatusItem[];
+};
+
+// @public
+export type EntityStatusItem = {
+  type: string;
+  level: EntityStatusLevel;
+  message: string;
+  error?: SerializedError;
+};
+
+// @public
+export type EntityStatusLevel = 'info' | 'warning' | 'error';
 
 // @public
 export class FieldFormatEntityPolicy implements EntityPolicy {
