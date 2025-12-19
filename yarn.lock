@@ -12,10 +12,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@acemir/cssom@npm:^0.9.28":
-  version: 0.9.28
-  resolution: "@acemir/cssom@npm:0.9.28"
-  checksum: 10/429faa2af7bffdcf3311e984f6b8ced77bf58d936e0e9a22c2fc892a84e54d2c8cbd71ae3a979ef54241509ac7c866cb880d919e3e713e64c865a1cd4ede3a1f
+"@acemir/cssom@npm:^0.9.28, @acemir/cssom@npm:^0.9.29":
+  version: 0.9.30
+  resolution: "@acemir/cssom@npm:0.9.30"
+  checksum: 10/b7db600b88b6d9e93d16e4b532f9f1c551af31ba0ad279693e4382a393798bff3d0a5f74e868b007dd0646e5ff8485ea85c628aca85ac09aed51361b0484e3cc
   languageName: node
   linkType: hard
 
@@ -7936,6 +7936,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@backstage/ui@workspace:packages/ui"
   dependencies:
+    "@acemir/cssom": "npm:^0.9.29"
     "@backstage/cli": "workspace:^"
     "@remixicon/react": "npm:^4.6.0"
     "@tanstack/react-table": "npm:^8.21.3"

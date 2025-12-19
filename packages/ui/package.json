@@ -46,6 +46,7 @@
     "react-aria-components": "^1.13.0"
   },
   "devDependencies": {
+    "@acemir/cssom": "^0.9.30",
     "@backstage/cli": "workspace:^",
     "@types/react": "^18.0.0",
     "@types/react-dom": "^18.0.0",
