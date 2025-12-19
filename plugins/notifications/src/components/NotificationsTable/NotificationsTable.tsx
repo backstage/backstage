@@ -32,6 +32,8 @@ import {
   TableColumn,
   TableProps,
 } from '@backstage/core-components';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { notificationsTranslationRef } from '../../translation';
 
 import { notificationsApiRef } from '../../api';
 import { SelectAll } from './SelectAll';
@@ -86,6 +88,7 @@ export const NotificationsTable = ({
   pageSize,
   totalCount,
 }: NotificationsTableProps) => {
+  const { t } = useTranslationRef(notificationsTranslationRef);
   const classes = useStyles();
   const notificationsApi = useApi(notificationsApiRef);
   const alertApi = useApi(alertApiRef);
@@ -341,6 +344,19 @@ export const NotificationsTable = ({
       onSearchChange={throttledContainsTextHandler}
       data={notifications}
       columns={compactColumns}
+      localization={{
+        body: {
+          emptyDataSourceMessage: t('table.emptyMessage'),
+        },
+        pagination: {
+          firstTooltip: t('table.pagination.firstTooltip'),
+          labelDisplayedRows: t('table.pagination.labelDisplayedRows'),
+          labelRowsSelect: t('table.pagination.labelRowsSelect'),
+          lastTooltip: t('table.pagination.lastTooltip'),
+          nextTooltip: t('table.pagination.nextTooltip'),
+          previousTooltip: t('table.pagination.previousTooltip'),
+        },
+      }}
     />
   );
 };
