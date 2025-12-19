@@ -24,7 +24,7 @@ export function registerMswTestHooks(worker: {
   close: () => void;
   resetHandlers: () => void;
 }) {
-  beforeAll(() => worker.listen());
+  beforeAll(() => worker.listen({ onUnhandledRequest: 'error' }));
   afterAll(() => worker.close());
   afterEach(() => worker.resetHandlers());
 }
