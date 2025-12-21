@@ -268,8 +268,8 @@ jobs:
         with:
           clean: false
 
-      # - name: Build MkDocs for TechDocs
-      #   run: mkdocs build --strict
+      - name: Build MkDocs for TechDocs
+        run: mkdocs build --strict
 
       - name: download next OpenAPI API docs
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
