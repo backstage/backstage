@@ -335,7 +335,7 @@ describe('UserTokenHandler', () => {
       );
     });
 
-    it('should return the original token if payload.uip is missing', async () => {
+    it('should throw if payload.uip is missing', async () => {
       const backstageToken = await createToken({
         header: { typ: 'vnd.backstage.user', alg: 'ES256' },
         payload: {
@@ -344,15 +344,12 @@ describe('UserTokenHandler', () => {
           ent: ['mock'],
           iat: 1,
           exp: 2,
-          // Note: uip is intentionally missing
         },
       });
 
-      const result = userTokenHandler.createLimitedUserToken(backstageToken);
-      expect(result).toEqual({
-        token: backstageToken,
-        expiresAt: new Date(2 * 1000),
-      });
+      expect(() =>
+        userTokenHandler.createLimitedUserToken(backstageToken),
+      ).toThrow(/payload\.uip/i);
     });
 
     it('should create a limited user token from a user token', async () => {

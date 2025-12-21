@@ -53,6 +53,8 @@ export class JwksClient {
     const header = await decodeProtectedHeader(rawJwtToken);
 
     // Refresh public keys if needed
+    const MIN_REFRESH_INTERVAL_S = 30;
+
     let keyStoreHasKey = false;
     try {
       if (this.#keyStore) {
@@ -72,12 +74,19 @@ export class JwksClient {
     // cases where a new key was published to JWKS after the keystore was cached
     // Also refresh if token was issued after last refresh (to catch newly published keys)
     // Add a small margin in case clocks are out of sync
+    const now = Date.now() / 1000;
     const issuedAfterLastRefresh =
       payload?.iat && payload.iat > this.#keyStoreUpdated - CLOCK_MARGIN_S;
-    if (!this.#keyStore || !keyStoreHasKey || issuedAfterLastRefresh) {
+    if (
+      !this.#keyStore ||
+      (!keyStoreHasKey &&
+        now - this.#keyStoreUpdated > MIN_REFRESH_INTERVAL_S) ||
+      (issuedAfterLastRefresh &&
+        now - this.#keyStoreUpdated > MIN_REFRESH_INTERVAL_S)
+    ) {
       const endpoint = await this.getEndpoint();
       this.#keyStore = createRemoteJWKSet(endpoint);
-      this.#keyStoreUpdated = Date.now() / 1000;
+      this.#keyStoreUpdated = now;
     }
   }
 }

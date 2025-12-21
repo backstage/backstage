@@ -137,7 +137,9 @@ export class UserTokenHandler {
     // If payload.uip is missing, return the original token as we cannot create
     // a valid limited token without the user identity proof signature
     if (!payload.uip) {
-      return { token: backstageToken, expiresAt: new Date(payload.exp * 1000) };
+      throw new Error(
+        'Cannot create limited user token: payload.uip is missing',
+      );
     }
 
     // NOTE: The order and properties in both the header and payload must match
