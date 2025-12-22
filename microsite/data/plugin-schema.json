@@ -30,8 +30,7 @@
                     "type": "string"
                 },
                 "npmPackageName": {
-                    "type": "string",
-                    "pattern": "/^(@[a-z0-9-~][a-z0-9-._~]*\/)?[a-z0-9-~][a-z0-9-._~]*$/"
+                    "type": "string"
                 },
                 "addedDate": {
                     "type": "string",
