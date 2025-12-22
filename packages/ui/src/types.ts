@@ -173,3 +173,9 @@ export interface ComponentDefinition {
   dataAttributes?: DataAttributesMap;
   utilityProps?: string[];
 }
+
+/**
+ * Surface type
+ * @public
+ */
+export type Surface = '0' | '1' | '2' | '3';
