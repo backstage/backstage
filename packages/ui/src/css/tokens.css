@@ -81,9 +81,10 @@
     --bui-gray-8: #595959;
 
     /* Background Colors */
-    --bui-bg: var(--bui-gray-1);
+    --bui-bg-surface-0: var(--bui-gray-1);
     --bui-bg-surface-1: var(--bui-white);
-    --bui-bg-surface-2: var(--bui-gray-2);
+    --bui-bg-surface-2: var(--bui-gray-1);
+    --bui-bg-surface-3: var(--bui-gray-2);
     --bui-bg-solid: #1f5493;
     --bui-bg-solid-hover: #163a66;
     --bui-bg-solid-pressed: #0f2b4e;
@@ -140,9 +141,10 @@
     --bui-gray-8: #b4b4b4;
 
     /* Background Colors */
-    --bui-bg: #333333;
-    --bui-bg-surface-1: #424242;
+    --bui-bg-surface-0: var(--bui-black);
+    --bui-bg-surface-1: var(--bui-gray-1);
     --bui-bg-surface-2: var(--bui-gray-2);
+    --bui-bg-surface-3: var(--bui-gray-3);
     --bui-bg-solid: #9cc9ff;
     --bui-bg-solid-hover: #83b9fd;
     --bui-bg-solid-pressed: #83b9fd;

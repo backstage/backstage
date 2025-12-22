@@ -216,9 +216,6 @@
 }
 
 [data-theme-mode='light'][data-theme-name='spotify'] {
-  --bui-bg: var(--bui-gray-1);
-  --bui-bg-surface-1: var(--bui-white);
-  --bui-bg-surface-2: var(--bui-gray-2);
   --bui-bg-solid: #1ed760;
   --bui-bg-solid-hover: #3be477;
   --bui-bg-solid-pressed: #1abc54;
@@ -248,9 +245,6 @@
 }
 
 [data-theme-mode='dark'][data-theme-name='spotify'] {
-  --bui-bg: var(--bui-black);
-  --bui-bg-surface-1: var(--bui-gray-1);
-  --bui-bg-surface-2: var(--bui-gray-2);
   --bui-bg-solid: #1ed760;
   --bui-bg-solid-hover: #3be477;
   --bui-bg-solid-pressed: #1abc54;
