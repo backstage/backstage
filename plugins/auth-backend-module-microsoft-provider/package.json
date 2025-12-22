@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-auth-backend-module-microsoft-provider",
-  "version": "0.3.10-next.0",
+  "version": "0.3.10",
   "description": "The microsoft-provider backend module for the auth plugin.",
   "backstage": {
     "role": "backend-plugin-module",
@@ -36,7 +36,7 @@
   "dependencies": {
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/plugin-auth-node": "workspace:^",
-    "express": "^4.18.2",
+    "express": "^4.22.0",
     "jose": "^5.0.0",
     "passport-microsoft": "^1.0.0",
     "zod": "^3.22.4"

@@ -103,13 +103,7 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
               ? r.json().then(
                   ({ kind, items }): FetchResponse => ({
                     type: objectType,
-                    resources:
-                      objectType === 'customresources'
-                        ? items.map((item: JsonObject) => ({
-                            ...item,
-                            kind: kind.replace(/(List)$/, ''),
-                          }))
-                        : items,
+                    resources: this.transformResources(objectType, kind, items),
                   }),
                 )
               : this.handleUnsuccessfulResponse(params.clusterDetails.name, r),
@@ -319,5 +313,34 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
       });
     }
     return [url, requestInit];
+  }
+
+  private transformResources(
+    objectType: string,
+    kind: string,
+    items: JsonObject[],
+  ): JsonObject[] {
+    if (objectType === 'customresources') {
+      return items.map((item: JsonObject) => ({
+        ...item,
+        kind: kind.replace(/(List)$/, ''),
+      }));
+    }
+
+    if (objectType === 'secrets') {
+      return items.map((item: JsonObject) => {
+        if (item.data && typeof item.data === 'object') {
+          return {
+            ...item,
+            data: Object.fromEntries(
+              Object.keys(item.data).map(key => [key, '***']),
+            ),
+          };
+        }
+        return item;
+      });
+    }
+
+    return items;
   }
 }

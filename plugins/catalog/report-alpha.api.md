@@ -27,7 +27,7 @@ import { RouteRef as RouteRef_2 } from '@backstage/frontend-plugin-api';
 import { SearchResultItemExtensionComponent } from '@backstage/plugin-search-react/alpha';
 import { SearchResultItemExtensionPredicate } from '@backstage/plugin-search-react/alpha';
 import { SearchResultListItemBlueprintParams } from '@backstage/plugin-search-react/alpha';
-import { TranslationRef } from '@backstage/core-plugin-api/alpha';
+import { TranslationRef } from '@backstage/frontend-plugin-api';
 
 // @alpha (undocumented)
 export const catalogTranslationRef: TranslationRef<
@@ -197,15 +197,7 @@ const _default: OverridableFrontendPlugin<
         initialFilter?: string | undefined;
       };
       output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
-      inputs: {
-        [x: string]: ExtensionInput<
-          ExtensionDataRef,
-          {
-            singleton: boolean;
-            optional: boolean;
-          }
-        >;
-      };
+      inputs: {};
       kind: 'catalog-filter';
       name: 'kind';
       params: {
@@ -231,15 +223,7 @@ const _default: OverridableFrontendPlugin<
         initialFilter?: 'all' | 'owned' | 'starred' | undefined;
       };
       output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
-      inputs: {
-        [x: string]: ExtensionInput<
-          ExtensionDataRef,
-          {
-            singleton: boolean;
-            optional: boolean;
-          }
-        >;
-      };
+      inputs: {};
       kind: 'catalog-filter';
       name: 'list';
       params: {
@@ -254,15 +238,7 @@ const _default: OverridableFrontendPlugin<
         mode?: 'all' | 'owners-only' | undefined;
       };
       output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
-      inputs: {
-        [x: string]: ExtensionInput<
-          ExtensionDataRef,
-          {
-            singleton: boolean;
-            optional: boolean;
-          }
-        >;
-      };
+      inputs: {};
       kind: 'catalog-filter';
       name: 'mode';
       params: {
@@ -995,7 +971,6 @@ const _default: OverridableFrontendPlugin<
               offset?: number | undefined;
               limit?: number | undefined;
             };
-      } & {
         path: string | undefined;
       };
       configInput: {
@@ -1007,7 +982,6 @@ const _default: OverridableFrontendPlugin<
               limit?: number | undefined;
             }
           | undefined;
-      } & {
         path?: string | undefined;
       };
       output:
@@ -1048,7 +1022,6 @@ const _default: OverridableFrontendPlugin<
               }
             >[]
           | undefined;
-      } & {
         path: string | undefined;
       };
       configInput: {
@@ -1060,7 +1033,6 @@ const _default: OverridableFrontendPlugin<
               }
             >[]
           | undefined;
-      } & {
         path?: string | undefined;
       };
       output:

@@ -1,5 +1,17 @@
 # @backstage/plugin-kubernetes-common
 
+## 0.9.9
+
+### Patch Changes
+
+- 8fa8d87: Add Kubernetes Plugin Secrets Accordion with masked secret datas
+
+## 0.9.9-next.0
+
+### Patch Changes
+
+- 8fa8d87: Add Kubernetes Plugin Secrets Accordion with masked secret datas
+
 ## 0.9.8
 
 ### Patch Changes

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
+import preview from '../../../../../.storybook/preview';
 import { useState } from 'react';
-import type { Meta, StoryObj } from '@storybook/react-vite';
 import { TagGroup, Tag } from '.';
 import type { Selection } from 'react-aria-components';
 import { Flex } from '../../';
@@ -35,7 +35,7 @@ export interface ListItem {
   isDisabled?: boolean;
 }
 
-const meta = {
+const meta = preview.meta({
   title: 'Backstage UI/TagGroup',
   component: TagGroup<ListItem>,
   argTypes: {
@@ -54,10 +54,7 @@ const meta = {
       </MemoryRouter>
     ),
   ],
-} satisfies Meta<typeof TagGroup<ListItem>>;
-
-export default meta;
-type Story = StoryObj<typeof meta>;
+});
 
 const initialList: ListItem[] = [
   { id: 'banana', name: 'Banana', icon: <RiBugLine /> },
@@ -74,7 +71,7 @@ const initialList: ListItem[] = [
   { id: 'strawberry', name: 'Strawberry', icon: <RiHeartLine /> },
 ];
 
-export const Default: Story = {
+export const Default = meta.story({
   args: {
     'aria-label': 'Tag Group',
   },
@@ -85,11 +82,11 @@ export const Default: Story = {
       ))}
     </TagGroup>
   ),
-};
+});
 
-export const Sizes: Story = {
+export const Sizes = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
   },
   render: args => (
     <Flex direction="column">
@@ -109,9 +106,9 @@ export const Sizes: Story = {
       </TagGroup>
     </Flex>
   ),
-};
+});
 
-export const SelectionModeSingle: Story = {
+export const SelectionModeSingle = meta.story({
   args: {
     selectionMode: 'single',
     'aria-label': 'Tag Group',
@@ -130,9 +127,9 @@ export const SelectionModeSingle: Story = {
       </TagGroup>
     );
   },
-};
+});
 
-export const SelectionModeMultiple: Story = {
+export const SelectionModeMultiple = meta.story({
   args: {
     selectionMode: 'multiple',
     'aria-label': 'Tag Group',
@@ -153,11 +150,11 @@ export const SelectionModeMultiple: Story = {
       </TagGroup>
     );
   },
-};
+});
 
-export const WithIcon: Story = {
+export const WithIcon = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
   },
   render: args => (
     <TagGroup {...args}>
@@ -168,9 +165,9 @@ export const WithIcon: Story = {
       ))}
     </TagGroup>
   ),
-};
+});
 
-export const WithLink: Story = {
+export const WithLink = meta.story({
   render: args => (
     <TagGroup {...args}>
       {initialList.map(item => (
@@ -180,9 +177,9 @@ export const WithLink: Story = {
       ))}
     </TagGroup>
   ),
-};
+});
 
-export const Disabled: Story = {
+export const Disabled = meta.story({
   render: args => (
     <TagGroup {...args}>
       {initialList.map(item => (
@@ -192,11 +189,11 @@ export const Disabled: Story = {
       ))}
     </TagGroup>
   ),
-};
+});
 
-export const RemovingTags: Story = {
+export const RemovingTags = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
   },
   render: args => {
     const [selected, setSelected] = useState<Selection>(new Set(['travel']));
@@ -217,11 +214,11 @@ export const RemovingTags: Story = {
       </TagGroup>
     );
   },
-};
+});
 
-export const WithIconAndRemoveButton: Story = {
+export const WithIconAndRemoveButton = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
   },
   render: args => {
     const [selected, setSelected] = useState<Selection>(new Set(['travel']));
@@ -244,4 +241,4 @@ export const WithIconAndRemoveButton: Story = {
       </TagGroup>
     );
   },
-};
+});

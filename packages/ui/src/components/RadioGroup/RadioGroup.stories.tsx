@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,19 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import type { Meta, StoryObj } from '@storybook/react-vite';
+import preview from '../../../../../.storybook/preview';
 import { RadioGroup, Radio } from './RadioGroup';
 
-const meta = {
+const meta = preview.meta({
   title: 'Backstage UI/RadioGroup',
   component: RadioGroup,
-} satisfies Meta<typeof RadioGroup>;
+});
 
-export default meta;
-type Story = StoryObj<typeof meta>;
-
-export const Default: Story = {
+export const Default = meta.story({
   args: {
     label: 'What is your favorite pokemon?',
   },
@@ -36,11 +32,11 @@ export const Default: Story = {
       <Radio value="squirtle">Squirtle</Radio>
     </RadioGroup>
   ),
-};
+});
 
-export const Horizontal: Story = {
+export const Horizontal = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
     orientation: 'horizontal',
   },
   render: args => (
@@ -50,11 +46,11 @@ export const Horizontal: Story = {
       <Radio value="squirtle">Squirtle</Radio>
     </RadioGroup>
   ),
-};
+});
 
-export const Disabled: Story = {
+export const Disabled = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
     isDisabled: true,
   },
   render: args => (
@@ -64,11 +60,11 @@ export const Disabled: Story = {
       <Radio value="squirtle">Squirtle</Radio>
     </RadioGroup>
   ),
-};
+});
 
-export const DisabledSingle: Story = {
+export const DisabledSingle = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
   },
   render: args => (
     <RadioGroup {...args}>
@@ -79,11 +75,11 @@ export const DisabledSingle: Story = {
       <Radio value="squirtle">Squirtle</Radio>
     </RadioGroup>
   ),
-};
+});
 
-export const DisabledAndSelected: Story = {
+export const DisabledAndSelected = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
     value: 'charmander',
   },
   render: args => (
@@ -95,11 +91,11 @@ export const DisabledAndSelected: Story = {
       <Radio value="squirtle">Squirtle</Radio>
     </RadioGroup>
   ),
-};
+});
 
-export const Invalid: Story = {
+export const Invalid = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
     name: 'pokemon',
     isInvalid: true,
   },
@@ -112,11 +108,11 @@ export const Invalid: Story = {
       <Radio value="squirtle">Squirtle</Radio>
     </RadioGroup>
   ),
-};
+});
 
-export const Validation: Story = {
+export const Validation = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
     name: 'pokemon',
     defaultValue: 'charmander',
     validationBehavior: 'aria',
@@ -129,11 +125,11 @@ export const Validation: Story = {
       <Radio value="squirtle">Squirtle</Radio>
     </RadioGroup>
   ),
-};
+});
 
-export const ReadOnly: Story = {
+export const ReadOnly = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
     isReadOnly: true,
     defaultValue: 'charmander',
   },
@@ -144,4 +140,4 @@ export const ReadOnly: Story = {
       <Radio value="squirtle">Squirtle</Radio>
     </RadioGroup>
   ),
-};
+});

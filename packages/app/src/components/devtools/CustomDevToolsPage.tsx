@@ -18,6 +18,7 @@ import {
   ConfigContent,
   ExternalDependenciesContent,
   InfoContent,
+  ScheduledTasksContent,
 } from '@backstage/plugin-devtools';
 import { DevToolsLayout } from '@backstage/plugin-devtools';
 import { UnprocessedEntitiesContent } from '@backstage/plugin-catalog-unprocessed-entities';
@@ -30,6 +31,9 @@ const DevToolsPage = () => {
       </DevToolsLayout.Route>
       <DevToolsLayout.Route path="config" title="Config">
         <ConfigContent />
+      </DevToolsLayout.Route>
+      <DevToolsLayout.Route path="scheduled-tasks" title="Scheduled Tasks">
+        <ScheduledTasksContent />
       </DevToolsLayout.Route>
       <DevToolsLayout.Route
         path="external-dependencies"

@@ -1,5 +1,34 @@
 # @backstage/frontend-plugin-api
 
+## 0.13.2
+
+### Patch Changes
+
+- 75683ed: Added a new `errorPresentation` prop to `ExtensionBoundary` to control how errors are presented to the user. The default is `'error-display'`, which is the current behavior of showing the error in the `ErrorDisplay` component. The new option is `'error-api'`, posts errors to the `ErrorApi` and does not allow retries.
+
+  The `AppRootElementBlueprint` now wraps its element in an `ErrorBoundary` using the new `'error-api'` presentation mode.
+
+- 0bc1ce9: Fixed a versioning conflict that could result in a `.withContext` is not a function error.
+- f3f84f1: Made the return type of `.withOverrides` to be simplified.
+- 97cd16f: Reversed the relationship between the old `@backstage/core-plugin-api` and the new `@backstage/frontend-plugin-api`. Previously, the a lot of API definitions and utilities where defined in the old and re-exported from the old, but this change flips that around so that they now reside in the new package and are re-exported from the old. The external API of both packages remain the same, but this is a step towards being able to add further compatibility with the new frontend system built into the old.
+- 9b8bde4: Removed unnecessary dependencies on `@backstage/core-components`, `@backstage/config`, `@material-ui/core`, and `lodash`.
+
+## 0.13.2-next.1
+
+### Patch Changes
+
+- 75683ed: Added a new `errorPresentation` prop to `ExtensionBoundary` to control how errors are presented to the user. The default is `'error-display'`, which is the current behavior of showing the error in the `ErrorDisplay` component. The new option is `'error-api'`, posts errors to the `ErrorApi` and does not allow retries.
+
+  The `AppRootElementBlueprint` now wraps its element in an `ErrorBoundary` using the new `'error-api'` presentation mode.
+
+- f3f84f1: Made the return type of `.withOverrides` to be simplified.
+- Updated dependencies
+  - @backstage/core-components@0.18.4-next.2
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.11
+
 ## 0.13.2-next.0
 
 ### Patch Changes

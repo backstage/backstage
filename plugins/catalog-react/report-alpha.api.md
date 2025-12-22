@@ -16,7 +16,7 @@ import { JSX as JSX_2 } from 'react';
 import { ReactNode } from 'react';
 import { ResourcePermission } from '@backstage/plugin-permission-common';
 import { RouteRef } from '@backstage/frontend-plugin-api';
-import { TranslationRef } from '@backstage/core-plugin-api/alpha';
+import { TranslationRef } from '@backstage/frontend-plugin-api';
 
 // @alpha
 export const CatalogFilterBlueprint: ExtensionBlueprint<{
@@ -549,7 +549,7 @@ export type EntityPredicateValue =
       $in: EntityPredicatePrimitive[];
     }
   | {
-      $contains: EntityPredicateExpression;
+      $contains: EntityPredicate;
     };
 
 // @alpha (undocumented)

@@ -11,7 +11,6 @@ import { EntityCardType } from '@backstage/plugin-catalog-react/alpha';
 import { EntityPredicate } from '@backstage/plugin-catalog-react/alpha';
 import { ExtensionBlueprintParams } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
-import { ExtensionInput } from '@backstage/frontend-plugin-api';
 import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { JSX as JSX_2 } from 'react';
 import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
@@ -92,7 +91,6 @@ const _default: OverridableFrontendPlugin<
         curve: 'curveStepBefore' | 'curveMonotoneX' | undefined;
         title: string | undefined;
         height: number | undefined;
-      } & {
         filter: EntityPredicate | undefined;
         type: 'content' | 'summary' | 'info' | undefined;
       };
@@ -108,7 +106,6 @@ const _default: OverridableFrontendPlugin<
         mergeRelations?: boolean | undefined;
         relationPairs?: [string, string][] | undefined;
         unidirectional?: boolean | undefined;
-      } & {
         filter?: EntityPredicate | undefined;
         type?: 'content' | 'summary' | 'info' | undefined;
       };
@@ -135,15 +132,7 @@ const _default: OverridableFrontendPlugin<
               optional: true;
             }
           >;
-      inputs: {
-        [x: string]: ExtensionInput<
-          ExtensionDataRef,
-          {
-            singleton: boolean;
-            optional: boolean;
-          }
-        >;
-      };
+      inputs: {};
       kind: 'entity-card';
       name: 'relations';
       params: {
@@ -167,7 +156,6 @@ const _default: OverridableFrontendPlugin<
         relations: string[] | undefined;
         relationPairs: [string, string][] | undefined;
         zoom: 'disabled' | 'enabled' | 'enable-on-click' | undefined;
-      } & {
         path: string | undefined;
       };
       configInput: {
@@ -184,7 +172,6 @@ const _default: OverridableFrontendPlugin<
         selectedRelations?: string[] | undefined;
         selectedKinds?: string[] | undefined;
         showFilters?: boolean | undefined;
-      } & {
         path?: string | undefined;
       };
       output:
@@ -197,15 +184,7 @@ const _default: OverridableFrontendPlugin<
               optional: true;
             }
           >;
-      inputs: {
-        [x: string]: ExtensionInput<
-          ExtensionDataRef,
-          {
-            singleton: boolean;
-            optional: boolean;
-          }
-        >;
-      };
+      inputs: {};
       kind: 'page';
       name: undefined;
       params: {

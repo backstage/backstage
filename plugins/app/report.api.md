@@ -232,12 +232,18 @@ const appPlugin: OverridableFrontendPlugin<
       ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
     'api:app/app-language': OverridableExtensionDefinition<{
-      kind: 'api';
-      name: 'app-language';
-      config: {};
-      configInput: {};
+      config: {
+        defaultLanguage: string | undefined;
+        availableLanguages: string[] | undefined;
+      };
+      configInput: {
+        defaultLanguage?: string | undefined;
+        availableLanguages?: string[] | undefined;
+      };
       output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
       inputs: {};
+      kind: 'api';
+      name: 'app-language';
       params: <
         TApi,
         TImpl extends TApi,
@@ -712,15 +718,7 @@ const appPlugin: OverridableFrontendPlugin<
         transientTimeoutMs?: number | undefined;
       };
       output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
-      inputs: {
-        [x: string]: ExtensionInput<
-          ExtensionDataRef,
-          {
-            singleton: boolean;
-            optional: boolean;
-          }
-        >;
-      };
+      inputs: {};
       kind: 'app-root-element';
       name: 'alert-display';
       params: {
@@ -731,15 +729,7 @@ const appPlugin: OverridableFrontendPlugin<
       config: {};
       configInput: {};
       output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
-      inputs: {
-        [x: string]: ExtensionInput<
-          ExtensionDataRef,
-          {
-            singleton: boolean;
-            optional: boolean;
-          }
-        >;
-      };
+      inputs: {};
       kind: 'app-root-element';
       name: 'dialog-display';
       params: {

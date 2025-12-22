@@ -22,13 +22,22 @@ import {
   lazy as reactLazy,
 } from 'react';
 import { AnalyticsContext, useAnalytics } from '../analytics';
-import { ErrorBoundary } from './ErrorBoundary';
+import { ErrorDisplayBoundary } from './ErrorDisplayBoundary';
+import { ErrorApiBoundary } from './ErrorApiBoundary';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { routableExtensionRenderedEvent } from '../../../core-plugin-api/src/analytics/Tracker';
-import { AppNode } from '../apis';
+import { AppNode, ErrorApi, errorApiRef, useApi } from '../apis';
 import { coreExtensionData } from '../wiring';
 import { AppNodeProvider } from './AppNodeProvider';
 import { Progress } from './DefaultSwappableComponents';
+
+function useOptionalErrorApi(): ErrorApi | undefined {
+  try {
+    return useApi(errorApiRef);
+  } catch {
+    return undefined;
+  }
+}
 
 type RouteTrackerProps = PropsWithChildren<{
   enabled?: boolean;
@@ -53,6 +62,7 @@ const RouteTracker = (props: RouteTrackerProps) => {
 
 /** @public */
 export interface ExtensionBoundaryProps {
+  errorPresentation?: 'error-api' | 'error-display';
   node: AppNode;
   children: ReactNode;
 }
@@ -60,6 +70,8 @@ export interface ExtensionBoundaryProps {
 /** @public */
 export function ExtensionBoundary(props: ExtensionBoundaryProps) {
   const { node, children } = props;
+
+  const errorApi = useOptionalErrorApi();
 
   const hasRoutePathOutput = Boolean(
     node.instance?.getData(coreExtensionData.routePath),
@@ -70,18 +82,30 @@ export function ExtensionBoundary(props: ExtensionBoundaryProps) {
   // Skipping "routeRef" attribute in the new system, the extension "id" should provide more insight
   const attributes = {
     extensionId: node.spec.id,
-    pluginId: node.spec.plugin?.id ?? 'app',
+    pluginId: plugin.id ?? 'app',
   };
+
+  let content = (
+    <AnalyticsContext attributes={attributes}>
+      <RouteTracker enabled={hasRoutePathOutput}>{children}</RouteTracker>
+    </AnalyticsContext>
+  );
+
+  if (props.errorPresentation === 'error-api') {
+    content = (
+      <ErrorApiBoundary node={node} errorApi={errorApi}>
+        {content}
+      </ErrorApiBoundary>
+    );
+  } else {
+    content = (
+      <ErrorDisplayBoundary plugin={plugin}>{content}</ErrorDisplayBoundary>
+    );
+  }
 
   return (
     <AppNodeProvider node={node}>
-      <Suspense fallback={<Progress />}>
-        <ErrorBoundary plugin={plugin}>
-          <AnalyticsContext attributes={attributes}>
-            <RouteTracker enabled={hasRoutePathOutput}>{children}</RouteTracker>
-          </AnalyticsContext>
-        </ErrorBoundary>
-      </Suspense>
+      <Suspense fallback={<Progress />}>{content}</Suspense>
     </AppNodeProvider>
   );
 }

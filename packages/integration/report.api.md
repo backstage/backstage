@@ -250,6 +250,8 @@ export type BitbucketCloudIntegrationConfig = {
   username?: string;
   appPassword?: string;
   token?: string;
+  clientId?: string;
+  clientSecret?: string;
   commitSigningKey?: string;
 };
 
@@ -451,11 +453,17 @@ export function getBitbucketCloudFileFetchUrl(
 ): string;
 
 // @public
+export function getBitbucketCloudOAuthToken(
+  clientId: string,
+  clientSecret: string,
+): Promise<string>;
+
+// @public
 export function getBitbucketCloudRequestOptions(
   config: BitbucketCloudIntegrationConfig,
-): {
+): Promise<{
   headers: Record<string, string>;
-};
+}>;
 
 // @public @deprecated
 export function getBitbucketDefaultBranch(
@@ -665,6 +673,7 @@ export type GithubAppConfig = {
   clientId: string;
   clientSecret: string;
   allowedInstallationOwners?: string[];
+  publicAccess?: boolean;
 };
 
 // @public
