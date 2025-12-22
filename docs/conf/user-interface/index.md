@@ -164,6 +164,7 @@ These colors are used for the background of your application. We are mostly usin
 | `--bui-bg-surface-0`      | The background color of your Backstage instance. |
 | `--bui-bg-surface-1`      | Use for any panels or elevated surfaces.         |
 | `--bui-bg-surface-2`      | Use for any panels or elevated surfaces.         |
+| `--bui-bg-surface-3`      | Use for any panels or elevated surfaces.         |
 | `--bui-bg-solid`          | Used for solid background colors.                |
 | `--bui-bg-solid-hover`    | Used for solid background colors when hovered.   |
 | `--bui-bg-solid-pressed`  | Used for solid background colors when pressed.   |
