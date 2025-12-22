@@ -117,6 +117,16 @@ export const AutocompleteFilter = (props: SearchAutocompleteFilterProps) => {
       <Chip label={option.label} color="primary" {...getTagProps({ index })} />
     ));
 
+  const handleInputChange = (
+    _: ChangeEvent<{}>,
+    newValue: string,
+    reason: string,
+  ) => {
+    if (reason === 'input' || !multiple) {
+      setInputValue(newValue);
+    }
+  };
+
   return (
     <Autocomplete
       filterSelectedOptions={filterSelectedOptions}
@@ -129,11 +139,7 @@ export const AutocompleteFilter = (props: SearchAutocompleteFilterProps) => {
       value={filterValue}
       onChange={handleChange}
       inputValue={inputValue}
-      onInputChange={(_, newValue, reason) => {
-        if (reason === 'input') {
-          setInputValue(newValue);
-        }
-      }}
+      onInputChange={handleInputChange}
       getOptionLabel={option => option.label}
       renderOption={option => option.label}
       renderInput={renderInput}
