@@ -25,7 +25,11 @@ import Autocomplete, {
 import { useSearch } from '../../context';
 import { useAsyncFilterValues, useDefaultFilterValue } from './hooks';
 import { SearchFilterComponentProps } from './SearchFilter';
-import { ensureFilterValueWithLabel, FilterValueWithLabel } from './types';
+import {
+  ensureFilterValueWithLabel,
+  FilterValue,
+  FilterValueWithLabel,
+} from './types';
 
 /**
  * @public
@@ -67,12 +71,7 @@ export const AutocompleteFilter = (props: SearchAutocompleteFilterProps) => {
   );
   const { filters, setFilters } = useSearch();
   const filterValueWithLabel = ensureFilterValueWithLabel(
-    filters[name] as
-      | string
-      | string[]
-      | FilterValueWithLabel
-      | FilterValueWithLabel[]
-      | undefined,
+    filters[name] as FilterValue | FilterValue[] | undefined,
   );
   const filterValue = useMemo(
     () => filterValueWithLabel || (multiple ? [] : null),
@@ -95,6 +94,7 @@ export const AutocompleteFilter = (props: SearchAutocompleteFilterProps) => {
       }
       return { ...others };
     });
+    setInputValue('');
   };
 
   // Provide the input field.
@@ -128,7 +128,12 @@ export const AutocompleteFilter = (props: SearchAutocompleteFilterProps) => {
       loading={loading}
       value={filterValue}
       onChange={handleChange}
-      onInputChange={(_, newValue) => setInputValue(newValue)}
+      inputValue={inputValue}
+      onInputChange={(_, newValue, reason) => {
+        if (reason === 'input') {
+          setInputValue(newValue);
+        }
+      }}
       getOptionLabel={option => option.label}
       renderOption={option => option.label}
       renderInput={renderInput}
