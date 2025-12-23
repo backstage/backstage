@@ -211,6 +211,9 @@ export function auditorMiddlewareFactory(dependencies: {
       res.send = function overriddenSend(body: any) {
         if (typeof body === 'string') {
           // Do nothing.
+          logger.debug(
+            `Response body is a string, cannot capture fields from it for auditing.`,
+          );
         } else {
           locals[CAPTURED_RESPONSE_BODY_SYMBOL] = body;
         }
