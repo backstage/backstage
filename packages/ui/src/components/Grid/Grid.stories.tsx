@@ -108,7 +108,7 @@ export const Surfaces = meta.story({
   args: { px: '6', py: '4' },
   render: args => (
     <Flex direction="column">
-      <Flex>
+      <Flex style={{ flexWrap: 'wrap' }}>
         <Grid.Root {...args} surface="0">
           Surface 0
         </Grid.Root>
@@ -124,23 +124,58 @@ export const Surfaces = meta.story({
         <Grid.Root {...args} surface={{ initial: '0', sm: '1' }}>
           Responsive Surface
         </Grid.Root>
+        <Grid.Root {...args} surface="danger">
+          Surface Danger
+        </Grid.Root>
+        <Grid.Root {...args} surface="warning">
+          Surface Warning
+        </Grid.Root>
+        <Grid.Root {...args} surface="success">
+          Surface Success
+        </Grid.Root>
       </Flex>
-      <Flex>
+      <Flex style={{ flexWrap: 'wrap' }}>
         <Grid.Root {...args}>
-          <Grid.Item surface="0">Surface 0</Grid.Item>
+          <Grid.Item surface="0" style={{ padding: '4px' }}>
+            Surface 0
+          </Grid.Item>
         </Grid.Root>
         <Grid.Root {...args}>
-          <Grid.Item surface="1">Surface 1</Grid.Item>
+          <Grid.Item surface="1" style={{ padding: '4px' }}>
+            Surface 1
+          </Grid.Item>
         </Grid.Root>
         <Grid.Root {...args}>
-          <Grid.Item surface="2">Surface 2</Grid.Item>
+          <Grid.Item surface="2" style={{ padding: '4px' }}>
+            Surface 2
+          </Grid.Item>
         </Grid.Root>
         <Grid.Root {...args}>
-          <Grid.Item surface="3">Surface 3</Grid.Item>
+          <Grid.Item surface="3" style={{ padding: '4px' }}>
+            Surface 3
+          </Grid.Item>
         </Grid.Root>
         <Grid.Root {...args}>
-          <Grid.Item surface={{ initial: '0', sm: '1' }}>
+          <Grid.Item
+            surface={{ initial: '0', sm: '1' }}
+            style={{ padding: '4px' }}
+          >
             Responsive Surface
+          </Grid.Item>
+        </Grid.Root>
+        <Grid.Root {...args}>
+          <Grid.Item surface="danger" style={{ padding: '4px' }}>
+            Surface Danger
+          </Grid.Item>
+        </Grid.Root>
+        <Grid.Root {...args}>
+          <Grid.Item surface="warning" style={{ padding: '4px' }}>
+            Surface Warning
+          </Grid.Item>
+        </Grid.Root>
+        <Grid.Root {...args}>
+          <Grid.Item surface="success" style={{ padding: '4px' }}>
+            Surface Success
           </Grid.Item>
         </Grid.Root>
       </Flex>

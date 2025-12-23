@@ -40,4 +40,19 @@
   .bui-GridItem[data-surface='3'] {
     background-color: var(--bui-bg-surface-3);
   }
+
+  .bui-Grid[data-surface='danger'],
+  .bui-GridItem[data-surface='danger'] {
+    background-color: var(--bui-bg-danger);
+  }
+
+  .bui-Grid[data-surface='warning'],
+  .bui-GridItem[data-surface='warning'] {
+    background-color: var(--bui-bg-warning);
+  }
+
+  .bui-Grid[data-surface='success'],
+  .bui-GridItem[data-surface='success'] {
+    background-color: var(--bui-bg-success);
+  }
 }

@@ -349,7 +349,7 @@ export const Display = meta.story({
 export const Surfaces = meta.story({
   args: { px: '6', py: '4' },
   render: args => (
-    <Flex align="center">
+    <Flex align="center" style={{ flexWrap: 'wrap' }}>
       <Box {...args}>Default</Box>
       <Box surface="0" {...args}>
         Surface 0
@@ -365,6 +365,15 @@ export const Surfaces = meta.story({
       </Box>
       <Box surface={{ initial: '0', sm: '1' }} {...args}>
         Responsive Surface
+      </Box>
+      <Box surface="danger" {...args}>
+        Surface Danger
+      </Box>
+      <Box surface="warning" {...args}>
+        Surface Warning
+      </Box>
+      <Box surface="success" {...args}>
+        Surface Success
       </Box>
     </Flex>
   ),

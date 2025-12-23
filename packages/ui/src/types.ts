@@ -178,4 +178,4 @@ export interface ComponentDefinition {
  * Surface type
  * @public
  */
-export type Surface = '0' | '1' | '2' | '3';
+export type Surface = '0' | '1' | '2' | '3' | 'danger' | 'warning' | 'success';

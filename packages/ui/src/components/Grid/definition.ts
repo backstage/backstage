@@ -43,7 +43,7 @@ export const GridDefinition = {
     'py',
   ],
   dataAttributes: {
-    surface: ['0', '1', '2', '3'] as const,
+    surface: ['0', '1', '2', '3', 'danger', 'warning', 'success'] as const,
   },
 } as const satisfies ComponentDefinition;
 
@@ -57,6 +57,6 @@ export const GridItemDefinition = {
   },
   utilityProps: ['colSpan', 'colEnd', 'colStart', 'rowSpan'],
   dataAttributes: {
-    surface: ['0', '1', '2', '3'] as const,
+    surface: ['0', '1', '2', '3', 'danger', 'warning', 'success'] as const,
   },
 } as const satisfies ComponentDefinition;

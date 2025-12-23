@@ -49,6 +49,6 @@ export const BoxDefinition = {
     'maxHeight',
   ],
   dataAttributes: {
-    surface: ['0', '1', '2', '3'] as const,
+    surface: ['0', '1', '2', '3', 'danger', 'warning', 'success'] as const,
   },
 } as const satisfies ComponentDefinition;

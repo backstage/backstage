@@ -38,4 +38,16 @@
   .bui-Box[data-surface='3'] {
     background-color: var(--bui-bg-surface-3);
   }
+
+  .bui-Box[data-surface='danger'] {
+    background-color: var(--bui-bg-danger);
+  }
+
+  .bui-Box[data-surface='warning'] {
+    background-color: var(--bui-bg-warning);
+  }
+
+  .bui-Box[data-surface='success'] {
+    background-color: var(--bui-bg-success);
+  }
 }
