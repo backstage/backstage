@@ -69,17 +69,15 @@
 
   .bui-Button[data-variant='secondary'] {
     color: var(--bui-fg-primary);
+    background-color: var(--bui-bg-neutral-on-surface-0);
 
-    &[data-surface='0'] {
-      background-color: var(--bui-bg-neutral-on-surface-0);
+    &:hover {
+      background-color: var(--bui-bg-neutral-on-surface-0-hover);
+      transition: background-color 150ms ease;
+    }
 
-      &:hover {
-        background-color: var(--bui-bg-neutral-on-surface-0-hover);
-      }
-
-      &:active {
-        background-color: var(--bui-bg-neutral-on-surface-0-pressed);
-      }
+    &:active {
+      background-color: var(--bui-bg-neutral-on-surface-0-pressed);
     }
 
     &[data-surface='1'] {
@@ -116,10 +114,6 @@
       &:active {
         background-color: var(--bui-bg-neutral-on-surface-3-pressed);
       }
-    }
-
-    &:hover {
-      transition: background-color 150ms ease;
     }
 
     &:focus-visible {
