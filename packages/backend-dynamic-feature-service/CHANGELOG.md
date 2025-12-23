@@ -1,5 +1,30 @@
 # @backstage/backend-dynamic-feature-service
 
+## 0.7.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-openapi-utils@0.6.5-next.0
+  - @backstage/backend-defaults@0.14.1-next.0
+  - @backstage/backend-plugin-api@1.6.0
+  - @backstage/cli-common@0.1.16
+  - @backstage/cli-node@0.2.16
+  - @backstage/config@1.3.6
+  - @backstage/config-loader@1.10.7
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-app-node@0.1.40
+  - @backstage/plugin-auth-node@0.6.10
+  - @backstage/plugin-catalog-backend@3.3.1-next.0
+  - @backstage/plugin-events-backend@0.5.10-next.0
+  - @backstage/plugin-events-node@0.4.18
+  - @backstage/plugin-permission-common@0.9.3
+  - @backstage/plugin-permission-node@0.10.7
+  - @backstage/plugin-scaffolder-node@0.12.2
+  - @backstage/plugin-search-backend-node@1.4.0
+  - @backstage/plugin-search-common@1.2.21
+
 ## 0.7.7
 
 ### Patch Changes

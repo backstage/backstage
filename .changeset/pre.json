@@ -206,5 +206,17 @@
     "@backstage/plugin-user-settings-backend": "0.3.9",
     "@backstage/plugin-user-settings-common": "0.0.1"
   },
-  "changesets": []
+  "changesets": [
+    "better-ghosts-tell",
+    "create-app-1766498726",
+    "dependabot-aed8e01",
+    "every-bears-add",
+    "hot-colts-float",
+    "major-mangos-shine",
+    "proud-streets-switch",
+    "shaggy-bats-film",
+    "thin-teams-roll",
+    "weak-lemons-create",
+    "wild-toys-retire"
+  ]
 }
