@@ -37,3 +37,5 @@ export {
   getOpenApiSpecRoute,
   createValidatedOpenApiRouterFromGeneratedEndpointMap,
 } from './stub';
+export type { WithOpenapi, WithAuditorEvent } from './middlewares/auditor';
+export { auditorMiddlewareFactory } from './middlewares/auditor';
