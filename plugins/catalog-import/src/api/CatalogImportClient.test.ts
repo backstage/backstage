@@ -59,7 +59,7 @@ import { ScmAuthApi } from '@backstage/integration-react';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { MockFetchApi, registerMswTestHooks } from '@backstage/test-utils';
 import { Octokit } from '@octokit/rest';
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import {
   AzurePrOptions,
@@ -298,69 +298,68 @@ describe('CatalogImportClient', () => {
         },
       });
       server.use(
-        rest.post(`${mockBaseUrl}/analyze-location`, (req, res, ctx) => {
-          expect(req.body).toEqual({
+        http.post(`${mockBaseUrl}/analyze-location`, async ({ request }) => {
+          const body = await request.json();
+          expect(body).toEqual({
             location: {
               target: 'https://github.com/backstage/backstage',
               type: 'url',
             },
           });
 
-          return res(
-            ctx.json({
-              generateEntities: [],
-              existingEntityFiles: [
-                {
-                  isRegistered: false,
-                  location: {
-                    type: 'url',
-                    target:
-                      'https://github.com/backstage/backstage/blob/main/simple/path/catalog-info.yaml',
-                  },
-                  entity: {
-                    apiVersion: '1',
-                    kind: 'k',
-                    metadata: {
-                      name: 'e',
-                      namespace: 'n',
-                    },
+          return HttpResponse.json({
+            generateEntities: [],
+            existingEntityFiles: [
+              {
+                isRegistered: false,
+                location: {
+                  type: 'url',
+                  target:
+                    'https://github.com/backstage/backstage/blob/main/simple/path/catalog-info.yaml',
+                },
+                entity: {
+                  apiVersion: '1',
+                  kind: 'k',
+                  metadata: {
+                    name: 'e',
+                    namespace: 'n',
                   },
                 },
-                {
-                  isRegistered: false,
-                  location: {
-                    type: 'url',
-                    target:
-                      'https://github.com/backstage/backstage/blob/main/co/mple/x/path/catalog-info.yaml',
-                  },
-                  entity: {
-                    apiVersion: '1',
-                    kind: 'k',
-                    metadata: {
-                      name: 'e',
-                      namespace: 'n',
-                    },
+              },
+              {
+                isRegistered: false,
+                location: {
+                  type: 'url',
+                  target:
+                    'https://github.com/backstage/backstage/blob/main/co/mple/x/path/catalog-info.yaml',
+                },
+                entity: {
+                  apiVersion: '1',
+                  kind: 'k',
+                  metadata: {
+                    name: 'e',
+                    namespace: 'n',
                   },
                 },
-                {
-                  isRegistered: false,
-                  location: {
-                    type: 'url',
-                    target:
-                      'https://github.com/backstage/backstage/blob/main/catalog-info.yaml',
-                  },
-                  entity: {
-                    apiVersion: '1',
-                    kind: 'k',
-                    metadata: {
-                      name: 'e',
-                      namespace: 'n',
-                    },
+              },
+              {
+                isRegistered: false,
+                location: {
+                  type: 'url',
+                  target:
+                    'https://github.com/backstage/backstage/blob/main/catalog-info.yaml',
+                },
+                entity: {
+                  apiVersion: '1',
+                  kind: 'k',
+                  metadata: {
+                    name: 'e',
+                    namespace: 'n',
                   },
                 },
-              ],
-            }),
-          );
+              },
+            ],
+          });
         }),
       );
 
@@ -399,28 +398,27 @@ describe('CatalogImportClient', () => {
       });
 
       server.use(
-        rest.post(`${mockBaseUrl}/analyze-location`, (req, res, ctx) => {
-          expect(req.body).toEqual({
+        http.post(`${mockBaseUrl}/analyze-location`, async ({ request }) => {
+          const body = await request.json();
+          expect(body).toEqual({
             location: {
               target: 'https://github.com/backstage/backstage',
               type: 'url',
             },
           });
 
-          return res(
-            ctx.json({
-              generateEntities: [
-                {
-                  entity: {
-                    kind: 'k',
-                    metadata: { name: 'e', namespace: 'n' },
-                  },
-                  fields: [],
+          return HttpResponse.json({
+            generateEntities: [
+              {
+                entity: {
+                  kind: 'k',
+                  metadata: { name: 'e', namespace: 'n' },
                 },
-              ],
-              existingEntityFiles: [],
-            }),
-          );
+                fields: [],
+              },
+            ],
+            existingEntityFiles: [],
+          });
         }),
       );
 
@@ -470,8 +468,9 @@ describe('CatalogImportClient', () => {
       );
 
       server.use(
-        rest.post(`${mockBaseUrl}/analyze-location`, (req, res, ctx) => {
-          expect(req.body).toEqual({
+        http.post(`${mockBaseUrl}/analyze-location`, async ({ request }) => {
+          const body = await request.json();
+          expect(body).toEqual({
             location: {
               target: 'https://github.com/acme-corp/our-awesome-api',
               type: 'url',
@@ -479,45 +478,43 @@ describe('CatalogImportClient', () => {
             catalogFilename: 'anvil.yaml',
           });
 
-          return res(
-            ctx.json({
-              generateEntities: [],
-              existingEntityFiles: [
-                {
-                  isRegistered: false,
-                  location: {
-                    type: 'url',
-                    target:
-                      'https://github.com/acme-corp/our-awesome-api/blob/main/anvil.yaml',
-                  },
-                  entity: {
-                    apiVersion: '1',
-                    kind: 'Location',
-                    metadata: {
-                      name: 'my-entity',
-                      namespace: 'my-namespace',
-                    },
+          return HttpResponse.json({
+            generateEntities: [],
+            existingEntityFiles: [
+              {
+                isRegistered: false,
+                location: {
+                  type: 'url',
+                  target:
+                    'https://github.com/acme-corp/our-awesome-api/blob/main/anvil.yaml',
+                },
+                entity: {
+                  apiVersion: '1',
+                  kind: 'Location',
+                  metadata: {
+                    name: 'my-entity',
+                    namespace: 'my-namespace',
                   },
                 },
-                {
-                  isRegistered: false,
-                  location: {
-                    type: 'url',
-                    target:
-                      'https://github.com/acme-corp/our-awesome-api/blob/main/anvil.yaml',
-                  },
-                  entity: {
-                    apiVersion: '1',
-                    kind: 'Component',
-                    metadata: {
-                      name: 'my-entity',
-                      namespace: 'my-namespace',
-                    },
+              },
+              {
+                isRegistered: false,
+                location: {
+                  type: 'url',
+                  target:
+                    'https://github.com/acme-corp/our-awesome-api/blob/main/anvil.yaml',
+                },
+                entity: {
+                  apiVersion: '1',
+                  kind: 'Component',
+                  metadata: {
+                    name: 'my-entity',
+                    namespace: 'my-namespace',
                   },
                 },
-              ],
-            }),
-          );
+              },
+            ],
+          });
         }),
       );
 

@@ -28,7 +28,7 @@ jest.mock('@backstage/plugin-scaffolder-node', () => {
 
 import path from 'path';
 import { createPublishGerritAction } from './gerrit';
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import { registerMswTestHooks } from '@backstage/backend-test-utils';
 import { ScmIntegrations } from '@backstage/integration';
@@ -72,22 +72,18 @@ describe('publish:gerrit', () => {
   it(`should ${examples[0].description}`, async () => {
     expect.assertions(5);
     server.use(
-      rest.put('https://gerrit.com/a/projects/repo', (req, res, ctx) => {
-        expect(req.headers.get('Authorization')).toBe(
+      http.put('https://gerrit.com/a/projects/repo', async ({ request }) => {
+        expect(request.headers.get('Authorization')).toBe(
           'Basic ZGVtb3VzZXI6YWNjZXNzdG9rZW4=',
         );
-        expect(req.body).toEqual({
+        expect(await request.json()).toEqual({
           branches: ['master'],
           create_empty_commit: false,
           owners: ['owner'],
           description,
           parent: 'parent',
         });
-        return res(
-          ctx.status(201),
-          ctx.set('Content-Type', 'application/json'),
-          ctx.json({}),
-        );
+        return HttpResponse.json({}, { status: 201 });
       }),
     );
 
@@ -131,11 +127,11 @@ describe('publish:gerrit', () => {
   it(`should ${examples[1].description}`, async () => {
     expect.assertions(5);
     server.use(
-      rest.put('https://gerrit.com/a/projects/repo', (req, res, ctx) => {
-        expect(req.headers.get('Authorization')).toBe(
+      http.put('https://gerrit.com/a/projects/repo', async ({ request }) => {
+        expect(request.headers.get('Authorization')).toBe(
           'Basic ZGVtb3VzZXI6YWNjZXNzdG9rZW4=',
         );
-        expect(req.body).toEqual({
+        expect(await request.json()).toEqual({
           branches: ['master'],
           create_empty_commit: false,
           owners: ['owner'],
@@ -143,11 +139,7 @@ describe('publish:gerrit', () => {
             .description,
           parent: 'parent',
         });
-        return res(
-          ctx.status(201),
-          ctx.set('Content-Type', 'application/json'),
-          ctx.json({}),
-        );
+        return HttpResponse.json({}, { status: 201 });
       }),
     );
 
@@ -190,22 +182,18 @@ describe('publish:gerrit', () => {
   it(`should ${examples[2].description}`, async () => {
     expect.assertions(5);
     server.use(
-      rest.put('https://gerrit.com/a/projects/repo', (req, res, ctx) => {
-        expect(req.headers.get('Authorization')).toBe(
+      http.put('https://gerrit.com/a/projects/repo', async ({ request }) => {
+        expect(request.headers.get('Authorization')).toBe(
           'Basic ZGVtb3VzZXI6YWNjZXNzdG9rZW4=',
         );
-        expect(req.body).toEqual({
+        expect(await request.json()).toEqual({
           branches: ['staging'],
           create_empty_commit: false,
           owners: ['owner'],
           description,
           parent: 'parent',
         });
-        return res(
-          ctx.status(201),
-          ctx.set('Content-Type', 'application/json'),
-          ctx.json({}),
-        );
+        return HttpResponse.json({}, { status: 201 });
       }),
     );
 
@@ -248,22 +236,18 @@ describe('publish:gerrit', () => {
   it(`should ${examples[3].description}`, async () => {
     expect.assertions(5);
     server.use(
-      rest.put('https://gerrit.com/a/projects/repo', (req, res, ctx) => {
-        expect(req.headers.get('Authorization')).toBe(
+      http.put('https://gerrit.com/a/projects/repo', async ({ request }) => {
+        expect(request.headers.get('Authorization')).toBe(
           'Basic ZGVtb3VzZXI6YWNjZXNzdG9rZW4=',
         );
-        expect(req.body).toEqual({
+        expect(await request.json()).toEqual({
           branches: ['master'],
           create_empty_commit: false,
           owners: ['owner'],
           description,
           parent: 'parent',
         });
-        return res(
-          ctx.status(201),
-          ctx.set('Content-Type', 'application/json'),
-          ctx.json({}),
-        );
+        return HttpResponse.json({}, { status: 201 });
       }),
     );
 
@@ -309,22 +293,18 @@ describe('publish:gerrit', () => {
   it(`should ${examples[4].description}`, async () => {
     expect.assertions(5);
     server.use(
-      rest.put('https://gerrit.com/a/projects/repo', (req, res, ctx) => {
-        expect(req.headers.get('Authorization')).toBe(
+      http.put('https://gerrit.com/a/projects/repo', async ({ request }) => {
+        expect(request.headers.get('Authorization')).toBe(
           'Basic ZGVtb3VzZXI6YWNjZXNzdG9rZW4=',
         );
-        expect(req.body).toEqual({
+        expect(await request.json()).toEqual({
           branches: ['master'],
           create_empty_commit: false,
           owners: ['owner'],
           description,
           parent: 'parent',
         });
-        return res(
-          ctx.status(201),
-          ctx.set('Content-Type', 'application/json'),
-          ctx.json({}),
-        );
+        return HttpResponse.json({}, { status: 201 });
       }),
     );
 
@@ -368,22 +348,18 @@ describe('publish:gerrit', () => {
   it(`should ${examples[5].description}`, async () => {
     expect.assertions(5);
     server.use(
-      rest.put('https://gerrit.com/a/projects/repo', (req, res, ctx) => {
-        expect(req.headers.get('Authorization')).toBe(
+      http.put('https://gerrit.com/a/projects/repo', async ({ request }) => {
+        expect(request.headers.get('Authorization')).toBe(
           'Basic ZGVtb3VzZXI6YWNjZXNzdG9rZW4=',
         );
-        expect(req.body).toEqual({
+        expect(await request.json()).toEqual({
           branches: ['master'],
           create_empty_commit: false,
           owners: ['owner'],
           description,
           parent: 'parent',
         });
-        return res(
-          ctx.status(201),
-          ctx.set('Content-Type', 'application/json'),
-          ctx.json({}),
-        );
+        return HttpResponse.json({}, { status: 201 });
       }),
     );
 
@@ -427,22 +403,18 @@ describe('publish:gerrit', () => {
   it(`should ${examples[6].description}`, async () => {
     expect.assertions(5);
     server.use(
-      rest.put('https://gerrit.com/a/projects/repo', (req, res, ctx) => {
-        expect(req.headers.get('Authorization')).toBe(
+      http.put('https://gerrit.com/a/projects/repo', async ({ request }) => {
+        expect(request.headers.get('Authorization')).toBe(
           'Basic ZGVtb3VzZXI6YWNjZXNzdG9rZW4=',
         );
-        expect(req.body).toEqual({
+        expect(await request.json()).toEqual({
           branches: ['master'],
           create_empty_commit: false,
           owners: ['owner'],
           description,
           parent: 'parent',
         });
-        return res(
-          ctx.status(201),
-          ctx.set('Content-Type', 'application/json'),
-          ctx.json({}),
-        );
+        return HttpResponse.json({}, { status: 201 });
       }),
     );
 
@@ -486,22 +458,18 @@ describe('publish:gerrit', () => {
   it(`should ${examples[7].description}`, async () => {
     expect.assertions(5);
     server.use(
-      rest.put('https://gerrit.com/a/projects/repo', (req, res, ctx) => {
-        expect(req.headers.get('Authorization')).toBe(
+      http.put('https://gerrit.com/a/projects/repo', async ({ request }) => {
+        expect(request.headers.get('Authorization')).toBe(
           'Basic ZGVtb3VzZXI6YWNjZXNzdG9rZW4=',
         );
-        expect(req.body).toEqual({
+        expect(await request.json()).toEqual({
           branches: ['staging'],
           create_empty_commit: false,
           owners: ['owner'],
           description: 'Initialize a gerrit repository',
           parent: 'parent',
         });
-        return res(
-          ctx.status(201),
-          ctx.set('Content-Type', 'application/json'),
-          ctx.json({}),
-        );
+        return HttpResponse.json({}, { status: 201 });
       }),
     );
 

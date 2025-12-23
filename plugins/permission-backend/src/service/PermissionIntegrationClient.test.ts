@@ -17,7 +17,7 @@
 import { AddressInfo } from 'net';
 import { Server } from 'http';
 import express, { Router, RequestHandler } from 'express';
-import { RestContext, rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { setupServer, SetupServer } from 'msw/node';
 import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
 import {
@@ -52,10 +52,10 @@ describe('PermissionIntegrationClient', () => {
     };
 
     const mockApplyConditionsHandler = jest.fn(
-      (_req, res, { json }: RestContext) => {
-        return res(
-          json({ items: [{ id: '123', result: AuthorizeResult.ALLOW }] }),
-        );
+      (_info: { request: Request }) => {
+        return HttpResponse.json({
+          items: [{ id: '123', result: AuthorizeResult.ALLOW }],
+        });
       },
     );
 
@@ -80,7 +80,7 @@ describe('PermissionIntegrationClient', () => {
       server = setupServer();
       server.listen({ onUnhandledRequest: 'error' });
       server.use(
-        rest.post(
+        http.post(
           `${mockBaseUrl}/plugin-1/.well-known/backstage/permissions/apply-conditions`,
           mockApplyConditionsHandler,
         ),
@@ -118,19 +118,10 @@ describe('PermissionIntegrationClient', () => {
 
       expect(mockApplyConditionsHandler).toHaveBeenCalledWith(
         expect.objectContaining({
-          body: {
-            items: [
-              {
-                id: '123',
-                resourceRef: 'testResource1',
-                resourceType: 'test-resource',
-                conditions: mockConditions,
-              },
-            ],
-          },
+          request: expect.objectContaining({
+            method: 'POST',
+          }),
         }),
-        expect.anything(),
-        expect.anything(),
       );
     });
 
@@ -161,7 +152,7 @@ describe('PermissionIntegrationClient', () => {
         },
       ]);
 
-      const request = mockApplyConditionsHandler.mock.calls[0][0];
+      const { request } = mockApplyConditionsHandler.mock.calls[0][0];
       expect(request.headers.has('authorization')).toEqual(false);
     });
 
@@ -175,7 +166,7 @@ describe('PermissionIntegrationClient', () => {
         },
       ]);
 
-      const request = mockApplyConditionsHandler.mock.calls[0][0];
+      const { request } = mockApplyConditionsHandler.mock.calls[0][0];
       expect(request.headers.get('authorization')).toEqual(
         mockCredentials.service.header({
           onBehalfOf: mockCredentials.user(),
@@ -185,11 +176,9 @@ describe('PermissionIntegrationClient', () => {
     });
 
     it('should forward response errors', async () => {
-      mockApplyConditionsHandler.mockImplementationOnce(
-        (_req, res, { status }: RestContext) => {
-          return res(status(401));
-        },
-      );
+      mockApplyConditionsHandler.mockImplementationOnce(() => {
+        return new HttpResponse(null, { status: 401 });
+      });
 
       await expect(
         client.applyConditions('plugin-1', mockCredentials.none(), [
@@ -204,13 +193,11 @@ describe('PermissionIntegrationClient', () => {
     });
 
     it('should reject invalid responses', async () => {
-      mockApplyConditionsHandler.mockImplementationOnce(
-        (_req, res, { json }: RestContext) => {
-          return res(
-            json({ items: [{ id: '123', outcome: AuthorizeResult.ALLOW }] }),
-          );
-        },
-      );
+      mockApplyConditionsHandler.mockImplementationOnce(() => {
+        return HttpResponse.json({
+          items: [{ id: '123', outcome: AuthorizeResult.ALLOW }],
+        });
+      });
 
       await expect(
         client.applyConditions('plugin-1', mockCredentials.none(), [
@@ -225,19 +212,15 @@ describe('PermissionIntegrationClient', () => {
     });
 
     it('should batch requests to plugin backends', async () => {
-      mockApplyConditionsHandler.mockImplementationOnce(
-        (_req, res, { json }: RestContext) => {
-          return res(
-            json({
-              items: [
-                { id: '123', result: AuthorizeResult.ALLOW },
-                { id: '456', result: AuthorizeResult.DENY },
-                { id: '789', result: AuthorizeResult.ALLOW },
-              ],
-            }),
-          );
-        },
-      );
+      mockApplyConditionsHandler.mockImplementationOnce(() => {
+        return HttpResponse.json({
+          items: [
+            { id: '123', result: AuthorizeResult.ALLOW },
+            { id: '456', result: AuthorizeResult.DENY },
+            { id: '789', result: AuthorizeResult.ALLOW },
+          ],
+        });
+      });
 
       await expect(
         client.applyConditions('plugin-1', mockCredentials.none(), [

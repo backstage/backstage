@@ -22,7 +22,7 @@ import {
   registerMswTestHooks,
 } from '@backstage/backend-test-utils';
 import type { ActionContext } from '@backstage/plugin-scaffolder-node';
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
@@ -122,16 +122,15 @@ describe('confluence:transform:markdown', () => {
     };
 
     worker.use(
-      rest.get(`${baseUrl}/rest/api/content`, (_, res, ctx) =>
-        res(ctx.status(200, 'OK'), ctx.json(responseBody)),
+      http.get(`${baseUrl}/rest/api/content`, () =>
+        HttpResponse.json(responseBody, { status: 200 }),
       ),
-      rest.get(
-        `${baseUrl}/rest/api/content/4444444/child/attachment`,
-        (_, res, ctx) => res(ctx.status(200, 'OK'), ctx.json(responseBodyTwo)),
+      http.get(`${baseUrl}/rest/api/content/4444444/child/attachment`, () =>
+        HttpResponse.json(responseBodyTwo, { status: 200 }),
       ),
-      rest.get(
+      http.get(
         `${baseUrl}/download/attachments/4444444/testing.pdf`,
-        (_, res, ctx) => res(ctx.status(200, 'OK'), ctx.body('hello')),
+        () => new HttpResponse('hello', { status: 200 }),
       ),
     );
 
@@ -175,12 +174,11 @@ describe('confluence:transform:markdown', () => {
     };
 
     worker.use(
-      rest.get(`${baseUrl}/rest/api/content`, (_, res, ctx) =>
-        res(ctx.status(200, 'OK'), ctx.json(responseBody)),
+      http.get(`${baseUrl}/rest/api/content`, () =>
+        HttpResponse.json(responseBody, { status: 200 }),
       ),
-      rest.get(
-        `${baseUrl}/rest/api/content/4444444/child/attachment`,
-        (_, res, ctx) => res(ctx.status(200, 'OK'), ctx.json(responseBodyTwo)),
+      http.get(`${baseUrl}/rest/api/content/4444444/child/attachment`, () =>
+        HttpResponse.json(responseBodyTwo, { status: 200 }),
       ),
     );
 
@@ -207,8 +205,8 @@ describe('confluence:transform:markdown', () => {
     const responseBody = {};
 
     worker.use(
-      rest.get(`${baseUrl}/rest/api/content`, (_, res, ctx) =>
-        res(ctx.status(401, 'nope'), ctx.json(responseBody)),
+      http.get(`${baseUrl}/rest/api/content`, () =>
+        HttpResponse.json(responseBody, { status: 401, statusText: 'nope' }),
       ),
     );
 
@@ -229,8 +227,8 @@ describe('confluence:transform:markdown', () => {
     };
 
     worker.use(
-      rest.get(`${baseUrl}/rest/api/content`, (_, res, ctx) =>
-        res(ctx.status(200, 'OK'), ctx.json(responseBody)),
+      http.get(`${baseUrl}/rest/api/content`, () =>
+        HttpResponse.json(responseBody, { status: 200 }),
       ),
     );
 
@@ -265,13 +263,11 @@ describe('confluence:transform:markdown', () => {
     const responseBodyTwo = {};
 
     worker.use(
-      rest.get(`${baseUrl}/rest/api/content`, (_, res, ctx) =>
-        res(ctx.status(200, 'OK'), ctx.json(responseBody)),
+      http.get(`${baseUrl}/rest/api/content`, () =>
+        HttpResponse.json(responseBody, { status: 200 }),
       ),
-      rest.get(
-        `${baseUrl}/rest/api/content/4444444/child/attachment`,
-        (_, res, ctx) =>
-          res(ctx.status(404, 'nope'), ctx.json(responseBodyTwo)),
+      http.get(`${baseUrl}/rest/api/content/4444444/child/attachment`, () =>
+        HttpResponse.json(responseBodyTwo, { status: 404, statusText: 'nope' }),
       ),
     );
 

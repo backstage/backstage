@@ -24,7 +24,7 @@ import {
 import { screen, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { setupServer } from 'msw/node';
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { PropsWithChildren, ReactNode } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import {
@@ -848,13 +848,10 @@ describe('Integration Test', () => {
   it('should clear app cookie when the user logs out', async () => {
     const logoutSignal = jest.fn();
     server.use(
-      rest.delete(
-        'http://localhost:7007/app/.backstage/auth/v1/cookie',
-        (_req, res, ctx) => {
-          logoutSignal();
-          return res(ctx.status(200));
-        },
-      ),
+      http.delete('http://localhost:7007/app/.backstage/auth/v1/cookie', () => {
+        logoutSignal();
+        return new HttpResponse(null, { status: 200 });
+      }),
     );
 
     const meta = global.document.createElement('meta');

@@ -20,7 +20,7 @@ import {
   getRepoSourceDirectory,
   initRepoAndPush,
 } from '@backstage/plugin-scaffolder-node';
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { registerMswTestHooks } from '@backstage/backend-test-utils';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { setupServer } from 'msw/node';
@@ -68,45 +68,37 @@ describe('publish:gitea', () => {
 
   it(`should ${examples[0].description}`, async () => {
     server.use(
-      rest.get('https://gitea.com/api/v1/orgs/org1', (_req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.set('Content-Type', 'application/json'),
-          ctx.json({
+      http.get('https://gitea.com/api/v1/orgs/org1', () => {
+        return HttpResponse.json(
+          {
             id: 1,
             name: 'org1',
             visibility: 'public',
             repo_admin_change_team_access: false,
             username: 'org1',
-          }),
+          },
+          { status: 200 },
         );
       }),
-      rest.get(
-        'https://gitea.com/org1/repo/src/branch/main',
-        (_req, res, ctx) => {
-          return res(
-            ctx.status(200),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json({}),
+      http.get('https://gitea.com/org1/repo/src/branch/main', () => {
+        return HttpResponse.json({}, { status: 200 });
+      }),
+      http.post(
+        'https://gitea.com/api/v1/orgs/org1/repos',
+        async ({ request }) => {
+          // Basic auth must match the user and password defined part of the config
+          expect(request.headers.get('Authorization')).toBe(
+            'basic c2FtcGxlX3VzZXI6cGFzc3dvcmRfdG9rZW4=',
           );
+          const body = await request.json();
+          expect(body).toEqual({
+            name: 'repo',
+            private: false,
+            description,
+          });
+          return HttpResponse.json({}, { status: 201 });
         },
       ),
-      rest.post('https://gitea.com/api/v1/orgs/org1/repos', (req, res, ctx) => {
-        // Basic auth must match the user and password defined part of the config
-        expect(req.headers.get('Authorization')).toBe(
-          'basic c2FtcGxlX3VzZXI6cGFzc3dvcmRfdG9rZW4=',
-        );
-        expect(req.body).toEqual({
-          name: 'repo',
-          private: false,
-          description,
-        });
-        return res(
-          ctx.status(201),
-          ctx.set('Content-Type', 'application/json'),
-          ctx.json({}),
-        );
-      }),
     );
 
     let input;
@@ -141,45 +133,37 @@ describe('publish:gitea', () => {
 
   it(`should ${examples[1].description}`, async () => {
     server.use(
-      rest.get('https://gitea.com/api/v1/orgs/org1', (_req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.set('Content-Type', 'application/json'),
-          ctx.json({
+      http.get('https://gitea.com/api/v1/orgs/org1', () => {
+        return HttpResponse.json(
+          {
             id: 1,
             name: 'org1',
             visibility: 'public',
             repo_admin_change_team_access: false,
             username: 'org1',
-          }),
+          },
+          { status: 200 },
         );
       }),
-      rest.get(
-        'https://gitea.com/org1/repo/src/branch/main',
-        (_req, res, ctx) => {
-          return res(
-            ctx.status(200),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json({}),
+      http.get('https://gitea.com/org1/repo/src/branch/main', () => {
+        return HttpResponse.json({}, { status: 200 });
+      }),
+      http.post(
+        'https://gitea.com/api/v1/orgs/org1/repos',
+        async ({ request }) => {
+          // Basic auth must match the user and password defined part of the config
+          expect(request.headers.get('Authorization')).toBe(
+            'basic c2FtcGxlX3VzZXI6cGFzc3dvcmRfdG9rZW4=',
           );
+          const body = await request.json();
+          expect(body).toEqual({
+            name: 'repo',
+            private: false,
+            description: 'Initialize a gitea repository',
+          });
+          return HttpResponse.json({}, { status: 201 });
         },
       ),
-      rest.post('https://gitea.com/api/v1/orgs/org1/repos', (req, res, ctx) => {
-        // Basic auth must match the user and password defined part of the config
-        expect(req.headers.get('Authorization')).toBe(
-          'basic c2FtcGxlX3VzZXI6cGFzc3dvcmRfdG9rZW4=',
-        );
-        expect(req.body).toEqual({
-          name: 'repo',
-          private: false,
-          description: 'Initialize a gitea repository',
-        });
-        return res(
-          ctx.status(201),
-          ctx.set('Content-Type', 'application/json'),
-          ctx.json({}),
-        );
-      }),
     );
 
     let input;
@@ -214,45 +198,37 @@ describe('publish:gitea', () => {
 
   it(`should ${examples[2].description}`, async () => {
     server.use(
-      rest.get('https://gitea.com/api/v1/orgs/org1', (_req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.set('Content-Type', 'application/json'),
-          ctx.json({
+      http.get('https://gitea.com/api/v1/orgs/org1', () => {
+        return HttpResponse.json(
+          {
             id: 1,
             name: 'org1',
             visibility: 'public',
             repo_admin_change_team_access: false,
             username: 'org1',
-          }),
+          },
+          { status: 200 },
         );
       }),
-      rest.get(
-        'https://gitea.com/org1/repo/src/branch/main',
-        (_req, res, ctx) => {
-          return res(
-            ctx.status(200),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json({}),
+      http.get('https://gitea.com/org1/repo/src/branch/main', () => {
+        return HttpResponse.json({}, { status: 200 });
+      }),
+      http.post(
+        'https://gitea.com/api/v1/orgs/org1/repos',
+        async ({ request }) => {
+          // Basic auth must match the user and password defined part of the config
+          expect(request.headers.get('Authorization')).toBe(
+            'basic c2FtcGxlX3VzZXI6cGFzc3dvcmRfdG9rZW4=',
           );
+          const body = await request.json();
+          expect(body).toEqual({
+            name: 'repo',
+            private: true,
+            description,
+          });
+          return HttpResponse.json({}, { status: 201 });
         },
       ),
-      rest.post('https://gitea.com/api/v1/orgs/org1/repos', (req, res, ctx) => {
-        // Basic auth must match the user and password defined part of the config
-        expect(req.headers.get('Authorization')).toBe(
-          'basic c2FtcGxlX3VzZXI6cGFzc3dvcmRfdG9rZW4=',
-        );
-        expect(req.body).toEqual({
-          name: 'repo',
-          private: true,
-          description,
-        });
-        return res(
-          ctx.status(201),
-          ctx.set('Content-Type', 'application/json'),
-          ctx.json({}),
-        );
-      }),
     );
 
     let input;
@@ -287,45 +263,37 @@ describe('publish:gitea', () => {
 
   it(`should ${examples[3].description}`, async () => {
     server.use(
-      rest.get('https://gitea.com/api/v1/orgs/org1', (_req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.set('Content-Type', 'application/json'),
-          ctx.json({
+      http.get('https://gitea.com/api/v1/orgs/org1', () => {
+        return HttpResponse.json(
+          {
             id: 1,
             name: 'org1',
             visibility: 'public',
             repo_admin_change_team_access: false,
             username: 'org1',
-          }),
+          },
+          { status: 200 },
         );
       }),
-      rest.get(
-        'https://gitea.com/org1/repo/src/branch/staging',
-        (_req, res, ctx) => {
-          return res(
-            ctx.status(200),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json({}),
+      http.get('https://gitea.com/org1/repo/src/branch/staging', () => {
+        return HttpResponse.json({}, { status: 200 });
+      }),
+      http.post(
+        'https://gitea.com/api/v1/orgs/org1/repos',
+        async ({ request }) => {
+          // Basic auth must match the user and password defined part of the config
+          expect(request.headers.get('Authorization')).toBe(
+            'basic c2FtcGxlX3VzZXI6cGFzc3dvcmRfdG9rZW4=',
           );
+          const body = await request.json();
+          expect(body).toEqual({
+            name: 'repo',
+            private: false,
+            description,
+          });
+          return HttpResponse.json({}, { status: 201 });
         },
       ),
-      rest.post('https://gitea.com/api/v1/orgs/org1/repos', (req, res, ctx) => {
-        // Basic auth must match the user and password defined part of the config
-        expect(req.headers.get('Authorization')).toBe(
-          'basic c2FtcGxlX3VzZXI6cGFzc3dvcmRfdG9rZW4=',
-        );
-        expect(req.body).toEqual({
-          name: 'repo',
-          private: false,
-          description,
-        });
-        return res(
-          ctx.status(201),
-          ctx.set('Content-Type', 'application/json'),
-          ctx.json({}),
-        );
-      }),
     );
 
     let input;
@@ -360,45 +328,37 @@ describe('publish:gitea', () => {
 
   it(`should ${examples[4].description}`, async () => {
     server.use(
-      rest.get('https://gitea.com/api/v1/orgs/org1', (_req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.set('Content-Type', 'application/json'),
-          ctx.json({
+      http.get('https://gitea.com/api/v1/orgs/org1', () => {
+        return HttpResponse.json(
+          {
             id: 1,
             name: 'org1',
             visibility: 'public',
             repo_admin_change_team_access: false,
             username: 'org1',
-          }),
+          },
+          { status: 200 },
         );
       }),
-      rest.get(
-        'https://gitea.com/org1/repo/src/branch/main',
-        (_req, res, ctx) => {
-          return res(
-            ctx.status(200),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json({}),
+      http.get('https://gitea.com/org1/repo/src/branch/main', () => {
+        return HttpResponse.json({}, { status: 200 });
+      }),
+      http.post(
+        'https://gitea.com/api/v1/orgs/org1/repos',
+        async ({ request }) => {
+          // Basic auth must match the user and password defined part of the config
+          expect(request.headers.get('Authorization')).toBe(
+            'basic c2FtcGxlX3VzZXI6cGFzc3dvcmRfdG9rZW4=',
           );
+          const body = await request.json();
+          expect(body).toEqual({
+            name: 'repo',
+            private: false,
+            description,
+          });
+          return HttpResponse.json({}, { status: 201 });
         },
       ),
-      rest.post('https://gitea.com/api/v1/orgs/org1/repos', (req, res, ctx) => {
-        // Basic auth must match the user and password defined part of the config
-        expect(req.headers.get('Authorization')).toBe(
-          'basic c2FtcGxlX3VzZXI6cGFzc3dvcmRfdG9rZW4=',
-        );
-        expect(req.body).toEqual({
-          name: 'repo',
-          private: false,
-          description,
-        });
-        return res(
-          ctx.status(201),
-          ctx.set('Content-Type', 'application/json'),
-          ctx.json({}),
-        );
-      }),
     );
 
     let input;
@@ -435,45 +395,37 @@ describe('publish:gitea', () => {
 
   it(`should ${examples[5].description}`, async () => {
     server.use(
-      rest.get('https://gitea.com/api/v1/orgs/org1', (_req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.set('Content-Type', 'application/json'),
-          ctx.json({
+      http.get('https://gitea.com/api/v1/orgs/org1', () => {
+        return HttpResponse.json(
+          {
             id: 1,
             name: 'org1',
             visibility: 'public',
             repo_admin_change_team_access: false,
             username: 'org1',
-          }),
+          },
+          { status: 200 },
         );
       }),
-      rest.get(
-        'https://gitea.com/org1/repo/src/branch/main',
-        (_req, res, ctx) => {
-          return res(
-            ctx.status(200),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json({}),
+      http.get('https://gitea.com/org1/repo/src/branch/main', () => {
+        return HttpResponse.json({}, { status: 200 });
+      }),
+      http.post(
+        'https://gitea.com/api/v1/orgs/org1/repos',
+        async ({ request }) => {
+          // Basic auth must match the user and password defined part of the config
+          expect(request.headers.get('Authorization')).toBe(
+            'basic c2FtcGxlX3VzZXI6cGFzc3dvcmRfdG9rZW4=',
           );
+          const body = await request.json();
+          expect(body).toEqual({
+            name: 'repo',
+            private: false,
+            description,
+          });
+          return HttpResponse.json({}, { status: 201 });
         },
       ),
-      rest.post('https://gitea.com/api/v1/orgs/org1/repos', (req, res, ctx) => {
-        // Basic auth must match the user and password defined part of the config
-        expect(req.headers.get('Authorization')).toBe(
-          'basic c2FtcGxlX3VzZXI6cGFzc3dvcmRfdG9rZW4=',
-        );
-        expect(req.body).toEqual({
-          name: 'repo',
-          private: false,
-          description,
-        });
-        return res(
-          ctx.status(201),
-          ctx.set('Content-Type', 'application/json'),
-          ctx.json({}),
-        );
-      }),
     );
 
     let input;
@@ -508,45 +460,37 @@ describe('publish:gitea', () => {
 
   it(`should ${examples[6].description}`, async () => {
     server.use(
-      rest.get('https://gitea.com/api/v1/orgs/org1', (_req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.set('Content-Type', 'application/json'),
-          ctx.json({
+      http.get('https://gitea.com/api/v1/orgs/org1', () => {
+        return HttpResponse.json(
+          {
             id: 1,
             name: 'org1',
             visibility: 'public',
             repo_admin_change_team_access: false,
             username: 'org1',
-          }),
+          },
+          { status: 200 },
         );
       }),
-      rest.get(
-        'https://gitea.com/org1/repo/src/branch/main',
-        (_req, res, ctx) => {
-          return res(
-            ctx.status(200),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json({}),
+      http.get('https://gitea.com/org1/repo/src/branch/main', () => {
+        return HttpResponse.json({}, { status: 200 });
+      }),
+      http.post(
+        'https://gitea.com/api/v1/orgs/org1/repos',
+        async ({ request }) => {
+          // Basic auth must match the user and password defined part of the config
+          expect(request.headers.get('Authorization')).toBe(
+            'basic c2FtcGxlX3VzZXI6cGFzc3dvcmRfdG9rZW4=',
           );
+          const body = await request.json();
+          expect(body).toEqual({
+            name: 'repo',
+            private: false,
+            description,
+          });
+          return HttpResponse.json({}, { status: 201 });
         },
       ),
-      rest.post('https://gitea.com/api/v1/orgs/org1/repos', (req, res, ctx) => {
-        // Basic auth must match the user and password defined part of the config
-        expect(req.headers.get('Authorization')).toBe(
-          'basic c2FtcGxlX3VzZXI6cGFzc3dvcmRfdG9rZW4=',
-        );
-        expect(req.body).toEqual({
-          name: 'repo',
-          private: false,
-          description,
-        });
-        return res(
-          ctx.status(201),
-          ctx.set('Content-Type', 'application/json'),
-          ctx.json({}),
-        );
-      }),
     );
 
     let input;
@@ -581,45 +525,37 @@ describe('publish:gitea', () => {
 
   it(`should ${examples[7].description}`, async () => {
     server.use(
-      rest.get('https://gitea.com/api/v1/orgs/org1', (_req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.set('Content-Type', 'application/json'),
-          ctx.json({
+      http.get('https://gitea.com/api/v1/orgs/org1', () => {
+        return HttpResponse.json(
+          {
             id: 1,
             name: 'org1',
             visibility: 'public',
             repo_admin_change_team_access: false,
             username: 'org1',
-          }),
+          },
+          { status: 200 },
         );
       }),
-      rest.get(
-        'https://gitea.com/org1/repo/src/branch/main',
-        (_req, res, ctx) => {
-          return res(
-            ctx.status(200),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json({}),
+      http.get('https://gitea.com/org1/repo/src/branch/main', () => {
+        return HttpResponse.json({}, { status: 200 });
+      }),
+      http.post(
+        'https://gitea.com/api/v1/orgs/org1/repos',
+        async ({ request }) => {
+          // Basic auth must match the user and password defined part of the config
+          expect(request.headers.get('Authorization')).toBe(
+            'basic c2FtcGxlX3VzZXI6cGFzc3dvcmRfdG9rZW4=',
           );
+          const body = await request.json();
+          expect(body).toEqual({
+            name: 'repo',
+            private: false,
+            description,
+          });
+          return HttpResponse.json({}, { status: 201 });
         },
       ),
-      rest.post('https://gitea.com/api/v1/orgs/org1/repos', (req, res, ctx) => {
-        // Basic auth must match the user and password defined part of the config
-        expect(req.headers.get('Authorization')).toBe(
-          'basic c2FtcGxlX3VzZXI6cGFzc3dvcmRfdG9rZW4=',
-        );
-        expect(req.body).toEqual({
-          name: 'repo',
-          private: false,
-          description,
-        });
-        return res(
-          ctx.status(201),
-          ctx.set('Content-Type', 'application/json'),
-          ctx.json({}),
-        );
-      }),
     );
 
     let input;
@@ -654,45 +590,37 @@ describe('publish:gitea', () => {
 
   it(`should ${examples[8].description}`, async () => {
     server.use(
-      rest.get('https://gitea.com/api/v1/orgs/org1', (_req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.set('Content-Type', 'application/json'),
-          ctx.json({
+      http.get('https://gitea.com/api/v1/orgs/org1', () => {
+        return HttpResponse.json(
+          {
             id: 1,
             name: 'org1',
             visibility: 'public',
             repo_admin_change_team_access: false,
             username: 'org1',
-          }),
+          },
+          { status: 200 },
         );
       }),
-      rest.get(
-        'https://gitea.com/org1/repo/src/branch/staging',
-        (_req, res, ctx) => {
-          return res(
-            ctx.status(200),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json({}),
+      http.get('https://gitea.com/org1/repo/src/branch/staging', () => {
+        return HttpResponse.json({}, { status: 200 });
+      }),
+      http.post(
+        'https://gitea.com/api/v1/orgs/org1/repos',
+        async ({ request }) => {
+          // Basic auth must match the user and password defined part of the config
+          expect(request.headers.get('Authorization')).toBe(
+            'basic c2FtcGxlX3VzZXI6cGFzc3dvcmRfdG9rZW4=',
           );
+          const body = await request.json();
+          expect(body).toEqual({
+            name: 'repo',
+            private: false,
+            description: 'Initialize a gitea repository',
+          });
+          return HttpResponse.json({}, { status: 201 });
         },
       ),
-      rest.post('https://gitea.com/api/v1/orgs/org1/repos', (req, res, ctx) => {
-        // Basic auth must match the user and password defined part of the config
-        expect(req.headers.get('Authorization')).toBe(
-          'basic c2FtcGxlX3VzZXI6cGFzc3dvcmRfdG9rZW4=',
-        );
-        expect(req.body).toEqual({
-          name: 'repo',
-          private: false,
-          description: 'Initialize a gitea repository',
-        });
-        return res(
-          ctx.status(201),
-          ctx.set('Content-Type', 'application/json'),
-          ctx.json({}),
-        );
-      }),
     );
 
     let input;
@@ -729,45 +657,37 @@ describe('publish:gitea', () => {
 
   it(`should ${examples[0].description}`, async () => {
     server.use(
-      rest.get('https://gitea.com/api/v1/orgs/org1', (_req, res, ctx) => {
-        return res(
-          ctx.status(200),
-          ctx.set('Content-Type', 'application/json'),
-          ctx.json({
+      http.get('https://gitea.com/api/v1/orgs/org1', () => {
+        return HttpResponse.json(
+          {
             id: 1,
             name: 'org1',
             visibility: 'public',
             repo_admin_change_team_access: false,
             username: 'org1',
-          }),
+          },
+          { status: 200 },
         );
       }),
-      rest.get(
-        'https://gitea.com/org1/repo/src/branch/main',
-        (_req, res, ctx) => {
-          return res(
-            ctx.status(200),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json({}),
+      http.get('https://gitea.com/org1/repo/src/branch/main', () => {
+        return HttpResponse.json({}, { status: 200 });
+      }),
+      http.post(
+        'https://gitea.com/api/v1/orgs/org1/repos',
+        async ({ request }) => {
+          // Basic auth must match the user and password defined part of the config
+          expect(request.headers.get('Authorization')).toBe(
+            'basic c2FtcGxlX3VzZXI6cGFzc3dvcmRfdG9rZW4=',
           );
+          const body = await request.json();
+          expect(body).toEqual({
+            name: 'repo',
+            private: false,
+            description,
+          });
+          return HttpResponse.json({}, { status: 201 });
         },
       ),
-      rest.post('https://gitea.com/api/v1/orgs/org1/repos', (req, res, ctx) => {
-        // Basic auth must match the user and password defined part of the config
-        expect(req.headers.get('Authorization')).toBe(
-          'basic c2FtcGxlX3VzZXI6cGFzc3dvcmRfdG9rZW4=',
-        );
-        expect(req.body).toEqual({
-          name: 'repo',
-          private: false,
-          description,
-        });
-        return res(
-          ctx.status(201),
-          ctx.set('Content-Type', 'application/json'),
-          ctx.json({}),
-        );
-      }),
     );
 
     let input;

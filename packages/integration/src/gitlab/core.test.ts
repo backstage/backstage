@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import { GitLabIntegrationConfig } from './config';
 import { getGitLabFileFetchUrl, getGitLabRequestOptions } from './core';
@@ -28,11 +28,11 @@ describe('gitlab core', () => {
 
   beforeEach(() => {
     worker.use(
-      rest.get('*/api/v4/projects/group%2Fproject', (_, res, ctx) =>
-        res(ctx.status(200), ctx.json({ id: 12345 })),
+      http.get('*/api/v4/projects/group%2Fproject', () =>
+        HttpResponse.json({ id: 12345 }, { status: 200 }),
       ),
-      rest.get('*/api/v4/projects/group%2Fsubgroup%2Fproject', (_, res, ctx) =>
-        res(ctx.status(200), ctx.json({ id: 12345 })),
+      http.get('*/api/v4/projects/group%2Fsubgroup%2Fproject', () =>
+        HttpResponse.json({ id: 12345 }, { status: 200 }),
       ),
     );
   });

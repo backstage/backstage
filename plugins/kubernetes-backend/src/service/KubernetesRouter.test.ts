@@ -41,7 +41,6 @@ import {
   registerMswTestHooks,
   startTestBackend,
 } from '@backstage/backend-test-utils';
-import { rest } from 'msw';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { createBackendModule } from '@backstage/backend-plugin-api';
 import {
@@ -54,6 +53,7 @@ import {
   kubernetesServiceLocatorExtensionPoint,
 } from '@backstage/plugin-kubernetes-node';
 import { ExtendedHttpServer } from '@backstage/backend-defaults/rootHttpRouter';
+import { http, HttpResponse, passthrough } from 'msw';
 
 describe('API integration tests', () => {
   let app: ExtendedHttpServer;
@@ -528,20 +528,20 @@ describe('API integration tests', () => {
 
     beforeEach(() => {
       worker.use(
-        rest.post(
+        // Allow requests to the test backend (127.0.0.1) to pass through
+        http.all(/http:\/\/127\.0\.0\.1:\d+\/.*/, () => passthrough()),
+        http.post(
           'https://localhost:1234/api/v1/namespaces',
-          (req, res, ctx) => {
+          async ({ request: req }) => {
             if (!req.headers.get('Authorization')) {
-              return res(ctx.status(401));
+              return new HttpResponse(null, { status: 401 });
             }
-            return req
-              .arrayBuffer()
-              .then(body =>
-                res(
-                  ctx.set('content-type', `${req.headers.get('content-type')}`),
-                  ctx.body(body),
-                ),
-              );
+            const body = await req.arrayBuffer();
+            return new HttpResponse(body, {
+              headers: {
+                'content-type': req.headers.get('content-type') || '',
+              },
+            });
           },
         ),
       );
@@ -554,13 +554,11 @@ describe('API integration tests', () => {
         metadata: { name: 'new-ns' },
       };
 
-      const proxyEndpointRequest = request(app)
+      const response = await request(app)
         .post('/api/kubernetes/proxy/api/v1/namespaces')
         .set(HEADER_KUBERNETES_CLUSTER, 'some-cluster')
         .set(HEADER_KUBERNETES_AUTH, 'randomtoken')
         .send(namespaceManifest);
-      worker.use(rest.all(proxyEndpointRequest.url, req => req.passthrough()));
-      const response = await proxyEndpointRequest;
 
       expect(response.body).toStrictEqual(namespaceManifest);
     });
@@ -573,23 +571,19 @@ metadata:
   name: new-ns
 `;
 
-      const proxyEndpointRequest = request(app)
+      const response = await request(app)
         .post('/api/kubernetes/proxy/api/v1/namespaces')
         .set(HEADER_KUBERNETES_CLUSTER, 'some-cluster')
         .set(HEADER_KUBERNETES_AUTH, 'randomtoken')
         .set('content-type', 'application/yaml')
         .send(yamlManifest);
-
-      worker.use(rest.all(proxyEndpointRequest.url, req => req.passthrough()));
-
-      const response = await proxyEndpointRequest;
       expect(response.text).toEqual(yamlManifest);
     });
 
     it('returns 403 response when permission blocks endpoint', async () => {
       app = await startPermissionDeniedTestServer();
 
-      const proxyEndpointRequest = request(app)
+      const response = await request(app)
         .post('/api/kubernetes/proxy/api/v1/namespaces')
         .set(HEADER_KUBERNETES_CLUSTER, 'some-cluster')
         .set(HEADER_KUBERNETES_AUTH, 'randomtoken')
@@ -599,21 +593,20 @@ metadata:
           metadata: { name: 'new-ns' },
         });
 
-      worker.use(rest.all(proxyEndpointRequest.url, req => req.passthrough()));
-
-      const response = await proxyEndpointRequest;
-
       expect(response.status).toEqual(403);
     });
 
     it('permits custom client-side auth strategy', async () => {
       worker.use(
-        rest.get('http://my.cluster.url/api/v1/namespaces', (req, res, ctx) => {
-          if (req.headers.get('Authorization') !== 'custom-token') {
-            return res(ctx.status(401));
-          }
-          return res(ctx.json({ items: [] }));
-        }),
+        http.get(
+          'http://my.cluster.url/api/v1/namespaces',
+          ({ request: req }) => {
+            if (req.headers.get('Authorization') !== 'custom-token') {
+              return new HttpResponse(null, { status: 401 });
+            }
+            return HttpResponse.json({ items: [] });
+          },
+        ),
       );
 
       const { server } = await startTestBackend({
@@ -651,12 +644,10 @@ metadata:
         ],
       });
 
-      const proxyEndpointRequest = request(server)
+      const response = await request(server)
         .get('/api/kubernetes/proxy/api/v1/namespaces')
         .set(HEADER_KUBERNETES_CLUSTER, 'custom-cluster')
         .set(HEADER_KUBERNETES_AUTH, 'custom-token');
-      worker.use(rest.all(proxyEndpointRequest.url, req => req.passthrough()));
-      const response = await proxyEndpointRequest;
 
       expect(response.body).toStrictEqual({ items: [] });
     });
@@ -668,9 +659,7 @@ metadata:
         presentAuthMetadata: jest.fn().mockReturnValue({}),
       };
       worker.use(
-        rest.get('http://my.cluster/api', (_req, res, ctx) =>
-          res(ctx.json({})),
-        ),
+        http.get('http://my.cluster/api', () => HttpResponse.json({})),
       );
       const { server } = await startTestBackend({
         features: [
@@ -711,11 +700,7 @@ metadata:
       });
       app = server;
 
-      const proxyEndpointRequest = request(app).get(
-        '/api/kubernetes/proxy/api',
-      );
-      worker.use(rest.all(proxyEndpointRequest.url, req => req.passthrough()));
-      const response = await proxyEndpointRequest;
+      const response = await request(app).get('/api/kubernetes/proxy/api');
 
       expect(response.body).toStrictEqual({});
       expect(authStrategy.getCredential).toHaveBeenCalledWith(

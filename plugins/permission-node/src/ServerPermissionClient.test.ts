@@ -29,7 +29,7 @@ import {
 } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { setupServer } from 'msw/node';
-import { RestContext, rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 
 const server = setupServer();
 
@@ -65,18 +65,19 @@ describe('ServerPermissionClient', () => {
     let mockAuthorizeHandler: jest.Mock;
 
     beforeEach(() => {
-      mockAuthorizeHandler = jest.fn((req, res, { json }: RestContext) => {
-        const responses = req.body.items.map(
+      mockAuthorizeHandler = jest.fn(async ({ request }) => {
+        const body = await request.json();
+        const responses = body.items.map(
           (r: IdentifiedPermissionMessage<DefinitivePolicyDecision>) => ({
             id: r.id,
             result: AuthorizeResult.ALLOW,
           }),
         );
 
-        return res(json({ items: responses }));
+        return HttpResponse.json({ items: responses });
       });
 
-      server.use(rest.post(`${mockBaseUrl}/authorize`, mockAuthorizeHandler));
+      server.use(http.post(`${mockBaseUrl}/authorize`, mockAuthorizeHandler));
     });
 
     it('should bypass the permission backend if permissions are disabled', async () => {
@@ -122,7 +123,9 @@ describe('ServerPermissionClient', () => {
 
       expect(mockAuthorizeHandler).toHaveBeenCalled();
       expect(
-        mockAuthorizeHandler.mock.calls[0][0].headers.get('authorization'),
+        mockAuthorizeHandler.mock.calls[0][0].request.headers.get(
+          'authorization',
+        ),
       ).toBe(
         mockCredentials.service.header({
           onBehalfOf: mockCredentials.user(),
@@ -136,18 +139,19 @@ describe('ServerPermissionClient', () => {
     let mockAuthorizeHandler: jest.Mock;
 
     beforeEach(() => {
-      mockAuthorizeHandler = jest.fn((req, res, { json }: RestContext) => {
-        const responses = req.body.items.map(
+      mockAuthorizeHandler = jest.fn(async ({ request }) => {
+        const body = await request.json();
+        const responses = body.items.map(
           (r: IdentifiedPermissionMessage<ConditionalPolicyDecision>) => ({
             id: r.id,
             result: AuthorizeResult.ALLOW,
           }),
         );
 
-        return res(json({ items: responses }));
+        return HttpResponse.json({ items: responses });
       });
 
-      server.use(rest.post(`${mockBaseUrl}/authorize`, mockAuthorizeHandler));
+      server.use(http.post(`${mockBaseUrl}/authorize`, mockAuthorizeHandler));
     });
 
     it('should bypass the permission backend if permissions are disabled', async () => {
@@ -197,7 +201,9 @@ describe('ServerPermissionClient', () => {
 
       expect(mockAuthorizeHandler).toHaveBeenCalled();
       expect(
-        mockAuthorizeHandler.mock.calls[0][0].headers.get('authorization'),
+        mockAuthorizeHandler.mock.calls[0][0].request.headers.get(
+          'authorization',
+        ),
       ).toBe(
         mockCredentials.service.header({
           onBehalfOf: mockCredentials.user(),
