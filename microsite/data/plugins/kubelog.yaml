@@ -7,4 +7,4 @@ description: Kubelog provides your Backstage users the ability to view logs of y
 documentation: https://github.com/jfvilas/kubelog
 iconUrl: https://raw.githubusercontent.com/jfvilas/kubelog/master/src/assets/kubelog-logo.png
 npmPackageName: '@jfvilas/plugin-kubelog'
-addedDate: 2024-08-25
+addedDate: '2024-08-25'

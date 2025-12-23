@@ -7,6 +7,4 @@ description: Import API definitions (OpenAPI, AsyncAPI, gRPC) from Microcks inst
 documentation: https://github.com/microcks/microcks-backstage-provider
 iconUrl: https://raw.githubusercontent.com/microcks/.github/refs/heads/main/assets/microcks-logo-blue.png
 npmPackageName: '@microcks/microcks-backstage-provider'
-tags:
-  - mock
 addedDate: '2023-04-06'
