@@ -203,7 +203,7 @@ export function auditorMiddlewareFactory(dependencies: {
 
       const locals = res.locals as Response['locals'] &
         WithCapturedResponseBody;
-      res.json = function overridenJson(body: any) {
+      res.json = function overriddenJson(body: any) {
         locals[CAPTURED_RESPONSE_BODY_SYMBOL] = body;
         return originalJson(body);
       };
