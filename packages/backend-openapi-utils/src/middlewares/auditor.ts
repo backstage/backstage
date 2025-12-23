@@ -38,12 +38,12 @@ type AuditorExtension = {
   };
 };
 
-function extractValueFromObject(obj: any, path: string): any {
+function extractValueFromObject(obj: unknown, path: string): any {
   const parts = path.split('.');
   let current = obj;
   for (const part of parts) {
     if (current && typeof current === 'object' && part in current) {
-      current = current[part];
+      current = (current as Record<string, any>)[part];
     } else {
       return undefined;
     }
@@ -57,7 +57,8 @@ function waitForResponseToFinish(res: Response): Promise<void> {
   });
 }
 
-interface WithOpenapi {
+/** @public */
+export interface WithOpenapi {
   openapi?: {
     expressRoute: string;
     openApiRoute: string;
@@ -68,16 +69,24 @@ interface WithOpenapi {
 }
 
 const AUDITOR_SYMBOL = Symbol('auditor');
-const CAPTURED_RESPONSE_BODY_SYMBOL = Symbol('capturedResponseBody');
 
-interface WithAuditorEvent {
+/** @public */
+export interface WithAuditorEvent {
   [AUDITOR_SYMBOL]?: Awaited<ReturnType<AuditorService['createEvent']>>;
 }
+
+const CAPTURED_RESPONSE_BODY_SYMBOL = Symbol('capturedResponseBody');
 
 interface WithCapturedResponseBody {
   [CAPTURED_RESPONSE_BODY_SYMBOL]?: JsonObject;
 }
 
+/**
+ *
+ * Middleware factory for auditing OpenAPI requests and responses.
+ *
+ * @public
+ */
 export function auditorMiddlewareFactory(dependencies: {
   auditor: AuditorService;
   logger: LoggerService;
