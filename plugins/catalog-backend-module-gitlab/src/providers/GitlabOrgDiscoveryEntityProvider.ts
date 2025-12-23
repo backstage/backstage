@@ -204,7 +204,7 @@ export class GitlabOrgDiscoveryEntityProvider implements EntityProvider {
       : [this.config.groupPattern];
 
     this.gitLabClient = new GitLabClient({
-      config: this.integration.config,
+      integration: this.integration,
       logger: this.logger,
     });
   }
