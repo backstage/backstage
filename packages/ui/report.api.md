@@ -194,6 +194,9 @@ export const BoxDefinition: {
     'minHeight',
     'maxHeight',
   ];
+  readonly dataAttributes: {
+    readonly surface: readonly ['0', '1', '2', '3'];
+  };
 };
 
 // @public (undocumented)
@@ -222,6 +225,8 @@ export interface BoxProps extends SpaceProps {
   >;
   // (undocumented)
   style?: React.CSSProperties;
+  // (undocumented)
+  surface?: Responsive<Surface>;
   // (undocumented)
   width?: Responsive<string>;
 }
@@ -657,6 +662,9 @@ export const FlexDefinition: {
     'justify',
     'direction',
   ];
+  readonly dataAttributes: {
+    readonly surface: readonly ['0', '1', '2', '3'];
+  };
 };
 
 // @public (undocumented)
@@ -678,6 +686,8 @@ export interface FlexProps extends SpaceProps {
   justify?: Responsive<'start' | 'center' | 'end' | 'between'>;
   // (undocumented)
   style?: React.CSSProperties;
+  // (undocumented)
+  surface?: Responsive<Surface>;
 }
 
 // @public (undocumented)
@@ -714,6 +724,9 @@ export const GridDefinition: {
     'px',
     'py',
   ];
+  readonly dataAttributes: {
+    readonly surface: readonly ['0', '1', '2', '3'];
+  };
 };
 
 // @public
@@ -722,6 +735,9 @@ export const GridItemDefinition: {
     readonly root: 'bui-GridItem';
   };
   readonly utilityProps: ['colSpan', 'colEnd', 'colStart', 'rowSpan'];
+  readonly dataAttributes: {
+    readonly surface: readonly ['0', '1', '2', '3'];
+  };
 };
 
 // @public (undocumented)
@@ -740,6 +756,8 @@ export interface GridItemProps {
   rowSpan?: Responsive<Columns>;
   // (undocumented)
   style?: React.CSSProperties;
+  // (undocumented)
+  surface?: Responsive<Surface>;
 }
 
 // @public (undocumented)
@@ -754,6 +772,8 @@ export interface GridProps extends SpaceProps {
   gap?: Responsive<Space>;
   // (undocumented)
   style?: React.CSSProperties;
+  // (undocumented)
+  surface?: Responsive<Surface>;
 }
 
 // @public
@@ -1228,6 +1248,9 @@ export const SubmenuTrigger: (props: SubmenuTriggerProps) => JSX_2.Element;
 
 // @public (undocumented)
 export interface SubmenuTriggerProps extends SubmenuTriggerProps_2 {}
+
+// @public
+export type Surface = '0' | '1' | '2' | '3';
 
 // @public (undocumented)
 export const Switch: ForwardRefExoticComponent<

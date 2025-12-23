@@ -103,3 +103,47 @@ export const RowAndColumns = meta.story({
     </Grid.Root>
   ),
 });
+
+export const Surfaces = meta.story({
+  args: { px: '6', py: '4' },
+  render: args => (
+    <Flex direction="column">
+      <Flex>
+        <Grid.Root {...args} surface="0">
+          Surface 0
+        </Grid.Root>
+        <Grid.Root {...args} surface="1">
+          Surface 1
+        </Grid.Root>
+        <Grid.Root {...args} surface="2">
+          Surface 2
+        </Grid.Root>
+        <Grid.Root {...args} surface="3">
+          Surface 3
+        </Grid.Root>
+        <Grid.Root {...args} surface={{ initial: '0', sm: '1' }}>
+          Responsive Surface
+        </Grid.Root>
+      </Flex>
+      <Flex>
+        <Grid.Root {...args}>
+          <Grid.Item surface="0">Surface 0</Grid.Item>
+        </Grid.Root>
+        <Grid.Root {...args}>
+          <Grid.Item surface="1">Surface 1</Grid.Item>
+        </Grid.Root>
+        <Grid.Root {...args}>
+          <Grid.Item surface="2">Surface 2</Grid.Item>
+        </Grid.Root>
+        <Grid.Root {...args}>
+          <Grid.Item surface="3">Surface 3</Grid.Item>
+        </Grid.Root>
+        <Grid.Root {...args}>
+          <Grid.Item surface={{ initial: '0', sm: '1' }}>
+            Responsive Surface
+          </Grid.Item>
+        </Grid.Root>
+      </Flex>
+    </Flex>
+  ),
+});
