@@ -292,6 +292,13 @@ const _default: OverridableFrontendPlugin<
             optional: false;
           }
         >;
+        layout: ExtensionInput<
+          ConfigurableExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>,
+          {
+            singleton: true;
+            optional: true;
+          }
+        >;
       };
       kind: 'page';
       name: 'reader';

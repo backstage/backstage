@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createElement, ComponentType } from 'react';
+import { createElement, ComponentType, JSX } from 'react';
 
 import { TechDocsAddonOptions } from './types';
 import {
@@ -22,8 +22,10 @@ import {
 } from '@backstage/core-plugin-api';
 import { getDataKeyByName, TECHDOCS_ADDONS_KEY } from './addons';
 import {
+  coreExtensionData,
   createExtensionBlueprint,
   createExtensionDataRef,
+  ExtensionBoundary,
 } from '@backstage/frontend-plugin-api';
 
 /** @alpha */
@@ -53,7 +55,7 @@ export const AddonBlueprint = createExtensionBlueprint({
 });
 
 /** @alpha */
-export const attachTechDocsAddonComponentData = <P>(
+export const attachTechDocsAddonComponentData = <P,>(
   techDocsAddon: ComponentType<P>,
   data: TechDocsAddonOptions,
 ) => {
@@ -73,3 +75,52 @@ export const attachTechDocsAddonComponentData = <P>(
     attachComponentData(techDocsAddon, dataKey, true);
   }
 };
+
+/**
+ * Props for TechDocs reader layout components.
+ * @alpha
+ */
+export interface TechDocsReaderLayoutProps {
+  /**
+   * Show or hide the header, defaults to true.
+   */
+  withHeader?: boolean;
+  /**
+   * Show or hide the content search bar, defaults to true.
+   */
+  withSearch?: boolean;
+}
+
+/**
+ * Creates an extension that provides a custom layout for the TechDocs reader page.
+ *
+ * @alpha
+ * @example
+ * ```tsx
+ * TechDocsReaderLayoutBlueprint.make({
+ *   params: {
+ *     loader: () => import('./MyCustomLayout').then(m => m.MyCustomLayout),
+ *   },
+ * })
+ * ```
+ */
+export const TechDocsReaderLayoutBlueprint = createExtensionBlueprint({
+  kind: 'techdocs-reader-layout',
+  attachTo: { id: 'page:techdocs/reader', input: 'layout' },
+  output: [coreExtensionData.reactElement],
+  config: {
+    schema: {
+      withHeader: z => z.boolean().optional(),
+      withSearch: z => z.boolean().optional(),
+    },
+  },
+  *factory(
+    params: {
+      loader: () => Promise<(props: TechDocsReaderLayoutProps) => JSX.Element>;
+    },
+    { config, node },
+  ) {
+    const Component = ExtensionBoundary.lazyComponent(node, params.loader);
+    yield coreExtensionData.reactElement(<Component {...config} />);
+  },
+});
