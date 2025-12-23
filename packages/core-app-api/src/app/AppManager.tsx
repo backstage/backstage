@@ -24,10 +24,15 @@ import {
 } from 'react';
 import useAsync from 'react-use/esm/useAsync';
 import {
+  AlertApiForwarder,
   ApiProvider,
   AppThemeSelector,
   ConfigReader,
-  LocalStorageFeatureFlags,
+  ErrorAlerter,
+  ErrorApiForwarder,
+  MultiStorageFeatureFlags,
+  UnhandledErrorForwarder,
+  WebStorage,
 } from '../apis';
 import {
   AnyApiFactory,
@@ -45,6 +50,8 @@ import {
   fetchApiRef,
   discoveryApiRef,
   errorApiRef,
+  storageApiRef,
+  alertApiRef,
 } from '@backstage/core-plugin-api';
 import {
   AppLanguageApi,
@@ -182,7 +189,12 @@ export class AppManager implements BackstageApp {
     this.apis = options.apis ?? [];
     this.icons = options.icons;
     this.plugins = new Set((options.plugins as CompatiblePlugin[]) ?? []);
-    this.featureFlags = options.featureFlags ?? [];
+    this.featureFlags =
+      options.featureFlags?.map(flag => ({
+        ...flag,
+        persisted: flag.persisted ?? false,
+        pluginId: flag.pluginId ?? '',
+      })) ?? [];
     this.components = options.components;
     this.themes = options.themes as AppTheme[];
     this.configLoader = options.configLoader ?? defaultConfigLoader;
@@ -336,6 +348,7 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
               for (const flag of plugin.getFeatureFlags()) {
                 featureFlagsApi.registerFlag({
                   name: flag.name,
+                  persisted: flag.persisted ?? false,
                   pluginId: plugin.getId(),
                 });
               }
@@ -344,6 +357,7 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
                 if (output.type === 'feature-flag') {
                   featureFlagsApi.registerFlag({
                     name: output.name,
+                    persisted: false,
                     pluginId: plugin.getId(),
                   });
                 }
@@ -354,13 +368,19 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
           // Go through the featureFlags returned from the traversal and
           // register those now the configApi has been loaded
           const registeredFlags = featureFlagsApi.getRegisteredFlags();
-          const flagNames = new Set(registeredFlags.map(f => f.name));
+          const flagNames = new Map(registeredFlags.map(f => [f.name, f]));
           for (const name of featureFlags) {
             // Prevents adding duplicate feature flags
             if (!flagNames.has(name)) {
-              featureFlagsApi.registerFlag({ name, pluginId: '' });
+              featureFlagsApi.registerFlag({
+                name,
+                pluginId: '',
+                persisted: flagNames.get(name)?.persisted ?? false,
+              });
             }
           }
+
+          featureFlagsApi.initialize?.();
         }
       }
 
@@ -473,12 +493,40 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
         }),
     });
 
+    // The feature flags API requires StorageApi hence ErrorApi and AlertApi,
+    // so we'll create them here instead of defaultApis.
+    this.apiFactoryRegistry.register('default', {
+      api: alertApiRef,
+      deps: {},
+      factory: () => new AlertApiForwarder(),
+    });
+    this.apiFactoryRegistry.register('default', {
+      api: errorApiRef,
+      deps: {
+        alertApi: alertApiRef,
+      },
+      factory: ({ alertApi }) => {
+        const errorApi = new ErrorAlerter(alertApi, new ErrorApiForwarder());
+        UnhandledErrorForwarder.forward(errorApi, { hidden: false });
+        return errorApi;
+      },
+    });
+    this.apiFactoryRegistry.register('default', {
+      api: storageApiRef,
+      deps: {
+        errorApi: errorApiRef,
+      },
+      factory: ({ errorApi }) => WebStorage.create({ errorApi }),
+    });
+
     // It's possible to replace the feature flag API, but since we must have at least
     // one implementation we add it here directly instead of through the defaultApis.
     this.apiFactoryRegistry.register('default', {
       api: featureFlagsApiRef,
-      deps: {},
-      factory: () => new LocalStorageFeatureFlags(),
+      deps: {
+        storageApi: storageApiRef,
+      },
+      factory: ({ storageApi }) => new MultiStorageFeatureFlags({ storageApi }),
     });
     for (const factory of this.defaultApis) {
       this.apiFactoryRegistry.register('default', factory);

@@ -399,6 +399,7 @@ describe('Integration Test', () => {
 
     expect(storageFlags.registerFlag).toHaveBeenCalledWith({
       name: 'name',
+      persisted: false,
       pluginId: 'test',
     });
   });
@@ -476,10 +477,12 @@ describe('Integration Test', () => {
 
     expect(storageFlags.registerFlag).toHaveBeenCalledWith({
       name: 'foo',
+      persisted: false,
       pluginId: 'test',
     });
     expect(storageFlags.registerFlag).toHaveBeenCalledWith({
       name: 'old-feature-flag',
+      persisted: false,
       pluginId: 'old-test',
     });
   });

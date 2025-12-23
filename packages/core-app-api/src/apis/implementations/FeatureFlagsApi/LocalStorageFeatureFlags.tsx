@@ -14,33 +14,18 @@
  * limitations under the License.
  */
 
+import ZenObservable from 'zen-observable';
+
 import {
   FeatureFlagState,
   FeatureFlagsApi,
   FeatureFlag,
   FeatureFlagsSaveOptions,
 } from '@backstage/core-plugin-api';
+import type { Observable } from '@backstage/types';
 
-export function validateFlagName(name: string): void {
-  if (name.length < 3) {
-    throw new Error(
-      `The '${name}' feature flag must have a minimum length of three characters.`,
-    );
-  }
-
-  if (name.length > 150) {
-    throw new Error(
-      `The '${name}' feature flag must not exceed 150 characters.`,
-    );
-  }
-
-  if (!name.match(/^[a-z]+[a-z0-9-]+$/)) {
-    throw new Error(
-      `The '${name}' feature flag must start with a lowercase letter and only contain lowercase letters, numbers and hyphens. ` +
-        'Examples: feature-flag-one, alpha, release-2020',
-    );
-  }
-}
+import { validateFlagName } from './validateFlagName';
+import { BroadcastSignal } from './BroadcastSignal';
 
 /**
  * A feature flags implementation that stores the flags in the browser's local
@@ -49,8 +34,17 @@ export function validateFlagName(name: string): void {
  * @public
  */
 export class LocalStorageFeatureFlags implements FeatureFlagsApi {
+  #signal: BroadcastSignal;
   private registeredFeatureFlags: FeatureFlag[] = [];
   private flags?: Map<string, FeatureFlagState>;
+
+  constructor() {
+    this.#signal = new BroadcastSignal((name, state, persisted) => {
+      if (!persisted) {
+        this.flags?.set(name, state);
+      }
+    });
+  }
 
   registerFlag(flag: FeatureFlag) {
     validateFlagName(flag.name);
@@ -59,6 +53,37 @@ export class LocalStorageFeatureFlags implements FeatureFlagsApi {
 
   getRegisteredFlags(): FeatureFlag[] {
     return this.registeredFeatureFlags.slice();
+  }
+
+  async getFlag(name: string): Promise<boolean> {
+    return this.isActive(name);
+  }
+
+  async setFlag(name: string, active: boolean): Promise<void> {
+    this.save({
+      states: {
+        [name]: active ? FeatureFlagState.Active : FeatureFlagState.None,
+      },
+      merge: true,
+    });
+  }
+
+  observe$(name: string): Observable<boolean> {
+    return new ZenObservable(subscriber => {
+      subscriber.next(this.isActive(name));
+      this.#signal.observe$(name).subscribe({
+        next(value) {
+          subscriber.next(value);
+        },
+        error(error) {
+          subscriber.error(error);
+        },
+        complete() {
+          subscriber.complete();
+        },
+      });
+      subscriber.complete();
+    });
   }
 
   isActive(name: string): boolean {
@@ -72,7 +97,10 @@ export class LocalStorageFeatureFlags implements FeatureFlagsApi {
     if (!this.flags) {
       this.flags = this.load();
     }
+
+    let removedKeys: string[] = [];
     if (!options.merge) {
+      removedKeys = Array.from(this.flags.keys());
       this.flags.clear();
     }
     for (const [name, state] of Object.entries(options.states)) {
@@ -86,6 +114,15 @@ export class LocalStorageFeatureFlags implements FeatureFlagsApi {
       'featureFlags',
       JSON.stringify(Object.fromEntries(enabled)),
     );
+
+    for (const name of removedKeys) {
+      if (!(name in options.states)) {
+        this.#signal.signal(name, FeatureFlagState.None, false);
+      }
+    }
+    for (const [name, state] of Object.entries(options.states)) {
+      this.#signal.signal(name, state, false);
+    }
   }
 
   private load(): Map<string, FeatureFlagState> {

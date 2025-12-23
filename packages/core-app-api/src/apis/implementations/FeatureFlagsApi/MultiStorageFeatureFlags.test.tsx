@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,26 +14,33 @@
  * limitations under the License.
  */
 
-import { LocalStorageFeatureFlags } from './LocalStorageFeatureFlags';
+import { MockErrorApi } from '@backstage/test-utils';
+import { WebStorage } from '../StorageApi';
+import { MultiStorageFeatureFlags } from './MultiStorageFeatureFlags';
 import { FeatureFlagState, FeatureFlagsApi } from '@backstage/core-plugin-api';
 
-describe('FeatureFlags', () => {
+describe('MultiStorageFeatureFlags', () => {
   beforeEach(() => {
     window.localStorage.clear();
   });
 
   describe('getFlags', () => {
+    let errorApi: MockErrorApi;
     let featureFlags: FeatureFlagsApi;
 
     beforeEach(() => {
-      featureFlags = new LocalStorageFeatureFlags();
+      window.localStorage.clear();
+      errorApi = new MockErrorApi();
+      featureFlags = new MultiStorageFeatureFlags({
+        storageApi: WebStorage.create({ errorApi }),
+      });
     });
 
     it('returns no flags', () => {
       expect(featureFlags.getRegisteredFlags()).toEqual([]);
     });
 
-    it('loads flags from local storage', () => {
+    it('loads flags from local storage', async () => {
       window.localStorage.setItem(
         'featureFlags',
         JSON.stringify({
@@ -50,22 +57,125 @@ describe('FeatureFlags', () => {
       expect(featureFlags.isActive('feature-flag-three')).toBe(false);
       expect(featureFlags.isActive('feature-flag-four')).toBe(false);
       expect(featureFlags.isActive('feature-flag-five')).toBe(false);
+      expect(await featureFlags.getFlag('feature-flag-one')).toBe(true);
+      expect(await featureFlags.getFlag('feature-flag-two')).toBe(true);
+      expect(await featureFlags.getFlag('feature-flag-three')).toBe(false);
+      expect(await featureFlags.getFlag('feature-flag-four')).toBe(false);
+      expect(await featureFlags.getFlag('feature-flag-five')).toBe(false);
     });
 
-    it('sets the correct values', () => {
+    it('loads flags from local storage and storage api', async () => {
+      featureFlags.registerFlag({
+        name: 'persisted-flag-one',
+        persisted: true,
+        pluginId: '-',
+      });
+      featureFlags.registerFlag({
+        name: 'persisted-flag-two',
+        persisted: true,
+        pluginId: '-',
+      });
+      featureFlags.registerFlag({
+        name: 'persisted-flag-three',
+        persisted: true,
+        pluginId: '-',
+      });
+      featureFlags.registerFlag({
+        name: 'persisted-flag-four',
+        persisted: true,
+        pluginId: '-',
+      });
+      featureFlags.registerFlag({
+        name: 'persisted-flag-five',
+        persisted: true,
+        pluginId: '-',
+      });
+
+      window.localStorage.setItem(
+        'featureFlags',
+        JSON.stringify({
+          'feature-flag-one': 1,
+          'feature-flag-two': 1,
+          'feature-flag-three': 0,
+          'feature-flag-four': 2,
+          'feature-flag-five': 'not-valid',
+        }),
+      );
+
+      window.localStorage.setItem('/feature-flags/persisted-flag-one', '1');
+      window.localStorage.setItem('/feature-flags/persisted-flag-two', '1');
+      window.localStorage.setItem('/feature-flags/persisted-flag-three', '0');
+      window.localStorage.setItem('/feature-flags/persisted-flag-four', '2');
+      window.localStorage.setItem(
+        '/feature-flags/persisted-flag-five',
+        '"not-valid"',
+      );
+
+      expect(featureFlags.isActive('feature-flag-one')).toBe(true);
+      expect(featureFlags.isActive('feature-flag-two')).toBe(true);
+      expect(featureFlags.isActive('feature-flag-three')).toBe(false);
+      expect(featureFlags.isActive('feature-flag-four')).toBe(false);
+      expect(featureFlags.isActive('feature-flag-five')).toBe(false);
+      expect(await featureFlags.getFlag('feature-flag-one')).toBe(true);
+      expect(await featureFlags.getFlag('feature-flag-two')).toBe(true);
+      expect(await featureFlags.getFlag('feature-flag-three')).toBe(false);
+      expect(await featureFlags.getFlag('feature-flag-four')).toBe(false);
+      expect(await featureFlags.getFlag('feature-flag-five')).toBe(false);
+
+      expect(await featureFlags.getFlag('persisted-flag-one')).toBe(true);
+      expect(await featureFlags.getFlag('persisted-flag-two')).toBe(true);
+      expect(await featureFlags.getFlag('persisted-flag-three')).toBe(false);
+      expect(await featureFlags.getFlag('persisted-flag-four')).toBe(false);
+      expect(await featureFlags.getFlag('persisted-flag-five')).toBe(false);
+      expect(featureFlags.isActive('persisted-flag-one')).toBe(true);
+      expect(featureFlags.isActive('persisted-flag-two')).toBe(true);
+      expect(featureFlags.isActive('persisted-flag-three')).toBe(false);
+      expect(featureFlags.isActive('persisted-flag-four')).toBe(false);
+      expect(featureFlags.isActive('persisted-flag-five')).toBe(false);
+    });
+
+    it('sets the correct values', async () => {
+      featureFlags.registerFlag({
+        name: 'persisted-flag-zero',
+        persisted: true,
+        pluginId: '-',
+      });
+
+      const persistedValues: boolean[] = [];
+      const subscription = featureFlags
+        .observe$('persisted-flag-zero')
+        .subscribe(value => {
+          if (persistedValues.at(-1) !== value) {
+            persistedValues.push(value);
+          }
+        });
+
+      await new Promise(resolve => setTimeout(resolve, 10));
+
+      expect(persistedValues).toEqual([false]);
+
       featureFlags.save({
         states: {
           'feature-flag-zero': FeatureFlagState.Active,
+          'persisted-flag-zero': FeatureFlagState.Active,
         },
       });
+
+      await new Promise(resolve => setTimeout(resolve, 10));
 
       expect(featureFlags.isActive('feature-flag-zero')).toBe(true);
       expect(window.localStorage.getItem('featureFlags')).toEqual(
         '{"feature-flag-zero":1}',
       );
+      expect(featureFlags.isActive('persisted-flag-zero')).toBe(true);
+      expect(await featureFlags.getFlag('persisted-flag-zero')).toBe(true);
+
+      expect(persistedValues).toEqual([false, true]);
+
+      subscription.unsubscribe();
     });
 
-    it('deletes the correct values', () => {
+    it('deletes the correct values', async () => {
       window.localStorage.setItem(
         'featureFlags',
         JSON.stringify({
@@ -83,12 +193,14 @@ describe('FeatureFlags', () => {
         },
       });
 
+      await new Promise(resolve => setTimeout(resolve, 10));
+
       expect(window.localStorage.getItem('featureFlags')).toEqual(
         '{"feature-flag-two":1}',
       );
     });
 
-    it('clears all values', () => {
+    it('clears all values', async () => {
       window.localStorage.setItem(
         'featureFlags',
         JSON.stringify({
@@ -104,6 +216,8 @@ describe('FeatureFlags', () => {
 
       featureFlags.save({ states: {} });
 
+      await new Promise(resolve => setTimeout(resolve, 10));
+
       expect(featureFlags.isActive('feature-flag-one')).toBe(false);
       expect(featureFlags.isActive('feature-flag-two')).toBe(false);
       expect(featureFlags.isActive('feature-flag-three')).toBe(false);
@@ -113,10 +227,14 @@ describe('FeatureFlags', () => {
   });
 
   describe('getRegisteredFlags', () => {
+    let errorApi: MockErrorApi;
     let featureFlags: FeatureFlagsApi;
 
     beforeEach(() => {
-      featureFlags = new LocalStorageFeatureFlags();
+      errorApi = new MockErrorApi();
+      featureFlags = new MultiStorageFeatureFlags({
+        storageApi: WebStorage.create({ errorApi }),
+      });
       featureFlags.registerFlag({
         name: 'registered-flag-1',
         persisted: false,
@@ -135,7 +253,9 @@ describe('FeatureFlags', () => {
     });
 
     it('should return an empty list', () => {
-      featureFlags = new LocalStorageFeatureFlags();
+      featureFlags = new MultiStorageFeatureFlags({
+        storageApi: WebStorage.create({ errorApi }),
+      });
       expect(featureFlags.getRegisteredFlags()).toEqual([]);
     });
 
