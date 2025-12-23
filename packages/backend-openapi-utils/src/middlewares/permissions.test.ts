@@ -18,7 +18,7 @@ import { permissionsMiddlewareFactory } from './permissions';
 import express from 'express';
 import request from 'supertest';
 import type { PermissionsService } from '@backstage/backend-plugin-api';
-import { MiddlewareFactory } from '@backstage/backend-defaults';
+import { MiddlewareFactory } from '@backstage/backend-defaults/rootHttpRouter';
 import { mockServices } from '@backstage/backend-test-utils';
 import { createValidatedOpenApiRouter } from '../stub';
 import {
@@ -146,6 +146,9 @@ describe('permissionsMiddleware', () => {
   let mockPermissionsService: ReturnType<typeof createMockPermissionsService>;
   let permissionsMiddleware: express.RequestHandler;
   let mockHttpAuth: ReturnType<typeof mockServices.httpAuth.mock>;
+  let mockPermissionsRegistry: ReturnType<
+    typeof mockServices.permissionsRegistry.mock
+  >;
 
   beforeEach(() => {
     router =
@@ -154,19 +157,14 @@ describe('permissionsMiddleware', () => {
       );
     app = express().use(router);
     mockPermissionsService = createMockPermissionsService();
+    mockPermissionsRegistry = mockServices.permissionsRegistry.mock();
+    mockPermissionsRegistry.listPermissions.mockReturnValue([mockPermission]);
     mockHttpAuth = mockServices.httpAuth.mock();
-    permissionsMiddleware = permissionsMiddlewareFactory(
-      {
-        permissions: mockPermissionsService.permissionsService,
-        httpAuth: mockHttpAuth,
-      },
-      {
-        permissions: {
-          'catalog.location.read': mockPermission,
-          'catalog.entity.read': mockPermission,
-        },
-      },
-    );
+    permissionsMiddleware = permissionsMiddlewareFactory({
+      permissions: mockPermissionsService.permissionsService,
+      httpAuth: mockHttpAuth,
+      permissionsRegistry: mockPermissionsRegistry,
+    });
     router.use(permissionsMiddleware);
   });
 

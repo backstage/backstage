@@ -21,7 +21,6 @@ import type {
   PermissionsRegistryService,
   PermissionsService,
 } from '@backstage/backend-plugin-api';
-import type { BasicPermission } from '@backstage/plugin-permission-common';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { NotFoundError, NotAllowedError } from '@backstage/errors';
 
@@ -31,7 +30,8 @@ type PermissionsExtension = {
   onDeny?: 403 | 404;
 };
 
-interface WithOpenapi {
+/** @public */
+export interface WithOpenapi {
   openapi?: {
     expressRoute: string;
     openApiRoute: string;
@@ -41,17 +41,11 @@ interface WithOpenapi {
   };
 }
 
-interface WithCredentials {
-  credentials?: {
-    $$type?: '@backstage/BackstageCredentials';
-    principal?: unknown;
-  };
-}
-
-export interface PermissionsMiddlewareOptions {
-  permissions: Record<string, BasicPermission>;
-}
-
+/**
+ * Middleware factory that enforces permissions based on OpenAPI operation metadata.
+ *
+ * @public
+ */
 export function permissionsMiddlewareFactory(dependencies: {
   permissions: PermissionsService;
   permissionsRegistry: PermissionsRegistryService;
@@ -62,7 +56,7 @@ export function permissionsMiddlewareFactory(dependencies: {
   const { permissions: permissionsService, httpAuth } = dependencies;
 
   return async (
-    req: Request & WithOpenapi & WithCredentials,
+    req: Request & WithOpenapi,
     _res: Response,
     next: NextFunction,
   ) => {
