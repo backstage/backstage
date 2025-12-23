@@ -18,12 +18,6 @@ For this example, the default Note.js template will be used. The template create
 
 - You should have already [installed a standalone app](../getting-started/index.md).
 
-- If you are running Backstage with Node 20 or later, pass the flag `--no-node-snapshot` to Node in order to use the templates feature to create new components. One way to do this is to specify the `NODE_OPTIONS` environment variable before starting Backstage:
-
-  ```
-  export NODE_OPTIONS=--no-node-snapshot
-  ```
-
 - Register the [GitHub Scaffolder Action module](../features/software-templates/builtin-actions.md#installing-action-modules).
 
 - [Setup up a GitHub Integration](../getting-started/config/authentication.md#setting-up-a-github-integration) with Backstage, using a GitHub Personal Access Token.
