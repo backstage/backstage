@@ -27,6 +27,6 @@ export {
   NotImplementedError,
   ServiceUnavailableError,
 } from './common';
-export { CustomErrorBase } from './CustomErrorBase';
+export { CustomErrorBase, isCustomError } from './CustomErrorBase';
 export { ResponseError } from './ResponseError';
 export type { ConsumedResponse } from './types';
