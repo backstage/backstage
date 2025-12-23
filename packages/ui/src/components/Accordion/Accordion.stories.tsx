@@ -13,8 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import type { Meta, StoryObj } from '@storybook/react-vite';
+import preview from '../../../../../.storybook/preview';
 import {
   Accordion,
   AccordionTrigger,
@@ -36,15 +35,12 @@ const Content = () => (
   </Box>
 );
 
-const meta = {
+const meta = preview.meta({
   title: 'Backstage UI/Accordion',
   component: Accordion,
-} satisfies Meta<typeof Accordion>;
+});
 
-export default meta;
-type Story = StoryObj<typeof meta>;
-
-export const Default: Story = {
+export const Default = meta.story({
   render: () => (
     <Accordion>
       <AccordionTrigger title="Toggle Panel" />
@@ -53,9 +49,9 @@ export const Default: Story = {
       </AccordionPanel>
     </Accordion>
   ),
-};
+});
 
-export const WithSubtitle: Story = {
+export const WithSubtitle = meta.story({
   render: () => (
     <Accordion>
       <AccordionTrigger
@@ -67,9 +63,9 @@ export const WithSubtitle: Story = {
       </AccordionPanel>
     </Accordion>
   ),
-};
+});
 
-export const CustomTrigger: Story = {
+export const CustomTrigger = meta.story({
   render: () => (
     <Accordion>
       <AccordionTrigger>
@@ -87,9 +83,9 @@ export const CustomTrigger: Story = {
       </AccordionPanel>
     </Accordion>
   ),
-};
+});
 
-export const DefaultExpanded: Story = {
+export const DefaultExpanded = meta.story({
   render: () => (
     <Accordion defaultExpanded>
       <AccordionTrigger title="Toggle Panel" />
@@ -98,9 +94,9 @@ export const DefaultExpanded: Story = {
       </AccordionPanel>
     </Accordion>
   ),
-};
+});
 
-export const GroupSingleOpen: Story = {
+export const GroupSingleOpen = meta.story({
   render: () => (
     <AccordionGroup>
       <Accordion>
@@ -136,9 +132,9 @@ export const GroupSingleOpen: Story = {
       </Accordion>
     </AccordionGroup>
   ),
-};
+});
 
-export const GroupMultipleOpen: Story = {
+export const GroupMultipleOpen = meta.story({
   render: () => (
     <AccordionGroup allowsMultiple>
       <Accordion>
@@ -174,4 +170,4 @@ export const GroupMultipleOpen: Story = {
       </Accordion>
     </AccordionGroup>
   ),
-};
+});

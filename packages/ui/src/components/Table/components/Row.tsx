@@ -18,11 +18,11 @@ import {
   Row as ReactAriaRow,
   RowProps,
   useTableOptions,
-  Cell,
+  Cell as ReactAriaCell,
   Collection,
-  Checkbox,
   RouterProvider,
 } from 'react-aria-components';
+import { Checkbox } from '../../Checkbox';
 import { useStyles } from '../../../hooks/useStyles';
 import { TableDefinition } from '../definition';
 import { useNavigate } from 'react-router-dom';
@@ -30,6 +30,7 @@ import { useHref } from 'react-router-dom';
 import { isExternalLink } from '../../../utils/isExternalLink';
 import styles from '../Table.module.css';
 import clsx from 'clsx';
+import { Flex } from '../../Flex';
 
 /** @public */
 export function Row<T extends object>(props: RowProps<T>) {
@@ -38,20 +39,29 @@ export function Row<T extends object>(props: RowProps<T>) {
   const navigate = useNavigate();
   const isExternal = isExternalLink(href);
 
-  let { selectionBehavior } = useTableOptions();
+  let { selectionBehavior, selectionMode } = useTableOptions();
 
   const content = (
     <>
-      {selectionBehavior === 'toggle' && (
-        <Cell>
-          <Checkbox slot="selection" />
-        </Cell>
+      {selectionBehavior === 'toggle' && selectionMode === 'multiple' && (
+        <ReactAriaCell
+          className={clsx(
+            classNames.cellSelection,
+            styles[classNames.cellSelection],
+          )}
+        >
+          <Flex justify="center" align="center">
+            <Checkbox slot="selection">
+              <></>
+            </Checkbox>
+          </Flex>
+        </ReactAriaCell>
       )}
       <Collection items={columns}>{children}</Collection>
     </>
   );
 
-  if (isExternal) {
+  if (!href || isExternal) {
     return (
       <ReactAriaRow
         id={id}

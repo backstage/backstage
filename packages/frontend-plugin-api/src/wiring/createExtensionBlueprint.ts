@@ -26,7 +26,7 @@ import {
   ctxParamsSymbol,
   VerifyExtensionAttachTo,
 } from './createExtension';
-import { z } from 'zod';
+import type { z } from 'zod';
 import { ExtensionInput } from './createExtensionInput';
 import { ExtensionDataRef, ExtensionDataValue } from './createExtensionDataRef';
 import { createExtensionDataContainer } from '@internal/frontend';
@@ -249,8 +249,8 @@ export interface ExtensionBlueprint<
     },
     UFactoryOutput extends ExtensionDataValue<any, any>,
     UNewOutput extends ExtensionDataRef,
-    TExtraInputs extends { [inputName in string]: ExtensionInput },
     UParentInputs extends ExtensionDataRef,
+    TExtraInputs extends { [inputName in string]: ExtensionInput } = {},
   >(args: {
     name?: TName;
     attachTo?: ExtensionDefinitionAttachTo<UParentInputs> &
@@ -304,26 +304,30 @@ export interface ExtensionBlueprint<
         UFactoryOutput
       >;
   }): OverridableExtensionDefinition<{
-    config: (string extends keyof TExtensionConfigSchema
-      ? {}
-      : {
-          [key in keyof TExtensionConfigSchema]: z.infer<
-            ReturnType<TExtensionConfigSchema[key]>
-          >;
-        }) &
-      T['config'];
-    configInput: (string extends keyof TExtensionConfigSchema
-      ? {}
-      : z.input<
-          z.ZodObject<{
-            [key in keyof TExtensionConfigSchema]: ReturnType<
-              TExtensionConfigSchema[key]
+    config: Expand<
+      (string extends keyof TExtensionConfigSchema
+        ? {}
+        : {
+            [key in keyof TExtensionConfigSchema]: z.infer<
+              ReturnType<TExtensionConfigSchema[key]>
             >;
-          }>
-        >) &
-      T['configInput'];
+          }) &
+        T['config']
+    >;
+    configInput: Expand<
+      (string extends keyof TExtensionConfigSchema
+        ? {}
+        : z.input<
+            z.ZodObject<{
+              [key in keyof TExtensionConfigSchema]: ReturnType<
+                TExtensionConfigSchema[key]
+              >;
+            }>
+          >) &
+        T['configInput']
+    >;
     output: ExtensionDataRef extends UNewOutput ? T['output'] : UNewOutput;
-    inputs: T['inputs'] & TExtraInputs;
+    inputs: Expand<T['inputs'] & TExtraInputs>;
     kind: T['kind'];
     name: string | undefined extends TName ? undefined : TName;
     params: T['params'];

@@ -37,12 +37,12 @@ import ObservableImpl from 'zen-observable';
 import {
   toInternalTranslationResource,
   InternalTranslationResourceLoader,
-} from '../../../../../core-plugin-api/src/translation/TranslationResource';
+} from '../../../../../frontend-plugin-api/src/translation/TranslationResource';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import {
   toInternalTranslationRef,
   InternalTranslationRef,
-} from '../../../../../core-plugin-api/src/translation/TranslationRef';
+} from '../../../../../frontend-plugin-api/src/translation/TranslationRef';
 import { Observable } from '@backstage/types';
 import { DEFAULT_LANGUAGE } from '../AppLanguageApi/AppLanguageSelector';
 import { createElement, Fragment, ReactNode, isValidElement } from 'react';

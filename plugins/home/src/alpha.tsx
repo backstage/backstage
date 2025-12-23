@@ -26,7 +26,6 @@ import {
   storageApiRef,
   ApiBlueprint,
 } from '@backstage/frontend-plugin-api';
-import { compatWrapper } from '@backstage/core-compat-api';
 import { VisitListener } from './components/';
 import { visitsApiRef, VisitsStorageApi } from './api';
 
@@ -57,14 +56,12 @@ const homePage = PageBlueprint.makeWithOverrides({
       path: '/home',
       routeRef: rootRouteRef,
       loader: () =>
-        import('./components/').then(m =>
-          compatWrapper(
-            <m.HomepageCompositionRoot
-              children={inputs.props?.get(coreExtensionData.reactElement)}
-              title={inputs.props?.get(titleExtensionDataRef)}
-            />,
-          ),
-        ),
+        import('./components/').then(m => (
+          <m.HomepageCompositionRoot
+            children={inputs.props?.get(coreExtensionData.reactElement)}
+            title={inputs.props?.get(titleExtensionDataRef)}
+          />
+        )),
     });
   },
 });

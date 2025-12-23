@@ -130,7 +130,7 @@ export const createGitlabRepoPushAction: (options: {
     sourcePath?: string | undefined;
     targetPath?: string | undefined;
     token?: string | undefined;
-    commitAction?: 'update' | 'delete' | 'create' | undefined;
+    commitAction?: 'auto' | 'update' | 'delete' | 'create' | undefined;
   },
   {
     projectid: string;

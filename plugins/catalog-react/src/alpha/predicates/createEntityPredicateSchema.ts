@@ -14,33 +14,44 @@
  * limitations under the License.
  */
 
-import { EntityPredicate, EntityPredicateValue } from './types';
+import {
+  EntityPredicate,
+  EntityPredicateExpression,
+  EntityPredicatePrimitive,
+  EntityPredicateValue,
+} from './types';
 import type { z as zImpl, ZodType } from 'zod';
 
 /** @internal */
 export function createEntityPredicateSchema(z: typeof zImpl) {
-  const primitiveSchema = z.union([z.string(), z.number(), z.boolean()]);
-
-  const comparableValueSchema = z.union([
-    primitiveSchema,
-    z.array(primitiveSchema),
-  ]);
+  const primitiveSchema = z.union([
+    z.string(),
+    z.number(),
+    z.boolean(),
+  ]) as ZodType<EntityPredicatePrimitive>;
 
   // eslint-disable-next-line prefer-const
   let valuePredicateSchema: ZodType<EntityPredicateValue>;
 
+  const expressionSchema = z.lazy(() =>
+    z.union([
+      z.record(z.string().regex(/^(?!\$).*$/), valuePredicateSchema),
+      z.record(z.string().regex(/^\$/), z.never()),
+    ]),
+  ) as ZodType<EntityPredicateExpression>;
+
   const predicateSchema = z.lazy(() =>
     z.union([
-      comparableValueSchema,
+      expressionSchema,
+      primitiveSchema,
       z.object({ $all: z.array(predicateSchema) }),
       z.object({ $any: z.array(predicateSchema) }),
       z.object({ $not: predicateSchema }),
-      z.record(z.string().regex(/^(?!\$).*$/), valuePredicateSchema),
     ]),
   ) as ZodType<EntityPredicate>;
 
   valuePredicateSchema = z.union([
-    comparableValueSchema,
+    primitiveSchema,
     z.object({ $exists: z.boolean() }),
     z.object({ $in: z.array(primitiveSchema) }),
     z.object({ $contains: predicateSchema }),

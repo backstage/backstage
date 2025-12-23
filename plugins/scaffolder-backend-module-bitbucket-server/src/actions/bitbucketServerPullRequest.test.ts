@@ -399,4 +399,33 @@ describe('publish:bitbucketServer:pull-request', () => {
       'https://hosted.bitbucket.com/projects/project/repos/repo/pull-requests/1',
     );
   });
+
+  it('should throw an error when the target branch is not found', async () => {
+    server.use(
+      rest.get(
+        'https://hosted.bitbucket.com/rest/api/1.0/projects/project/repos/repo/branches',
+        (_, res, ctx) => {
+          return res(
+            ctx.status(200),
+            ctx.set('Content-Type', 'application/json'),
+            ctx.json(responseOfBranches),
+          );
+        },
+      ),
+    );
+
+    await expect(
+      action.handler({
+        ...mockContext,
+        input: {
+          ...mockContext.input,
+          repoUrl: 'hosted.bitbucket.com?project=project&repo=repo',
+          targetBranch: 'non-existent-branch',
+          sourceBranch: 'develop',
+        },
+      }),
+    ).rejects.toThrow(
+      /Target branch 'non-existent-branch' not found in repository project\/repo/,
+    );
+  });
 });

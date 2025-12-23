@@ -73,7 +73,7 @@ describe('azure core', () => {
       },
       {
         url: 'com/a/b/blob/master/path/to/c.yaml',
-        error: 'Invalid URL: com/a/b/blob/master/path/to/c.yaml',
+        error: 'Invalid URL',
       },
     ])('should handle error path %#', ({ url, error }) => {
       expect(() => getAzureFileFetchUrl(url)).toThrow(error);

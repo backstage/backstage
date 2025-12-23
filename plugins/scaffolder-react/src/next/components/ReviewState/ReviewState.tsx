@@ -43,7 +43,7 @@ function processSchema(
   const name =
     definitionInSchema?.['ui:backstage']?.review?.name ??
     definitionInSchema?.title ??
-    key;
+    formatKey(key);
 
   if (definitionInSchema) {
     const backstageReviewOptions = definitionInSchema['ui:backstage']?.review;
@@ -96,12 +96,14 @@ export const ReviewState = (props: ReviewStateProps) => {
         const schema = findSchemaForKey(key, props.schemas, props.formState);
         return schema
           ? processSchema(key, value, schema, props.formState)
-          : [[key, value]];
+          : [[formatKey(key), value]];
       })
       .filter(prop => prop.length > 0),
   );
-  const options = {
-    titleFormat: formatKey,
-  };
-  return <StructuredMetadataTable metadata={reviewData} options={options} />;
+  return (
+    <StructuredMetadataTable
+      metadata={reviewData}
+      options={{ titleFormat: key => key }}
+    />
+  );
 };

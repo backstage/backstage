@@ -11,12 +11,12 @@ import { EntityCardType } from '@backstage/plugin-catalog-react/alpha';
 import { EntityPredicate } from '@backstage/plugin-catalog-react/alpha';
 import { ExtensionBlueprintParams } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
-import { ExtensionInput } from '@backstage/frontend-plugin-api';
-import { ExternalRouteRef } from '@backstage/frontend-plugin-api';
+import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { JSX as JSX_2 } from 'react';
 import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
-import { RouteRef } from '@backstage/frontend-plugin-api';
+import { RouteRef } from '@backstage/core-plugin-api';
+import { RouteRef as RouteRef_2 } from '@backstage/frontend-plugin-api';
 import { TranslationRef } from '@backstage/frontend-plugin-api';
 
 // @alpha (undocumented)
@@ -30,7 +30,7 @@ export const catalogGraphTranslationRef: TranslationRef<
     readonly 'catalogGraphPage.supportButtonDescription': 'Start tracking your component in by adding it to the software catalog.';
     readonly 'catalogGraphPage.simplifiedSwitchLabel': 'Simplified';
     readonly 'catalogGraphPage.mergeRelationsSwitchLabel': 'Merge relations';
-    readonly 'catalogGraphPage.zoomOutDescription': 'Use pinch &amp; zoom to move around the diagram. Click to change active node, shift click to navigate to entity.';
+    readonly 'catalogGraphPage.zoomOutDescription': 'Use pinch & zoom to move around the diagram. Click to change active node, shift click to navigate to entity.';
     readonly 'catalogGraphPage.curveFilter.title': 'Curve';
     readonly 'catalogGraphPage.curveFilter.curveStepBefore': 'Step Before';
     readonly 'catalogGraphPage.curveFilter.curveMonotoneX': 'Monotone X';
@@ -53,11 +53,14 @@ const _default: OverridableFrontendPlugin<
     catalogGraph: RouteRef<undefined>;
   },
   {
-    catalogEntity: ExternalRouteRef<{
-      name: string;
-      kind: string;
-      namespace: string;
-    }>;
+    catalogEntity: ExternalRouteRef<
+      {
+        name: string;
+        kind: string;
+        namespace: string;
+      },
+      true
+    >;
   },
   {
     'api:catalog-graph': OverridableExtensionDefinition<{
@@ -88,7 +91,6 @@ const _default: OverridableFrontendPlugin<
         curve: 'curveStepBefore' | 'curveMonotoneX' | undefined;
         title: string | undefined;
         height: number | undefined;
-      } & {
         filter: EntityPredicate | undefined;
         type: 'content' | 'summary' | 'info' | undefined;
       };
@@ -104,7 +106,6 @@ const _default: OverridableFrontendPlugin<
         mergeRelations?: boolean | undefined;
         relationPairs?: [string, string][] | undefined;
         unidirectional?: boolean | undefined;
-      } & {
         filter?: EntityPredicate | undefined;
         type?: 'content' | 'summary' | 'info' | undefined;
       };
@@ -131,15 +132,7 @@ const _default: OverridableFrontendPlugin<
               optional: true;
             }
           >;
-      inputs: {
-        [x: string]: ExtensionInput<
-          ExtensionDataRef,
-          {
-            singleton: boolean;
-            optional: boolean;
-          }
-        >;
-      };
+      inputs: {};
       kind: 'entity-card';
       name: 'relations';
       params: {
@@ -163,7 +156,6 @@ const _default: OverridableFrontendPlugin<
         relations: string[] | undefined;
         relationPairs: [string, string][] | undefined;
         zoom: 'disabled' | 'enabled' | 'enable-on-click' | undefined;
-      } & {
         path: string | undefined;
       };
       configInput: {
@@ -180,35 +172,26 @@ const _default: OverridableFrontendPlugin<
         selectedRelations?: string[] | undefined;
         selectedKinds?: string[] | undefined;
         showFilters?: boolean | undefined;
-      } & {
         path?: string | undefined;
       };
       output:
         | ExtensionDataRef<string, 'core.routing.path', {}>
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
         | ExtensionDataRef<
-            RouteRef<AnyRouteRefParams>,
+            RouteRef_2<AnyRouteRefParams>,
             'core.routing.ref',
             {
               optional: true;
             }
           >;
-      inputs: {
-        [x: string]: ExtensionInput<
-          ExtensionDataRef,
-          {
-            singleton: boolean;
-            optional: boolean;
-          }
-        >;
-      };
+      inputs: {};
       kind: 'page';
       name: undefined;
       params: {
         defaultPath?: [Error: `Use the 'path' param instead`];
         path: string;
         loader: () => Promise<JSX.Element>;
-        routeRef?: RouteRef;
+        routeRef?: RouteRef_2;
       };
     }>;
   }

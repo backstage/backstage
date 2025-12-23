@@ -1,5 +1,41 @@
 # @backstage/create-app
 
+## 0.7.7
+
+### Patch Changes
+
+- 336db00: Bumped create-app version.
+- 2bae83a: Updated engines to support Node 22 or 24
+- c8c2329: Add proxy configuration from env-vars to create-app tasks
+- 2bae83a: Bumped dev dependencies `@types/node`
+- Updated dependencies
+  - @backstage/cli-common@0.1.16
+
+## 0.7.7-next.2
+
+### Patch Changes
+
+- 2bae83a: Updated engines to support Node 22 or 24
+- 2bae83a: Bumped dev dependencies `@types/node`
+- Updated dependencies
+  - @backstage/cli-common@0.1.16-next.2
+
+## 0.7.7-next.1
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.16-next.1
+
+## 0.7.7-next.0
+
+### Patch Changes
+
+- c8c2329: Add proxy configuration from env-vars to create-app tasks
+- Updated dependencies
+  - @backstage/cli-common@0.1.16-next.0
+
 ## 0.7.6
 
 ### Patch Changes

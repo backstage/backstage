@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { convertLegacyRouteRefs } from '@backstage/core-compat-api';
 import { createFrontendPlugin } from '@backstage/frontend-plugin-api';
 
 import { entityRouteRef } from '@backstage/plugin-catalog-react';
@@ -41,16 +40,16 @@ import contextMenuItems from './contextMenuItems';
 export default createFrontendPlugin({
   pluginId: 'catalog',
   info: { packageJson: () => import('../../package.json') },
-  routes: convertLegacyRouteRefs({
+  routes: {
     catalogIndex: rootRouteRef,
     catalogEntity: entityRouteRef,
-  }),
-  externalRoutes: convertLegacyRouteRefs({
+  },
+  externalRoutes: {
     viewTechDoc: viewTechDocRouteRef,
     createComponent: createComponentRouteRef,
     createFromTemplate: createFromTemplateRouteRef,
     unregisterRedirect: unregisterRedirectRouteRef,
-  }),
+  },
   extensions: [
     ...apis,
     ...pages,

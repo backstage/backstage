@@ -6,5 +6,5 @@ category: Utility
 description: The shortcuts plugin allows a user to have easy access to pages within a Backstage app by storing them as "shortcuts" in the Sidebar.
 documentation: https://github.com/backstage/community-plugins/blob/main/workspaces/shortcuts/plugins/shortcuts/README.md
 iconUrl: /img/shortcuts.svg
-npmPackageName: '@backstage/plugin-shortcuts'
+npmPackageName: '@backstage-community/plugin-shortcuts'
 addedDate: '2021-10-06'

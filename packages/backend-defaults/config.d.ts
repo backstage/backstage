@@ -710,27 +710,9 @@ export interface Config {
              */
             client?: {
               /**
-               * Namespace for the current instance.
+               * Namespace and separator used for prefixing keys.
                */
-              namespace?: string;
-              /**
-               * Separator to use between namespace and key.
-               */
-              keyPrefixSeparator?: string;
-              /**
-               * Number of keys to delete in a single batch.
-               */
-              clearBatchSize?: number;
-              /**
-               * Enable Unlink instead of using Del for clearing keys. This is more performant but may not be supported by all Redis versions.
-               */
-              useUnlink?: boolean;
-              /**
-               * Whether to allow clearing all keys when no namespace is set.
-               * If set to true and no namespace is set, iterate() will return all keys.
-               * Defaults to `false`.
-               */
-              noNamespaceAffectsAll?: boolean;
+              keyPrefix?: string;
             };
             /**
              * An optional Valkey cluster (redis cluster under the hood) configuration.
@@ -992,6 +974,13 @@ export interface Config {
      * remove the default value that Backstage puts in place for that policy.
      */
     csp?: { [policyId: string]: string[] | false };
+
+    /**
+     * Referrer Policy options
+     */
+    referrer?: {
+      policy: string[];
+    };
 
     /**
      * Options for the health check service and endpoint.

@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-catalog-import",
-  "version": "0.13.7",
+  "version": "0.13.8",
   "description": "A Backstage plugin the helps you import entities into your catalog",
   "backstage": {
     "role": "frontend-plugin",
@@ -57,7 +57,6 @@
     "@backstage/catalog-client": "workspace:^",
     "@backstage/catalog-model": "workspace:^",
     "@backstage/config": "workspace:^",
-    "@backstage/core-compat-api": "workspace:^",
     "@backstage/core-components": "workspace:^",
     "@backstage/core-plugin-api": "workspace:^",
     "@backstage/errors": "workspace:^",

@@ -7,8 +7,7 @@ import { Entity } from '@backstage/catalog-model';
 import { EntityCardType } from '@backstage/plugin-catalog-react/alpha';
 import { EntityPredicate } from '@backstage/plugin-catalog-react/alpha';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
-import { ExtensionInput } from '@backstage/frontend-plugin-api';
-import { ExternalRouteRef } from '@backstage/frontend-plugin-api';
+import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { JSX as JSX_2 } from 'react';
 import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
@@ -18,7 +17,7 @@ import { TranslationRef } from '@backstage/frontend-plugin-api';
 const _default: OverridableFrontendPlugin<
   {},
   {
-    catalogIndex: ExternalRouteRef<undefined>;
+    catalogIndex: ExternalRouteRef<undefined, true>;
   },
   {
     'entity-card:org/group-profile': OverridableExtensionDefinition<{
@@ -66,14 +65,12 @@ const _default: OverridableFrontendPlugin<
       config: {
         initialRelationAggregation: 'direct' | 'aggregated' | undefined;
         showAggregateMembersToggle: boolean | undefined;
-      } & {
         filter: EntityPredicate | undefined;
         type: 'content' | 'summary' | 'info' | undefined;
       };
       configInput: {
         showAggregateMembersToggle?: boolean | undefined;
         initialRelationAggregation?: 'direct' | 'aggregated' | undefined;
-      } & {
         filter?: EntityPredicate | undefined;
         type?: 'content' | 'summary' | 'info' | undefined;
       };
@@ -100,15 +97,7 @@ const _default: OverridableFrontendPlugin<
               optional: true;
             }
           >;
-      inputs: {
-        [x: string]: ExtensionInput<
-          ExtensionDataRef,
-          {
-            singleton: boolean;
-            optional: boolean;
-          }
-        >;
-      };
+      inputs: {};
       kind: 'entity-card';
       name: 'members-list';
       params: {
@@ -121,14 +110,12 @@ const _default: OverridableFrontendPlugin<
       config: {
         initialRelationAggregation: 'direct' | 'aggregated' | undefined;
         showAggregateMembersToggle: boolean | undefined;
-      } & {
         filter: EntityPredicate | undefined;
         type: 'content' | 'summary' | 'info' | undefined;
       };
       configInput: {
         showAggregateMembersToggle?: boolean | undefined;
         initialRelationAggregation?: 'direct' | 'aggregated' | undefined;
-      } & {
         filter?: EntityPredicate | undefined;
         type?: 'content' | 'summary' | 'info' | undefined;
       };
@@ -155,15 +142,7 @@ const _default: OverridableFrontendPlugin<
               optional: true;
             }
           >;
-      inputs: {
-        [x: string]: ExtensionInput<
-          ExtensionDataRef,
-          {
-            singleton: boolean;
-            optional: boolean;
-          }
-        >;
-      };
+      inputs: {};
       kind: 'entity-card';
       name: 'ownership';
       params: {
@@ -176,14 +155,12 @@ const _default: OverridableFrontendPlugin<
       config: {
         maxRelations: number | undefined;
         hideIcons: boolean;
-      } & {
         filter: EntityPredicate | undefined;
         type: 'content' | 'summary' | 'info' | undefined;
       };
       configInput: {
         hideIcons?: boolean | undefined;
         maxRelations?: number | undefined;
-      } & {
         filter?: EntityPredicate | undefined;
         type?: 'content' | 'summary' | 'info' | undefined;
       };
@@ -210,15 +187,7 @@ const _default: OverridableFrontendPlugin<
               optional: true;
             }
           >;
-      inputs: {
-        [x: string]: ExtensionInput<
-          ExtensionDataRef,
-          {
-            singleton: boolean;
-            optional: boolean;
-          }
-        >;
-      };
+      inputs: {};
       kind: 'entity-card';
       name: 'user-profile';
       params: {

@@ -1,5 +1,28 @@
 # @backstage/plugin-signals
 
+## 0.0.26
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.2
+  - @backstage/core-components@0.18.4
+  - @backstage/core-plugin-api@1.12.1
+  - @backstage/theme@0.7.1
+  - @backstage/plugin-signals-react@0.0.18
+
+## 0.0.26-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.2-next.0
+  - @backstage/core-plugin-api@1.12.1-next.0
+  - @backstage/theme@0.7.1-next.0
+  - @backstage/core-components@0.18.4-next.0
+  - @backstage/plugin-signals-react@0.0.18-next.0
+  - @backstage/types@1.2.2
+
 ## 0.0.25
 
 ### Patch Changes

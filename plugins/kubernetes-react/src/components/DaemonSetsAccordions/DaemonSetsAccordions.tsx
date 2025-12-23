@@ -30,6 +30,8 @@ import {
 } from '../../hooks';
 import { StatusError, StatusOK } from '@backstage/core-components';
 import { READY_COLUMNS, RESOURCE_COLUMNS } from '../Pods/PodsTable';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { kubernetesReactTranslationRef } from '../../translation';
 
 type DaemonSetsAccordionsProps = {
   children?: ReactNode;
@@ -53,6 +55,7 @@ const DaemonSetSummary = ({
   numberOfCurrentPods,
   numberOfPodsWithErrors,
 }: DaemonSetSummaryProps) => {
+  const { t } = useTranslationRef(kubernetesReactTranslationRef);
   return (
     <Grid
       container
@@ -74,16 +77,15 @@ const DaemonSetSummary = ({
         spacing={0}
       >
         <Grid item>
-          <StatusOK>{numberOfCurrentPods} pods</StatusOK>
+          <StatusOK>{t('pods.pods', { count: numberOfCurrentPods })}</StatusOK>
         </Grid>
         <Grid item>
           {numberOfPodsWithErrors > 0 ? (
             <StatusError>
-              {numberOfPodsWithErrors} pod
-              {numberOfPodsWithErrors > 1 ? 's' : ''} with errors
+              {t('cluster.podsWithErrors', { count: numberOfPodsWithErrors })}
             </StatusError>
           ) : (
-            <StatusOK>No pods with errors</StatusOK>
+            <StatusOK>{t('cluster.noPodsWithErrors')}</StatusOK>
           )}
         </Grid>
       </Grid>

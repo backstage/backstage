@@ -39,5 +39,7 @@ export const TableDefinition = {
     cellProfileAvatarFallback: 'bui-TableCellProfileAvatarFallback',
     cellProfileName: 'bui-TableCellProfileName',
     cellProfileLink: 'bui-TableCellProfileLink',
+    headSelection: 'bui-TableHeadSelection',
+    cellSelection: 'bui-TableCellSelection',
   },
 } as const satisfies ComponentDefinition;

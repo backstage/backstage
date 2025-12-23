@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { compatWrapper } from '@backstage/core-compat-api';
 import {
   Link,
   Sidebar,
@@ -106,36 +105,34 @@ export const appModuleNav = createFrontendModule({
   extensions: [
     NavContentBlueprint.make({
       params: {
-        component: ({ items }) => {
-          return compatWrapper(
-            <Sidebar>
-              <SidebarLogo />
-              <SidebarGroup label="Search" icon={<SearchIcon />} to="/search">
-                <SidebarSearchModal />
-              </SidebarGroup>
-              <SidebarDivider />
-              <SidebarGroup label="Menu" icon={<MenuIcon />}>
-                <SidebarScrollWrapper>
-                  {items.map((item, index) => (
-                    <SidebarItem {...item} key={index} />
-                  ))}
-                </SidebarScrollWrapper>
-              </SidebarGroup>
-              <SidebarDivider />
-              <SidebarSpace />
-              <SidebarDivider />
-              <SidebarGroup
-                label="Settings"
-                icon={<UserSettingsSignInAvatar />}
-                to="/settings"
-              >
-                <NotificationsSidebarItem />
-                <SidebarItem icon={BuildIcon} to="devtools" text="DevTools" />
-                <Settings />
-              </SidebarGroup>
-            </Sidebar>,
-          );
-        },
+        component: ({ items }) => (
+          <Sidebar>
+            <SidebarLogo />
+            <SidebarGroup label="Search" icon={<SearchIcon />} to="/search">
+              <SidebarSearchModal />
+            </SidebarGroup>
+            <SidebarDivider />
+            <SidebarGroup label="Menu" icon={<MenuIcon />}>
+              <SidebarScrollWrapper>
+                {items.map((item, index) => (
+                  <SidebarItem {...item} key={index} />
+                ))}
+              </SidebarScrollWrapper>
+            </SidebarGroup>
+            <SidebarDivider />
+            <SidebarSpace />
+            <SidebarDivider />
+            <SidebarGroup
+              label="Settings"
+              icon={<UserSettingsSignInAvatar />}
+              to="/settings"
+            >
+              <NotificationsSidebarItem />
+              <SidebarItem icon={BuildIcon} to="devtools" text="DevTools" />
+              <Settings />
+            </SidebarGroup>
+          </Sidebar>
+        ),
       },
     }),
   ],

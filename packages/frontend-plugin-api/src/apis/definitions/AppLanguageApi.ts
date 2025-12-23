@@ -14,7 +14,23 @@
  * limitations under the License.
  */
 
-export {
-  type AppLanguageApi,
-  appLanguageApiRef,
-} from '@backstage/core-plugin-api/alpha';
+import { ApiRef, createApiRef } from '../system';
+import { Observable } from '@backstage/types';
+
+/** @public */
+export type AppLanguageApi = {
+  getAvailableLanguages(): { languages: string[] };
+
+  setLanguage(language?: string): void;
+
+  getLanguage(): { language: string };
+
+  language$(): Observable<{ language: string }>;
+};
+
+/**
+ * @public
+ */
+export const appLanguageApiRef: ApiRef<AppLanguageApi> = createApiRef({
+  id: 'core.applanguage',
+});
