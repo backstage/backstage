@@ -39,5 +39,5 @@ export {
 } from './stub';
 export {
   permissionsMiddlewareFactory,
-  type PermissionsMiddlewareOptions,
+  type WithOpenapi,
 } from './middlewares/permissions';

@@ -499,6 +499,7 @@ export namespace mockServices {
         addPermissions: jest.fn(),
         addResourceType: jest.fn(),
         getPermissionRuleset: jest.fn(),
+        listPermissions: jest.fn(),
       }),
     );
   }
