@@ -112,7 +112,7 @@
     --bui-gray-6: #7b7b7b;
     --bui-gray-7: #9e9e9e;
     --bui-gray-8: #b4b4b4;
-    --bui-bg-surface-0: var(--bui-black);
+    --bui-bg-surface-0: #333;
     --bui-bg-surface-1: var(--bui-gray-1);
     --bui-bg-surface-2: var(--bui-gray-2);
     --bui-bg-surface-3: var(--bui-gray-3);
