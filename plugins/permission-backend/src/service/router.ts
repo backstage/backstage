@@ -47,6 +47,7 @@ import {
   RootConfigService,
   UserInfoService,
 } from '@backstage/backend-plugin-api';
+import { createOpenApiRouter } from '../schema/openapi';
 
 const attributesSchema: z.ZodSchema<PermissionAttributes> = z.object({
   action: z
@@ -217,8 +218,8 @@ export async function createRouter(
     auth,
   });
 
-  const router = Router();
-  router.use(express.json());
+  const router = await createOpenApiRouter();
+  console.log('using permission router');
 
   router.get('/health', (_, response) => {
     response.json({ status: 'ok' });
@@ -230,19 +231,12 @@ export async function createRouter(
       req: Request,
       res: Response<PermissionMessageBatch<InternalEvaluatePermissionResponse>>,
     ) => {
+      console.log('base URL', req.url, req.baseUrl, req.path);
       const credentials = await httpAuth.credentials(req, {
         allow: ['user', 'none'],
       });
 
-      const parseResult = evaluatePermissionRequestBatchSchema.safeParse(
-        req.body,
-      );
-
-      if (!parseResult.success) {
-        throw new InputError(parseResult.error.toString());
-      }
-
-      const body = parseResult.data;
+      const body = req.body;
 
       if (
         (auth.isPrincipal(credentials, 'none') && !disabledDefaultAuthPolicy) ||
