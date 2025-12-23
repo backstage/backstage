@@ -21,6 +21,7 @@ import './storybook.css';
 import './themes/spotify.css';
 
 export default definePreview({
+  tags: ['manifest'],
   globalTypes: {
     themeMode: {
       name: 'Theme Mode',
@@ -106,6 +107,13 @@ export default definePreview({
         // 'light spotify': allModes['light spotify'],
         // 'dark spotify': allModes['dark spotify'],
       },
+    },
+
+    a11y: {
+      // 'todo' - show a11y violations in the test UI only
+      // 'error' - fail CI on a11y violations
+      // 'off' - skip a11y checks entirely
+      test: 'todo',
     },
   },
 

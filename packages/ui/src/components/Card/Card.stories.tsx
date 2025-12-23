@@ -33,14 +33,13 @@ export const Default = meta.story({
   ),
 });
 
-export const CustomSize = meta.story({
+export const CustomSize = Default.extend({
   args: {
     style: {
       width: '300px',
       height: '200px',
     },
   },
-  render: Default.input.render,
 });
 
 export const WithLongBody = meta.story({

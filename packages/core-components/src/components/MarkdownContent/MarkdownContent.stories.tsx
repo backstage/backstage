@@ -19,6 +19,7 @@ import { MarkdownContent } from './MarkdownContent';
 export default {
   title: 'Data Display/MarkdownContent',
   component: MarkdownContent,
+  tags: ['!manifest'],
 };
 
 const markdownGithubFlavored =

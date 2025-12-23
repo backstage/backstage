@@ -54,6 +54,7 @@ export default {
         },
       ),
   ],
+  tags: ['!manifest'],
 };
 
 export const Default = () => {

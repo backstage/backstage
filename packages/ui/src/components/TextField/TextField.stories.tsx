@@ -104,12 +104,10 @@ export const WithIcon = meta.story({
   ),
 });
 
-export const DisabledWithIcon = meta.story({
+export const DisabledWithIcon = WithIcon.extend({
   args: {
-    ...WithIcon.input.args,
     isDisabled: true,
   },
-  render: WithIcon.input.render,
 });
 
 export const ShowError = meta.story({
