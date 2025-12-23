@@ -40,17 +40,25 @@ import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { CatalogTableColumnsFunc } from '../CatalogTable/types';
 import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common/alpha';
 import { usePermission } from '@backstage/plugin-permission-react';
+import { CatalogExportButton } from '../CatalogExportButton';
+import Box from '@material-ui/core/Box';
 
 /** @internal */
 export type BaseCatalogPageProps = {
   filters: ReactNode;
   content?: ReactNode;
   pagination?: EntityListPagination;
+  enableExport?: boolean;
 };
 
 /** @internal */
 export function BaseCatalogPage(props: BaseCatalogPageProps) {
-  const { filters, content = <CatalogTable />, pagination } = props;
+  const {
+    filters,
+    content = <CatalogTable />,
+    pagination,
+    enableExport = false,
+  } = props;
   const orgName =
     useApi(configApiRef).getOptionalString('organization.name') ?? 'Backstage';
   const createComponentLink = useRouteRef(createComponentRouteRef);
@@ -60,25 +68,30 @@ export function BaseCatalogPage(props: BaseCatalogPageProps) {
   });
 
   return (
-    <PageWithHeader title={t('indexPage.title', { orgName })} themeId="home">
-      <Content>
-        <ContentHeader title="">
-          {allowed && (
-            <CreateButton
-              title={t('indexPage.createButtonTitle')}
-              to={createComponentLink && createComponentLink()}
-            />
-          )}
-          <SupportButton>{t('indexPage.supportButtonContent')}</SupportButton>
-        </ContentHeader>
-        <EntityListProvider pagination={pagination}>
+    <EntityListProvider pagination={pagination}>
+      <PageWithHeader title={t('indexPage.title', { orgName })} themeId="home">
+        <Content>
+          <ContentHeader title="">
+            {allowed && (
+              <CreateButton
+                title={t('indexPage.createButtonTitle')}
+                to={createComponentLink && createComponentLink()}
+              />
+            )}
+            {enableExport && (
+              <Box sx={{ ml: 2 }}>
+                <CatalogExportButton />
+              </Box>
+            )}
+            <SupportButton>{t('indexPage.supportButtonContent')}</SupportButton>
+          </ContentHeader>
           <CatalogFilterLayout>
             <CatalogFilterLayout.Filters>{filters}</CatalogFilterLayout.Filters>
             <CatalogFilterLayout.Content>{content}</CatalogFilterLayout.Content>
           </CatalogFilterLayout>
-        </EntityListProvider>
-      </Content>
-    </PageWithHeader>
+        </Content>
+      </PageWithHeader>
+    </EntityListProvider>
   );
 }
 
@@ -98,6 +111,7 @@ export interface DefaultCatalogPageProps {
   filters?: ReactNode;
   initiallySelectedNamespaces?: string[];
   pagination?: EntityListPagination;
+  enableExport?: boolean;
 }
 
 export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
@@ -112,6 +126,7 @@ export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
     ownerPickerMode,
     filters,
     initiallySelectedNamespaces,
+    enableExport,
   } = props;
 
   return (
@@ -135,6 +150,7 @@ export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
         />
       }
       pagination={pagination}
+      enableExport={enableExport}
     />
   );
 }

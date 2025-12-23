@@ -5,6 +5,7 @@
 ```ts
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
+import type { ButtonProps } from '@material-ui/core/Button';
 import { CatalogApi } from '@backstage/plugin-catalog-react';
 import { ComponentEntity } from '@backstage/catalog-model';
 import { CompoundEntityRef } from '@backstage/catalog-model';
@@ -83,6 +84,23 @@ export type Breakpoint = 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
 // @public (undocumented)
 export const CatalogEntityPage: () => JSX.Element;
+
+// @public
+export const CatalogExportButton: ({
+  buttonProps,
+}: {
+  buttonProps?: ButtonProps;
+}) => JSX_2.Element;
+
+// Warning: (ae-missing-release-tag) "CatalogExportType" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
+//
+// @public (undocumented)
+export enum CatalogExportType {
+  // (undocumented)
+  CSV = 'csv',
+  // (undocumented)
+  JSON = 'json',
+}
 
 // @public (undocumented)
 export const CatalogIndexPage: (props: DefaultCatalogPageProps) => JSX.Element;
@@ -232,6 +250,8 @@ export interface DefaultCatalogPageProps {
   columns?: TableColumn<CatalogTableRow>[] | CatalogTableColumnsFunc;
   // (undocumented)
   emptyContent?: ReactNode;
+  // (undocumented)
+  enableExport?: boolean;
   // (undocumented)
   filters?: ReactNode;
   // (undocumented)
