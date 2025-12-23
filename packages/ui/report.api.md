@@ -323,6 +323,7 @@ export interface ButtonProps extends ButtonProps_2 {
   iconStart?: ReactElement;
   // (undocumented)
   loading?: boolean;
+  onSurface?: Responsive<Surface>;
   // (undocumented)
   size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
   // (undocumented)

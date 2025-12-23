@@ -31,6 +31,7 @@
     flex-shrink: 0;
     transition: background-color var(--loading-duration) ease-out,
       box-shadow var(--loading-duration) ease-out;
+    background-color: transparent;
 
     &[data-disabled='true'] {
       cursor: not-allowed;
@@ -67,17 +68,58 @@
   }
 
   .bui-Button[data-variant='secondary'] {
-    background-color: var(--bui-bg-surface-1);
-    box-shadow: inset 0 0 0 1px var(--bui-border);
     color: var(--bui-fg-primary);
 
-    &:hover {
-      box-shadow: inset 0 0 0 1px var(--bui-border-hover);
-      transition: box-shadow 150ms ease;
+    &[data-surface='0'] {
+      background-color: var(--bui-bg-neutral-on-surface-0);
+
+      &:hover {
+        background-color: var(--bui-bg-neutral-on-surface-0-hover);
+      }
+
+      &:active {
+        background-color: var(--bui-bg-neutral-on-surface-0-pressed);
+      }
     }
 
-    &:active {
-      box-shadow: inset 0 0 0 1px var(--bui-border-pressed);
+    &[data-surface='1'] {
+      background-color: var(--bui-bg-neutral-on-surface-1);
+
+      &:hover {
+        background-color: var(--bui-bg-neutral-on-surface-1-hover);
+      }
+
+      &:active {
+        background-color: var(--bui-bg-neutral-on-surface-1-pressed);
+      }
+    }
+
+    &[data-surface='2'] {
+      background-color: var(--bui-bg-neutral-on-surface-2);
+
+      &:hover {
+        background-color: var(--bui-bg-neutral-on-surface-2-hover);
+      }
+
+      &:active {
+        background-color: var(--bui-bg-neutral-on-surface-2-pressed);
+      }
+    }
+
+    &[data-surface='3'] {
+      background-color: var(--bui-bg-neutral-on-surface-3);
+
+      &:hover {
+        background-color: var(--bui-bg-neutral-on-surface-3-hover);
+      }
+
+      &:active {
+        background-color: var(--bui-bg-neutral-on-surface-3-pressed);
+      }
+    }
+
+    &:hover {
+      transition: background-color 150ms ease;
     }
 
     &:focus-visible {
@@ -97,13 +139,48 @@
     background-color: transparent;
     color: var(--bui-fg-primary);
 
-    &:hover {
-      background-color: var(--bui-bg-surface-1);
-      transition: background-color 200ms ease;
+    &[data-surface='0'] {
+      &:hover {
+        background-color: var(--bui-bg-neutral-on-surface-0-hover);
+      }
+
+      &:active {
+        background-color: var(--bui-bg-neutral-on-surface-0-pressed);
+      }
     }
 
-    &:active {
-      background-color: var(--bui-bg-surface-2);
+    &[data-surface='1'] {
+      &:hover {
+        background-color: var(--bui-bg-neutral-on-surface-1-hover);
+      }
+
+      &:active {
+        background-color: var(--bui-bg-neutral-on-surface-1-pressed);
+      }
+    }
+
+    &[data-surface='2'] {
+      &:hover {
+        background-color: var(--bui-bg-neutral-on-surface-2-hover);
+      }
+
+      &:active {
+        background-color: var(--bui-bg-neutral-on-surface-2-pressed);
+      }
+    }
+
+    &[data-surface='3'] {
+      &:hover {
+        background-color: var(--bui-bg-neutral-on-surface-3-hover);
+      }
+
+      &:active {
+        background-color: var(--bui-bg-neutral-on-surface-3-pressed);
+      }
+    }
+
+    &:hover {
+      transition: background-color 200ms ease;
     }
 
     &:focus-visible {

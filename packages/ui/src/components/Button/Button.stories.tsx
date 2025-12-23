@@ -53,16 +53,63 @@ export const Variants = meta.story({
     },
   },
   render: () => (
-    <Flex align="center">
-      <Button iconStart={<RiCloudLine />} variant="primary">
-        Button
-      </Button>
-      <Button iconStart={<RiCloudLine />} variant="secondary">
-        Button
-      </Button>
-      <Button iconStart={<RiCloudLine />} variant="tertiary">
-        Button
-      </Button>
+    <Flex direction="column" gap="4">
+      <Flex direction="column" gap="4">
+        <Text>On Surface 0</Text>
+        <Flex align="center" surface="0" p="4">
+          <Button iconStart={<RiCloudLine />} variant="primary">
+            Button
+          </Button>
+          <Button iconStart={<RiCloudLine />} variant="secondary">
+            Button
+          </Button>
+          <Button iconStart={<RiCloudLine />} variant="tertiary">
+            Button
+          </Button>
+        </Flex>
+      </Flex>
+      <Flex direction="column" gap="4">
+        <Text>On Surface 1</Text>
+        <Flex align="center" surface="1" p="4">
+          <Button iconStart={<RiCloudLine />} variant="primary">
+            Button
+          </Button>
+          <Button iconStart={<RiCloudLine />} variant="secondary">
+            Button
+          </Button>
+          <Button iconStart={<RiCloudLine />} variant="tertiary">
+            Button
+          </Button>
+        </Flex>
+      </Flex>
+      <Flex direction="column" gap="4">
+        <Text>On Surface 2</Text>
+        <Flex align="center" surface="2" p="4">
+          <Button iconStart={<RiCloudLine />} variant="primary">
+            Button
+          </Button>
+          <Button iconStart={<RiCloudLine />} variant="secondary">
+            Button
+          </Button>
+          <Button iconStart={<RiCloudLine />} variant="tertiary">
+            Button
+          </Button>
+        </Flex>
+      </Flex>
+      <Flex direction="column" gap="4">
+        <Text>On Surface 3</Text>
+        <Flex align="center" surface="3" p="4">
+          <Button iconStart={<RiCloudLine />} variant="primary">
+            Button
+          </Button>
+          <Button iconStart={<RiCloudLine />} variant="secondary">
+            Button
+          </Button>
+          <Button iconStart={<RiCloudLine />} variant="tertiary">
+            Button
+          </Button>
+        </Flex>
+      </Flex>
     </Flex>
   ),
 });

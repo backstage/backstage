@@ -22,6 +22,7 @@ import type { ButtonProps } from './types';
 import { useStyles } from '../../hooks/useStyles';
 import { ButtonDefinition } from './definition';
 import styles from './Button.module.css';
+import { useSurface } from '../../hooks/useSurface';
 
 /** @public */
 export const Button = forwardRef(
@@ -35,8 +36,19 @@ export const Button = forwardRef(
       },
     );
 
-    const { children, className, iconStart, iconEnd, loading, ...rest } =
-      cleanedProps;
+    const {
+      children,
+      className,
+      iconStart,
+      iconEnd,
+      loading,
+      onSurface,
+      ...rest
+    } = cleanedProps;
+
+    const { surface } = useSurface();
+
+    const surfaceToUse = onSurface || surface;
 
     return (
       <RAButton
@@ -44,6 +56,7 @@ export const Button = forwardRef(
         ref={ref}
         isPending={loading}
         {...dataAttributes}
+        {...(surfaceToUse ? { 'data-surface': surfaceToUse } : {})}
         {...rest}
       >
         {({ isPending }) => (

@@ -381,11 +381,11 @@ export const SurfacesNested = meta.story({
         inherit the surface from the parent.
       </Box>
       <Box {...args} surface="1">
-        <Button>Button</Button>
+        <Button variant="secondary">Button</Button>
         <Box {...args} surface="2" mt="4">
-          <Button>Button</Button>
+          <Button variant="secondary">Button</Button>
           <Box {...args} mt="4">
-            <Button>Button</Button>
+            <Button variant="secondary">Button</Button>
           </Box>
         </Box>
       </Box>
