@@ -174,7 +174,6 @@ export async function createRouter(
   });
 
   const router = await createOpenApiRouter();
-  console.log('using permission router');
 
   router.get('/health', (_, response) => {
     response.json({ status: 'ok' });
