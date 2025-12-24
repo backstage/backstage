@@ -21,15 +21,16 @@ import { createValidatedOpenApiRouterFromGeneratedEndpointMap } from '@backstage
 import { EndpointMap } from './apis';
 
 export const spec = {
-  openapi: '3.0.0',
+  openapi: '3.0.3',
   info: {
-    title: 'auth-backend-providers',
+    title: 'auth',
     description: 'API for the Backstage authentication provider backend',
     version: '1.0.0',
     license: {
-      name: 'Apache 2.0',
-      url: 'https://www.apache.org/licenses/LICENSE-2.0',
+      name: 'Apache-2.0',
+      url: 'http://www.apache.org/licenses/LICENSE-2.0.html',
     },
+    contact: {},
   },
   servers: [
     {
@@ -50,6 +51,7 @@ export const spec = {
             required: true,
             description:
               'The ID of the authentication provider (e.g., google, github, okta)',
+            allowReserved: true,
             schema: {
               type: 'string',
               example: 'google',
@@ -60,6 +62,7 @@ export const spec = {
             in: 'query',
             required: false,
             description: 'Optional environment identifier',
+            allowReserved: true,
             schema: {
               type: 'string',
             },
@@ -69,6 +72,7 @@ export const spec = {
             in: 'query',
             required: false,
             description: 'Optional OAuth scope(s) to request',
+            allowReserved: true,
             schema: {
               type: 'string',
             },
@@ -78,6 +82,7 @@ export const spec = {
             in: 'query',
             required: false,
             description: 'Origin URL for CORS validation',
+            allowReserved: true,
             schema: {
               type: 'string',
             },
@@ -122,6 +127,7 @@ export const spec = {
             in: 'path',
             required: true,
             description: 'The ID of the authentication provider',
+            allowReserved: true,
             schema: {
               type: 'string',
               example: 'google',
@@ -132,6 +138,7 @@ export const spec = {
             in: 'query',
             required: false,
             description: 'Authorization code from OAuth provider',
+            allowReserved: true,
             schema: {
               type: 'string',
             },
@@ -141,6 +148,7 @@ export const spec = {
             in: 'query',
             required: false,
             description: 'State parameter for CSRF protection',
+            allowReserved: true,
             schema: {
               type: 'string',
             },
@@ -150,6 +158,7 @@ export const spec = {
             in: 'query',
             required: false,
             description: 'Error code if authentication failed',
+            allowReserved: true,
             schema: {
               type: 'string',
             },
@@ -159,6 +168,7 @@ export const spec = {
             in: 'query',
             required: false,
             description: 'Human-readable error description',
+            allowReserved: true,
             schema: {
               type: 'string',
             },
@@ -223,6 +233,7 @@ export const spec = {
               type: 'string',
               example: 'google',
             },
+            allowReserved: true,
           },
         ],
         requestBody: {
@@ -310,6 +321,7 @@ export const spec = {
             in: 'path',
             required: true,
             description: 'The ID of the authentication provider',
+            allowReserved: true,
             schema: {
               type: 'string',
               example: 'google',
@@ -384,6 +396,7 @@ export const spec = {
             in: 'path',
             required: true,
             description: 'The ID of the authentication provider',
+            allowReserved: true,
             schema: {
               type: 'string',
               example: 'google',
@@ -394,6 +407,7 @@ export const spec = {
             in: 'query',
             required: false,
             description: 'Optional OAuth scope(s) to request',
+            allowReserved: true,
             schema: {
               type: 'string',
             },
@@ -403,6 +417,7 @@ export const spec = {
             in: 'query',
             required: false,
             description: 'Origin URL for CORS validation',
+            allowReserved: true,
             schema: {
               type: 'string',
             },
@@ -462,6 +477,7 @@ export const spec = {
             in: 'path',
             required: true,
             description: 'The ID of the authentication provider',
+            allowReserved: true,
             schema: {
               type: 'string',
               example: 'google',
@@ -534,6 +550,14 @@ export const spec = {
     },
   },
   components: {
+    securitySchemes: {
+      BearerAuth: {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        description: 'Backstage identity token',
+      },
+    },
     schemas: {
       RefreshResponse: {
         type: 'object',

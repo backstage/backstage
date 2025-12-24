@@ -1,11 +1,12 @@
-openapi: 3.0.0
+openapi: 3.0.3
 info:
-  title: auth-backend-providers
+  title: auth
   description: API for the Backstage authentication provider backend
   version: 1.0.0
   license:
-    name: Apache 2.0
-    url: https://www.apache.org/licenses/LICENSE-2.0
+    name: Apache-2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  contact: {}
 
 servers:
   - url: /
@@ -21,6 +22,7 @@ paths:
           in: path
           required: true
           description: The ID of the authentication provider (e.g., google, github, okta)
+          allowReserved: true
           schema:
             type: string
             example: google
@@ -28,18 +30,21 @@ paths:
           in: query
           required: false
           description: Optional environment identifier
+          allowReserved: true
           schema:
             type: string
         - name: scope
           in: query
           required: false
           description: Optional OAuth scope(s) to request
+          allowReserved: true
           schema:
             type: string
         - name: origin
           in: query
           required: false
           description: Origin URL for CORS validation
+          allowReserved: true
           schema:
             type: string
       responses:
@@ -68,6 +73,7 @@ paths:
           in: path
           required: true
           description: The ID of the authentication provider
+          allowReserved: true
           schema:
             type: string
             example: google
@@ -75,24 +81,28 @@ paths:
           in: query
           required: false
           description: Authorization code from OAuth provider
+          allowReserved: true
           schema:
             type: string
         - name: state
           in: query
           required: false
           description: State parameter for CSRF protection
+          allowReserved: true
           schema:
             type: string
         - name: error
           in: query
           required: false
           description: Error code if authentication failed
+          allowReserved: true
           schema:
             type: string
         - name: error_description
           in: query
           required: false
           description: Human-readable error description
+          allowReserved: true
           schema:
             type: string
       responses:
@@ -133,6 +143,7 @@ paths:
           schema:
             type: string
             example: google
+          allowReserved: true
       requestBody:
         required: false
         content:
@@ -190,6 +201,7 @@ paths:
           in: path
           required: true
           description: The ID of the authentication provider
+          allowReserved: true
           schema:
             type: string
             example: google
@@ -239,6 +251,7 @@ paths:
           in: path
           required: true
           description: The ID of the authentication provider
+          allowReserved: true
           schema:
             type: string
             example: google
@@ -246,12 +259,14 @@ paths:
           in: query
           required: false
           description: Optional OAuth scope(s) to request
+          allowReserved: true
           schema:
             type: string
         - name: origin
           in: query
           required: false
           description: Origin URL for CORS validation
+          allowReserved: true
           schema:
             type: string
       responses:
@@ -291,6 +306,7 @@ paths:
           in: path
           required: true
           description: The ID of the authentication provider
+          allowReserved: true
           schema:
             type: string
             example: google
@@ -334,6 +350,12 @@ paths:
                 $ref: '#/components/schemas/Error'
 
 components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+      description: Backstage identity token
   schemas:
     RefreshResponse:
       type: object
