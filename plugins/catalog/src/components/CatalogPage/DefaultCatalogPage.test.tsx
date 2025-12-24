@@ -193,10 +193,10 @@ describe('DefaultCatalogPage', () => {
   it('should render the default column of the grid', async () => {
     await renderWrapped(<DefaultCatalogPage />);
 
-    const columnHeader = screen
-      .getAllByRole('button')
-      .filter(c => c.tagName === 'SPAN');
-    const columnHeaderLabels = columnHeader.map(c => c.textContent);
+    const columnHeader = screen.getAllByRole('columnheader');
+    const columnHeaderLabels = columnHeader.map(
+      c => c.textContent?.trim() || '',
+    );
 
     expect(columnHeaderLabels).toEqual([
       'Name',
@@ -218,10 +218,10 @@ describe('DefaultCatalogPage', () => {
     ];
     await renderWrapped(<DefaultCatalogPage columns={columns} />);
 
-    const columnHeader = screen
-      .getAllByRole('button')
-      .filter(c => c.tagName === 'SPAN');
-    const columnHeaderLabels = columnHeader.map(c => c.textContent);
+    const columnHeader = screen.getAllByRole('columnheader');
+    const columnHeaderLabels = columnHeader.map(
+      c => c.textContent?.trim() || '',
+    );
     expect(columnHeaderLabels).toEqual(['Foo', 'Bar', 'Baz', 'Actions']);
   }, 20_000);
 
@@ -237,10 +237,10 @@ describe('DefaultCatalogPage', () => {
     };
     await renderWrapped(<DefaultCatalogPage columns={columns} />);
 
-    const columnHeader = screen
-      .getAllByRole('button')
-      .filter(c => c.tagName === 'SPAN');
-    const columnHeaderLabels = columnHeader.map(c => c.textContent);
+    const columnHeader = screen.getAllByRole('columnheader');
+    const columnHeaderLabels = columnHeader.map(
+      c => c.textContent?.trim() || '',
+    );
     expect(columnHeaderLabels).toEqual(['Foo', 'Bar', 'Baz', 'Actions']);
   }, 20_000);
 
@@ -252,10 +252,14 @@ describe('DefaultCatalogPage', () => {
     await expect(
       screen.findByText(/Owned components \(1\)/),
     ).resolves.toBeInTheDocument();
-    await expect(screen.findByTitle(/View/)).resolves.toBeInTheDocument();
-    await expect(screen.findByTitle(/Edit/)).resolves.toBeInTheDocument();
     await expect(
-      screen.findByTitle(/Add to favorites/),
+      screen.findByRole('button', { name: /View/i }),
+    ).resolves.toBeInTheDocument();
+    await expect(
+      screen.findByRole('button', { name: /Edit/i }),
+    ).resolves.toBeInTheDocument();
+    await expect(
+      screen.findByRole('button', { name: /Add to favorites/i }),
     ).resolves.toBeInTheDocument();
   }, 20_000);
 
@@ -286,11 +290,14 @@ describe('DefaultCatalogPage', () => {
     await expect(
       screen.findByText(/Owned components \(1\)/),
     ).resolves.toBeInTheDocument();
-    await expect(screen.findByTitle(/Foo Action/)).resolves.toBeInTheDocument();
-    await expect(screen.findByTitle(/Bar Action/)).resolves.toBeInTheDocument();
     await expect(
-      screen.findByTitle(/Bar Action/).then(e => e.firstChild),
-    ).resolves.toBeDisabled();
+      screen.findByRole('button', { name: /Foo Action/i }),
+    ).resolves.toBeInTheDocument();
+    const barActionButton = await screen.findByRole('button', {
+      name: /Bar Action/i,
+    });
+    expect(barActionButton).toBeInTheDocument();
+    expect(barActionButton).toBeDisabled();
   }, 20_000);
 
   // this test right now causes some red lines in the log output when running tests
@@ -339,7 +346,9 @@ describe('DefaultCatalogPage', () => {
       screen.findByText(/All components \(2\)/),
     ).resolves.toBeInTheDocument();
 
-    const starredIcons = await screen.findAllByTitle('Add to favorites');
+    const starredIcons = await screen.findAllByRole('button', {
+      name: /Add to favorites/i,
+    });
     fireEvent.click(starredIcons[0]);
     await expect(
       screen.findByText(/All components \(2\)/),
