@@ -40,10 +40,12 @@
     "lint": "backstage-cli package lint",
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
+    "generate": "backstage-repo-tools package schema openapi generate --server",
     "start": "backstage-cli package start",
     "test": "backstage-cli package test"
   },
   "dependencies": {
+    "@backstage/backend-openapi-utils": "workspace:^",
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/catalog-model": "workspace:^",
     "@backstage/config": "workspace:^",
@@ -72,6 +74,7 @@
     "@backstage/cli": "workspace:^",
     "@backstage/plugin-auth-backend-module-google-provider": "workspace:^",
     "@backstage/plugin-auth-backend-module-guest-provider": "workspace:^",
+    "@backstage/repo-tools": "workspace:^",
     "@types/cookie-parser": "^1.4.2",
     "@types/express": "^4.17.6",
     "@types/express-session": "^1.17.2",
