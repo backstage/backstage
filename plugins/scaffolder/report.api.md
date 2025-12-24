@@ -231,11 +231,18 @@ export const MultiEntityPickerFieldExtension: FieldExtensionComponent_2<
 // @public
 export const MyGroupsPickerFieldExtension: FieldExtensionComponent_2<
   string,
-  any
+  {
+    namespaces?: string[] | undefined;
+  }
 >;
 
 // @public
-export const MyGroupsPickerFieldSchema: FieldSchema_2<string, any>;
+export const MyGroupsPickerFieldSchema: FieldSchema_2<
+  string,
+  {
+    namespaces?: string[] | undefined;
+  }
+>;
 
 // @public
 export const MyGroupsPickerSchema: CustomFieldExtensionSchema_2;
@@ -380,9 +387,9 @@ export const RepoBranchPickerFieldExtension: FieldExtensionComponent_2<
             | {
                 azure?: string[] | undefined;
                 github?: string[] | undefined;
-                gitlab?: string[] | undefined;
                 bitbucket?: string[] | undefined;
                 gerrit?: string[] | undefined;
+                gitlab?: string[] | undefined;
                 gitea?: string[] | undefined;
               }
             | undefined;
@@ -403,9 +410,9 @@ export const RepoOwnerPickerFieldExtension: FieldExtensionComponent_2<
             | {
                 azure?: string[] | undefined;
                 github?: string[] | undefined;
-                gitlab?: string[] | undefined;
                 bitbucket?: string[] | undefined;
                 gerrit?: string[] | undefined;
+                gitlab?: string[] | undefined;
                 gitea?: string[] | undefined;
               }
             | undefined;
@@ -440,9 +447,9 @@ export const RepoUrlPickerFieldExtension: FieldExtensionComponent_2<
             | {
                 azure?: string[] | undefined;
                 github?: string[] | undefined;
-                gitlab?: string[] | undefined;
                 bitbucket?: string[] | undefined;
                 gerrit?: string[] | undefined;
+                gitlab?: string[] | undefined;
                 gitea?: string[] | undefined;
               }
             | undefined;
@@ -467,9 +474,9 @@ export const RepoUrlPickerFieldSchema: FieldSchema_2<
             | {
                 azure?: string[] | undefined;
                 github?: string[] | undefined;
-                gitlab?: string[] | undefined;
                 bitbucket?: string[] | undefined;
                 gerrit?: string[] | undefined;
+                gitlab?: string[] | undefined;
                 gitea?: string[] | undefined;
               }
             | undefined;
