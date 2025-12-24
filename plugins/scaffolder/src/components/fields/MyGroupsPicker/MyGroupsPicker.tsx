@@ -61,9 +61,7 @@ export const MyGroupsPicker = (props: MyGroupsPickerProps) => {
   const errorApi = useApi(errorApiRef);
   const entityPresentationApi = useApi(entityPresentationApiRef);
   const isDisabled = uiSchema?.['ui:disabled'] ?? false;
-  const namespaces = uiSchema?.['ui:options']?.namespaces as
-    | string[]
-    | undefined;
+  const namespaces = uiSchema?.['ui:options']?.namespaces;
 
   const { value: groups, loading } = useAsync(async () => {
     const { userEntityRef } = await identityApi.getBackstageIdentity();
