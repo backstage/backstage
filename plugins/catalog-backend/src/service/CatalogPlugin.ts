@@ -239,6 +239,7 @@ export const catalogPlugin = createBackendPlugin({
         auth: coreServices.auth,
         httpAuth: coreServices.httpAuth,
         auditor: coreServices.auditor,
+        schema: coreServices.schema,
         events: eventsServiceRef,
         catalog: catalogServiceRef,
         actionsRegistry: actionsRegistryServiceRef,
@@ -258,6 +259,7 @@ export const catalogPlugin = createBackendPlugin({
         catalog,
         actionsRegistry,
         auditor,
+        schema,
         events,
       }) {
         const builder = await CatalogBuilder.create({
@@ -271,6 +273,7 @@ export const catalogPlugin = createBackendPlugin({
           auth,
           httpAuth,
           auditor,
+          schema,
           events,
         });
 
