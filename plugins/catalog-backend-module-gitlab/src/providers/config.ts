@@ -54,6 +54,7 @@ function readGitlabConfig(id: string, config: Config): GitlabProviderConfig {
     groupPattern = new RegExp(/[\s\S]*/);
   }
 
+  const useSearch: boolean = config.getOptionalBoolean('useSearch') ?? false;
   const orgEnabled: boolean = config.getOptionalBoolean('orgEnabled') ?? false;
   const allowInherited: boolean =
     config.getOptionalBoolean('allowInherited') ?? false;
@@ -96,6 +97,7 @@ function readGitlabConfig(id: string, config: Config): GitlabProviderConfig {
     schedule,
     orgEnabled,
     allowInherited,
+    useSearch,
     relations,
     skipForkedRepos,
     includeArchivedRepos,
