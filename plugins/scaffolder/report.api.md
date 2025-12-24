@@ -387,9 +387,9 @@ export const RepoBranchPickerFieldExtension: FieldExtensionComponent_2<
             | {
                 azure?: string[] | undefined;
                 github?: string[] | undefined;
+                gitlab?: string[] | undefined;
                 bitbucket?: string[] | undefined;
                 gerrit?: string[] | undefined;
-                gitlab?: string[] | undefined;
                 gitea?: string[] | undefined;
               }
             | undefined;
@@ -410,9 +410,9 @@ export const RepoOwnerPickerFieldExtension: FieldExtensionComponent_2<
             | {
                 azure?: string[] | undefined;
                 github?: string[] | undefined;
+                gitlab?: string[] | undefined;
                 bitbucket?: string[] | undefined;
                 gerrit?: string[] | undefined;
-                gitlab?: string[] | undefined;
                 gitea?: string[] | undefined;
               }
             | undefined;
@@ -447,9 +447,9 @@ export const RepoUrlPickerFieldExtension: FieldExtensionComponent_2<
             | {
                 azure?: string[] | undefined;
                 github?: string[] | undefined;
+                gitlab?: string[] | undefined;
                 bitbucket?: string[] | undefined;
                 gerrit?: string[] | undefined;
-                gitlab?: string[] | undefined;
                 gitea?: string[] | undefined;
               }
             | undefined;
@@ -474,9 +474,9 @@ export const RepoUrlPickerFieldSchema: FieldSchema_2<
             | {
                 azure?: string[] | undefined;
                 github?: string[] | undefined;
+                gitlab?: string[] | undefined;
                 bitbucket?: string[] | undefined;
                 gerrit?: string[] | undefined;
-                gitlab?: string[] | undefined;
                 gitea?: string[] | undefined;
               }
             | undefined;
