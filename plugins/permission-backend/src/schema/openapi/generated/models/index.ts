@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-export * from '../models/AuthorizeResult.model';
 export * from '../models/BasicPermission.model';
 export * from '../models/BasicPermissionRequest.model';
+export * from '../models/BatchEvaluatePermissionResponse.model';
+export * from '../models/ConditionalEvaluatePermissionResponse.model';
+export * from '../models/DefinitiveEvaluatePermissionResponse.model';
 export * from '../models/ErrorError.model';
 export * from '../models/EvaluatePermissionRequest.model';
 export * from '../models/EvaluatePermissionRequestBatch.model';
@@ -25,6 +27,11 @@ export * from '../models/EvaluatePermissionResponseBatch.model';
 export * from '../models/GetHealth200Response.model';
 export * from '../models/ModelError.model';
 export * from '../models/PermissionAttributes.model';
+export * from '../models/PermissionCondition.model';
+export * from '../models/PermissionCriteria.model';
+export * from '../models/PermissionCriteriaOneOf.model';
+export * from '../models/PermissionCriteriaOneOf1.model';
+export * from '../models/PermissionCriteriaOneOf2.model';
 export * from '../models/ResourcePermission.model';
 export * from '../models/ResourcePermissionRequest.model';
 export * from '../models/ResourcePermissionRequestResourceRef.model';

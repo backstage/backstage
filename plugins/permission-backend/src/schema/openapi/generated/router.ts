@@ -232,12 +232,72 @@ export const spec = {
         required: ['items'],
         additionalProperties: false,
       },
-      AuthorizeResult: {
-        type: 'string',
-        enum: ['ALLOW', 'DENY', 'CONDITIONAL'],
-        description: 'The authorization decision result',
+      PermissionCondition: {
+        type: 'object',
+        properties: {
+          rule: {
+            type: 'string',
+            description: 'The name of the permission rule',
+          },
+          resourceType: {
+            type: 'string',
+            description: 'The type of resource this condition applies to',
+          },
+          params: {
+            type: 'object',
+            additionalProperties: true,
+            description: 'Parameters to apply to the rule',
+          },
+        },
+        required: ['rule', 'resourceType'],
+        additionalProperties: false,
       },
-      EvaluatePermissionResponse: {
+      PermissionCriteria: {
+        oneOf: [
+          {
+            type: 'object',
+            properties: {
+              anyOf: {
+                type: 'array',
+                items: {
+                  $ref: '#/components/schemas/PermissionCriteria',
+                },
+                minItems: 1,
+              },
+            },
+            required: ['anyOf'],
+            additionalProperties: false,
+          },
+          {
+            type: 'object',
+            properties: {
+              allOf: {
+                type: 'array',
+                items: {
+                  $ref: '#/components/schemas/PermissionCriteria',
+                },
+                minItems: 1,
+              },
+            },
+            required: ['allOf'],
+            additionalProperties: false,
+          },
+          {
+            type: 'object',
+            properties: {
+              not: {
+                $ref: '#/components/schemas/PermissionCriteria',
+              },
+            },
+            required: ['not'],
+            additionalProperties: false,
+          },
+          {
+            $ref: '#/components/schemas/PermissionCondition',
+          },
+        ],
+      },
+      DefinitiveEvaluatePermissionResponse: {
         type: 'object',
         properties: {
           id: {
@@ -245,11 +305,73 @@ export const spec = {
             description: 'The request ID this response corresponds to',
           },
           result: {
-            $ref: '#/components/schemas/AuthorizeResult',
+            type: 'string',
+            enum: ['ALLOW', 'DENY'],
+            description: 'The definitive authorization result',
           },
         },
         required: ['id', 'result'],
-        additionalProperties: {},
+        additionalProperties: false,
+      },
+      ConditionalEvaluatePermissionResponse: {
+        type: 'object',
+        properties: {
+          id: {
+            type: 'string',
+            description: 'The request ID this response corresponds to',
+          },
+          result: {
+            type: 'string',
+            enum: ['CONDITIONAL'],
+            description: 'Indicates a conditional authorization result',
+          },
+          pluginId: {
+            type: 'string',
+            description: 'The plugin that should evaluate the conditions',
+          },
+          resourceType: {
+            type: 'string',
+            description: 'The type of resource the conditions apply to',
+          },
+          conditions: {
+            $ref: '#/components/schemas/PermissionCriteria',
+          },
+        },
+        required: ['id', 'result', 'pluginId', 'resourceType', 'conditions'],
+        additionalProperties: false,
+      },
+      BatchEvaluatePermissionResponse: {
+        type: 'object',
+        properties: {
+          id: {
+            type: 'string',
+            description: 'The request ID this response corresponds to',
+          },
+          result: {
+            type: 'array',
+            items: {
+              type: 'string',
+              enum: ['ALLOW', 'DENY'],
+            },
+            description:
+              'Array of authorization results from batch condition evaluation',
+          },
+        },
+        required: ['id', 'result'],
+        additionalProperties: false,
+      },
+      EvaluatePermissionResponse: {
+        oneOf: [
+          {
+            $ref: '#/components/schemas/DefinitiveEvaluatePermissionResponse',
+          },
+          {
+            $ref: '#/components/schemas/ConditionalEvaluatePermissionResponse',
+          },
+          {
+            $ref: '#/components/schemas/BatchEvaluatePermissionResponse',
+          },
+        ],
       },
       EvaluatePermissionResponseBatch: {
         type: 'object',
