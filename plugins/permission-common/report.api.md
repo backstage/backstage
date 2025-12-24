@@ -186,7 +186,7 @@ export type PermissionBase<TType extends string, TFields extends object> = {
 
 // @public
 export class PermissionClient implements PermissionEvaluator {
-  constructor(options: { discovery: DiscoveryApi; config: Config });
+  constructor(options: PermissionClientOptions);
   authorize(
     requests: AuthorizePermissionRequest[],
     options?: PermissionClientRequestOptions,
@@ -196,6 +196,12 @@ export class PermissionClient implements PermissionEvaluator {
     options?: PermissionClientRequestOptions,
   ): Promise<QueryPermissionResponse[]>;
 }
+
+// @public
+export type PermissionClientOptions = {
+  discovery: DiscoveryApi;
+  config: Config;
+};
 
 // @public
 export type PermissionClientRequestOptions = {
