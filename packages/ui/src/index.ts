@@ -52,6 +52,8 @@ export * from './components/Link';
 export * from './components/Select';
 export * from './components/Skeleton';
 export * from './components/Switch';
+export * from './components/ToggleButton';
+export * from './components/ToggleButtonGroup';
 export * from './components/VisuallyHidden';
 
 // Types
