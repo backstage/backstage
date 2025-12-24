@@ -117,6 +117,14 @@ export const components: Page[] = [
     slug: 'text-field',
   },
   {
+    title: 'ToggleButton',
+    slug: 'toggle-button',
+  },
+  {
+    title: 'ToggleButtonGroup',
+    slug: 'toggle-button-group',
+  },
+  {
     title: 'Tooltip',
     slug: 'tooltip',
   },
