@@ -16,12 +16,7 @@
 
 import { Location } from '@backstage/catalog-client';
 import { CompoundEntityRef, Entity } from '@backstage/catalog-model';
-import { NotAllowedError, NotFoundError } from '@backstage/errors';
-import {
-  catalogLocationCreatePermission,
-  catalogLocationDeletePermission,
-  catalogLocationReadPermission,
-} from '@backstage/plugin-catalog-common/alpha';
+import { catalogLocationReadPermission } from '@backstage/plugin-catalog-common/alpha';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { LocationInput, LocationService } from './types';
 import {
@@ -52,17 +47,6 @@ export class AuthorizedLocationService implements LocationService {
     entities: Entity[];
     exists?: boolean | undefined;
   }> {
-    const authorizationResponse = (
-      await this.permissionApi.authorize(
-        [{ permission: catalogLocationCreatePermission }],
-        { credentials: options.credentials },
-      )
-    )[0];
-
-    if (authorizationResponse.result === AuthorizeResult.DENY) {
-      throw new NotAllowedError();
-    }
-
     return this.locationService.createLocation(spec, dryRun, options);
   }
 
@@ -87,17 +71,6 @@ export class AuthorizedLocationService implements LocationService {
     id: string,
     options: { credentials: BackstageCredentials },
   ): Promise<Location> {
-    const authorizationResponse = (
-      await this.permissionApi.authorize(
-        [{ permission: catalogLocationReadPermission }],
-        { credentials: options.credentials },
-      )
-    )[0];
-
-    if (authorizationResponse.result === AuthorizeResult.DENY) {
-      throw new NotFoundError(`Found no location with ID ${id}`);
-    }
-
     return this.locationService.getLocation(id, options);
   }
 
@@ -105,17 +78,6 @@ export class AuthorizedLocationService implements LocationService {
     id: string,
     options: { credentials: BackstageCredentials },
   ): Promise<void> {
-    const authorizationResponse = (
-      await this.permissionApi.authorize(
-        [{ permission: catalogLocationDeletePermission }],
-        { credentials: options.credentials },
-      )
-    )[0];
-
-    if (authorizationResponse.result === AuthorizeResult.DENY) {
-      throw new NotAllowedError();
-    }
-
     return this.locationService.deleteLocation(id, options);
   }
 
@@ -123,16 +85,6 @@ export class AuthorizedLocationService implements LocationService {
     entityRef: CompoundEntityRef | string,
     options: { credentials: BackstageCredentials },
   ): Promise<Location> {
-    const authorizationResponse = (
-      await this.permissionApi.authorize(
-        [{ permission: catalogLocationReadPermission }],
-        { credentials: options.credentials },
-      )
-    )[0];
-
-    if (authorizationResponse.result === AuthorizeResult.DENY) {
-      throw new NotFoundError();
-    }
     return this.locationService.getLocationByEntity(entityRef, options);
   }
 }
