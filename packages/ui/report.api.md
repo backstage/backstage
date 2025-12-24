@@ -195,7 +195,15 @@ export const BoxDefinition: {
     'maxHeight',
   ];
   readonly dataAttributes: {
-    readonly surface: readonly ['0', '1', '2', '3'];
+    readonly surface: readonly [
+      '0',
+      '1',
+      '2',
+      '3',
+      'danger',
+      'warning',
+      'success',
+    ];
   };
 };
 
@@ -664,7 +672,15 @@ export const FlexDefinition: {
     'direction',
   ];
   readonly dataAttributes: {
-    readonly surface: readonly ['0', '1', '2', '3'];
+    readonly surface: readonly [
+      '0',
+      '1',
+      '2',
+      '3',
+      'danger',
+      'warning',
+      'success',
+    ];
   };
 };
 
@@ -726,7 +742,15 @@ export const GridDefinition: {
     'py',
   ];
   readonly dataAttributes: {
-    readonly surface: readonly ['0', '1', '2', '3'];
+    readonly surface: readonly [
+      '0',
+      '1',
+      '2',
+      '3',
+      'danger',
+      'warning',
+      'success',
+    ];
   };
 };
 
@@ -737,7 +761,15 @@ export const GridItemDefinition: {
   };
   readonly utilityProps: ['colSpan', 'colEnd', 'colStart', 'rowSpan'];
   readonly dataAttributes: {
-    readonly surface: readonly ['0', '1', '2', '3'];
+    readonly surface: readonly [
+      '0',
+      '1',
+      '2',
+      '3',
+      'danger',
+      'warning',
+      'success',
+    ];
   };
 };
 
@@ -1251,7 +1283,7 @@ export const SubmenuTrigger: (props: SubmenuTriggerProps) => JSX_2.Element;
 export interface SubmenuTriggerProps extends SubmenuTriggerProps_2 {}
 
 // @public
-export type Surface = '0' | '1' | '2' | '3';
+export type Surface = '0' | '1' | '2' | '3' | 'danger' | 'warning' | 'success';
 
 // @public (undocumented)
 export const Switch: ForwardRefExoticComponent<
