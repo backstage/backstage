@@ -186,7 +186,7 @@
     "eslint-webpack-plugin": "^4.2.0",
     "fork-ts-checker-webpack-plugin": "^9.0.0",
     "jest": "^30.2.0",
-    "jsdom": "^25.0.1",
+    "jsdom": "^27.1.0",
     "mini-css-extract-plugin": "^2.4.2",
     "msw": "^1.0.0",
     "nodemon": "^3.0.1",
