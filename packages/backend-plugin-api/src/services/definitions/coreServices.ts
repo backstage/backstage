@@ -266,6 +266,19 @@ export namespace coreServices {
   >({ id: 'core.scheduler' });
 
   /**
+   * OpenAPI schema management for plugins.
+   *
+   * See {@link SchemaService}
+   * and {@link https://backstage.io/docs/backend-system/core-services/schema | the service docs}
+   * for more information.
+   *
+   * @public
+   */
+  export const schema = createServiceRef<
+    import('./SchemaService').SchemaService
+  >({ id: 'core.schema' });
+
+  /**
    * Reading content from external systems.
    *
    * See {@link UrlReaderService}
