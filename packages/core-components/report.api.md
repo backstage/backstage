@@ -827,6 +827,8 @@ export interface LogViewerProps {
   classes?: {
     root?: string;
   };
+  onDownloadLog?: () => void;
+  showDownloadButton?: boolean;
   text: string;
   textWrap?: boolean;
 }

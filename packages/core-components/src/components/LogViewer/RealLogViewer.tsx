@@ -32,6 +32,8 @@ import { useLogViewerSelection } from './useLogViewerSelection';
 import Snackbar from '@material-ui/core/Snackbar';
 
 export interface RealLogViewerProps {
+  showDownloadButton?: boolean;
+  onDownloadLog?: () => void;
   text: string;
   textWrap?: boolean;
   classes?: { root?: string };
@@ -187,7 +189,11 @@ export function RealLogViewer(props: RealLogViewerProps) {
           return (
             <Box style={{ width, height }} className={classes.root}>
               <Box className={classes.header}>
-                <LogViewerControls {...search} />
+                <LogViewerControls
+                  {...search}
+                  showLogsDownloadButton={props.showDownloadButton}
+                  onDownloadLog={props.onDownloadLog}
+                />
               </Box>
               {shouldTextWrap ? (
                 <VariableSizeList<AnsiLine[]>
