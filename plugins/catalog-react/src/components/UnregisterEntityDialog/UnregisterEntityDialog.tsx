@@ -29,8 +29,12 @@ import Alert from '@material-ui/lab/Alert';
 import { useCallback, useState } from 'react';
 import { useUnregisterEntityDialogState } from './useUnregisterEntityDialogState';
 
-import { alertApiRef, configApiRef, useApi } from '@backstage/core-plugin-api';
-import { Progress, ResponseErrorPanel } from '@backstage/core-components';
+import { alertApiRef, useApi } from '@backstage/core-plugin-api';
+import {
+  Progress,
+  ResponseErrorPanel,
+  useAppTitle,
+} from '@backstage/core-components';
 import { assertError } from '@backstage/errors';
 import { catalogReactTranslationRef } from '../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
@@ -54,12 +58,11 @@ const Contents = ({
   onClose: () => any;
 }) => {
   const alertApi = useApi(alertApiRef);
-  const configApi = useApi(configApiRef);
   const classes = useStyles();
   const state = useUnregisterEntityDialogState(entity);
   const [showDelete, setShowDelete] = useState(false);
   const [busy, setBusy] = useState(false);
-  const appTitle = configApi.getOptionalString('app.title') ?? 'Backstage';
+  const appTitle = useAppTitle();
   const { t } = useTranslationRef(catalogReactTranslationRef);
 
   const onUnregister = useCallback(
