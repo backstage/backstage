@@ -495,6 +495,7 @@ export interface PermissionsRegistryService {
   getPermissionRuleset<TResourceType extends string, TResource, TQuery>(
     resourceRef: PermissionResourceRef<TResource, TQuery, TResourceType>,
   ): PermissionRuleset<TResource, TQuery, TResourceType>;
+  listPermissions(): Permission[];
 }
 
 // @public

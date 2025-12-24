@@ -124,6 +124,7 @@ export async function createRouter(
         permissions: permissionsService,
         httpAuth,
         permissionsRegistry,
+        logger,
       }),
     );
   }
