@@ -33,6 +33,7 @@ import {
   translationApiRef,
 } from '../apis/definitions/TranslationApi';
 import { ErrorApi, errorApiRef } from '../apis';
+import { mockApis } from '@backstage/test-utils';
 
 const plainRef = createTranslationRef({
   id: 'plain',
@@ -105,6 +106,7 @@ describe('useTranslationRef', () => {
   it('should switch between languages', async () => {
     const languageApi = AppLanguageSelector.create({
       availableLanguages: ['en', 'de'],
+      storageApi: mockApis.storage(),
     });
     const translationApi = I18nextTranslationApi.create({
       languageApi,
@@ -231,6 +233,7 @@ describe('useTranslationRef', () => {
     const errorApi = new MockErrorApi({ collect: true });
     const languageApi = AppLanguageSelector.create({
       availableLanguages: ['en', 'de'],
+      storageApi: mockApis.storage(),
     });
     const translationApi = I18nextTranslationApi.create({
       languageApi,
