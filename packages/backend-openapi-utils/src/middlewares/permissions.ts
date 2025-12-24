@@ -18,6 +18,7 @@ import { Request, Response, NextFunction } from 'express';
 import { OperationObject } from 'openapi3-ts';
 import type {
   HttpAuthService,
+  LoggerService,
   PermissionsRegistryService,
   PermissionsService,
 } from '@backstage/backend-plugin-api';
@@ -50,11 +51,11 @@ export function permissionsMiddlewareFactory(dependencies: {
   permissions: PermissionsService;
   permissionsRegistry: PermissionsRegistryService;
   httpAuth: HttpAuthService;
+  logger: LoggerService;
 }) {
   const { permissionsRegistry } = dependencies;
   const registeredPermissions = permissionsRegistry.listPermissions();
-  const { permissions: permissionsService, httpAuth } = dependencies;
-
+  const { permissions: permissionsService, httpAuth, logger } = dependencies;
   return async (
     req: Request & WithOpenapi,
     _res: Response,
@@ -117,7 +118,7 @@ export function permissionsMiddlewareFactory(dependencies: {
 
       next();
     } catch (error) {
-      console.error(error);
+      logger.error(error);
       next(error);
     }
   };

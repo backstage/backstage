@@ -31,9 +31,17 @@ const middleware = MiddlewareFactory.create({
   config: mockServices.rootConfig(),
 });
 
-const mockPermission: BasicPermission = {
+const catalogLocationReadPermission: BasicPermission = {
   type: 'basic',
   name: 'catalog.location.read',
+  attributes: {
+    action: 'read',
+  },
+};
+
+const catalogEntityReadPermission: BasicPermission = {
+  type: 'basic',
+  name: 'catalog.entity.read',
   attributes: {
     action: 'read',
   },
@@ -158,12 +166,16 @@ describe('permissionsMiddleware', () => {
     app = express().use(router);
     mockPermissionsService = createMockPermissionsService();
     mockPermissionsRegistry = mockServices.permissionsRegistry.mock();
-    mockPermissionsRegistry.listPermissions.mockReturnValue([mockPermission]);
+    mockPermissionsRegistry.listPermissions.mockReturnValue([
+      catalogLocationReadPermission,
+      catalogEntityReadPermission,
+    ]);
     mockHttpAuth = mockServices.httpAuth.mock();
     permissionsMiddleware = permissionsMiddlewareFactory({
       permissions: mockPermissionsService.permissionsService,
       httpAuth: mockHttpAuth,
       permissionsRegistry: mockPermissionsRegistry,
+      logger: mockServices.logger.mock(),
     });
     router.use(permissionsMiddleware);
   });
@@ -180,7 +192,7 @@ describe('permissionsMiddleware', () => {
     await request(app).get('/locations/loc-123').expect(200);
 
     expect(mockAuthorize).toHaveBeenCalledWith(
-      [{ permission: mockPermission }],
+      [{ permission: catalogLocationReadPermission }],
       { credentials: undefined },
     );
   });
@@ -262,7 +274,7 @@ describe('permissionsMiddleware', () => {
     await request(app).get('/locations/loc-123').expect(200);
 
     expect(mockPermissionsService.mockAuthorize).toHaveBeenCalledWith(
-      [{ permission: mockPermission }],
+      [{ permission: catalogLocationReadPermission }],
       { credentials: mockCredentials },
     );
   });

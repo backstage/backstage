@@ -180,6 +180,7 @@ export function createPermissionIntegrationRouter<
   getPermissionRuleset<TResource, TQuery, TResourceType extends string>(
     resourceRef: PermissionResourceRef<TResource, TQuery, TResourceType>,
   ): PermissionRuleset<TResource, TQuery, TResourceType>;
+  listPermissions(): Permission[];
 };
 
 // @public @deprecated
