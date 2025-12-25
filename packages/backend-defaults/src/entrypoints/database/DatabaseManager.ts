@@ -29,6 +29,7 @@ import { MysqlConnector } from './connectors/mysql';
 import { PgConnector } from './connectors/postgres';
 import { Sqlite3Connector } from './connectors/sqlite3';
 import { Connector } from './types';
+import { PgLiteConnector } from './connectors';
 
 /**
  * Provides a config lookup path for a plugin's config block.
@@ -260,6 +261,7 @@ export class DatabaseManager {
         databaseConfig,
         {
           pg: new PgConnector(databaseConfig, prefix),
+          pglite: new PgLiteConnector(databaseConfig),
           sqlite3: new Sqlite3Connector(databaseConfig),
           'better-sqlite3': new Sqlite3Connector(databaseConfig),
           mysql: new MysqlConnector(databaseConfig, prefix),
