@@ -14,24 +14,28 @@
  * limitations under the License.
  */
 
-export type {
-  RootSystemMetadataServicePluginInfo,
-  RootSystemMetadataService,
-} from './RootSystemMetadataService';
+import { metricsServiceRef } from '@backstage/backend-plugin-api/alpha';
+import {
+  coreServices,
+  createServiceFactory,
+} from '@backstage/backend-plugin-api';
+import { DefaultMetricsService } from './DefaultMetricsService';
 
-export type {
-  ActionsRegistryService,
-  ActionsRegistryActionOptions,
-  ActionsRegistryActionContext,
-} from './ActionsRegistryService';
+/**
+ * Service factory for collecting plugin-scoped metrics.
+ *
+ * @alpha
+ */
+export const metricsServiceFactory = createServiceFactory({
+  service: metricsServiceRef,
+  deps: {
+    pluginMetadata: coreServices.pluginMetadata,
+  },
+  factory: () => {
+    const namespace = 'default';
 
-export type { ActionsService, ActionsServiceAction } from './ActionsService';
-
-export type { MetricsService, MetricsServiceOptions } from './MetricsService';
-
-export {
-  actionsRegistryServiceRef,
-  actionsServiceRef,
-  metricsServiceRef,
-  rootSystemMetadataServiceRef,
-} from './refs';
+    return DefaultMetricsService.create({
+      namespace,
+    });
+  },
+});

@@ -13,25 +13,4 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-export type {
-  RootSystemMetadataServicePluginInfo,
-  RootSystemMetadataService,
-} from './RootSystemMetadataService';
-
-export type {
-  ActionsRegistryService,
-  ActionsRegistryActionOptions,
-  ActionsRegistryActionContext,
-} from './ActionsRegistryService';
-
-export type { ActionsService, ActionsServiceAction } from './ActionsService';
-
-export type { MetricsService, MetricsServiceOptions } from './MetricsService';
-
-export {
-  actionsRegistryServiceRef,
-  actionsServiceRef,
-  metricsServiceRef,
-  rootSystemMetadataServiceRef,
-} from './refs';
+export { metricsServiceFactory } from './metricsServiceFactory';
