@@ -1,5 +1,11 @@
 # @backstage/integration
 
+## 1.19.1
+
+### Patch Changes
+
+- 627c131: Rollback the lowercase replacing in GitHub integration config
+
 ## 1.19.0
 
 ### Minor Changes
