@@ -41,7 +41,7 @@ import {
   rootDocsRouteRef,
   rootRouteRef,
 } from '../routes';
-import { TechDocsReaderLayout } from '../reader';
+import { TechDocsReaderLayout as DefaultTechDocsReaderLayout } from '../reader';
 import { attachTechDocsAddonComponentData } from '@backstage/plugin-techdocs-react/alpha';
 import {
   TechDocsAddons,
@@ -151,6 +151,10 @@ const techDocsReaderPage = PageBlueprint.makeWithOverrides({
   name: 'reader',
   inputs: {
     addons: createExtensionInput([AddonBlueprint.dataRefs.addon]),
+    layout: createExtensionInput([coreExtensionData.reactElement], {
+      singleton: true,
+      optional: true,
+    }),
   },
   factory(originalFactory, { inputs }) {
     const addons = inputs.addons.map(output => {
@@ -160,16 +164,27 @@ const techDocsReaderPage = PageBlueprint.makeWithOverrides({
       return <Addon key={options.name} />;
     });
 
+    const CustomTechDocsReaderLayout = inputs.layout?.get(
+      coreExtensionData.reactElement,
+    );
+    const TechDocsReaderLayout = CustomTechDocsReaderLayout ? (
+      CustomTechDocsReaderLayout
+    ) : (
+      <DefaultTechDocsReaderLayout />
+    );
+
     return originalFactory({
       path: '/docs/:namespace/:kind/:name',
       routeRef: rootDocsRouteRef,
       loader: async () =>
-        await import('../Router').then(({ TechDocsReaderRouter }) => (
-          <TechDocsReaderRouter>
-            <TechDocsReaderLayout />
-            <TechDocsAddons>{addons}</TechDocsAddons>
-          </TechDocsReaderRouter>
-        )),
+        import('../Router').then(({ TechDocsReaderRouter }) => {
+          return (
+            <TechDocsReaderRouter>
+              {TechDocsReaderLayout}
+              <TechDocsAddons>{addons}</TechDocsAddons>
+            </TechDocsReaderRouter>
+          );
+        }),
     });
   },
 });
