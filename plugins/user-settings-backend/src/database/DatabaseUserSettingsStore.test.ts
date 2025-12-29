@@ -107,6 +107,81 @@ describe.each(databases.eachSupportedId())(
       });
     });
 
+    describe('multiget', () => {
+      it('should return empty', async () => {
+        await expect(
+          storage.multiget({
+            userEntityRef: 'user-1',
+            items: [
+              {
+                bucket: 'bucket-c',
+                key: 'key-c',
+              },
+            ],
+          }),
+        ).resolves.toEqual([null]);
+      });
+
+      it('should handle large inputs and return existing values', async () => {
+        // Create 30 buckets with 300 keys in each.
+        const BUCKETS = 30;
+        const KEYS_PER_BUCKET = 300;
+
+        const buckets = Array.from(Array(BUCKETS)).map(
+          (_, i) => `mget-bucket-${i}`,
+        );
+
+        const items = buckets.flatMap(bucket => {
+          const keys = Array.from(Array(KEYS_PER_BUCKET)).map(
+            (_, i) => `mget-key-${i}`,
+          );
+          return keys.map(key => ({ bucket, key }));
+        });
+
+        const chunkify = <T>(keys: Array<T>, size: number): T[][] => {
+          const chunks: T[][] = [];
+          for (let i = 0; i < keys.length; i += size) {
+            chunks.push(keys.slice(i, i + size));
+          }
+          return chunks;
+        };
+
+        const valueOfKey = (bucket: string, key: string) => ({
+          theValue: `Value of ${bucket} / ${key}`,
+        });
+
+        const chunkedItems = chunkify(items, 100);
+        for (const chunk of chunkedItems) {
+          await insert(
+            chunk.map(({ bucket, key }) => ({
+              user_entity_ref: 'user-1',
+              bucket,
+              key,
+              value: JSON.stringify(valueOfKey(bucket, key)),
+            })),
+          );
+        }
+
+        const result = await storage.multiget({
+          userEntityRef: 'user-1',
+          // Include a missing key which shouldn't exist in the result
+          items: [...items, { bucket: 'missing', key: 'missing' }],
+        });
+        expect(result).toEqual([
+          ...items.map(({ bucket, key }) => ({
+            value: valueOfKey(bucket, key),
+          })),
+          null, // The missing key
+        ]);
+
+        const rows = await knex<RawDbUserSettingsRow>('user_settings')
+          .where('user_entity_ref', 'user-1')
+          .count<{ count: string }[]>('* as count');
+        const savedRows = Number(rows[0].count);
+        expect(savedRows).toEqual(BUCKETS * KEYS_PER_BUCKET);
+      });
+    });
+
     describe('set', () => {
       it('should insert a new setting', async () => {
         await storage.set({
