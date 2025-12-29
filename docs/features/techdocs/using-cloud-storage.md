@@ -172,15 +172,17 @@ TechDocs will publish documentation to this bucket and will fetch files from
 here to serve documentation in Backstage. Note that the bucket names are
 globally unique.
 
-Set the config `techdocs.publisher.awsS3.bucketName` in your `app-config.yaml`
-to the name of the bucket you just created.
+Set the bucket name and region in your `app-config.yaml` to the name of the bucket you just created:
 
 ```yaml
 techdocs:
   publisher:
     type: 'awsS3'
+/* highlight-add-start */
     awsS3:
       bucketName: 'name-of-techdocs-storage-bucket'
+      region: 'us-east-1'
+/* highlight-add-end */
 ```
 
 **3. Create minimal AWS IAM policies to manage TechDocs**
@@ -266,7 +268,7 @@ environment automatically by defining appropriate IAM role with access to the
 bucket. Read more in the
 [official AWS documentation for using IAM roles](https://docs.aws.amazon.com/general/latest/gr/aws-access-keys-best-practices.html#use-roles).
 
-**4b. Authentication using app-config.yaml**
+**4b. Authentication using app-config.yaml via aws.accounts**
 
 AWS credentials and region can be provided to the AWS SDK via `app-config.yaml`.
 If the configs below are present, they will be used over existing `AWS_*`
@@ -290,7 +292,45 @@ aws:
 Refer to the
 [official AWS documentation for obtaining the credentials](https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/setting-credentials-node.html).
 
-**4c. Authentication using an assumed role** Users with multiple AWS accounts
+**4c. Authentication using app-config.yaml via integrations.awsS3**
+
+If you already have an [AWS S3 integration](../../integrations/aws-s3/locations.md), you can use it to authenticate with AWS S3:
+
+```yaml
+techdocs:
+  publisher:
+    type: 'awsS3'
+    awsS3:
+      bucketName: 'name-of-techdocs-storage-bucket'
+      region: 'eu-west-1'
+integrations:
+  awsS3:
+    - accessKeyId: ${AWS_ACCESS_KEY_ID}
+      secretAccessKey: ${AWS_SECRET_ACCESS_KEY}
+```
+
+This will use the credentials from the integration to authenticate with AWS S3 and it does not require any additional configuration in the `app-config.yaml`. However, **if you have multiple S3 integrations**, you **must** specify the target integration by setting the `accessKeyId` in the `techdocs.publisher.awsS3.credentials` config:
+
+```yaml
+techdocs:
+  publisher:
+    type: 'awsS3'
+    awsS3:
+      bucketName: 'name-of-techdocs-storage-bucket'
+      region: 'eu-west-1'
+/* highlight-add-start */
+      credentials:
+        accessKeyId: ${AWS_ACCESS_KEY_ID_1}
+/* highlight-add-end */
+integrations:
+  awsS3:
+    - accessKeyId: ${AWS_ACCESS_KEY_ID_1}
+      secretAccessKey: ${AWS_SECRET_ACCESS_KEY_1}
+    - accessKeyId: ${AWS_ACCESS_KEY_ID_2}
+      secretAccessKey: ${AWS_SECRET_ACCESS_KEY_2}
+```
+
+**4d. Authentication using an assumed role** Users with multiple AWS accounts
 may want to use a role for S3 storage that is in a different AWS account. Using
 the `roleArn` parameter as seen below, you can instruct the TechDocs publisher
 to assume a role before accessing S3.
