@@ -55,3 +55,5 @@ export default createFrontendPlugin({
   // TODO(Rugvip): Nav item (i.e. NotificationsSidebarItem) currently needs to be installed manually
   extensions: [page, api],
 });
+
+export { notificationsTranslationRef } from './translation';
