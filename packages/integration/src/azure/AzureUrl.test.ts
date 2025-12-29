@@ -27,6 +27,7 @@ describe('AzureUrl', () => {
     expect(url.getRepo()).toBe('my-project');
     expect(url.getRef()).toBeUndefined();
     expect(url.getPath()).toBeUndefined();
+    expect(url.getPrefix()).toBeUndefined();
 
     expect(url.toRepoUrl()).toBe(
       'https://dev.azure.com/my-org/_git/my-project',
@@ -52,6 +53,7 @@ describe('AzureUrl', () => {
     expect(url.getRepo()).toBe('my-project');
     expect(url.getRef()).toBeUndefined();
     expect(url.getPath()).toBe('/test.yaml');
+    expect(url.getPrefix()).toBeUndefined();
 
     expect(url.toRepoUrl()).toBe(
       'https://dev.azure.com/my-org/_git/my-project?path=%2Ftest.yaml',
@@ -67,7 +69,7 @@ describe('AzureUrl', () => {
     );
   });
 
-  it('should work with the short URL form with a path and ref', () => {
+  it('should work with the short URL form with a path and branch ref', () => {
     const url = AzureUrl.fromRepoUrl(
       'https://dev.azure.com/my-org/_git/my-project?path=%2Ftest.yaml&version=GBtest-branch',
     );
@@ -77,6 +79,7 @@ describe('AzureUrl', () => {
     expect(url.getRepo()).toBe('my-project');
     expect(url.getRef()).toBe('test-branch');
     expect(url.getPath()).toBe('/test.yaml');
+    expect(url.getPrefix()).toBe('GB');
 
     expect(url.toRepoUrl()).toBe(
       'https://dev.azure.com/my-org/_git/my-project?path=%2Ftest.yaml&version=GBtest-branch',
@@ -92,6 +95,32 @@ describe('AzureUrl', () => {
     );
   });
 
+  it('should work with the short URL form with a path and tag ref', () => {
+    const url = AzureUrl.fromRepoUrl(
+      'https://dev.azure.com/my-org/_git/my-project?path=%2Ftest.yaml&version=GTtest-tag',
+    );
+
+    expect(url.getOwner()).toBe('my-org');
+    expect(url.getProject()).toBe('my-project');
+    expect(url.getRepo()).toBe('my-project');
+    expect(url.getRef()).toBe('test-tag');
+    expect(url.getPath()).toBe('/test.yaml');
+    expect(url.getPrefix()).toBe('GT');
+
+    expect(url.toRepoUrl()).toBe(
+      'https://dev.azure.com/my-org/_git/my-project?path=%2Ftest.yaml&version=GTtest-tag',
+    );
+    expect(url.toFileUrl()).toBe(
+      'https://dev.azure.com/my-org/my-project/_apis/git/repositories/my-project/items?api-version=6.0&path=%2Ftest.yaml&version=test-tag',
+    );
+    expect(url.toArchiveUrl()).toBe(
+      'https://dev.azure.com/my-org/my-project/_apis/git/repositories/my-project/items?recursionLevel=full&download=true&api-version=6.0&scopePath=%2Ftest.yaml&version=test-tag',
+    );
+    expect(url.toCommitsUrl()).toBe(
+      'https://dev.azure.com/my-org/my-project/_apis/git/repositories/my-project/commits?api-version=6.0&searchCriteria.itemVersion.version=test-tag',
+    );
+  });
+
   it('should work with the long URL', () => {
     const url = AzureUrl.fromRepoUrl(
       'http://my-host/my-org/my-project/_git/my-repo',
@@ -102,6 +131,7 @@ describe('AzureUrl', () => {
     expect(url.getRepo()).toBe('my-repo');
     expect(url.getRef()).toBeUndefined();
     expect(url.getPath()).toBeUndefined();
+    expect(url.getPrefix()).toBeUndefined();
 
     expect(url.toRepoUrl()).toBe(
       'http://my-host/my-org/my-project/_git/my-repo',
@@ -117,7 +147,7 @@ describe('AzureUrl', () => {
     );
   });
 
-  it('should work with the long URL form with a path and ref', () => {
+  it('should work with the long URL form with a path and branch ref', () => {
     const url = AzureUrl.fromRepoUrl(
       'http://my-host/my-org/my-project/_git/my-repo?path=%2Ffolder&version=GBtest-branch',
     );
@@ -127,6 +157,7 @@ describe('AzureUrl', () => {
     expect(url.getRepo()).toBe('my-repo');
     expect(url.getRef()).toBe('test-branch');
     expect(url.getPath()).toBe('/folder');
+    expect(url.getPrefix()).toBe('GB');
 
     expect(url.toRepoUrl()).toBe(
       'http://my-host/my-org/my-project/_git/my-repo?path=%2Ffolder&version=GBtest-branch',
@@ -142,6 +173,32 @@ describe('AzureUrl', () => {
     );
   });
 
+  it('should work with the long URL form with a path and tag ref', () => {
+    const url = AzureUrl.fromRepoUrl(
+      'http://my-host/my-org/my-project/_git/my-repo?path=%2Ffolder&version=GTtest-tag',
+    );
+
+    expect(url.getOwner()).toBe('my-org');
+    expect(url.getProject()).toBe('my-project');
+    expect(url.getRepo()).toBe('my-repo');
+    expect(url.getRef()).toBe('test-tag');
+    expect(url.getPath()).toBe('/folder');
+    expect(url.getPrefix()).toBe('GT');
+
+    expect(url.toRepoUrl()).toBe(
+      'http://my-host/my-org/my-project/_git/my-repo?path=%2Ffolder&version=GTtest-tag',
+    );
+    expect(url.toFileUrl()).toBe(
+      'http://my-host/my-org/my-project/_apis/git/repositories/my-repo/items?api-version=6.0&path=%2Ffolder&version=test-tag',
+    );
+    expect(url.toArchiveUrl()).toBe(
+      'http://my-host/my-org/my-project/_apis/git/repositories/my-repo/items?recursionLevel=full&download=true&api-version=6.0&scopePath=%2Ffolder&version=test-tag',
+    );
+    expect(url.toCommitsUrl()).toBe(
+      'http://my-host/my-org/my-project/_apis/git/repositories/my-repo/commits?api-version=6.0&searchCriteria.itemVersion.version=test-tag',
+    );
+  });
+
   it('should work with the old tfs long URL', () => {
     const url = AzureUrl.fromRepoUrl(
       'http://my-host/tfs/projects/my-project/_git/my-repo',
@@ -152,9 +209,10 @@ describe('AzureUrl', () => {
     expect(url.getRepo()).toBe('my-repo');
     expect(url.getRef()).toBeUndefined();
     expect(url.getPath()).toBeUndefined();
+    expect(url.getPrefix()).toBeUndefined();
   });
 
-  it('should work with the old tfs long URL form with a path and ref', () => {
+  it('should work with the old tfs long URL form with a path and branch ref', () => {
     const url = AzureUrl.fromRepoUrl(
       'http://my-host/tfs/projects/my-project/_git/my-repo?path=%2Ffolder&version=GBtest-branch',
     );
@@ -164,14 +222,28 @@ describe('AzureUrl', () => {
     expect(url.getRepo()).toBe('my-repo');
     expect(url.getRef()).toBe('test-branch');
     expect(url.getPath()).toBe('/folder');
+    expect(url.getPrefix()).toBe('GB');
   });
 
-  it('should reject non-branch refs', () => {
+  it('should work with the old tfs long URL form with a path and tag ref', () => {
+    const url = AzureUrl.fromRepoUrl(
+      'http://my-host/tfs/projects/my-project/_git/my-repo?path=%2Ffolder&version=GTtest-tag',
+    );
+
+    expect(url.getOwner()).toBe('tfs/projects');
+    expect(url.getProject()).toBe('my-project');
+    expect(url.getRepo()).toBe('my-repo');
+    expect(url.getRef()).toBe('test-tag');
+    expect(url.getPath()).toBe('/folder');
+    expect(url.getPrefix()).toBe('GT');
+  });
+
+  it('should reject non-branch and non-tag refs', () => {
     expect(() =>
       AzureUrl.fromRepoUrl(
         'https://dev.azure.com/my-org/_git/my-project?version=GC6eead79870d998a3befd4bc7c72cc89e446f2970',
       ),
-    ).toThrow('Azure URL version must point to a git branch');
+    ).toThrow('Azure URL version must point to a git branch or git tag');
   });
 
   it('should reject non-repo URLs', () => {
