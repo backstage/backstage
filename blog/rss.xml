@@ -4,10 +4,59 @@
         <title>Backstage Software Catalog and Developer Platform Blog</title>
         <link>https://backstage.io/blog</link>
         <description>Backstage Software Catalog and Developer Platform Blog</description>
-        <lastBuildDate>Tue, 25 Nov 2025 00:00:00 GMT</lastBuildDate>
+        <lastBuildDate>Tue, 30 Dec 2025 00:00:00 GMT</lastBuildDate>
         <docs>https://validator.w3.org/feed/docs/rss2.html</docs>
         <generator>https://github.com/jpmonette/feed</generator>
         <language>en</language>
+        <item>
+            <title><![CDATA[Backstage Wrapped 2025: Celebrating a mature framework with modern foundations]]></title>
+            <link>https://backstage.io/blog/2025/12/30/backstage-wrapped-2025</link>
+            <guid>https://backstage.io/blog/2025/12/30/backstage-wrapped-2025</guid>
+            <pubDate>Tue, 30 Dec 2025 00:00:00 GMT</pubDate>
+            <description><![CDATA[Let's blast into the New Year with a quick look back at all the big hits — backend, frontend, AI, UI, and more! See how today's Backstage is ready to build the future of developer experience.]]></description>
+            <content:encoded><![CDATA[<p><img decoding="async" loading="lazy" alt="Let&amp;#39;s blast into the New Year with a quick look back at all the big hits — backend, frontend, AI, UI, and more! See how today&amp;#39;s Backstage is ready to build the future of developer experience." src="https://backstage.io/assets/images/wrapped2025-e9778ec7bc8d695246bd5e513137fb52.png" width="1800" height="945" class="img_ev3q"></p>
+<p>This year was another big one for Backstage and our worldwide community of adopters, contributors, and partners. Backstage turned five, the New Frontend System became adoption-ready, and your favorite platform for developer experience gained AI superpowers with the introduction of the Actions Registry and MCP server support. Let's blast into the New Year with a quick look back, along with a peek around the corner at what's coming next.</p>
+<!-- -->
+<hr>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="busy-beavers-here-there-and-everywhere">Busy beavers here, there, and everywhere<a href="https://backstage.io/blog/2025/12/30/backstage-wrapped-2025#busy-beavers-here-there-and-everywhere" class="hash-link" aria-label="Direct link to Busy beavers here, there, and everywhere" title="Direct link to Busy beavers here, there, and everywhere">​</a></h2>
+<p>As in years past, we've visualized how our vibrant global community lights up the Backstage open source repo with enthusiasm, creativity, and commits. This year, we're visualizing contributions to the Community Plugins repo, too. Can you spot your name in the videos below?</p>
+<iframe src="https://www.youtube.com/embed/-D8PGN1tPn8" width="100%" height="440" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
+<p><em>All 7.7k commits to <code>backstage/backstage</code> in 2025</em></p>
+<iframe src="https://www.youtube.com/embed/Vaz0AbOJdi0" width="100%" height="440" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
+<p><em>All 3.3k commits to <code>backstage/community-plugins</code> in 2025</em></p>
+<p>Couldn't spot your name in the videos? Here's one more chance — every contributor who helped shape Backstage in 2025, all in one picture.</p>
+<p><img decoding="async" loading="lazy" alt="Backstage 2025 contributors" src="https://backstage.io/assets/images/contributors-wrapped-2025-bdf31bc1a956d0731c7c073b363d5787.png" width="2944" height="2646" class="img_ev3q"></p>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="mature-for-a-five-year-old">Mature for a five-year-old<a href="https://backstage.io/blog/2025/12/30/backstage-wrapped-2025#mature-for-a-five-year-old" class="hash-link" aria-label="Direct link to Mature for a five-year-old" title="Direct link to Mature for a five-year-old">​</a></h2>
+<p><img decoding="async" loading="lazy" alt="Backstage community stats: 3.4k+ adopters, 1,8k contributors, 15k Discord members, 7k project forks, 68k total contributions, 250+ open source plugins, 31k stars" src="https://backstage.io/assets/images/wrapped2025-stats-f3a479e9c2c7b82ae435f7ec8161b5f0.png" width="1999" height="1125" class="img_ev3q">
+<em>The growing Backstage ecosystem, by the numbers</em></p>
+<p>Earlier this year, the Backstage project <a href="https://www.youtube.com/watch?v=JqG1wey7-Ao&amp;t=563s&amp;list=PL8iP9yIjU0Q3K8LV_a9CcFmhvvNTAUzL1" target="_blank" rel="noopener noreferrer">celebrated its 5th birthday</a> on the main stage at <a href="https://backstage.io/blog/2025/04/29/backstagecon-kubecon-25-london#big-birthday-energy-on-the-big-stage" target="_blank" rel="noopener noreferrer">KubeCon + CloudNativeCon in London</a>.</p>
+<p>While the framework still isn't old enough to shave, it's matured into the industry standard for internal developer portals (IDPs). According to <a href="https://newsletter.getdx.com/p/backstage-and-the-developer-portal-market" target="_blank" rel="noopener noreferrer">this DX survey</a> released in March:</p>
+<blockquote>
+<p>Backstage is dominating the IDP market, holding an impressive 89% market share compared to SaaS competitors and achieving a remarkable 67% overall market penetration. These percentages are even higher for enterprise companies.</p>
+</blockquote>
+<p>As you can see above in the <a href="https://www.youtube.com/watch?v=Wih0a1v1Et0&amp;list=PL8iP9yIjU0Q33vpSaBlAvIhgDb-9smXUU" target="_blank" rel="noopener noreferrer">latest project stats</a>, the Backstage ecosystem continues to expand, growing in adopters and contributors, as well as plugins and third-party service providers.</p>
+<p>Want to dive into more Backstage stats? Check out the project's health scores and more on the relaunched <a href="https://insights.linuxfoundation.org/project/backstage" target="_blank" rel="noopener noreferrer">LFX Insights</a> site.</p>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="building-the-future-on-modern-foundations">Building the future on modern foundations<a href="https://backstage.io/blog/2025/12/30/backstage-wrapped-2025#building-the-future-on-modern-foundations" class="hash-link" aria-label="Direct link to Building the future on modern foundations" title="Direct link to Building the future on modern foundations">​</a></h2>
+<p>Just because Backstage has cemented its place as the standard for IDPs doesn't mean it's sitting still. From backend to frontend, from AI to UI, the technical foundations of the platform have been modernized, updated, and revamped — this is why today's Backstage is ready to build the future of developer experience.</p>
+<p>Top 2025 highlights:</p>
+<ul>
+<li>Goodbye to the old backend system</li>
+<li>New Frontend System is adoption-ready</li>
+<li>Hello to the Actions Registry + MCP server support</li>
+<li>Introducing a new design system with Backstage UI</li>
+</ul>
+<p>With the <a href="https://backstage.io/docs/backend-system/" target="_blank" rel="noopener noreferrer">New Backend System</a> released as a stable 1.0 last year and the <a href="https://backstage.io/docs/frontend-system/" target="_blank" rel="noopener noreferrer">New Frontend System</a> becoming <a href="https://backstage.io/docs/releases/v1.42.0" target="_blank" rel="noopener noreferrer">adoption-ready</a> this year, Backstage is easier than ever to use, maintain, and build on — making it both more accessible and more capable for adopters, old and new.</p>
+<p>This year also saw the debut of the <a href="https://backstage.io/docs/backend-system/core-services/actions-registry" target="_blank" rel="noopener noreferrer">Actions Registry</a> and MCP server support — so now Backstage can empower both your human developers and their AI helpers.</p>
+<p>And <a href="https://ui.backstage.io/" target="_blank" rel="noopener noreferrer">Backstage UI</a> is coming! The alpha release of the upcoming design system made huge strides in 2025, preparing the way for a new level of usability throughout the Backstage experience.</p>
+<p>Catch up on a whole year's worth of improvements — and see where Backstage is heading next — in the recordings below.</p>
+<iframe src="https://www.youtube.com/embed/anqWhSnN7sA" width="100%" height="440" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
+<p><em>Watch the Backstage maintainers' talk at <a href="https://backstage.io/blog/2025/04/29/backstagecon-kubecon-25-london" target="_blank" rel="noopener noreferrer">KubeCon in London</a>, where they demoed the New Frontend System and introduced the Actions Registry.</em></p>
+<iframe src="https://www.youtube.com/embed/evmmr-uxNsc" width="100%" height="440" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen=""></iframe>
+<p><em>Watch the maintainers' talk at <a href="https://backstage.io/blog/2025/11/25/backstagecon-kubecon-25-atlanta" target="_blank" rel="noopener noreferrer">KubeCon in Atlanta</a>, where they shared
+work towards an AI-Native Backstage, progress on Backstage UI, and more.</em></p>
+<h2 class="anchor anchorWithStickyNavbar_LWe7" id="see-you-in-2026">See you in 2026!<a href="https://backstage.io/blog/2025/12/30/backstage-wrapped-2025#see-you-in-2026" class="hash-link" aria-label="Direct link to See you in 2026!" title="Direct link to See you in 2026!">​</a></h2>
+<p>Happy New Year, Backstage Community! See you in the repos!</p>]]></content:encoded>
+        </item>
         <item>
             <title><![CDATA[Backstage in Atlanta: Highlights from BackstageCon and KubeCon + CloudNativeCon North America 2025]]></title>
             <link>https://backstage.io/blog/2025/11/25/backstagecon-kubecon-25-atlanta</link>
@@ -1473,50 +1522,6 @@ The <code>isolated-vm</code> repo has <a href="https://github.com/laverdet/isola
 <p>This change comes with the v1.15.0 release of Backstage that was released yesterday, so please make sure you are upgraded to the latest version of Backstage to keep your sandbox environments secure.</p>
 <p>For more guidance on how to upgrade, check out the documentation for <a href="https://backstage.io/docs/getting-started/keeping-backstage-updated" target="_blank" rel="noopener noreferrer">keeping Backstage updated</a>.</p>
 <p>If you have any further questions you can either reach out to us in the <a href="https://discord.gg/backstage-687207715902193673" target="_blank" rel="noopener noreferrer">Community Discord</a>, or in the <a href="https://info.backstage.spotify.com/office-hours" target="_blank" rel="noopener noreferrer">office hours</a>.</p>]]></content:encoded>
-        </item>
-        <item>
-            <title><![CDATA[Welcome: Backstage Deploy CLI (Alpha)]]></title>
-            <link>https://backstage.io/blog/2023/05/06/backstage-deploy-alpha</link>
-            <guid>https://backstage.io/blog/2023/05/06/backstage-deploy-alpha</guid>
-            <pubDate>Sat, 06 May 2023 00:00:00 GMT</pubDate>
-            <description><![CDATA[This blog post is co-authored by Emma White (@ewhite1997), Spotify.]]></description>
-            <content:encoded><![CDATA[<p><em>This blog post is co-authored by Emma White (<a href="https://github.com/ewhite1997" target="_blank" rel="noopener noreferrer">@ewhite1997</a>), Spotify.</em></p>
-<p><img decoding="async" loading="lazy" alt="Backstage Deploy banner" src="https://backstage.io/assets/images/Welcome-Backstage-Deploy-951eb8990a99cd89400cb7d9b2c178e9.png" width="738" height="415" class="img_ev3q"></p>
-<p>TL;DR: Backstage released a new CLI earlier this year as part of a <a href="https://github.com/backstage/backstage-deploy" target="_blank" rel="noopener noreferrer">new Backstage project</a>. This new capability allows early adopters to deploy their Backstage proof of concept faster than before. In this blog, you’ll learn a little bit more about the Deploy CLI and how you can get started with it.</p>
-<!-- -->
-<h2 class="anchor anchorWithStickyNavbar_LWe7" id="why-backstage-deploy">Why Backstage Deploy<a href="https://backstage.io/blog/2023/05/06/backstage-deploy-alpha#why-backstage-deploy" class="hash-link" aria-label="Direct link to Why Backstage Deploy" title="Direct link to Why Backstage Deploy">​</a></h2>
-<p>We’ve heard from Backstage adopters that before reaching widespread adoption at their organizations, teams test out a Backstage proof of concept (POC). To create the POC, teams scaffold an instance, set up the catalog, and change the UI to suit their company’s branding. Once these milestones are completed, there's just one last step before showing off the awesomeness of a Backstage POC internally... deploying the Backstage POC from a local machine to the cloud. This final step often introduces a lot of questions that attempt to determine the easiest and fastest way to do that.</p>
-<p>Let’s say you’re at this last step: your POC is ready for deployment, but you have some lingering questions.</p>
-<p>For example:</p>
-<ul>
-<li>What Dockerfile should you use?</li>
-<li>Should the POC be deployed on Kubernetes?</li>
-<li>How do you deploy the POC on my cloud provider?</li>
-</ul>
-<p>To address these questions and reduce friction from deploying a POC, we built a <a href="https://github.com/backstage/backstage-deploy" target="_blank" rel="noopener noreferrer">new CLI</a>. The CLI is simply called <code>deploy</code> and is invocable with <code>npx</code>. With this new CLI, you can generate a Dockerfile and deploy a Backstage instance onto a preferred cloud provider. While the package’s infrastructure is built to support all cloud providers, currently the CLI only offers an AWS implementation. In the future, we plan to add additional cloud providers to the package and <a href="https://github.com/backstage/backstage/blob/6996b3338d678efc03307112524060e9dc2ad769/CONTRIBUTING.md" target="_blank" rel="noopener noreferrer">welcome any contributions</a> extending the suite of cloud provider implementations!</p>
-<p><strong>So, what about Kubernetes?</strong> Since the CLI is designed specifically for the POC phase, we believe that Kubernetes isn’t the right fit – as Kubernetes is better suited for production workloads. So, we explored lightweight, container-based solutions, and landed on <a href="https://docs.aws.amazon.com/lightsail/index.html" target="_blank" rel="noopener noreferrer">Amazon Lightsail</a> as a hosting service for the POC.
-Amazon Lightsail supports <a href="https://lightsail.aws.amazon.com/ls/docs/en_us/articles/amazon-lightsail-container-services" target="_blank" rel="noopener noreferrer">lightweight container</a> deployments <a href="https://aws.amazon.com/lightsail/pricing/" target="_blank" rel="noopener noreferrer">at a low cost</a>, and has a <a href="https://aws.amazon.com/lightsail/pricing/?loc=ft#AWS_Free_Tier" target="_blank" rel="noopener noreferrer">free trial for new users</a>! Given Lightsail’s ease of use and affordability, we recommend using Lightsail over Kubernetes to test out your Backstage POC.</p>
-<p>With the Dockerfile and Kubernetes questions answered, we just have to address how to actually deploy the POC. And that is where the new CLI comes in.</p>
-<h2 class="anchor anchorWithStickyNavbar_LWe7" id="get-started-with-deploy-cli">Get started with Deploy CLI<a href="https://backstage.io/blog/2023/05/06/backstage-deploy-alpha#get-started-with-deploy-cli" class="hash-link" aria-label="Direct link to Get started with Deploy CLI" title="Direct link to Get started with Deploy CLI">​</a></h2>
-<p>It's now time to put the Deploy CLI into action and deploy a Backstage POC. The following steps guide you through the deployment process.</p>
-<p>Deploy CLI makes use of <a href="https://www.pulumi.com/docs/" target="_blank" rel="noopener noreferrer">Pulumi</a> which is an infrastructure-as-code tool that helps provision resources in the cloud. Before you get started, ensure you have the <a href="https://www.pulumi.com/docs/cli/" target="_blank" rel="noopener noreferrer">Pulumi CLI</a> and <a href="https://docs.aws.amazon.com/cli/latest/userguide/getting-started-install.html" target="_blank" rel="noopener noreferrer">AWS CLI</a> installed on your local machine.</p>
-<p>You can find the step-by-step installation documentation for Pulumi under the <a href="https://backstage.io/docs/deployment/backstage-deploy/aws-lightsail" target="_blank" rel="noopener noreferrer">Deployment section</a>.</p>
-<p>But we summarize the steps to deploy your POC here. You can invoke the CLI you can use the following command:</p>
-<div class="language-bash codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#9CDCFE;--prism-background-color:#232323"><div class="codeBlockContent_biex"><pre tabindex="0" class="prism-code language-bash codeBlock_bY9V thin-scrollbar" style="color:#9CDCFE;background-color:#232323"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#9CDCFE"><span class="token plain">$ npx backstage-deploy aws --create-dockerfile</span><br></span><span class="token-line" style="color:#9CDCFE"><span class="token plain">Starting Pulumi</span><br></span><span class="token-line" style="color:#9CDCFE"><span class="token plain">successfully initialized stack</span><br></span><span class="token-line" style="color:#9CDCFE"><span class="token plain">installing aws plugin</span><span class="token punctuation" style="color:rgb(212, 212, 212)">..</span><span class="token plain">.</span><br></span><span class="token-line" style="color:#9CDCFE"><span class="token plain">plugins installed</span><br></span><span class="token-line" style="color:#9CDCFE"><span class="token plain">setting up config</span><br></span><span class="token-line" style="color:#9CDCFE"><span class="token plain">refreshing stack</span><span class="token punctuation" style="color:rgb(212, 212, 212)">..</span><span class="token plain">.</span><br></span><span class="token-line" style="color:#9CDCFE"><span class="token plain">Refreshing </span><span class="token punctuation" style="color:rgb(212, 212, 212)">(</span><span class="token plain">backstage</span><span class="token punctuation" style="color:rgb(212, 212, 212)">)</span><span class="token plain">:</span><br></span><span class="token-line" style="color:#9CDCFE"><span class="token plain" style="display:inline-block"></span><br></span><span class="token-line" style="color:#9CDCFE"><span class="token plain">Instance will live at:</span><br></span><span class="token-line" style="color:#9CDCFE"><span class="token plain">https://backstage-container-service.xxx.us-east-1.cs.amazonlightsail.com/</span><br></span></code></pre><div class="buttonGroup__atx"><button type="button" aria-label="Copy code to clipboard" title="Copy" class="clean-btn"><span class="copyButtonIcons_eSgA" aria-hidden="true"><svg viewBox="0 0 24 24" class="copyButtonIcon_y97N"><path fill="currentColor" d="M19,21H8V7H19M19,5H8A2,2 0 0,0 6,7V21A2,2 0 0,0 8,23H19A2,2 0 0,0 21,21V7A2,2 0 0,0 19,5M16,1H4A2,2 0 0,0 2,3V17H4V3H16V1Z"></path></svg><svg viewBox="0 0 24 24" class="copyButtonSuccessIcon_LjdS"><path fill="currentColor" d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"></path></svg></span></button></div></div></div>
-<p>Once you kick off the command it will create a Dockerfile for you in the root and Pulumi will start provisioning resources in AWS.
-Pulumi will then create a container based deployment in Amazon Lightsail.</p>
-<p>After you’re done with the POC, it’s easy to delete the AWS resources you provisioned and save you costs within AWS. You can do so with the following command:</p>
-<div class="language-bash codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#9CDCFE;--prism-background-color:#232323"><div class="codeBlockContent_biex"><pre tabindex="0" class="prism-code language-bash codeBlock_bY9V thin-scrollbar" style="color:#9CDCFE;background-color:#232323"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#9CDCFE"><span class="token plain">$ npx backstage-deploy aws </span><span class="token parameter variable" style="color:rgb(156, 220, 254)">--destroy</span><br></span></code></pre><div class="buttonGroup__atx"><button type="button" aria-label="Copy code to clipboard" title="Copy" class="clean-btn"><span class="copyButtonIcons_eSgA" aria-hidden="true"><svg viewBox="0 0 24 24" class="copyButtonIcon_y97N"><path fill="currentColor" d="M19,21H8V7H19M19,5H8A2,2 0 0,0 6,7V21A2,2 0 0,0 8,23H19A2,2 0 0,0 21,21V7A2,2 0 0,0 19,5M16,1H4A2,2 0 0,0 2,3V17H4V3H16V1Z"></path></svg><svg viewBox="0 0 24 24" class="copyButtonSuccessIcon_LjdS"><path fill="currentColor" d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"></path></svg></span></button></div></div></div>
-<h2 class="anchor anchorWithStickyNavbar_LWe7" id="looking-ahead">Looking ahead<a href="https://backstage.io/blog/2023/05/06/backstage-deploy-alpha#looking-ahead" class="hash-link" aria-label="Direct link to Looking ahead" title="Direct link to Looking ahead">​</a></h2>
-<p>As mentioned earlier in this blog, we released the Backstage Deploy CLI with an AWS implementation only. In the next few months, we are excited to collect feedback from our end users to understand how the AWS implementation works. With those learnings, we plan to iterate on the Deploy CLI and build out implementations for other cloud providers. Of course, contributions are always welcome!</p>
-<p>So, please try this new CLI out and let us know what you think on <a href="https://discord.com/channels/687207715902193673/995973463208644678" target="_blank" rel="noopener noreferrer">Discord</a>!</p>
-<p>Useful links:</p>
-<ul>
-<li><a href="https://github.com/backstage/backstage-deploy" target="_blank" rel="noopener noreferrer">Backstage Deploy</a></li>
-<li><a href="https://backstage.io/docs/deployment/backstage-deploy/aws-lightsail" target="_blank" rel="noopener noreferrer">Documentation</a></li>
-<li><a href="https://www.pulumi.com/docs/" target="_blank" rel="noopener noreferrer">Pulumi docs</a></li>
-<li><a href="https://discord.com/channels/687207715902193673/995973463208644678" target="_blank" rel="noopener noreferrer">#deployment</a> channel in Discord</li>
-</ul>]]></content:encoded>
         </item>
     </channel>
 </rss>
