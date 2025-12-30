@@ -47,6 +47,15 @@ const catalogEntityReadPermission: BasicPermission = {
   },
 };
 
+const catalogLocationReadResourcePermission = {
+  type: 'resource' as const,
+  name: 'catalog.location.read.resource',
+  attributes: {
+    action: 'read' as const,
+  },
+  resourceType: 'catalog-location',
+};
+
 describe('permissionsMiddleware', () => {
   const createMockPermissionsService = () => {
     const mockAuthorize = jest.fn();
@@ -71,7 +80,7 @@ describe('permissionsMiddleware', () => {
           operationId: 'getLocation',
           'x-backstage-permissions': {
             permission: 'catalog.location.read',
-            onDeny: 404,
+            onDeny: { statusCode: 404 },
           },
           parameters: [
             {
@@ -127,6 +136,117 @@ describe('permissionsMiddleware', () => {
           },
         },
       },
+      '/entities-empty-array': {
+        get: {
+          operationId: 'listEntitiesEmptyArray',
+          'x-backstage-permissions': {
+            permission: 'catalog.entity.read',
+            onDeny: { body: [] },
+          },
+          responses: {
+            '200': {
+              description: 'Success',
+            },
+          },
+        },
+      },
+      '/entity-empty-object': {
+        get: {
+          operationId: 'getEntityEmptyObject',
+          'x-backstage-permissions': {
+            permission: 'catalog.entity.read',
+            onDeny: { body: {} },
+          },
+          responses: {
+            '200': {
+              description: 'Success',
+            },
+          },
+        },
+      },
+      '/entities-custom-response': {
+        get: {
+          operationId: 'listEntitiesCustomResponse',
+          'x-backstage-permissions': {
+            permission: 'catalog.entity.read',
+            onDeny: { body: { items: [], totalCount: 0 } },
+          },
+          responses: {
+            '200': {
+              description: 'Success',
+            },
+          },
+        },
+      },
+      '/entities-custom-status': {
+        get: {
+          operationId: 'listEntitiesCustomStatus',
+          'x-backstage-permissions': {
+            permission: 'catalog.entity.read',
+            onDeny: { body: { test: '123' }, statusCode: 201 },
+          },
+          responses: {
+            '200': {
+              description: 'Success',
+            },
+          },
+        },
+      },
+      '/locations-resource/{id}': {
+        get: {
+          operationId: 'getLocationResource',
+          'x-backstage-permissions': {
+            permission: 'catalog.location.read.resource',
+            resourceRef: {
+              from: 'path',
+              param: 'id',
+            },
+            onDeny: { statusCode: 404 },
+          },
+          parameters: [
+            {
+              name: 'id',
+              in: 'path',
+              required: true,
+              schema: {
+                type: 'string',
+              },
+            },
+          ],
+          responses: {
+            '200': {
+              description: 'Success',
+            },
+          },
+        },
+      },
+      '/locations-query-resource': {
+        get: {
+          operationId: 'getLocationByQuery',
+          'x-backstage-permissions': {
+            permission: 'catalog.location.read.resource',
+            resourceRef: {
+              from: 'query',
+              param: 'locationId',
+            },
+          },
+          parameters: [
+            {
+              name: 'locationId',
+              in: 'query',
+              required: true,
+              schema: {
+                type: 'string',
+              },
+            },
+          ],
+          responses: {
+            '200': {
+              description: 'Success',
+            },
+          },
+        },
+      },
       '/unknown': {
         get: {
           operationId: 'unknown',
@@ -169,6 +289,7 @@ describe('permissionsMiddleware', () => {
     mockPermissionsRegistry.listPermissions.mockReturnValue([
       catalogLocationReadPermission,
       catalogEntityReadPermission,
+      catalogLocationReadResourcePermission,
     ]);
     mockHttpAuth = mockServices.httpAuth.mock();
     permissionsMiddleware = permissionsMiddlewareFactory({
@@ -197,7 +318,7 @@ describe('permissionsMiddleware', () => {
     );
   });
 
-  it('throws NotFoundError when authorization denied and onDeny is 404', async () => {
+  it('throws NotFoundError when authorization denied and onDeny is { statusCode: 404 }', async () => {
     const { mockAuthorize } = mockPermissionsService;
     mockAuthorize.mockResolvedValue([{ result: AuthorizeResult.DENY }]);
 
@@ -213,7 +334,7 @@ describe('permissionsMiddleware', () => {
     });
   });
 
-  it('throws NotAllowedError when authorization denied and onDeny is 403', async () => {
+  it('throws NotAllowedError when authorization denied and onDeny defaults to { statusCode: 403 }', async () => {
     const { mockAuthorize } = mockPermissionsService;
     mockAuthorize.mockResolvedValue([{ result: AuthorizeResult.DENY }]);
 
@@ -303,6 +424,204 @@ describe('permissionsMiddleware', () => {
 
     expect(response.body.error.message).toContain(
       "Permission 'unknown.validateManually.permission' not found",
+    );
+  });
+
+  it('returns empty array when authorization denied and onDeny is { body: [] }', async () => {
+    const { mockAuthorize } = mockPermissionsService;
+    mockAuthorize.mockResolvedValue([{ result: AuthorizeResult.DENY }]);
+
+    router.get('/entities-empty-array', (_req, res) => {
+      res.json([{ id: '1' }, { id: '2' }]);
+    });
+
+    const response = await request(app)
+      .get('/entities-empty-array')
+      .expect(200);
+
+    expect(response.body).toEqual([]);
+  });
+
+  it('returns empty object when authorization denied and onDeny is { body: {} }', async () => {
+    const { mockAuthorize } = mockPermissionsService;
+    mockAuthorize.mockResolvedValue([{ result: AuthorizeResult.DENY }]);
+
+    router.get('/entity-empty-object', (_req, res) => {
+      res.json({ id: '1', name: 'Test' });
+    });
+
+    const response = await request(app).get('/entity-empty-object').expect(200);
+
+    expect(response.body).toEqual({});
+  });
+
+  it('returns custom object when authorization denied and onDeny is a custom object', async () => {
+    const { mockAuthorize } = mockPermissionsService;
+    mockAuthorize.mockResolvedValue([{ result: AuthorizeResult.DENY }]);
+
+    router.get('/entities-custom-response', (_req, res) => {
+      res.json({ items: [{ id: '1' }], totalCount: 1 });
+    });
+
+    const response = await request(app)
+      .get('/entities-custom-response')
+      .expect(200);
+
+    expect(response.body).toEqual({ items: [], totalCount: 0 });
+  });
+
+  it('calls handler when authorized with custom onDeny option', async () => {
+    const { mockAuthorize } = mockPermissionsService;
+    mockAuthorize.mockResolvedValue([{ result: AuthorizeResult.ALLOW }]);
+
+    const handler = jest.fn((_req, res) => {
+      res.json([{ id: '1' }, { id: '2' }]);
+    });
+
+    router.get('/entities-empty-array', handler);
+
+    const response = await request(app)
+      .get('/entities-empty-array')
+      .expect(200);
+
+    expect(handler).toHaveBeenCalled();
+    expect(response.body).toEqual([{ id: '1' }, { id: '2' }]);
+  });
+
+  it('returns custom status code with body when onDeny has both', async () => {
+    const { mockAuthorize } = mockPermissionsService;
+    mockAuthorize.mockResolvedValue([{ result: AuthorizeResult.DENY }]);
+
+    router.get('/entities-custom-status', (_req, res) => {
+      res.json([{ id: '1' }]);
+    });
+
+    const response = await request(app)
+      .get('/entities-custom-status')
+      .expect(201);
+
+    expect(response.body).toEqual({ test: '123' });
+  });
+
+  it('defaults to status 200 when only body is specified', async () => {
+    const { mockAuthorize } = mockPermissionsService;
+    mockAuthorize.mockResolvedValue([{ result: AuthorizeResult.DENY }]);
+
+    router.get('/entities-empty-array', (_req, res) => {
+      res.json([{ id: '1' }, { id: '2' }]);
+    });
+
+    const response = await request(app)
+      .get('/entities-empty-array')
+      .expect(200);
+
+    expect(response.body).toEqual([]);
+  });
+
+  it('extracts resourceRef from path parameters', async () => {
+    const { mockAuthorize } = mockPermissionsService;
+    mockAuthorize.mockResolvedValue([{ result: AuthorizeResult.ALLOW }]);
+
+    router.get('/locations-resource/:id', (_req, res) => {
+      res.json({ id: 'loc-123' });
+    });
+    router.use(middleware.error());
+
+    await request(app).get('/locations-resource/loc-123').expect(200);
+
+    expect(mockAuthorize).toHaveBeenCalledWith(
+      [
+        {
+          permission: catalogLocationReadResourcePermission,
+          resourceRef: 'loc-123',
+        },
+      ],
+      { credentials: undefined },
+    );
+  });
+
+  it('extracts resourceRef from query parameters', async () => {
+    const { mockAuthorize } = mockPermissionsService;
+    mockAuthorize.mockResolvedValue([{ result: AuthorizeResult.ALLOW }]);
+
+    router.get('/locations-query-resource', (_req, res) => {
+      res.json({ id: 'loc-456' });
+    });
+
+    await request(app)
+      .get('/locations-query-resource?locationId=loc-456')
+      .expect(200);
+
+    expect(mockAuthorize).toHaveBeenCalledWith(
+      [
+        {
+          permission: catalogLocationReadResourcePermission,
+          resourceRef: 'loc-456',
+        },
+      ],
+      { credentials: undefined },
+    );
+  });
+
+  it('returns 404 when resource permission denied with onDeny { statusCode: 404 }', async () => {
+    const { mockAuthorize } = mockPermissionsService;
+    mockAuthorize.mockResolvedValue([{ result: AuthorizeResult.DENY }]);
+
+    router.get('/locations-resource/:id', (_req, res) => {
+      res.json({ id: 'loc-123' });
+    });
+    router.use(middleware.error());
+
+    const response = await request(app)
+      .get('/locations-resource/loc-123')
+      .expect(404);
+
+    expect(response.body.error).toMatchObject({
+      name: 'NotFoundError',
+    });
+  });
+
+  it('throws error when resourceRef specified for non-resource permission', async () => {
+    const badSpec = {
+      openapi: '3.0.2',
+      info: { title: 'Test', version: '1.0.0' },
+      paths: {
+        '/bad-resource/{id}': {
+          get: {
+            operationId: 'badResource',
+            'x-backstage-permissions': {
+              permission: 'catalog.entity.read', // basic permission
+              resourceRef: {
+                from: 'path',
+                param: 'id',
+              },
+            },
+            parameters: [
+              {
+                name: 'id',
+                in: 'path',
+                required: true,
+                schema: { type: 'string' },
+              },
+            ],
+            responses: { '200': { description: 'OK' } },
+          },
+        },
+      },
+    } as const;
+
+    const badRouter = createValidatedOpenApiRouter<typeof badSpec>(badSpec);
+    const badApp = express().use(badRouter);
+    badRouter.use(permissionsMiddleware);
+    badRouter.get('/bad-resource/:id', (_req, res) => {
+      res.json({ ok: true });
+    });
+    badRouter.use(middleware.error());
+
+    const response = await request(badApp).get('/bad-resource/123').expect(500);
+
+    expect(response.body.error.message).toContain(
+      'is not a resource permission, but resourceRef was specified',
     );
   });
 });

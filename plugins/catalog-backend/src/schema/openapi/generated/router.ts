@@ -1272,8 +1272,7 @@ export const spec = {
         operationId: 'CreateLocation',
         tags: ['Locations'],
         'x-backstage-permissions': {
-          permission: 'catalog.locations.create',
-          onDeny: 403,
+          permission: 'catalog.location.create',
         },
         description: 'Create a location for a given target.',
         responses: {
@@ -1350,8 +1349,10 @@ export const spec = {
         operationId: 'GetLocations',
         tags: ['Locations'],
         'x-backstage-permissions': {
-          permission: 'catalog.locations.read',
-          validateManually: true,
+          permission: 'catalog.location.read',
+          onDeny: {
+            body: [],
+          },
         },
         description: 'Get all locations',
         responses: {
@@ -1391,8 +1392,10 @@ export const spec = {
       get: {
         operationId: 'GetLocation',
         'x-backstage-permissions': {
-          permission: 'catalog.locations.read',
-          onDeny: 404,
+          permission: 'catalog.location.read',
+          onDeny: {
+            statusCode: 404,
+          },
         },
         tags: ['Locations'],
         description: 'Get a location by id.',
@@ -1432,7 +1435,7 @@ export const spec = {
       delete: {
         operationId: 'DeleteLocation',
         'x-backstage-permissions': {
-          permission: 'catalog.locations.delete',
+          permission: 'catalog.location.delete',
         },
         tags: ['Locations'],
         description: 'Delete a location by id.',
@@ -1472,8 +1475,10 @@ export const spec = {
         tags: ['Locations'],
         description: 'Get a location for entity.',
         'x-backstage-permissions': {
-          permission: 'catalog.locations.read',
-          onDeny: 404,
+          permission: 'catalog.location.read',
+          onDeny: {
+            statusCode: 404,
+          },
         },
         responses: {
           '200': {
@@ -1531,6 +1536,9 @@ export const spec = {
       post: {
         operationId: 'AnalyzeLocation',
         tags: ['Locations'],
+        'x-backstage-permissions': {
+          permission: 'catalog.location.analyze',
+        },
         description: 'Validate a given location.',
         responses: {
           '200': {
@@ -1582,6 +1590,9 @@ export const spec = {
       post: {
         operationId: 'ValidateEntity',
         tags: ['Entity'],
+        'x-backstage-permissions': {
+          permission: 'catalog.entity.validate',
+        },
         description:
           'Validate that a passed in entity has no errors in schema.',
         responses: {

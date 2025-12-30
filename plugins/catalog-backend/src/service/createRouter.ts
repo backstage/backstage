@@ -39,7 +39,6 @@ import { Cursor, EntitiesCatalog } from '../catalog/types';
 import { CatalogProcessingOrchestrator } from '../processing/types';
 import { validateEntityEnvelope } from '../processing/util';
 import { createOpenApiRouter } from '../schema/openapi';
-import { AuthorizedValidationService } from './AuthorizedValidationService';
 import {
   basicEntityFilter,
   entitiesBatchRequest,
@@ -788,27 +787,19 @@ export async function createRouter(
         });
       }
 
-      const credentials = await httpAuth.credentials(req);
-      const authorizedValidationService = new AuthorizedValidationService(
-        orchestrator,
-        permissionsService,
-      );
-      const processingResult = await authorizedValidationService.process(
-        {
-          entity: {
-            ...entity,
-            metadata: {
-              ...entity.metadata,
-              annotations: {
-                [ANNOTATION_LOCATION]: body.location,
-                [ANNOTATION_ORIGIN_LOCATION]: body.location,
-                ...entity.metadata.annotations,
-              },
+      const processingResult = await orchestrator.process({
+        entity: {
+          ...entity,
+          metadata: {
+            ...entity.metadata,
+            annotations: {
+              [ANNOTATION_LOCATION]: body.location,
+              [ANNOTATION_ORIGIN_LOCATION]: body.location,
+              ...entity.metadata.annotations,
             },
           },
         },
-        credentials,
-      );
+      });
 
       if (!processingResult.ok) {
         const errors = processingResult.errors.map(e => serializeError(e));
