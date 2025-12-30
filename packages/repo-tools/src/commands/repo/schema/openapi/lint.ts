@@ -70,6 +70,8 @@ async function lint(directoryPath: string, config?: { strict: boolean }) {
             'no-unknown-error-format': 'off',
             // Disabled as it currently gives false positives when 'example' is used as a property name.
             'oas3-valid-media-example': 'off',
+            // allow types for /health endpoints without requiring health format
+            'api-health-format': 'off',
           },
         },
       ],
