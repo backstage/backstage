@@ -1,5 +1,13 @@
 # @backstage/plugin-home
 
+## 0.8.16-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.5-next.0
+  - @backstage/frontend-plugin-api@0.13.2
+
 ## 0.8.15
 
 ### Patch Changes

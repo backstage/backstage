@@ -1,5 +1,12 @@
 # @backstage/plugin-scaffolder-backend-module-sentry
 
+## 0.2.17-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.12.3-next.0
+
 ## 0.2.16
 
 ### Patch Changes

@@ -1,5 +1,20 @@
 # example-backend
 
+## 0.0.46-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.14.1-next.1
+  - @backstage/plugin-techdocs-backend@2.1.4-next.1
+  - @backstage/plugin-catalog-backend@3.3.1-next.1
+  - @backstage/plugin-catalog-backend-module-openapi@0.2.18-next.0
+  - @backstage/plugin-scaffolder-backend@3.1.1-next.1
+  - @backstage/plugin-scaffolder-backend-module-github@0.9.4-next.0
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.16-next.0
+  - @backstage/plugin-scaffolder-backend-module-notifications@0.1.18-next.0
+  - @backstage/plugin-search-backend-module-techdocs@0.4.10-next.0
+
 ## 0.0.46-next.0
 
 ### Patch Changes
