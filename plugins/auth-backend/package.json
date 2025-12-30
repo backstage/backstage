@@ -76,6 +76,7 @@
     "@types/express": "^4.17.6",
     "@types/express-session": "^1.17.2",
     "@types/passport": "^1.0.3",
+    "msw": "^1.0.0",
     "supertest": "^7.0.0"
   },
   "configSchema": "config.d.ts"
