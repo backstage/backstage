@@ -47,6 +47,16 @@ paths:
           allowReserved: true
           schema:
             type: string
+        - name: unknown
+          in: query
+          required: false
+          # explode form is the equivalent to allow any extra query parameters
+          style: form
+          explode: true
+          allowReserved: true
+          schema:
+            type: object
+            additionalProperties: {}
       responses:
         '302':
           description: Redirect to the provider's authorization endpoint
@@ -105,6 +115,16 @@ paths:
           allowReserved: true
           schema:
             type: string
+        - name: unknown
+          in: query
+          required: false
+          # explode form is the equivalent to allow any extra query parameters
+          style: form
+          explode: true
+          allowReserved: true
+          schema:
+            type: object
+            additionalProperties: {}
       responses:
         '200':
           description: Authentication successful, returns HTML frame with token
@@ -144,6 +164,16 @@ paths:
             type: string
             example: google
           allowReserved: true
+        - name: unknown
+          in: query
+          required: false
+          # explode form is the equivalent to allow any extra query parameters
+          style: form
+          explode: true
+          allowReserved: true
+          schema:
+            type: object
+            additionalProperties: {}
       requestBody:
         required: false
         content:
@@ -205,6 +235,16 @@ paths:
           schema:
             type: string
             example: google
+        - name: unknown
+          in: query
+          required: false
+          # explode form is the equivalent to allow any extra query parameters
+          style: form
+          explode: true
+          allowReserved: true
+          schema:
+            type: object
+            additionalProperties: {}
       requestBody:
         required: false
         content:
@@ -269,6 +309,16 @@ paths:
           allowReserved: true
           schema:
             type: string
+        - name: unknown
+          in: query
+          required: false
+          # explode form is the equivalent to allow any extra query parameters
+          style: form
+          explode: true
+          allowReserved: true
+          schema:
+            type: object
+            additionalProperties: {}
       responses:
         '200':
           description: Token refresh successful
@@ -310,6 +360,16 @@ paths:
           schema:
             type: string
             example: google
+        - name: unknown
+          in: query
+          required: false
+          # explode form is the equivalent to allow any extra query parameters
+          style: form
+          explode: true
+          allowReserved: true
+          schema:
+            type: object
+            additionalProperties: {}
       requestBody:
         required: false
         content:

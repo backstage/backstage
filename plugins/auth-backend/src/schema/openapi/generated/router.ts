@@ -87,6 +87,18 @@ export const spec = {
               type: 'string',
             },
           },
+          {
+            name: 'unknown',
+            in: 'query',
+            required: false,
+            style: 'form',
+            explode: true,
+            allowReserved: true,
+            schema: {
+              type: 'object',
+              additionalProperties: {},
+            },
+          },
         ],
         responses: {
           '302': {
@@ -173,6 +185,18 @@ export const spec = {
               type: 'string',
             },
           },
+          {
+            name: 'unknown',
+            in: 'query',
+            required: false,
+            style: 'form',
+            explode: true,
+            allowReserved: true,
+            schema: {
+              type: 'object',
+              additionalProperties: {},
+            },
+          },
         ],
         responses: {
           '200': {
@@ -234,6 +258,18 @@ export const spec = {
               example: 'google',
             },
             allowReserved: true,
+          },
+          {
+            name: 'unknown',
+            in: 'query',
+            required: false,
+            style: 'form',
+            explode: true,
+            allowReserved: true,
+            schema: {
+              type: 'object',
+              additionalProperties: {},
+            },
           },
         ],
         requestBody: {
@@ -325,6 +361,18 @@ export const spec = {
             schema: {
               type: 'string',
               example: 'google',
+            },
+          },
+          {
+            name: 'unknown',
+            in: 'query',
+            required: false,
+            style: 'form',
+            explode: true,
+            allowReserved: true,
+            schema: {
+              type: 'object',
+              additionalProperties: {},
             },
           },
         ],
@@ -422,6 +470,18 @@ export const spec = {
               type: 'string',
             },
           },
+          {
+            name: 'unknown',
+            in: 'query',
+            required: false,
+            style: 'form',
+            explode: true,
+            allowReserved: true,
+            schema: {
+              type: 'object',
+              additionalProperties: {},
+            },
+          },
         ],
         responses: {
           '200': {
@@ -481,6 +541,18 @@ export const spec = {
             schema: {
               type: 'string',
               example: 'google',
+            },
+          },
+          {
+            name: 'unknown',
+            in: 'query',
+            required: false,
+            style: 'form',
+            explode: true,
+            allowReserved: true,
+            schema: {
+              type: 'object',
+              additionalProperties: {},
             },
           },
         ],
