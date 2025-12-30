@@ -239,7 +239,6 @@ export class OidcService {
       'auth.experimentalClientIdMetadataDocuments.enabled',
     );
 
-    console.log('clientId', clientId);
     // Check if client_id is a CIMD URL
     if (isCimdUrl(clientId)) {
       if (!cimdEnabled) {
