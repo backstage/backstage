@@ -72,11 +72,7 @@ export type {
   SchedulerServiceTaskScheduleDefinition,
   SchedulerServiceTaskScheduleDefinitionConfig,
 } from './SchedulerService';
-export type {
-  SchemaService,
-  RegisterSchemaOptions,
-  CreateRouterOptions,
-} from './SchemaService';
+export type { SchemaService, CreateRouterOptions } from './SchemaService';
 export type {
   UrlReaderService,
   UrlReaderServiceReadTreeOptions,

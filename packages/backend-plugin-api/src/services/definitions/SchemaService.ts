@@ -14,27 +14,10 @@
  * limitations under the License.
  */
 
-import type { OpenAPIObject } from 'openapi3-ts';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { TypedRouter } from '../../../../backend-openapi-utils/src/router';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { EndpointMap } from '../../../../backend-openapi-utils/src/types';
-
-/**
- * Options for registering an OpenAPI schema.
- *
- * @public
- */
-export interface RegisterSchemaOptions {
-  /**
-   * Optional identifier for this schema.
-   *
-   * When multiple schemas are registered, this helps identify
-   * the source of each schema component. Use this when creating
-   * separate routers for different modules.
-   */
-  moduleId?: string;
-}
 
 /**
  * Options for creating an OpenAPI router.
@@ -42,12 +25,6 @@ export interface RegisterSchemaOptions {
  * @public
  */
 export interface CreateRouterOptions {
-  /**
-   * The module ID of the schema to use.
-   * If not specified, uses the default schema or throws if multiple schemas exist.
-   */
-  moduleId?: string;
-
   /**
    * OpenAPI validator options.
    *
@@ -114,7 +91,7 @@ export interface SchemaService {
    * @param spec - The OpenAPI specification to register
    * @param options - Registration options
    */
-  register(spec: unknown, options?: RegisterSchemaOptions): void;
+  register(spec: unknown): void;
 
   /**
    * Creates a type-safe Express router from a registered schema.
@@ -147,17 +124,4 @@ export interface SchemaService {
   createRouter<T extends EndpointMap>(
     options?: CreateRouterOptions,
   ): Promise<TypedRouter<T>>;
-
-  /**
-   * Retrieves the merged OpenAPI schema for documentation.
-   *
-   * @remarks
-   *
-   * If multiple schemas have been registered, this returns a merged schema
-   * combining all registered schemas. This is primarily used for serving
-   * a unified API documentation endpoint.
-   *
-   * @returns The merged OpenAPI schema, or undefined if no schemas are registered
-   */
-  getMergedSchema(): OpenAPIObject | undefined;
 }

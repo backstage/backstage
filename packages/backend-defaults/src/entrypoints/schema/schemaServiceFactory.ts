@@ -19,7 +19,6 @@ import {
   createServiceFactory,
 } from '@backstage/backend-plugin-api';
 import type {
-  RegisterSchemaOptions,
   CreateRouterOptions,
   SchemaService,
 } from '@backstage/backend-plugin-api';
@@ -28,16 +27,10 @@ import {
   TypedRouter,
 } from '@backstage/backend-openapi-utils';
 import type { internal } from '@backstage/backend-openapi-utils';
-import type { RequestHandler, Request, Response, NextFunction } from 'express';
+import type { RequestHandler } from 'express';
 import PromiseRouter from 'express-promise-router';
 import { OpenAPIObject } from 'openapi3-ts';
-import merge from 'lodash/merge';
 import cloneDeep from 'lodash/cloneDeep';
-
-interface RegisteredSchema {
-  spec: OpenAPIObject;
-  options?: RegisterSchemaOptions;
-}
 
 /**
  * OpenAPI schema management for plugins.
@@ -67,7 +60,7 @@ export const schemaServiceFactory = createServiceFactory({
     httpAuth: _httpAuth,
   }): Promise<SchemaService> {
     const pluginId = plugin.getId();
-    const schemas = new Map<string, RegisteredSchema>();
+    let schema: unknown | undefined = undefined;
 
     // Read plugin-specific config
     const schemaConfig = config.getOptionalConfig(`backend.schema.${pluginId}`);
@@ -83,42 +76,19 @@ export const schemaServiceFactory = createServiceFactory({
     );
 
     return {
-      register(spec: unknown, options?: RegisterSchemaOptions): void {
-        const moduleId = options?.moduleId || 'default';
+      register(spec: unknown): void {
+        logger.info(`Registering OpenAPI schema for plugin ${pluginId}`);
 
-        logger.info(
-          `Registering OpenAPI schema for plugin ${pluginId}${
-            options?.moduleId ? `, module ${options.moduleId}` : ''
-          }`,
-        );
-
-        schemas.set(moduleId, {
-          spec: cloneDeep(spec) as OpenAPIObject,
-          options,
-        });
+        schema = cloneDeep(spec) as OpenAPIObject;
       },
 
       async createRouter<T extends internal.EndpointMap>(
         options?: CreateRouterOptions,
       ): Promise<TypedRouter<T>> {
-        const moduleId = options?.moduleId || 'default';
-        let registered = schemas.get(moduleId);
-
-        if (!registered) {
-          if (schemas.size === 0) {
-            throw new Error(
-              `No schemas registered for plugin ${pluginId}. Call register() before createRouter().`,
-            );
-          }
-          if (schemas.size === 1) {
-            // Auto-select the only registered schema
-            const [singleSchema] = schemas.values();
-            registered = singleSchema;
-          } else {
-            throw new Error(
-              `Multiple schemas registered for plugin ${pluginId}. Specify moduleId in createRouter() options.`,
-            );
-          }
+        if (!schema) {
+          throw new Error(
+            `No schemas registered for plugin ${pluginId}. Call register() before createRouter().`,
+          );
         }
 
         const middleware: RequestHandler[] = [];
@@ -137,14 +107,12 @@ export const schemaServiceFactory = createServiceFactory({
         // }
 
         logger.debug(
-          `Creating router for ${pluginId}${
-            options?.moduleId ? `/${options.moduleId}` : ''
-          } with audit=${auditEnabled}, permissions=${permissionsEnabled}`,
+          `Creating router for ${pluginId} with audit=${auditEnabled}, permissions=${permissionsEnabled}`,
         );
 
         // Create outer router with validation
         const router = createValidatedOpenApiRouterFromGeneratedEndpointMap<T>(
-          registered.spec,
+          schema as OpenAPIObject,
           {
             middleware,
             validatorOptions: {
@@ -157,53 +125,10 @@ export const schemaServiceFactory = createServiceFactory({
         const pluginRoutes = PromiseRouter();
         router.use(pluginRoutes);
 
-        // Add error handlers AFTER pluginRoutes mount
-        // These will catch errors from routes added to pluginRoutes
-        if (auditEnabled) {
-          router.use(
-            (err: Error, req: Request, _res: Response, next: NextFunction) => {
-              // Mark audit event as failed
-              console.log(
-                `Audit error handler - to be implemented for ${req.path}`,
-              );
-              next(err);
-            },
-          );
-        }
+        // TODO: Post-route audit error handler.
 
         // Return the inner router for plugins to add routes to
         return pluginRoutes as typeof router;
-      },
-
-      getMergedSchema(): OpenAPIObject | undefined {
-        if (schemas.size === 0) {
-          return undefined;
-        }
-
-        if (schemas.size === 1) {
-          const [registered] = schemas.values();
-          return cloneDeep(registered.spec);
-        }
-
-        // Merge multiple schemas
-        const mergedSchema: OpenAPIObject = {
-          openapi: '3.0.0',
-          info: {
-            title: `${pluginId} API`,
-            version: '1.0.0',
-          },
-          paths: {},
-          components: {},
-        };
-
-        for (const [moduleId, registered] of schemas.entries()) {
-          logger.debug(
-            `Merging schema from module ${moduleId} into ${pluginId}`,
-          );
-          merge(mergedSchema, registered.spec);
-        }
-
-        return mergedSchema;
       },
     };
   },
