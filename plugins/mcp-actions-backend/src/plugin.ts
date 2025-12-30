@@ -79,11 +79,15 @@ export const mcpPlugin = createBackendPlugin({
 
         httpRouter.use(router);
 
-        if (
+        const oauthEnabled =
           config.getOptionalBoolean(
             'auth.experimentalDynamicClientRegistration.enabled',
-          )
-        ) {
+          ) ||
+          config.getOptionalBoolean(
+            'auth.experimentalClientIdMetadataDocuments.enabled',
+          );
+
+        if (oauthEnabled) {
           // This should be replaced with throwing a WWW-Authenticate header, but that doesn't seem to be supported by
           // many of the MCP client as of yet. So this seems to be the oldest version of the spec thats implemented.
           rootRouter.use(
@@ -95,6 +99,24 @@ export const mcpPlugin = createBackendPlugin({
               );
 
               res.json(await oidcResponse.json());
+            },
+          );
+
+          // Protected Resource Metadata (RFC 9728)
+          // https://datatracker.ietf.org/doc/html/rfc9728
+          // This allows MCP clients to discover the authorization server for this resource
+          rootRouter.use(
+            '/.well-known/oauth-protected-resource',
+            async (_, res) => {
+              const authBaseUrl = await discovery.getExternalBaseUrl('auth');
+              const mcpBaseUrl = await discovery.getExternalBaseUrl(
+                'mcp-actions',
+              );
+
+              res.json({
+                resource: mcpBaseUrl,
+                authorization_servers: [authBaseUrl],
+              });
             },
           );
         }
