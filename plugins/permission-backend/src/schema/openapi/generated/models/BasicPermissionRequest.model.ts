@@ -28,8 +28,4 @@ export interface BasicPermissionRequest {
    */
   id: string;
   permission: BasicPermission;
-  /**
-   * Optional resource reference (should not be set for basic permissions)
-   */
-  resourceRef?: string | null;
 }

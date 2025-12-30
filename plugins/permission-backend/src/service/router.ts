@@ -42,7 +42,16 @@ import {
   UserInfoService,
 } from '@backstage/backend-plugin-api';
 import { createOpenApiRouter } from '../schema/openapi';
-import { EvaluatePermissionRequest } from '../schema/openapi/generated/models';
+import {
+  EvaluatePermissionRequest,
+  ResourcePermissionRequest,
+} from '../schema/openapi/generated/models';
+
+function isResourcePermissionRequest(
+  request: EvaluatePermissionRequest,
+): request is ResourcePermissionRequest {
+  return isResourcePermission(request.permission);
+}
 
 /**
  * Options required when constructing a new {@link express#Router} using
@@ -111,8 +120,8 @@ const handleRequest = async (
             };
           }
 
-          if (!isResourcePermission(request.permission)) {
-            throw new InputError(
+          if (!isResourcePermissionRequest(request)) {
+            throw new Error(
               `Conditional decision returned from permission policy for non-resource permission ${request.permission.name}`,
             );
           }
@@ -186,10 +195,7 @@ export async function createRouter(
       (auth.isPrincipal(credentials, 'user') && !credentials.principal.actor)
     ) {
       if (
-        body.items.some(
-          r =>
-            isResourcePermission(r.permission) && r.resourceRef === undefined,
-        )
+        body.items.some(r => isResourcePermissionRequest(r) && !r.resourceRef)
       ) {
         throw new InputError(
           'Resource permissions require a resourceRef to be set. Direct user requests without a resourceRef are not allowed.',

@@ -169,12 +169,6 @@ export const spec = {
           permission: {
             $ref: '#/components/schemas/BasicPermission',
           },
-          resourceRef: {
-            type: 'string',
-            nullable: true,
-            description:
-              'Optional resource reference (should not be set for basic permissions)',
-          },
         },
         required: ['id', 'permission'],
         additionalProperties: false,
