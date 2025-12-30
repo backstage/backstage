@@ -19,8 +19,6 @@ import { InputError } from '@backstage/errors';
 import { IdentityApi } from '@backstage/plugin-auth-node';
 import {
   AuthorizeResult,
-  DefinitivePolicyDecision,
-  IdentifiedPermissionMessage,
   isResourcePermission,
 } from '@backstage/plugin-permission-common';
 import {
@@ -110,11 +108,11 @@ const handleRequest = async (
             return {
               id: request.id,
               ...decision,
-            } as IdentifiedPermissionMessage<DefinitivePolicyDecision>;
+            };
           }
 
           if (!isResourcePermission(request.permission)) {
-            throw new Error(
+            throw new InputError(
               `Conditional decision returned from permission policy for non-resource permission ${request.permission.name}`,
             );
           }
@@ -132,14 +130,11 @@ const handleRequest = async (
             };
           }
 
-          const conditions = await applyConditionsLoaderFor(
-            decision.pluginId,
-          ).load({
+          return applyConditionsLoaderFor(decision.pluginId).load({
             id: request.id,
             resourceRef: request.resourceRef,
             ...decision,
           });
-          return conditions;
         }),
     ),
   );
