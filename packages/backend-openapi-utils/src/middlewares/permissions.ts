@@ -22,13 +22,21 @@ import type {
   PermissionsRegistryService,
   PermissionsService,
 } from '@backstage/backend-plugin-api';
-import { AuthorizeResult } from '@backstage/plugin-permission-common';
+import {
+  AuthorizeResult,
+  BasicPermission,
+  ResourcePermission,
+} from '@backstage/plugin-permission-common';
 import { NotFoundError, NotAllowedError } from '@backstage/errors';
 
 type PermissionsExtension = {
   permission: string;
   validateManually?: boolean;
-  onDeny?: 403 | 404;
+  resourceRef?: {
+    from: 'path' | 'query';
+    param: string;
+  };
+  onDeny?: { statusCode: 403 | 404 } | { statusCode?: number; body: any };
 };
 
 /** @public */
@@ -58,7 +66,7 @@ export function permissionsMiddlewareFactory(dependencies: {
   const { permissions: permissionsService, httpAuth, logger } = dependencies;
   return async (
     req: Request & WithOpenapi,
-    _res: Response,
+    res: Response,
     next: NextFunction,
   ) => {
     if (!req.openapi) {
@@ -95,22 +103,53 @@ export function permissionsMiddlewareFactory(dependencies: {
       return;
     }
 
-    if (permission.type !== 'basic') {
+    let resourceRef: string | undefined;
+    if (permissionsConfig.resourceRef) {
+      if (permission.type !== 'resource') {
+        throw new Error(
+          `Permission '${permissionsConfig.permission}' is not a resource permission, but resourceRef was specified in the OpenAPI permissions middleware`,
+        );
+      }
+      let value = undefined;
+      const param = permissionsConfig.resourceRef.param;
+      if (permissionsConfig.resourceRef.from === 'path') {
+        // express doesn't attach req.params until the route is matched, but
+        // we have the path params available from openapi metadata
+        value = req.openapi.pathParams?.[param];
+      } else {
+        value = req.query?.[param];
+      }
+
+      if (!value || typeof value !== 'string') {
+        throw new Error(`Resource reference parameter '${param}' not found.`);
+      }
+      resourceRef = value;
+    } else if (permission.type !== 'basic') {
       throw new Error(
-        `Permission '${permissionsConfig.permission}' is not a basic permission and cannot be used in the OpenAPI permissions middleware`,
+        `Permission '${permissionsConfig.permission}' is not a basic permission. Resource permissions require a resourceRef configuration in the OpenAPI permissions middleware`,
       );
     }
 
     try {
+      const authorizeRequest = resourceRef
+        ? { permission: permission as ResourcePermission, resourceRef }
+        : { permission: permission as BasicPermission };
+
       const authorizationResponse = (
-        await permissionsService.authorize([{ permission }], {
+        await permissionsService.authorize([authorizeRequest], {
           credentials: await httpAuth.credentials(req),
         })
       )[0];
 
       if (authorizationResponse.result === AuthorizeResult.DENY) {
-        const statusCode = permissionsConfig.onDeny ?? 403;
-        if (statusCode === 404) {
+        const onDeny = permissionsConfig.onDeny ?? { statusCode: 403 };
+
+        if ('body' in onDeny) {
+          res.status(onDeny.statusCode ?? 200).json(onDeny.body);
+          return;
+        }
+
+        if (onDeny.statusCode === 404) {
           throw new NotFoundError();
         }
         throw new NotAllowedError();

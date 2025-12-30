@@ -90,8 +90,6 @@ import { DefaultLocationStore } from '../providers/DefaultLocationStore';
 import { DefaultStitcher } from '../stitching/DefaultStitcher';
 import { defaultEntityDataParser } from '../util/parse';
 import { AuthorizedEntitiesCatalog } from './AuthorizedEntitiesCatalog';
-import { AuthorizedLocationAnalyzer } from './AuthorizedLocationAnalyzer';
-import { AuthorizedLocationService } from './AuthorizedLocationService';
 import { AuthorizedRefreshService } from './AuthorizedRefreshService';
 import { createRouter } from './createRouter';
 import { DefaultEntitiesCatalog } from './DefaultEntitiesCatalog';
@@ -521,19 +519,17 @@ export class CatalogBuilder {
 
     const locationAnalyzer =
       this.locationAnalyzer ??
-      new AuthorizedLocationAnalyzer(
-        new RepoLocationAnalyzer(logger, integrations, this.locationAnalyzers),
-        permissions,
-      );
-    const locationService = new AuthorizedLocationService(
-      new DefaultLocationService(locationStore, orchestrator, {
+      new RepoLocationAnalyzer(logger, integrations, this.locationAnalyzers);
+    const locationService = new DefaultLocationService(
+      locationStore,
+      orchestrator,
+      {
         allowedLocationTypes: this.allowedLocationType,
         defaultLocationConflictStrategy:
           (config.getOptionalString(
             'catalog.defaultLocationConflictStrategy',
           ) as 'refresh' | 'reject') || 'reject',
-      }),
-      permissions,
+      },
     );
     const refreshService = new AuthorizedRefreshService(
       new DefaultRefreshService({ database: catalogDatabase }),
