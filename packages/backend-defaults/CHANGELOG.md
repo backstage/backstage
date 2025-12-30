@@ -1,5 +1,13 @@
 # @backstage/backend-defaults
 
+## 0.14.1-next.1
+
+### Patch Changes
+
+- 3afeab4: Implementing `readTree` for `GoogleGcsReader`
+- Updated dependencies
+  - @backstage/integration@1.19.2-next.0
+
 ## 0.14.1-next.0
 
 ### Patch Changes

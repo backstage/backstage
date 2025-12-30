@@ -1,5 +1,12 @@
 # @backstage/cli
 
+## 0.35.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.19.2-next.0
+
 ## 0.35.2-next.0
 
 ### Patch Changes
