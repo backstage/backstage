@@ -19,7 +19,7 @@ import {
   DynamicFrontendFeaturesLoaderOptions,
   dynamicFrontendFeaturesLoader,
 } from './loader';
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import { RemoteEntryExports } from '@module-federation/runtime/types';
 import { Module } from '@module-federation/sdk';
@@ -110,13 +110,10 @@ describe('dynamicFrontendFeaturesLoader', () => {
   it('should return immediately if dynamic plugins are not enabled in config', async () => {
     let manifestsEndpointCalled = false;
     server.use(
-      rest.get(
-        `${baseUrl}/.backstage/dynamic-plugins/remotes`,
-        (_, res, ctx) => {
-          manifestsEndpointCalled = true;
-          return res(ctx.json({}));
-        },
-      ),
+      http.get(`${baseUrl}/.backstage/dynamic-plugins/remotes`, () => {
+        manifestsEndpointCalled = true;
+        return HttpResponse.json({});
+      }),
     );
 
     const features = await (
@@ -151,39 +148,33 @@ describe('dynamicFrontendFeaturesLoader', () => {
 
   it('should load a dynamic frontend plugin with the default exposed remote module', async () => {
     server.use(
-      rest.get(
-        `${baseUrl}/.backstage/dynamic-features/remotes`,
-        (_, res, ctx) =>
-          res(
-            ctx.json([
-              {
-                packageName: 'plugin-test-dynamic',
-                exposedModules: ['.'],
-                remoteInfo: {
-                  name: 'test_plugin',
-                  entry: `${baseUrl}/.backstage/dynamic-features/remotes/plugin-test-dynamic/mf-manifest.json`,
-                },
-              },
-            ]),
-          ),
-      ),
-      rest.get(
-        `${baseUrl}/.backstage/dynamic-features/remotes/plugin-test-dynamic/mf-manifest.json`,
-        (_, res, ctx) =>
-          res(
-            ctx.json({
+      http.get(`${baseUrl}/.backstage/dynamic-features/remotes`, () =>
+        HttpResponse.json([
+          {
+            packageName: 'plugin-test-dynamic',
+            exposedModules: ['.'],
+            remoteInfo: {
               name: 'test_plugin',
-              ...manifestDummyData,
-              exposes: [
-                {
-                  id: 'test_plugin:.',
-                  name: '.',
-                  path: '.',
-                  ...manifestExposedRemoteDummyData,
-                },
-              ],
-            }),
-          ),
+              entry: `${baseUrl}/.backstage/dynamic-features/remotes/plugin-test-dynamic/mf-manifest.json`,
+            },
+          },
+        ]),
+      ),
+      http.get(
+        `${baseUrl}/.backstage/dynamic-features/remotes/plugin-test-dynamic/mf-manifest.json`,
+        () =>
+          HttpResponse.json({
+            name: 'test_plugin',
+            ...manifestDummyData,
+            exposes: [
+              {
+                id: 'test_plugin:.',
+                name: '.',
+                path: '.',
+                ...manifestExposedRemoteDummyData,
+              },
+            ],
+          }),
       ),
     );
 
@@ -243,65 +234,57 @@ describe('dynamicFrontendFeaturesLoader', () => {
 
   it('should load several dynamic frontend plugins', async () => {
     server.use(
-      rest.get(
-        `${baseUrl}/.backstage/dynamic-features/remotes`,
-        (_, res, ctx) =>
-          res(
-            ctx.json([
-              {
-                packageName: 'plugin-1',
-                exposedModules: ['.'],
-                remoteInfo: {
-                  name: 'plugin_1',
-                  entry: `${baseUrl}/.backstage/dynamic-features/remotes/plugin-1/mf-manifest.json`,
-                },
-              },
-              {
-                packageName: 'plugin-2',
-                exposedModules: ['.'],
-                remoteInfo: {
-                  name: 'plugin_2',
-                  entry: `${baseUrl}/.backstage/dynamic-features/remotes/plugin-2/mf-manifest.json`,
-                },
-              },
-            ]),
-          ),
-      ),
-      rest.get(
-        `${baseUrl}/.backstage/dynamic-features/remotes/plugin-1/mf-manifest.json`,
-        (_, res, ctx) =>
-          res(
-            ctx.json({
+      http.get(`${baseUrl}/.backstage/dynamic-features/remotes`, () =>
+        HttpResponse.json([
+          {
+            packageName: 'plugin-1',
+            exposedModules: ['.'],
+            remoteInfo: {
               name: 'plugin_1',
-              ...manifestDummyData,
-              exposes: [
-                {
-                  id: 'plugin_1:.',
-                  name: '.',
-                  path: '.',
-                  ...manifestExposedRemoteDummyData,
-                },
-              ],
-            }),
-          ),
-      ),
-      rest.get(
-        `${baseUrl}/.backstage/dynamic-features/remotes/plugin-2/mf-manifest.json`,
-        (_, res, ctx) =>
-          res(
-            ctx.json({
+              entry: `${baseUrl}/.backstage/dynamic-features/remotes/plugin-1/mf-manifest.json`,
+            },
+          },
+          {
+            packageName: 'plugin-2',
+            exposedModules: ['.'],
+            remoteInfo: {
               name: 'plugin_2',
-              ...manifestDummyData,
-              exposes: [
-                {
-                  id: 'plugin_2:.',
-                  name: '.',
-                  path: '.',
-                  ...manifestExposedRemoteDummyData,
-                },
-              ],
-            }),
-          ),
+              entry: `${baseUrl}/.backstage/dynamic-features/remotes/plugin-2/mf-manifest.json`,
+            },
+          },
+        ]),
+      ),
+      http.get(
+        `${baseUrl}/.backstage/dynamic-features/remotes/plugin-1/mf-manifest.json`,
+        () =>
+          HttpResponse.json({
+            name: 'plugin_1',
+            ...manifestDummyData,
+            exposes: [
+              {
+                id: 'plugin_1:.',
+                name: '.',
+                path: '.',
+                ...manifestExposedRemoteDummyData,
+              },
+            ],
+          }),
+      ),
+      http.get(
+        `${baseUrl}/.backstage/dynamic-features/remotes/plugin-2/mf-manifest.json`,
+        () =>
+          HttpResponse.json({
+            name: 'plugin_2',
+            ...manifestDummyData,
+            exposes: [
+              {
+                id: 'plugin_2:.',
+                name: '.',
+                path: '.',
+                ...manifestExposedRemoteDummyData,
+              },
+            ],
+          }),
       ),
     );
 
@@ -378,45 +361,39 @@ describe('dynamicFrontendFeaturesLoader', () => {
 
   it('should load a dynamic frontend plugin with several exposed remote modules', async () => {
     server.use(
-      rest.get(
-        `${baseUrl}/.backstage/dynamic-features/remotes`,
-        (_, res, ctx) =>
-          res(
-            ctx.json([
-              {
-                packageName: 'plugin-test-dynamic',
-                exposedModules: ['.', 'alpha'],
-                remoteInfo: {
-                  name: 'test_plugin',
-                  entry: `${baseUrl}/.backstage/dynamic-features/remotes/plugin-test-dynamic/mf-manifest.json`,
-                },
-              },
-            ]),
-          ),
-      ),
-      rest.get(
-        `${baseUrl}/.backstage/dynamic-features/remotes/plugin-test-dynamic/mf-manifest.json`,
-        (_, res, ctx) =>
-          res(
-            ctx.json({
+      http.get(`${baseUrl}/.backstage/dynamic-features/remotes`, () =>
+        HttpResponse.json([
+          {
+            packageName: 'plugin-test-dynamic',
+            exposedModules: ['.', 'alpha'],
+            remoteInfo: {
               name: 'test_plugin',
-              ...manifestDummyData,
-              exposes: [
-                {
-                  id: 'test_plugin:.',
-                  name: '.',
-                  path: '.',
-                  ...manifestExposedRemoteDummyData,
-                },
-                {
-                  id: 'test_plugin:alpha',
-                  name: 'alpha',
-                  path: './alpha',
-                  ...manifestExposedRemoteDummyData,
-                },
-              ],
-            }),
-          ),
+              entry: `${baseUrl}/.backstage/dynamic-features/remotes/plugin-test-dynamic/mf-manifest.json`,
+            },
+          },
+        ]),
+      ),
+      http.get(
+        `${baseUrl}/.backstage/dynamic-features/remotes/plugin-test-dynamic/mf-manifest.json`,
+        () =>
+          HttpResponse.json({
+            name: 'test_plugin',
+            ...manifestDummyData,
+            exposes: [
+              {
+                id: 'test_plugin:.',
+                name: '.',
+                path: '.',
+                ...manifestExposedRemoteDummyData,
+              },
+              {
+                id: 'test_plugin:alpha',
+                name: 'alpha',
+                path: './alpha',
+                ...manifestExposedRemoteDummyData,
+              },
+            ],
+          }),
       ),
     );
 
@@ -494,26 +471,22 @@ describe('dynamicFrontendFeaturesLoader', () => {
     mocks.federation.get.mockRestore();
     mocks.federation.onLoad.mockRestore();
     server.use(
-      rest.get(
-        `${baseUrl}/.backstage/dynamic-features/remotes`,
-        (_, res, ctx) =>
-          res(
-            ctx.json([
-              {
-                packageName: 'plugin-test-dynamic',
-                exposedModules: ['.'],
-                remoteInfo: {
-                  name: 'test_plugin',
-                  entry: `${baseUrl}/.backstage/dynamic-features/remotes/plugin-test-dynamic/remoteEntry.js`,
-                  type: 'jsonp',
-                },
-              },
-            ]),
-          ),
+      http.get(`${baseUrl}/.backstage/dynamic-features/remotes`, () =>
+        HttpResponse.json([
+          {
+            packageName: 'plugin-test-dynamic',
+            exposedModules: ['.'],
+            remoteInfo: {
+              name: 'test_plugin',
+              entry: `${baseUrl}/.backstage/dynamic-features/remotes/plugin-test-dynamic/remoteEntry.js`,
+              type: 'jsonp',
+            },
+          },
+        ]),
       ),
-      rest.get(
+      http.get(
         `${baseUrl}/.backstage/dynamic-features/remotes/plugin-test-dynamic/remoteEntry.js`,
-        (_, res, ctx) => res(ctx.text('coucou :-)')),
+        () => new HttpResponse('coucou :-)'),
       ),
     );
 
@@ -573,9 +546,9 @@ describe('dynamicFrontendFeaturesLoader', () => {
 
   it('should warn and recover from a 404 error fetching module feredation configuration', async () => {
     server.use(
-      rest.get(
+      http.get(
         `${baseUrl}/.backstage/dynamic-features/remotes`,
-        (_, res, ctx) => res(ctx.status(404, 'NOT FOUND')),
+        () => new HttpResponse(null, { status: 404, statusText: 'NOT FOUND' }),
       ),
     );
 
@@ -620,9 +593,9 @@ describe('dynamicFrontendFeaturesLoader', () => {
 
   it('should warn and recover from empty response while fetching module feredation configuration', async () => {
     server.use(
-      rest.get(
+      http.get(
         `${baseUrl}/.backstage/dynamic-features/remotes`,
-        (_, res, ctx) => res(ctx.status(200)),
+        () => new HttpResponse(null, { status: 200 }),
       ),
     );
 
@@ -667,65 +640,57 @@ describe('dynamicFrontendFeaturesLoader', () => {
 
   it('should warn on empty module, but still load other remotes', async () => {
     server.use(
-      rest.get(
-        `${baseUrl}/.backstage/dynamic-features/remotes`,
-        (_, res, ctx) =>
-          res(
-            ctx.json([
-              {
-                packageName: 'plugin-1',
-                exposedModules: ['.'],
-                remoteInfo: {
-                  name: 'plugin_1',
-                  entry: `${baseUrl}/.backstage/dynamic-features/remotes/plugin-1/mf-manifest.json`,
-                },
-              },
-              {
-                packageName: 'plugin-2',
-                exposedModules: ['.'],
-                remoteInfo: {
-                  name: 'plugin_2',
-                  entry: `${baseUrl}/.backstage/dynamic-features/remotes/plugin-2/mf-manifest.json`,
-                },
-              },
-            ]),
-          ),
-      ),
-      rest.get(
-        `${baseUrl}/.backstage/dynamic-features/remotes/plugin-1/mf-manifest.json`,
-        (_, res, ctx) =>
-          res(
-            ctx.json({
+      http.get(`${baseUrl}/.backstage/dynamic-features/remotes`, () =>
+        HttpResponse.json([
+          {
+            packageName: 'plugin-1',
+            exposedModules: ['.'],
+            remoteInfo: {
               name: 'plugin_1',
-              ...manifestDummyData,
-              exposes: [
-                {
-                  id: 'plugin_1:.',
-                  name: '.',
-                  path: '.',
-                  ...manifestExposedRemoteDummyData,
-                },
-              ],
-            }),
-          ),
-      ),
-      rest.get(
-        `${baseUrl}/.backstage/dynamic-features/remotes/plugin-2/mf-manifest.json`,
-        (_, res, ctx) =>
-          res(
-            ctx.json({
+              entry: `${baseUrl}/.backstage/dynamic-features/remotes/plugin-1/mf-manifest.json`,
+            },
+          },
+          {
+            packageName: 'plugin-2',
+            exposedModules: ['.'],
+            remoteInfo: {
               name: 'plugin_2',
-              ...manifestDummyData,
-              exposes: [
-                {
-                  id: 'plugin_2:.',
-                  name: '.',
-                  path: '.',
-                  ...manifestExposedRemoteDummyData,
-                },
-              ],
-            }),
-          ),
+              entry: `${baseUrl}/.backstage/dynamic-features/remotes/plugin-2/mf-manifest.json`,
+            },
+          },
+        ]),
+      ),
+      http.get(
+        `${baseUrl}/.backstage/dynamic-features/remotes/plugin-1/mf-manifest.json`,
+        () =>
+          HttpResponse.json({
+            name: 'plugin_1',
+            ...manifestDummyData,
+            exposes: [
+              {
+                id: 'plugin_1:.',
+                name: '.',
+                path: '.',
+                ...manifestExposedRemoteDummyData,
+              },
+            ],
+          }),
+      ),
+      http.get(
+        `${baseUrl}/.backstage/dynamic-features/remotes/plugin-2/mf-manifest.json`,
+        () =>
+          HttpResponse.json({
+            name: 'plugin_2',
+            ...manifestDummyData,
+            exposes: [
+              {
+                id: 'plugin_2:.',
+                name: '.',
+                path: '.',
+                ...manifestExposedRemoteDummyData,
+              },
+            ],
+          }),
       ),
     );
 
@@ -793,65 +758,57 @@ describe('dynamicFrontendFeaturesLoader', () => {
 
   it('should skip module without default export, but still load other remotes', async () => {
     server.use(
-      rest.get(
-        `${baseUrl}/.backstage/dynamic-features/remotes`,
-        (_, res, ctx) =>
-          res(
-            ctx.json([
-              {
-                packageName: 'plugin-1',
-                exposedModules: ['.'],
-                remoteInfo: {
-                  name: 'plugin_1',
-                  entry: `${baseUrl}/.backstage/dynamic-features/remotes/plugin-1/mf-manifest.json`,
-                },
-              },
-              {
-                packageName: 'plugin-2',
-                exposedModules: ['.'],
-                remoteInfo: {
-                  name: 'plugin_2',
-                  entry: `${baseUrl}/.backstage/dynamic-features/remotes/plugin-2/mf-manifest.json`,
-                },
-              },
-            ]),
-          ),
-      ),
-      rest.get(
-        `${baseUrl}/.backstage/dynamic-features/remotes/plugin-1/mf-manifest.json`,
-        (_, res, ctx) =>
-          res(
-            ctx.json({
+      http.get(`${baseUrl}/.backstage/dynamic-features/remotes`, () =>
+        HttpResponse.json([
+          {
+            packageName: 'plugin-1',
+            exposedModules: ['.'],
+            remoteInfo: {
               name: 'plugin_1',
-              ...manifestDummyData,
-              exposes: [
-                {
-                  id: 'plugin_1:.',
-                  name: '.',
-                  path: '.',
-                  ...manifestExposedRemoteDummyData,
-                },
-              ],
-            }),
-          ),
-      ),
-      rest.get(
-        `${baseUrl}/.backstage/dynamic-features/remotes/plugin-2/mf-manifest.json`,
-        (_, res, ctx) =>
-          res(
-            ctx.json({
+              entry: `${baseUrl}/.backstage/dynamic-features/remotes/plugin-1/mf-manifest.json`,
+            },
+          },
+          {
+            packageName: 'plugin-2',
+            exposedModules: ['.'],
+            remoteInfo: {
               name: 'plugin_2',
-              ...manifestDummyData,
-              exposes: [
-                {
-                  id: 'plugin_2:.',
-                  name: '.',
-                  path: '.',
-                  ...manifestExposedRemoteDummyData,
-                },
-              ],
-            }),
-          ),
+              entry: `${baseUrl}/.backstage/dynamic-features/remotes/plugin-2/mf-manifest.json`,
+            },
+          },
+        ]),
+      ),
+      http.get(
+        `${baseUrl}/.backstage/dynamic-features/remotes/plugin-1/mf-manifest.json`,
+        () =>
+          HttpResponse.json({
+            name: 'plugin_1',
+            ...manifestDummyData,
+            exposes: [
+              {
+                id: 'plugin_1:.',
+                name: '.',
+                path: '.',
+                ...manifestExposedRemoteDummyData,
+              },
+            ],
+          }),
+      ),
+      http.get(
+        `${baseUrl}/.backstage/dynamic-features/remotes/plugin-2/mf-manifest.json`,
+        () =>
+          HttpResponse.json({
+            name: 'plugin_2',
+            ...manifestDummyData,
+            exposes: [
+              {
+                id: 'plugin_2:.',
+                name: '.',
+                path: '.',
+                ...manifestExposedRemoteDummyData,
+              },
+            ],
+          }),
       ),
     );
 
@@ -921,51 +878,45 @@ describe('dynamicFrontendFeaturesLoader', () => {
 
   it('should warn on 404 error fetching module feredation manifest, but still load other remotes', async () => {
     server.use(
-      rest.get(
-        `${baseUrl}/.backstage/dynamic-features/remotes`,
-        (_, res, ctx) =>
-          res(
-            ctx.json([
-              {
-                packageName: 'plugin-1',
-                exposedModules: ['.'],
-                remoteInfo: {
-                  name: 'plugin_1',
-                  entry: `${baseUrl}/.backstage/dynamic-features/remotes/plugin-1/mf-manifest.json`,
-                },
-              },
-              {
-                packageName: 'plugin-2',
-                exposedModules: ['.'],
-                remoteInfo: {
-                  name: 'plugin_2',
-                  entry: `${baseUrl}/.backstage/dynamic-features/remotes/plugin-2/mf-manifest.json`,
-                },
-              },
-            ]),
-          ),
-      ),
-      rest.get(
-        `${baseUrl}/.backstage/dynamic-features/remotes/plugin-1/mf-manifest.json`,
-        (_, res, ctx) => res(ctx.json({}), ctx.status(404, 'NOT FOUND')),
-      ),
-      rest.get(
-        `${baseUrl}/.backstage/dynamic-features/remotes/plugin-2/mf-manifest.json`,
-        (_, res, ctx) =>
-          res(
-            ctx.json({
+      http.get(`${baseUrl}/.backstage/dynamic-features/remotes`, () =>
+        HttpResponse.json([
+          {
+            packageName: 'plugin-1',
+            exposedModules: ['.'],
+            remoteInfo: {
+              name: 'plugin_1',
+              entry: `${baseUrl}/.backstage/dynamic-features/remotes/plugin-1/mf-manifest.json`,
+            },
+          },
+          {
+            packageName: 'plugin-2',
+            exposedModules: ['.'],
+            remoteInfo: {
               name: 'plugin_2',
-              ...manifestDummyData,
-              exposes: [
-                {
-                  id: 'plugin_2:.',
-                  name: '.',
-                  path: '.',
-                  ...manifestExposedRemoteDummyData,
-                },
-              ],
-            }),
-          ),
+              entry: `${baseUrl}/.backstage/dynamic-features/remotes/plugin-2/mf-manifest.json`,
+            },
+          },
+        ]),
+      ),
+      http.get(
+        `${baseUrl}/.backstage/dynamic-features/remotes/plugin-1/mf-manifest.json`,
+        () => HttpResponse.json({}, { status: 404, statusText: 'NOT FOUND' }),
+      ),
+      http.get(
+        `${baseUrl}/.backstage/dynamic-features/remotes/plugin-2/mf-manifest.json`,
+        () =>
+          HttpResponse.json({
+            name: 'plugin_2',
+            ...manifestDummyData,
+            exposes: [
+              {
+                id: 'plugin_2:.',
+                name: '.',
+                path: '.',
+                ...manifestExposedRemoteDummyData,
+              },
+            ],
+          }),
       ),
     );
 
@@ -1029,51 +980,45 @@ describe('dynamicFrontendFeaturesLoader', () => {
 
   it('should warn on unexpected Json content while fetching module feredation manifest, but still load other remotes', async () => {
     server.use(
-      rest.get(
-        `${baseUrl}/.backstage/dynamic-features/remotes`,
-        (_, res, ctx) =>
-          res(
-            ctx.json([
-              {
-                packageName: 'plugin-1',
-                exposedModules: ['.'],
-                remoteInfo: {
-                  name: 'plugin_1',
-                  entry: `${baseUrl}/.backstage/dynamic-features/remotes/plugin-1/mf-manifest.json`,
-                },
-              },
-              {
-                packageName: 'plugin-2',
-                exposedModules: ['.'],
-                remoteInfo: {
-                  name: 'plugin_2',
-                  entry: `${baseUrl}/.backstage/dynamic-features/remotes/plugin-2/mf-manifest.json`,
-                },
-              },
-            ]),
-          ),
+      http.get(`${baseUrl}/.backstage/dynamic-features/remotes`, () =>
+        HttpResponse.json([
+          {
+            packageName: 'plugin-1',
+            exposedModules: ['.'],
+            remoteInfo: {
+              name: 'plugin_1',
+              entry: `${baseUrl}/.backstage/dynamic-features/remotes/plugin-1/mf-manifest.json`,
+            },
+          },
+          {
+            packageName: 'plugin-2',
+            exposedModules: ['.'],
+            remoteInfo: {
+              name: 'plugin_2',
+              entry: `${baseUrl}/.backstage/dynamic-features/remotes/plugin-2/mf-manifest.json`,
+            },
+          },
+        ]),
       ),
-      rest.get(
+      http.get(
         `${baseUrl}/.backstage/dynamic-features/remotes/plugin-1/mf-manifest.json`,
-        (_, res, ctx) => res(ctx.json('A Json String')),
+        () => HttpResponse.json('A Json String'),
       ),
-      rest.get(
+      http.get(
         `${baseUrl}/.backstage/dynamic-features/remotes/plugin-2/mf-manifest.json`,
-        (_, res, ctx) =>
-          res(
-            ctx.json({
-              name: 'plugin-2',
-              ...manifestDummyData,
-              exposes: [
-                {
-                  id: 'plugin-2:.',
-                  name: '.',
-                  path: '.',
-                  ...manifestExposedRemoteDummyData,
-                },
-              ],
-            }),
-          ),
+        () =>
+          HttpResponse.json({
+            name: 'plugin-2',
+            ...manifestDummyData,
+            exposes: [
+              {
+                id: 'plugin-2:.',
+                name: '.',
+                path: '.',
+                ...manifestExposedRemoteDummyData,
+              },
+            ],
+          }),
       ),
     );
 

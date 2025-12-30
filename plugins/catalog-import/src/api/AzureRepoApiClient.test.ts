@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import {
   AzurePrOptions,
   AzurePrResult,
@@ -29,44 +29,42 @@ import { setupServer } from 'msw/node';
 import { registerMswTestHooks } from '@backstage/test-utils';
 
 function mockRepoEndpoint() {
-  return rest.get(
+  return http.get(
     'https://dev.azure.com/acme/project/_apis/git/repositories/:path',
-    (req, res, ctx) => {
-      const { path } = req.params;
+    ({ params }) => {
+      const { path } = params;
       if (path === 'success') {
-        return res(
-          ctx.json({
-            id: '01',
-            name: 'success',
-            defaultBranch: 'refs/heads/master',
-          }),
-        );
+        return HttpResponse.json({
+          id: '01',
+          name: 'success',
+          defaultBranch: 'refs/heads/master',
+        });
       }
       if (path === 'not-found') {
-        return res(
-          ctx.status(404),
-          ctx.json({
+        return HttpResponse.json(
+          {
             message: 'repository not found',
-          }),
+          },
+          { status: 404 },
         );
       }
-      return res(ctx.status(200));
+      return new HttpResponse(null, { status: 200 });
     },
   );
 }
 
 function mockRefsEndpoint() {
-  return rest.get(
+  return http.get(
     'https://dev.azure.com/acme/project/_apis/git/repositories/:repo/refs',
-    (req, res, ctx) => {
-      const filter = req.url.searchParams.get('filter');
-      const { repo } = req.params;
+    ({ request, params }) => {
+      const filter = new URL(request.url).searchParams.get('filter');
+      const { repo } = params;
       if (repo !== 'success') {
-        return res(
-          ctx.status(404),
-          ctx.json({
+        return HttpResponse.json(
+          {
             message: 'repository not found',
-          }),
+          },
+          { status: 404 },
         );
       }
       if (filter === 'heads/main') {
@@ -78,74 +76,70 @@ function mockRefsEndpoint() {
             },
           ],
         };
-        return res(ctx.json(result));
+        return HttpResponse.json(result);
       }
-      return res(ctx.json({ value: [] }));
+      return HttpResponse.json({ value: [] });
     },
   );
 }
 
 function mockPushEndpoint() {
-  return rest.post(
+  return http.post(
     'https://dev.azure.com/acme/project/_apis/git/repositories/:repo/pushes',
-    (req, res, ctx) => {
-      const { repo } = req.params;
+    ({ params }) => {
+      const { repo } = params;
       if (repo === 'success') {
-        return res(
-          ctx.json({
-            refUpdates: [
-              {
-                repositoryId: '01',
-                name: 'refs/heads/backstage-integration',
-                oldObjectId: '0000000000000000000000000000000000000000',
-                newObjectId: '0000000000000000000000000000000000000001',
-              },
-            ],
-          } satisfies { refUpdates: AzureRefUpdate[] }),
-        );
+        return HttpResponse.json({
+          refUpdates: [
+            {
+              repositoryId: '01',
+              name: 'refs/heads/backstage-integration',
+              oldObjectId: '0000000000000000000000000000000000000000',
+              newObjectId: '0000000000000000000000000000000000000001',
+            },
+          ],
+        } satisfies { refUpdates: AzureRefUpdate[] });
       }
 
       if (repo === 'error') {
-        return res(
-          ctx.status(500),
-          ctx.json({
+        return HttpResponse.json(
+          {
             message: 'internal error',
-          }),
+          },
+          { status: 500 },
         );
       }
 
-      return res(
-        ctx.status(500),
-        ctx.json({
+      return HttpResponse.json(
+        {
           message: 'Unexpected call',
-        }),
+        },
+        { status: 500 },
       );
     },
   );
 }
 
 function mockPrEndpoint() {
-  return rest.post(
+  return http.post(
     'https://dev.azure.com/acme/project/_apis/git/repositories/:repo/pullrequests',
-    (req, res, ctx) => {
-      const { repo } = req.params;
+    ({ params }) => {
+      const { repo } = params;
       if (repo === 'success') {
-        return res(
-          ctx.json({
-            pullRequestId: 'PR01',
-            repository: {
-              name: 'success',
-              webUrl: 'https://example.com',
-            },
-          } satisfies AzurePrResult),
-        );
+        return HttpResponse.json({
+          pullRequestId: 'PR01',
+          repository: {
+            name: 'success',
+            webUrl: 'https://example.com',
+          },
+        } satisfies AzurePrResult);
       }
 
-      return res(
-        ctx.status(500),
-        ctx.json({
+      return HttpResponse.json(
+        {
           message: 'internal error',
-        }),
+        },
+        { status: 500 },
       );
     },
   );

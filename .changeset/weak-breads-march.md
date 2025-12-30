@@ -1,0 +1,50 @@
+---
+'@backstage/backend-defaults': patch
+'@backstage/backend-openapi-utils': patch
+'@backstage/catalog-client': patch
+'@backstage/cli': patch
+'@backstage/core-app-api': patch
+'@backstage/core-components': patch
+'@backstage/frontend-dynamic-feature-loader': patch
+'@backstage/integration': patch
+'@backstage/integration-react': patch
+'@backstage/plugin-app': patch
+'@backstage/plugin-auth': patch
+'@backstage/plugin-auth-backend-module-microsoft-provider': patch
+'@backstage/plugin-auth-backend-module-oidc-provider': patch
+'@backstage/plugin-auth-backend-module-pinniped-provider': patch
+'@backstage/plugin-auth-node': patch
+'@backstage/plugin-auth-react': patch
+'@backstage/plugin-bitbucket-cloud-common': patch
+'@backstage/plugin-catalog-backend-module-azure': patch
+'@backstage/plugin-catalog-backend-module-bitbucket-cloud': patch
+'@backstage/plugin-catalog-backend-module-bitbucket-server': patch
+'@backstage/plugin-catalog-backend-module-gerrit': patch
+'@backstage/plugin-catalog-backend-module-gitlab': patch
+'@backstage/plugin-catalog-backend-module-msgraph': patch
+'@backstage/plugin-catalog-backend-module-puppetdb': patch
+'@backstage/plugin-catalog-import': patch
+'@backstage/plugin-catalog-node': patch
+'@backstage/plugin-kubernetes-backend': patch
+'@backstage/plugin-kubernetes-node': patch
+'@backstage/plugin-notifications': patch
+'@backstage/plugin-notifications-node': patch
+'@backstage/plugin-permission-backend': patch
+'@backstage/plugin-permission-common': patch
+'@backstage/plugin-permission-node': patch
+'@backstage/plugin-scaffolder-backend-module-bitbucket': patch
+'@backstage/plugin-scaffolder-backend-module-bitbucket-cloud': patch
+'@backstage/plugin-scaffolder-backend-module-bitbucket-server': patch
+'@backstage/plugin-scaffolder-backend-module-confluence-to-markdown': patch
+'@backstage/plugin-scaffolder-backend-module-gerrit': patch
+'@backstage/plugin-scaffolder-backend-module-gitea': patch
+'@backstage/plugin-scaffolder-common': patch
+'@backstage/plugin-search-backend-module-explore': patch
+'@backstage/plugin-search-backend-module-stack-overflow-collator': patch
+'@backstage/plugin-search-backend-module-techdocs': patch
+'@backstage/plugin-user-settings': patch
+'@backstage/release-manifests': patch
+'@backstage/test-utils': patch
+---
+
+Migrated test infrastructure from MSW v1 to MSW v2.

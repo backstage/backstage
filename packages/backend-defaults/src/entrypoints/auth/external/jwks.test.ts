@@ -17,7 +17,7 @@
 import { registerMswTestHooks } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { SignJWT, exportJWK, generateKeyPair } from 'jose';
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import { v4 as uuid } from 'uuid';
 import { jwksTokenHandler } from './jwks';
@@ -93,9 +93,9 @@ describe('JWKSHandler', () => {
     });
 
     server.use(
-      rest.get(`${mockBaseUrl}/.well-known/jwks.json`, async (_, res, ctx) => {
+      http.get(`${mockBaseUrl}/.well-known/jwks.json`, async () => {
         const keys = await factory.listPublicKeys();
-        return res(ctx.json(keys));
+        return HttpResponse.json(keys);
       }),
     );
   });

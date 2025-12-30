@@ -31,7 +31,7 @@ import {
 } from '@backstage/plugin-catalog-node';
 import { Events } from '@backstage/plugin-bitbucket-cloud-common';
 import { DefaultEventsService } from '@backstage/plugin-events-node';
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import {
   ANNOTATION_BITBUCKET_CLOUD_REPO_URL,
@@ -362,9 +362,9 @@ describe('BitbucketCloudEntityProvider', () => {
     );
 
     server.use(
-      rest.get(
+      http.get(
         `https://api.bitbucket.org/2.0/workspaces/test-ws/projects`,
-        (_req, res, ctx) => {
+        () => {
           const response = {
             values: [
               {
@@ -375,12 +375,12 @@ describe('BitbucketCloudEntityProvider', () => {
               },
             ],
           };
-          return res(ctx.json(response));
+          return HttpResponse.json(response);
         },
       ),
-      rest.get(
+      http.get(
         `https://api.bitbucket.org/2.0/workspaces/test-ws/search/code`,
-        (_req, res, ctx) => {
+        () => {
           const response = {
             values: [
               {
@@ -479,7 +479,7 @@ describe('BitbucketCloudEntityProvider', () => {
               },
             ],
           };
-          return res(ctx.json(response));
+          return HttpResponse.json(response);
         },
       ),
     );
@@ -589,12 +589,12 @@ describe('BitbucketCloudEntityProvider', () => {
     })[0];
 
     server.use(
-      rest.get(
+      http.get(
         `https://api.bitbucket.org/2.0/workspaces/test-ws/search/code`,
-        (req, res, ctx) => {
-          const query = req.url.searchParams.get('search_query');
+        ({ request }) => {
+          const query = new URL(request.url).searchParams.get('search_query');
           if (!query || !query.includes('repo:test-repo')) {
-            return res(ctx.json({ values: [] }));
+            return HttpResponse.json({ values: [] });
           }
 
           const response = {
@@ -657,7 +657,7 @@ describe('BitbucketCloudEntityProvider', () => {
               },
             ],
           };
-          return res(ctx.json(response));
+          return HttpResponse.json(response);
         },
       ),
     );
@@ -794,12 +794,12 @@ describe('BitbucketCloudEntityProvider', () => {
     })[0];
 
     server.use(
-      rest.get(
+      http.get(
         `https://api.bitbucket.org/2.0/workspaces/test-ws/search/code`,
-        (req, res, ctx) => {
-          const query = req.url.searchParams.get('search_query');
+        ({ request }) => {
+          const query = new URL(request.url).searchParams.get('search_query');
           if (!query || !query.includes('repo:test-repo-new')) {
-            return res(ctx.json({ values: [] }));
+            return HttpResponse.json({ values: [] });
           }
 
           const response = {
@@ -834,7 +834,7 @@ describe('BitbucketCloudEntityProvider', () => {
               },
             ],
           };
-          return res(ctx.json(response));
+          return HttpResponse.json(response);
         },
       ),
     );
