@@ -150,17 +150,13 @@ export class GoogleGcsUrlReader implements UrlReaderService {
       prefix: key,
     });
 
-    const responses = [];
-    for (const file of files) {
-      const buffer = await getRawBody(file.createReadStream());
-      responses.push({
-        data: Readable.from(buffer),
-        path: relative(key, file.name),
-        lastModifiedAt: file.metadata.updated
-          ? new Date(file.metadata.updated as string)
-          : undefined,
-      });
-    }
+    const responses = files.map(file => ({
+      data: file.createReadStream(),
+      path: relative(key, file.name),
+      lastModifiedAt: file.metadata.updated
+        ? new Date(file.metadata.updated as string)
+        : undefined,
+    }));
 
     return this.deps.treeResponseFactory.fromReadableArray(responses);
   }

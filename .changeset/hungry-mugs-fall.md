@@ -2,4 +2,4 @@
 '@backstage/integration': patch
 ---
 
-Implementing `ScmIntegraion` for `GoogleGcs`
+Implementing `ScmIntegration` for `GoogleGcs`
