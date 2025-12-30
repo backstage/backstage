@@ -26,6 +26,10 @@ export const spec = {
     title: 'permission',
     description: 'API for the Backstage permission system backend',
     version: '1.0.0',
+    contact: {
+      name: 'Backstage',
+      url: 'https://backstage.io',
+    },
     license: {
       name: 'Apache 2.0',
       url: 'https://www.apache.org/licenses/LICENSE-2.0',
@@ -70,6 +74,12 @@ export const spec = {
         description:
           'Evaluates a batch of permission requests and returns authorization decisions',
         operationId: 'authorize',
+        security: [
+          {
+            BearerAuth: [],
+          },
+          {},
+        ],
         requestBody: {
           required: true,
           content: {
@@ -107,6 +117,14 @@ export const spec = {
     },
   },
   components: {
+    securitySchemes: {
+      BearerAuth: {
+        type: 'http',
+        scheme: 'bearer',
+        bearerFormat: 'JWT',
+        description: 'Backstage authentication token',
+      },
+    },
     schemas: {
       PermissionAttributes: {
         type: 'object',
