@@ -29,7 +29,7 @@ When registering a component, you can:
 
 ## Prerequisites
 
-- A running [standalone Backstage App](./index.md).
+- You should have already [installed a standalone app](../getting-started/index.md).
 
 ## Registering a component
 
