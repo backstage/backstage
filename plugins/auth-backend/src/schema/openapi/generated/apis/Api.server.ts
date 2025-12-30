@@ -36,6 +36,7 @@ export type HandleFrameCallbackGet = {
     state?: string;
     error?: string;
     errorDescription?: string;
+    unknown?: { [key: string]: any };
   };
   response: string | Error | Error | Error;
 };
@@ -45,6 +46,9 @@ export type HandleFrameCallbackGet = {
 export type HandleFrameCallbackPost = {
   path: {
     providerId: string;
+  };
+  query: {
+    unknown?: { [key: string]: any };
   };
   response: string | Error | Error | Error;
 };
@@ -56,6 +60,9 @@ export type Logout = {
     providerId: string;
   };
   body: LogoutRequest;
+  query: {
+    unknown?: { [key: string]: any };
+  };
   response: Logout200Response | Error | Error;
 };
 /**
@@ -68,6 +75,7 @@ export type RefreshTokenGet = {
   query: {
     scope?: string;
     origin?: string;
+    unknown?: { [key: string]: any };
   };
   response: RefreshResponse | Error | Error | Error;
 };
@@ -79,6 +87,9 @@ export type RefreshTokenPost = {
     providerId: string;
   };
   body: RefreshTokenPostRequest;
+  query: {
+    unknown?: { [key: string]: any };
+  };
   response: RefreshResponse | Error | Error | Error;
 };
 /**
@@ -92,6 +103,7 @@ export type StartAuth = {
     env?: string;
     scope?: string;
     origin?: string;
+    unknown?: { [key: string]: any };
   };
   response: void | Error | Error;
 };
