@@ -139,18 +139,28 @@ export class GoogleGcsUrlReader implements UrlReaderService {
   ): Promise<UrlReaderServiceReadTreeResponse> {
     const { bucket, key } = parseURL(url);
 
+    if (key.match(/[*?]/)) {
+      throw new Error(
+        'GcsUrlReader readTree does not support glob patterns, use search instead',
+      );
+    }
+
     const [files] = await this.storage.bucket(bucket).getFiles({
       autoPaginate: true,
       prefix: key,
     });
 
-    const responses = files.map(file => ({
-      data: file.createReadStream(),
-      path: relative(key, file.name),
-      lastModifiedAt: file.metadata.updated
-        ? new Date(file.metadata.updated as string)
-        : undefined,
-    }));
+    const responses = [];
+    for (const file of files) {
+      const buffer = await getRawBody(file.createReadStream());
+      responses.push({
+        data: Readable.from(buffer),
+        path: relative(key, file.name),
+        lastModifiedAt: file.metadata.updated
+          ? new Date(file.metadata.updated as string)
+          : undefined,
+      });
+    }
 
     return this.deps.treeResponseFactory.fromReadableArray(responses);
   }

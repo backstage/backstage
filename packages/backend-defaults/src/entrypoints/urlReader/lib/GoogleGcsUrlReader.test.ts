@@ -235,5 +235,13 @@ describe('GcsUrlReader', () => {
         prefix: 'some/prefix/',
       });
     });
+
+    it('throws if readTree url contains glob pattern', async () => {
+      await expect(
+        reader.readTree('https://storage.cloud.google.com/bucket/path/*'),
+      ).rejects.toThrow(
+        'GcsUrlReader readTree does not support glob patterns, use search instead',
+      );
+    });
   });
 });
