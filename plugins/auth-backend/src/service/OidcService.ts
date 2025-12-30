@@ -74,6 +74,9 @@ export class OidcService {
     const cimdEnabled = this.config.getOptionalBoolean(
       'auth.experimentalClientIdMetadataDocuments.enabled',
     );
+    const dcrEnabled = this.config.getOptionalBoolean(
+      'auth.experimentalDynamicClientRegistration.enabled',
+    );
 
     return {
       issuer: this.baseUrl,
@@ -102,8 +105,10 @@ export class OidcService {
       claims_supported: ['sub', 'ent'],
       grant_types_supported: ['authorization_code'],
       authorization_endpoint: `${this.baseUrl}/v1/authorize`,
-      registration_endpoint: `${this.baseUrl}/v1/register`,
       code_challenge_methods_supported: ['S256', 'plain'],
+      ...(dcrEnabled && {
+        registration_endpoint: `${this.baseUrl}/v1/register`,
+      }),
       ...(cimdEnabled && { client_id_metadata_document_supported: true }),
     };
   }
@@ -234,6 +239,7 @@ export class OidcService {
       'auth.experimentalClientIdMetadataDocuments.enabled',
     );
 
+    console.log('clientId', clientId);
     // Check if client_id is a CIMD URL
     if (isCimdUrl(clientId)) {
       if (!cimdEnabled) {
