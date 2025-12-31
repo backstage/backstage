@@ -316,6 +316,14 @@ export const componentDefinitions = {
       indicator: 'bui-SwitchIndicator',
     },
   },
+  ToggleButton: {
+    classNames: {
+      root: 'bui-ToggleButton',
+    },
+    dataAttributes: {
+      size: ['small', 'medium', 'large'] as const,
+    },
+  },
   Table: {
     classNames: {
       table: 'bui-Table',
