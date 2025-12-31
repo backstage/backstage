@@ -1,0 +1,14 @@
+---
+title: GitOps Clusters
+author: Weaveworks
+authorUrl: https://www.weave.works/
+category: Kubernetes
+description: Create GitOps-managed Kubernetes clusters. Currently, it supports provisioning EKS clusters on GitHub via GitHub Actions.
+documentation: https://github.com/backstage/community-plugins/tree/main/workspaces/gitops-profiles/plugins/gitops-profiles
+npmPackageName: '@backstage-community/plugin-gitops-profiles'
+tags:
+  - kubernetes
+  - gitops
+  - github
+  - eks
+addedDate: '2020-11-03'

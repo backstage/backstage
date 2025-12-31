@@ -1,0 +1,15 @@
+---
+title: VeeCode GitHub Workflows
+author: VeeCode Platform
+authorUrl: https://platform.vee.codes/
+category: CI/CD
+description: The Github Workflows plugin provides an alternative for manually triggering GitHub workflows from within your Backstage component.
+documentation: https://platform.vee.codes/plugin/github-workflows/
+iconUrl: https://veecode-platform.github.io/support/imgs/logo_2.svg
+npmPackageName: '@veecode-platform/backstage-plugin-github-workflows'
+tags:
+  - ci
+  - cd
+  - github
+  - workflows
+addedDate: '2023-09-12'

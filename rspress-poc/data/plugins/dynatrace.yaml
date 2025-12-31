@@ -1,0 +1,15 @@
+---
+title: Dynatrace
+author: Dynatrace
+authorUrl: https://github.com/dynatrace
+category: Monitoring
+description: Provide customizable context-rich observability and security insights for services in your software catalog.
+documentation: https://github.com/Dynatrace/backstage-plugin
+iconUrl: /img/dynatrace.svg
+npmPackageName: '@dynatrace/backstage-plugin-dql'
+tags:
+  - monitoring
+  - observability
+  - security
+  - problem
+addedDate: '2024-03-22'

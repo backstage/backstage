@@ -1,0 +1,16 @@
+---
+title: VeeCode Gitlab Pipelines
+author: VeeCode Platform
+authorUrl: https://platform.vee.codes
+category: CI/CD
+description: The Gitlab pipelines plugin integrates GitlabCi with its backstage component in a simple way.
+documentation: https://platform.vee.codes/plugin/gitlab-pipelines/
+iconUrl: https://veecode-platform.github.io/support/imgs/logo_1.svg
+npmPackageName: '@veecode-platform/backstage-plugin-gitlab-pipelines'
+tags:
+  - ci
+  - cd
+  - gitlabCi
+  - pipelines
+  - jobs
+addedDate: '2023-09-27'

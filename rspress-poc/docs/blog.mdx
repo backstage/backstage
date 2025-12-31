@@ -1,0 +1,39 @@
+---
+title: Blog
+---
+
+import { useLoader } from 'rspress/runtime';
+import blogData from '../blog.data';
+
+export function BlogList() {
+  const posts = useLoader(blogData);
+
+  return (
+    <div>
+      <h1>Blog Posts ({posts.length})</h1>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+        {posts.map(post => (
+          <div key={post.slug} style={{ padding: '1rem', border: '1px solid #ddd', borderRadius: '4px' }}>
+            <h2>{post.title}</h2>
+            <p style={{ color: '#666' }}>{post.date}</p>
+            <p>{post.excerpt}</p>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+<BlogList />
+
+## Blog Implementation Note
+
+This demonstrates RSPress's data loading API to build custom blog functionality.
+The actual blog posts from `microsite/blog/` would need to be migrated to this structure.
+
+**What's needed for full blog support:**
+- RSS feed generation
+- Blog post pagination
+- Categories/tags
+- Author pages
+- SEO metadata

@@ -1,0 +1,10 @@
+---
+title: Readme
+author: AxisCommunications
+authorUrl: https://github.com/AxisCommunications
+category: Metadata
+description: The Readme-plugin enables easy access and viewing of the README.md file in your entity overview.
+documentation: https://github.com/AxisCommunications/backstage-plugins/blob/main/plugins/readme/README.md
+iconUrl: https://raw.githubusercontent.com/AxisCommunications/backstage-plugins/main/plugins/readme/media/readme.png
+npmPackageName: '@axis-backstage/plugin-readme'
+addedDate: '2023-12-07'

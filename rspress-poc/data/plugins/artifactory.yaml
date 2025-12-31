@@ -1,0 +1,12 @@
+---
+title: Artifacts Plugin for JFrog Artifactory
+author: StageCentral
+authorUrl: https://stagecentral.io
+category: Artifacts
+description: |
+  Connect Backstage entities to software artifacts stored in JFrog Artifactory.
+  Display information about artifacts, such as their version, size, and download links.
+documentation: https://github.com/StageCentral/backstage-artifactory-plugin/tree/main#readme
+iconUrl: https://raw.githubusercontent.com/StageCentral/backstage-artifactory-plugin/main/logo/logo.png
+npmPackageName: '@stagecentral/plugin-artifactory'
+addedDate: '2023-08-23'

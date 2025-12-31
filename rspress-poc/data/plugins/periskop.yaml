@@ -1,0 +1,10 @@
+---
+title: Periskop
+author: Periskop
+authorUrl: https://periskop.io/
+category: Monitoring
+description: Periskop is a pull-based, language agnostic exception aggregator for microservice environments.
+documentation: https://github.com/backstage/community-plugins/tree/main/workspaces/periskop/plugins/periskop
+iconUrl: https://raw.githubusercontent.com/periskop-dev/periskop/master/docs/assets/periskop-logo.png
+npmPackageName: '@backstage-community/plugin-periskop'
+addedDate: '2022-02-25'

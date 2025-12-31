@@ -1,0 +1,10 @@
+---
+title: OpenDORA
+author: Devoteam
+authorUrl: https://www.devoteam.com/
+category: Monitoring
+description: View DORA metrics within Backstage using DevLake.
+documentation: https://github.com/DevoteamNL/opendora/tree/main/backstage-plugin/plugins/open-dora#readme
+iconUrl: /img/open-dora-icon.png
+npmPackageName: '@devoteam-nl/open-dora-backstage-plugin'
+addedDate: '2023-11-29'

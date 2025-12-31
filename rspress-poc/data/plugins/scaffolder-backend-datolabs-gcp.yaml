@@ -1,0 +1,10 @@
+---
+title: Scaffolder Google Cloud Platform (GCP) actions
+author: Datolabs
+authorUrl: https://www.datolabs.io
+category: Scaffolder
+description: A collection of actions for interacting with Google Cloud Platform (GCP).
+documentation: https://github.com/datolabs-io/backstage-plugins/blob/main/workspaces/scaffolder-backend-module-gcp/plugins/scaffolder-backend-module-gcp/README.md
+iconUrl: https://avatars1.githubusercontent.com/u/2810941?s=280&v=4
+npmPackageName: '@datolabs/plugin-scaffolder-backend-module-gcp'
+addedDate: '2024-12-20'

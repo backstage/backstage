@@ -1,0 +1,596 @@
+/* ==========================================================================
+   Backstage Home Page Styles - Exact match to original Docusaurus site
+   ========================================================================== */
+
+/* RSPress Home Layout - full width with nav bar */
+.rspress-home-layout {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.rspress-home-layout main {
+  flex: 1;
+  width: 100%;
+}
+
+/* CSS Variables matching the original theme */
+:root {
+  --ifm-background-color: #121212;
+  --ifm-grey-background: linear-gradient(90.49deg, #121212 15.36%, #282828 70.44%);
+  --ifm-green-gradient-background: linear-gradient(87.29deg, #9bf0e1 17.71%, #36baa2 80.85%);
+  --ifm-color-primary: #9bf0e1;
+  --ifm-color-gray-900: #121212;
+  --diagonal-border-height: 40px;
+}
+
+@media (min-width: 997px) {
+  :root {
+    --diagonal-border-height: 80px;
+  }
+}
+
+/* Reset RSPress default content styles for home page */
+.home-page {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  max-width: none;
+  background: var(--ifm-background-color);
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 1.25rem;
+  color: #e4e4e4;
+}
+
+.home-page * {
+  box-sizing: border-box;
+}
+
+.home-page h1 {
+  font-size: 54px;
+  line-height: 56px;
+  word-break: break-word;
+  margin: 0;
+  padding: 0;
+}
+
+.home-page h2 {
+  margin: 0;
+  padding: 0;
+}
+
+.home-page p {
+  margin: 0;
+  padding: 0;
+}
+
+/* ==========================================================================
+   Banner Section Base Styles
+   ========================================================================== */
+
+.banner-section {
+  display: block;
+  background: var(--ifm-background-color);
+  position: relative;
+  width: 100%;
+}
+
+/* Container inside banner section */
+.banner-section > .container {
+  max-width: 1430px;
+  margin: 0 auto;
+  padding: 48px 32px;
+}
+
+@media (min-width: 997px) {
+  .banner-section > .container {
+    padding: 80px 32px;
+  }
+}
+
+/* ==========================================================================
+   Diagonal Border Effects
+   ========================================================================== */
+
+.banner-section.diagonal-border,
+.banner-section.diagonal-bottom-border {
+  padding-bottom: var(--diagonal-border-height);
+}
+
+.banner-section.diagonal-border + section,
+.banner-section.diagonal-bottom-border + section {
+  margin-top: calc(var(--diagonal-border-height) * -1);
+  padding-top: var(--diagonal-border-height);
+}
+
+.banner-section.diagonal-border {
+  clip-path: polygon(
+    0 var(--diagonal-border-height),
+    100% 0,
+    100% calc(100% - var(--diagonal-border-height)),
+    0 100%
+  );
+}
+
+.banner-section.diagonal-bottom-border {
+  clip-path: polygon(
+    0 0,
+    100% 0,
+    100% calc(100% - var(--diagonal-border-height)),
+    0 100%
+  );
+}
+
+/* ==========================================================================
+   Background Variants
+   ========================================================================== */
+
+.banner-section.grey-background {
+  background: var(--ifm-grey-background);
+}
+
+.banner-section.green-gradient-background {
+  background: var(--ifm-green-gradient-background);
+}
+
+.banner-section.green-bottom-gradient-background {
+  background:
+    linear-gradient(178.64deg, hsla(0, 0%, 100%, 0) 57.61%, hsla(0, 0%, 100%, 0.17) 127.71%),
+    linear-gradient(144.35deg, rgba(98, 197, 179, 0) 56.68%, rgba(98, 197, 179, 0.59) 109.25%),
+    linear-gradient(192.29deg, rgba(155, 240, 225, 0) 54.17%, rgba(155, 240, 225, 0.67) 137.34%);
+}
+
+.banner-section.green-cta-gradient-background {
+  background: linear-gradient(87.29deg, #9bf0e1 17.71%, #36baa2 80.85%);
+  color: var(--ifm-color-gray-900);
+}
+
+/* ==========================================================================
+   Banner Section Grid (for hero and simple 2-column layouts)
+   ========================================================================== */
+
+.section-grid-container {
+  gap: 2rem;
+  display: grid;
+}
+
+.section-grid-container .grid-header {
+  grid-column: 1 / -1;
+}
+
+.grid-container {
+  gap: 2rem;
+  display: grid;
+  align-items: center;
+}
+
+@media (min-width: 997px) {
+  .grid-container {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  }
+}
+
+/* ==========================================================================
+   Content Block Styles
+   ========================================================================== */
+
+.content-block {
+  height: 100%;
+  gap: 1.5rem;
+  display: grid;
+  align-items: center;
+}
+
+.content-block > *,
+.content-block h1,
+.content-block h2 {
+  margin: 0;
+  padding: 0;
+}
+
+.content-block-title {
+  align-self: start;
+}
+
+.content-block-title h1 {
+  font-size: 54px;
+  line-height: 56px;
+  color: #fff;
+  font-weight: 700;
+  word-break: break-word;
+}
+
+.content-block-title h2 {
+  font-size: 24px;
+  line-height: 28px;
+  color: #fff;
+  font-weight: 700;
+}
+
+.content-block-content {
+  font-size: 20px;
+  line-height: 32px;
+  font-weight: 300;
+  color: #fff;
+}
+
+.content-block-content p {
+  font-size: 20px;
+  line-height: 32px;
+  font-weight: 300;
+  color: #fff;
+}
+
+/* Bullet line styling */
+.bullet-line {
+  width: 50px;
+  height: 3px;
+  margin-bottom: 0.5rem;
+  background: linear-gradient(89.75deg, #9bf0e1 -1.5%, rgba(155, 240, 225, 0) 111.48%);
+}
+
+/* Top image in content block */
+.content-block-top-img {
+  max-width: 190px;
+  max-height: 190px;
+  height: auto;
+}
+
+/* ==========================================================================
+   Action Buttons
+   ========================================================================== */
+
+.action-buttons {
+  gap: 1rem;
+  display: grid;
+  align-self: end;
+  grid-template-columns: repeat(auto-fit, minmax(100px, auto));
+}
+
+.buttons-container {
+  gap: 1rem;
+  display: grid;
+  grid-template-columns: repeat(2, auto);
+}
+
+.button {
+  padding: 14px 16px;
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 14px;
+  line-height: 16px;
+  display: inline-block;
+  transition: all 0.2s;
+  text-align: center;
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  min-width: 176px;
+}
+
+.button--primary {
+  background-color: #9bf0e1;
+  color: #000;
+  border: none;
+}
+
+.button--primary:hover {
+  background-color: #1da189;
+  color: #000;
+}
+
+.button--secondary {
+  background-color: #fff;
+  color: #000;
+  border: none;
+}
+
+.button--secondary:hover {
+  background-color: #e0e0e0;
+}
+
+.button--lg {
+  padding: 14px 16px;
+}
+
+/* ==========================================================================
+   Hero Section with Laptop SVG
+   ========================================================================== */
+
+.svg-container {
+  position: relative;
+}
+
+.svg-container .laptop-svg {
+  width: 100%;
+}
+
+.svg-container .laptop-screen-gif {
+  position: absolute;
+  top: 3%;
+  left: 17%;
+  width: 70%;
+}
+
+/* ==========================================================================
+   Catalog Container (for Software Catalog section)
+   ========================================================================== */
+
+.catalog-container,
+.software-templates-container {
+  gap: 2rem;
+  display: grid;
+  align-items: center;
+}
+
+.catalog-container picture,
+.software-templates-container picture {
+  display: block;
+  text-align: center;
+}
+
+.catalog-container picture img,
+.software-templates-container picture img {
+  max-width: 100%;
+  height: auto;
+}
+
+.catalog-container [class*='title'] img,
+.catalog-container [class*='Title'] img,
+.software-templates-container [class*='title'] img,
+.software-templates-container [class*='Title'] img {
+  max-width: 190px;
+  max-height: 190px;
+}
+
+/* Catalog Title section */
+.catalog-title,
+.software-templates-title {
+  text-align: center;
+}
+
+.catalog-title img,
+.software-templates-title img {
+  max-width: 190px;
+  max-height: 190px;
+}
+
+.catalog-title h2,
+.software-templates-title h2 {
+  color: #9bf0e1;
+  font-size: 24px;
+  line-height: 28px;
+  font-weight: 700;
+  margin-bottom: 0.5rem;
+}
+
+.catalog-title h1,
+.software-templates-title h1 {
+  font-size: 54px;
+  line-height: 56px;
+  font-weight: 700;
+  margin-bottom: 1rem;
+}
+
+/* Dark text for green gradient backgrounds */
+.green-gradient-background .catalog-title h1,
+.green-gradient-background .catalog-title h2,
+.green-gradient-background .software-templates-title h1,
+.green-gradient-background .software-templates-title h2 {
+  color: #000;
+}
+
+.green-gradient-background .content-block-title h1,
+.green-gradient-background .content-block-title h2,
+.green-gradient-background .content-block-content,
+.green-gradient-background .content-block-content p {
+  color: #000;
+}
+
+.green-gradient-background .bullet-line {
+  background: linear-gradient(89.75deg, #000 -1.5%, rgba(0, 0, 0, 0) 111.48%);
+}
+
+/* Catalog image */
+.catalog-img,
+.software-templates-img {
+  text-align: center;
+}
+
+.catalog-img img,
+.software-templates-img img {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Desktop layout for catalog */
+@media (min-width: 997px) {
+  .catalog-container {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .catalog-container .catalog-title {
+    grid-column: span 2;
+  }
+
+  .catalog-container .catalog-img {
+    grid-row: span 2;
+    grid-column: span 2;
+  }
+
+  .catalog-container .content-block {
+    grid-column: span 1;
+  }
+}
+
+/* Desktop layout for software templates */
+@media (min-width: 997px) {
+  .software-templates-container {
+    grid: repeat(2, auto) / repeat(4, 1fr);
+  }
+
+  .software-templates-container .software-templates-title {
+    grid-column: span 4;
+  }
+
+  .software-templates-container .software-templates-img {
+    grid-row-start: 3;
+    grid-column: span 4;
+  }
+
+  .software-templates-container .content-block {
+    grid-column: span 1;
+  }
+}
+
+/* ==========================================================================
+   Kubernetes Section Container
+   ========================================================================== */
+
+.kubernetes-section-container .grid-header img {
+  max-width: 190px;
+  max-height: 190px;
+}
+
+.kubernetes-section-container .grid-header {
+  text-align: center;
+}
+
+.kubernetes-section-container .grid-header h2 {
+  color: #9bf0e1;
+  font-size: 24px;
+  line-height: 28px;
+  font-weight: 700;
+}
+
+.kubernetes-section-container .grid-header h1 {
+  color: #fff;
+  font-size: 54px;
+  line-height: 56px;
+  font-weight: 700;
+}
+
+/* ==========================================================================
+   CTA (Call to Action) Sections
+   ========================================================================== */
+
+.cta-section {
+  padding: 48px 32px;
+  text-align: center;
+}
+
+.cta-section h1 {
+  margin: 15px 80px;
+  color: #000;
+  font-style: normal;
+  font-weight: 700;
+  font-size: 48px;
+  text-align: center;
+  margin-bottom: 1.5rem;
+}
+
+/* ==========================================================================
+   CNCF Section
+   ========================================================================== */
+
+.cncf-section {
+  padding: 40px 32px;
+  text-align: center;
+}
+
+.cncf-section h2 {
+  color: #fff;
+  font-size: 24px;
+  line-height: 32px;
+  font-weight: 700;
+}
+
+.cncf-section a {
+  color: #9bf0e1;
+  text-decoration: none;
+}
+
+.cncf-section a:hover {
+  text-decoration: underline;
+}
+
+.cncf-logo {
+  height: 100px;
+  margin-top: 20px;
+  margin-bottom: 40px;
+}
+
+/* ==========================================================================
+   Mobile Responsiveness
+   ========================================================================== */
+
+@media (max-width: 996px) {
+  .home-page h1,
+  .content-block-title h1,
+  .catalog-title h1,
+  .software-templates-title h1,
+  .kubernetes-section-container .grid-header h1 {
+    font-size: 36px;
+    line-height: 42px;
+  }
+
+  .content-block-content,
+  .content-block-content p {
+    font-size: 18px;
+    line-height: 28px;
+  }
+
+  .cta-section h1 {
+    font-size: 32px;
+    line-height: 38px;
+    margin: 15px 20px;
+  }
+
+  .buttons-container {
+    grid-template-columns: 1fr;
+  }
+
+  .button {
+    width: 265px;
+    margin: 0 auto;
+  }
+}
+
+@media (max-width: 485px) {
+  .home-page h1,
+  .content-block-title h1,
+  .catalog-title h1,
+  .software-templates-title h1,
+  .kubernetes-section-container .grid-header h1,
+  .cta-section h1 {
+    font-size: 24px;
+    line-height: 28px;
+  }
+
+  .content-block-title h2,
+  .catalog-title h2,
+  .software-templates-title h2,
+  .kubernetes-section-container .grid-header h2 {
+    font-size: 14px;
+    line-height: 18px;
+  }
+
+  .content-block-content,
+  .content-block-content p {
+    font-size: 15px;
+    line-height: 18px;
+  }
+
+  .content-block-top-img,
+  .catalog-title img,
+  .software-templates-title img,
+  .kubernetes-section-container .grid-header img {
+    width: 30%;
+    max-width: 120px;
+  }
+
+  .green-bottom-gradient-background {
+    background: linear-gradient(90deg, #121212 0.04%, #353535 100%);
+  }
+}

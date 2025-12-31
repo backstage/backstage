@@ -1,0 +1,14 @@
+---
+title: Azure Storage Explorer
+author: Deepankumar
+authorUrl: https://github.com/deepan10
+category: Infrastructure
+description: Explore Azure Storage Blobs in Backstage.
+documentation: https://github.com/backstage/community-plugins/tree/main/workspaces/azure-storage-explorer/plugins/azure-storage
+iconUrl: /img/azure-storage-folder.png
+npmPackageName: '@backstage-community/plugin-azure-storage-explorer'
+tags:
+  - Azure
+  - Azure Storage
+  - Infrastructure
+addedDate: '2023-12-01'

@@ -1,0 +1,10 @@
+---
+title: API SDK Generator
+author: Konfig
+authorUrl: https://konfigthis.com/
+category: Development
+description: Generate SDKs for your REST API to accelerate integration
+documentation: https://github.com/konfig-dev/backstage-plugin-konfig/tree/main/plugins/backstage-plugin-konfig
+iconUrl: https://raw.githubusercontent.com/konfig-dev/backstage-plugin-konfig/main/plugins/backstage-plugin-konfig/docs/logo.png
+npmPackageName: 'backstage-plugin-konfig'
+addedDate: '2023-08-07'

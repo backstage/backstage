@@ -1,0 +1,324 @@
+/* ==========================================================================
+   Backstage Plugins Page Styles
+   ========================================================================== */
+
+.plugins-page {
+  background: #121212;
+  min-height: 100vh;
+  color: #e4e4e4;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+.plugins-container {
+  max-width: 1400px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+/* Directory Banner */
+.directory-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin-bottom: 2rem;
+}
+
+.directory-content {
+  flex: 1;
+  min-width: 300px;
+}
+
+.directory-content h2 {
+  font-size: 2rem;
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 0.5rem 0;
+}
+
+.directory-content p {
+  font-size: 1rem;
+  color: #a0a0a0;
+  margin: 0;
+}
+
+.directory-content a {
+  color: #9bf0e1;
+  text-decoration: none;
+}
+
+.directory-content a:hover {
+  text-decoration: underline;
+}
+
+.add-to-directory-button {
+  display: inline-block;
+  padding: 12px 24px;
+  border: 2px solid #9bf0e1;
+  border-radius: 4px;
+  color: #9bf0e1;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.2s;
+  background: transparent;
+}
+
+.add-to-directory-button:hover {
+  background: #9bf0e1;
+  color: #000;
+}
+
+/* Bullet Line Divider */
+.plugins-page .bullet-line {
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, #9bf0e1 0%, transparent 100%);
+  margin-bottom: 2rem;
+}
+
+/* Filter Box */
+.plugins-filter-box {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.filter-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  flex: 1;
+}
+
+.filter-chip {
+  padding: 8px 16px;
+  border: 1px solid #9bf0e1;
+  border-radius: 20px;
+  background: transparent;
+  color: #9bf0e1;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.filter-chip:hover {
+  background: rgba(155, 240, 225, 0.1);
+}
+
+.filter-chip.selected {
+  background: #9bf0e1;
+  color: #000;
+}
+
+.plugins-search {
+  padding: 10px 16px;
+  border: 1px solid #9bf0e1;
+  border-radius: 4px;
+  background: transparent;
+  color: #fff;
+  font-size: 14px;
+  min-width: 220px;
+}
+
+.plugins-search::placeholder {
+  color: #666;
+}
+
+.plugins-search:focus {
+  outline: none;
+  border-color: #36baa2;
+}
+
+/* No Plugins Found */
+.no-plugins-found {
+  text-align: center;
+  padding: 3rem;
+  color: #a0a0a0;
+}
+
+.no-plugins-found h3 {
+  color: #fff;
+  margin-bottom: 1rem;
+}
+
+/* Plugins Section */
+.plugins-section {
+  margin-bottom: 3rem;
+}
+
+.plugins-section h2 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 1rem;
+}
+
+.plugins-disclaimer {
+  color: #a0a0a0;
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+  line-height: 1.6;
+}
+
+/* Plugins Grid */
+.plugins-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+/* Plugin Card */
+.plugin-card {
+  background: #1e1e1e;
+  border: 1px solid #333;
+  border-radius: 8px;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.plugin-card:hover {
+  border-color: #9bf0e1;
+  box-shadow: 0 4px 20px rgba(155, 240, 225, 0.1);
+}
+
+.plugin-card-header {
+  padding: 1rem;
+  display: grid;
+  grid-template-columns: 80px 1fr;
+  gap: 1rem;
+  align-items: start;
+  position: relative;
+  overflow: hidden;
+}
+
+.new-ribbon {
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 4px 30px;
+  background: #9bf0e1;
+  color: #000;
+  font-weight: 700;
+  font-size: 10px;
+  text-transform: uppercase;
+  transform: translateX(25%) translateY(-25%) rotate(45deg);
+  transform-origin: center;
+}
+
+.plugin-icon {
+  width: 80px;
+  height: 80px;
+  object-fit: contain;
+  grid-row: span 3;
+}
+
+.plugin-info {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.plugin-info h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: #fff;
+  margin: 0;
+}
+
+.plugin-info h3.new-ribbon-padding {
+  padding-right: 50px;
+}
+
+.plugin-author {
+  font-size: 0.8rem;
+  color: #a0a0a0;
+  margin: 0;
+}
+
+.plugin-author a {
+  color: #9bf0e1;
+  text-decoration: none;
+}
+
+.plugin-author a:hover {
+  text-decoration: underline;
+}
+
+.plugin-category {
+  display: inline-block;
+  padding: 2px 8px;
+  background: #333;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  color: #a0a0a0;
+  width: fit-content;
+  margin-top: 0.25rem;
+}
+
+.plugin-card-body {
+  padding: 0 1rem 1rem;
+  flex: 1;
+}
+
+.plugin-card-body p {
+  font-size: 0.9rem;
+  color: #a0a0a0;
+  line-height: 1.5;
+  margin: 0;
+}
+
+.plugin-card-footer {
+  padding: 1rem;
+  border-top: 1px solid #333;
+}
+
+.plugin-button {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  text-align: center;
+  border: 2px solid #9bf0e1;
+  border-radius: 4px;
+  color: #9bf0e1;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  transition: all 0.2s;
+  background: transparent;
+}
+
+.plugin-button:hover {
+  background: #9bf0e1;
+  color: #000;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .directory-banner {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .plugins-filter-box {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .plugins-search {
+    width: 100%;
+  }
+
+  .plugins-grid {
+    grid-template-columns: 1fr;
+  }
+}

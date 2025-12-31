@@ -1,0 +1,14 @@
+{
+  "name": "backstage-rspress-poc",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "dev": "rspress dev",
+    "build": "rspress build",
+    "preview": "rspress preview"
+  },
+  "devDependencies": {
+    "rspress": "^1.0.0",
+    "yaml-loader": "^0.9.0"
+  }
+}

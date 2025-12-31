@@ -1,0 +1,136 @@
+/* ==========================================================================
+   Backstage Blog Page Styles
+   ========================================================================== */
+
+.blog-page {
+  background: #121212;
+  min-height: 100vh;
+  color: #e4e4e4;
+  font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+}
+
+.blog-container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+/* Blog Header */
+.blog-header {
+  margin-bottom: 3rem;
+  text-align: center;
+}
+
+.blog-header h1 {
+  font-size: 3rem;
+  font-weight: 700;
+  color: #fff;
+  margin: 0 0 1rem 0;
+}
+
+.blog-header p {
+  font-size: 1.25rem;
+  color: #a0a0a0;
+  margin: 0;
+}
+
+/* Blog Content */
+.blog-content {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* Year Filters */
+.blog-filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  justify-content: center;
+  margin-bottom: 1rem;
+}
+
+.year-filter {
+  padding: 8px 20px;
+  border: 1px solid #9bf0e1;
+  border-radius: 20px;
+  background: transparent;
+  color: #9bf0e1;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.year-filter:hover {
+  background: rgba(155, 240, 225, 0.1);
+}
+
+.year-filter.active {
+  background: #9bf0e1;
+  color: #000;
+}
+
+/* Blog Posts List */
+.blog-posts {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+/* Blog Post Card */
+.blog-post-card {
+  display: block;
+  padding: 1.5rem;
+  background: #1e1e1e;
+  border: 1px solid #333;
+  border-radius: 8px;
+  text-decoration: none;
+  transition: all 0.2s;
+}
+
+.blog-post-card:hover {
+  border-color: #9bf0e1;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(155, 240, 225, 0.1);
+}
+
+.blog-post-date {
+  font-size: 0.85rem;
+  color: #9bf0e1;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+}
+
+.blog-post-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  color: #fff;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.blog-post-card:hover .blog-post-title {
+  color: #9bf0e1;
+}
+
+/* No Posts */
+.no-posts {
+  text-align: center;
+  padding: 3rem;
+  color: #a0a0a0;
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .blog-header h1 {
+    font-size: 2rem;
+  }
+
+  .blog-header p {
+    font-size: 1rem;
+  }
+
+  .blog-post-title {
+    font-size: 1.1rem;
+  }
+}

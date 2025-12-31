@@ -1,0 +1,10 @@
+---
+title: GitHub Pull Requests Board
+author: DAZN
+authorUrl: https://engineering.dazn.com
+category: Source Control Mgmt
+description: View all open GitHub pull requests owned by your team in Backstage.
+documentation: https://github.com/backstage/community-plugins/tree/main/workspaces/github-pull-requests-board/plugins/github-pull-requests-board
+iconUrl: /img/github-pull-requests-board-logo.svg
+npmPackageName: '@backstage-community/plugin-github-pull-requests-board'
+addedDate: '2022-05-10'

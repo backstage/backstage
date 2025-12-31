@@ -1,0 +1,12 @@
+---
+title: IBM APIC EntityProvider
+author: croz.net
+authorUrl: https://croz.net/?utm_source=backstage.io&utm_medium=marketplace&utm_campaign=backstage-ibm-apic-backend
+category: API Management
+description: Bring IBM APIC to Backstage.
+documentation: https://github.com/croz-ltd/apic-backend-plugin?utm_source=backstage.io&utm_medium=marketplace&utm_campaign=backstage-ibm-apic-backend
+iconUrl: https://croz.net/app/uploads/2024/05/apple-touch-icon.png
+npmPackageName: '@croz/plugin-ibm-apic-backend'
+tags:
+  - openapic
+addedDate: '2024-03-01'

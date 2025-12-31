@@ -1,0 +1,13 @@
+---
+title: Jenkins
+author: '@timja'
+authorUrl: https://github.com/timja
+category: CI/CD
+description: Jenkins offers a simple way to set up a continuous integration and continuous delivery environment.
+documentation: https://github.com/backstage/community-plugins/tree/main/workspaces/jenkins/plugins/jenkins
+iconUrl: https://img.icons8.com/color/1600/jenkins.png
+npmPackageName: '@backstage-community/plugin-jenkins'
+tags:
+  - ci
+  - cd
+addedDate: '2021-01-20'

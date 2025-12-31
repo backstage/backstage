@@ -1,0 +1,131 @@
+import React from 'react';
+import { BannerSection, BannerSectionGrid } from '../theme/components/BannerSection';
+import { ContentBlock } from '../theme/components/ContentBlock';
+import '../theme/styles/home.css';
+
+const HomePage = () => {
+  return (
+    <div className="home-page">
+      <BannerSection diagonalBottomBorder greyBackground>
+        <BannerSectionGrid>
+          <ContentBlock
+            title={<h1>An open source framework for building developer portals</h1>}
+            actionButtons={[
+              { link: 'https://github.com/backstage/backstage#getting-started', label: 'GITHUB' },
+              { link: 'https://info.backstage.spotify.com/office-hours', label: 'OFFICE HOURS' },
+            ]}
+          >
+            Powered by a centralized software catalog, Backstage restores order to your
+            infrastructure and enables your product teams to ship high-quality code quickly —
+            without compromising autonomy.
+          </ContentBlock>
+
+          <div style={{ position: 'relative', padding: '2rem' }}>
+            <img
+              src="/animations/backstage-logos-hero-8.gif"
+              alt="Backstage Logo Animation"
+              style={{ maxWidth: '100%' }}
+            />
+          </div>
+        </BannerSectionGrid>
+      </BannerSection>
+
+      <BannerSection diagonalBorder>
+        <BannerSectionGrid>
+          <ContentBlock
+            title="The Speed Paradox"
+            topImgSrc="/animations/backstage-speed-paradox-7.gif"
+          >
+            At Spotify, we've always believed in the speed and ingenuity that comes from having
+            autonomous development teams. But as we learned firsthand, the faster you grow, the
+            more fragmented and complex your software ecosystem becomes. And then everything slows
+            down again.
+          </ContentBlock>
+
+          <ContentBlock
+            title="The Standards Paradox"
+            topImgSrc="/animations/backstage-standards-paradox-4.gif"
+          >
+            By centralizing services and standardizing your tooling, Backstage streamlines your
+            development environment from end to end. Instead of restricting autonomy,
+            standardization frees your engineers from infrastructure complexity. So you can return
+            to building and scaling, quickly and safely.
+          </ContentBlock>
+        </BannerSectionGrid>
+      </BannerSection>
+
+      <BannerSection diagonalBorder greenGradientBackground>
+        <div style={{ display: 'grid', gap: '2rem', maxWidth: '1200px', margin: '0 auto' }}>
+          <div style={{ textAlign: 'center' }}>
+            <img
+              src="/animations/backstage-software-catalog-icon-1.gif"
+              alt="Software Catalog Icon"
+              style={{ maxWidth: '190px' }}
+            />
+            <h2 style={{ color: '#1f1f1f', marginTop: '1rem' }}>Backstage Software Catalog</h2>
+            <h1>Build an ecosystem, not a wilderness</h1>
+          </div>
+
+          <ContentBlock title="Manage all your software, all in one place" hasBulletLine>
+            Backstage makes it easy for one team to manage 10 services — and makes it possible for
+            your company to manage thousands of them
+          </ContentBlock>
+
+          <ContentBlock title="A uniform overview" hasBulletLine>
+            Every team can see all the services they own and related resources (deployments, data
+            pipelines, pull request status, etc.)
+          </ContentBlock>
+
+          <ContentBlock title="Metadata on tap" hasBulletLine>
+            All that information can be shared with plugins inside Backstage to enable other
+            management features, like resource monitoring and testing
+          </ContentBlock>
+        </div>
+      </BannerSection>
+
+      <BannerSection greenCallToActionGradientBackground>
+        <div style={{ textAlign: 'center' }}>
+          <h1 style={{ color: 'white' }}>Learn more about the software catalog</h1>
+          <a href="/docs/features/software-catalog/" className="button button--secondary">
+            READ
+          </a>
+        </div>
+      </BannerSection>
+
+      <BannerSection diagonalBorder greenBottomGradientBackground>
+        <div style={{ textAlign: 'center', maxWidth: '1200px', margin: '0 auto' }}>
+          <img
+            src="/animations/backstage-plugin-icon-2.gif"
+            alt="Plugins Icon"
+            style={{ maxWidth: '190px' }}
+          />
+          <h2 style={{ color: 'white', marginTop: '1rem' }}>Customize Backstage with plugins</h2>
+          <h1 style={{ color: 'white' }}>An app store for your infrastructure</h1>
+
+          <p style={{ fontSize: '1.25rem', color: 'white', marginTop: '2rem' }}>
+            Extend Backstage with hundreds of open source plugins, or build your own.
+          </p>
+        </div>
+      </BannerSection>
+
+      <BannerSection>
+        <div style={{ textAlign: 'center', padding: '2rem' }}>
+          <h2>
+            Backstage is a{' '}
+            <a href="https://www.cncf.io" style={{ color: '#36baa2' }}>
+              Cloud Native Computing Foundation
+            </a>{' '}
+            incubation project
+          </h2>
+          <img
+            src="/img/cncf-color.svg"
+            alt="CNCF Logo"
+            style={{ height: '100px', marginTop: '2rem' }}
+          />
+        </div>
+      </BannerSection>
+    </div>
+  );
+};
+
+export default HomePage;

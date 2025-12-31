@@ -1,0 +1,10 @@
+---
+title: Pulumi
+author: Pulumi
+authorUrl: https://www.pulumi.com
+category: Infrastructure
+description: Use Pulumi scaffolder actions and view Pulumi stack information in Backstage.
+documentation: https://github.com/pulumi/pulumi-backstage-plugin
+iconUrl: https://www.pulumi.com/logos/brand/avatar-on-white.png
+npmPackageName: '@pulumi/backstage-plugin-pulumi'
+addedDate: '2023-09-27'

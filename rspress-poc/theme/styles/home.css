@@ -1,0 +1,166 @@
+/* Reset RSPress default styles for home page */
+.home-page {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  max-width: none;
+}
+
+/* Banner Section Styles */
+.banner-section {
+  padding: 60px 20px;
+  position: relative;
+  width: 100%;
+}
+
+.banner-section.grey-background {
+  background-color: #f6f6f6;
+}
+
+.banner-section.green-gradient-background {
+  background: linear-gradient(180deg, #9bf09b 0%, #4ddbff 100%);
+}
+
+.banner-section.green-bottom-gradient-background {
+  background: linear-gradient(180deg, #36baa2 0%, #36baa2 100%);
+}
+
+.banner-section.green-cta-gradient-background {
+  background: linear-gradient(180deg, #36baa2 0%, #36baa2 100%);
+  padding: 40px 20px;
+}
+
+.banner-section.diagonal-border::before,
+.banner-section.diagonal-bottom-border::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 100px;
+  background: inherit;
+  clip-path: polygon(0 0, 100% 100%, 100% 0);
+}
+
+.banner-section.diagonal-border::before {
+  top: -50px;
+}
+
+.banner-section.diagonal-bottom-border::after {
+  bottom: -50px;
+  transform: scaleY(-1);
+}
+
+/* Banner Grid */
+.banner-section-grid {
+  max-width: 1200px;
+  margin: 0 auto;
+  display: grid;
+  gap: 2rem;
+}
+
+/* Content Block */
+.content-block {
+  padding: 1rem 0;
+}
+
+.content-block-title h1 {
+  font-size: 54px;
+  line-height: 56px;
+  margin-bottom: 1rem;
+  color: #1f1f1f;
+}
+
+.content-block-title h2 {
+  font-size: 32px;
+  line-height: 38px;
+  margin-bottom: 1rem;
+  color: #1f1f1f;
+}
+
+.content-block-content {
+  font-size: 1.25rem;
+  line-height: 1.6;
+  color: #333;
+}
+
+.content-block-image {
+  max-width: 100%;
+  height: auto;
+  margin-bottom: 1rem;
+}
+
+.content-block.has-bullet .content-block-title::before {
+  content: '•';
+  color: #36baa2;
+  font-size: 2rem;
+  margin-right: 0.5rem;
+}
+
+.content-block-buttons {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.button {
+  padding: 12px 24px;
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: 600;
+  display: inline-block;
+  transition: all 0.2s;
+}
+
+.button--primary {
+  background-color: #36baa2;
+  color: white;
+  border: none;
+}
+
+.button--primary:hover {
+  background-color: #2a9985;
+}
+
+.button--secondary {
+  background-color: white;
+  color: #36baa2;
+  border: 2px solid #36baa2;
+}
+
+.button--secondary:hover {
+  background-color: #f0f0f0;
+}
+
+.button--primary:focus-visible,
+.button--secondary:focus-visible {
+  outline: 2px solid #36baa2;
+  outline-offset: 2px;
+}
+
+/* Responsive */
+@media (min-width: 996px) {
+  .banner-section-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+/* Mobile responsiveness */
+@media (max-width: 996px) {
+  .banner-section {
+    padding: 40px 16px;
+  }
+
+  .content-block-title h1 {
+    font-size: 36px;
+    line-height: 42px;
+  }
+
+  .content-block-title h2 {
+    font-size: 24px;
+    line-height: 30px;
+  }
+
+  .content-block-content {
+    font-size: 1.1rem;
+  }
+}

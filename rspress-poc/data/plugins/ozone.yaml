@@ -1,0 +1,11 @@
+---
+title: Ozone
+author: ozone-one
+authorUrl: https://www.ozone.one/
+category: CI/CD
+description: |
+  View pipeline runs, builds from your Ozone account.
+documentation: https://docs.ozone.one/ozone-end-user-guide/~/changes/7YIrhOgqbpKF1lkWsq0G/guides/ozone-backstage-plugin
+iconUrl: /img/ozone-logo.png
+npmPackageName: '@ozonecloud/plugin-ozone'
+addedDate: '2023-06-14'

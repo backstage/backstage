@@ -1,0 +1,14 @@
+---
+title: InfraWallet
+author: Electrolux Group
+authorUrl: https://opensource.electrolux.one/
+category: FinOps
+description: Control your cloud costs just in the way how you control your bank accounts.
+documentation: https://github.com/electrolux-oss/infrawallet/blob/main/README.md
+iconUrl: /img/infrawallet-logo.png
+npmPackageName: '@electrolux-oss/plugin-infrawallet'
+tags:
+  - finops
+  - cost
+  - infrastructure
+addedDate: '2024-06-03'

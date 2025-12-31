@@ -1,0 +1,10 @@
+---
+title: Authentication and Authorization with Keycloak
+author: Red Hat
+authorUrl: https://redhat.com
+category: Authentication/Authorization
+description: Load users and groups from Keycloak, enabling use of multiple authentication providers to be applied to Backstage entities.
+documentation: https://github.com/backstage/community-plugins/blob/main/workspaces/keycloak/plugins/catalog-backend-module-keycloak/README.md
+iconUrl: /img/keycloak.svg
+npmPackageName: '@backstage-community/plugin-catalog-backend-module-keycloak'
+addedDate: '2023-05-15'

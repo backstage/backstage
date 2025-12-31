@@ -1,0 +1,10 @@
+---
+title: TargetBoard
+author: TargetBoard
+authorUrl: https://www.targetboard.ai
+category: Metrics
+description: Embed TargetBoard dashboards and metric cards inside Backstage to visualize real-time engineering performance, KPIs, and delivery metrics.
+documentation: https://github.com/targetboard/backstage-plugin/blob/main/README.md
+iconUrl: https://app.targetboard.ai/assets/TargetBoard-Backstage-logo.svg
+npmPackageName: '@targetboard/backstage-plugin'
+addedDate: '2025-11-02'
