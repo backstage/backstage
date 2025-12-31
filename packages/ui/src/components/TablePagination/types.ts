@@ -19,6 +19,10 @@ export interface TablePaginationProps
   extends React.HTMLAttributes<HTMLDivElement> {
   offset?: number;
   pageSize?: number;
+  pageSizeOptions?: {
+    value: string;
+    label: string;
+  }[];
   setPageSize?: (pageSize: number) => void;
   setOffset?: (offset: number) => void;
   rowCount?: number;

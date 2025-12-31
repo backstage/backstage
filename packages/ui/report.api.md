@@ -1315,6 +1315,11 @@ export interface TablePaginationProps
   // (undocumented)
   pageSize?: number;
   // (undocumented)
+  pageSizeOptions?: {
+    value: string;
+    label: string;
+  }[];
+  // (undocumented)
   rowCount?: number;
   // (undocumented)
   setOffset?: (offset: number) => void;
@@ -1568,6 +1573,10 @@ export interface UseTablePaginationConfig {
   onPageSizeChange?: (pageSize: number) => void;
   onPreviousPage?: () => void;
   pageSize?: number;
+  pageSizeOptions?: {
+    value: string;
+    label: string;
+  }[];
   rowCount?: number;
   showPageSizeOptions?: boolean;
 }
