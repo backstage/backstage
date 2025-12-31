@@ -18,27 +18,30 @@ import clsx from 'clsx';
 import { forwardRef, Ref } from 'react';
 import { ToggleButtonGroup as AriaToggleButtonGroup } from 'react-aria-components';
 import type { ToggleButtonGroupProps } from './types';
-import { useStyles } from '../../hooks/useStyles';
+import { resolveResponsiveValue, useStyles } from '../../hooks/useStyles';
 import { ToggleButtonGroupDefinition } from './definition';
 import styles from './ToggleButtonGroup.module.css';
+import { useBreakpoint } from '../../hooks/useBreakpoint';
 
 /** @public */
 export const ToggleButtonGroup = forwardRef(
   (props: ToggleButtonGroupProps, ref: Ref<HTMLDivElement>) => {
+    const { breakpoint } = useBreakpoint();
     const { classNames, dataAttributes, cleanedProps } = useStyles(
       ToggleButtonGroupDefinition,
       {
-        orientation: 'horizontal',
+        orientation: 'horizontal' as const,
         ...props,
       },
     );
 
-    const { className, children, ...rest } = cleanedProps;
+    const { className, children, orientation, ...rest } = cleanedProps;
 
     return (
       <AriaToggleButtonGroup
         className={clsx(classNames.root, styles[classNames.root], className)}
         ref={ref}
+        orientation={resolveResponsiveValue(orientation, breakpoint)}
         {...dataAttributes}
         {...rest}
       >
