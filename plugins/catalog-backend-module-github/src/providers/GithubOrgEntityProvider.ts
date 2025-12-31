@@ -59,6 +59,7 @@ import {
   getOrganizationTeams,
   getOrganizationTeamsFromUsers,
   getOrganizationUsers,
+  GithubPageSizes,
   GithubTeam,
 } from '../lib/github';
 import { areGroupEntities, areUserEntities } from '../lib/guards';
@@ -133,6 +134,12 @@ export interface GithubOrgEntityProviderOptions {
   teamTransformer?: TeamTransformer;
 
   /**
+   * Optionally configure page sizes for GitHub GraphQL API queries.
+   * Reduce these values if hitting RESOURCE_LIMITS_EXCEEDED errors.
+   */
+  pageSizes?: Partial<GithubPageSizes>;
+
+  /**
    * Optionally exclude suspended users when querying organization users.
    * @defaultValue false
    * @remarks
@@ -176,6 +183,7 @@ export class GithubOrgEntityProvider implements EntityProvider {
       userTransformer: options.userTransformer,
       teamTransformer: options.teamTransformer,
       events: options.events,
+      pageSizes: options.pageSizes,
       excludeSuspendedUsers: options.excludeSuspendedUsers,
     });
 
@@ -194,6 +202,7 @@ export class GithubOrgEntityProvider implements EntityProvider {
       githubCredentialsProvider?: GithubCredentialsProvider;
       userTransformer?: UserTransformer;
       teamTransformer?: TeamTransformer;
+      pageSizes?: Partial<GithubPageSizes>;
       excludeSuspendedUsers?: boolean;
     },
   ) {
@@ -205,6 +214,13 @@ export class GithubOrgEntityProvider implements EntityProvider {
   /** {@inheritdoc @backstage/plugin-catalog-node#EntityProvider.getProviderName} */
   getProviderName() {
     return `GithubOrgEntityProvider:${this.options.id}`;
+  }
+
+  private getPageSizes(): GithubPageSizes {
+    return {
+      ...DEFAULT_PAGE_SIZES,
+      ...this.options.pageSizes,
+    };
   }
 
   /** {@inheritdoc @backstage/plugin-catalog-node#EntityProvider.connect} */
@@ -242,18 +258,20 @@ export class GithubOrgEntityProvider implements EntityProvider {
     });
 
     const { org } = parseGithubOrgUrl(this.options.orgUrl);
+    const pageSizes = this.getPageSizes();
     const { users } = await getOrganizationUsers(
       client,
       org,
       tokenType,
       this.options.userTransformer,
-      DEFAULT_PAGE_SIZES,
+      pageSizes,
       this.options.excludeSuspendedUsers,
     );
     const { teams } = await getOrganizationTeams(
       client,
       org,
       this.options.teamTransformer,
+      pageSizes,
     );
 
     if (areGroupEntities(teams)) {
@@ -365,6 +383,7 @@ export class GithubOrgEntityProvider implements EntityProvider {
     });
 
     const { org } = parseGithubOrgUrl(this.options.orgUrl);
+    const pageSizes = this.getPageSizes();
     const { team } = await getOrganizationTeam(
       client,
       org,
@@ -377,7 +396,7 @@ export class GithubOrgEntityProvider implements EntityProvider {
       org,
       tokenType,
       this.options.userTransformer,
-      DEFAULT_PAGE_SIZES,
+      pageSizes,
       this.options.excludeSuspendedUsers,
     );
 
@@ -395,6 +414,7 @@ export class GithubOrgEntityProvider implements EntityProvider {
       org,
       usersToRebuild.map(u => u.metadata.name),
       this.options.teamTransformer,
+      pageSizes,
     );
 
     if (areGroupEntities(teams)) {
@@ -458,6 +478,7 @@ export class GithubOrgEntityProvider implements EntityProvider {
     });
 
     const { org } = parseGithubOrgUrl(this.options.orgUrl);
+    const pageSizes = this.getPageSizes();
     const { team } = await getOrganizationTeam(
       client,
       org,
@@ -470,7 +491,7 @@ export class GithubOrgEntityProvider implements EntityProvider {
       org,
       tokenType,
       this.options.userTransformer,
-      DEFAULT_PAGE_SIZES,
+      pageSizes,
       this.options.excludeSuspendedUsers,
     );
 
@@ -481,6 +502,7 @@ export class GithubOrgEntityProvider implements EntityProvider {
       org,
       [userLogin],
       this.options.teamTransformer,
+      pageSizes,
     );
 
     // we include group because the removed event need to update the old group too
@@ -565,7 +587,13 @@ export class GithubOrgEntityProvider implements EntityProvider {
 
     const userTransformer =
       this.options.userTransformer || defaultUserTransformer;
-    const { name, avatar_url: avatarUrl, email, login } = event.membership.user;
+    const {
+      name,
+      avatar_url: avatarUrl,
+      email,
+      login,
+      node_id,
+    } = event.membership.user;
     const org = event.organization.login;
     const { headers } = await this.credentialsProvider.getCredentials({
       url: this.options.orgUrl,
@@ -581,6 +609,7 @@ export class GithubOrgEntityProvider implements EntityProvider {
         avatarUrl,
         login,
         email: email || undefined,
+        id: node_id,
         // we don't have this information in the event, so the refresh will handle that for us
         organizationVerifiedDomainEmails: [],
       },

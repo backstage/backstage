@@ -137,10 +137,6 @@ export interface Config {
          */
         sesConfig?: {
           /**
-           * ARN of the identity to use as the source of the email
-           */
-          sourceArn?: string;
-          /**
            * ARN of the identity to use for the "From"/sender address of the email
            */
           fromArn?: string;

@@ -6,5 +6,5 @@ category: Kubernetes
 description: Import Kubernetes resources into Backstage Components
 documentation: https://github.com/AntoineDao/backstage-provider-kubernetes#readme
 iconUrl: https://avatars.githubusercontent.com/u/13629408
-npmPackageName: https://www.npmjs.com/package/@antoinedao/backstage-provider-kubernetes
+npmPackageName: '@antoinedao/backstage-provider-kubernetes'
 addedDate: '2023-04-10'

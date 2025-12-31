@@ -50,7 +50,7 @@ export class DefaultRootHealthService implements RootHealthService {
     if (this.#state === 'down') {
       return {
         status: 503,
-        payload: { message: 'Backend is shuttting down', status: 'error' },
+        payload: { message: 'Backend is shutting down', status: 'error' },
       };
     }
 

@@ -1,6 +1,6 @@
 {
   "name": "@backstage/backend-defaults",
-  "version": "0.14.0-next.0",
+  "version": "0.14.1-next.1",
   "description": "Backend defaults used by Backstage backend apps",
   "backstage": {
     "role": "node-library"
@@ -203,7 +203,7 @@
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@google-cloud/cloud-sql-connector": "^1.4.0",
-    "@types/archiver": "^6.0.0",
+    "@types/archiver": "^7.0.0",
     "@types/base64-stream": "^1.0.2",
     "@types/compression": "^1.7.5",
     "@types/concat-stream": "^2.0.0",
@@ -214,6 +214,7 @@
     "@types/yauzl": "^2.10.0",
     "aws-sdk-client-mock": "^4.0.0",
     "better-sqlite3": "^12.0.0",
+    "get-port": "^5.1.1",
     "http-errors": "^2.0.0",
     "msw": "^1.0.0",
     "node-mocks-http": "^1.0.0",

@@ -17,6 +17,8 @@
 import os from 'os';
 import crypto from 'node:crypto';
 import yargs from 'yargs';
+// 'jest-cli' is included with jest and should be kept in sync with the installed jest version
+// eslint-disable-next-line @backstage/no-undeclared-imports
 import { run as runJest, yargsOptions as jestYargsOptions } from 'jest-cli';
 import { relative as relativePath } from 'path';
 import { Command, OptionValues } from 'commander';
@@ -287,6 +289,14 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
   // https://stackoverflow.com/questions/56261381/how-do-i-set-a-timezone-in-my-jest-config
   if (!process.env.TZ) {
     process.env.TZ = 'UTC';
+  }
+
+  // Unless the user explicitly toggles node-snapshot, default to provide --no-node-snapshot to reduce number of steps to run scaffolder
+  //  on Node LTS.
+  if (!process.env.NODE_OPTIONS?.includes('--node-snapshot')) {
+    process.env.NODE_OPTIONS = `${
+      process.env.NODE_OPTIONS ? `${process.env.NODE_OPTIONS} ` : ''
+    }--no-node-snapshot`;
   }
 
   // This ensures that the process doesn't exit too early before stdout is flushed

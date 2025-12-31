@@ -15,6 +15,11 @@
  */
 
 export type {
+  RootSystemMetadataServicePluginInfo,
+  RootSystemMetadataService,
+} from './RootSystemMetadataService';
+
+export type {
   ActionsRegistryService,
   ActionsRegistryActionOptions,
   ActionsRegistryActionContext,
@@ -22,4 +27,8 @@ export type {
 
 export type { ActionsService, ActionsServiceAction } from './ActionsService';
 
-export { actionsRegistryServiceRef, actionsServiceRef } from './refs';
+export {
+  actionsRegistryServiceRef,
+  actionsServiceRef,
+  rootSystemMetadataServiceRef,
+} from './refs';
