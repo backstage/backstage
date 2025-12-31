@@ -20,6 +20,8 @@ import { ToggleButton } from '../ToggleButton/ToggleButton';
 import { Flex } from '../Flex';
 import { Text } from '../Text';
 import { useState } from 'react';
+import type { Selection } from 'react-aria-components';
+import { useBreakpoint } from '../../hooks/useBreakpoint';
 import {
   RiCloudLine,
   RiStarLine,
@@ -124,16 +126,42 @@ export const Orientation = meta.story({
   ),
 });
 
+export const ResponsiveOrientation = meta.story({
+  render: () => {
+    const { breakpoint } = useBreakpoint(); // For testing purposes only (display breakpoint)
+
+    return (
+      <Flex direction="column" gap="3">
+        <Text>
+          Breakpoint: {breakpoint} (orientation: vertical on initial/sm,
+          horizontal from md+)
+        </Text>
+        <ToggleButtonGroup
+          selectionMode="single"
+          orientation={{ initial: 'vertical', md: 'horizontal' }}
+          defaultSelectedKeys={['morning']}
+        >
+          <ToggleButton id="morning">Morning</ToggleButton>
+          <ToggleButton id="afternoon">Afternoon</ToggleButton>
+          <ToggleButton id="evening">Evening</ToggleButton>
+        </ToggleButtonGroup>
+      </Flex>
+    );
+  },
+});
+
 export const ControlledGroup = meta.story({
   render: () => {
-    const [selectedKeys, setSelectedKeys] = useState(new Set(['beta']));
+    const [selectedKeys, setSelectedKeys] = useState<Selection>(
+      new Set(['beta']),
+    );
 
     return (
       <Flex direction="column" gap="3">
         <ToggleButtonGroup
           selectionMode="single"
           selectedKeys={selectedKeys}
-          onSelectionChange={keys => setSelectedKeys(new Set(keys))}
+          onSelectionChange={setSelectedKeys}
         >
           <ToggleButton id="alpha">Alpha</ToggleButton>
           <ToggleButton id="beta">Beta</ToggleButton>

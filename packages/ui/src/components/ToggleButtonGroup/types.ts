@@ -14,14 +14,13 @@
  * limitations under the License.
  */
 
-import type { Breakpoint } from '../..';
 import type { ToggleButtonGroupProps as AriaToggleButtonGroupProps } from 'react-aria-components';
+import { Responsive } from '../../types';
 
 /** @public */
 export interface ToggleButtonGroupProps
-  extends AriaToggleButtonGroupProps<object> {
-  orientation?:
-    | 'horizontal'
-    | 'vertical'
-    | Partial<Record<Breakpoint, 'horizontal' | 'vertical'>>;
+  extends Omit<AriaToggleButtonGroupProps, 'orientation'> {
+  orientation?: Responsive<
+    NonNullable<AriaToggleButtonGroupProps['orientation']>
+  >;
 }

@@ -23,10 +23,13 @@ import { utilityClassMap } from '../utils/utilityClassMap';
  * @param breakpoint - The current breakpoint
  * @returns The resolved value for the current breakpoint
  */
-function resolveResponsiveValue(
-  value: string | Record<string, string>,
+export function resolveResponsiveValue<T extends string>(
+  value: T | Partial<Record<string, T>> | undefined,
   breakpoint: string,
-): string | undefined {
+): T | undefined {
+  if (value === undefined) {
+    return undefined;
+  }
   if (typeof value === 'string') {
     return value;
   }
