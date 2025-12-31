@@ -694,7 +694,7 @@ In order to migrate your existing sidebar, you will want to create an override f
 
 ```tsx title="in packages/app/src/modules/nav/index.ts"
 import { createFrontendModule } from '@backstage/frontend-plugin-api';
-import { SidebarContent } from './Sidebar';
+import { sidebarContent } from './Sidebar';
 
 export const navModule = createFrontendModule({
   pluginId: 'app',
