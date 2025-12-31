@@ -5189,7 +5189,7 @@ __metadata:
     "@types/core-js": "npm:^2.5.4"
     "@types/express": "npm:^4.17.6"
     "@types/git-url-parse": "npm:^9.0.0"
-    "@types/glob": "npm:^8.0.0"
+    "@types/glob": "npm:^9.0.0"
     "@types/lodash": "npm:^4.14.151"
     "@types/supertest": "npm:^2.0.8"
     better-sqlite3: "npm:^12.0.0"
@@ -20864,13 +20864,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/glob@npm:^8.0.0":
-  version: 8.1.0
-  resolution: "@types/glob@npm:8.1.0"
+"@types/glob@npm:^9.0.0":
+  version: 9.0.0
+  resolution: "@types/glob@npm:9.0.0"
   dependencies:
-    "@types/minimatch": "npm:^5.1.2"
-    "@types/node": "npm:*"
-  checksum: 10/9101f3a9061e40137190f70626aa0e202369b5ec4012c3fabe6f5d229cce04772db9a94fa5a0eb39655e2e4ad105c38afbb4af56a56c0996a8c7d4fc72350e3d
+    glob: "npm:*"
+  checksum: 10/a9ea3afe1eafbc8fb303d2d39cd786084aece75fd8eeae1bad8febbf6e0323b429145f31e779a3d68fa693b2a53648ec2c639ee4858fb29132f801c74678051c
   languageName: node
   linkType: hard
 
@@ -21259,13 +21258,6 @@ __metadata:
   version: 3.0.5
   resolution: "@types/minimatch@npm:3.0.5"
   checksum: 10/c41d136f67231c3131cf1d4ca0b06687f4a322918a3a5adddc87ce90ed9dbd175a3610adee36b106ae68c0b92c637c35e02b58c8a56c424f71d30993ea220b92
-  languageName: node
-  linkType: hard
-
-"@types/minimatch@npm:^5.1.2":
-  version: 5.1.2
-  resolution: "@types/minimatch@npm:5.1.2"
-  checksum: 10/94db5060d20df2b80d77b74dd384df3115f01889b5b6c40fa2dfa27cfc03a68fb0ff7c1f2a0366070263eb2e9d6bfd8c87111d4bc3ae93c3f291297c1bf56c85
   languageName: node
   linkType: hard
 
@@ -32341,7 +32333,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"glob@npm:13.0.0":
+"glob@npm:*, glob@npm:13.0.0":
   version: 13.0.0
   resolution: "glob@npm:13.0.0"
   dependencies:
