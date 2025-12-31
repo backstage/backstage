@@ -1,3 +1,4 @@
+import preview from '../../../../../.storybook/preview';
 /*
  * Copyright 2024 The Backstage Authors
  *
@@ -15,11 +16,10 @@
  */
 
 import { ReactNode } from 'react';
-import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Box } from './Box';
 import { Flex } from '../Flex';
 
-const meta = {
+const meta = preview.meta({
   title: 'Backstage UI/Box',
   component: Box,
   argTypes: {
@@ -31,10 +31,7 @@ const meta = {
       control: false,
     },
   },
-} satisfies Meta<typeof Box>;
-
-export default meta;
-type Story = StoryObj<typeof meta>;
+});
 
 const diagonalStripePattern = (() => {
   const svg = `
@@ -47,7 +44,7 @@ const diagonalStripePattern = (() => {
   return `data:image/svg+xml,${encodeURIComponent(svg)}`;
 })();
 
-export const Default: Story = {
+export const Default = meta.story({
   args: {
     width: '64px',
     height: '64px',
@@ -63,10 +60,10 @@ export const Default: Story = {
       color: '#2563eb',
     },
   },
-};
+});
 
-export const Margin: Story = {
-  args: { ...Default.args },
+export const Margin = meta.story({
+  args: { ...Default.input.args },
   render: args => (
     <Flex align="center">
       <Box style={{ border: '1px solid red', borderRadius: '5px' }}>
@@ -89,10 +86,10 @@ export const Margin: Story = {
       </Box>
     </Flex>
   ),
-};
+});
 
-export const ResponsiveMargin: Story = {
-  args: { ...Default.args },
+export const ResponsiveMargin = meta.story({
+  args: { ...Default.input.args },
   render: args => (
     <Flex align="center">
       <Box style={{ border: '1px solid red', borderRadius: '5px' }}>
@@ -115,10 +112,10 @@ export const ResponsiveMargin: Story = {
       </Box>
     </Flex>
   ),
-};
+});
 
-export const CustomMargin: Story = {
-  args: { ...Default.args },
+export const CustomMargin = meta.story({
+  args: { ...Default.input.args },
   render: args => (
     <Flex align="center">
       <Box style={{ border: '1px solid red', borderRadius: '5px' }}>
@@ -141,10 +138,10 @@ export const CustomMargin: Story = {
       </Box>
     </Flex>
   ),
-};
+});
 
-export const CustomResponsiveMargin: Story = {
-  args: { ...Default.args },
+export const CustomResponsiveMargin = meta.story({
+  args: { ...Default.input.args },
   render: args => (
     <Flex align="center">
       <Box style={{ border: '1px solid red', borderRadius: '5px' }}>
@@ -167,10 +164,10 @@ export const CustomResponsiveMargin: Story = {
       </Box>
     </Flex>
   ),
-};
+});
 
-export const Padding: Story = {
-  args: { ...Default.args },
+export const Padding = meta.story({
+  args: { ...Default.input.args },
   render: args => (
     <Flex align="center">
       <Box pl="6" style={{ border: '1px solid red', borderRadius: '5px' }}>
@@ -193,10 +190,10 @@ export const Padding: Story = {
       </Box>
     </Flex>
   ),
-};
+});
 
-export const ResponsivePadding: Story = {
-  args: { ...Default.args },
+export const ResponsivePadding = meta.story({
+  args: { ...Default.input.args },
   render: args => (
     <Flex align="center">
       <Box
@@ -237,10 +234,10 @@ export const ResponsivePadding: Story = {
       </Box>
     </Flex>
   ),
-};
+});
 
-export const CustomPadding: Story = {
-  args: { ...Default.args },
+export const CustomPadding = meta.story({
+  args: { ...Default.input.args },
   render: args => (
     <Flex align="center">
       <Box pl="42px" style={{ border: '1px solid red', borderRadius: '5px' }}>
@@ -263,10 +260,10 @@ export const CustomPadding: Story = {
       </Box>
     </Flex>
   ),
-};
+});
 
-export const CustomResponsivePadding: Story = {
-  args: { ...Default.args },
+export const CustomResponsivePadding = meta.story({
+  args: { ...Default.input.args },
   render: args => (
     <Flex align="center">
       <Box
@@ -307,7 +304,7 @@ export const CustomResponsivePadding: Story = {
       </Box>
     </Flex>
   ),
-};
+});
 
 const CardDisplay = ({ children }: { children?: ReactNode }) => {
   return (
@@ -327,7 +324,7 @@ const CardDisplay = ({ children }: { children?: ReactNode }) => {
   );
 };
 
-export const Display: Story = {
+export const Display = meta.story({
   render: args => (
     <Flex direction="column" align="center">
       <Flex>
@@ -346,4 +343,4 @@ export const Display: Story = {
       </Box>
     </Flex>
   ),
-};
+});

@@ -81,8 +81,8 @@ export const ExamplePage = examplePlugin.provide(
 ```
 
 This is where the plugin is created and where it creates and exports extensions
-that can be imported and used the app. See reference docs for
-[`createPlugin`](../reference/core-plugin-api.createplugin.md) or introduction to
+that can be imported and used in the app. See reference docs for
+[`createPlugin`](https://backstage.io/api/stable/functions/_backstage_core-plugin-api.index.createPlugin.html) or introduction to
 the new [Composability System](./composability.md).
 
 ## Components

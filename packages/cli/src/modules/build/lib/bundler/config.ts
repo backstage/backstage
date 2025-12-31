@@ -29,7 +29,7 @@ import { paths as cliPaths } from '../../../../lib/paths';
 import fs from 'fs-extra';
 import { optimization as optimizationConfig } from './optimization';
 import pickBy from 'lodash/pickBy';
-import { runPlain } from '../../../../lib/run';
+import { runOutput } from '@backstage/cli-common';
 import { transforms } from './transforms';
 import { version } from '../../../../lib/version';
 import yn from 'yn';
@@ -78,14 +78,14 @@ async function readBuildInfo() {
 
   let commit: string | undefined;
   try {
-    commit = await runPlain('git', 'rev-parse', 'HEAD');
+    commit = await runOutput(['git', 'rev-parse', 'HEAD']);
   } catch (error) {
     // ignore, see below
   }
 
   let gitVersion: string | undefined;
   try {
-    gitVersion = await runPlain('git', 'describe', '--always');
+    gitVersion = await runOutput(['git', 'describe', '--always']);
   } catch (error) {
     // ignore, see below
   }

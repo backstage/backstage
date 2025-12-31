@@ -24,11 +24,7 @@ export type {
   EntityProviderProps,
   AsyncEntityProviderProps,
 } from './useEntity';
-export {
-  EntityListContext,
-  EntityListProvider,
-  useEntityList,
-} from './useEntityListProvider';
+export { EntityListProvider, useEntityList } from './useEntityListProvider';
 export type {
   DefaultEntityFilters,
   EntityListContextProps,

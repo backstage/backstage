@@ -127,6 +127,14 @@ export const repoBranchPickerFormField = FormFieldBlueprint.make({
   },
 });
 
+export const repoOwnerPickerFormField = FormFieldBlueprint.make({
+  name: 'repo-owner-picker',
+  params: {
+    field: () =>
+      import('./fields/RepoOwnerPicker').then(m => m.RepoOwnerPicker),
+  },
+});
+
 export const scaffolderApi = ApiBlueprint.make({
   params: defineParams =>
     defineParams({

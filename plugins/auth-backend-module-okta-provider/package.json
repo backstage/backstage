@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-auth-backend-module-okta-provider",
-  "version": "0.2.10-next.0",
+  "version": "0.2.10",
   "description": "The okta-provider backend module for the auth plugin.",
   "backstage": {
     "role": "backend-plugin-module",
@@ -37,7 +37,7 @@
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/plugin-auth-node": "workspace:^",
     "@davidzemon/passport-okta-oauth": "^0.0.7",
-    "express": "^4.18.2",
+    "express": "^4.22.0",
     "passport": "^0.7.0",
     "zod": "^3.22.4"
   },

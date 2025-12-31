@@ -259,7 +259,7 @@ export async function makeRollupConfigs(
         json(),
         yaml(),
         esbuild({
-          target: 'ES2022',
+          target: 'ES2023',
           minify: options.minify,
         }),
       ],
