@@ -51,6 +51,8 @@ import type { TagGroupProps as TagGroupProps_2 } from 'react-aria-components';
 import type { TagListProps } from 'react-aria-components';
 import type { TagProps as TagProps_2 } from 'react-aria-components';
 import type { TextFieldProps as TextFieldProps_2 } from 'react-aria-components';
+import type { ToggleButtonGroupProps as ToggleButtonGroupProps_2 } from 'react-aria-components';
+import type { ToggleButtonProps as ToggleButtonProps_2 } from 'react-aria-components';
 import { TooltipProps as TooltipProps_2 } from 'react-aria-components';
 import { TooltipTriggerComponentProps } from 'react-aria-components';
 
@@ -1813,6 +1815,64 @@ export type TextVariants =
 
 // @public (undocumented)
 export type TextWeights = 'regular' | 'bold';
+
+// @public (undocumented)
+export const ToggleButton: ForwardRefExoticComponent<
+  ToggleButtonProps & RefAttributes<HTMLButtonElement>
+>;
+
+// @public
+export const ToggleButtonDefinition: {
+  readonly classNames: {
+    readonly root: 'bui-ToggleButton';
+    readonly content: 'bui-ToggleButtonContent';
+  };
+  readonly dataAttributes: {
+    readonly size: readonly ['small', 'medium'];
+    readonly variant: readonly ['primary', 'secondary'];
+  };
+};
+
+// @public (undocumented)
+export const ToggleButtonGroup: ForwardRefExoticComponent<
+  ToggleButtonGroupProps & RefAttributes<HTMLDivElement>
+>;
+
+// @public
+export const ToggleButtonGroupDefinition: {
+  readonly classNames: {
+    readonly root: 'bui-ToggleButtonGroup';
+  };
+  readonly dataAttributes: {
+    readonly orientation: readonly ['horizontal', 'vertical'];
+  };
+};
+
+// @public (undocumented)
+export interface ToggleButtonGroupProps
+  extends Omit<ToggleButtonGroupProps_2, 'orientation'> {
+  // (undocumented)
+  orientation?: Responsive<
+    NonNullable<ToggleButtonGroupProps_2['orientation']>
+  >;
+}
+
+// @public
+export interface ToggleButtonProps extends ToggleButtonProps_2 {
+  // (undocumented)
+  children?: ReactNode;
+  // (undocumented)
+  iconEnd?: ReactElement;
+  // (undocumented)
+  iconStart?: ReactElement;
+  // (undocumented)
+  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
+  // (undocumented)
+  variant?:
+    | 'primary'
+    | 'secondary'
+    | Partial<Record<Breakpoint, 'primary' | 'secondary'>>;
+}
 
 // @public (undocumented)
 export const Tooltip: ForwardRefExoticComponent<
