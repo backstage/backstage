@@ -17,13 +17,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import { ToggleButton } from './ToggleButton';
 import { Flex } from '../Flex';
-import { Text } from '../Text';
-import {
-  RiHeartLine,
-  RiHeartFill,
-  RiStarLine,
-  RiStarFill,
-} from '@remixicon/react';
+import { RiStarLine } from '@remixicon/react';
 import { useState } from 'react';
 
 const meta = {
