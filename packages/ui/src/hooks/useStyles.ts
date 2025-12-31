@@ -17,13 +17,23 @@ import { useBreakpoint, breakpoints } from './useBreakpoint';
 import type { ComponentDefinition } from '../types';
 import { utilityClassMap } from '../utils/utilityClassMap';
 
+type DataAttributeValue<V> = V extends string ? V : string;
+
+type DataAttributesOf<T extends ComponentDefinition> = T extends {
+  dataAttributes: infer D extends Record<string, readonly unknown[]>;
+}
+  ? {
+      [K in keyof D as `data-${K & string}`]?: DataAttributeValue<D[K][number]>;
+    }
+  : Record<string, string>;
+
 /**
  * Resolve a responsive value based on the current breakpoint
  * @param value - The responsive value (string or object with breakpoint keys)
  * @param breakpoint - The current breakpoint
  * @returns The resolved value for the current breakpoint
  */
-export function resolveResponsiveValue<T extends string>(
+function resolveResponsiveValue<T extends string>(
   value: T | Partial<Record<string, T>> | undefined,
   breakpoint: string,
 ): T | undefined {
@@ -69,7 +79,7 @@ export function useStyles<
   props: P = {} as P,
 ): {
   classNames: T['classNames'];
-  dataAttributes: Record<string, string>;
+  dataAttributes: DataAttributesOf<T> & Record<string, string>;
   utilityClasses: string;
   style: React.CSSProperties;
   cleanedProps: P;
@@ -91,6 +101,7 @@ export function useStyles<
   const incomingStyle = props.style || {};
 
   // Generate data attributes from component definition
+  // Keep this writable without running into TS2862 ("generic and can only be indexed for reading")
   const dataAttributes: Record<string, string> = {};
   for (const key of dataAttributeNames) {
     const value = props[key];
@@ -197,7 +208,8 @@ export function useStyles<
 
   return {
     classNames,
-    dataAttributes,
+    dataAttributes: dataAttributes as DataAttributesOf<T> &
+      Record<string, string>,
     utilityClasses: utilityClassList.join(' '),
     style: mergedStyle,
     cleanedProps,
