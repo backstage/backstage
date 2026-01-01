@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,18 +15,14 @@
  */
 
 /**
- * Config API used by Backstage core, backend, and CLI
+ * The pattern that IDs must match.
  *
- * @packageDocumentation
+ * @remarks
+ * ids must only contain the letters `a` through `z` and digits, in groups separated by
+ * dashes. Additionally, the very first character of the first group
+ * must be a letter, not a digit
+ *
+ * @public
  */
-
-export type {
-  JsonArray,
-  JsonObject,
-  JsonPrimitive,
-  JsonValue,
-} from './deprecatedTypes';
-export { readDurationFromConfig } from './readDurationFromConfig';
-export { ConfigReader } from './reader';
-export type { AppConfig, Config } from './types';
-export { CONFIG_KEY_PART_PATTERN } from './constants';
+export const ID_PATTERN = /^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/i;
+export const ID_PATTERN_OLD = /^[a-z][a-z0-9]*(?:[-_][a-z0-9]+)*$/i;
