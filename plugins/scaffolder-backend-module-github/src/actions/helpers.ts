@@ -277,7 +277,7 @@ export async function initRepoPushAndProtect(
   sourcePath: string | undefined,
   defaultBranch: string,
   protectDefaultBranch: boolean,
-  protectEnforceAdmins: boolean,
+  enforceAdmins: boolean,
   owner: string,
   client: Octokit,
   repo: string,
@@ -310,6 +310,18 @@ export async function initRepoPushAndProtect(
   requiredCommitSigning?: boolean,
   requiredLinearHistory?: boolean,
 ): Promise<{ commitHash: string }> {
+  const gitAuthorInfo = {
+    name: gitAuthorName
+      ? gitAuthorName
+      : config.getOptionalString('scaffolder.defaultAuthor.name'),
+    email: gitAuthorEmail
+      ? gitAuthorEmail
+      : config.getOptionalString('scaffolder.defaultAuthor.email'),
+  };
+
+  const commitMessage =
+    getGitCommitMessage(gitCommitMessage, config) || 'initial commit';
+
   const commitResult = await initRepoAndPush({
     dir: getRepoSourceDirectory(workspacePath, sourcePath),
     remoteUrl,
@@ -319,16 +331,8 @@ export async function initRepoPushAndProtect(
       password,
     },
     logger,
-    commitMessage:
-      getGitCommitMessage(gitCommitMessage, config) || 'initial commit',
-    gitAuthorInfo: {
-      email:
-        gitAuthorEmail ||
-        config.getOptionalString('scaffolder.defaultAuthor.email'),
-      name:
-        gitAuthorName ||
-        config.getOptionalString('scaffolder.defaultAuthor.name'),
-    },
+    commitMessage,
+    gitAuthorInfo,
   });
 
   if (protectDefaultBranch) {
@@ -347,7 +351,7 @@ export async function initRepoPushAndProtect(
         requireBranchesToBeUpToDate,
         requiredConversationResolution,
         requireLastPushApproval,
-        enforceAdmins: protectEnforceAdmins,
+        enforceAdmins,
         dismissStaleReviews,
         requiredCommitSigning,
         requiredLinearHistory,
