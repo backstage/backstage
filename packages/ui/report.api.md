@@ -50,6 +50,7 @@ import type { TagGroupProps as TagGroupProps_2 } from 'react-aria-components';
 import type { TagListProps } from 'react-aria-components';
 import type { TagProps as TagProps_2 } from 'react-aria-components';
 import type { TextFieldProps as TextFieldProps_2 } from 'react-aria-components';
+import { ToggleButtonProps as ToggleButtonProps_2 } from 'react-aria-components';
 import { TooltipProps as TooltipProps_2 } from 'react-aria-components';
 import { TooltipTriggerComponentProps } from 'react-aria-components';
 
@@ -1503,6 +1504,33 @@ export type TextVariants =
 
 // @public (undocumented)
 export type TextWeights = 'regular' | 'bold';
+
+// @public (undocumented)
+export const ToggleButton: ForwardRefExoticComponent<
+  ToggleButtonProps & RefAttributes<HTMLButtonElement>
+>;
+
+// @public
+export const ToggleButtonDefinition: {
+  readonly classNames: {
+    readonly root: 'bui-ToggleButton';
+  };
+  readonly dataAttributes: {
+    readonly size: readonly ['small', 'medium', 'large'];
+  };
+};
+
+// @public
+export interface ToggleButtonProps extends ToggleButtonProps_2 {
+  // (undocumented)
+  children?: ReactNode;
+  // (undocumented)
+  iconEnd?: ReactElement;
+  // (undocumented)
+  iconStart?: ReactElement;
+  // (undocumented)
+  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
+}
 
 // @public (undocumented)
 export const Tooltip: ForwardRefExoticComponent<
