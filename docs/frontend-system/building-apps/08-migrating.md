@@ -694,20 +694,20 @@ In order to migrate your existing sidebar, you will want to create an override f
 
 ```tsx title="in packages/app/src/modules/nav/index.ts"
 import { createFrontendModule } from '@backstage/frontend-plugin-api';
-import { sidebarContent } from './Sidebar';
+import { SidebarContent } from './Sidebar';
 
 export const navModule = createFrontendModule({
   pluginId: 'app',
-  extensions: [sidebarContent],
+  extensions: [SidebarContent],
 });
 ```
 
-Then in the actual implementation for the `sidebarContent` extension, you can provide something like the following, where you implement the entire `Sidebar` component.
+Then in the actual implementation for the `SidebarContent` extension, you can provide something like the following, where you implement the entire `Sidebar` component.
 
 ```tsx title="in packages/app/src/modules/nav/Sidebar.tsx"
 import { NavContentBlueprint } from '@backstage/frontend-plugin-api';
 
-export const sidebarContent = NavContentBlueprint.make({
+export const SidebarContent = NavContentBlueprint.make({
   params: {
     component: ({ items }) => (
       <Sidebar>
