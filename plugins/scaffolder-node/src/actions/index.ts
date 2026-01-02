@@ -22,6 +22,9 @@ export {
 export {
   executeShellCommand,
   type ExecuteShellCommandOptions,
+  type StderrLogLevel,
+  type StderrLogLevelSelector,
+  type StderrLoggingOptions,
 } from './executeShellCommand';
 export { fetchContents, fetchFile } from './fetch';
 export { type ActionContext, type TemplateAction } from './types';
