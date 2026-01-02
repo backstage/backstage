@@ -1,3 +1,4 @@
+// This file has been automatically migrated to valid ESM format by Storybook.
 import { defineMain } from '@storybook/react-vite/node';
 import { fileURLToPath } from 'node:url';
 import { createRequire } from 'node:module';
@@ -49,10 +50,15 @@ export default defineMain({
     getAbsolutePath('@storybook/addon-docs'),
     getAbsolutePath('@storybook/addon-a11y'),
     getAbsolutePath('@storybook/addon-vitest'),
+    getAbsolutePath('@storybook/addon-mcp'),
   ],
   framework: {
     name: getAbsolutePath('@storybook/react-vite'),
     options: {},
+  },
+  features: {
+    experimentalComponentsManifest: true,
+    experimentalCodeExamples: true, // optional
   },
   viteFinal: async (config, { configType }) => {
     // Add Node.js polyfills for browser compatibility

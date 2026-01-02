@@ -18,6 +18,7 @@ import { HeaderLabel } from './HeaderLabel';
 export default {
   title: 'Layout/HeaderLabel',
   component: HeaderLabel,
+  tags: ['!manifest'],
 };
 
 type HeaderLabelProps = {

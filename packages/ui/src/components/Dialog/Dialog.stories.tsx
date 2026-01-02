@@ -143,30 +143,26 @@ export const FixedWidth = meta.story({
   ),
 });
 
-export const FixedHeight = meta.story({
+export const FixedHeight = FixedWidth.extend({
   args: {
     defaultOpen: true,
+    width: undefined,
     height: 500,
   },
-  render: FixedWidth.input.render,
 });
 
-export const FixedWidthAndHeight = meta.story({
+export const FixedWidthAndHeight = FixedWidth.extend({
   args: {
-    defaultOpen: true,
-    width: 600,
     height: 400,
   },
-  render: FixedWidth.input.render,
 });
 
-export const FullWidthAndHeight = meta.story({
+export const FullWidthAndHeight = FixedWidth.extend({
   args: {
     defaultOpen: true,
     width: '100%',
     height: '100%',
   },
-  render: FixedWidth.input.render,
 });
 
 export const Confirmation = meta.story({
@@ -233,18 +229,16 @@ export const WithForm = meta.story({
   ),
 });
 
-export const PreviewFixedWidthAndHeight = meta.story({
+export const PreviewFixedWidthAndHeight = FixedWidth.extend({
   args: {
     defaultOpen: undefined,
     width: 600,
     height: 400,
   },
-  render: FixedWidth.input.render,
 });
 
-export const PreviewWithForm = meta.story({
+export const PreviewWithForm = WithForm.extend({
   args: {
-    defaultOpen: undefined,
+    isOpen: undefined,
   },
-  render: WithForm.input.render,
 });
