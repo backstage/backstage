@@ -48,4 +48,7 @@ export const BoxDefinition = {
     'minHeight',
     'maxHeight',
   ],
+  dataAttributes: {
+    surface: ['0', '1', '2', '3', 'danger', 'warning', 'success'] as const,
+  },
 } as const satisfies ComponentDefinition;
