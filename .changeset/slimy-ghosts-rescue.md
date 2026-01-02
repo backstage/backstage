@@ -6,4 +6,4 @@
 '@backstage/plugin-devtools-common': patch
 ---
 
-Add support for adding `unprocessed-entities` and other tabs to `devtools`
+Add support for adding `unprocessed-entities` and other tabs to `devtools` when using the New Frontend system

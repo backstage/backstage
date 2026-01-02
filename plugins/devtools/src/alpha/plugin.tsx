@@ -63,13 +63,13 @@ export const devToolsPage = PageBlueprint.makeWithOverrides({
       path: '/devtools',
       routeRef: rootRouteRef,
       loader: () => {
-        const extensions = inputs.contents.map(content => ({
+        const contents = inputs.contents.map(content => ({
           path: content.get(coreExtensionData.routePath),
           title: content.get(coreExtensionData.title),
           children: content.get(coreExtensionData.reactElement),
         }));
         return import('../components/DevToolsPage').then(m => (
-          <m.DevToolsPage extensions={extensions} />
+          <m.DevToolsPage contents={contents} />
         ));
       },
     });

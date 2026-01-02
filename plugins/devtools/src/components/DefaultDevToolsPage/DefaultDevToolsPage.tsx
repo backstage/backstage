@@ -28,7 +28,7 @@ import { ScheduledTasksContent } from '../Content/ScheduledTasksContent';
 import { DevToolsPageProps } from '../DevToolsPage';
 
 /** @public */
-export const DefaultDevToolsPage = ({ extensions }: DevToolsPageProps) => (
+export const DefaultDevToolsPage = ({ contents }: DevToolsPageProps) => (
   <DevToolsLayout>
     <DevToolsLayout.Route path="info" title="Info">
       <RequirePermission permission={devToolsInfoReadPermission}>
@@ -45,13 +45,13 @@ export const DefaultDevToolsPage = ({ extensions }: DevToolsPageProps) => (
         <ScheduledTasksContent />
       </RequirePermission>
     </DevToolsLayout.Route>
-    {extensions?.map((extension, index) => (
+    {contents?.map((content, index) => (
       <DevToolsLayout.Route
-        key={`extension-${extension.path}-${index}`}
-        path={extension.path}
-        title={extension.title}
+        key={`extension-${content.path}-${index}`}
+        path={content.path}
+        title={content.title}
       >
-        {extension.children}
+        {content.children}
       </DevToolsLayout.Route>
     ))}
   </DevToolsLayout>

@@ -91,7 +91,7 @@ const _default: OverridableFrontendPlugin<
 export default _default;
 
 // @alpha
-export const unprocessedEntitiesDevToolsContent: ExtensionDefinition<{
+export const unprocessedEntitiesDevToolsContent: OverridableExtensionDefinition<{
   kind: 'devtools-content';
   name: undefined;
   config: {
@@ -106,7 +106,7 @@ export const unprocessedEntitiesDevToolsContent: ExtensionDefinition<{
     | ExtensionDataRef<string, 'core.routing.path', {}>
     | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
     | ExtensionDataRef<
-        RouteRef<AnyRouteRefParams>,
+        RouteRef_2<AnyRouteRefParams>,
         'core.routing.ref',
         {
           optional: true;
