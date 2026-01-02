@@ -423,7 +423,7 @@ const autoInit = (z: typeof zod) =>
 
 const workflowAccess = (z: typeof zod) =>
   z
-    .enum(['node', 'organization', 'user'], {
+    .enum(['none', 'organization', 'user'], {
       description:
         'Level of access for workflows outside of the repository. Default is "none".',
     })
