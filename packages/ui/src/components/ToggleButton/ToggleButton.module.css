@@ -1,0 +1,61 @@
+@layer tokens, base, components, utilities;
+
+@layer components {
+  .bui-ToggleButton {
+    border: 2px solid var(--bui-border-default);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+    font-family: var(--bui-font-regular);
+    font-weight: var(--bui-font-weight-bold);
+    padding: 0;
+    cursor: pointer;
+    border-radius: var(--bui-radius-2);
+    gap: var(--bui-space-1_5);
+    flex-shrink: 0;
+    transition: all 150ms ease;
+    background-color: transparent;
+    color: var(--bui-fg-default);
+
+    &:hover {
+      background-color: var(--bui-bg-weak-hover);
+      border-color: var(--bui-border-hover);
+    }
+
+    &:active {
+      background-color: var(--bui-bg-weak-pressed);
+    }
+
+    &[data-disabled='true'] {
+      cursor: not-allowed;
+      color: var(--bui-fg-disabled);
+      border-color: var(--bui-border-disabled);
+    }
+
+    &[data-selected='true'] {
+      background-color: var(--bui-bg-solid);
+      color: var(--bui-fg-solid);
+      border-color: var(--bui-bg-solid);
+
+      &:hover {
+        background-color: var(--bui-bg-solid-hover);
+        border-color: var(--bui-bg-solid-hover);
+      }
+    }
+  }
+
+  .bui-ToggleButton[data-size='small'] {
+    height: var(--bui-size-7);
+    padding: 0 var(--bui-space-2);
+    font-size: var(--bui-font-size-small);
+    line-height: var(--bui-line-height-small);
+  }
+
+  .bui-ToggleButton[data-size='medium'] {
+    height: var(--bui-size-8);
+    padding: 0 var(--bui-space-3);
+    font-size: var(--bui-font-size-body);
+    line-height: var(--bui-line-height-body);
+  }
+}
