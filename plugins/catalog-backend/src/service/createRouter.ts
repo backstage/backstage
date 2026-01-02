@@ -19,6 +19,7 @@ import {
   AuthService,
   HttpAuthService,
   LoggerService,
+  PermissionsRegistryService,
   PermissionsService,
 } from '@backstage/backend-plugin-api';
 import {
@@ -38,7 +39,6 @@ import { Cursor, EntitiesCatalog } from '../catalog/types';
 import { CatalogProcessingOrchestrator } from '../processing/types';
 import { validateEntityEnvelope } from '../processing/util';
 import { createOpenApiRouter } from '../schema/openapi';
-import { AuthorizedValidationService } from './AuthorizedValidationService';
 import {
   basicEntityFilter,
   entitiesBatchRequest,
@@ -61,6 +61,7 @@ import {
   locationInput,
   validateRequestBody,
 } from './util';
+import { permissionsMiddlewareFactory } from '@backstage/backend-openapi-utils';
 
 /**
  * Options used by {@link createRouter}.
@@ -74,6 +75,7 @@ export interface RouterOptions {
   logger: LoggerService;
   config: Config;
   permissionIntegrationRouter?: express.Router;
+  permissionsRegistry?: PermissionsRegistryService;
   auth: AuthService;
   httpAuth: HttpAuthService;
   permissionsService: PermissionsService;
@@ -104,11 +106,23 @@ export async function createRouter(
     logger,
     permissionIntegrationRouter,
     permissionsService,
+    permissionsRegistry,
     auth,
     httpAuth,
     auditor,
     enableRelationsCompatibility = false,
   } = options;
+
+  if (permissionsRegistry) {
+    router.use(
+      permissionsMiddlewareFactory({
+        permissions: permissionsService,
+        httpAuth,
+        permissionsRegistry,
+        logger,
+      }),
+    );
+  }
 
   const readonlyEnabled =
     config.getOptionalBoolean('catalog.readonly') || false;
@@ -773,27 +787,19 @@ export async function createRouter(
         });
       }
 
-      const credentials = await httpAuth.credentials(req);
-      const authorizedValidationService = new AuthorizedValidationService(
-        orchestrator,
-        permissionsService,
-      );
-      const processingResult = await authorizedValidationService.process(
-        {
-          entity: {
-            ...entity,
-            metadata: {
-              ...entity.metadata,
-              annotations: {
-                [ANNOTATION_LOCATION]: body.location,
-                [ANNOTATION_ORIGIN_LOCATION]: body.location,
-                ...entity.metadata.annotations,
-              },
+      const processingResult = await orchestrator.process({
+        entity: {
+          ...entity,
+          metadata: {
+            ...entity.metadata,
+            annotations: {
+              [ANNOTATION_LOCATION]: body.location,
+              [ANNOTATION_ORIGIN_LOCATION]: body.location,
+              ...entity.metadata.annotations,
             },
           },
         },
-        credentials,
-      );
+      });
 
       if (!processingResult.ok) {
         const errors = processingResult.errors.map(e => serializeError(e));

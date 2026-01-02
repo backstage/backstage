@@ -26,7 +26,7 @@ import fs from 'fs-extra';
 import chalk from 'chalk';
 import { runner } from '../../../../lib/runner';
 import { oas } from '@stoplight/spectral-rulesets';
-import { truthy } from '@stoplight/spectral-functions';
+import { truthy, schema } from '@stoplight/spectral-functions';
 import { DiagnosticSeverity } from '@stoplight/types';
 import { pretty } from '@stoplight/spectral-formatters';
 import { getPathToOpenApiSpec } from '../../../../lib/openapi/helpers';
@@ -56,6 +56,80 @@ async function lint(directoryPath: string, config?: { strict: boolean }) {
             function: truthy,
           },
           severity: 'error',
+        },
+        'valid-backstage-permissions': {
+          given: '$.paths..[?(@.x-backstage-permissions)]',
+          then: {
+            field: 'x-backstage-permissions',
+            function: schema,
+            functionOptions: {
+              schema: {
+                type: 'object',
+                required: ['permission'],
+                properties: {
+                  permission: {
+                    type: 'string',
+                    description: 'The permission name to check',
+                  },
+                  validateManually: {
+                    type: 'boolean',
+                    description:
+                      'If true, skip automatic validation and let handler check permissions',
+                  },
+                  resourceRef: {
+                    type: 'object',
+                    required: ['from', 'param'],
+                    properties: {
+                      from: {
+                        type: 'string',
+                        enum: ['path', 'query'],
+                        description:
+                          'Where to extract the resource reference from',
+                      },
+                      param: {
+                        type: 'string',
+                        description: 'The parameter name to extract',
+                      },
+                    },
+                    additionalProperties: false,
+                  },
+                  onDeny: {
+                    oneOf: [
+                      {
+                        type: 'object',
+                        required: ['statusCode'],
+                        properties: {
+                          statusCode: {
+                            type: 'number',
+                            enum: [403, 404],
+                          },
+                        },
+                        additionalProperties: false,
+                      },
+                      {
+                        type: 'object',
+                        required: ['body'],
+                        properties: {
+                          body: {
+                            description: 'Custom response body to return',
+                          },
+                          statusCode: {
+                            type: 'number',
+                            description:
+                              'Optional status code (defaults to 200)',
+                          },
+                        },
+                        additionalProperties: false,
+                      },
+                    ],
+                  },
+                },
+                additionalProperties: false,
+              },
+            },
+          },
+          severity: 'error',
+          message: 'x-backstage-permissions must follow the correct schema',
         },
       },
       overrides: [
