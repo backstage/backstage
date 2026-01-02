@@ -7,9 +7,4 @@ description: Observability platform built to help engineers create and monitor t
 documentation: https://github.com/backstage/community-plugins/tree/main/workspaces/newrelic/plugins/newrelic
 iconUrl: https://www.mulesoft.com/sites/default/files/2018-10/New_relic.png
 npmPackageName: '@backstage-community/plugin-newrelic'
-tags:
-  - performance
-  - monitoring
-  - errors
-  - alerting
 addedDate: '2020-11-03'

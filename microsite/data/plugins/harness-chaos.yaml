@@ -6,6 +6,4 @@ description: This plugin lets you view the status of Harness Chaos Engineering R
 documentation: https://github.com/harness/backstage-plugins/tree/main/plugins/harness-chaos
 iconUrl: https://static.harness.io/ng-static/images/favicon.png
 npmPackageName: '@harnessio/backstage-plugin-harness-chaos'
-tags:
-  - resiliency
 addedDate: '2024-06-25'
