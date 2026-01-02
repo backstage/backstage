@@ -8752,6 +8752,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@epic-web/invariant@npm:^1.0.0":
+  version: 1.0.0
+  resolution: "@epic-web/invariant@npm:1.0.0"
+  checksum: 10/28b36a7447f60b84f9d6a23571480042170ef4239a577577ad8447f64a2e4f1a4e57e6fe1b592e61534c5ab53ff67776130e6c88a68cbd997eb6e9c9759a5934
+  languageName: node
+  linkType: hard
+
 "@esbuild/aix-ppc64@npm:0.25.8":
   version: 0.25.8
   resolution: "@esbuild/aix-ppc64@npm:0.25.8"
@@ -27577,15 +27584,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cross-env@npm:^7.0.0":
-  version: 7.0.3
-  resolution: "cross-env@npm:7.0.3"
+"cross-env@npm:^10.0.0":
+  version: 10.1.0
+  resolution: "cross-env@npm:10.1.0"
   dependencies:
-    cross-spawn: "npm:^7.0.1"
+    "@epic-web/invariant": "npm:^1.0.0"
+    cross-spawn: "npm:^7.0.6"
   bin:
-    cross-env: src/bin/cross-env.js
-    cross-env-shell: src/bin/cross-env-shell.js
-  checksum: 10/e99911f0d31c20e990fd92d6fd001f4b01668a303221227cc5cb42ed155f086351b1b3bd2699b200e527ab13011b032801f8ce638e6f09f854bdf744095e604c
+    cross-env: dist/bin/cross-env.js
+    cross-env-shell: dist/bin/cross-env-shell.js
+  checksum: 10/0e5d8bdefbbcd000460b69755e0eeb22953510abac8375e4f8b638ff7c45406141acfd57b8a4c1d1cf0b5ea42f33451b302062fb9b34408753b4d465e901b845
   languageName: node
   linkType: hard
 
@@ -27640,7 +27648,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"cross-spawn@npm:^7.0.1, cross-spawn@npm:^7.0.2, cross-spawn@npm:^7.0.3, cross-spawn@npm:^7.0.5, cross-spawn@npm:^7.0.6":
+"cross-spawn@npm:^7.0.2, cross-spawn@npm:^7.0.3, cross-spawn@npm:^7.0.5, cross-spawn@npm:^7.0.6":
   version: 7.0.6
   resolution: "cross-spawn@npm:7.0.6"
   dependencies:
@@ -30533,7 +30541,7 @@ __metadata:
     "@types/react": "npm:*"
     "@types/react-dom": "npm:*"
     "@types/zen-observable": "npm:^0.8.0"
-    cross-env: "npm:^7.0.0"
+    cross-env: "npm:^10.0.0"
     history: "npm:^5.0.0"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
@@ -30606,7 +30614,7 @@ __metadata:
     "@types/react-dom": "npm:*"
     "@types/zen-observable": "npm:^0.8.0"
     axios: "npm:^1.13.0"
-    cross-env: "npm:^7.0.0"
+    cross-env: "npm:^10.0.0"
     history: "npm:^5.0.0"
     msw: "npm:^1.0.0"
     react: "npm:^18.0.2"
@@ -45129,7 +45137,7 @@ __metadata:
     "@useoptic/optic": "npm:^1.0.0"
     array-to-table: "npm:^1.0.1"
     command-exists: "npm:^1.2.9"
-    cross-env: "npm:^7.0.0"
+    cross-env: "npm:^10.0.0"
     e2e-test: "workspace:*"
     eslint: "npm:^8.6.0"
     eslint-plugin-notice: "npm:^1.0.0"
@@ -47600,7 +47608,7 @@ __metadata:
     "@testing-library/user-event": "npm:^14.0.0"
     "@types/react": "npm:*"
     "@types/react-dom": "npm:*"
-    cross-env: "npm:^7.0.0"
+    cross-env: "npm:^10.0.0"
     history: "npm:^5.0.0"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
