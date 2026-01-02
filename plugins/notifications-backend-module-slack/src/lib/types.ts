@@ -18,3 +18,16 @@ export interface SlackNotificationOptions {
   url: string;
   payload: string;
 }
+
+/**
+ * Configuration for routing broadcast notifications to specific Slack channels
+ * based on origin and/or topic.
+ */
+export type BroadcastRoute = {
+  /** The origin to match (e.g., 'plugin:catalog', 'external:my-service') */
+  origin?: string;
+  /** The topic to match (e.g., 'entity-updated', 'alerts') */
+  topic?: string;
+  /** The Slack channel(s) to send to */
+  channels: string[];
+};

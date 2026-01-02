@@ -20,9 +20,11 @@ import {
 } from '@backstage/plugin-devtools-common';
 
 import { ConfigContent } from '../Content';
+import { devToolsTaskSchedulerReadPermission } from '@backstage/plugin-devtools-common/alpha';
 import { DevToolsLayout } from '../DevToolsLayout';
 import { InfoContent } from '../Content';
 import { RequirePermission } from '@backstage/plugin-permission-react';
+import { ScheduledTasksContent } from '../Content/ScheduledTasksContent';
 import { DevToolsPageProps } from '../DevToolsPage';
 
 /** @public */
@@ -36,6 +38,11 @@ export const DefaultDevToolsPage = ({ extensions }: DevToolsPageProps) => (
     <DevToolsLayout.Route path="config" title="Config">
       <RequirePermission permission={devToolsConfigReadPermission}>
         <ConfigContent />
+      </RequirePermission>
+    </DevToolsLayout.Route>
+    <DevToolsLayout.Route path="scheduled-tasks" title="Scheduled Tasks">
+      <RequirePermission permission={devToolsTaskSchedulerReadPermission}>
+        <ScheduledTasksContent />
       </RequirePermission>
     </DevToolsLayout.Route>
     {extensions?.map((extension, index) => (

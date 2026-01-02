@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useState, useMemo, useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import throttle from 'lodash/throttle';
 import {
   Content,
@@ -156,13 +156,17 @@ export const NotificationsPage = (props?: NotificationsPageProps) => {
   const isUnread = !!value?.[1]?.unread;
   const allTopics = value?.[2]?.topics;
 
-  let tableTitle = `All notifications (${totalCount})`;
+  let tableTitle = `All notifications `;
   if (saved) {
-    tableTitle = `Saved notifications (${totalCount})`;
+    tableTitle = `Saved notifications`;
   } else if (unreadOnly === true) {
-    tableTitle = `Unread notifications (${totalCount})`;
+    tableTitle = `Unread notifications`;
   } else if (unreadOnly === false) {
-    tableTitle = `Read notifications (${totalCount})`;
+    tableTitle = `Read notifications`;
+  }
+
+  if (totalCount) {
+    tableTitle += ` (${totalCount})`;
   }
 
   return (

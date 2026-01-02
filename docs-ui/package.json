@@ -32,13 +32,13 @@
     "clsx": "^2.1.1",
     "html-react-parser": "^5.2.5",
     "motion": "^12.4.1",
-    "next": "15.5.7",
+    "next": "15.5.9",
     "next-mdx-remote-client": "^2.1.2",
     "prop-types": "^15.8.1",
     "react": "19.1.1",
     "react-dom": "19.1.1",
     "shiki": "^3.13.0",
-    "storybook": "^8.6.12"
+    "storybook": "^8.6.15"
   },
   "devDependencies": {
     "@octokit/rest": "^22.0.1",

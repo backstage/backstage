@@ -1,6 +1,12 @@
-import type { StorybookConfig } from '@storybook/react-vite';
+import { defineMain } from '@storybook/react-vite/node';
+import { fileURLToPath } from 'node:url';
+import { createRequire } from 'node:module';
 
 import { join, dirname, posix } from 'path';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const require = createRequire(import.meta.url);
 
 const isChromatic = process.env.STORYBOOK_STORY_SET === 'chromatic';
 
@@ -35,13 +41,14 @@ function getAbsolutePath(value: string): any {
   return dirname(require.resolve(join(value, 'package.json')));
 }
 
-const config: StorybookConfig = {
+export default defineMain({
   stories,
   addons: [
     getAbsolutePath('@storybook/addon-links'),
     getAbsolutePath('@storybook/addon-themes'),
     getAbsolutePath('@storybook/addon-docs'),
     getAbsolutePath('@storybook/addon-a11y'),
+    getAbsolutePath('@storybook/addon-vitest'),
   ],
   framework: {
     name: getAbsolutePath('@storybook/react-vite'),
@@ -122,6 +129,4 @@ const config: StorybookConfig = {
 
     return config;
   },
-};
-
-export default config;
+});

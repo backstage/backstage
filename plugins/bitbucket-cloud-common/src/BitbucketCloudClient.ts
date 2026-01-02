@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { BitbucketCloudIntegrationConfig } from '@backstage/integration';
+import {
+  BitbucketCloudIntegrationConfig,
+  getBitbucketCloudOAuthToken,
+} from '@backstage/integration';
 import fetch, { Request } from 'cross-fetch';
 import { Models } from './models';
 import { WithPagination } from './pagination';
@@ -139,22 +142,32 @@ export class BitbucketCloudClient {
   }
 
   private async request(req: Request): Promise<Response> {
-    return fetch(req, { headers: this.getAuthHeaders() }).then(
-      (response: Response) => {
-        if (!response.ok) {
-          throw new Error(
-            `Unexpected response for ${req.method} ${req.url}. Expected 200 but got ${response.status} - ${response.statusText}`,
-          );
-        }
+    const headers = await this.getAuthHeaders();
+    return fetch(req, { headers }).then((response: Response) => {
+      if (!response.ok) {
+        throw new Error(
+          `Unexpected response for ${req.method} ${req.url}. Expected 200 but got ${response.status} - ${response.statusText}`,
+        );
+      }
 
-        return response;
-      },
-    );
+      return response;
+    });
   }
 
-  private getAuthHeaders(): Record<string, string> {
+  private async getAuthHeaders(): Promise<Record<string, string>> {
     const headers: Record<string, string> = {};
 
+    // OAuth authentication (clientId/clientSecret)
+    if (this.config.clientId && this.config.clientSecret) {
+      const token = await getBitbucketCloudOAuthToken(
+        this.config.clientId,
+        this.config.clientSecret,
+      );
+      headers.Authorization = `Bearer ${token}`;
+      return headers;
+    }
+
+    // Basic authentication (username/token or username/appPassword)
     if (
       this.config.username &&
       (this.config.token ?? this.config.appPassword)

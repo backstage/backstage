@@ -33,7 +33,7 @@
     "strictNullChecks": true,
     "strictPropertyInitialization": true,
     "stripInternal": true,
-    "target": "ES2023",
+    "target": "ES2022",
     "types": ["node", "jest", "webpack-env"],
     "useDefineForClassFields": true
   }
