@@ -11,7 +11,7 @@ The Backstage UI Themer helps you convert an existing MUI v5 theme into Backstag
 Run this from your Backstage repo root:
 
 ```bash
-yarn add --cwd packages/app @backstage/plugin-mui-to-bui
+yarn --cwd packages/app add @backstage/plugin-mui-to-bui
 ```
 
 ### 2) Wire it up depending on your frontend system
