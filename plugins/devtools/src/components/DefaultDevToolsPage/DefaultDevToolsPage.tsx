@@ -47,7 +47,7 @@ export const DefaultDevToolsPage = ({ contents }: DevToolsPageProps) => (
     </DevToolsLayout.Route>
     {contents?.map((content, index) => (
       <DevToolsLayout.Route
-        key={`extension-${content.path}-${index}`}
+        key={`extension-${index}`}
         path={content.path}
         title={content.title}
       >
