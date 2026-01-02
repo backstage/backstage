@@ -1,8 +1,9 @@
 {
-  "name": "@backstage/plugin-devtools",
-  "version": "0.1.35-next.0",
+  "name": "@backstage/plugin-devtools-react",
+  "version": "0.0.0",
+  "description": "Web library for the devtools plugin",
   "backstage": {
-    "role": "frontend-plugin",
+    "role": "web-library",
     "pluginId": "devtools",
     "pluginPackages": [
       "@backstage/plugin-devtools",
@@ -12,36 +13,21 @@
     ]
   },
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "main": "dist/index.esm.js",
+    "types": "dist/index.d.ts"
   },
-  "homepage": "https://backstage.io",
   "repository": {
     "type": "git",
     "url": "https://github.com/backstage/backstage",
-    "directory": "plugins/devtools"
+    "directory": "plugins/devtools-react"
   },
   "license": "Apache-2.0",
   "sideEffects": false,
-  "exports": {
-    ".": "./src/index.ts",
-    "./alpha": "./src/alpha.ts",
-    "./package.json": "./package.json"
-  },
   "main": "src/index.ts",
   "types": "src/index.ts",
-  "typesVersions": {
-    "*": {
-      "alpha": [
-        "src/alpha.ts"
-      ],
-      "package.json": [
-        "package.json"
-      ]
-    }
-  },
   "files": [
-    "dist",
-    "config.d.ts"
+    "dist"
   ],
   "scripts": {
     "build": "backstage-cli package build",
@@ -53,26 +39,15 @@
     "test": "backstage-cli package test"
   },
   "dependencies": {
-    "@backstage/core-compat-api": "workspace:^",
-    "@backstage/core-components": "workspace:^",
     "@backstage/core-plugin-api": "workspace:^",
-    "@backstage/errors": "workspace:^",
     "@backstage/frontend-plugin-api": "workspace:^",
-    "@backstage/plugin-devtools-common": "workspace:^",
-    "@backstage/plugin-devtools-react": "workspace:^",
-    "@backstage/plugin-permission-react": "workspace:^",
-    "@material-ui/core": "^4.9.13",
-    "@material-ui/icons": "^4.9.1",
-    "@material-ui/lab": "^4.0.0-alpha.57",
-    "lodash": "^4.17.21",
-    "react-json-view": "^1.21.3",
-    "react-use": "^17.2.4"
+    "@material-ui/core": "^4.9.13"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
-    "@backstage/dev-utils": "workspace:^",
+    "@backstage/test-utils": "workspace:^",
     "@testing-library/jest-dom": "^6.0.0",
-    "@types/lodash": "^4.14.151",
+    "@testing-library/react": "^14.0.0",
     "@types/react": "^18.0.0",
     "react": "^18.0.2",
     "react-dom": "^18.0.2",
@@ -88,6 +63,5 @@
     "@types/react": {
       "optional": true
     }
-  },
-  "configSchema": "config.d.ts"
+  }
 }
