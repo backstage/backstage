@@ -88,45 +88,35 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
     await validateAccessTeam(client, access);
   }
 
-  const [reposMethod, extraParams]: [
-    'createInOrg' | 'createForAuthenticatedUser',
-    any,
-  ] =
+  const baseRepoParams = {
+    allow_auto_merge: allowAutoMerge,
+    allow_merge_commit: allowMergeCommit,
+    allow_rebase_merge: allowRebaseMerge,
+    allow_squash_merge: allowSquashMerge,
+    allow_update_branch: allowUpdateBranch,
+    auto_init: autoInit,
+    delete_branch_on_merge: deleteBranchOnMerge,
+    description,
+    has_issues: hasIssues,
+    has_projects: hasProjects,
+    has_wiki: hasWiki,
+    homepage,
+    name: repo,
+    private: repoVisibility === 'private',
+    squash_merge_commit_message: squashMergeCommitMessage,
+    squash_merge_commit_title: squashMergeCommitTitle,
+  };
+  const repoCreationPromise =
     user.data.type === 'Organization'
-      ? [
-          'createInOrg',
-          {
-            // Custom properties only available on org repos
-            custom_properties: customProperties,
-            org: owner,
-            // @ts-ignore https://github.com/octokit/types.ts/issues/522
-            visibility: repoVisibility,
-          },
-        ]
-      : ['createForAuthenticatedUser', null];
-  const repoCreationPromise = client.rest.repos[reposMethod](
-    Object.assign(
-      {
-        allow_auto_merge: allowAutoMerge,
-        allow_merge_commit: allowMergeCommit,
-        allow_rebase_merge: allowRebaseMerge,
-        allow_squash_merge: allowSquashMerge,
-        allow_update_branch: allowUpdateBranch,
-        auto_init: autoInit,
-        delete_branch_on_merge: deleteBranchOnMerge,
-        description,
-        has_issues: hasIssues,
-        has_projects: hasProjects,
-        has_wiki: hasWiki,
-        homepage,
-        name: repo,
-        private: repoVisibility === 'private',
-        squash_merge_commit_message: squashMergeCommitMessage,
-        squash_merge_commit_title: squashMergeCommitTitle,
-      },
-      extraParams,
-    ),
-  );
+      ? client.rest.repos.createInOrg({
+          ...baseRepoParams,
+          // Custom properties only available on org repos
+          custom_properties: customProperties,
+          org: owner,
+          // @ts-ignore https://github.com/octokit/types.ts/issues/522
+          visibility: repoVisibility,
+        })
+      : client.rest.repos.createForAuthenticatedUser(baseRepoParams);
 
   let newRepo;
 
