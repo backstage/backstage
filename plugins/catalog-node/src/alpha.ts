@@ -64,3 +64,11 @@ export type { CatalogPermissionExtensionPoint } from './extensions';
 export { catalogPermissionExtensionPoint } from './extensions';
 export type { CatalogModelExtensionPoint } from './extensions';
 export { catalogModelExtensionPoint } from './extensions';
+
+export {
+  catalogScmEventsServiceRef,
+  type CatalogScmEventsService,
+  type CatalogScmEventsServiceSubscriber,
+  type CatalogScmEvent,
+  type CatalogScmEventContext,
+} from './catalogScmEventsService';
