@@ -159,6 +159,7 @@ catalog:
           - '^somegroup$'
           - 'anothergroup'
         entityFilename: catalog-info.yaml # Optional. Defaults to `catalog-info.yaml`
+        entityFilePattern: '(catalog-info|backstage)\.ya?ml$' # Optional. RegExp pattern for matching catalog files (overrides entityFilename). Supports both basename and full path matching
         projectPattern: '[\s\S]*' # Optional. Filters found projects based on provided pattern. Defaults to `[\s\S]*`, which means to not filter anything
         excludeRepos: [] # Optional. A list of project paths that should be excluded from discovery, e.g. group/subgroup/repo. Should not start or end with a slash.
         schedule: # Same options as in SchedulerServiceTaskScheduleDefinition. Optional for the Legacy Backend System
@@ -167,6 +168,29 @@ catalog:
           # supports ISO duration, "human duration" as used in code
           timeout: { minutes: 3 }
 ```
+
+### Advanced File Pattern Matching
+
+The `entityFilePattern` configuration option provides more flexibility than `entityFilename` by using regular expressions to match catalog files. When both options are present, `entityFilePattern` takes precedence.
+
+**Examples:**
+
+```yaml
+# Match multiple file extensions
+entityFilePattern: '(catalog-info|backstage)\.(yaml|yml)$'
+
+# Match files in specific directories
+entityFilePattern: '.*/api/.*\.yaml$'
+
+# Complex pattern combining basename and path matching
+entityFilePattern: '(.*/backend/.*\.ya?ml$|catalog-info\.ya?ml$)'
+```
+
+The pattern is tested against both the full file path and the basename, providing maximum flexibility:
+
+- **Basename matching**: Pattern like `catalog-info\.ya?ml$` will match `catalog-info.yaml` or `catalog-info.yml` regardless of directory
+- **Path matching**: Pattern like `.*/api/.*\.yaml$` will match any `.yaml` file in an `api/` directory
+- **Combined matching**: Single pattern can handle both cases using RegExp alternation
 
 ## Alternative processor
 
