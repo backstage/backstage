@@ -74,17 +74,6 @@ jobs:
         with:
           cache-prefix: ${{ runner.os }}-v22.x
 
-      - name: build API reference
-        run: yarn build:api-docs
-
-      - name: upload API reference
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
-        with:
-          name: stable-reference
-          path: docs/reference/
-          if-no-files-found: error
-          retention-days: 1
-
       # Use the lower-level cache actions for the success cache, so that we can store the cache even on failed builds
       - name: restore package-docs cache
         uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
@@ -94,13 +83,13 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-v${{ matrix.node-version }}-package-docs-stable-
 
-      - name: build API reference (beta)
+      - name: build API reference
         run: yarn backstage-repo-tools package-docs
 
-      - name: upload API reference (beta)
+      - name: upload API reference
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: stable-reference-beta
+          name: stable-reference
           path: type-docs/
 
       # Always save success cache even if there were failures, that way it can be used in re-triggered builds
@@ -155,17 +144,6 @@ jobs:
         with:
           cache-prefix: ${{ runner.os }}-v22.x
 
-      - name: build API reference
-        run: yarn build:api-docs
-
-      - name: upload API reference
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
-        with:
-          name: next-reference
-          path: docs/reference/
-          if-no-files-found: error
-          retention-days: 1
-
       # Use the lower-level cache actions for the success cache, so that we can store the cache even on failed builds
       - name: restore package-docs cache
         uses: actions/cache/restore@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
@@ -175,13 +153,13 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-v${{ matrix.node-version }}-package-docs-next-
 
-      - name: build API reference (beta)
+      - name: build API reference
         run: yarn backstage-repo-tools package-docs
 
-      - name: upload API reference (beta)
+      - name: upload API reference
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: next-reference-beta
+          name: next-reference
           path: type-docs/
 
       # Always save success cache even if there were failures, that way it can be used in re-triggered builds
@@ -267,12 +245,6 @@ jobs:
       - name: verify yarn dependency duplicates
         run: node scripts/verify-lockfile-duplicates.js
 
-      - name: download stable reference
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
-        with:
-          name: stable-reference
-          path: docs/reference
-
       - name: download stable OpenAPI API docs
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
@@ -291,9 +263,6 @@ jobs:
       - name: clear generated docs
         run: git clean -fdx docs/
 
-      - name: build API reference
-        run: yarn build:api-docs
-
       - name: checkout master
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
         with:
@@ -301,12 +270,6 @@ jobs:
 
       - name: Build MkDocs for TechDocs
         run: mkdocs build --strict
-
-      - name: download next reference
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
-        with:
-          name: next-reference
-          path: docs/reference
 
       - name: download next OpenAPI API docs
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
@@ -317,15 +280,3 @@ jobs:
       - name: build microsite
         run: yarn build
         working-directory: microsite
-
-      - name: download stable reference (beta)
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
-        with:
-          name: stable-reference-beta
-          path: api/stable/
-
-      - name: download next reference (beta)
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
-        with:
-          name: next-reference-beta
-          path: api/next/
