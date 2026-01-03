@@ -14,6 +14,7 @@ import {
   selectSearchableSnippet,
   selectMultipleSnippet,
   selectSearchableMultipleSnippet,
+  selectDisabledOptionsSnippet,
 } from './select.props';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
@@ -89,6 +90,18 @@ Here's a view when the select is disabled.
   open
   preview={<SelectSnippet story="Disabled" />}
   code={selectDisabledSnippet}
+/>
+
+### Disabled options
+
+You can disable specific options within the Select component using `disabledKeys`.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<SelectSnippet story="DisabledOption" />}
+  code={selectDisabledOptionsSnippet}
 />
 
 ### Searchable
