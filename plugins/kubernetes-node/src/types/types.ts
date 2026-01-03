@@ -187,7 +187,9 @@ export type KubernetesObjectTypes =
   | 'customresources'
   | 'statefulsets'
   | 'daemonsets'
-  | 'secrets';
+  | 'secrets'
+  | 'persistentvolumes'
+  | 'persistentvolumeclaims';
 // If updating this list, also make sure to update
 // `objectTypes` and `apiVersionOverrides` in config.d.ts on @backstage/plugin-kubernetes-backend!
 
