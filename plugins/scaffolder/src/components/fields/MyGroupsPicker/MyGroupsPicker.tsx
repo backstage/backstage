@@ -61,6 +61,7 @@ export const MyGroupsPicker = (props: MyGroupsPickerProps) => {
   const errorApi = useApi(errorApiRef);
   const entityPresentationApi = useApi(entityPresentationApiRef);
   const isDisabled = uiSchema?.['ui:disabled'] ?? false;
+  const namespaces = uiSchema?.['ui:options']?.namespaces;
 
   const { value: groups, loading } = useAsync(async () => {
     const { userEntityRef } = await identityApi.getBackstageIdentity();
@@ -74,6 +75,7 @@ export const MyGroupsPicker = (props: MyGroupsPickerProps) => {
       filter: {
         kind: 'Group',
         ['relations.hasMember']: [userEntityRef],
+        ...(namespaces ? { 'metadata.namespace': namespaces } : {}),
       },
     });
 
