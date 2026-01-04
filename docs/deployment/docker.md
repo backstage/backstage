@@ -9,15 +9,23 @@ description: How to build a Backstage Docker image for deployment
 
 This section describes how to build a Backstage App into a deployable Docker image. It is split into three sections, first covering the host build approach, which is recommended due to its speed and more efficient and often simpler caching. The second section covers a full multi-stage Docker build, and the last section covers how to deploy the frontend and backend as separate images.
 
+## Who is this guide for?  
+
+This guide focuses on building **production-ready Docker images** for deploying Backstage.  
+
+If you are looking to run Backstage locally with supporting services (such as PostgreSQL or Redis) using Docker Compose, refer to the local development and dependency setup documentation instead.
+
 ## Prerequisites
 
 This guide assumes your have a basic understanding of Docker and how it works. If you are new to Docker, you can start with the [Docker overview](https://docs.docker.com/get-started/overview/) guide.
+
+These prerequisites are required to ensure the containerized Backstage backend can start correctly and authenticate users in non-development environments.
 
 You'll also want to complete the following prerequisites:
 
 1. Created an app following the [Getting Started guide](../getting-started/index.md)
 2. Setup an auth provider, the [Authentication guide](../getting-started/config/authentication.md) is a good starting point for this, the default [Guest auth provider](../auth/guest/provider.md) is not intended for use in containerized environments
-3. A Postgres database setup that you are able to connect to, the [Database guide](../getting-started/config/database.md) can help you with this
+3. A Postgres database setup that you are able to connect to at runtime (local, containerized, or external), the [Database guide](../getting-started/config/database.md) can help you with this
 
 :::warning
 
@@ -138,6 +146,7 @@ With the project built and the `.dockerignore` and `Dockerfile` in place, we are
 now ready to build the final image. From the root of the repo, execute the
 build:
 
+From the root of the Backstage repository, run the following command to build the image:
 ```bash
 docker image build . -f packages/backend/Dockerfile --tag backstage
 ```
