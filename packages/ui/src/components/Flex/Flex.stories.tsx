@@ -279,3 +279,30 @@ export const Surfaces = meta.story({
     </Flex>
   ),
 });
+
+export const SurfacesAutoIncrement = meta.story({
+  args: { px: '6', py: '4', gap: '4' },
+  render: args => (
+    <Flex direction="column">
+      <div style={{ maxWidth: '600px', marginBottom: '16px' }}>
+        Using surface="auto" automatically increments from the parent surface.
+        This allows components to be reusable without hardcoding surface levels.
+      </div>
+      <Flex {...args} surface="0" direction="column">
+        <div>Surface 0 (explicit)</div>
+        <Flex {...args} surface="auto" direction="column">
+          <div>Surface auto (becomes 1)</div>
+          <Flex {...args} surface="auto" direction="column">
+            <div>Surface auto (becomes 2)</div>
+            <Flex {...args} surface="auto" direction="column">
+              <div>Surface auto (becomes 3)</div>
+              <Flex {...args} surface="auto" direction="column">
+                <div>Surface auto (stays 3 - capped)</div>
+              </Flex>
+            </Flex>
+          </Flex>
+        </Flex>
+      </Flex>
+    </Flex>
+  ),
+});

@@ -20,12 +20,21 @@ import clsx from 'clsx';
 import { useStyles } from '../../hooks/useStyles';
 import styles from './Box.module.css';
 import { BoxDefinition } from './definition';
-import { SurfaceProvider } from '../../hooks/useSurface';
+import { SurfaceProvider, useSurface } from '../../hooks/useSurface';
 
 /** @public */
 export const Box = forwardRef<HTMLDivElement, BoxProps>((props, ref) => {
+  // Resolve the surface this Box creates for its children
+  // Using 'surface' parameter = container behavior (auto increments)
+  const { surface: resolvedSurface } = useSurface({
+    surface: props.surface,
+  });
+
   const { classNames, dataAttributes, utilityClasses, style, cleanedProps } =
-    useStyles(BoxDefinition, props);
+    useStyles(BoxDefinition, {
+      ...props,
+      surface: resolvedSurface, // Use resolved surface for data attribute
+    });
 
   const { as = 'div', children, className, surface, ...rest } = cleanedProps;
 
@@ -43,8 +52,8 @@ export const Box = forwardRef<HTMLDivElement, BoxProps>((props, ref) => {
       ...dataAttributes,
       ...rest,
     },
-    surface ? (
-      <SurfaceProvider surface={surface}>{children}</SurfaceProvider>
+    resolvedSurface ? (
+      <SurfaceProvider surface={resolvedSurface}>{children}</SurfaceProvider>
     ) : (
       children
     ),

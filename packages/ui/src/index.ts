@@ -59,3 +59,9 @@ export * from './types';
 
 // Hooks
 export { useBreakpoint } from './hooks/useBreakpoint';
+export { useSurface, SurfaceProvider } from './hooks/useSurface';
+export type {
+  SurfaceContextValue,
+  SurfaceProviderProps,
+  UseSurfaceOptions,
+} from './hooks/useSurface';

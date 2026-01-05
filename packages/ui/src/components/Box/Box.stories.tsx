@@ -401,3 +401,35 @@ export const SurfacesNested = meta.story({
     </Flex>
   ),
 });
+
+export const SurfacesAutoIncrement = meta.story({
+  args: { px: '6', py: '4' },
+  render: args => (
+    <Flex direction="column">
+      <Box style={{ maxWidth: '600px' }} mb="4">
+        Using surface="auto" automatically increments from the parent surface
+        level. This makes components more reusable as they don't need to know
+        their absolute surface level. Notice how each nested Box with
+        surface="auto" automatically increments: 0 → 1 → 2 → 3 (capped at 3).
+      </Box>
+      <Box {...args} surface="0">
+        Surface 0 (explicit)
+        <Box {...args} surface="auto" mt="4">
+          <Box mb="3">Surface auto (becomes 1)</Box>
+          <Button variant="secondary" onSurface="auto">
+            Button auto
+          </Button>
+          <Box {...args} surface="auto" mt="4">
+            Surface auto (becomes 2)
+            <Box {...args} surface="auto" mt="4">
+              Surface auto (becomes 3)
+              <Box {...args} surface="auto" mt="4">
+                Surface auto (stays 3 - capped)
+              </Box>
+            </Box>
+          </Box>
+        </Box>
+      </Box>
+    </Flex>
+  ),
+});

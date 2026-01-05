@@ -1283,7 +1283,35 @@ export const SubmenuTrigger: (props: SubmenuTriggerProps) => JSX_2.Element;
 export interface SubmenuTriggerProps extends SubmenuTriggerProps_2 {}
 
 // @public
-export type Surface = '0' | '1' | '2' | '3' | 'danger' | 'warning' | 'success';
+export type Surface =
+  | '0'
+  | '1'
+  | '2'
+  | '3'
+  | 'danger'
+  | 'warning'
+  | 'success'
+  | 'auto';
+
+// @public (undocumented)
+export interface SurfaceContextValue {
+  // (undocumented)
+  surface: Responsive<Surface> | undefined;
+}
+
+// @public
+export const SurfaceProvider: ({
+  surface,
+  children,
+}: SurfaceProviderProps) => JSX_2.Element;
+
+// @public (undocumented)
+export interface SurfaceProviderProps {
+  // (undocumented)
+  children: ReactNode;
+  // (undocumented)
+  surface: Responsive<Surface>;
+}
 
 // @public (undocumented)
 export const Switch: ForwardRefExoticComponent<
@@ -1590,6 +1618,15 @@ export const useBreakpoint: () => {
   up: (key: Breakpoint) => boolean;
   down: (key: Breakpoint) => boolean;
 };
+
+// @public
+export const useSurface: (options?: UseSurfaceOptions) => SurfaceContextValue;
+
+// @public (undocumented)
+export interface UseSurfaceOptions {
+  onSurface?: Responsive<Surface>;
+  surface?: Responsive<Surface>;
+}
 
 // @public
 export function useTable<T = any>(

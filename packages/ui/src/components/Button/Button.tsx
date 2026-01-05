@@ -54,7 +54,7 @@ export const Button = forwardRef(
         ref={ref}
         isPending={loading}
         {...dataAttributes}
-        {...(surface ? { 'data-surface': surface } : {})}
+        {...(surface ? { 'data-on-surface': surface } : {})}
         {...rest}
       >
         {({ isPending }) => (

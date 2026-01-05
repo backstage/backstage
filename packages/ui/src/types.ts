@@ -176,6 +176,18 @@ export interface ComponentDefinition {
 
 /**
  * Surface type
+ *
+ * Supports absolute levels ('0'-'3'), intent surfaces ('danger', 'warning', 'success'),
+ * and 'auto' which increments from the parent surface context.
+ *
  * @public
  */
-export type Surface = '0' | '1' | '2' | '3' | 'danger' | 'warning' | 'success';
+export type Surface =
+  | '0'
+  | '1'
+  | '2'
+  | '3'
+  | 'danger'
+  | 'warning'
+  | 'success'
+  | 'auto';

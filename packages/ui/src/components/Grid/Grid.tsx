@@ -20,11 +20,22 @@ import type { GridItemProps, GridProps } from './types';
 import { useStyles } from '../../hooks/useStyles';
 import { GridDefinition, GridItemDefinition } from './definition';
 import styles from './Grid.module.css';
-import { SurfaceProvider } from '../../hooks/useSurface';
+import { SurfaceProvider, useSurface } from '../../hooks/useSurface';
 
 const GridRoot = forwardRef<HTMLDivElement, GridProps>((props, ref) => {
+  // Resolve the surface this Grid creates for its children
+  // Using 'surface' parameter = container behavior (auto increments)
+  const { surface: resolvedSurface } = useSurface({
+    surface: props.surface,
+  });
+
   const { classNames, dataAttributes, utilityClasses, style, cleanedProps } =
-    useStyles(GridDefinition, { columns: 'auto', gap: '4', ...props });
+    useStyles(GridDefinition, {
+      columns: 'auto',
+      gap: '4',
+      ...props,
+      surface: resolvedSurface, // Use resolved surface for data attribute
+    });
 
   const { className, surface, ...rest } = cleanedProps;
 
@@ -43,16 +54,25 @@ const GridRoot = forwardRef<HTMLDivElement, GridProps>((props, ref) => {
     />
   );
 
-  return surface ? (
-    <SurfaceProvider surface={surface}>{content}</SurfaceProvider>
+  return resolvedSurface ? (
+    <SurfaceProvider surface={resolvedSurface}>{content}</SurfaceProvider>
   ) : (
     content
   );
 });
 
 const GridItem = forwardRef<HTMLDivElement, GridItemProps>((props, ref) => {
+  // Resolve the surface this GridItem creates for its children
+  // Using 'surface' parameter = container behavior (auto increments)
+  const { surface: resolvedSurface } = useSurface({
+    surface: props.surface,
+  });
+
   const { classNames, dataAttributes, utilityClasses, style, cleanedProps } =
-    useStyles(GridItemDefinition, props);
+    useStyles(GridItemDefinition, {
+      ...props,
+      surface: resolvedSurface, // Use resolved surface for data attribute
+    });
 
   const { className, surface, ...rest } = cleanedProps;
 
@@ -71,8 +91,8 @@ const GridItem = forwardRef<HTMLDivElement, GridItemProps>((props, ref) => {
     />
   );
 
-  return surface ? (
-    <SurfaceProvider surface={surface}>{content}</SurfaceProvider>
+  return resolvedSurface ? (
+    <SurfaceProvider surface={resolvedSurface}>{content}</SurfaceProvider>
   ) : (
     content
   );

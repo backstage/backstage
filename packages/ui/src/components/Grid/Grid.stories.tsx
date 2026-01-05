@@ -182,3 +182,27 @@ export const Surfaces = meta.story({
     </Flex>
   ),
 });
+
+export const SurfacesAutoIncrement = meta.story({
+  args: { px: '6', py: '4', columns: '2', gap: '4' },
+  render: args => (
+    <Flex direction="column">
+      <div style={{ maxWidth: '600px', marginBottom: '16px' }}>
+        Using surface="auto" automatically increments from the parent surface.
+        Each Grid.Item with auto will be one level above its Grid.Root parent.
+      </div>
+      <Grid.Root {...args} surface="0">
+        <Grid.Item>Surface 0 (Grid.Root)</Grid.Item>
+        <Grid.Item surface="auto">Surface auto (becomes 1)</Grid.Item>
+        <Grid.Item>
+          <Grid.Root {...args} surface="auto">
+            <Grid.Item>Nested: Surface auto (becomes 1)</Grid.Item>
+            <Grid.Item surface="auto">
+              Nested: Surface auto (becomes 2)
+            </Grid.Item>
+          </Grid.Root>
+        </Grid.Item>
+      </Grid.Root>
+    </Flex>
+  ),
+});
