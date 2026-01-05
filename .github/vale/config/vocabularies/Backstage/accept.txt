@@ -523,7 +523,7 @@ transpile
 transpiled
 transpiler
 transpilers
-Trixie
+trixie
 truthy
 tsconfig
 TSDoc
