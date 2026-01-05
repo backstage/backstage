@@ -215,12 +215,12 @@ export function createOAuthRouteHandlers<TProfile>(
           signInResolver &&
           (await signInResolver({ profile, result }, resolverContext));
 
-        await emitAuditEvent(auditor, {
+        emitAuditEvent(auditor, {
           eventId: 'auth-login',
           request: req,
           severityLevel: 'low',
           meta: { providerId, email: profile?.email },
-        });
+        }).catch(() => {});
 
         const grantedScopes = await scopeManager.handleCallback(req, {
           result,
@@ -268,13 +268,13 @@ export function createOAuthRouteHandlers<TProfile>(
           response,
         });
       } catch (error) {
-        await emitAuditEvent(auditor, {
+        emitAuditEvent(auditor, {
           eventId: 'auth-login',
           request: req,
           severityLevel: 'low',
           meta: { providerId, email: profile?.email },
           error: isError(error) ? error : new Error('Unknown auth error'),
-        });
+        }).catch(() => {});
 
         const { name, message } = isError(error)
           ? error
@@ -317,12 +317,12 @@ export function createOAuthRouteHandlers<TProfile>(
       // remove persisted scopes
       await scopeManager.clear(req);
 
-      await emitAuditEvent(auditor, {
+      emitAuditEvent(auditor, {
         eventId: 'auth-logout',
         request: req,
         severityLevel: 'low',
         meta: { providerId },
-      });
+      }).catch(() => {});
 
       res.status(200).end();
     },
