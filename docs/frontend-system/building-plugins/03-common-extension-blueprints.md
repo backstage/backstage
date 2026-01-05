@@ -11,35 +11,35 @@ This section covers many of the [extension blueprints](../architecture/23-extens
 
 These are the [extension blueprints](../architecture/23-extension-blueprints.md) provided by the Backstage frontend framework itself.
 
-### Api - [Reference](../../reference/frontend-plugin-api.apiblueprint.md)
+### Api - [Reference](https://backstage.io/api/stable/variables/_backstage_frontend-plugin-api.ApiBlueprint.html)
 
 An API extension is used to add or override [Utility API factories](../utility-apis/01-index.md) in the app. They are commonly used by plugins for both internal and shared APIs. There are also many built-in Api extensions provided by the framework that you are able to override.
 
-### NavItem - [Reference](../../reference/frontend-plugin-api.navitemblueprint.md)
+### NavItem - [Reference](https://backstage.io/api/stable/variables/_backstage_frontend-plugin-api.NavItemBlueprint.html)
 
 Navigation item extensions are used to provide menu items that link to different parts of the app. By default nav items are attached to the app nav extension, which by default is rendered as the left sidebar in the app.
 
-### Page - [Reference](../../reference/frontend-plugin-api.pageblueprint.md)
+### Page - [Reference](https://backstage.io/api/stable/variables/_backstage_frontend-plugin-api.PageBlueprint.html)
 
 Page extensions provide content for a particular route in the app. By default pages are attached to the app routes extensions, which renders the root routes.
 
-### SignInPage - [Reference](../../reference/frontend-plugin-api.signinpageblueprint.md)
+### SignInPage - [Reference](https://backstage.io/api/stable/variables/_backstage_frontend-plugin-api.SignInPageBlueprint.html)
 
 Sign-in page extension have a single purpose - to implement a custom sign-in page. They are always attached to the app root extension and are rendered before the rest of the app until the user is signed in.
 
-### SwappableComponent - [Reference](../../reference/frontend-plugin-api.swappablecomponentblueprint.md)
+### SwappableComponent - [Reference](https://backstage.io/api/stable/variables/_backstage_frontend-plugin-api.SwappableComponentBlueprint.html)
 
 Swappable Components are extensions that are used to replace the implementations of components in the app and plugins.
 
-### Theme - [Reference](../../reference/frontend-plugin-api.themeblueprint.md)
+### Theme - [Reference](https://backstage.io/api/stable/variables/_backstage_frontend-plugin-api.ThemeBlueprint.html)
 
 Theme extensions provide custom themes for the app. They are always attached to the app extension and you can have any number of themes extensions installed in an app at once, letting the user choose which theme to use.
 
-### Icons - [Reference](../../reference/frontend-plugin-api.iconbundleblueprint.md)
+### Icons - [Reference](https://backstage.io/api/stable/variables/_backstage_frontend-plugin-api.IconBundleBlueprint.html)
 
 Icon bundle extensions provide the ability to replace or provide new icons to the app. You can use the above blueprint to make new extension instances which can be installed into the app.
 
-### Translation - [Reference](../../reference/frontend-plugin-api.translationblueprint.md)
+### Translation - [Reference](https://backstage.io/api/stable/variables/_backstage_frontend-plugin-api.TranslationBlueprint.html)
 
 Translation extension provide custom translation messages for the app. They can be used both to override the default english messages to custom ones, as well as provide translations for additional languages.
 
