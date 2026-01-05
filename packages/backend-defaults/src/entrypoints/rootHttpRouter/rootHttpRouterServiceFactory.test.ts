@@ -285,7 +285,7 @@ describe('rootHttpRouterServiceFactory', () => {
 
     // Immediately start failing the readiness health check
     await request(app).get('/.backstage/health/v1/readiness').expect(503, {
-      message: 'Backend is shuttting down',
+      message: 'Backend is shutting down',
       status: 'error',
     });
 
@@ -301,7 +301,7 @@ describe('rootHttpRouterServiceFactory', () => {
       .expect(200, { status: 'ok' });
 
     await request(app).get('/.backstage/health/v1/readiness').expect(503, {
-      message: 'Backend is shuttting down',
+      message: 'Backend is shutting down',
       status: 'error',
     });
 
@@ -312,7 +312,7 @@ describe('rootHttpRouterServiceFactory', () => {
       .expect(200, { status: 'ok' });
 
     await request(app).get('/.backstage/health/v1/readiness').expect(503, {
-      message: 'Backend is shuttting down',
+      message: 'Backend is shutting down',
       status: 'error',
     });
 

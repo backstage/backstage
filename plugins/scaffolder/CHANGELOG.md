@@ -1,5 +1,17 @@
 # @backstage/plugin-scaffolder
 
+## 1.35.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.19.2-next.0
+  - @backstage/integration-react@1.2.14-next.0
+  - @backstage/plugin-scaffolder-common@1.7.5-next.0
+  - @backstage/plugin-catalog-react@1.21.5-next.0
+  - @backstage/plugin-scaffolder-react@1.19.5-next.0
+  - @backstage/frontend-plugin-api@0.13.2
+
 ## 1.35.0
 
 ### Minor Changes

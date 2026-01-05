@@ -1,6 +1,6 @@
 {
   "name": "example-app",
-  "version": "0.2.116",
+  "version": "0.2.117-next.1",
   "backstage": {
     "role": "frontend"
   },
