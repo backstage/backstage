@@ -46,9 +46,7 @@ export const Button = forwardRef(
       ...rest
     } = cleanedProps;
 
-    const { surface } = useSurface();
-
-    const surfaceToUse = onSurface || surface;
+    const { surface } = useSurface({ onSurface });
 
     return (
       <RAButton
@@ -56,7 +54,7 @@ export const Button = forwardRef(
         ref={ref}
         isPending={loading}
         {...dataAttributes}
-        {...(surfaceToUse ? { 'data-surface': surfaceToUse } : {})}
+        {...(surface ? { 'data-surface': surface } : {})}
         {...rest}
       >
         {({ isPending }) => (

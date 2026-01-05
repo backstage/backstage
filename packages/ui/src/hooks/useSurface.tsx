@@ -28,6 +28,11 @@ export interface SurfaceProviderProps {
   children: ReactNode;
 }
 
+/** @public */
+export interface UseSurfaceOptions {
+  onSurface?: Responsive<Surface>;
+}
+
 const SurfaceContext = createContext<SurfaceContextValue>({
   surface: undefined,
 });
@@ -53,8 +58,15 @@ export const SurfaceProvider = ({
  * Hook to access the current surface context.
  * Returns the current surface level, or undefined if no provider is present.
  *
+ * @param options - Optional configuration
+ * @param options.onSurface - Override the context surface with a specific surface value
  * @public
  */
-export const useSurface = (): SurfaceContextValue => {
-  return useContext(SurfaceContext);
+export const useSurface = (
+  options?: UseSurfaceOptions,
+): SurfaceContextValue => {
+  const context = useContext(SurfaceContext);
+  return {
+    surface: options?.onSurface || context.surface,
+  };
 };
