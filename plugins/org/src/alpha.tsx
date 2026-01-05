@@ -81,7 +81,12 @@ const EntityOwnershipCard = EntityCardBlueprint.makeWithOverrides({
                 : !config.showAggregateMembersToggle
             }
             entityFilterKind={
-              config.entityFilterKind ?? ['Component', 'API', 'System']
+              config.entityFilterKind ?? [
+                'Component',
+                'API',
+                'System',
+                'Resource',
+              ]
             }
           />
         )),
