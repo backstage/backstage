@@ -14,7 +14,11 @@
  * limitations under the License.
  */
 
-import { createContext, useContext, ReactNode } from 'react';
+import { useContext, ReactNode } from 'react';
+import {
+  createVersionedContext,
+  createVersionedValueMap,
+} from '@backstage/version-bridge';
 import { Surface, Responsive } from '../types';
 
 /** @public */
@@ -46,9 +50,9 @@ export interface UseSurfaceOptions {
   onSurface?: Responsive<Surface>;
 }
 
-const SurfaceContext = createContext<SurfaceContextValue>({
-  surface: undefined,
-});
+const SurfaceContext = createVersionedContext<{
+  1: SurfaceContextValue;
+}>('surface-context');
 
 /**
  * Increments a surface level by one, capping at '3'.
@@ -159,7 +163,9 @@ export const SurfaceProvider = ({
   children,
 }: SurfaceProviderProps) => {
   return (
-    <SurfaceContext.Provider value={{ surface }}>
+    <SurfaceContext.Provider
+      value={createVersionedValueMap({ 1: { surface } })}
+    >
       {children}
     </SurfaceContext.Provider>
   );
@@ -179,7 +185,8 @@ export const SurfaceProvider = ({
 export const useSurface = (
   options?: UseSurfaceOptions,
 ): SurfaceContextValue => {
-  const context = useContext(SurfaceContext);
+  const value = useContext(SurfaceContext)?.atVersion(1);
+  const context = value ?? { surface: undefined };
 
   // Infer behavior from which parameter is provided
   // 'surface' = provider behavior (increment)
