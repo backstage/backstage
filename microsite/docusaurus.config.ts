@@ -273,6 +273,10 @@ const config: Config = {
             from: '/docs/getting-started/app-custom-theme',
             to: '/docs/conf/user-interface',
           },
+          {
+            from: '/docs/plugins/existing-plugins',
+            to: '/docs/plugins/',
+          },
         ],
       }),
     [

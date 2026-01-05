@@ -1,5 +1,19 @@
 # @backstage/ui
 
+## 0.11.0-next.0
+
+### Minor Changes
+
+- 4ea1d15: **BREAKING**: Renamed CSS variable `--bui-bg` to `--bui-bg-surface-0` for consistency.
+
+### Patch Changes
+
+- 1880402: Fixes app background color on dark mode.
+- 9c76682: build(deps-dev): bump `storybook` from 10.1.9 to 10.1.10
+- b4a4911: Fixed SearchField `startCollapsed` prop not working correctly in Backstage UI. The field now properly starts in a collapsed state, expands when clicked and focused, and collapses back when unfocused with no input. Also fixed CSS logic to work correctly in all layout contexts (flex row, flex column, and regular containers).
+
+  Affected components: SearchField
+
 ## 0.10.0
 
 ### Minor Changes

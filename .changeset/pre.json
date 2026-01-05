@@ -206,5 +206,22 @@
     "@backstage/plugin-user-settings-backend": "0.3.9",
     "@backstage/plugin-user-settings-common": "0.0.1"
   },
-  "changesets": []
+  "changesets": [
+    "better-ghosts-tell",
+    "clever-streets-roll",
+    "cold-dogs-study",
+    "create-app-1766498726",
+    "create-app-1767101113",
+    "dependabot-aed8e01",
+    "every-bears-add",
+    "hot-colts-float",
+    "hungry-mugs-fall",
+    "major-mangos-shine",
+    "polite-pillows-accept",
+    "proud-streets-switch",
+    "shaggy-bats-film",
+    "thin-teams-roll",
+    "weak-lemons-create",
+    "wild-toys-retire"
+  ]
 }
