@@ -35,9 +35,7 @@ export interface ProxyAuthRouteHandlersOptions<TResult> {
   resolverContext: AuthResolverContext;
   signInResolver: SignInResolver<TResult>;
   profileTransform?: ProfileTransform<TResult>;
-  /** Provider ID for audit logging */
   providerId?: string;
-  /** Optional auditor service for emitting authentication audit events */
   auditor?: AuditorService;
 }
 

@@ -681,14 +681,7 @@ describe('createOAuthRouteHandlers', () => {
               shouldPersistScopes: true,
             },
             profileTransform: async () => ({ profile: { email: 'em@i.l' } }),
-            signInResolver: async () => ({
-              token: mockBackstageToken,
-              identity: {
-                type: 'user',
-                userEntityRef: 'user:default/mock',
-                ownershipEntityRefs: [],
-              },
-            }),
+            signInResolver: async () => ({ token: mockBackstageToken }),
             auditor: mockAuditor,
           }),
         ),
@@ -1048,14 +1041,7 @@ describe('createOAuthRouteHandlers', () => {
               shouldPersistScopes: true,
             },
             profileTransform: async () => ({ profile: { email: 'em@i.l' } }),
-            signInResolver: async () => ({
-              token: mockBackstageToken,
-              identity: {
-                type: 'user',
-                userEntityRef: 'user:default/mock',
-                ownershipEntityRefs: [],
-              },
-            }),
+            signInResolver: async () => ({ token: mockBackstageToken }),
             auditor: mockAuditor,
           }),
         ),
