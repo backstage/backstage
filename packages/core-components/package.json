@@ -78,7 +78,7 @@
     "linkifyjs": "4.3.2",
     "lodash": "^4.17.21",
     "pluralize": "^8.0.0",
-    "qs": "^6.9.4",
+    "qs": "^6.14.1",
     "rc-progress": "3.5.1",
     "react-full-screen": "^1.1.1",
     "react-helmet": "6.1.0",
