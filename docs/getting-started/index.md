@@ -184,8 +184,8 @@ Choose the correct next steps for your user role, if you're likely to be deployi
 
 - Using your Backstage instance
   - [Logging into Backstage](./logging-in.md)
-  - [Viewing the Catalog]/(./viewing-catalog.md)
-  - [Viewing what you own]/(./view-what-you-own.md)
+  - [Viewing the Catalog](./viewing-catalog.md)
+  - [Viewing what you own](./view-what-you-own.md)
   - [Viewing entity relationships](./viewing-entity-relationships.md)
   - [Searching the Catalog](./search-catalog.md)
   - [Register a component](./register-a-component.md)
