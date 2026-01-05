@@ -20,7 +20,7 @@ import {
   mockServices,
   registerMswTestHooks,
 } from '@backstage/backend-test-utils';
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import { FetchUrlReader } from './FetchUrlReader';
 import { DefaultReadTreeResponseFactory } from './tree';
@@ -38,48 +38,50 @@ describe('FetchUrlReader', () => {
 
   beforeEach(() => {
     worker.use(
-      rest.get('https://backstage.io/some-resource', (req, res, ctx) => {
-        if (req.headers.get('if-none-match') === 'foo') {
-          return res(
-            ctx.status(304),
-            ctx.set('Content-Type', 'text/plain'),
-            ctx.set('etag', 'foo'),
-          );
+      http.get('https://backstage.io/some-resource', ({ request }) => {
+        if (request.headers.get('if-none-match') === 'foo') {
+          return new HttpResponse(null, {
+            status: 304,
+            headers: {
+              'Content-Type': 'text/plain',
+              etag: 'foo',
+            },
+          });
         }
 
         if (
-          req.headers.get('if-modified-since') &&
-          new Date(req.headers.get('if-modified-since') ?? '') <
+          request.headers.get('if-modified-since') &&
+          new Date(request.headers.get('if-modified-since') ?? '') <
             new Date('2021-01-01T00:00:00Z')
         ) {
-          return res(
-            ctx.status(304),
-            ctx.set('Content-Type', 'text/plain'),
-            ctx.set(
-              'last-modified',
-              new Date('2021-01-01T00:00:00Z').toUTCString(),
-            ),
-          );
+          return new HttpResponse(null, {
+            status: 304,
+            headers: {
+              'Content-Type': 'text/plain',
+              'last-modified': new Date('2021-01-01T00:00:00Z').toUTCString(),
+            },
+          });
         }
 
-        return res(
-          ctx.status(200),
-          ctx.set('Content-Type', 'text/plain'),
-          ctx.set('etag', 'foo'),
-          ctx.body('content foo'),
-        );
+        return new HttpResponse('content foo', {
+          status: 200,
+          headers: {
+            'Content-Type': 'text/plain',
+            etag: 'foo',
+          },
+        });
       }),
     );
 
     worker.use(
-      rest.get('https://backstage.io/not-exists', (_req, res, ctx) => {
-        return res(ctx.status(404));
+      http.get('https://backstage.io/not-exists', () => {
+        return new HttpResponse(null, { status: 404 });
       }),
     );
 
     worker.use(
-      rest.get('https://backstage.io/error', (_req, res, ctx) => {
-        return res(ctx.status(500), ctx.body('An internal error occurred'));
+      http.get('https://backstage.io/error', () => {
+        return new HttpResponse('An internal error occurred', { status: 500 });
       }),
     );
   });
@@ -229,11 +231,11 @@ describe('FetchUrlReader', () => {
       expect.assertions(1);
 
       worker.use(
-        rest.get(
+        http.get(
           'https://backstage.io/requires-authentication',
-          (req, res, ctx) => {
-            expect(req.headers.get('authorization')).toBe('Bearer mytoken');
-            return res(ctx.status(200));
+          ({ request }) => {
+            expect(request.headers.get('authorization')).toBe('Bearer mytoken');
+            return new HttpResponse(null, { status: 200 });
           },
         ),
       );

@@ -20,7 +20,7 @@
  * @param worker - service worker
  */
 export function registerMswTestHooks(worker: {
-  listen: (t: any) => void;
+  listen: (options?: any) => void;
   close: () => void;
   resetHandlers: () => void;
 }) {

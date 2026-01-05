@@ -3030,7 +3030,7 @@ __metadata:
     logform: "npm:^2.3.2"
     luxon: "npm:^3.0.0"
     minimatch: "npm:^9.0.0"
-    msw: "npm:^1.0.0"
+    msw: "npm:^2.0.0"
     mysql2: "npm:^3.0.0"
     node-fetch: "npm:^2.7.0"
     node-forge: "npm:^1.3.2"
@@ -3135,7 +3135,7 @@ __metadata:
     json-schema-to-ts: "npm:^3.0.0"
     lodash: "npm:^4.17.21"
     mockttp: "npm:^3.13.0"
-    msw: "npm:^1.0.0"
+    msw: "npm:^2.0.0"
     openapi-merge: "npm:^1.3.2"
     openapi3-ts: "npm:^3.1.2"
     supertest: "npm:^7.0.0"
@@ -3218,7 +3218,7 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/plugin-catalog-common": "workspace:^"
     cross-fetch: "npm:^4.0.0"
-    msw: "npm:^1.0.0"
+    msw: "npm:^2.0.0"
     uri-template: "npm:^2.0.0"
   languageName: unknown
   linkType: soft
@@ -3379,7 +3379,7 @@ __metadata:
     lodash: "npm:^4.17.21"
     mini-css-extract-plugin: "npm:^2.4.2"
     minimatch: "npm:^9.0.0"
-    msw: "npm:^1.0.0"
+    msw: "npm:^2.0.0"
     node-stdlib-browser: "npm:^1.3.1"
     nodemon: "npm:^3.0.1"
     npm-packlist: "npm:^5.0.0"
@@ -3538,7 +3538,7 @@ __metadata:
     history: "npm:^5.0.0"
     i18next: "npm:^22.4.15"
     lodash: "npm:^4.17.21"
-    msw: "npm:^1.0.0"
+    msw: "npm:^2.0.0"
     prop-types: "npm:^15.7.2"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
@@ -3644,7 +3644,7 @@ __metadata:
     linkify-react: "npm:4.3.2"
     linkifyjs: "npm:4.3.2"
     lodash: "npm:^4.17.21"
-    msw: "npm:^1.0.0"
+    msw: "npm:^2.0.0"
     pluralize: "npm:^8.0.0"
     qs: "npm:^6.9.4"
     rc-progress: "npm:3.5.1"
@@ -3892,7 +3892,7 @@ __metadata:
     "@testing-library/react": "npm:^16.0.0"
     "@types/react": "npm:^18.0.0"
     cross-fetch: "npm:^4.0.0"
-    msw: "npm:^1.0.0"
+    msw: "npm:^2.0.0"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
     react-router-dom: "npm:^6.3.0"
@@ -4005,7 +4005,7 @@ __metadata:
     "@testing-library/dom": "npm:^10.0.0"
     "@testing-library/jest-dom": "npm:^6.0.0"
     "@types/react": "npm:^18.0.0"
-    msw: "npm:^1.0.0"
+    msw: "npm:^2.0.0"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
     react-router-dom: "npm:^6.3.0"
@@ -4036,7 +4036,7 @@ __metadata:
     git-url-parse: "npm:^15.0.0"
     lodash: "npm:^4.17.21"
     luxon: "npm:^3.0.0"
-    msw: "npm:^1.0.0"
+    msw: "npm:^2.0.0"
   languageName: unknown
   linkType: soft
 
@@ -4204,7 +4204,7 @@ __metadata:
     "@testing-library/react": "npm:^16.0.0"
     "@testing-library/user-event": "npm:^14.0.0"
     "@types/react": "npm:^18.0.0"
-    msw: "npm:^1.0.0"
+    msw: "npm:^2.0.0"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
     react-router-dom: "npm:^6.3.0"
@@ -4461,7 +4461,7 @@ __metadata:
     "@types/passport-microsoft": "npm:^1.0.0"
     express: "npm:^4.22.0"
     jose: "npm:^5.0.0"
-    msw: "npm:^1.0.0"
+    msw: "npm:^2.0.0"
     passport-microsoft: "npm:^1.0.0"
     supertest: "npm:^7.0.0"
     zod: "npm:^3.22.4"
@@ -4517,7 +4517,7 @@ __metadata:
     express-promise-router: "npm:^4.1.1"
     express-session: "npm:^1.17.3"
     jose: "npm:^5.0.0"
-    msw: "npm:^1.3.1"
+    msw: "npm:^2.0.0"
     openid-client: "npm:^5.5.0"
     passport: "npm:^0.7.0"
     supertest: "npm:^7.0.0"
@@ -4601,7 +4601,7 @@ __metadata:
     express-session: "npm:^1.17.3"
     jose: "npm:^5.0.0"
     luxon: "npm:^3.4.3"
-    msw: "npm:^1.3.0"
+    msw: "npm:^2.0.0"
     openid-client: "npm:^5.4.3"
     passport: "npm:^0.7.0"
     supertest: "npm:^7.0.0"
@@ -4688,7 +4688,7 @@ __metadata:
     express-promise-router: "npm:^4.1.1"
     jose: "npm:^5.0.0"
     lodash: "npm:^4.17.21"
-    msw: "npm:^1.0.0"
+    msw: "npm:^2.0.0"
     passport: "npm:^0.7.0"
     supertest: "npm:^7.0.0"
     uuid: "npm:^11.0.0"
@@ -4713,7 +4713,7 @@ __metadata:
     "@testing-library/react": "npm:^16.0.0"
     "@testing-library/user-event": "npm:^14.0.0"
     "@types/react": "npm:^18.0.0"
-    msw: "npm:^1.0.0"
+    msw: "npm:^2.0.0"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
     react-router-dom: "npm:^6.3.0"
@@ -4747,7 +4747,7 @@ __metadata:
     "@testing-library/react": "npm:^16.0.0"
     "@testing-library/user-event": "npm:^14.0.0"
     "@types/react": "npm:^18.0.0"
-    msw: "npm:^1.0.0"
+    msw: "npm:^2.0.0"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
     react-router-dom: "npm:^6.3.0"
@@ -4771,7 +4771,7 @@ __metadata:
     "@backstage/integration": "workspace:^"
     "@openapitools/openapi-generator-cli": "npm:^2.4.26"
     cross-fetch: "npm:^4.0.0"
-    msw: "npm:^1.0.0"
+    msw: "npm:^2.0.0"
     ts-morph: "npm:^24.0.0"
   languageName: unknown
   linkType: soft
@@ -4819,7 +4819,7 @@ __metadata:
     "@backstage/integration": "workspace:^"
     "@backstage/plugin-catalog-common": "workspace:^"
     "@backstage/plugin-catalog-node": "workspace:^"
-    msw: "npm:^1.0.0"
+    msw: "npm:^2.0.0"
     uuid: "npm:^11.0.0"
   languageName: unknown
   linkType: soft
@@ -4859,7 +4859,7 @@ __metadata:
     "@backstage/plugin-catalog-node": "workspace:^"
     "@backstage/plugin-events-backend-test-utils": "workspace:^"
     "@backstage/plugin-events-node": "workspace:^"
-    msw: "npm:^1.0.0"
+    msw: "npm:^2.0.0"
     uuid: "npm:^11.0.0"
   languageName: unknown
   linkType: soft
@@ -4879,7 +4879,7 @@ __metadata:
     "@backstage/plugin-catalog-node": "workspace:^"
     "@backstage/plugin-events-backend-test-utils": "workspace:^"
     "@backstage/plugin-events-node": "workspace:^"
-    msw: "npm:^1.0.0"
+    msw: "npm:^2.0.0"
     uuid: "npm:^11.0.0"
   languageName: unknown
   linkType: soft
@@ -4913,7 +4913,7 @@ __metadata:
     "@backstage/plugin-catalog-node": "workspace:^"
     "@types/fs-extra": "npm:^11.0.0"
     fs-extra: "npm:^11.2.0"
-    msw: "npm:^1.0.0"
+    msw: "npm:^2.0.0"
     p-limit: "npm:^3.1.0"
     uuid: "npm:^11.0.0"
   languageName: unknown
@@ -5009,7 +5009,7 @@ __metadata:
     "@gitbeaker/rest": "npm:^40.0.3"
     "@types/lodash": "npm:^4.14.151"
     lodash: "npm:^4.17.21"
-    msw: "npm:^1.0.0"
+    msw: "npm:^2.0.0"
     node-fetch: "npm:^2.7.0"
     uuid: "npm:^11.0.0"
   languageName: unknown
@@ -5088,7 +5088,7 @@ __metadata:
     "@microsoft/microsoft-graph-types": "npm:^2.6.0"
     "@types/lodash": "npm:^4.14.151"
     lodash: "npm:^4.17.21"
-    msw: "npm:^1.0.0"
+    msw: "npm:^2.0.0"
     p-limit: "npm:^3.0.2"
     qs: "npm:^6.9.4"
     uuid: "npm:^11.0.0"
@@ -5127,7 +5127,7 @@ __metadata:
     "@backstage/types": "workspace:^"
     "@types/lodash": "npm:^4.14.151"
     lodash: "npm:^4.17.21"
-    msw: "npm:^1.0.0"
+    msw: "npm:^2.0.0"
     uuid: "npm:^11.0.0"
   languageName: unknown
   linkType: soft
@@ -5304,7 +5304,7 @@ __metadata:
     git-url-parse: "npm:^15.0.0"
     js-base64: "npm:^3.6.0"
     lodash: "npm:^4.17.21"
-    msw: "npm:^1.0.0"
+    msw: "npm:^2.0.0"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
     react-hook-form: "npm:^7.12.2"
@@ -5337,7 +5337,7 @@ __metadata:
     "@backstage/plugin-permission-node": "workspace:^"
     "@backstage/types": "workspace:^"
     lodash: "npm:^4.17.21"
-    msw: "npm:^1.0.0"
+    msw: "npm:^2.0.0"
     yaml: "npm:^2.0.0"
   languageName: unknown
   linkType: soft
@@ -5934,7 +5934,7 @@ __metadata:
     http-proxy-middleware: "npm:^2.0.6"
     lodash: "npm:^4.17.21"
     luxon: "npm:^3.0.0"
-    msw: "npm:^1.0.0"
+    msw: "npm:^2.0.0"
     node-fetch: "npm:^2.7.0"
     supertest: "npm:^7.0.0"
     ws: "npm:^8.18.0"
@@ -6007,7 +6007,7 @@ __metadata:
     "@backstage/types": "workspace:^"
     "@kubernetes/client-node": "npm:1.4.0"
     "@types/express": "npm:^4.17.6"
-    msw: "npm:^1.3.1"
+    msw: "npm:^2.0.0"
     node-fetch: "npm:^2.7.0"
     supertest: "npm:^7.0.0"
     winston: "npm:^3.2.1"
@@ -6252,7 +6252,7 @@ __metadata:
     "@backstage/plugin-signals-node": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     knex: "npm:^3.0.0"
-    msw: "npm:^1.0.0"
+    msw: "npm:^2.0.0"
     uuid: "npm:^11.0.0"
   languageName: unknown
   linkType: soft
@@ -6279,7 +6279,7 @@ __metadata:
     "@types/react": "npm:^18.0.0"
     lodash: "npm:^4.17.21"
     material-ui-confirm: "npm:^3.0.12"
-    msw: "npm:^1.0.0"
+    msw: "npm:^2.0.0"
     notistack: "npm:^3.0.1"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
@@ -6411,7 +6411,7 @@ __metadata:
     express: "npm:^4.22.0"
     express-promise-router: "npm:^4.1.0"
     lodash: "npm:^4.17.21"
-    msw: "npm:^1.0.0"
+    msw: "npm:^2.0.0"
     supertest: "npm:^7.0.0"
     yn: "npm:^4.0.0"
     zod: "npm:^3.22.4"
@@ -6427,7 +6427,7 @@ __metadata:
     "@backstage/errors": "workspace:^"
     "@backstage/types": "workspace:^"
     cross-fetch: "npm:^4.0.0"
-    msw: "npm:^1.0.0"
+    msw: "npm:^2.0.0"
     uuid: "npm:^11.0.0"
     zod: "npm:^3.22.4"
     zod-to-json-schema: "npm:^3.20.4"
@@ -6450,7 +6450,7 @@ __metadata:
     "@types/supertest": "npm:^2.0.8"
     express: "npm:^4.22.0"
     express-promise-router: "npm:^4.1.0"
-    msw: "npm:^1.0.0"
+    msw: "npm:^2.0.0"
     supertest: "npm:^7.0.0"
     zod: "npm:^3.22.4"
     zod-to-json-schema: "npm:^3.20.4"
@@ -6550,7 +6550,7 @@ __metadata:
     "@backstage/plugin-scaffolder-node-test-utils": "workspace:^"
     bitbucket: "npm:^2.12.0"
     fs-extra: "npm:^11.2.0"
-    msw: "npm:^1.0.0"
+    msw: "npm:^2.0.0"
     yaml: "npm:^2.0.0"
     zod: "npm:^3.22.4"
   languageName: unknown
@@ -6569,7 +6569,7 @@ __metadata:
     "@backstage/plugin-scaffolder-node": "workspace:^"
     "@backstage/plugin-scaffolder-node-test-utils": "workspace:^"
     fs-extra: "npm:^11.2.0"
-    msw: "npm:^1.0.0"
+    msw: "npm:^2.0.0"
     yaml: "npm:^2.0.0"
   languageName: unknown
   linkType: soft
@@ -6589,7 +6589,7 @@ __metadata:
     "@backstage/plugin-scaffolder-node": "workspace:^"
     "@backstage/plugin-scaffolder-node-test-utils": "workspace:^"
     fs-extra: "npm:^11.2.0"
-    msw: "npm:^1.0.0"
+    msw: "npm:^2.0.0"
     yaml: "npm:^2.0.0"
   languageName: unknown
   linkType: soft
@@ -6608,7 +6608,7 @@ __metadata:
     "@backstage/plugin-scaffolder-node-test-utils": "workspace:^"
     fs-extra: "npm:^11.2.0"
     git-url-parse: "npm:^15.0.0"
-    msw: "npm:^1.0.0"
+    msw: "npm:^2.0.0"
     node-html-markdown: "npm:^1.3.0"
     yaml: "npm:^2.0.0"
   languageName: unknown
@@ -6666,7 +6666,7 @@ __metadata:
     "@backstage/integration": "workspace:^"
     "@backstage/plugin-scaffolder-node": "workspace:^"
     "@backstage/plugin-scaffolder-node-test-utils": "workspace:^"
-    msw: "npm:^1.0.0"
+    msw: "npm:^2.0.0"
     yaml: "npm:^2.0.0"
   languageName: unknown
   linkType: soft
@@ -6683,7 +6683,7 @@ __metadata:
     "@backstage/integration": "workspace:^"
     "@backstage/plugin-scaffolder-node": "workspace:^"
     "@backstage/plugin-scaffolder-node-test-utils": "workspace:^"
-    msw: "npm:^1.0.0"
+    msw: "npm:^2.0.0"
     yaml: "npm:^2.0.0"
   languageName: unknown
   linkType: soft
@@ -6891,7 +6891,7 @@ __metadata:
     "@types/json-schema": "npm:^7.0.9"
     cross-fetch: "npm:^4.0.0"
     json-schema: "npm:^0.4.0"
-    msw: "npm:^1.0.0"
+    msw: "npm:^2.0.0"
     uri-template: "npm:^2.0.0"
     zen-observable: "npm:^0.10.0"
   languageName: unknown
@@ -7154,7 +7154,7 @@ __metadata:
     "@backstage/config": "workspace:^"
     "@backstage/plugin-search-backend-node": "workspace:^"
     "@backstage/plugin-search-common": "workspace:^"
-    msw: "npm:^1.2.1"
+    msw: "npm:^2.0.0"
   languageName: unknown
   linkType: soft
 
@@ -7184,7 +7184,7 @@ __metadata:
     "@backstage/config": "workspace:^"
     "@backstage/plugin-search-backend-node": "workspace:^"
     "@backstage/plugin-search-common": "workspace:^"
-    msw: "npm:^1.2.1"
+    msw: "npm:^2.0.0"
     qs: "npm:^6.9.4"
   languageName: unknown
   linkType: soft
@@ -7206,7 +7206,7 @@ __metadata:
     "@backstage/plugin-search-common": "workspace:^"
     "@backstage/plugin-techdocs-node": "workspace:^"
     lodash: "npm:^4.17.21"
-    msw: "npm:^1.0.0"
+    msw: "npm:^2.0.0"
     p-limit: "npm:^3.1.0"
   languageName: unknown
   linkType: soft
@@ -7759,7 +7759,7 @@ __metadata:
     "@testing-library/react": "npm:^16.0.0"
     "@testing-library/user-event": "npm:^14.0.0"
     "@types/react": "npm:^18.0.0"
-    msw: "npm:^1.0.0"
+    msw: "npm:^2.0.0"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
     react-router-dom: "npm:^6.3.0"
@@ -7782,7 +7782,7 @@ __metadata:
   dependencies:
     "@backstage/cli": "workspace:^"
     "@backstage/test-utils": "workspace:^"
-    msw: "npm:^1.0.0"
+    msw: "npm:^2.0.0"
   languageName: unknown
   linkType: soft
 
@@ -7877,7 +7877,7 @@ __metadata:
     "@types/react": "npm:^18.0.0"
     cross-fetch: "npm:^4.0.0"
     i18next: "npm:^22.4.15"
-    msw: "npm:^1.0.0"
+    msw: "npm:^2.0.0"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
     react-router-dom: "npm:^6.3.0"
@@ -11657,32 +11657,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@mswjs/cookies@npm:^0.2.2":
-  version: 0.2.2
-  resolution: "@mswjs/cookies@npm:0.2.2"
-  dependencies:
-    "@types/set-cookie-parser": "npm:^2.4.0"
-    set-cookie-parser: "npm:^2.4.6"
-  checksum: 10/f1b3b82a6821219494390d77d86383febc5f9d5bc21b0f47cc4d57d11af08cac1952d845011d8842ec6448a95e49efd0f35f6d56650c76a98848d70d9c78466d
-  languageName: node
-  linkType: hard
-
-"@mswjs/interceptors@npm:^0.17.10":
-  version: 0.17.10
-  resolution: "@mswjs/interceptors@npm:0.17.10"
-  dependencies:
-    "@open-draft/until": "npm:^1.0.3"
-    "@types/debug": "npm:^4.1.7"
-    "@xmldom/xmldom": "npm:^0.8.3"
-    debug: "npm:^4.3.3"
-    headers-polyfill: "npm:3.2.5"
-    outvariant: "npm:^1.2.1"
-    strict-event-emitter: "npm:^0.2.4"
-    web-encoding: "npm:^1.1.5"
-  checksum: 10/0bbadfc3c925016d9f26f5bc0aa8833a1ec0065a04933c30f5d7b1f636f39c3458f5dc653d6418e5733523846626e84049a72ec913f70282d7b53bfef2a1aa81
-  languageName: node
-  linkType: hard
-
 "@mswjs/interceptors@npm:^0.39.1":
   version: 0.39.6
   resolution: "@mswjs/interceptors@npm:0.39.6"
@@ -12939,13 +12913,6 @@ __metadata:
     is-node-process: "npm:^1.2.0"
     outvariant: "npm:^1.4.0"
   checksum: 10/7a280f170bcd4e91d3eedbefe628efd10c3bd06dd2461d06a7fdbced89ef457a38785847f88cc630fb4fd7dfa176d6f77aed17e5a9b08000baff647433b5ff78
-  languageName: node
-  linkType: hard
-
-"@open-draft/until@npm:^1.0.3":
-  version: 1.0.3
-  resolution: "@open-draft/until@npm:1.0.3"
-  checksum: 10/323e92ebef0150ed0f8caedc7d219b68cdc50784fa4eba0377eef93533d3f46514eb2400ced83dda8c51bddc3d2c7b8e9cf95e5ec85ab7f62dfc015d174f62f2
   languageName: node
   linkType: hard
 
@@ -20602,13 +20569,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/cookie@npm:^0.4.1":
-  version: 0.4.1
-  resolution: "@types/cookie@npm:0.4.1"
-  checksum: 10/427c9220217d3d74f3e5d53d68cd39502f3bbebdb1af4ecf0d05076bcbe9ddab299ad6369fe0f517389296ba4ca49ddf9a8c22f68e5e9eb8ae6d0076cfab90b2
-  languageName: node
-  linkType: hard
-
 "@types/cookie@npm:^0.6.0":
   version: 0.6.0
   resolution: "@types/cookie@npm:0.6.0"
@@ -20697,7 +20657,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/debug@npm:^4.0.0, @types/debug@npm:^4.1.7":
+"@types/debug@npm:^4.0.0":
   version: 4.1.12
   resolution: "@types/debug@npm:4.1.12"
   dependencies:
@@ -21064,13 +21024,6 @@ __metadata:
   version: 2.2.6
   resolution: "@types/js-cookie@npm:2.2.6"
   checksum: 10/97c50ff6cd0a27409b028aad94b0c4eb5cc43623532a1bdbbcccdb200539593eff3cc7f0d874b6b9bee586167638e3a10093c811ff6603ff2a9639564c82b3b1
-  languageName: node
-  linkType: hard
-
-"@types/js-levenshtein@npm:^1.1.1":
-  version: 1.1.3
-  resolution: "@types/js-levenshtein@npm:1.1.3"
-  checksum: 10/eb338696da976925ea8448a42d775d7615a14323dceeb08909f187d0b3d3b4c1f67a1c36ef586b1c2318b70ab141bba8fc58311ba1c816711704605aec09db8b
   languageName: node
   linkType: hard
 
@@ -21871,15 +21824,6 @@ __metadata:
     "@types/node": "npm:*"
     "@types/send": "npm:*"
   checksum: 10/c5a7171d5647f9fbd096ed1a26105759f3153ccf683824d99fee4c7eb9cde2953509621c56a070dd9fb1159e799e86d300cbe4e42245ebc5b0c1767e8ca94a67
-  languageName: node
-  linkType: hard
-
-"@types/set-cookie-parser@npm:^2.4.0":
-  version: 2.4.10
-  resolution: "@types/set-cookie-parser@npm:2.4.10"
-  dependencies:
-    "@types/node": "npm:*"
-  checksum: 10/105cc90c7d7deeb344858f720b58bd137356586545ac00d1a448e050bfcc0f385553ff26bc9c674bd8c2e953a458149eadb1945ee3d1eee81e6c0656236ebc0a
   languageName: node
   linkType: hard
 
@@ -23189,13 +23133,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@xmldom/xmldom@npm:^0.8.3":
-  version: 0.8.11
-  resolution: "@xmldom/xmldom@npm:0.8.11"
-  checksum: 10/f6d6ffdf71cf19d9b3c10e978fad40d2f85453bf5b2aa05be8aa0c5ad13f84690c3153316729213cc652d06ec12c605ddb0aa03886f1d73d51b974b4105d31e3
-  languageName: node
-  linkType: hard
-
 "@xobotyi/scrollbar-width@npm:^1.9.5":
   version: 1.9.5
   resolution: "@xobotyi/scrollbar-width@npm:1.9.5"
@@ -23956,13 +23893,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@zxing/text-encoding@npm:0.9.0":
-  version: 0.9.0
-  resolution: "@zxing/text-encoding@npm:0.9.0"
-  checksum: 10/268e4ef64b8eaa32b990240bdfd1f7b3e2b501a6ed866a565f7c9747f04ac884fbe0537fe12bb05d9241b98fb111270c0fd0023ef0a02d23a6619b4589e98f6b
-  languageName: node
-  linkType: hard
-
 "GendocuPublicApis@npm:gendocu-public-apis@^1.0.0":
   version: 1.0.3
   resolution: "gendocu-public-apis@npm:1.0.3"
@@ -24433,7 +24363,7 @@ __metadata:
     "@material-ui/icons": "npm:^4.9.1"
     "@types/react": "npm:^18.0.0"
     cross-fetch: "npm:^4.0.0"
-    msw: "npm:^1.0.0"
+    msw: "npm:^2.0.0"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
     react-router-dom: "npm:^6.3.0"
@@ -27352,13 +27282,6 @@ __metadata:
   version: 0.7.2
   resolution: "cookie@npm:0.7.2"
   checksum: 10/24b286c556420d4ba4e9bc09120c9d3db7d28ace2bd0f8ccee82422ce42322f73c8312441271e5eefafbead725980e5996cc02766dbb89a90ac7f5636ede608f
-  languageName: node
-  linkType: hard
-
-"cookie@npm:^0.4.2":
-  version: 0.4.2
-  resolution: "cookie@npm:0.4.2"
-  checksum: 10/2e1de9fdedca54881eab3c0477aeb067f281f3155d9cfee9d28dfb252210d09e85e9d175c0a60689661feb9e35e588515352f2456bc1f8e8db4267e05fd70137
   languageName: node
   linkType: hard
 
@@ -30641,7 +30564,7 @@ __metadata:
     axios: "npm:^1.13.0"
     cross-env: "npm:^10.0.0"
     history: "npm:^5.0.0"
-    msw: "npm:^1.0.0"
+    msw: "npm:^2.0.0"
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
     react-router: "npm:^6.3.0"
@@ -33112,13 +33035,6 @@ __metadata:
   bin:
     he: bin/he
   checksum: 10/d09b2243da4e23f53336e8de3093e5c43d2c39f8d0d18817abfa32ce3e9355391b2edb4bb5edc376aea5d4b0b59d6a0482aab4c52bc02ef95751e4b818e847f1
-  languageName: node
-  linkType: hard
-
-"headers-polyfill@npm:3.2.5":
-  version: 3.2.5
-  resolution: "headers-polyfill@npm:3.2.5"
-  checksum: 10/3aa62d23091576c05722e8043879a3a6beb9fdd85719780248d628ef8df232eb8261522ae2edb8dd6d0a991d7c744f7382c22e279bc81690f8da39502bc62c4c
   languageName: node
   linkType: hard
 
@@ -35712,13 +35628,6 @@ __metadata:
   version: 0.4.12
   resolution: "js-file-download@npm:0.4.12"
   checksum: 10/a03847eef0184fbf34a7b7fd365ea6aa1a6cc142efeac52c4baa0cdde845dc93718eb66808dfcffd6c91b37ddc9d058d352ac9698b4280744bad3587240c93b6
-  languageName: node
-  linkType: hard
-
-"js-levenshtein@npm:^1.1.6":
-  version: 1.1.6
-  resolution: "js-levenshtein@npm:1.1.6"
-  checksum: 10/bb034043fdebab606122fe5b5c0316036f1bb0ea352038af8b0ba4cda4b016303b24f64efb59d9918f66e3680eea97ff421396ff3c153cb00a6f982908f61f8a
   languageName: node
   linkType: hard
 
@@ -39223,40 +39132,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"msw@npm:^1.0.0, msw@npm:^1.2.1, msw@npm:^1.3.0, msw@npm:^1.3.1":
-  version: 1.3.5
-  resolution: "msw@npm:1.3.5"
-  dependencies:
-    "@mswjs/cookies": "npm:^0.2.2"
-    "@mswjs/interceptors": "npm:^0.17.10"
-    "@open-draft/until": "npm:^1.0.3"
-    "@types/cookie": "npm:^0.4.1"
-    "@types/js-levenshtein": "npm:^1.1.1"
-    chalk: "npm:^4.1.1"
-    chokidar: "npm:^3.4.2"
-    cookie: "npm:^0.4.2"
-    graphql: "npm:^16.8.1"
-    headers-polyfill: "npm:3.2.5"
-    inquirer: "npm:^8.2.0"
-    is-node-process: "npm:^1.2.0"
-    js-levenshtein: "npm:^1.1.6"
-    node-fetch: "npm:^2.6.7"
-    outvariant: "npm:^1.4.0"
-    path-to-regexp: "npm:^6.3.0"
-    strict-event-emitter: "npm:^0.4.3"
-    type-fest: "npm:^2.19.0"
-    yargs: "npm:^17.3.1"
-  peerDependencies:
-    typescript: ">= 4.4.x"
-  peerDependenciesMeta:
-    typescript:
-      optional: true
-  bin:
-    msw: cli/index.js
-  checksum: 10/bc45d14bfc7b28d6deaeefe0d24d3fa2b0b1032a83f337d74bf9c4a94875085893317fa01f754cfdf743b17ded76b9886fd69de5f6defe51ed2b77876bf2041c
-  languageName: node
-  linkType: hard
-
 "msw@npm:^2.0.0, msw@npm:^2.0.8, msw@npm:^2.7.3":
   version: 2.11.2
   resolution: "msw@npm:2.11.2"
@@ -40707,7 +40582,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"outvariant@npm:^1.2.1, outvariant@npm:^1.4.0, outvariant@npm:^1.4.3":
+"outvariant@npm:^1.4.0, outvariant@npm:^1.4.3":
   version: 1.4.3
   resolution: "outvariant@npm:1.4.3"
   checksum: 10/3a7582745850cb344d49641867a4c080858c54f4091afd91b9c0765ba6e471c2bc841348f0fff344845ddd0a4db42fd5d68c6f7ebaf32d4b676a3a9987b2488a
@@ -45754,13 +45629,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"set-cookie-parser@npm:^2.4.6":
-  version: 2.7.1
-  resolution: "set-cookie-parser@npm:2.7.1"
-  checksum: 10/c92b1130032693342bca13ea1b1bc93967ab37deec4387fcd8c2a843c0ef2fd9a9f3df25aea5bb3976cd05a91c2cf4632dd6164d6e1814208fb7d7e14edd42b4
-  languageName: node
-  linkType: hard
-
 "set-function-length@npm:^1.2.2":
   version: 1.2.2
   resolution: "set-function-length@npm:1.2.2"
@@ -46802,22 +46670,6 @@ __metadata:
   version: 2.0.0
   resolution: "strict-event-emitter-types@npm:2.0.0"
   checksum: 10/d7b28708bf09648302e8ea5a6c4999d7e3186a06f68568a6196a71e315bf4ef44f78011db11576b0b4ed45df4a8f0baf0d64232d2a6eaf21fa92c7ec4085f481
-  languageName: node
-  linkType: hard
-
-"strict-event-emitter@npm:^0.2.4":
-  version: 0.2.8
-  resolution: "strict-event-emitter@npm:0.2.8"
-  dependencies:
-    events: "npm:^3.3.0"
-  checksum: 10/6ac06fe72a6ee6ae64d20f1dd42838ea67342f1b5f32b03b3050d73ee6ecee44b4d5c4ed2965a7154b47991e215f373d4e789e2b2be2769cd80e356126c2ca53
-  languageName: node
-  linkType: hard
-
-"strict-event-emitter@npm:^0.4.3":
-  version: 0.4.6
-  resolution: "strict-event-emitter@npm:0.4.6"
-  checksum: 10/abdbf59b6c45b599cc2f227fa473765d1510d155ebd22533e8ecb06110dfacb2ff07aece7fd528dde2b4f9e379d60f2687eee8af3fa2877c3ed88ee5b7ed2707
   languageName: node
   linkType: hard
 
@@ -48528,13 +48380,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"type-fest@npm:^2.19.0":
-  version: 2.19.0
-  resolution: "type-fest@npm:2.19.0"
-  checksum: 10/7bf9e8fdf34f92c8bb364c0af14ca875fac7e0183f2985498b77be129dc1b3b1ad0a6b3281580f19e48c6105c037fb966ad9934520c69c6434d17fd0af4eed78
-  languageName: node
-  linkType: hard
-
 "type-fest@npm:^4.26.1, type-fest@npm:^4.3.1, type-fest@npm:^4.41.0":
   version: 4.41.0
   resolution: "type-fest@npm:4.41.0"
@@ -49911,19 +49756,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"web-encoding@npm:^1.1.5":
-  version: 1.1.5
-  resolution: "web-encoding@npm:1.1.5"
-  dependencies:
-    "@zxing/text-encoding": "npm:0.9.0"
-    util: "npm:^0.12.3"
-  dependenciesMeta:
-    "@zxing/text-encoding":
-      optional: true
-  checksum: 10/243518cfa8388ac05eeb4041bd330d38c599476ff9a93239b386d1ba2af130089a2fcefb0cf65b385f989105ff460ae69dca7e42236f4d98dc776b04e558cdb5
-  languageName: node
-  linkType: hard
-
 "web-streams-polyfill@npm:4.0.0-beta.3":
   version: 4.0.0-beta.3
   resolution: "web-streams-polyfill@npm:4.0.0-beta.3"
@@ -50617,7 +50449,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"yargs@npm:17.7.2, yargs@npm:^17.1.1, yargs@npm:^17.3.1, yargs@npm:^17.7.1, yargs@npm:^17.7.2":
+"yargs@npm:17.7.2, yargs@npm:^17.1.1, yargs@npm:^17.7.1, yargs@npm:^17.7.2":
   version: 17.7.2
   resolution: "yargs@npm:17.7.2"
   dependencies:

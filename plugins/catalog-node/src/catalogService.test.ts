@@ -26,7 +26,7 @@ import {
   registerMswTestHooks,
   startTestBackend,
 } from '@backstage/backend-test-utils';
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import { catalogServiceRef } from './catalogService';
 
@@ -60,14 +60,14 @@ describe('catalogServiceRef', () => {
     expect.assertions(1);
 
     server.use(
-      rest.get('http://localhost/api/catalog/entities', (req, res, ctx) => {
-        expect(req.headers.get('authorization')).toBe(
+      http.get('*/api/catalog/entities', ({ request }) => {
+        expect(request.headers.get('authorization')).toBe(
           mockCredentials.service.header({
             onBehalfOf: mockCredentials.user(),
             targetPluginId: 'catalog',
           }),
         );
-        return res(ctx.json({}));
+        return HttpResponse.json({});
       }),
     );
     const tester = ServiceFactoryTester.from(
@@ -91,14 +91,14 @@ describe('catalogServiceRef', () => {
     expect.assertions(1);
 
     server.use(
-      rest.get('http://localhost/api/catalog/entities', (req, res, ctx) => {
-        expect(req.headers.get('authorization')).toBe(
+      http.get('*/api/catalog/entities', ({ request }) => {
+        expect(request.headers.get('authorization')).toBe(
           mockCredentials.service.header({
             onBehalfOf: mockCredentials.service(),
             targetPluginId: 'catalog',
           }),
         );
-        return res(ctx.json({}));
+        return HttpResponse.json({});
       }),
     );
     const tester = ServiceFactoryTester.from(

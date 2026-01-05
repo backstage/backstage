@@ -26,7 +26,7 @@ import { randomBytes } from 'crypto';
 import { SignJWT, exportJWK, generateKeyPair } from 'jose';
 import { DateTime } from 'luxon';
 import { v4 as uuid } from 'uuid';
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 
 // Simplified copy of TokenFactory in @backstage/plugin-auth-backend
@@ -152,13 +152,10 @@ describe('ExternalTokenHandler', () => {
     });
 
     server.use(
-      rest.get(
-        'https://example.com/.well-known/jwks.json',
-        async (_, res, ctx) => {
-          const keys = await factory.listPublicKeys();
-          return res(ctx.json(keys));
-        },
-      ),
+      http.get('https://example.com/.well-known/jwks.json', async () => {
+        const keys = await factory.listPublicKeys();
+        return HttpResponse.json(keys);
+      }),
     );
 
     const handler = ExternalAuthTokenHandler.create({
@@ -242,13 +239,10 @@ describe('ExternalTokenHandler', () => {
     });
 
     server.use(
-      rest.get(
-        'https://example.com/.well-known/jwks.json',
-        async (_, res, ctx) => {
-          const keys = await factory.listPublicKeys();
-          return res(ctx.json(keys));
-        },
-      ),
+      http.get('https://example.com/.well-known/jwks.json', async () => {
+        const keys = await factory.listPublicKeys();
+        return HttpResponse.json(keys);
+      }),
     );
 
     const logger = mockServices.logger.mock();
@@ -292,13 +286,10 @@ describe('ExternalTokenHandler', () => {
     });
 
     server.use(
-      rest.get(
-        'https://example.com/.well-known/jwks.json',
-        async (_, res, ctx) => {
-          const keys = await factory.listPublicKeys();
-          return res(ctx.json(keys));
-        },
-      ),
+      http.get('https://example.com/.well-known/jwks.json', async () => {
+        const keys = await factory.listPublicKeys();
+        return HttpResponse.json(keys);
+      }),
     );
 
     const verifyMock = jest.fn().mockResolvedValue({});

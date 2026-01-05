@@ -25,7 +25,7 @@ import { TestPipeline } from '@backstage/plugin-search-backend-node';
 import { ConfigReader } from '@backstage/config';
 import { Readable } from 'stream';
 import { setupServer } from 'msw/node';
-import { rest, RestRequest } from 'msw';
+import { http, HttpResponse } from 'msw';
 
 const logger = mockServices.logger.mock();
 
@@ -71,7 +71,7 @@ const mockOverrideQuestion = {
 };
 
 const testSearchQuery = (
-  request: RestRequest | undefined,
+  request: Request | undefined,
   expectedSearch: unknown,
 ) => {
   if (!request) {
@@ -80,7 +80,8 @@ const testSearchQuery = (
   }
 
   const executedSearch: { [key: string]: string } = {};
-  request.url.searchParams.forEach((value: string, key: string) => {
+  const url = new URL(request.url);
+  url.searchParams.forEach((value: string, key: string) => {
     executedSearch[key] = value;
   });
   expect(executedSearch).toEqual(expectedSearch);
@@ -119,11 +120,14 @@ describe('StackOverflowQuestionsCollatorFactory using custom request params', ()
     it('uses site query parameter when provided and baseUrl is not default', async () => {
       let request;
       worker.use(
-        rest.get('http://stack.overflow.local/questions', (req, res, ctx) => {
-          request = req;
+        http.get(
+          'http://stack.overflow.local/questions',
+          ({ request: req }) => {
+            request = req;
 
-          return res(ctx.status(200), ctx.json(mockQuestion));
-        }),
+            return HttpResponse.json(mockQuestion);
+          },
+        ),
       );
       const factory = StackOverflowQuestionsCollatorFactory.fromConfig(config, {
         logger,
@@ -149,10 +153,10 @@ describe('StackOverflowQuestionsCollatorFactory using custom request params', ()
     it('uses site query parameter when provided and baseUrl is default', async () => {
       let request;
       worker.use(
-        rest.get(`${BASE_URL}/questions`, (req, res, ctx) => {
+        http.get(`${BASE_URL}/questions`, ({ request: req }) => {
           request = req;
 
-          return res(ctx.status(200), ctx.json(mockQuestion));
+          return HttpResponse.json(mockQuestion);
         }),
       );
       const factory = StackOverflowQuestionsCollatorFactory.fromConfig(config, {
@@ -179,10 +183,10 @@ describe('StackOverflowQuestionsCollatorFactory using custom request params', ()
     it('uses default when site is not provided and baseUrl is default', async () => {
       let request;
       worker.use(
-        rest.get(`${BASE_URL}/questions`, (req, res, ctx) => {
+        http.get(`${BASE_URL}/questions`, ({ request: req }) => {
           request = req;
 
-          return res(ctx.status(200), ctx.json(mockQuestion));
+          return HttpResponse.json(mockQuestion);
         }),
       );
       const factory = StackOverflowQuestionsCollatorFactory.fromConfig(config, {
@@ -220,11 +224,14 @@ describe('StackOverflowQuestionsCollatorFactory using custom request params', ()
     it('fetches from the configured endpoint', async () => {
       let request;
       worker.use(
-        rest.get('http://stack.overflow.local/questions', (req, res, ctx) => {
-          request = req;
+        http.get(
+          'http://stack.overflow.local/questions',
+          ({ request: req }) => {
+            request = req;
 
-          return res(ctx.status(200), ctx.json(mockQuestion));
-        }),
+            return HttpResponse.json(mockQuestion);
+          },
+        ),
       );
       const factory = StackOverflowQuestionsCollatorFactory.fromConfig(
         config,
@@ -248,11 +255,11 @@ describe('StackOverflowQuestionsCollatorFactory using custom request params', ()
     it('fetches from the overridden endpoint', async () => {
       let request;
       worker.use(
-        rest.get(
+        http.get(
           'http://stack.overflow.override/questions',
-          (req, res, ctx) => {
+          ({ request: req }) => {
             request = req;
-            return res(ctx.status(200), ctx.json(mockOverrideQuestion));
+            return HttpResponse.json(mockOverrideQuestion);
           },
         ),
       );
@@ -280,13 +287,14 @@ describe('StackOverflowQuestionsCollatorFactory using custom request params', ()
     it('uses API key when provided', async () => {
       let request;
       worker.use(
-        rest.get(
+        http.get(
           'http://stack.overflow.override/questions',
-          (req, res, ctx) => {
+          ({ request: req }) => {
             request = req;
-            return req.url.searchParams.get('key') === 'abcdefg'
-              ? res(ctx.status(200), ctx.json(mockOverrideQuestion))
-              : res(ctx.status(401), ctx.json({}));
+            const url = new URL(req.url);
+            return url.searchParams.get('key') === 'abcdefg'
+              ? HttpResponse.json(mockOverrideQuestion)
+              : HttpResponse.json({}, { status: 401 });
           },
         ),
       );
@@ -316,13 +324,14 @@ describe('StackOverflowQuestionsCollatorFactory using custom request params', ()
     it('uses teamName when provided', async () => {
       let request;
       worker.use(
-        rest.get(
+        http.get(
           'http://stack.overflow.override/questions',
-          (req, res, ctx) => {
+          ({ request: req }) => {
             request = req;
-            return req.url.searchParams.get('team') === 'abcdefg'
-              ? res(ctx.status(200), ctx.json(mockOverrideQuestion))
-              : res(ctx.status(401), ctx.json({}));
+            const url = new URL(req.url);
+            return url.searchParams.get('team') === 'abcdefg'
+              ? HttpResponse.json(mockOverrideQuestion)
+              : HttpResponse.json({}, { status: 401 });
           },
         ),
       );
@@ -387,10 +396,10 @@ describe('StackOverflowQuestionsCollatorFactory using default request params', (
     it('fetches from the configured endpoint', async () => {
       let request;
       worker.use(
-        rest.get(`${BASE_URL}/questions`, (req, res, ctx) => {
+        http.get(`${BASE_URL}/questions`, ({ request: req }) => {
           request = req;
 
-          return res(ctx.status(200), ctx.json(mockQuestion));
+          return HttpResponse.json(mockQuestion);
         }),
       );
       const factory = StackOverflowQuestionsCollatorFactory.fromConfig(
@@ -414,9 +423,9 @@ describe('StackOverflowQuestionsCollatorFactory using default request params', (
     it('fetches from the overridden endpoint', async () => {
       let request;
       worker.use(
-        rest.get(`${BASE_URL}/questions`, (req, res, ctx) => {
+        http.get(`${BASE_URL}/questions`, ({ request: req }) => {
           request = req;
-          return res(ctx.status(200), ctx.json(mockOverrideQuestion));
+          return HttpResponse.json(mockOverrideQuestion);
         }),
       );
       const factory = StackOverflowQuestionsCollatorFactory.fromConfig(config, {
@@ -442,11 +451,12 @@ describe('StackOverflowQuestionsCollatorFactory using default request params', (
     it('uses API key when provided', async () => {
       let request;
       worker.use(
-        rest.get(`${BASE_URL}/questions`, (req, res, ctx) => {
+        http.get(`${BASE_URL}/questions`, ({ request: req }) => {
           request = req;
-          return req.url.searchParams.get('key') === 'abcdefg'
-            ? res(ctx.status(200), ctx.json(mockOverrideQuestion))
-            : res(ctx.status(401), ctx.json({}));
+          const url = new URL(req.url);
+          return url.searchParams.get('key') === 'abcdefg'
+            ? HttpResponse.json(mockOverrideQuestion)
+            : HttpResponse.json({}, { status: 401 });
         }),
       );
       const factory = StackOverflowQuestionsCollatorFactory.fromConfig(config, {
@@ -474,11 +484,12 @@ describe('StackOverflowQuestionsCollatorFactory using default request params', (
     it('uses teamName when provided', async () => {
       let request;
       worker.use(
-        rest.get(`${BASE_URL}/questions`, (req, res, ctx) => {
+        http.get(`${BASE_URL}/questions`, ({ request: req }) => {
           request = req;
-          return req.url.searchParams.get('team') === 'abcdefg'
-            ? res(ctx.status(200), ctx.json(mockOverrideQuestion))
-            : res(ctx.status(401), ctx.json({}));
+          const url = new URL(req.url);
+          return url.searchParams.get('team') === 'abcdefg'
+            ? HttpResponse.json(mockOverrideQuestion)
+            : HttpResponse.json({}, { status: 401 });
         }),
       );
       const factory = StackOverflowQuestionsCollatorFactory.fromConfig(config, {

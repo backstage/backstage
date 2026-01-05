@@ -20,7 +20,7 @@ import {
 } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { LocationSpec } from '@backstage/plugin-catalog-node';
-import { rest, RestRequest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import { GitLabDiscoveryProcessor, parseUrl } from './GitLabDiscoveryProcessor';
 import { GitLabProject } from './lib';
@@ -65,22 +65,23 @@ function setupFakeServer(
     data: GitLabProject[];
     nextPage?: number;
   },
-  assertion?: (r: RestRequest) => any,
+  assertion?: (request: Request) => any,
 ) {
   server.use(
-    rest.get(url, (req, res, ctx) => {
+    http.get(url, ({ request }) => {
       // Send the request to the assertion to give the test an opportunity to inspect the parameters.
       if (assertion !== undefined) {
-        assertion(req);
+        assertion(request);
       }
 
-      if (req.headers.get('authorization') !== 'Bearer test-token') {
-        return res(ctx.status(401), ctx.json({}));
+      if (request.headers.get('authorization') !== 'Bearer test-token') {
+        return HttpResponse.json({}, { status: 401 });
       }
-      const page = req.url.searchParams.get('page');
-      const include_subgroups = req.url.searchParams.get('include_subgroups');
-      const archived = req.url.searchParams.get('archived');
-      const simple = req.url.searchParams.get('simple');
+      const urlObj = new URL(request.url);
+      const page = urlObj.searchParams.get('page');
+      const include_subgroups = urlObj.searchParams.get('include_subgroups');
+      const archived = urlObj.searchParams.get('archived');
+      const simple = urlObj.searchParams.get('simple');
       const response = listProjectsCallback({
         page: parseInt(page!, 10),
         include_subgroups: include_subgroups === 'true',
@@ -89,7 +90,7 @@ function setupFakeServer(
       });
 
       // Filter the fake results based on the `last_activity_after` parameter
-      const last_activity_after = req.url.searchParams.get(
+      const last_activity_after = urlObj.searchParams.get(
         'last_activity_after',
       );
       const filteredData = response.data
@@ -100,35 +101,35 @@ function setupFakeServer(
         )
         .filter(v => archived || !v.archived);
 
-      return res(
-        ctx.set('x-next-page', response.nextPage?.toString() ?? ''),
-        ctx.json(filteredData),
-      );
+      return HttpResponse.json(filteredData, {
+        headers: { 'x-next-page': response.nextPage?.toString() ?? '' },
+      });
     }),
-    rest.head(
+    http.head(
       `${API_URL}/projects/:projectIdentifier/repository/files/:file_path`,
-      (req, res, ctx) => {
-        if (req.headers.get('authorization') !== 'Bearer test-token') {
-          return res(
-            ctx.status(401),
-            ctx.json({ message: '401 Unauthorized' }),
+      ({ request, params }) => {
+        if (request.headers.get('authorization') !== 'Bearer test-token') {
+          return HttpResponse.json(
+            { message: '401 Unauthorized' },
+            { status: 401 },
           );
         }
-        const ref = req.url.searchParams.get('ref');
+        const urlObj = new URL(request.url);
+        const ref = urlObj.searchParams.get('ref');
 
         if (ref === 'main' || ref === 'master') {
-          return res(ctx.status(200));
+          return new HttpResponse(null, { status: 200 });
         }
 
         if (
           // Gitlab GET project endpoint can use either numeric project.id or string project.path_with_namespace
-          EXISTING_PROJECT_ID.toString() === req.params.projectIdentifier ||
-          EXISTING_PROJECT_PATH === req.params.projectIdentifier
+          EXISTING_PROJECT_ID.toString() === params.projectIdentifier ||
+          EXISTING_PROJECT_PATH === params.projectIdentifier
         ) {
-          return res(ctx.status(200));
+          return new HttpResponse(null, { status: 200 });
         }
 
-        return res(ctx.status(404));
+        return new HttpResponse(null, { status: 404 });
       },
     ),
   );
@@ -445,9 +446,8 @@ describe('GitlabDiscoveryProcessor', () => {
         },
         request => {
           // We assert that the last activity timestamp is not being sent to the GitLab API as we expect the cache to be empty.
-          expect(
-            request.url.searchParams.get('last_activity_after'),
-          ).toBeNull();
+          const url = new URL(request.url);
+          expect(url.searchParams.get('last_activity_after')).toBeNull();
         },
       );
 
@@ -468,7 +468,8 @@ describe('GitlabDiscoveryProcessor', () => {
         },
         request => {
           // We assert that the last activity timestamp is being sent to the GitLab API since we expect it to be in the cache.
-          expect(request.url.searchParams.get('last_activity_after')).toMatch(
+          const url = new URL(request.url);
+          expect(url.searchParams.get('last_activity_after')).toMatch(
             SERVER_TIME,
           );
         },
@@ -502,7 +503,8 @@ describe('GitlabDiscoveryProcessor', () => {
         },
         request => {
           // Verify that simple=true is set in the request
-          expect(request.url.searchParams.get('simple')).toBe('true');
+          const url = new URL(request.url);
+          expect(url.searchParams.get('simple')).toBe('true');
         },
       );
 
@@ -540,7 +542,8 @@ describe('GitlabDiscoveryProcessor', () => {
         },
         request => {
           // Verify that simple parameter is not set
-          expect(request.url.searchParams.get('simple')).toBeNull();
+          const url = new URL(request.url);
+          expect(url.searchParams.get('simple')).toBeNull();
         },
       );
 
@@ -572,8 +575,9 @@ describe('GitlabDiscoveryProcessor', () => {
         },
         request => {
           // Verify default parameters: archived=false and simple=true
-          expect(request.url.searchParams.get('archived')).toBe('false');
-          expect(request.url.searchParams.get('simple')).toBe('true');
+          const url = new URL(request.url);
+          expect(url.searchParams.get('archived')).toBe('false');
+          expect(url.searchParams.get('simple')).toBe('true');
         },
       );
 

@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import { registerMswTestHooks } from '../../msw';
 import { MockFetchApi } from './MockFetchApi';
 
 describe('MockFetchApi', () => {
-  const worker = setupServer();
-  registerMswTestHooks(worker);
+  const server = setupServer();
+  registerMswTestHooks(server);
 
   it('works with default constructor', async () => {
-    worker.use(
-      rest.get('http://example.com/data.json', (_, res, ctx) =>
-        res(ctx.status(200), ctx.json({ a: 'foo' })),
+    server.use(
+      http.get('http://example.com/data.json', () =>
+        HttpResponse.json({ a: 'foo' }),
       ),
     );
     const m = new MockFetchApi();

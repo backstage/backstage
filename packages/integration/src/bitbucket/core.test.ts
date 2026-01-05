@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import { registerMswTestHooks } from '../helpers';
 import { BitbucketIntegrationConfig } from './config';
@@ -115,14 +115,13 @@ describe('bitbucket core', () => {
         displayId: 'main',
       };
       worker.use(
-        rest.get(
+        http.get(
           'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/default-branch',
-          (_, res, ctx) =>
-            res(
-              ctx.status(200),
-              ctx.set('Content-Type', 'application/json'),
-              ctx.json(defaultBranchResponse),
-            ),
+          () =>
+            HttpResponse.json(defaultBranchResponse, {
+              status: 200,
+              headers: { 'Content-Type': 'application/json' },
+            }),
         ),
       );
 
@@ -158,14 +157,13 @@ describe('bitbucket core', () => {
         displayId: 'main',
       };
       worker.use(
-        rest.get(
+        http.get(
           'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/default-branch',
-          (_, res, ctx) =>
-            res(
-              ctx.status(200),
-              ctx.set('Content-Type', 'application/json'),
-              ctx.json(defaultBranchResponse),
-            ),
+          () =>
+            HttpResponse.json(defaultBranchResponse, {
+              status: 200,
+              headers: { 'Content-Type': 'application/json' },
+            }),
         ),
       );
       const config: BitbucketIntegrationConfig = {
@@ -219,14 +217,13 @@ describe('bitbucket core', () => {
         },
       };
       worker.use(
-        rest.get(
+        http.get(
           'https://api.bitbucket.org/2.0/repositories/backstage/mock',
-          (_, res, ctx) =>
-            res(
-              ctx.status(200),
-              ctx.set('Content-Type', 'application/json'),
-              ctx.json(repoInfoResponse),
-            ),
+          () =>
+            HttpResponse.json(repoInfoResponse, {
+              status: 200,
+              headers: { 'Content-Type': 'application/json' },
+            }),
         ),
       );
       const config: BitbucketIntegrationConfig = {
@@ -245,14 +242,13 @@ describe('bitbucket core', () => {
         displayId: 'main',
       };
       worker.use(
-        rest.get(
+        http.get(
           'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/default-branch',
-          (_, res, ctx) =>
-            res(
-              ctx.status(200),
-              ctx.set('Content-Type', 'application/json'),
-              ctx.json(defaultBranchResponse),
-            ),
+          () =>
+            HttpResponse.json(defaultBranchResponse, {
+              status: 200,
+              headers: { 'Content-Type': 'application/json' },
+            }),
         ),
       );
       const config: BitbucketIntegrationConfig = {
@@ -271,23 +267,21 @@ describe('bitbucket core', () => {
         displayId: 'main',
       };
       worker.use(
-        rest.get(
+        http.get(
           'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/default-branch',
-          (_, res, ctx) =>
-            res(
-              ctx.status(404),
-              ctx.set('Content-Type', 'application/json'),
-              ctx.json(defaultBranchResponse),
-            ),
+          () =>
+            HttpResponse.json(defaultBranchResponse, {
+              status: 404,
+              headers: { 'Content-Type': 'application/json' },
+            }),
         ),
-        rest.get(
+        http.get(
           'https://api.bitbucket.mycompany.net/rest/api/1.0/projects/backstage/repos/mock/branches/default',
-          (_, res, ctx) =>
-            res(
-              ctx.status(200),
-              ctx.set('Content-Type', 'application/json'),
-              ctx.json(defaultBranchResponse),
-            ),
+          () =>
+            HttpResponse.json(defaultBranchResponse, {
+              status: 200,
+              headers: { 'Content-Type': 'application/json' },
+            }),
         ),
       );
       const config: BitbucketIntegrationConfig = {

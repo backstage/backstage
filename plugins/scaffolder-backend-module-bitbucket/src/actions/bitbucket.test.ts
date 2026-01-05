@@ -26,7 +26,7 @@ jest.mock('@backstage/plugin-scaffolder-node', () => {
   };
 });
 import { createPublishBitbucketAction } from './bitbucket';
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import { registerMswTestHooks } from '@backstage/backend-test-utils';
 import { ScmIntegrations } from '@backstage/integration';
@@ -118,32 +118,29 @@ describe('publish:bitbucket', () => {
   it('should call the correct APIs when the host is bitbucket cloud', async () => {
     expect.assertions(2);
     server.use(
-      rest.post(
+      http.post(
         'https://api.bitbucket.org/2.0/repositories/workspace/repo',
-        (req, res, ctx) => {
-          expect(req.headers.get('Authorization')).toBe('Bearer tokenlols');
-          expect(req.body).toEqual({
+        async ({ request }) => {
+          expect(request.headers.get('Authorization')).toBe('Bearer tokenlols');
+          const body = await request.json();
+          expect(body).toEqual({
             is_private: true,
             scm: 'git',
             project: { key: 'project' },
           });
-          return res(
-            ctx.status(200),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json({
-              links: {
-                html: {
+          return HttpResponse.json({
+            links: {
+              html: {
+                href: 'https://bitbucket.org/workspace/repo',
+              },
+              clone: [
+                {
+                  name: 'https',
                   href: 'https://bitbucket.org/workspace/repo',
                 },
-                clone: [
-                  {
-                    name: 'https',
-                    href: 'https://bitbucket.org/workspace/repo',
-                  },
-                ],
-              },
-            }),
-          );
+              ],
+            },
+          });
         },
       ),
     );
@@ -160,15 +157,14 @@ describe('publish:bitbucket', () => {
   it('should call the correct APIs when the host is hosted bitbucket', async () => {
     expect.assertions(2);
     server.use(
-      rest.post(
+      http.post(
         'https://hosted.bitbucket.com/rest/api/1.0/projects/project/repos',
-        (req, res, ctx) => {
-          expect(req.headers.get('Authorization')).toBe('Bearer thing');
-          expect(req.body).toEqual({ public: false, name: 'repo' });
-          return res(
-            ctx.status(201),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json({
+        async ({ request }) => {
+          expect(request.headers.get('Authorization')).toBe('Bearer thing');
+          const body = await request.json();
+          expect(body).toEqual({ public: false, name: 'repo' });
+          return HttpResponse.json(
+            {
               links: {
                 self: [
                   {
@@ -182,7 +178,8 @@ describe('publish:bitbucket', () => {
                   },
                 ],
               },
-            }),
+            },
+            { status: 201 },
           );
         },
       ),
@@ -200,15 +197,14 @@ describe('publish:bitbucket', () => {
   it('should work if the token is provided through ctx.input', async () => {
     expect.assertions(2);
     server.use(
-      rest.post(
+      http.post(
         'https://notoken.bitbucket.com/rest/api/1.0/projects/project/repos',
-        (req, res, ctx) => {
-          expect(req.headers.get('Authorization')).toBe('Bearer lols');
-          expect(req.body).toEqual({ public: false, name: 'repo' });
-          return res(
-            ctx.status(201),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json({
+        async ({ request }) => {
+          expect(request.headers.get('Authorization')).toBe('Bearer lols');
+          const body = await request.json();
+          expect(body).toEqual({ public: false, name: 'repo' });
+          return HttpResponse.json(
+            {
               links: {
                 self: [
                   {
@@ -222,7 +218,8 @@ describe('publish:bitbucket', () => {
                   },
                 ],
               },
-            }),
+            },
+            { status: 201 },
           );
         },
       ),
@@ -256,21 +253,17 @@ describe('publish:bitbucket', () => {
     it('should call the correct APIs to enable LFS if requested and the host is hosted bitbucket', async () => {
       expect.assertions(1);
       server.use(
-        rest.post(
+        http.post(
           'https://hosted.bitbucket.com/rest/api/1.0/projects/project/repos',
-          (_, res, ctx) => {
-            return res(
-              ctx.status(201),
-              ctx.set('Content-Type', 'application/json'),
-              ctx.json(repoCreationResponse),
-            );
+          () => {
+            return HttpResponse.json(repoCreationResponse, { status: 201 });
           },
         ),
-        rest.put(
+        http.put(
           'https://hosted.bitbucket.com/rest/git-lfs/admin/projects/project/repos/repo/enabled',
-          (req, res, ctx) => {
-            expect(req.headers.get('Authorization')).toBe('Bearer thing');
-            return res(ctx.status(204));
+          ({ request }) => {
+            expect(request.headers.get('Authorization')).toBe('Bearer thing');
+            return new HttpResponse(null, { status: 204 });
           },
         ),
       );
@@ -287,20 +280,16 @@ describe('publish:bitbucket', () => {
 
     it('should report an error if enabling LFS fails', async () => {
       server.use(
-        rest.post(
+        http.post(
           'https://hosted.bitbucket.com/rest/api/1.0/projects/project/repos',
-          (_, res, ctx) => {
-            return res(
-              ctx.status(201),
-              ctx.set('Content-Type', 'application/json'),
-              ctx.json(repoCreationResponse),
-            );
+          () => {
+            return HttpResponse.json(repoCreationResponse, { status: 201 });
           },
         ),
-        rest.put(
+        http.put(
           'https://hosted.bitbucket.com/rest/git-lfs/admin/projects/project/repos/repo/enabled',
-          (_, res, ctx) => {
-            return res(ctx.status(500));
+          () => {
+            return new HttpResponse(null, { status: 500 });
           },
         ),
       );
@@ -320,26 +309,22 @@ describe('publish:bitbucket', () => {
 
   it('should call initAndPush with the correct values', async () => {
     server.use(
-      rest.post(
+      http.post(
         'https://api.bitbucket.org/2.0/repositories/workspace/repo',
-        (_, res, ctx) =>
-          res(
-            ctx.status(200),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json({
-              links: {
-                html: {
-                  href: 'https://bitbucket.org/workspace/repo',
-                },
-                clone: [
-                  {
-                    name: 'https',
-                    href: 'https://bitbucket.org/workspace/cloneurl',
-                  },
-                ],
+        () =>
+          HttpResponse.json({
+            links: {
+              html: {
+                href: 'https://bitbucket.org/workspace/repo',
               },
-            }),
-          ),
+              clone: [
+                {
+                  name: 'https',
+                  href: 'https://bitbucket.org/workspace/cloneurl',
+                },
+              ],
+            },
+          }),
       ),
     );
 
@@ -358,26 +343,22 @@ describe('publish:bitbucket', () => {
 
   it('should call initAndPush with the correct default branch', async () => {
     server.use(
-      rest.post(
+      http.post(
         'https://api.bitbucket.org/2.0/repositories/workspace/repo',
-        (_, res, ctx) =>
-          res(
-            ctx.status(200),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json({
-              links: {
-                html: {
-                  href: 'https://bitbucket.org/workspace/repo',
-                },
-                clone: [
-                  {
-                    name: 'https',
-                    href: 'https://bitbucket.org/workspace/cloneurl',
-                  },
-                ],
+        () =>
+          HttpResponse.json({
+            links: {
+              html: {
+                href: 'https://bitbucket.org/workspace/repo',
               },
-            }),
-          ),
+              clone: [
+                {
+                  name: 'https',
+                  href: 'https://bitbucket.org/workspace/cloneurl',
+                },
+              ],
+            },
+          }),
       ),
     );
 
@@ -434,26 +415,22 @@ describe('publish:bitbucket', () => {
     });
 
     server.use(
-      rest.post(
+      http.post(
         'https://api.bitbucket.org/2.0/repositories/workspace/repo',
-        (_, res, ctx) =>
-          res(
-            ctx.status(200),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json({
-              links: {
-                html: {
-                  href: 'https://bitbucket.org/workspace/repo',
-                },
-                clone: [
-                  {
-                    name: 'https',
-                    href: 'https://bitbucket.org/workspace/cloneurl',
-                  },
-                ],
+        () =>
+          HttpResponse.json({
+            links: {
+              html: {
+                href: 'https://bitbucket.org/workspace/repo',
               },
-            }),
-          ),
+              clone: [
+                {
+                  name: 'https',
+                  href: 'https://bitbucket.org/workspace/cloneurl',
+                },
+              ],
+            },
+          }),
       ),
     );
 
@@ -501,26 +478,22 @@ describe('publish:bitbucket', () => {
     });
 
     server.use(
-      rest.post(
+      http.post(
         'https://api.bitbucket.org/2.0/repositories/workspace/repo',
-        (_, res, ctx) =>
-          res(
-            ctx.status(200),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json({
-              links: {
-                html: {
-                  href: 'https://bitbucket.org/workspace/repo',
-                },
-                clone: [
-                  {
-                    name: 'https',
-                    href: 'https://bitbucket.org/workspace/cloneurl',
-                  },
-                ],
+        () =>
+          HttpResponse.json({
+            links: {
+              html: {
+                href: 'https://bitbucket.org/workspace/repo',
               },
-            }),
-          ),
+              clone: [
+                {
+                  name: 'https',
+                  href: 'https://bitbucket.org/workspace/cloneurl',
+                },
+              ],
+            },
+          }),
       ),
     );
 
@@ -539,26 +512,22 @@ describe('publish:bitbucket', () => {
 
   it('should call outputs with the correct urls', async () => {
     server.use(
-      rest.post(
+      http.post(
         'https://api.bitbucket.org/2.0/repositories/workspace/repo',
-        (_, res, ctx) =>
-          res(
-            ctx.status(200),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json({
-              links: {
-                html: {
-                  href: 'https://bitbucket.org/workspace/repo',
-                },
-                clone: [
-                  {
-                    name: 'https',
-                    href: 'https://bitbucket.org/workspace/cloneurl',
-                  },
-                ],
+        () =>
+          HttpResponse.json({
+            links: {
+              html: {
+                href: 'https://bitbucket.org/workspace/repo',
               },
-            }),
-          ),
+              clone: [
+                {
+                  name: 'https',
+                  href: 'https://bitbucket.org/workspace/cloneurl',
+                },
+              ],
+            },
+          }),
       ),
     );
 
@@ -576,26 +545,22 @@ describe('publish:bitbucket', () => {
 
   it('should call outputs with the correct urls with correct default branch', async () => {
     server.use(
-      rest.post(
+      http.post(
         'https://api.bitbucket.org/2.0/repositories/workspace/repo',
-        (_, res, ctx) =>
-          res(
-            ctx.status(200),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.json({
-              links: {
-                html: {
-                  href: 'https://bitbucket.org/workspace/repo',
-                },
-                clone: [
-                  {
-                    name: 'https',
-                    href: 'https://bitbucket.org/workspace/cloneurl',
-                  },
-                ],
+        () =>
+          HttpResponse.json({
+            links: {
+              html: {
+                href: 'https://bitbucket.org/workspace/repo',
               },
-            }),
-          ),
+              clone: [
+                {
+                  name: 'https',
+                  href: 'https://bitbucket.org/workspace/cloneurl',
+                },
+              ],
+            },
+          }),
       ),
     );
 

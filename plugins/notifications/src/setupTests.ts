@@ -14,3 +14,9 @@
  * limitations under the License.
  */
 import '@testing-library/jest-dom';
+
+jest.mock('cross-fetch', () => ({
+  __esModule: true,
+  default: (...args: Parameters<typeof fetch>) => fetch(...args),
+  Response: global.Response,
+}));

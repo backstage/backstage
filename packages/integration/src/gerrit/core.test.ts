@@ -14,10 +14,6 @@
  * limitations under the License.
  */
 
-import { rest } from 'msw';
-import { setupServer } from 'msw/node';
-import fetch from 'cross-fetch';
-import { registerMswTestHooks } from '../helpers';
 import { GerritIntegrationConfig } from './config';
 import {
   buildGerritGitilesArchiveUrl,
@@ -33,9 +29,6 @@ import {
 } from './core';
 
 describe('gerrit core', () => {
-  const worker = setupServer();
-  registerMswTestHooks(worker);
-
   describe('buildGerritGitilesArchiveUrl', () => {
     const config: GerritIntegrationConfig = {
       host: 'gerrit.com',
@@ -552,51 +545,27 @@ describe('gerrit core', () => {
 
   describe('parseGerritJsonResponse', () => {
     it('can strip the magic prefix from the response.', async () => {
-      const responseBody = ")]}'[]";
-      const apiUrl = 'https://gerrit.com/projects/';
-      worker.use(
-        rest.get(apiUrl, (_, res, ctx) =>
-          res(
-            ctx.status(200),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.text(responseBody),
-          ),
-        ),
-      );
-      const response = await fetch(apiUrl, { method: 'GET' });
+      const response = new Response(")]}'[]", {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      });
       const jsonData = await parseGerritJsonResponse(response);
       expect(jsonData).toEqual([]);
     });
     it('will throw if the magic prefix is missing from the response.', async () => {
-      const responseBody = '[]';
-      const apiUrl = 'https://gerrit.com/projects/';
-      worker.use(
-        rest.get(apiUrl, (_, res, ctx) =>
-          res(
-            ctx.status(200),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.text(responseBody),
-          ),
-        ),
-      );
-      const response = await fetch(apiUrl, { method: 'GET' });
+      const response = new Response('[]', {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      });
       await expect(parseGerritJsonResponse(response)).rejects.toThrow(
         /body prefix missing/,
       );
     });
     it('will throw on invalid json with the magic prefix.', async () => {
-      const responseBody = ")]}']{}[";
-      const apiUrl = 'https://gerrit.com/projects/';
-      worker.use(
-        rest.get(apiUrl, (_, res, ctx) =>
-          res(
-            ctx.status(200),
-            ctx.set('Content-Type', 'application/json'),
-            ctx.text(responseBody),
-          ),
-        ),
-      );
-      const response = await fetch(apiUrl, { method: 'GET' });
+      const response = new Response(")]}']{}[", {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      });
       await expect(parseGerritJsonResponse(response)).rejects.toThrow(
         /response from/,
       );
