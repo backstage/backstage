@@ -30,6 +30,9 @@ app:
         config:
           showAggregateMembersToggle: true
           initialRelationAggregation: aggregated
+    # - entity-card:org/ownership:
+    #     config:
+    #       entityFilterKind: ['Component', 'API', 'Resource', 'System']
 
     # - apis.plugin.graphiql.browse.gitlab: true
     # - graphiql-endpoint:graphiql/gitlab: true
