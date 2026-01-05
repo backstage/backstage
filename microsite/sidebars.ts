@@ -397,7 +397,6 @@ export default {
       },
       [
         'plugins/index',
-        'plugins/existing-plugins',
         'plugins/create-a-plugin',
         'plugins/plugin-development',
         'plugins/structure-of-a-plugin',
