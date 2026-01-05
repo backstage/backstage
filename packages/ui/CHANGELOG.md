@@ -1,5 +1,80 @@
 # @backstage/ui
 
+## 0.11.0-next.0
+
+### Minor Changes
+
+- 4ea1d15: **BREAKING**: Renamed CSS variable `--bui-bg` to `--bui-bg-surface-0` for consistency.
+
+### Patch Changes
+
+- 1880402: Fixes app background color on dark mode.
+- 9c76682: build(deps-dev): bump `storybook` from 10.1.9 to 10.1.10
+- b4a4911: Fixed SearchField `startCollapsed` prop not working correctly in Backstage UI. The field now properly starts in a collapsed state, expands when clicked and focused, and collapses back when unfocused with no input. Also fixed CSS logic to work correctly in all layout contexts (flex row, flex column, and regular containers).
+
+  Affected components: SearchField
+
+## 0.10.0
+
+### Minor Changes
+
+- 16543fa: **Breaking change** The `Cell` component has been refactored to be a generic wrapper component that accepts `children` for custom cell content. The text-specific functionality (previously part of `Cell`) has been moved to a new `CellText` component.
+
+  ### Migration Guide
+
+  If you were using `Cell` with text-specific props (`title`, `description`, `leadingIcon`, `href`), you need to update your code to use `CellText` instead:
+
+  **Before:**
+
+  ```tsx
+  <Cell
+    title="My Title"
+    description="My description"
+    leadingIcon={<Icon />}
+    href="/path"
+  />
+  ```
+
+  **After:**
+
+  ```tsx
+  <CellText
+    title="My Title"
+    description="My description"
+    leadingIcon={<Icon />}
+    href="/path"
+  />
+  ```
+
+  For custom cell content, use the new generic `Cell` component:
+
+  ```tsx
+  <Cell>{/* Your custom content */}</Cell>
+  ```
+
+### Patch Changes
+
+- 50b7927: Fixed Checkbox indicator showing checkmark color when unchecked.
+
+  Affected components: Checkbox
+
+- 5bacf55: Fixed `ButtonIcon` incorrectly applying `className` to inner elements instead of only the root element.
+
+  Affected components: ButtonIcon
+
+- b3ad928: Fixed Table Row component to correctly handle cases where no `href` is provided, preventing unnecessary router provider wrapping and fixing the cursor incorrectly showing as a pointer despite the element not being a link.
+
+  Affected components: Row
+
+- a20d317: Added row selection support with visual state styling for hover, selected, and pressed states. Fixed checkbox rendering to only show for multi-select toggle mode.
+
+  Affected components: Table, TableHeader, Row, Column
+
+- fe7c751: Fixed `useTable` hook to prioritize `providedRowCount` over data length for accurate row count in server-side pagination scenarios.
+- c145031: Fixed Table column sorting indicator to show up arrow when no sort is active, correctly indicating that clicking will sort ascending.
+
+  Affected components: Column
+
 ## 0.10.0-next.1
 
 ### Minor Changes

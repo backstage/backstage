@@ -38,7 +38,7 @@
     "react": "19.1.1",
     "react-dom": "19.1.1",
     "shiki": "^3.13.0",
-    "storybook": "^8.6.12"
+    "storybook": "^8.6.15"
   },
   "devDependencies": {
     "@octokit/rest": "^22.0.1",

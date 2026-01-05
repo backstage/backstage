@@ -174,7 +174,7 @@ export interface Config {
        * The username to use for authenticated requests.
        * @visibility secret
        */
-      username: string;
+      username?: string;
       /**
        * Token used to authenticate requests.
        * @visibility secret
@@ -186,6 +186,16 @@ export interface Config {
        * @deprecated Use `token` instead.
        */
       appPassword?: string;
+      /**
+       * OAuth client ID for Bitbucket Cloud.
+       * @visibility secret
+       */
+      clientId?: string;
+      /**
+       * OAuth client secret for Bitbucket Cloud.
+       * @visibility secret
+       */
+      clientSecret?: string;
       /**
        * PGP signing key for signing commits.
        * @visibility secret

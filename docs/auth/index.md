@@ -340,7 +340,7 @@ The method with which frontend plugins request access to third-party services is
 through [Utility APIs](../api/utility-apis.md) for each service provider. These
 are all suffixed with `*AuthApiRef`, for example `githubAuthApiRef`. For a
 full list of providers, see the
-[@backstage/core-plugin-api](../reference/core-plugin-api.md#variables) reference.
+[@backstage/core-plugin-api](https://backstage.io/api/stable/modules/_backstage_core-plugin-api.index.html#alertapiref) reference.
 
 ## Custom Authentication Provider
 

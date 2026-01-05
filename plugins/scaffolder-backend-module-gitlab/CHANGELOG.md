@@ -1,5 +1,26 @@
 # @backstage/plugin-scaffolder-backend-module-gitlab
 
+## 0.11.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.19.2-next.0
+  - @backstage/plugin-scaffolder-node@0.12.3-next.0
+
+## 0.11.0
+
+### Minor Changes
+
+- f2d034b: In the `gitlabRepoPush` action, add 'auto' possibility for `commitAction` input.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.19.0
+  - @backstage/backend-plugin-api@1.6.0
+  - @backstage/plugin-scaffolder-node@0.12.2
+
 ## 0.11.0-next.1
 
 ### Minor Changes
