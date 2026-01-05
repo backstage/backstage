@@ -23,7 +23,7 @@ import {
 /** @internal */
 export type AuditEventMeta = {
   providerId?: string;
-  actionType?: 'login' | 'token-refresh' | 'logout';
+  actionType?: 'login' | 'logout';
   userEntityRef?: string;
   email?: string;
 };

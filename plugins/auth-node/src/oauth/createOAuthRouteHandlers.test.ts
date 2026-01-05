@@ -681,7 +681,14 @@ describe('createOAuthRouteHandlers', () => {
               shouldPersistScopes: true,
             },
             profileTransform: async () => ({ profile: { email: 'em@i.l' } }),
-            signInResolver: async () => ({ token: mockBackstageToken }),
+            signInResolver: async () => ({
+              token: mockBackstageToken,
+              identity: {
+                type: 'user',
+                userEntityRef: 'user:default/mock',
+                ownershipEntityRefs: [],
+              },
+            }),
             auditor: mockAuditor,
           }),
         ),
@@ -737,10 +744,9 @@ describe('createOAuthRouteHandlers', () => {
         mockAuditor,
         expect.objectContaining({
           eventId: 'auth-login',
-          severityLevel: 'medium',
+          severityLevel: 'low',
           meta: {
             providerId: 'my-provider',
-            userEntityRef: 'user:default/mock',
             email: 'em@i.l',
           },
         }),
@@ -1042,7 +1048,14 @@ describe('createOAuthRouteHandlers', () => {
               shouldPersistScopes: true,
             },
             profileTransform: async () => ({ profile: { email: 'em@i.l' } }),
-            signInResolver: async () => ({ token: mockBackstageToken }),
+            signInResolver: async () => ({
+              token: mockBackstageToken,
+              identity: {
+                type: 'user',
+                userEntityRef: 'user:default/mock',
+                ownershipEntityRefs: [],
+              },
+            }),
             auditor: mockAuditor,
           }),
         ),
@@ -1097,20 +1110,6 @@ describe('createOAuthRouteHandlers', () => {
         },
       });
       expect(getRefreshTokenCookie(agent).value).toBe('new-refresh-token');
-
-      expect(mockEmitAuditEvent).toHaveBeenCalledWith(
-        mockAuditor,
-        expect.objectContaining({
-          eventId: 'auth-login',
-          severityLevel: 'low',
-          meta: {
-            providerId: 'my-provider',
-            actionType: 'token-refresh',
-            userEntityRef: 'user:default/mock',
-            email: 'em@i.l',
-          },
-        }),
-      );
     });
 
     it('should forward errors and emit failure audit event', async () => {
@@ -1140,19 +1139,6 @@ describe('createOAuthRouteHandlers', () => {
           message: 'Refresh failed; caused by Error: NOPE',
         },
       });
-
-      expect(mockEmitAuditEvent).toHaveBeenCalledWith(
-        mockAuditor,
-        expect.objectContaining({
-          eventId: 'auth-login',
-          severityLevel: 'low',
-          meta: {
-            providerId: 'my-provider',
-            actionType: 'token-refresh',
-          },
-          error: expect.any(Error),
-        }),
-      );
     });
 
     it('should require refresh cookie', async () => {
@@ -1301,7 +1287,6 @@ describe('createOAuthRouteHandlers', () => {
           severityLevel: 'low',
           meta: {
             providerId: 'my-provider',
-            actionType: 'logout',
           },
         }),
       );

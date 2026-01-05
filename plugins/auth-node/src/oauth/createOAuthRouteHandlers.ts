@@ -176,7 +176,6 @@ export function createOAuthRouteHandlers<TProfile>(
       let origin = defaultAppOrigin;
       let state;
       let profile: ProfileInfo | undefined;
-      let userEntityRef: string | undefined;
 
       try {
         state = decodeOAuthState(req.query.state?.toString() ?? '');
@@ -215,13 +214,12 @@ export function createOAuthRouteHandlers<TProfile>(
         const signInResult =
           signInResolver &&
           (await signInResolver({ profile, result }, resolverContext));
-        userEntityRef = signInResult?.identity?.userEntityRef;
 
         await emitAuditEvent(auditor, {
           eventId: 'auth-login',
           request: req,
-          severityLevel: 'medium',
-          meta: { providerId, userEntityRef, email: profile?.email },
+          severityLevel: 'low',
+          meta: { providerId, email: profile?.email },
         });
 
         const grantedScopes = await scopeManager.handleCallback(req, {
@@ -273,8 +271,8 @@ export function createOAuthRouteHandlers<TProfile>(
         await emitAuditEvent(auditor, {
           eventId: 'auth-login',
           request: req,
-          severityLevel: 'medium',
-          meta: { providerId, userEntityRef, email: profile?.email },
+          severityLevel: 'low',
+          meta: { providerId, email: profile?.email },
           error: isError(error) ? error : new Error('Unknown auth error'),
         });
 
@@ -323,7 +321,7 @@ export function createOAuthRouteHandlers<TProfile>(
         eventId: 'auth-logout',
         request: req,
         severityLevel: 'low',
-        meta: { providerId, actionType: 'logout' },
+        meta: { providerId },
       });
 
       res.status(200).end();
@@ -389,29 +387,10 @@ export function createOAuthRouteHandlers<TProfile>(
           );
           response.backstageIdentity =
             prepareBackstageIdentityResponse(identity);
-
-          await emitAuditEvent(auditor, {
-            eventId: 'auth-login',
-            request: req,
-            severityLevel: 'low',
-            meta: {
-              providerId,
-              actionType: 'token-refresh',
-              userEntityRef: identity.identity?.userEntityRef,
-              email: profile?.email,
-            },
-          });
         }
 
         res.status(200).json(response);
       } catch (error) {
-        await emitAuditEvent(auditor, {
-          eventId: 'auth-login',
-          request: req,
-          severityLevel: 'low',
-          meta: { providerId, actionType: 'token-refresh' },
-          error: isError(error) ? error : new Error('Refresh failed'),
-        });
         throw new AuthenticationError('Refresh failed', error);
       }
     },

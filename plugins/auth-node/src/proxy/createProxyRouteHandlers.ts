@@ -25,9 +25,8 @@ import {
 } from '../types';
 import { ProxyAuthenticator } from './types';
 import { prepareBackstageIdentityResponse } from '../identity';
-import { isError, NotImplementedError } from '@backstage/errors';
+import { NotImplementedError } from '@backstage/errors';
 import { AuditorService } from '@backstage/backend-plugin-api';
-import { emitAuditEvent } from '../audit';
 
 /** @public */
 export interface ProxyAuthRouteHandlersOptions<TResult> {
@@ -46,14 +45,7 @@ export interface ProxyAuthRouteHandlersOptions<TResult> {
 export function createProxyAuthRouteHandlers<TResult>(
   options: ProxyAuthRouteHandlersOptions<TResult>,
 ): AuthProviderRouteHandlers {
-  const {
-    authenticator,
-    config,
-    resolverContext,
-    signInResolver,
-    providerId,
-    auditor,
-  } = options;
+  const { authenticator, config, resolverContext, signInResolver } = options;
 
   const profileTransform =
     options.profileTransform ?? authenticator.defaultProfileTransform;
@@ -69,48 +61,25 @@ export function createProxyAuthRouteHandlers<TResult>(
     },
 
     async refresh(this: never, req: Request, res: Response): Promise<void> {
-      try {
-        const { result, providerInfo } = await authenticator.authenticate(
-          { req },
-          authenticatorCtx,
-        );
+      const { result, providerInfo } = await authenticator.authenticate(
+        { req },
+        authenticatorCtx,
+      );
 
-        const { profile } = await profileTransform(result, resolverContext);
+      const { profile } = await profileTransform(result, resolverContext);
 
-        const identity = await signInResolver(
-          { profile, result },
-          resolverContext,
-        );
+      const identity = await signInResolver(
+        { profile, result },
+        resolverContext,
+      );
 
-        await emitAuditEvent(auditor, {
-          eventId: 'auth-login',
-          request: req,
-          severityLevel: 'low',
-          meta: {
-            providerId,
-            actionType: 'token-refresh',
-            userEntityRef: identity.identity?.userEntityRef,
-            email: profile.email,
-          },
-        });
+      const response: ClientAuthResponse<unknown> = {
+        profile,
+        providerInfo,
+        backstageIdentity: prepareBackstageIdentityResponse(identity),
+      };
 
-        const response: ClientAuthResponse<unknown> = {
-          profile,
-          providerInfo,
-          backstageIdentity: prepareBackstageIdentityResponse(identity),
-        };
-
-        res.status(200).json(response);
-      } catch (error) {
-        await emitAuditEvent(auditor, {
-          eventId: 'auth-login',
-          request: req,
-          severityLevel: 'medium',
-          meta: { providerId, actionType: 'token-refresh' },
-          error: isError(error) ? error : new Error('Proxy auth failed'),
-        });
-        throw error;
-      }
+      res.status(200).json(response);
     },
   };
 }
