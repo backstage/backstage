@@ -81,7 +81,7 @@ This guide also assumes a basic understanding of working on a Linux based operat
   - Using `nvm` (recommended)
     - [Installing nvm](https://github.com/nvm-sh/nvm#install--update-script)
     - [Install and change Node version with nvm](https://nodejs.org/en/download/package-manager/#nvm)
-    - Node 20 is a good starting point, this can be installed using `nvm install lts/iron`
+    - Node 24 is a good starting point, this can be installed using `nvm install lts/krypton`
   - [Binary Download](https://nodejs.org/en/download/)
   - [Package manager](https://nodejs.org/en/download/package-manager/)
   - [Using NodeSource packages](https://github.com/nodesource/distributions/blob/master/README.md)
