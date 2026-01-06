@@ -43,6 +43,12 @@ By default the bump command will upgrade `@backstage` packages to the latest `ma
 yarn backstage-cli versions:bump --release next
 ```
 
+You can also use the `--release` option to target a specific version. This is useful if you need to pin your app to a specific release or if you need to downgrade to a previous version (e.g. moving from `1.45.0` back to `1.43.0`).
+
+```bash
+yarn backstage-cli versions:bump --release 1.43.0
+```
+
 If you are using other plugins you can pass in the `--pattern` option to update
 more than just the `@backstage/*` dependencies.
 
