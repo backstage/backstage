@@ -26,7 +26,6 @@ import {
 import { ProxyAuthenticator } from './types';
 import { prepareBackstageIdentityResponse } from '../identity';
 import { NotImplementedError } from '@backstage/errors';
-import { AuditorService } from '@backstage/backend-plugin-api';
 
 /** @public */
 export interface ProxyAuthRouteHandlersOptions<TResult> {
@@ -35,8 +34,6 @@ export interface ProxyAuthRouteHandlersOptions<TResult> {
   resolverContext: AuthResolverContext;
   signInResolver: SignInResolver<TResult>;
   profileTransform?: ProfileTransform<TResult>;
-  providerId?: string;
-  auditor?: AuditorService;
 }
 
 /** @public */

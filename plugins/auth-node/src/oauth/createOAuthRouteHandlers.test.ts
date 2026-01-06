@@ -34,7 +34,7 @@ import { mockServices } from '@backstage/backend-test-utils';
 import { emitAuditEvent } from '../audit';
 
 jest.mock('../audit', () => ({
-  emitAuditEvent: jest.fn().mockResolvedValue(undefined),
+  emitAuditEvent: jest.fn(),
 }));
 
 const mockEmitAuditEvent = emitAuditEvent as jest.MockedFunction<

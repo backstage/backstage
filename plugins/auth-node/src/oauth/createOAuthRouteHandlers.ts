@@ -60,7 +60,6 @@ export interface OAuthRouteHandlersOptions<TProfile> {
   profileTransform?: ProfileTransform<OAuthAuthenticatorResult<TProfile>>;
   cookieConfigurer?: CookieConfigurer;
   signInResolver?: SignInResolver<OAuthAuthenticatorResult<TProfile>>;
-  /** Optional auditor service for emitting authentication audit events */
   auditor?: AuditorService;
 }
 
@@ -220,7 +219,7 @@ export function createOAuthRouteHandlers<TProfile>(
           request: req,
           severityLevel: 'low',
           meta: { providerId, email: profile?.email },
-        }).catch(() => {});
+        });
 
         const grantedScopes = await scopeManager.handleCallback(req, {
           result,
@@ -274,7 +273,7 @@ export function createOAuthRouteHandlers<TProfile>(
           severityLevel: 'low',
           meta: { providerId, email: profile?.email },
           error: isError(error) ? error : new Error('Unknown auth error'),
-        }).catch(() => {});
+        });
 
         const { name, message } = isError(error)
           ? error
@@ -322,7 +321,7 @@ export function createOAuthRouteHandlers<TProfile>(
         request: req,
         severityLevel: 'low',
         meta: { providerId },
-      }).catch(() => {});
+      });
 
       res.status(200).end();
     },

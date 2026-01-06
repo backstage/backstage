@@ -29,7 +29,7 @@ export type AuditEventMeta = {
 };
 
 /** @internal */
-export async function emitAuditEvent(
+export function emitAuditEvent(
   auditor: AuditorService | undefined,
   options: {
     eventId: string;
@@ -38,23 +38,26 @@ export async function emitAuditEvent(
     meta: AuditEventMeta;
     error?: Error;
   },
-): Promise<void> {
+): void {
   if (!auditor) return;
 
   const { eventId, request, severityLevel, meta, error } = options;
-  const auditEvent = await auditor.createEvent({
-    eventId,
-    request,
-    severityLevel,
-    meta: {
-      ...meta,
-      outcome: error ? 'failure' : 'success',
-    },
-  });
 
-  if (error) {
-    await auditEvent.fail({ error });
-  } else {
-    await auditEvent.success();
-  }
+  (async () => {
+    const auditEvent = await auditor.createEvent({
+      eventId,
+      request,
+      severityLevel,
+      meta: {
+        ...meta,
+        outcome: error ? 'failure' : 'success',
+      },
+    });
+
+    if (error) {
+      await auditEvent.fail({ error });
+    } else {
+      await auditEvent.success();
+    }
+  })().catch(() => {});
 }
