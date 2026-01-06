@@ -404,6 +404,7 @@ export interface OAuthRouteHandlersOptions<TProfile> {
   additionalScopes?: string[];
   // (undocumented)
   appUrl: string;
+  // (undocumented)
   auditor?: AuditorService;
   // (undocumented)
   authenticator: OAuthAuthenticator<any, TProfile>;
@@ -619,15 +620,11 @@ export interface ProxyAuthenticator<
 // @public (undocumented)
 export interface ProxyAuthRouteHandlersOptions<TResult> {
   // (undocumented)
-  auditor?: AuditorService;
-  // (undocumented)
   authenticator: ProxyAuthenticator<any, TResult, unknown>;
   // (undocumented)
   config: Config;
   // (undocumented)
   profileTransform?: ProfileTransform<TResult>;
-  // (undocumented)
-  providerId?: string;
   // (undocumented)
   resolverContext: AuthResolverContext;
   // (undocumented)
