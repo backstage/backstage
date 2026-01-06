@@ -199,7 +199,7 @@ jobs:
 
   deploy-microsite-and-storybook:
     permissions:
-      contents: write # for JamesIves/github-pages-deploy-action to push changes in repo
+      contents: read
 
     runs-on: ubuntu-latest
 
@@ -308,8 +308,18 @@ jobs:
       - name: Check the build output
         run: ls microsite/build && ls microsite/build/storybook && ls microsite/build/api/stable && ls microsite/build/api/next
 
-      - name: Deploy both microsite and storybook to gh-pages
-        uses: JamesIves/github-pages-deploy-action@9d877eea73427180ae43cf98e8914934fe157a1a # v4.7.6
+      - name: Deploy to Netlify
+        uses: nwtgck/actions-netlify@4cbaf4c08f1a7bfa537d6113472ef4424e4eb654 # v3.0.0
         with:
-          branch: gh-pages
-          folder: microsite/build
+          publish-dir: './microsite/build'
+          production-branch: master
+          production-deploy: ${{ github.ref == 'refs/heads/master' }}
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          deploy-message: 'Deploy from GitHub Actions - ${{ github.event.head_commit.message }}'
+          enable-pull-request-comment: true
+          enable-commit-comment: false
+          overwrites-pull-request-comment: true
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        timeout-minutes: 10
