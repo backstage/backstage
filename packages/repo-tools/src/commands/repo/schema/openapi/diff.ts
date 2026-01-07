@@ -100,6 +100,8 @@ export async function command(opts: OptionValues) {
       ),
     );
 
+    console.log(`<!-- api-breaking-changes-comment -->`);
+
     const failed = outputs.failed.length > 0;
     if (failed) {
       throw new Error('Some checks failed');
