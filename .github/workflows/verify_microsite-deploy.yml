@@ -1,0 +1,163 @@
+name: Microsite Preview Deploy
+
+on:
+  workflow_run:
+    workflows:
+      - 'Microsite'
+    types:
+      - completed
+
+jobs:
+  setup:
+    name: Setup deployment context
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    permissions:
+      actions: read # Access artifacts
+    outputs:
+      git-ref: ${{ steps.event.outputs.GIT_REF }}
+      pr-number: ${{ steps.event.outputs.PR_NUMBER }}
+      head-repo: ${{ steps.event.outputs.HEAD_REPO }}
+
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@df199fb7be9f65074067a9eb93f12bb4c5547cf2 # v2.13.3
+        with:
+          disable-sudo: true
+          egress-policy: block
+          allowed-endpoints: >
+            api.github.com:443
+
+      - name: Download build artifacts
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
+        with:
+          script: |
+            let allArtifacts = await github.rest.actions.listWorkflowRunArtifacts({
+               owner: context.repo.owner,
+               repo: context.repo.repo,
+               run_id: context.payload.workflow_run.id,
+            });
+            let matchArtifact = allArtifacts.data.artifacts.filter((artifact) => {
+              return artifact.name == "microsite-preview-build"
+            })[0];
+            if (matchArtifact === undefined) {
+              throw TypeError('Build Artifact not found!');
+            }
+            let download = await github.rest.actions.downloadArtifact({
+               owner: context.repo.owner,
+               repo: context.repo.repo,
+               artifact_id: matchArtifact.id,
+               archive_format: 'zip',
+            });
+            let fs = require('fs');
+            fs.writeFileSync(`${process.env.GITHUB_WORKSPACE}/microsite-preview-build.zip`, Buffer.from(download.data));
+
+      - name: Extract event context
+        run: |
+          unzip microsite-preview-build.zip event.json
+          ls -la
+
+      - name: Read Event into outputs
+        id: event
+        run: |
+          echo "GIT_REF=$(jq --raw-output '.pull_request.head.sha | tostring' < event.json)" >> $GITHUB_OUTPUT
+          echo "HEAD_REPO=$(jq --raw-output '.pull_request.head.repo.full_name | tostring' < event.json)" >> $GITHUB_OUTPUT
+          echo "PR_NUMBER=$(jq '.pull_request.number' < event.json)" >> $GITHUB_OUTPUT
+
+      - name: Cache build artifacts
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4.3.0
+        with:
+          path: microsite-preview-build.zip
+          key: microsite-preview-build-${{ github.event.workflow_run.id }}
+
+      - name: DEBUG - Print Job Outputs
+        if: ${{ runner.debug }}
+        run: |
+          echo "Git Ref: ${{ steps.event.outputs.GIT_REF }}"
+          echo "Head Repo: ${{ steps.event.outputs.HEAD_REPO }}"
+          echo "PR Number: ${{ steps.event.outputs.PR_NUMBER }}"
+
+  deploy-preview:
+    name: Deploy Preview to Netlify
+    needs: setup
+    runs-on: ubuntu-latest
+    # Security: Only deploy from the main repository, never from forks
+    if: |
+      github.event.workflow_run.conclusion == 'success' &&
+      github.event.workflow_run.event == 'pull_request' &&
+      github.event.workflow_run.head_repository.full_name == github.repository
+    permissions:
+      contents: read
+      pull-requests: write # For PR comments
+
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@df199fb7be9f65074067a9eb93f12bb4c5547cf2 # v2.13.3
+        with:
+          egress-policy: audit
+
+      - name: Checkout (for Netlify action)
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+
+      - name: Restore cached build artifacts
+        uses: actions/cache@0057852bfaa89a56745cba8c7296529d2fc39830 # v4
+        with:
+          path: microsite-preview-build.zip
+          key: microsite-preview-build-${{ github.event.workflow_run.id }}
+
+      - name: Extract build artifacts
+        run: |
+          unzip -q microsite-preview-build.zip
+          ls -la
+          ls -la microsite/build/
+
+      - name: Deploy to Netlify
+        uses: nwtgck/actions-netlify@4cbaf4c08f1a7bfa537d6113472ef4424e4eb654 # v3.0.0
+        id: netlify-deploy
+        with:
+          publish-dir: './microsite/build'
+          production-branch: master
+          production-deploy: false
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          deploy-message: |
+            Preview for PR #${{ needs.setup.outputs.pr-number }}
+            Commit: ${{ needs.setup.outputs.git-ref }}
+          enable-pull-request-comment: false # We'll handle this separately
+          enable-commit-comment: false
+          enable-commit-status: true
+          overwrites-pull-request-comment: false
+          alias: pr-${{ needs.setup.outputs.pr-number }}
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        timeout-minutes: 10
+
+      - name: Find existing preview comment
+        uses: peter-evans/find-comment@3eae4d37986fb5a8592848f6a574fdf654e61f9e # v3
+        id: find-comment
+        with:
+          issue-number: ${{ needs.setup.outputs.pr-number }}
+          comment-author: 'github-actions[bot]'
+          body-includes: 'Netlify Preview Deployment'
+
+      - name: Comment on PR with preview URL
+        uses: peter-evans/create-or-update-comment@71345be0265236311c031f5c7866368bd1eff043 # v4
+        with:
+          comment-id: ${{ steps.find-comment.outputs.comment-id }}
+          issue-number: ${{ needs.setup.outputs.pr-number }}
+          edit-mode: replace
+          body: |
+            ### Netlify Preview Deployment
+
+            ✅ Preview deployed successfully!
+
+            **Preview URL:** ${{ steps.netlify-deploy.outputs.deploy-url }}
+
+            Built from commit `${{ needs.setup.outputs.git-ref }}`
+
+            ---
+            <sub>Deploys by [Netlify](https://www.netlify.com)</sub>
+
+      - name: Output deployment URL
+        run: |
+          echo "Deployed preview to: ${{ steps.netlify-deploy.outputs.deploy-url }}"
