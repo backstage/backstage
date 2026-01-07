@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 The Backstage Authors
+ * Copyright 2026 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+export * from '../models/AllOfCriteria.model';
+export * from '../models/AnyOfCriteria.model';
 export * from '../models/BasicPermission.model';
 export * from '../models/BasicPermissionRequest.model';
 export * from '../models/BatchEvaluatePermissionResponse.model';
@@ -26,12 +28,10 @@ export * from '../models/EvaluatePermissionResponse.model';
 export * from '../models/EvaluatePermissionResponseBatch.model';
 export * from '../models/GetHealth200Response.model';
 export * from '../models/ModelError.model';
+export * from '../models/NotCriteria.model';
 export * from '../models/PermissionAttributes.model';
 export * from '../models/PermissionCondition.model';
 export * from '../models/PermissionCriteria.model';
-export * from '../models/PermissionCriteriaOneOf.model';
-export * from '../models/PermissionCriteriaOneOf1.model';
-export * from '../models/PermissionCriteriaOneOf2.model';
 export * from '../models/ResourcePermission.model';
 export * from '../models/ResourcePermissionRequest.model';
 export * from '../models/ResourcePermissionRequestResourceRef.model';

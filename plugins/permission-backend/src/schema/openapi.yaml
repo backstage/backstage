@@ -130,6 +130,17 @@ components:
         - permission
       additionalProperties: false
 
+    SingleResourceRef:
+      type: string
+      description: Reference to a single resource
+
+    MultipleResourceRef:
+      type: array
+      items:
+        type: string
+      minItems: 1
+      description: Reference to multiple resources
+
     ResourcePermissionRequest:
       type: object
       properties:
@@ -141,11 +152,8 @@ components:
         resourceRef:
           description: Reference to the resource(s) being accessed
           oneOf:
-            - type: string
-            - type: array
-              items:
-                type: string
-              minItems: 1
+            - $ref: '#/components/schemas/SingleResourceRef'
+            - $ref: '#/components/schemas/MultipleResourceRef'
       required:
         - id
         - permission
@@ -186,35 +194,47 @@ components:
         - resourceType
       additionalProperties: false
 
+    AnyOfCriteria:
+      type: object
+      properties:
+        anyOf:
+          type: array
+          items:
+            $ref: '#/components/schemas/PermissionCriteria'
+          minItems: 1
+          description: Array of criteria where at least one must be satisfied
+      required:
+        - anyOf
+      additionalProperties: false
+
+    AllOfCriteria:
+      type: object
+      properties:
+        allOf:
+          type: array
+          items:
+            $ref: '#/components/schemas/PermissionCriteria'
+          minItems: 1
+          description: Array of criteria where all must be satisfied
+      required:
+        - allOf
+      additionalProperties: false
+
+    NotCriteria:
+      type: object
+      properties:
+        not:
+          $ref: '#/components/schemas/PermissionCriteria'
+          description: Criteria to be negated
+      required:
+        - not
+      additionalProperties: false
+
     PermissionCriteria:
       oneOf:
-        - type: object
-          properties:
-            anyOf:
-              type: array
-              items:
-                $ref: '#/components/schemas/PermissionCriteria'
-              minItems: 1
-          required:
-            - anyOf
-          additionalProperties: false
-        - type: object
-          properties:
-            allOf:
-              type: array
-              items:
-                $ref: '#/components/schemas/PermissionCriteria'
-              minItems: 1
-          required:
-            - allOf
-          additionalProperties: false
-        - type: object
-          properties:
-            not:
-              $ref: '#/components/schemas/PermissionCriteria'
-          required:
-            - not
-          additionalProperties: false
+        - $ref: '#/components/schemas/AnyOfCriteria'
+        - $ref: '#/components/schemas/AllOfCriteria'
+        - $ref: '#/components/schemas/NotCriteria'
         - $ref: '#/components/schemas/PermissionCondition'
 
     DefinitiveEvaluatePermissionResponse:

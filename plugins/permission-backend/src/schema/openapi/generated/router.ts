@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 The Backstage Authors
+ * Copyright 2026 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -191,6 +191,18 @@ export const spec = {
         required: ['id', 'permission'],
         additionalProperties: false,
       },
+      SingleResourceRef: {
+        type: 'string',
+        description: 'Reference to a single resource',
+      },
+      MultipleResourceRef: {
+        type: 'array',
+        items: {
+          type: 'string',
+        },
+        minItems: 1,
+        description: 'Reference to multiple resources',
+      },
       ResourcePermissionRequest: {
         type: 'object',
         properties: {
@@ -205,14 +217,10 @@ export const spec = {
             description: 'Reference to the resource(s) being accessed',
             oneOf: [
               {
-                type: 'string',
+                $ref: '#/components/schemas/SingleResourceRef',
               },
               {
-                type: 'array',
-                items: {
-                  type: 'string',
-                },
-                minItems: 1,
+                $ref: '#/components/schemas/MultipleResourceRef',
               },
             ],
           },
@@ -264,45 +272,58 @@ export const spec = {
         required: ['rule', 'resourceType'],
         additionalProperties: false,
       },
+      AnyOfCriteria: {
+        type: 'object',
+        properties: {
+          anyOf: {
+            type: 'array',
+            items: {
+              $ref: '#/components/schemas/PermissionCriteria',
+            },
+            minItems: 1,
+            description:
+              'Array of criteria where at least one must be satisfied',
+          },
+        },
+        required: ['anyOf'],
+        additionalProperties: false,
+      },
+      AllOfCriteria: {
+        type: 'object',
+        properties: {
+          allOf: {
+            type: 'array',
+            items: {
+              $ref: '#/components/schemas/PermissionCriteria',
+            },
+            minItems: 1,
+            description: 'Array of criteria where all must be satisfied',
+          },
+        },
+        required: ['allOf'],
+        additionalProperties: false,
+      },
+      NotCriteria: {
+        type: 'object',
+        properties: {
+          not: {
+            $ref: '#/components/schemas/PermissionCriteria',
+            description: 'Criteria to be negated',
+          },
+        },
+        required: ['not'],
+        additionalProperties: false,
+      },
       PermissionCriteria: {
         oneOf: [
           {
-            type: 'object',
-            properties: {
-              anyOf: {
-                type: 'array',
-                items: {
-                  $ref: '#/components/schemas/PermissionCriteria',
-                },
-                minItems: 1,
-              },
-            },
-            required: ['anyOf'],
-            additionalProperties: false,
+            $ref: '#/components/schemas/AnyOfCriteria',
           },
           {
-            type: 'object',
-            properties: {
-              allOf: {
-                type: 'array',
-                items: {
-                  $ref: '#/components/schemas/PermissionCriteria',
-                },
-                minItems: 1,
-              },
-            },
-            required: ['allOf'],
-            additionalProperties: false,
+            $ref: '#/components/schemas/AllOfCriteria',
           },
           {
-            type: 'object',
-            properties: {
-              not: {
-                $ref: '#/components/schemas/PermissionCriteria',
-              },
-            },
-            required: ['not'],
-            additionalProperties: false,
+            $ref: '#/components/schemas/NotCriteria',
           },
           {
             $ref: '#/components/schemas/PermissionCondition',
