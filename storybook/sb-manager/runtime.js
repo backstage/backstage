@@ -30,18 +30,18 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
   mod
 ));
 
-// ../node_modules/prop-types/lib/ReactPropTypesSecret.js
+// ../../node_modules/prop-types/lib/ReactPropTypesSecret.js
 var require_ReactPropTypesSecret = __commonJS({
-  "../node_modules/prop-types/lib/ReactPropTypesSecret.js"(exports, module) {
+  "../../node_modules/prop-types/lib/ReactPropTypesSecret.js"(exports, module) {
     "use strict";
     var ReactPropTypesSecret = "SECRET_DO_NOT_PASS_THIS_OR_YOU_WILL_BE_FIRED";
     module.exports = ReactPropTypesSecret;
   }
 });
 
-// ../node_modules/prop-types/factoryWithThrowingShims.js
+// ../../node_modules/prop-types/factoryWithThrowingShims.js
 var require_factoryWithThrowingShims = __commonJS({
-  "../node_modules/prop-types/factoryWithThrowingShims.js"(exports, module) {
+  "../../node_modules/prop-types/factoryWithThrowingShims.js"(exports, module) {
     "use strict";
     var ReactPropTypesSecret = require_ReactPropTypesSecret();
     function emptyFunction() {
@@ -90,17 +90,17 @@ var require_factoryWithThrowingShims = __commonJS({
   }
 });
 
-// ../node_modules/prop-types/index.js
+// ../../node_modules/prop-types/index.js
 var require_prop_types = __commonJS({
-  "../node_modules/prop-types/index.js"(exports, module) {
+  "../../node_modules/prop-types/index.js"(exports, module) {
     module.exports = require_factoryWithThrowingShims()();
     var ReactIs, throwOnDirectAccess;
   }
 });
 
-// ../node_modules/react-fast-compare/index.js
+// ../../node_modules/react-fast-compare/index.js
 var require_react_fast_compare = __commonJS({
-  "../node_modules/react-fast-compare/index.js"(exports, module) {
+  "../../node_modules/react-fast-compare/index.js"(exports, module) {
     var hasElementType = typeof Element < "u", hasMap = typeof Map == "function", hasSet = typeof Set == "function", hasArrayBuffer = typeof ArrayBuffer == "function" && !!ArrayBuffer.isView;
     function equal4(a2, b2) {
       if (a2 === b2) return !0;
@@ -160,9 +160,9 @@ var require_react_fast_compare = __commonJS({
   }
 });
 
-// ../node_modules/invariant/browser.js
+// ../../node_modules/invariant/browser.js
 var require_browser = __commonJS({
-  "../node_modules/invariant/browser.js"(exports, module) {
+  "../../node_modules/invariant/browser.js"(exports, module) {
     "use strict";
     var invariant = function(condition, format, a2, b2, c2, d2, e2, f2) {
       if (!condition) {
@@ -186,9 +186,9 @@ var require_browser = __commonJS({
   }
 });
 
-// ../node_modules/shallowequal/index.js
+// ../../node_modules/shallowequal/index.js
 var require_shallowequal = __commonJS({
-  "../node_modules/shallowequal/index.js"(exports, module) {
+  "../../node_modules/shallowequal/index.js"(exports, module) {
     module.exports = function(objA, objB, compare, compareContext) {
       var ret = compare ? compare.call(compareContext, objA, objB) : void 0;
       if (ret !== void 0)
@@ -213,9 +213,9 @@ var require_shallowequal = __commonJS({
   }
 });
 
-// ../node_modules/memoizerific/memoizerific.js
+// ../../node_modules/memoizerific/memoizerific.js
 var require_memoizerific = __commonJS({
-  "../node_modules/memoizerific/memoizerific.js"(exports, module) {
+  "../../node_modules/memoizerific/memoizerific.js"(exports, module) {
     (function(f2) {
       if (typeof exports == "object" && typeof module < "u")
         module.exports = f2();
@@ -341,9 +341,9 @@ var require_memoizerific = __commonJS({
   }
 });
 
-// ../node_modules/picoquery/lib/string-util.js
+// ../../node_modules/picoquery/lib/string-util.js
 var require_string_util = __commonJS({
-  "../node_modules/picoquery/lib/string-util.js"(exports) {
+  "../../node_modules/picoquery/lib/string-util.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: !0 });
     exports.encodeString = encodeString;
@@ -507,9 +507,9 @@ var require_string_util = __commonJS({
   }
 });
 
-// ../node_modules/picoquery/lib/shared.js
+// ../../node_modules/picoquery/lib/shared.js
 var require_shared = __commonJS({
-  "../node_modules/picoquery/lib/shared.js"(exports) {
+  "../../node_modules/picoquery/lib/shared.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: !0 });
     exports.defaultOptions = exports.defaultShouldSerializeObject = exports.defaultValueSerializer = void 0;
@@ -545,9 +545,9 @@ var require_shared = __commonJS({
   }
 });
 
-// ../node_modules/picoquery/lib/object-util.js
+// ../../node_modules/picoquery/lib/object-util.js
 var require_object_util = __commonJS({
-  "../node_modules/picoquery/lib/object-util.js"(exports) {
+  "../../node_modules/picoquery/lib/object-util.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: !0 });
     exports.getDeepObject = getDeepObject;
@@ -580,9 +580,9 @@ var require_object_util = __commonJS({
   }
 });
 
-// ../node_modules/picoquery/lib/decode-uri-component.js
+// ../../node_modules/picoquery/lib/decode-uri-component.js
 var require_decode_uri_component = __commonJS({
-  "../node_modules/picoquery/lib/decode-uri-component.js"(exports) {
+  "../../node_modules/picoquery/lib/decode-uri-component.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: !0 });
     exports.decodeURIComponent = decodeURIComponent;
@@ -1019,9 +1019,9 @@ var require_decode_uri_component = __commonJS({
   }
 });
 
-// ../node_modules/picoquery/lib/parse.js
+// ../../node_modules/picoquery/lib/parse.js
 var require_parse = __commonJS({
-  "../node_modules/picoquery/lib/parse.js"(exports) {
+  "../../node_modules/picoquery/lib/parse.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: !0 });
     exports.numberValueDeserializer = exports.numberKeyDeserializer = void 0;
@@ -1068,9 +1068,9 @@ var require_parse = __commonJS({
   }
 });
 
-// ../node_modules/picoquery/lib/stringify.js
+// ../../node_modules/picoquery/lib/stringify.js
 var require_stringify = __commonJS({
-  "../node_modules/picoquery/lib/stringify.js"(exports) {
+  "../../node_modules/picoquery/lib/stringify.js"(exports) {
     "use strict";
     Object.defineProperty(exports, "__esModule", { value: !0 });
     exports.stringify = stringify2;
@@ -1084,9 +1084,9 @@ var require_stringify = __commonJS({
   }
 });
 
-// ../node_modules/picoquery/lib/main.js
+// ../../node_modules/picoquery/lib/main.js
 var require_main = __commonJS({
-  "../node_modules/picoquery/lib/main.js"(exports) {
+  "../../node_modules/picoquery/lib/main.js"(exports) {
     "use strict";
     var __createBinding = exports && exports.__createBinding || (Object.create ? (function(o3, m2, k2, k22) {
       k22 === void 0 && (k22 = k2);
@@ -1113,9 +1113,9 @@ var require_main = __commonJS({
   }
 });
 
-// ../node_modules/toggle-selection/index.js
+// ../../node_modules/toggle-selection/index.js
 var require_toggle_selection = __commonJS({
-  "../node_modules/toggle-selection/index.js"(exports, module) {
+  "../../node_modules/toggle-selection/index.js"(exports, module) {
     module.exports = function() {
       var selection = document.getSelection();
       if (!selection.rangeCount)
@@ -1142,9 +1142,9 @@ var require_toggle_selection = __commonJS({
   }
 });
 
-// ../node_modules/copy-to-clipboard/index.js
+// ../../node_modules/copy-to-clipboard/index.js
 var require_copy_to_clipboard = __commonJS({
-  "../node_modules/copy-to-clipboard/index.js"(exports, module) {
+  "../../node_modules/copy-to-clipboard/index.js"(exports, module) {
     "use strict";
     var deselectCurrent = require_toggle_selection(), clipboardToIE11Formatting = {
       "text/plain": "Text",
@@ -1189,9 +1189,9 @@ var require_copy_to_clipboard = __commonJS({
   }
 });
 
-// ../node_modules/scroll/index.js
+// ../../node_modules/scroll/index.js
 var require_scroll = __commonJS({
-  "../node_modules/scroll/index.js"(exports, module) {
+  "../../node_modules/scroll/index.js"(exports, module) {
     var E_NOSCROLL = new Error("Element already at target scroll position"), E_CANCELLED = new Error("Scroll cancelled"), min = Math.min, ms = Date.now;
     module.exports = {
       left: make("scrollLeft"),
@@ -1222,9 +1222,9 @@ var require_scroll = __commonJS({
   }
 });
 
-// ../node_modules/scrollparent/scrollparent.js
+// ../../node_modules/scrollparent/scrollparent.js
 var require_scrollparent = __commonJS({
-  "../node_modules/scrollparent/scrollparent.js"(exports, module) {
+  "../../node_modules/scrollparent/scrollparent.js"(exports, module) {
     (function(root2, factory) {
       typeof define == "function" && define.amd ? define([], factory) : typeof module == "object" && module.exports ? module.exports = factory() : root2.Scrollparent = factory();
     })(exports, function() {
@@ -1247,9 +1247,9 @@ var require_scrollparent = __commonJS({
   }
 });
 
-// ../node_modules/react-innertext/index.js
+// ../../node_modules/react-innertext/index.js
 var require_react_innertext = __commonJS({
-  "../node_modules/react-innertext/index.js"(exports, module) {
+  "../../node_modules/react-innertext/index.js"(exports, module) {
     "use strict";
     var hasProps = function(jsx2) {
       return Object.prototype.hasOwnProperty.call(jsx2, "props");
@@ -1263,9 +1263,9 @@ var require_react_innertext = __commonJS({
   }
 });
 
-// ../node_modules/deepmerge/dist/cjs.js
+// ../../node_modules/deepmerge/dist/cjs.js
 var require_cjs = __commonJS({
-  "../node_modules/deepmerge/dist/cjs.js"(exports, module) {
+  "../../node_modules/deepmerge/dist/cjs.js"(exports, module) {
     "use strict";
     var isMergeableObject = function(value) {
       return isNonNullObject(value) && !isSpecial(value);
@@ -1341,9 +1341,9 @@ var require_cjs = __commonJS({
   }
 });
 
-// ../node_modules/downshift/node_modules/react-is/cjs/react-is.production.min.js
+// ../../node_modules/downshift/node_modules/react-is/cjs/react-is.production.min.js
 var require_react_is_production_min = __commonJS({
-  "../node_modules/downshift/node_modules/react-is/cjs/react-is.production.min.js"(exports) {
+  "../../node_modules/downshift/node_modules/react-is/cjs/react-is.production.min.js"(exports) {
     "use strict";
     var b2 = Symbol.for("react.element"), c2 = Symbol.for("react.portal"), d2 = Symbol.for("react.fragment"), e2 = Symbol.for("react.strict_mode"), f2 = Symbol.for("react.profiler"), g2 = Symbol.for("react.provider"), h2 = Symbol.for("react.context"), k2 = Symbol.for("react.server_context"), l3 = Symbol.for("react.forward_ref"), m2 = Symbol.for("react.suspense"), n3 = Symbol.for("react.suspense_list"), p2 = Symbol.for("react.memo"), q2 = Symbol.for("react.lazy"), t2 = Symbol.for("react.offscreen"), u2;
     u2 = Symbol.for("react.module.reference");
@@ -1438,17 +1438,17 @@ var require_react_is_production_min = __commonJS({
   }
 });
 
-// ../node_modules/downshift/node_modules/react-is/index.js
+// ../../node_modules/downshift/node_modules/react-is/index.js
 var require_react_is = __commonJS({
-  "../node_modules/downshift/node_modules/react-is/index.js"(exports, module) {
+  "../../node_modules/downshift/node_modules/react-is/index.js"(exports, module) {
     "use strict";
     module.exports = require_react_is_production_min();
   }
 });
 
-// ../node_modules/fuse.js/dist/fuse.js
+// ../../node_modules/fuse.js/dist/fuse.js
 var require_fuse = __commonJS({
-  "../node_modules/fuse.js/dist/fuse.js"(exports, module) {
+  "../../node_modules/fuse.js/dist/fuse.js"(exports, module) {
     (function(e2, t2) {
       typeof exports == "object" && typeof module == "object" ? module.exports = t2() : typeof define == "function" && define.amd ? define("Fuse", [], t2) : typeof exports == "object" ? exports.Fuse = t2() : e2.Fuse = t2();
     })(exports, function() {
@@ -1761,9 +1761,9 @@ Output:
   }
 });
 
-// ../node_modules/store2/dist/store2.js
+// ../../node_modules/store2/dist/store2.js
 var require_store2 = __commonJS({
-  "../node_modules/store2/dist/store2.js"(exports, module) {
+  "../../node_modules/store2/dist/store2.js"(exports, module) {
     (function(window2, define2) {
       var _2 = {
         version: "2.14.4",
@@ -1990,7 +1990,7 @@ var channels_default = __STORYBOOK_CHANNELS__, { Channel, HEARTBEAT_INTERVAL, HE
 // global-externals:storybook/internal/core-events
 var core_events_default = __STORYBOOK_CORE_EVENTS__, { ARGTYPES_INFO_REQUEST, ARGTYPES_INFO_RESPONSE, CHANNEL_CREATED, CHANNEL_WS_DISCONNECT, CONFIG_ERROR, CREATE_NEW_STORYFILE_REQUEST, CREATE_NEW_STORYFILE_RESPONSE, CURRENT_STORY_WAS_SET, DOCS_PREPARED, DOCS_RENDERED, FILE_COMPONENT_SEARCH_REQUEST, FILE_COMPONENT_SEARCH_RESPONSE, FORCE_REMOUNT, FORCE_RE_RENDER, GLOBALS_UPDATED, MANAGER_INERT_ATTRIBUTE_CHANGED, NAVIGATE_URL, OPEN_IN_EDITOR_REQUEST, OPEN_IN_EDITOR_RESPONSE, PLAY_FUNCTION_THREW_EXCEPTION, PRELOAD_ENTRIES, PREVIEW_BUILDER_PROGRESS, PREVIEW_INITIALIZED, PREVIEW_KEYDOWN, REGISTER_SUBSCRIPTION, REQUEST_WHATS_NEW_DATA, RESET_STORY_ARGS, RESULT_WHATS_NEW_DATA, SAVE_STORY_REQUEST, SAVE_STORY_RESPONSE, SELECT_STORY, SET_CONFIG, SET_CURRENT_STORY, SET_FILTER, SET_GLOBALS, SET_INDEX, SET_STORIES, SET_WHATS_NEW_CACHE, SHARED_STATE_CHANGED, SHARED_STATE_SET, STORIES_COLLAPSE_ALL, STORIES_EXPAND_ALL, STORY_ARGS_UPDATED, STORY_CHANGED, STORY_ERRORED, STORY_FINISHED, STORY_HOT_UPDATED, STORY_INDEX_INVALIDATED, STORY_MISSING, STORY_PREPARED, STORY_RENDERED, STORY_RENDER_PHASE_CHANGED, STORY_SPECIFIED, STORY_THREW_EXCEPTION, STORY_UNCHANGED, TELEMETRY_ERROR, TOGGLE_WHATS_NEW_NOTIFICATIONS, UNHANDLED_ERRORS_WHILE_PLAYING, UPDATE_GLOBALS, UPDATE_QUERY_PARAMS, UPDATE_STORY_ARGS } = __STORYBOOK_CORE_EVENTS__;
 
-// ../node_modules/@storybook/global/dist/index.mjs
+// ../../node_modules/@storybook/global/dist/index.mjs
 var scope = (() => {
   let win;
   return typeof window < "u" ? win = window : typeof globalThis < "u" ? win = globalThis : typeof global < "u" ? win = global : typeof self < "u" ? win = self : win = {}, win;
@@ -2276,7 +2276,7 @@ var defaultItemValues = {
     ...argType.toolbar,
     items: argType.toolbar.items.map((_item) => {
       let item = typeof _item == "string" ? { value: _item, title: _item } : _item;
-      return item.type === "reset" && argType.toolbar.icon && (item.icon = argType.toolbar.icon, item.hideIcon = !0), { ...defaultItemValues, ...item };
+      return item.type === "reset" && argType.toolbar.icon && (item.icon = argType.toolbar.icon, item.hideIcon = !0, item.value = void 0), { ...defaultItemValues, ...item };
     })
   }
 });
@@ -2606,7 +2606,7 @@ var ToolbarMenuItemContainer = styled("div")({
   }) => {
     let [globals, updateGlobals, storyGlobals] = useGlobals(), currentValue = globals[id], isOverridden = id in storyGlobals, icon = _icon, title2 = _title;
     preventDynamicIcon || (icon = getSelectedIcon({ currentValue, items }) || icon), dynamicTitle && (title2 = getSelectedTitle({ currentValue, items }) || title2), !title2 && !icon && console.warn(`Toolbar '${name}' has no title or icon`);
-    let resetLabel = items.find((item) => item.type === "reset")?.title, options2 = items.filter((item) => item.type === "item").map((item) => {
+    let resetItem = items.find((item) => item.type === "reset"), resetLabel = resetItem?.title, options2 = items.filter((item) => item.type === "item").map((item) => {
       let itemTitle = item.title ?? item.value ?? "Untitled", iconComponent = !item.hideIcon && item.icon ? react_default.createElement(Icons, { icon: item.icon, __suppressDeprecationWarning: !0 }) : void 0;
       return item.right ? {
         title: itemTitle,
@@ -2627,7 +2627,7 @@ var ToolbarMenuItemContainer = styled("div")({
         ariaLabel,
         tooltip: ariaLabel,
         resetLabel,
-        onReset: () => updateGlobals({ [id]: "_reset" }),
+        onReset: resetItem ? () => updateGlobals({ [id]: resetItem?.value }) : void 0,
         onSelect: (selected) => updateGlobals({ [id]: selected }),
         icon: icon && react_default.createElement(Icons, { icon, __suppressDeprecationWarning: !0 })
       },
@@ -2654,7 +2654,7 @@ var manager_errors_default = __STORYBOOK_CORE_EVENTS_MANAGER_ERRORS__, { Categor
 // global-externals:storybook/internal/router
 var router_default = __STORYBOOK_ROUTER__, { BaseLocationProvider, DEEPLY_EQUAL, Link: Link2, Location, LocationProvider, Match, Route, buildArgsParam, deepDiff, getMatch, parsePath, queryFromLocation, stringifyQuery, useNavigate } = __STORYBOOK_ROUTER__;
 
-// ../node_modules/react-helmet-async/lib/index.module.js
+// ../../node_modules/react-helmet-async/lib/index.module.js
 var import_prop_types = __toESM(require_prop_types()), import_react_fast_compare = __toESM(require_react_fast_compare()), import_invariant = __toESM(require_browser()), import_shallowequal = __toESM(require_shallowequal());
 function a() {
   return a = Object.assign || function(t2) {
@@ -3054,7 +3054,7 @@ var LayoutContext = createContext({
   return react_default.createElement(LayoutContext.Provider, { value: contextValue }, children);
 }, useLayout = () => useContext(LayoutContext);
 
-// ../node_modules/@babel/runtime/helpers/esm/extends.js
+// ../../node_modules/@babel/runtime/helpers/esm/extends.js
 function _extends() {
   return _extends = Object.assign ? Object.assign.bind() : function(n3) {
     for (var e2 = 1; e2 < arguments.length; e2++) {
@@ -3065,32 +3065,32 @@ function _extends() {
   }, _extends.apply(null, arguments);
 }
 
-// ../node_modules/@babel/runtime/helpers/esm/assertThisInitialized.js
+// ../../node_modules/@babel/runtime/helpers/esm/assertThisInitialized.js
 function _assertThisInitialized(e2) {
   if (e2 === void 0) throw new ReferenceError("this hasn't been initialised - super() hasn't been called");
   return e2;
 }
 
-// ../node_modules/@babel/runtime/helpers/esm/setPrototypeOf.js
+// ../../node_modules/@babel/runtime/helpers/esm/setPrototypeOf.js
 function _setPrototypeOf(t2, e2) {
   return _setPrototypeOf = Object.setPrototypeOf ? Object.setPrototypeOf.bind() : function(t3, e3) {
     return t3.__proto__ = e3, t3;
   }, _setPrototypeOf(t2, e2);
 }
 
-// ../node_modules/@babel/runtime/helpers/esm/inheritsLoose.js
+// ../../node_modules/@babel/runtime/helpers/esm/inheritsLoose.js
 function _inheritsLoose(t2, o3) {
   t2.prototype = Object.create(o3.prototype), t2.prototype.constructor = t2, _setPrototypeOf(t2, o3);
 }
 
-// ../node_modules/@babel/runtime/helpers/esm/getPrototypeOf.js
+// ../../node_modules/@babel/runtime/helpers/esm/getPrototypeOf.js
 function _getPrototypeOf(t2) {
   return _getPrototypeOf = Object.setPrototypeOf ? Object.getPrototypeOf.bind() : function(t3) {
     return t3.__proto__ || Object.getPrototypeOf(t3);
   }, _getPrototypeOf(t2);
 }
 
-// ../node_modules/@babel/runtime/helpers/esm/isNativeFunction.js
+// ../../node_modules/@babel/runtime/helpers/esm/isNativeFunction.js
 function _isNativeFunction(t2) {
   try {
     return Function.toString.call(t2).indexOf("[native code]") !== -1;
@@ -3099,7 +3099,7 @@ function _isNativeFunction(t2) {
   }
 }
 
-// ../node_modules/@babel/runtime/helpers/esm/isNativeReflectConstruct.js
+// ../../node_modules/@babel/runtime/helpers/esm/isNativeReflectConstruct.js
 function _isNativeReflectConstruct() {
   try {
     var t2 = !Boolean.prototype.valueOf.call(Reflect.construct(Boolean, [], function() {
@@ -3111,7 +3111,7 @@ function _isNativeReflectConstruct() {
   })();
 }
 
-// ../node_modules/@babel/runtime/helpers/esm/construct.js
+// ../../node_modules/@babel/runtime/helpers/esm/construct.js
 function _construct(t2, e2, r3) {
   if (_isNativeReflectConstruct()) return Reflect.construct.apply(null, arguments);
   var o3 = [null];
@@ -3120,7 +3120,7 @@ function _construct(t2, e2, r3) {
   return r3 && _setPrototypeOf(p2, r3.prototype), p2;
 }
 
-// ../node_modules/@babel/runtime/helpers/esm/wrapNativeSuper.js
+// ../../node_modules/@babel/runtime/helpers/esm/wrapNativeSuper.js
 function _wrapNativeSuper(t2) {
   var r3 = typeof Map == "function" ? /* @__PURE__ */ new Map() : void 0;
   return _wrapNativeSuper = function(t3) {
@@ -3144,7 +3144,7 @@ function _wrapNativeSuper(t2) {
   }, _wrapNativeSuper(t2);
 }
 
-// ../node_modules/polished/dist/polished.esm.js
+// ../../node_modules/polished/dist/polished.esm.js
 var PolishedError = (function(_Error) {
   _inheritsLoose(PolishedError2, _Error);
   function PolishedError2(code) {
@@ -3829,14 +3829,14 @@ var mapper = ({ state, api }) => ({
   clearNotification: api.clearNotification
 }), Notifications = (props) => react_default.createElement(Consumer, { filter: mapper }, (fromState) => react_default.createElement(NotificationList, { ...props, ...fromState }));
 
-// ../node_modules/@react-aria/utils/dist/useLayoutEffect.mjs
+// ../../node_modules/@react-aria/utils/dist/useLayoutEffect.mjs
 var $f0a04ccd8dbdd83b$export$e5c5a5f917a5871c = typeof document < "u" ? react_default.useLayoutEffect : () => {
 };
 
-// ../node_modules/@react-aria/utils/dist/useEffectEvent.mjs
+// ../../node_modules/@react-aria/utils/dist/useEffectEvent.mjs
 var $8ae05eaa5c114e9c$var$_React_useInsertionEffect, $8ae05eaa5c114e9c$var$useEarlyEffect = ($8ae05eaa5c114e9c$var$_React_useInsertionEffect = react_default.useInsertionEffect) !== null && $8ae05eaa5c114e9c$var$_React_useInsertionEffect !== void 0 ? $8ae05eaa5c114e9c$var$_React_useInsertionEffect : $f0a04ccd8dbdd83b$export$e5c5a5f917a5871c;
 
-// ../node_modules/@react-aria/ssr/dist/SSRProvider.mjs
+// ../../node_modules/@react-aria/ssr/dist/SSRProvider.mjs
 var $b5e257d569688ac6$var$defaultContext = {
   prefix: String(Math.round(Math.random() * 1e10)),
   current: 0
@@ -3881,7 +3881,7 @@ function $b5e257d569688ac6$export$535bd6ca7f90a273() {
   return typeof react_default.useSyncExternalStore == "function" ? react_default.useSyncExternalStore($b5e257d569688ac6$var$subscribe, $b5e257d569688ac6$var$getSnapshot, $b5e257d569688ac6$var$getServerSnapshot) : useContext($b5e257d569688ac6$var$IsSSRContext);
 }
 
-// ../node_modules/@react-aria/utils/dist/useId.mjs
+// ../../node_modules/@react-aria/utils/dist/useId.mjs
 var $bdb11010cef70236$var$canUseDOM = !!(typeof window < "u" && window.document && window.document.createElement), $bdb11010cef70236$export$d41a04c74483c6ef = /* @__PURE__ */ new Map(), $bdb11010cef70236$var$registry;
 typeof FinalizationRegistry < "u" && ($bdb11010cef70236$var$registry = new FinalizationRegistry((heldValue) => {
   $bdb11010cef70236$export$d41a04c74483c6ef.delete(heldValue);
@@ -3909,7 +3909,7 @@ function $bdb11010cef70236$export$f680877a34711e37(defaultId) {
   }), res;
 }
 
-// ../node_modules/@react-aria/utils/dist/focusWithoutScrolling.mjs
+// ../../node_modules/@react-aria/utils/dist/focusWithoutScrolling.mjs
 function $7215afc6de606d6b$export$de79e2c695e052f3(element) {
   if ($7215afc6de606d6b$var$supportsPreventScroll()) element.focus({
     preventScroll: !0
@@ -3953,7 +3953,7 @@ function $7215afc6de606d6b$var$restoreScrollPosition(scrollableElements) {
     element.scrollTop = scrollTop, element.scrollLeft = scrollLeft;
 }
 
-// ../node_modules/@react-aria/utils/dist/platform.mjs
+// ../../node_modules/@react-aria/utils/dist/platform.mjs
 function $c87311424ea30a05$var$testUserAgent(re) {
   var _window_navigator_userAgentData;
   if (typeof window > "u" || window.navigator == null) return !1;
@@ -3989,7 +3989,7 @@ var $c87311424ea30a05$export$9ac100e40613ea10 = $c87311424ea30a05$var$cached(fun
   return $c87311424ea30a05$var$testUserAgent(/Firefox/i);
 });
 
-// ../node_modules/@react-aria/utils/dist/openLink.mjs
+// ../../node_modules/@react-aria/utils/dist/openLink.mjs
 var $ea8dcbcb9ea1b556$var$RouterContext = createContext({
   isNative: !0,
   open: $ea8dcbcb9ea1b556$var$openSyntheticLink,
@@ -4027,7 +4027,7 @@ function $ea8dcbcb9ea1b556$var$openSyntheticLink(target, modifiers2) {
   $ea8dcbcb9ea1b556$var$getSyntheticLink(target, (link) => $ea8dcbcb9ea1b556$export$95185d699e05d4d7(link, modifiers2));
 }
 
-// ../node_modules/@react-aria/utils/dist/runAfterTransition.mjs
+// ../../node_modules/@react-aria/utils/dist/runAfterTransition.mjs
 var $bbed8b41f857bcc0$var$transitionsByElement = /* @__PURE__ */ new Map(), $bbed8b41f857bcc0$var$transitionCallbacks = /* @__PURE__ */ new Set();
 function $bbed8b41f857bcc0$var$setupGlobalEvents() {
   if (typeof window > "u") return;
@@ -4052,16 +4052,16 @@ function $bbed8b41f857bcc0$var$setupGlobalEvents() {
 }
 typeof document < "u" && (document.readyState !== "loading" ? $bbed8b41f857bcc0$var$setupGlobalEvents() : document.addEventListener("DOMContentLoaded", $bbed8b41f857bcc0$var$setupGlobalEvents));
 
-// ../node_modules/@react-aria/utils/dist/useViewportSize.mjs
+// ../../node_modules/@react-aria/utils/dist/useViewportSize.mjs
 var $5df64b3807dc15ee$var$visualViewport = typeof document < "u" && window.visualViewport;
 
 // global-externals:react-dom
 var react_dom_default = __REACT_DOM__, { __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED: __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED2, createPortal, createRoot: createRoot2, findDOMNode, flushSync, hydrate, hydrateRoot: hydrateRoot2, render, unmountComponentAtNode, unstable_batchedUpdates, unstable_renderSubtreeIntoContainer, version: version2 } = __REACT_DOM__;
 
-// ../node_modules/@react-aria/utils/dist/isElementVisible.mjs
+// ../../node_modules/@react-aria/utils/dist/isElementVisible.mjs
 var $7d2416ea0959daaa$var$supportsCheckVisibility = typeof Element < "u" && "checkVisibility" in Element.prototype;
 
-// ../node_modules/@react-aria/utils/dist/isFocusable.mjs
+// ../../node_modules/@react-aria/utils/dist/isFocusable.mjs
 var $b4b717babfbb907b$var$focusableElements = [
   "input:not([disabled]):not([type=hidden])",
   "select:not([disabled])",
@@ -4105,7 +4105,7 @@ var StyledModal = styled(Modal)(({ theme }) => ({
   children
 );
 
-// ../node_modules/react-transition-state/dist/esm/hooks/utils.mjs
+// ../../node_modules/react-transition-state/dist/esm/hooks/utils.mjs
 var STATUS = ["preEnter", "entering", "entered", "preExit", "exiting", "exited", "unmounted"], getState = (status) => ({
   _s: status,
   status: STATUS[status],
@@ -4125,7 +4125,7 @@ var STATUS = ["preEnter", "entering", "entered", "preExit", "exiting", "exited",
   isNaN(document.body.offsetTop) || transitState(status + 1);
 }, 0);
 
-// ../node_modules/react-transition-state/dist/esm/hooks/useTransitionState.mjs
+// ../../node_modules/react-transition-state/dist/esm/hooks/useTransitionState.mjs
 var updateState = (status, setState, latestState, timeoutId, onChange) => {
   clearTimeout(timeoutId.current);
   let state = getState(status);
@@ -4166,7 +4166,7 @@ var updateState = (status, setState, latestState, timeoutId, onChange) => {
   return [state, toggle, endTransition];
 };
 
-// ../node_modules/react-transition-state/dist/esm/hooks/useTransitionMap.mjs
+// ../../node_modules/react-transition-state/dist/esm/hooks/useTransitionMap.mjs
 var updateState2 = (key, status, setStateMap, latestStateMap, timeoutId, onChange) => {
   clearTimeout(timeoutId);
   let state = getState(status), stateMap = new Map(latestStateMap.current);
@@ -4308,7 +4308,7 @@ var MobileAbout = () => {
     ), react_default.createElement(
       LinkLine,
       {
-        href: "https://storybook.js.org/docs/react/get-started/install/?ref=ui",
+        href: "https://storybook.js.org/docs/get-started/install?ref=ui",
         target: "_blank",
         rel: "noopener noreferrer"
       },
@@ -5599,7 +5599,7 @@ var StyledAnimatedButton = styled(Button)(({ theme, animating, disabled }) => ({
 // src/manager/components/preview/tools/share.tsx
 var import_copy_to_clipboard = __toESM(require_copy_to_clipboard(), 1);
 
-// ../node_modules/qrcode.react/lib/esm/index.js
+// ../../node_modules/qrcode.react/lib/esm/index.js
 var __defProp2 = Object.defineProperty, __getOwnPropSymbols = Object.getOwnPropertySymbols, __hasOwnProp2 = Object.prototype.hasOwnProperty, __propIsEnum = Object.prototype.propertyIsEnumerable, __defNormalProp = (obj, key, value) => key in obj ? __defProp2(obj, key, { enumerable: !0, configurable: !0, writable: !0, value }) : obj[key] = value, __spreadValues = (a2, b2) => {
   for (var prop in b2 || (b2 = {}))
     __hasOwnProp2.call(b2, prop) && __defNormalProp(a2, prop, b2[prop]);
@@ -6422,7 +6422,7 @@ var QRCodeSVG = react_default.forwardRef(
 );
 QRCodeSVG.displayName = "QRCodeSVG";
 
-// ../node_modules/es-toolkit/dist/function/debounce.mjs
+// ../../node_modules/es-toolkit/dist/function/debounce.mjs
 function debounce(func, debounceMs, { signal, edges } = {}) {
   let pendingThis, pendingArgs = null, leading = edges != null && edges.includes("leading"), trailing = edges == null || edges.includes("trailing"), invoke = () => {
     pendingArgs !== null && (func.apply(pendingThis, pendingArgs), pendingThis = void 0, pendingArgs = null);
@@ -6437,7 +6437,7 @@ function debounce(func, debounceMs, { signal, edges } = {}) {
   }, cancel = () => {
     cancelTimer(), pendingThis = void 0, pendingArgs = null;
   }, flush = () => {
-    invoke();
+    cancelTimer(), invoke();
   }, debounced = function(...args) {
     if (signal?.aborted)
       return;
@@ -6448,7 +6448,7 @@ function debounce(func, debounceMs, { signal, edges } = {}) {
   return debounced.schedule = schedule, debounced.cancel = cancel, debounced.flush = flush, signal?.addEventListener("abort", cancel, { once: !0 }), debounced;
 }
 
-// ../node_modules/es-toolkit/dist/function/partial.mjs
+// ../../node_modules/es-toolkit/dist/function/partial.mjs
 function partial(func, ...partialArgs) {
   return partialImpl(func, placeholderSymbol, ...partialArgs);
 }
@@ -6462,7 +6462,7 @@ function partialImpl(func, placeholder, ...partialArgs) {
 var placeholderSymbol = Symbol("partial.placeholder");
 partial.placeholder = placeholderSymbol;
 
-// ../node_modules/es-toolkit/dist/function/partialRight.mjs
+// ../../node_modules/es-toolkit/dist/function/partialRight.mjs
 function partialRight(func, ...partialArgs) {
   return partialRightImpl(func, placeholderSymbol2, ...partialArgs);
 }
@@ -6476,13 +6476,13 @@ function partialRightImpl(func, placeholder, ...partialArgs) {
 var placeholderSymbol2 = Symbol("partialRight.placeholder");
 partialRight.placeholder = placeholderSymbol2;
 
-// ../node_modules/es-toolkit/dist/function/retry.mjs
+// ../../node_modules/es-toolkit/dist/function/retry.mjs
 var DEFAULT_RETRIES = Number.POSITIVE_INFINITY;
 
-// ../node_modules/es-toolkit/dist/function/throttle.mjs
+// ../../node_modules/es-toolkit/dist/function/throttle.mjs
 function throttle(func, throttleMs, { signal, edges = ["leading", "trailing"] } = {}) {
   let pendingAt = null, debounced = debounce(func, throttleMs, { signal, edges }), throttled = function(...args) {
-    pendingAt == null ? pendingAt = Date.now() : Date.now() - pendingAt >= throttleMs && (pendingAt = Date.now(), debounced.cancel()), debounced.apply(this, args);
+    pendingAt == null ? pendingAt = Date.now() : Date.now() - pendingAt >= throttleMs && (pendingAt = Date.now(), debounced.cancel()), debounced(...args);
   };
   return throttled.cancel = debounced.cancel, throttled.flush = debounced.flush, throttled;
 }
@@ -6556,7 +6556,7 @@ var SUPPORTED_FRAMEWORKS = [
 var ADDON_ID5 = "storybook/docs", PANEL_ID3 = `${ADDON_ID5}/panel`;
 var SNIPPET_RENDERED = `${ADDON_ID5}/snippet-rendered`;
 
-// ../node_modules/@gilbarbara/deep-equal/dist/index.mjs
+// ../../node_modules/@gilbarbara/deep-equal/dist/index.mjs
 function isOfType(type) {
   return (value) => typeof value === type;
 }
@@ -6634,7 +6634,7 @@ function equal(left, right) {
   return Number.isNaN(left) && Number.isNaN(right) ? !0 : left === right;
 }
 
-// ../node_modules/is-lite/dist/index.mjs
+// ../../node_modules/is-lite/dist/index.mjs
 var objectTypes = [
   "Array",
   "ArrayBuffer",
@@ -6762,7 +6762,7 @@ is.weakMap = isObjectOfType("WeakMap");
 is.weakSet = isObjectOfType("WeakSet");
 var src_default = is;
 
-// ../node_modules/react-joyride/node_modules/tree-changes/dist/index.mjs
+// ../../node_modules/react-joyride/node_modules/tree-changes/dist/index.mjs
 function canHaveLength(...arguments_) {
   return arguments_.every((d2) => src_default.string(d2) || src_default.array(d2) || src_default.plainObject(d2));
 }
@@ -6884,16 +6884,16 @@ function treeChanges(previousData, data) {
   } };
 }
 
-// ../node_modules/react-joyride/dist/index.mjs
+// ../../node_modules/react-joyride/dist/index.mjs
 var import_scroll = __toESM(require_scroll(), 1), import_scrollparent = __toESM(require_scrollparent(), 1);
 var import_react_innertext = __toESM(require_react_innertext(), 1);
 var import_deepmerge2 = __toESM(require_cjs(), 1);
 var import_deepmerge3 = __toESM(require_cjs(), 1);
 
-// ../node_modules/react-floater/es/index.js
+// ../../node_modules/react-floater/es/index.js
 var import_prop_types2 = __toESM(require_prop_types());
 
-// ../node_modules/popper.js/dist/esm/popper.js
+// ../../node_modules/popper.js/dist/esm/popper.js
 var isBrowser = typeof window < "u" && typeof document < "u" && typeof navigator < "u", timeoutDuration = (function() {
   for (var longerTimeoutBrowsers = ["Edge", "Trident", "Firefox"], i2 = 0; i2 < longerTimeoutBrowsers.length; i2 += 1)
     if (isBrowser && navigator.userAgent.indexOf(longerTimeoutBrowsers[i2]) >= 0)
@@ -7906,10 +7906,10 @@ Popper.placements = placements;
 Popper.Defaults = Defaults;
 var popper_default = Popper;
 
-// ../node_modules/react-floater/es/index.js
+// ../../node_modules/react-floater/es/index.js
 var import_deepmerge = __toESM(require_cjs());
 
-// ../node_modules/react-floater/node_modules/is-lite/esm/index.js
+// ../../node_modules/react-floater/node_modules/is-lite/esm/index.js
 var DOM_PROPERTIES_TO_CHECK2 = [
   "innerHTML",
   "ownerDocument",
@@ -8078,7 +8078,7 @@ is2.weakMap = isObjectOfType2("WeakMap");
 is2.weakSet = isObjectOfType2("WeakSet");
 var esm_default = is2;
 
-// ../node_modules/tree-changes/node_modules/@gilbarbara/deep-equal/esm/helpers.js
+// ../../node_modules/tree-changes/node_modules/@gilbarbara/deep-equal/esm/helpers.js
 function isOfType4(type) {
   return function(value) {
     return typeof value === type;
@@ -8092,7 +8092,7 @@ var isFunction3 = isOfType4("function"), isNull2 = function(value) {
   return !isUndefined2(value) && !isNull2(value) && (isFunction3(value) || typeof value == "object");
 }, isUndefined2 = isOfType4("undefined");
 
-// ../node_modules/tree-changes/node_modules/@gilbarbara/deep-equal/esm/index.js
+// ../../node_modules/tree-changes/node_modules/@gilbarbara/deep-equal/esm/index.js
 var __values = function(o3) {
   var s2 = typeof Symbol == "function" && Symbol.iterator, m2 = s2 && o3[s2], i2 = 0;
   if (m2) return m2.call(o3);
@@ -8213,7 +8213,7 @@ function equal2(left, right) {
   return Number.isNaN(left) && Number.isNaN(right) ? !0 : left === right;
 }
 
-// ../node_modules/tree-changes/node_modules/is-lite/esm/index.js
+// ../../node_modules/tree-changes/node_modules/is-lite/esm/index.js
 var DOM_PROPERTIES_TO_CHECK3 = [
   "innerHTML",
   "ownerDocument",
@@ -8382,7 +8382,7 @@ is3.weakMap = isObjectOfType3("WeakMap");
 is3.weakSet = isObjectOfType3("WeakSet");
 var esm_default2 = is3;
 
-// ../node_modules/tree-changes/esm/helpers.js
+// ../../node_modules/tree-changes/esm/helpers.js
 function canHaveLength2() {
   for (var arguments_ = [], _i = 0; _i < arguments.length; _i++)
     arguments_[_i] = arguments[_i];
@@ -8469,7 +8469,7 @@ function nested2(data, property) {
   return data;
 }
 
-// ../node_modules/tree-changes/esm/index.js
+// ../../node_modules/tree-changes/esm/index.js
 function treeChanges2(previousData, data) {
   if ([previousData, data].some(esm_default2.nullOrUndefined))
     throw new Error("Missing required parameters");
@@ -8545,7 +8545,7 @@ function treeChanges2(previousData, data) {
   return { added, changed, changedFrom, changedTo, decreased, emptied, filled, increased, removed };
 }
 
-// ../node_modules/react-floater/es/index.js
+// ../../node_modules/react-floater/es/index.js
 function ownKeys(e2, r3) {
   var t2 = Object.keys(e2);
   if (Object.getOwnPropertySymbols) {
@@ -8966,7 +8966,7 @@ _defineProperty(ReactFloater, "propTypes", { autoOpen: import_prop_types2.defaul
 }), debug: import_prop_types2.default.bool, disableAnimation: import_prop_types2.default.bool, disableFlip: import_prop_types2.default.bool, disableHoverToClick: import_prop_types2.default.bool, event: import_prop_types2.default.oneOf(["hover", "click"]), eventDelay: import_prop_types2.default.number, footer: import_prop_types2.default.node, getPopper: import_prop_types2.default.func, hideArrow: import_prop_types2.default.bool, id: import_prop_types2.default.oneOfType([import_prop_types2.default.string, import_prop_types2.default.number]), offset: import_prop_types2.default.number, open: import_prop_types2.default.bool, options: import_prop_types2.default.object, placement: import_prop_types2.default.oneOf(["top", "top-start", "top-end", "bottom", "bottom-start", "bottom-end", "left", "left-start", "left-end", "right", "right-start", "right-end", "auto", "center"]), showCloseButton: import_prop_types2.default.bool, style: import_prop_types2.default.object, styles: import_prop_types2.default.object, target: import_prop_types2.default.oneOfType([import_prop_types2.default.object, import_prop_types2.default.string]), title: import_prop_types2.default.node, wrapperOptions: import_prop_types2.default.shape({ offset: import_prop_types2.default.number, placement: import_prop_types2.default.oneOf(["top", "top-start", "top-end", "bottom", "bottom-start", "bottom-end", "left", "left-start", "left-end", "right", "right-start", "right-end", "auto"]), position: import_prop_types2.default.bool }) });
 _defineProperty(ReactFloater, "defaultProps", { autoOpen: !1, callback: noop2, debug: !1, disableAnimation: !1, disableFlip: !1, disableHoverToClick: !1, event: "click", eventDelay: 0.4, getPopper: noop2, hideArrow: !1, offset: 15, placement: "bottom", showCloseButton: !1, styles: {}, target: null, wrapperOptions: { position: !1 } });
 
-// ../node_modules/react-joyride/dist/index.mjs
+// ../../node_modules/react-joyride/dist/index.mjs
 var __defProp3 = Object.defineProperty, __defNormalProp2 = (obj, key, value) => key in obj ? __defProp3(obj, key, { enumerable: !0, configurable: !0, writable: !0, value }) : obj[key] = value, __publicField = (obj, key, value) => __defNormalProp2(obj, typeof key != "symbol" ? key + "" : key, value), ACTIONS = {
   INIT: "init",
   START: "start",
@@ -11494,12 +11494,12 @@ var subscriptions = /* @__PURE__ */ new Map(), useStoryIndex = () => {
 }), checkLockedBy = (item, itemsById, state) => getAncestorIds(item, itemsById).find(
   (id) => state[id].status !== "accepted" && state[id].status !== "done"
 ), useChecklist = () => {
-  let api = useStorybookApi(), index = useStoryIndex(), [checklistState] = experimental_useUniversalStore(internal_universalChecklistStore), { loaded, items, widget } = checklistState, itemsById = useMemo(() => Object.fromEntries(
+  let api = useStorybookApi(), index = useStoryIndex(), [checklistState] = experimental_useUniversalStore(internal_universalChecklistStore), { loaded, items, widget } = checklistState, { status } = internal_universalChecklistStore, [initialized, setInitialized] = useState(!1), [ready, setReady] = useState(!1), debounceReady = useMemo(() => debounce(() => setReady(!0), 500), []), itemsById = useMemo(() => Object.fromEntries(
     checklistData.sections.flatMap(
       ({ items: items2, id: sectionId, title: sectionTitle }, sectionIndex) => items2.map(({ id, ...item }, itemIndex) => [id, { id, itemIndex, sectionId, sectionIndex, sectionTitle, ...item }])
     )
   ), []), allItems = useMemo(() => Object.values(itemsById).map((item) => {
-    let { status, mutedAt } = items[item.id], isOpen = status === "open", isAccepted = status === "accepted", isDone = status === "done", isCompleted = isAccepted || isDone, isSkipped = !isCompleted && checkSkipped(item, itemsById, items), isMuted = !!mutedAt || !!widget.disable, isAvailable = isCompleted ? item.afterCompletion !== "unavailable" : checkAvailable(item, itemsById, { api, index, item }), isLockedBy = checkLockedBy(item, itemsById, items), isImmutable = isCompleted && item.afterCompletion === "immutable";
+    let { status: status2, mutedAt } = items[item.id], isOpen = status2 === "open", isAccepted = status2 === "accepted", isDone = status2 === "done", isCompleted = isAccepted || isDone, isSkipped = !isCompleted && checkSkipped(item, itemsById, items), isMuted = !!mutedAt || !!widget.disable, isAvailable = isCompleted ? item.afterCompletion !== "unavailable" : checkAvailable(item, itemsById, { api, index, item }), isLockedBy = checkLockedBy(item, itemsById, items), isImmutable = isCompleted && item.afterCompletion === "immutable";
     return {
       ...item,
       isAvailable,
@@ -11520,7 +11520,7 @@ var subscriptions = /* @__PURE__ */ new Map(), useStoryIndex = () => {
     return { availableItems, openItems, readyItems, nextItems, progress };
   }, [allItems]);
   return useEffect(() => {
-    if (loaded)
+    if (!(!loaded || status !== experimental_UniversalStore.Status.READY))
       for (let item of allItems) {
         if (!item.subscribe)
           continue;
@@ -11541,7 +11541,15 @@ var subscriptions = /* @__PURE__ */ new Map(), useStoryIndex = () => {
           subscriptions.delete(item.id), typeof unsubscribe == "function" && unsubscribe();
         }
       }
-  }, [api, loaded, allItems]), {
+  }, [api, loaded, status, allItems]), useEffect(() => {
+    let initialize = () => setInitialized(!0), timeout = setTimeout(initialize, 1e3);
+    return api.once(PREVIEW_INITIALIZED, initialize), () => {
+      clearTimeout(timeout), api.off(PREVIEW_INITIALIZED, initialize);
+    };
+  }, [api]), useEffect(() => {
+    initialized && items && status === experimental_UniversalStore.Status.READY && debounceReady();
+  }, [initialized, items, status, debounceReady]), {
+    ready,
     allItems,
     ...itemCollections,
     ...internal_checklistStore,
@@ -12146,24 +12154,36 @@ var fadeScaleIn = keyframes`
     children
   );
 }, ChecklistWidget = () => {
-  let api = useStorybookApi(), { loaded, allItems, nextItems, progress, accept, mute, items } = useChecklist(), [renderItems, setItems] = useState([]), hasItems = renderItems.length > 0, transitionItems = useTransitionArray(allItems, renderItems, {
-    keyFn: (item) => item.id,
-    timeout: 300
-  });
-  return useEffect(() => {
-    setItems(
-      (current) => current.map((item) => ({
-        ...item,
-        isCompleted: items[item.id].status === "accepted" || items[item.id].status === "done",
-        isSkipped: items[item.id].status === "skipped"
-      }))
-    );
-    let timeout = setTimeout(setItems, 2e3, nextItems);
+  let api = useStorybookApi(), { loaded, ready, allItems, nextItems, progress, accept, mute, items } = useChecklist(), [renderItems, setRenderItems] = useState(nextItems), [animated, setAnimated] = useState(!1);
+  useEffect(() => {
+    if (ready) {
+      let timeout = setTimeout(setAnimated, 1e3, !0);
+      return () => clearTimeout(timeout);
+    }
+  }, [ready]), useEffect(() => {
+    if (!animated) {
+      setRenderItems(nextItems);
+      return;
+    }
+    setRenderItems((current) => {
+      let animateOut = !1, prevItems = current.map((item) => {
+        let { status } = items[item.id], isAccepted = status === "accepted", isDone = status === "done", isSkipped = status === "skipped";
+        return animateOut = animateOut || isAccepted || isDone || isSkipped, { ...item, isCompleted: isAccepted || isDone, isAccepted, isDone, isSkipped };
+      });
+      return animateOut ? prevItems : nextItems;
+    });
+    let timeout = setTimeout(setRenderItems, 2e3, nextItems);
     return () => clearTimeout(timeout);
-  }, [nextItems, items]), react_default.createElement(CollapsibleWithMargin, { collapsed: !hasItems || !loaded }, react_default.createElement(HoverCard, { id: "storybook-checklist-widget", outlineAnimation: "rainbow" }, react_default.createElement(
+  }, [animated, nextItems, items]);
+  let hasItems = renderItems.length > 0, transitionItems = useTransitionArray(allItems, renderItems, {
+    keyFn: (item) => item.id,
+    timeout: animated ? 300 : 0
+  });
+  return react_default.createElement(CollapsibleWithMargin, { collapsed: !hasItems || !loaded }, react_default.createElement(HoverCard, { id: "storybook-checklist-widget", outlineAnimation: "rainbow" }, react_default.createElement(
     Collapsible,
     {
-      collapsed: !hasItems,
+      storageKey: "checklist-widget",
+      initialCollapsed: !hasItems,
       disabled: !hasItems,
       summary: ({ isCollapsed, toggleCollapsed, toggleProps }) => react_default.createElement(ActionList, { as: "div", onClick: toggleCollapsed }, react_default.createElement(ActionList.Item, { as: "div" }, react_default.createElement(ActionList.Item, { as: "div", style: { flexShrink: 1 } }, loaded && react_default.createElement(
         Optional,
@@ -12230,7 +12250,7 @@ var fadeScaleIn = keyframes`
           ariaLabel: `Open onboarding guide for ${item.label}`,
           onClick: () => api.navigate(`/settings/guide#${item.id}`)
         },
-        react_default.createElement(ActionList.Icon, null, item.isCompleted ? react_default.createElement(Particles, { anchor: Checked, key: item.id }) : react_default.createElement(StatusFailIcon, null)),
+        react_default.createElement(ActionList.Icon, null, item.isCompleted && animated ? react_default.createElement(Particles, { anchor: Checked, key: item.id }) : react_default.createElement(StatusFailIcon, null)),
         react_default.createElement(ActionList.Text, null, react_default.createElement(ItemLabel, { isCompleted: item.isCompleted, isSkipped: item.isSkipped }, item.label))
       ), item.action && react_default.createElement(
         ActionList.Button,
@@ -12282,7 +12302,7 @@ function useMeasure() {
   }, []), dimensions];
 }
 
-// ../node_modules/@tanstack/virtual-core/dist/esm/utils.js
+// ../../node_modules/@tanstack/virtual-core/dist/esm/utils.js
 function memo2(getDeps, fn, opts) {
   let deps = opts.initialDeps ?? [], result;
   function memoizedFunction() {
@@ -12330,7 +12350,7 @@ var approxEqual = (a2, b2) => Math.abs(a2 - b2) < 1.01, debounce3 = (targetWindo
   };
 };
 
-// ../node_modules/@tanstack/virtual-core/dist/esm/index.js
+// ../../node_modules/@tanstack/virtual-core/dist/esm/index.js
 var getRect = (element) => {
   let { offsetWidth, offsetHeight } = element;
   return { width: offsetWidth, height: offsetHeight };
@@ -12810,7 +12830,7 @@ function calculateRange({
   return { startIndex, endIndex };
 }
 
-// ../node_modules/@tanstack/react-virtual/dist/esm/index.js
+// ../../node_modules/@tanstack/react-virtual/dist/esm/index.js
 var useIsomorphicLayoutEffect = typeof document < "u" ? useLayoutEffect : useEffect;
 function useVirtualizerBase(options2) {
   let rerender = useReducer(() => ({}), {})[1], resolvedOptions = {
@@ -15346,7 +15366,7 @@ var BrandArea = styled.div(({ theme }) => ({
   ...props
 }) => react_default.createElement(HeadingWrapper, { ...props }, skipLinkHref && react_default.createElement(SkipToCanvasLink, { ariaLabel: !1, asChild: !0 }, react_default.createElement("a", { href: skipLinkHref, tabIndex: 0 }, "Skip to canvas")), react_default.createElement(BrandArea, null, react_default.createElement(Brand, null)), react_default.createElement(SidebarMenu, { menu, isHighlighted: menuHighlighted, onClick: onMenuClick }));
 
-// ../node_modules/@babel/runtime/helpers/esm/objectWithoutPropertiesLoose.js
+// ../../node_modules/@babel/runtime/helpers/esm/objectWithoutPropertiesLoose.js
 function _objectWithoutPropertiesLoose2(r3, e2) {
   if (r3 == null) return {};
   var t2 = {};
@@ -15357,11 +15377,11 @@ function _objectWithoutPropertiesLoose2(r3, e2) {
   return t2;
 }
 
-// ../node_modules/downshift/dist/downshift.esm.js
+// ../../node_modules/downshift/dist/downshift.esm.js
 var import_prop_types3 = __toESM(require_prop_types());
 var import_react_is = __toESM(require_react_is());
 
-// ../node_modules/compute-scroll-into-view/dist/index.js
+// ../../node_modules/compute-scroll-into-view/dist/index.js
 var t = (t2) => typeof t2 == "object" && t2 != null && t2.nodeType === 1, e = (t2, e2) => (!e2 || t2 !== "hidden") && t2 !== "visible" && t2 !== "clip", n2 = (t2, n3) => {
   if (t2.clientHeight < t2.scrollHeight || t2.clientWidth < t2.scrollWidth) {
     let o3 = getComputedStyle(t2, null);
@@ -15413,7 +15433,7 @@ var t = (t2) => typeof t2 == "object" && t2 != null && t2.nodeType === 1, e = (t
   return L3;
 };
 
-// ../node_modules/tslib/tslib.es6.mjs
+// ../../node_modules/tslib/tslib.es6.mjs
 var __assign = function() {
   return __assign = Object.assign || function(t2) {
     for (var s2, i2 = 1, n3 = arguments.length; i2 < n3; i2++) {
@@ -15424,7 +15444,7 @@ var __assign = function() {
   }, __assign.apply(this, arguments);
 };
 
-// ../node_modules/downshift/dist/downshift.esm.js
+// ../../node_modules/downshift/dist/downshift.esm.js
 var idCounter = 0;
 function cbToCb(cb) {
   return typeof cb == "function" ? cb : noop4;
