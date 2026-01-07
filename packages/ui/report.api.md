@@ -229,7 +229,7 @@ export interface BoxProps extends SpaceProps {
 // @public (undocumented)
 export type Breakpoint = 'initial' | 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
-// @public (undocumented)
+// @public
 export const Button: ForwardRefExoticComponent<
   ButtonProps & RefAttributes<HTMLButtonElement>
 >;

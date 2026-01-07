@@ -240,13 +240,10 @@ export const WithCustomActions = meta.story({
   ),
 });
 
-export const WithAllOptionsAndTabs = meta.story({
+export const WithAllOptionsAndTabs = WithCustomActions.extend({
   args: {
-    ...WithCustomActions.input.args,
     tabs,
   },
-  decorators: [withRouter],
-  render: WithCustomActions.input.render,
 });
 
 export const WithHeaderPage = meta.story({
