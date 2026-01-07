@@ -82,7 +82,7 @@ function incrementSurface(surface: Surface | undefined): Surface {
  * @param contextSurface - The surface from context
  * @param requestedSurface - The requested surface value (may be 'auto')
  * @returns The resolved surface value
- * @public
+ * @internal
  */
 export function resolveSurfaceForProvider(
   contextSurface: Responsive<Surface> | undefined,
@@ -156,7 +156,7 @@ function resolveSurfaceForConsumer(
  * Note: The surface value should already be resolved before passing to this provider.
  * Container components should use useSurface with the surface parameter.
  *
- * @public
+ * @internal
  */
 export const SurfaceProvider = ({
   surface,
@@ -180,7 +180,7 @@ export const SurfaceProvider = ({
  * - `onSurface`: Leaf behavior - 'auto' inherits from parent
  *
  * @param options - Optional configuration for surface resolution
- * @public
+ * @internal
  */
 export const useSurface = (
   options?: UseSurfaceOptions,

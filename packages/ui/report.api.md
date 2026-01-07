@@ -1294,26 +1294,6 @@ export type Surface =
   | 'auto';
 
 // @public (undocumented)
-export interface SurfaceContextValue {
-  // (undocumented)
-  surface: Responsive<Surface> | undefined;
-}
-
-// @public
-export const SurfaceProvider: ({
-  surface,
-  children,
-}: SurfaceProviderProps) => JSX_2.Element;
-
-// @public (undocumented)
-export interface SurfaceProviderProps {
-  // (undocumented)
-  children: ReactNode;
-  // (undocumented)
-  surface: Responsive<Surface>;
-}
-
-// @public (undocumented)
 export const Switch: ForwardRefExoticComponent<
   SwitchProps & RefAttributes<HTMLLabelElement>
 >;
@@ -1618,15 +1598,6 @@ export const useBreakpoint: () => {
   up: (key: Breakpoint) => boolean;
   down: (key: Breakpoint) => boolean;
 };
-
-// @public
-export const useSurface: (options?: UseSurfaceOptions) => SurfaceContextValue;
-
-// @public (undocumented)
-export interface UseSurfaceOptions {
-  onSurface?: Responsive<Surface>;
-  surface?: Responsive<Surface>;
-}
 
 // @public
 export function useTable<T = any>(
