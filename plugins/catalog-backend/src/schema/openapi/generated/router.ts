@@ -858,9 +858,9 @@ export const spec = {
           severityLevel: 'medium',
           meta: {
             queryType: 'refresh',
-            captureFromRequest: {
-              body: ['entityRef'],
-            },
+          },
+          captureMetaFromRequest: {
+            body: ['entityRef'],
           },
         },
         responses: {
@@ -985,9 +985,9 @@ export const spec = {
           eventId: 'entity-fetch',
           meta: {
             queryType: 'by-uid',
-            captureFromRequest: {
-              params: ['uid'],
-            },
+          },
+          captureMetaFromRequest: {
+            params: ['uid'],
           },
         },
         responses: {
@@ -1029,9 +1029,9 @@ export const spec = {
           severityLevel: 'medium',
           meta: {
             actionType: 'delete',
-            captureFromRequest: {
-              params: ['uid'],
-            },
+          },
+          captureMetaFromRequest: {
+            params: ['uid'],
           },
         },
         responses: {
@@ -1067,9 +1067,9 @@ export const spec = {
           eventId: 'entity-fetch',
           meta: {
             queryType: 'by-name',
-            captureFromRequest: {
-              params: ['kind', 'namespace', 'name'],
-            },
+          },
+          captureMetaFromRequest: {
+            params: ['kind', 'namespace', 'name'],
           },
         },
         responses: {
@@ -1118,9 +1118,9 @@ export const spec = {
           eventId: 'entity-fetch',
           meta: {
             actionType: 'ancestry',
-            captureFromRequest: {
-              params: ['kind', 'namespace', 'name'],
-            },
+          },
+          captureMetaFromRequest: {
+            params: ['kind', 'namespace', 'name'],
           },
         },
         responses: {
@@ -1548,10 +1548,10 @@ export const spec = {
           severityLevel: 'medium',
           meta: {
             actionType: 'create',
-            captureFromRequest: {
-              body: ['type', 'target'],
-              query: ['dryRun'],
-            },
+          },
+          captureMetaFromRequest: {
+            body: ['type', 'target'],
+            query: ['dryRun'],
           },
         },
         responses: {
@@ -1737,9 +1737,9 @@ export const spec = {
           eventId: 'location-fetch',
           meta: {
             queryType: 'by-id',
-            captureFromRequest: {
-              params: ['id'],
-            },
+          },
+          captureMetaFromRequest: {
+            params: ['id'],
           },
         },
         responses: {
@@ -1830,9 +1830,9 @@ export const spec = {
           severityLevel: 'medium',
           meta: {
             actionType: 'delete',
-            captureFromRequest: {
-              params: ['id'],
-            },
+          },
+          captureMetaFromRequest: {
+            params: ['id'],
           },
         },
         responses: {
@@ -1873,9 +1873,9 @@ export const spec = {
           eventId: 'location-fetch',
           meta: {
             queryType: 'by-entity',
-            captureFromRequest: {
-              params: ['kind', 'namespace', 'name'],
-            },
+          },
+          captureMetaFromRequest: {
+            params: ['kind', 'namespace', 'name'],
           },
         },
         responses: {

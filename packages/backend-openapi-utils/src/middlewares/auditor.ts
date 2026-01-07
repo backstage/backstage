@@ -20,30 +20,32 @@ import type {
   AuditorService,
   LoggerService,
 } from '@backstage/backend-plugin-api';
-import type { JsonObject } from '@backstage/types';
+import type { JsonObject, JsonValue } from '@backstage/types';
 import { ForwardedError } from '@backstage/errors';
 
 type AuditorExtension = {
   eventId: string;
   severityLevel?: 'low' | 'medium' | 'high' | 'critical';
-  meta?: JsonObject & {
-    captureFromRequest?: {
-      body?: string[];
-      params?: string[];
-      query?: string[];
-    };
-    captureFromResponse?: {
-      body?: string[];
-    };
+  meta?: JsonObject;
+  captureMetaFromRequest?: {
+    body?: string[];
+    params?: string[];
+    query?: string[];
+  };
+  captureMetaFromResponse?: {
+    body?: string[];
   };
 };
 
-function extractValueFromObject(obj: unknown, path: string): any {
+function extractValueFromObject(
+  obj: JsonValue,
+  path: string,
+): JsonValue | undefined {
   const parts = path.split('.');
-  let current = obj;
+  let current: JsonValue | undefined = obj;
   for (const part of parts) {
     if (current && typeof current === 'object' && part in current) {
-      current = (current as Record<string, any>)[part];
+      current = (current as JsonObject)[part];
     } else {
       return undefined;
     }
@@ -57,7 +59,7 @@ function waitForResponseToFinish(res: Response): Promise<void> {
   });
 }
 
-/** @public */
+/** @internal */
 export interface WithOpenapi {
   openapi?: {
     expressRoute: string;
@@ -70,7 +72,7 @@ export interface WithOpenapi {
 
 const AUDITOR_SYMBOL = Symbol('auditor');
 
-/** @public */
+/** @internal */
 export interface WithAuditorEvent {
   [AUDITOR_SYMBOL]?: Awaited<ReturnType<AuditorService['createEvent']>>;
 }
@@ -123,15 +125,18 @@ export function auditorMiddlewareFactory(dependencies: {
     }
 
     // Store the capture config for use in finish event
-    const { captureFromRequest, captureFromResponse, ...staticMeta } =
-      auditorConfig.meta || {};
+    const {
+      captureMetaFromRequest,
+      captureMetaFromResponse,
+      meta: staticMeta = {},
+    } = auditorConfig;
 
     // Capture metadata from request
     const captureRequestMetadata = (): JsonObject => {
       const meta: JsonObject = { ...staticMeta };
 
-      if (captureFromRequest) {
-        const { body, params, query } = captureFromRequest;
+      if (captureMetaFromRequest) {
+        const { body, params, query } = captureMetaFromRequest;
 
         if (body) {
           for (const field of body) {
@@ -167,8 +172,8 @@ export function auditorMiddlewareFactory(dependencies: {
 
     const captureResponseMetadata = (): JsonObject => {
       const meta: JsonObject = {};
-      if (captureFromResponse) {
-        const { body } = captureFromResponse;
+      if (captureMetaFromResponse) {
+        const { body } = captureMetaFromResponse;
 
         if (body) {
           // Access captured response body from res.locals
@@ -191,11 +196,9 @@ export function auditorMiddlewareFactory(dependencies: {
     return { captureRequestMetadata, captureResponseMetadata, auditorConfig };
   }
 
-  const success = async (
-    req: Request & WithOpenapi & WithAuditorEvent,
-    res: Response,
-    next: NextFunction,
-  ) => {
+  const success = async (_req: Request, res: Response, next: NextFunction) => {
+    // Hide request object types from the public API.
+    const req = _req as Request & WithOpenapi & WithAuditorEvent;
     const result = baseHandler(req, res);
     if (!result) {
       next();
@@ -205,26 +208,23 @@ export function auditorMiddlewareFactory(dependencies: {
       result;
 
     // Intercept response body if we need to capture from it
-    const captureFromResponse = auditorConfig.meta?.captureFromResponse;
-    if (captureFromResponse?.body) {
+    const captureMetaFromResponse = auditorConfig.captureMetaFromResponse;
+    if (captureMetaFromResponse?.body) {
       const originalJson = res.json.bind(res);
       const originalSend = res.send.bind(res);
 
       const locals = res.locals as Response['locals'] &
         WithCapturedResponseBody;
-      res.json = function overriddenJson(body: any) {
+      res.json = function overriddenJson(body: JsonObject) {
         locals[CAPTURED_RESPONSE_BODY_SYMBOL] = body;
         return originalJson(body);
       };
 
-      res.send = function overriddenSend(body: any) {
-        if (typeof body === 'string') {
-          // Do nothing.
-          logger.debug(
-            `Response body is a string, cannot capture fields from it for auditing.`,
-          );
-        } else {
+      res.send = function overriddenSend(body: JsonValue) {
+        if (body && typeof body === 'object' && !Array.isArray(body)) {
           locals[CAPTURED_RESPONSE_BODY_SYMBOL] = body;
+        } else {
+          logger.debug(`Response body is not an object. Not capturing fields.`);
         }
         return originalSend(body);
       };
@@ -280,10 +280,12 @@ export function auditorMiddlewareFactory(dependencies: {
 
   const error = async (
     err: Error,
-    req: Request & WithOpenapi & WithAuditorEvent,
+    _req: Request,
     _res: Response,
     next: NextFunction,
   ) => {
+    // Hide request object types from the public API.
+    const req = _req as Request & WithOpenapi & WithAuditorEvent;
     if (!req[AUDITOR_SYMBOL]) {
       next(err);
       return;
