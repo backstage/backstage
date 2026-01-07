@@ -245,7 +245,7 @@ export class GitlabDiscoveryEntityProvider implements EntityProvider {
       options => this.gitLabClient.listFiles(options),
       {
         group: this.config.group,
-        search: `file:${this.config.catalogFile}`,
+        search: `filename:${this.config.catalogFile}`,
         page: 1,
         per_page: 50,
       },
