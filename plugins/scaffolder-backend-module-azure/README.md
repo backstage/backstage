@@ -34,26 +34,26 @@ Initializes a git repository with the content in the workspace and publishes it 
 
 #### Input Parameters
 
-| Parameter          | Type      | Required | Description                                                                                                      |
-| ------------------ | --------- | -------- | ---------------------------------------------------------------------------------------------------------------- |
-| `repoUrl`          | `string`  | Yes      | Repository URL in the format: `dev.azure.com?organization=<org>&project=<project>&repo=<repo>`                  |
-| `description`      | `string`  | No       | Repository description                                                                                           |
-| `defaultBranch`    | `string`  | No       | Default branch for the repository. Default: `master`                                                             |
-| `sourcePath`       | `string`  | No       | Path within the workspace to use as repository root. If omitted, the entire workspace will be published         |
-| `token`            | `string`  | No       | Personal Access Token for Azure DevOps authentication                                                            |
-| `gitCommitMessage` | `string`  | No       | Initial commit message. Default: `initial commit`                                                                |
-| `gitAuthorName`    | `string`  | No       | Author name for the commit. Default: `Scaffolder`                                                                |
-| `gitAuthorEmail`   | `string`  | No       | Author email for the commit                                                                                      |
-| `signCommit`       | `boolean` | No       | Sign the commit with the configured PGP private key                                                              |
+| Parameter          | Type      | Required | Description                                                                                             |
+| ------------------ | --------- | -------- | ------------------------------------------------------------------------------------------------------- |
+| `repoUrl`          | `string`  | Yes      | Repository URL in the format: `dev.azure.com?organization=<org>&project=<project>&repo=<repo>`          |
+| `description`      | `string`  | No       | Repository description                                                                                  |
+| `defaultBranch`    | `string`  | No       | Default branch for the repository. Default: `master`                                                    |
+| `sourcePath`       | `string`  | No       | Path within the workspace to use as repository root. If omitted, the entire workspace will be published |
+| `token`            | `string`  | No       | Personal Access Token for Azure DevOps authentication                                                   |
+| `gitCommitMessage` | `string`  | No       | Initial commit message. Default: `initial commit`                                                       |
+| `gitAuthorName`    | `string`  | No       | Author name for the commit. Default: `Scaffolder`                                                       |
+| `gitAuthorEmail`   | `string`  | No       | Author email for the commit                                                                             |
+| `signCommit`       | `boolean` | No       | Sign the commit with the configured PGP private key                                                     |
 
 #### Output Parameters
 
-| Parameter         | Type     | Description                              |
-| ----------------- | -------- | ---------------------------------------- |
-| `remoteUrl`       | `string` | URL to the repository                    |
-| `repoContentsUrl` | `string` | URL to the root of the repository (web)  |
-| `repositoryId`    | `string` | ID of the created repository             |
-| `commitHash`      | `string` | Git commit hash of the initial commit    |
+| Parameter         | Type     | Description                             |
+| ----------------- | -------- | --------------------------------------- |
+| `remoteUrl`       | `string` | URL to the repository                   |
+| `repoContentsUrl` | `string` | URL to the root of the repository (web) |
+| `repositoryId`    | `string` | ID of the created repository            |
+| `commitHash`      | `string` | Git commit hash of the initial commit   |
 
 #### Examples
 
@@ -131,4 +131,3 @@ integrations:
 ```
 
 For more information on Azure DevOps integration, see the [Azure DevOps integration documentation](https://backstage.io/docs/integrations/azure/locations).
-
