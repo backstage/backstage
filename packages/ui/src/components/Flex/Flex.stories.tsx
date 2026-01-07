@@ -243,3 +243,66 @@ export const WithTextTruncate = meta.story({
     </Flex>
   ),
 });
+
+export const Surfaces = meta.story({
+  args: {
+    px: '6',
+    py: '4',
+  },
+  render: args => (
+    <Flex align="center" style={{ flexWrap: 'wrap' }}>
+      <Flex {...args}>Default</Flex>
+      <Flex surface="0" {...args}>
+        Surface 0
+      </Flex>
+      <Flex surface="1" {...args}>
+        Surface 1
+      </Flex>
+      <Flex surface="2" {...args}>
+        Surface 2
+      </Flex>
+      <Flex surface="3" {...args}>
+        Surface 3
+      </Flex>
+      <Flex surface={{ initial: '0', sm: '1' }} {...args}>
+        Responsive Surface
+      </Flex>
+      <Flex surface="danger" {...args}>
+        Surface Danger
+      </Flex>
+      <Flex surface="warning" {...args}>
+        Surface Warning
+      </Flex>
+      <Flex surface="success" {...args}>
+        Surface Success
+      </Flex>
+    </Flex>
+  ),
+});
+
+export const SurfacesAutoIncrement = meta.story({
+  args: { px: '6', py: '4', gap: '4' },
+  render: args => (
+    <Flex direction="column">
+      <div style={{ maxWidth: '600px', marginBottom: '16px' }}>
+        Using surface="auto" automatically increments from the parent surface.
+        This allows components to be reusable without hardcoding surface levels.
+      </div>
+      <Flex {...args} surface="0" direction="column">
+        <div>Surface 0 (explicit)</div>
+        <Flex {...args} surface="auto" direction="column">
+          <div>Surface auto (becomes 1)</div>
+          <Flex {...args} surface="auto" direction="column">
+            <div>Surface auto (becomes 2)</div>
+            <Flex {...args} surface="auto" direction="column">
+              <div>Surface auto (becomes 3)</div>
+              <Flex {...args} surface="auto" direction="column">
+                <div>Surface auto (stays 3 - capped)</div>
+              </Flex>
+            </Flex>
+          </Flex>
+        </Flex>
+      </Flex>
+    </Flex>
+  ),
+});

@@ -7940,6 +7940,7 @@ __metadata:
   resolution: "@backstage/ui@workspace:packages/ui"
   dependencies:
     "@backstage/cli": "workspace:^"
+    "@backstage/version-bridge": "workspace:^"
     "@remixicon/react": "npm:^4.6.0"
     "@tanstack/react-table": "npm:^8.21.3"
     "@types/react": "npm:^18.0.0"

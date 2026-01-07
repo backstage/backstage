@@ -40,6 +40,7 @@
     "test": "backstage-cli package test"
   },
   "dependencies": {
+    "@backstage/version-bridge": "workspace:^",
     "@remixicon/react": "^4.6.0",
     "@tanstack/react-table": "^8.21.3",
     "clsx": "^2.1.1",
