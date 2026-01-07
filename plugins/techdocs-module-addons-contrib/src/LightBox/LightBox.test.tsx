@@ -56,4 +56,43 @@ describe('LightBox', () => {
       expect.any(Function),
     );
   });
+
+  it('does not add onclick event to linked images', async () => {
+    await TechDocsAddonTester.buildAddonsInTechDocs([<LightBox />])
+      .withDom(
+        <div>
+          <a href="https://example.com">
+            <img
+              data-testid="linked-fixture"
+              src="http://example.com/cat.jpg"
+              alt="cat"
+            />
+          </a>
+          <a href="https://example.com">
+            <span>
+              <img
+                data-testid="linked-indirect-fixture"
+                src="http://example.com/cat2.jpg"
+                alt="cat2"
+              />
+            </span>
+          </a>
+          <img
+            data-testid="plain-fixture"
+            src="http://example.com/dog.jpg"
+            alt="dog"
+          />
+        </div>,
+      )
+      .withApis([[entityPresentationApiRef, entityPresentationApiMock]])
+      .renderWithEffects();
+
+    expect(screen.getByShadowTestId('linked-fixture').onclick).toBeNull();
+    expect(
+      screen.getByShadowTestId('linked-indirect-fixture').onclick,
+    ).toBeNull();
+    expect(screen.getByShadowTestId('plain-fixture').onclick).toEqual(
+      expect.any(Function),
+    );
+  });
 });
