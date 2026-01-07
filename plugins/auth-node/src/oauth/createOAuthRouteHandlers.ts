@@ -44,7 +44,6 @@ import { OAuthAuthenticator, OAuthAuthenticatorResult } from './types';
 import { Config, readDurationFromConfig } from '@backstage/config';
 import { CookieScopeManager } from './CookieScopeManager';
 import { AuditorService } from '@backstage/backend-plugin-api';
-import { emitAuditEvent } from '../audit';
 
 /** @public */
 export interface OAuthRouteHandlersOptions<TProfile> {
@@ -210,16 +209,16 @@ export function createOAuthRouteHandlers<TProfile>(
         );
         profile = resolvedProfile;
 
-        const signInResult =
-          signInResolver &&
-          (await signInResolver({ profile, result }, resolverContext));
-
-        emitAuditEvent(auditor, {
+        const auditEvent = await auditor?.createEvent({
           eventId: 'auth-login',
           request: req,
           severityLevel: 'low',
           meta: { providerId, email: profile?.email },
         });
+
+        const signInResult =
+          signInResolver &&
+          (await signInResolver({ profile, result }, resolverContext));
 
         const grantedScopes = await scopeManager.handleCallback(req, {
           result,
@@ -257,27 +256,31 @@ export function createOAuthRouteHandlers<TProfile>(
               'No redirectUrl provided in request query parameters',
             );
           }
+          auditEvent?.success().catch(() => {});
           res.redirect(state.redirectUrl);
           return;
         }
 
         // post message back to popup if successful
+        auditEvent?.success().catch(() => {});
         sendWebMessageResponse(res, origin, {
           type: 'authorization_response',
           response,
         });
       } catch (error) {
-        emitAuditEvent(auditor, {
+        const auditEvent = await auditor?.createEvent({
           eventId: 'auth-login',
           request: req,
           severityLevel: 'low',
           meta: { providerId, email: profile?.email },
-          error: isError(error) ? error : new Error('Unknown auth error'),
         });
 
-        const { name, message } = isError(error)
+        const authError = isError(error)
           ? error
           : new Error('Encountered invalid error'); // Being a bit safe and not forwarding the bad value
+        const { name, message } = authError;
+
+        auditEvent?.fail({ error: authError }).catch(() => {});
 
         if (state?.flow === 'redirect' && state?.redirectUrl) {
           const redirectUrl = new URL(state.redirectUrl);
@@ -316,12 +319,13 @@ export function createOAuthRouteHandlers<TProfile>(
       // remove persisted scopes
       await scopeManager.clear(req);
 
-      emitAuditEvent(auditor, {
+      const auditEvent = await auditor?.createEvent({
         eventId: 'auth-logout',
         request: req,
         severityLevel: 'low',
         meta: { providerId },
       });
+      auditEvent?.success().catch(() => {});
 
       res.status(200).end();
     },

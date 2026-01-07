@@ -31,15 +31,6 @@ import { PassportProfile } from '../passport';
 import { parseWebMessageResponse } from '../flow/__testUtils__/parseWebMessageResponse';
 import { MiddlewareFactory } from '@backstage/backend-defaults/rootHttpRouter';
 import { mockServices } from '@backstage/backend-test-utils';
-import { emitAuditEvent } from '../audit';
-
-jest.mock('../audit', () => ({
-  emitAuditEvent: jest.fn(),
-}));
-
-const mockEmitAuditEvent = emitAuditEvent as jest.MockedFunction<
-  typeof emitAuditEvent
->;
 
 const mockAuthenticator: jest.Mocked<OAuthAuthenticator<unknown, unknown>> = {
   initialize: jest.fn(_r => ({ ctx: 'authenticator' })),
@@ -671,7 +662,12 @@ describe('createOAuthRouteHandlers', () => {
     });
 
     it('should authenticate with sign-in, profile transform, and persisted scopes', async () => {
-      const mockAuditor = {} as any;
+      const mockAuditor = mockServices.auditor.mock();
+      const auditEvent = {
+        success: jest.fn().mockResolvedValue(undefined),
+        fail: jest.fn().mockResolvedValue(undefined),
+      };
+      mockAuditor.createEvent.mockResolvedValue(auditEvent);
       const agent = request.agent(
         wrapInApp(
           createOAuthRouteHandlers({
@@ -733,8 +729,7 @@ describe('createOAuthRouteHandlers', () => {
         'my-scope%20my-other-scope',
       );
 
-      expect(mockEmitAuditEvent).toHaveBeenCalledWith(
-        mockAuditor,
+      expect(mockAuditor.createEvent).toHaveBeenCalledWith(
         expect.objectContaining({
           eventId: 'auth-login',
           severityLevel: 'low',
@@ -1031,7 +1026,12 @@ describe('createOAuthRouteHandlers', () => {
     });
 
     it('should refresh with sign-in, profile transform, and persisted scopes', async () => {
-      const mockAuditor = {} as any;
+      const mockAuditor = mockServices.auditor.mock();
+      const auditEvent = {
+        success: jest.fn().mockResolvedValue(undefined),
+        fail: jest.fn().mockResolvedValue(undefined),
+      };
+      mockAuditor.createEvent.mockResolvedValue(auditEvent);
       const agent = request.agent(
         wrapInApp(
           createOAuthRouteHandlers({
@@ -1099,7 +1099,7 @@ describe('createOAuthRouteHandlers', () => {
     });
 
     it('should forward errors and emit failure audit event', async () => {
-      const mockAuditor = {} as any;
+      const mockAuditor = mockServices.auditor.mock();
       const agent = request.agent(
         wrapInApp(
           createOAuthRouteHandlers({ ...baseConfig, auditor: mockAuditor }),
@@ -1242,7 +1242,12 @@ describe('createOAuthRouteHandlers', () => {
 
   describe('logout', () => {
     it('should log out', async () => {
-      const mockAuditor = {} as any;
+      const mockAuditor = mockServices.auditor.mock();
+      const auditEvent = {
+        success: jest.fn().mockResolvedValue(undefined),
+        fail: jest.fn().mockResolvedValue(undefined),
+      };
+      mockAuditor.createEvent.mockResolvedValue(auditEvent);
       const agent = request.agent(
         wrapInApp(
           createOAuthRouteHandlers({ ...baseConfig, auditor: mockAuditor }),
@@ -1266,8 +1271,7 @@ describe('createOAuthRouteHandlers', () => {
 
       expect(getRefreshTokenCookie(agent)).toBeUndefined();
 
-      expect(mockEmitAuditEvent).toHaveBeenCalledWith(
-        mockAuditor,
+      expect(mockAuditor.createEvent).toHaveBeenCalledWith(
         expect.objectContaining({
           eventId: 'auth-logout',
           severityLevel: 'low',
