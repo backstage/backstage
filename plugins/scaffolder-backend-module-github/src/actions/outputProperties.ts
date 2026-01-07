@@ -31,6 +31,4 @@ const commitHash = (z: typeof zod) =>
     description: 'The git commit hash of the initial commit',
   });
 
-export { remoteUrl };
-export { repoContentsUrl };
-export { commitHash };
+export { commitHash, remoteUrl, repoContentsUrl };
