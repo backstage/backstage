@@ -274,7 +274,6 @@ export function auditorMiddlewareFactory(dependencies: {
     } catch (err) {
       logger.error(`Failed to finalize auditor event`, err);
       // Don't fail the request if auditing fails after the response is sent.
-      next();
       return;
     }
   };
