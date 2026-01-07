@@ -12,7 +12,6 @@ import type { LoggerService } from '@backstage/backend-plugin-api';
 import { middleware } from 'express-openapi-validator';
 import { NextFunction } from 'express';
 import type { OpenAPIObject } from 'openapi3-ts';
-import { OperationObject } from 'openapi3-ts';
 import type { ParameterObject } from 'openapi3-ts';
 import type { ReferenceObject } from 'openapi3-ts';
 import { Request as Request_3 } from 'express';
@@ -49,13 +48,13 @@ export function auditorMiddlewareFactory(dependencies: {
   logger: LoggerService;
 }): {
   success: (
-    req: Request_3 & WithOpenapi & WithAuditorEvent,
+    _req: Request_3,
     res: Response_4,
     next: NextFunction,
   ) => Promise<void>;
   error: (
     err: Error,
-    req: Request_3 & WithOpenapi & WithAuditorEvent,
+    _req: Request_3,
     _res: Response_4,
     next: NextFunction,
   ) => Promise<void>;
@@ -945,22 +944,4 @@ type UnknownIfNever<P> = [P] extends [never] ? unknown : P;
 
 // @public
 type ValueOf<T> = T[keyof T];
-
-// @public (undocumented)
-export interface WithAuditorEvent {
-  // (undocumented)
-  [AUDITOR_SYMBOL]?: Awaited<ReturnType<AuditorService['createEvent']>>;
-}
-
-// @public (undocumented)
-export interface WithOpenapi {
-  // (undocumented)
-  openapi?: {
-    expressRoute: string;
-    openApiRoute: string;
-    pathParams: Record<string, string>;
-    schema: OperationObject;
-    serial: number;
-  };
-}
 ```

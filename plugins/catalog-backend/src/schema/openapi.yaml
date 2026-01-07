@@ -833,8 +833,8 @@ paths:
         severityLevel: medium
         meta:
           queryType: refresh
-          captureFromRequest:
-            body: [entityRef]
+        captureMetaFromRequest:
+          body: [entityRef]
       responses:
         '200':
           description: Refreshed
@@ -912,8 +912,8 @@ paths:
         eventId: entity-fetch
         meta:
           queryType: by-uid
-          captureFromRequest:
-            params: [uid]
+        captureMetaFromRequest:
+          params: [uid]
       responses:
         '200':
           description: Ok
@@ -940,8 +940,8 @@ paths:
         severityLevel: medium
         meta:
           actionType: delete
-          captureFromRequest:
-            params: [uid]
+        captureMetaFromRequest:
+          params: [uid]
       responses:
         '204':
           description: Deleted successfully.
@@ -964,8 +964,8 @@ paths:
         eventId: entity-fetch
         meta:
           queryType: by-name
-          captureFromRequest:
-            params: [kind, namespace, name]
+        captureMetaFromRequest:
+          params: [kind, namespace, name]
       responses:
         '200':
           description: Ok
@@ -994,8 +994,8 @@ paths:
         eventId: entity-fetch
         meta:
           actionType: ancestry
-          captureFromRequest:
-            params: [kind, namespace, name]
+        captureMetaFromRequest:
+          params: [kind, namespace, name]
       responses:
         '200':
           description: Ok
@@ -1168,9 +1168,9 @@ paths:
         severityLevel: medium
         meta:
           actionType: create
-          captureFromRequest:
-            body: [type, target]
-            query: [dryRun]
+        captureMetaFromRequest:
+          body: [type, target]
+          query: [dryRun]
       responses:
         '201':
           description: Created
@@ -1257,8 +1257,8 @@ paths:
         eventId: location-fetch
         meta:
           queryType: by-id
-          captureFromRequest:
-            params: [id]
+        captureMetaFromRequest:
+          params: [id]
       responses:
         '200':
           description: Ok
@@ -1288,8 +1288,8 @@ paths:
         severityLevel: medium
         meta:
           actionType: delete
-          captureFromRequest:
-            params: [id]
+        captureMetaFromRequest:
+          params: [id]
       responses:
         '204':
           description: No content
@@ -1317,8 +1317,8 @@ paths:
         eventId: location-fetch
         meta:
           queryType: by-entity
-          captureFromRequest:
-            params: [kind, namespace, name]
+        captureMetaFromRequest:
+          params: [kind, namespace, name]
       responses:
         '200':
           description: Ok

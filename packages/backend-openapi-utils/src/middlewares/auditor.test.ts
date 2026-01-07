@@ -59,9 +59,9 @@ describe('auditorMiddleware', () => {
             severityLevel: 'medium',
             meta: {
               queryType: 'refresh',
-              captureFromRequest: {
-                body: ['entityRef'],
-              },
+            },
+            captureMetaFromRequest: {
+              body: ['entityRef'],
             },
           },
           requestBody: {
@@ -91,11 +91,9 @@ describe('auditorMiddleware', () => {
           'x-backstage-auditor': {
             eventId: 'user-fetch',
             severityLevel: 'low',
-            meta: {
-              captureFromRequest: {
-                params: ['userId'],
-                query: ['includeDetails'],
-              },
+            captureMetaFromRequest: {
+              params: ['userId'],
+              query: ['includeDetails'],
             },
           },
           parameters: [
@@ -138,10 +136,8 @@ describe('auditorMiddleware', () => {
           operationId: 'test',
           'x-backstage-auditor': {
             eventId: 'test-event',
-            meta: {
-              captureFromRequest: {
-                body: ['user.id', 'user.email'],
-              },
+            captureMetaFromRequest: {
+              body: ['user.id', 'user.email'],
             },
           },
           responses: { '200': { description: 'OK' } },
@@ -154,10 +150,8 @@ describe('auditorMiddleware', () => {
           'x-backstage-auditor': {
             eventId: 'data-process',
             severityLevel: 'medium',
-            meta: {
-              captureFromResponse: {
-                body: ['resultId', 'processedCount'],
-              },
+            captureMetaFromResponse: {
+              body: ['resultId', 'processedCount'],
             },
           },
           responses: { '200': { description: 'OK' } },
