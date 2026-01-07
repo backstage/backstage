@@ -1,5 +1,12 @@
 # @backstage/plugin-scaffolder-common
 
+## 1.7.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.19.2-next.0
+
 ## 1.7.4
 
 ### Patch Changes

@@ -523,6 +523,7 @@ transpile
 transpiled
 transpiler
 transpilers
+trixie
 truthy
 tsconfig
 TSDoc
@@ -577,3 +578,4 @@ zoomable
 zsh
 resizable
 enums
+LLMs

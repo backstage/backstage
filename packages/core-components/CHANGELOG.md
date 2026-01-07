@@ -1,5 +1,11 @@
 # @backstage/core-components
 
+## 0.18.5-next.0
+
+### Patch Changes
+
+- a723b8a: The MarkdownContent component now handles HTML content the same way as GitHub when rendering GitHub-flavored Markdown
+
 ## 0.18.4
 
 ### Patch Changes

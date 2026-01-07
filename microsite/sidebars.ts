@@ -27,17 +27,17 @@ function sidebarElementWithIndex(
   },
   children: Array<string | object>,
 ) {
-  const { label, description, differentiator } = element;
+  const { label, description, differentiator = '' } = element;
   return {
     type: 'category',
-    label: label,
+    label,
     description,
     link: {
       type: 'generated-index',
       title: label,
       slug: `/${differentiator}${label
         .toLowerCase()
-        .replace(/[^a-z0-9 _-]/gi, '-')}/generated-index`,
+        .replace(/[^a-z0-9]/g, '-')}/generated-index`,
     },
     items: children,
   };
@@ -397,7 +397,6 @@ export default {
       },
       [
         'plugins/index',
-        'plugins/existing-plugins',
         'plugins/create-a-plugin',
         'plugins/plugin-development',
         'plugins/structure-of-a-plugin',
