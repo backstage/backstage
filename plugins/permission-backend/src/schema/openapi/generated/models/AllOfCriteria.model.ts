@@ -20,11 +20,9 @@
 import { PermissionCriteria } from '../models/PermissionCriteria.model';
 
 /**
+ * Permissions criteria where all of the requested permissions must be fulfilled.
  * @public
  */
 export interface AllOfCriteria {
-  /**
-   * Array of criteria where all must be satisfied
-   */
   allOf: Array<PermissionCriteria>;
 }

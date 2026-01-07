@@ -20,6 +20,7 @@
 import { PermissionCriteria } from '../models/PermissionCriteria.model';
 
 /**
+ * Permissions criteria that will be negated.
  * @public
  */
 export interface NotCriteria {

@@ -274,6 +274,8 @@ export const spec = {
       },
       AnyOfCriteria: {
         type: 'object',
+        description:
+          'Permissions criteria where only one of the requested permissions must be fulfilled.',
         properties: {
           anyOf: {
             type: 'array',
@@ -281,8 +283,6 @@ export const spec = {
               $ref: '#/components/schemas/PermissionCriteria',
             },
             minItems: 1,
-            description:
-              'Array of criteria where at least one must be satisfied',
           },
         },
         required: ['anyOf'],
@@ -290,6 +290,8 @@ export const spec = {
       },
       AllOfCriteria: {
         type: 'object',
+        description:
+          'Permissions criteria where all of the requested permissions must be fulfilled.',
         properties: {
           allOf: {
             type: 'array',
@@ -297,7 +299,6 @@ export const spec = {
               $ref: '#/components/schemas/PermissionCriteria',
             },
             minItems: 1,
-            description: 'Array of criteria where all must be satisfied',
           },
         },
         required: ['allOf'],
@@ -305,10 +306,10 @@ export const spec = {
       },
       NotCriteria: {
         type: 'object',
+        description: 'Permissions criteria that will be negated.',
         properties: {
           not: {
             $ref: '#/components/schemas/PermissionCriteria',
-            description: 'Criteria to be negated',
           },
         },
         required: ['not'],

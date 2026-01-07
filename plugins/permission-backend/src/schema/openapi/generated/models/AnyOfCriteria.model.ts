@@ -20,11 +20,9 @@
 import { PermissionCriteria } from '../models/PermissionCriteria.model';
 
 /**
+ * Permissions criteria where only one of the requested permissions must be fulfilled.
  * @public
  */
 export interface AnyOfCriteria {
-  /**
-   * Array of criteria where at least one must be satisfied
-   */
   anyOf: Array<PermissionCriteria>;
 }
