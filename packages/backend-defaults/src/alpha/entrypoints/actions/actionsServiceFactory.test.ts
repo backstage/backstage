@@ -168,7 +168,7 @@ describe('actionsServiceFactory', () => {
                   actions: {
                     pluginSources: ['my-plugin', 'other-plugin'],
                     filter: {
-                      include: ['my-plugin:*'],
+                      include: [{ id: 'my-plugin:*' }],
                     },
                   },
                 },
@@ -223,7 +223,7 @@ describe('actionsServiceFactory', () => {
                   actions: {
                     pluginSources: ['my-plugin'],
                     filter: {
-                      exclude: ['*:delete-*'],
+                      exclude: [{ id: '*:delete-*' }],
                     },
                   },
                 },
@@ -275,8 +275,8 @@ describe('actionsServiceFactory', () => {
                   actions: {
                     pluginSources: ['my-plugin'],
                     filter: {
-                      include: ['my-plugin:*'],
-                      exclude: ['my-plugin:delete-entity'],
+                      include: [{ id: 'my-plugin:*' }],
+                      exclude: [{ id: 'my-plugin:delete-entity' }],
                     },
                   },
                 },
@@ -338,9 +338,13 @@ describe('actionsServiceFactory', () => {
                   actions: {
                     pluginSources: ['my-plugin'],
                     filter: {
-                      attributes: {
-                        readOnly: true,
-                      },
+                      include: [
+                        {
+                          attributes: {
+                            readOnly: true,
+                          },
+                        },
+                      ],
                     },
                   },
                 },
@@ -430,10 +434,14 @@ describe('actionsServiceFactory', () => {
                   actions: {
                     pluginSources: ['my-plugin', 'other-plugin'],
                     filter: {
-                      include: ['my-plugin:*'],
-                      attributes: {
-                        destructive: false,
-                      },
+                      include: [
+                        {
+                          id: 'my-plugin:*',
+                          attributes: {
+                            destructive: false,
+                          },
+                        },
+                      ],
                     },
                   },
                 },

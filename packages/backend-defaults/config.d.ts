@@ -161,45 +161,96 @@ export interface Config {
        */
       filter?: {
         /**
-         * Glob patterns for action IDs to include.
-         * An action must match at least one pattern to be included.
-         * Action IDs have the format `{pluginId}:{actionName}`.
-         * @default ['*']
-         * @example ['catalog:*', 'scaffolder:create-*']
+         * Rules for actions to include. An action must match at least one rule to be included.
+         * Each rule can specify an id pattern and/or attribute constraints.
+         * If no include rules are specified, all actions are included by default.
+         *
+         * @example
+         * ```yaml
+         * include:
+         *   - id: 'catalog:*'
+         *     attributes:
+         *       destructive: false
+         *   - id: 'scaffolder:*'
+         * ```
          */
-        include?: string[];
+        include?: Array<{
+          /**
+           * Glob pattern for action IDs to match.
+           * Action IDs have the format `{pluginId}:{actionName}`.
+           * @example 'catalog:*'
+           */
+          id?: string;
+
+          /**
+           * Attribute constraints. All specified attributes must match.
+           * Actions are compared against their resolved attributes (with defaults applied).
+           */
+          attributes?: {
+            /**
+             * If specified, only match actions where destructive matches this value.
+             * Actions default to destructive: true if not explicitly set.
+             */
+            destructive?: boolean;
+
+            /**
+             * If specified, only match actions where readOnly matches this value.
+             * Actions default to readOnly: false if not explicitly set.
+             */
+            readOnly?: boolean;
+
+            /**
+             * If specified, only match actions where idempotent matches this value.
+             * Actions default to idempotent: false if not explicitly set.
+             */
+            idempotent?: boolean;
+          };
+        }>;
 
         /**
-         * Glob patterns for action IDs to exclude.
-         * Exclusions take precedence over inclusions.
-         * @default []
-         * @example ['*:delete-*']
+         * Rules for actions to exclude. Exclusions take precedence over inclusions.
+         * Each rule can specify an id pattern and/or attribute constraints.
+         *
+         * @example
+         * ```yaml
+         * exclude:
+         *   - id: '*:delete-*'
+         *   - attributes:
+         *       readOnly: false
+         * ```
          */
-        exclude?: string[];
-
-        /**
-         * Attribute constraints. All specified attributes must match.
-         * Actions are compared against their resolved attributes (with defaults applied).
-         */
-        attributes?: {
+        exclude?: Array<{
           /**
-           * If specified, only include actions where destructive matches this value.
-           * Actions default to destructive: true if not explicitly set.
+           * Glob pattern for action IDs to match.
+           * Action IDs have the format `{pluginId}:{actionName}`.
+           * @example '*:delete-*'
            */
-          destructive?: boolean;
+          id?: string;
 
           /**
-           * If specified, only include actions where readOnly matches this value.
-           * Actions default to readOnly: false if not explicitly set.
+           * Attribute constraints. All specified attributes must match.
+           * Actions are compared against their resolved attributes (with defaults applied).
            */
-          readOnly?: boolean;
+          attributes?: {
+            /**
+             * If specified, only match actions where destructive matches this value.
+             * Actions default to destructive: true if not explicitly set.
+             */
+            destructive?: boolean;
 
-          /**
-           * If specified, only include actions where idempotent matches this value.
-           * Actions default to idempotent: false if not explicitly set.
-           */
-          idempotent?: boolean;
-        };
+            /**
+             * If specified, only match actions where readOnly matches this value.
+             * Actions default to readOnly: false if not explicitly set.
+             */
+            readOnly?: boolean;
+
+            /**
+             * If specified, only match actions where idempotent matches this value.
+             * Actions default to idempotent: false if not explicitly set.
+             */
+            idempotent?: boolean;
+          };
+        }>;
       };
     };
 

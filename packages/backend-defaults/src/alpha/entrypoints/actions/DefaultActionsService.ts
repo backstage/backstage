@@ -27,6 +27,7 @@ import {
   ActionsServiceAction,
 } from '@backstage/backend-plugin-api/alpha';
 import { Minimatch } from 'minimatch';
+import { Config } from '@backstage/config';
 
 export class DefaultActionsService implements ActionsService {
   private readonly discovery: DiscoveryService;
@@ -153,55 +154,110 @@ export class DefaultActionsService implements ActionsService {
   private applyFilters(
     actions: ActionsServiceAction[],
   ): ActionsServiceAction[] {
-    const includePatterns = this.config.getOptionalStringArray(
-      'backend.actions.filter.include',
-    ) ?? ['*'];
-    const excludePatterns =
-      this.config.getOptionalStringArray('backend.actions.filter.exclude') ??
-      [];
-    const attributesConfig = this.config.getOptionalConfig(
-      'backend.actions.filter.attributes',
+    const filterConfig = this.config.getOptionalConfig(
+      'backend.actions.filter',
     );
 
-    // Pre-compile matchers for efficiency
-    const includeMatchers = includePatterns.map(p => new Minimatch(p));
-    const excludeMatchers = excludePatterns.map(p => new Minimatch(p));
-
-    // Build attribute constraints
-    const attributeConstraints: Array<{
-      key: 'destructive' | 'readOnly' | 'idempotent';
-      value: boolean;
-    }> = [];
-    if (attributesConfig) {
-      for (const key of ['destructive', 'readOnly', 'idempotent'] as const) {
-        const value = attributesConfig.getOptionalBoolean(key);
-        if (value !== undefined) {
-          attributeConstraints.push({ key, value });
-        }
-      }
+    if (!filterConfig) {
+      return actions;
     }
 
+    const includeRules = this.parseFilterRules(
+      filterConfig.getOptionalConfigArray('include') ?? [],
+    );
+    const excludeRules = this.parseFilterRules(
+      filterConfig.getOptionalConfigArray('exclude') ?? [],
+    );
+
     return actions.filter(action => {
-      // Must match at least one include pattern
-      const included = includeMatchers.some(m => m.match(action.id));
-      if (!included) {
-        return false;
-      }
-
-      // Must not match any exclude pattern
-      const excluded = excludeMatchers.some(m => m.match(action.id));
-      if (excluded) {
-        return false;
-      }
-
-      // Must satisfy all attribute constraints
-      for (const { key, value } of attributeConstraints) {
-        if (action.attributes[key] !== value) {
+      // If include rules exist, must match at least one
+      if (includeRules.length > 0) {
+        const included = includeRules.some(rule =>
+          this.matchesRule(action, rule),
+        );
+        if (!included) {
           return false;
         }
       }
 
+      // Must not match any exclude rule
+      const excluded = excludeRules.some(rule =>
+        this.matchesRule(action, rule),
+      );
+      if (excluded) {
+        return false;
+      }
+
       return true;
     });
+  }
+
+  private parseFilterRules(configArray: Array<Config>): Array<{
+    idMatcher?: Minimatch;
+    attributes?: Partial<
+      Record<'destructive' | 'readOnly' | 'idempotent', boolean>
+    >;
+  }> {
+    if (!configArray) {
+      return [];
+    }
+
+    return configArray.map(ruleConfig => {
+      const idPattern = ruleConfig.getOptionalString('id');
+      const attributesConfig = ruleConfig.getOptionalConfig('attributes');
+
+      const rule: {
+        idMatcher?: Minimatch;
+        attributes?: Partial<
+          Record<'destructive' | 'readOnly' | 'idempotent', boolean>
+        >;
+      } = {};
+
+      if (idPattern) {
+        rule.idMatcher = new Minimatch(idPattern);
+      }
+
+      if (attributesConfig) {
+        rule.attributes = {};
+        for (const key of ['destructive', 'readOnly', 'idempotent'] as const) {
+          const value = attributesConfig.getOptionalBoolean(key);
+          if (value !== undefined) {
+            rule.attributes[key] = value;
+          }
+        }
+      }
+
+      return rule;
+    });
+  }
+
+  private matchesRule(
+    action: ActionsServiceAction,
+    rule: {
+      idMatcher?: Minimatch;
+      attributes?: Partial<
+        Record<'destructive' | 'readOnly' | 'idempotent', boolean>
+      >;
+    },
+  ): boolean {
+    // If id pattern is specified, it must match
+    if (rule.idMatcher && !rule.idMatcher.match(action.id)) {
+      return false;
+    }
+
+    // If attributes are specified, all must match
+    if (rule.attributes) {
+      for (const [key, value] of Object.entries(rule.attributes)) {
+        if (
+          action.attributes[
+            key as 'destructive' | 'readOnly' | 'idempotent'
+          ] !== value
+        ) {
+          return false;
+        }
+      }
+    }
+
+    return true;
   }
 }

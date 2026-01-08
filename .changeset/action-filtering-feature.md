@@ -16,15 +16,18 @@ backend:
       - scaffolder
     filter:
       include:
-        - 'catalog:*'
+        - id: 'catalog:*'
+          attributes:
+            destructive: false
+        - id: 'scaffolder:*'
       exclude:
-        - '*:delete-*'
-      attributes:
-        destructive: false
+        - id: '*:delete-*'
+        - attributes:
+            readOnly: false
 ```
 
 Filtering logic:
 
-- `include`: Glob patterns for action IDs to include (default: `['*']`)
-- `exclude`: Glob patterns for action IDs to exclude (takes precedence over include)
-- `attributes`: Attribute constraints that all must match (destructive, readOnly, idempotent)
+- `include`: Rules for actions to include. Each rule can specify an `id` glob pattern and/or `attributes` constraints. An action must match at least one rule to be included. If no include rules are specified, all actions are included by default.
+- `exclude`: Rules for actions to exclude. Takes precedence over include rules.
+- Each rule combines `id` and `attributes` with AND logic (both must match if specified).
