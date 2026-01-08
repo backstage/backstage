@@ -179,20 +179,20 @@ import { DevToolsContentBlueprint } from '@backstage/plugin-devtools-react';
 
 export const unprocessedEntitiesDevToolsContent = DevToolsContentBlueprint.make(
   {
+    disabled: true,
     params: {
       path: 'unprocessed-entities',
       title: 'Unprocessed Entities',
       loader: () =>
-        import('../components/UnprocessedEntities').then(
-          ({ UnprocessedEntitiesContent }) =>
-            createElement(UnprocessedEntitiesContent),
-        ),
+        import('../components/UnprocessedEntities').then(m => (
+          <m.UnprocessedEntitiesContent />
+        )),
     },
   },
 );
 
 const appFeature = createFrontendModule({
-  pluginId: 'app',
+  pluginId: 'catalog-unprocessed-entities',
   extensions: [unprocessedEntitiesDevToolsContent],
 });
 ```

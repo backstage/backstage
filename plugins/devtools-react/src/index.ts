@@ -22,4 +22,4 @@
 export {
   type DevToolsContentBlueprintParams,
   DevToolsContentBlueprint,
-} from './devToolsContentBlueprint.tsx';
+} from './devToolsContentBlueprint';

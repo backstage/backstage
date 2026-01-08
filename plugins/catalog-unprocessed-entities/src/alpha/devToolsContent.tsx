@@ -23,6 +23,7 @@ import { DevToolsContentBlueprint } from '@backstage/plugin-devtools-react';
  */
 export const unprocessedEntitiesDevToolsContent = DevToolsContentBlueprint.make(
   {
+    disabled: true,
     params: {
       path: 'unprocessed-entities',
       title: 'Unprocessed Entities',

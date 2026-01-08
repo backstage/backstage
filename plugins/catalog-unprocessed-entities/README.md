@@ -55,19 +55,31 @@ import catalogUnprocessedEntitiesPlugin from '@backstage/plugin-catalog-unproces
 import { unprocessedEntitiesDevToolsContent } from '@backstage/plugin-catalog-unprocessed-entities/alpha';
 
 // Optionally add unprocessed entities route to devtools
-const appFeature = createFrontendModule({
-  pluginId: 'app',
+const devtoolsPluginUnprocessed = createFrontendModule({
+  pluginId: 'catalog-unprocessed-entities',
   extensions: [unprocessedEntitiesDevToolsContent],
 });
 
 export const app = createApp({
   features: [
-    appFeature,
     // ...
     catalogUnprocessedEntitiesPlugin,
+
+    // Optionally add unprocessed entities route to devtools
+    devtoolsPluginUnprocessed,
+    devtoolsPlugin, // devtools plugin needs to be added too, if autodiscover is disabled
     // ...
   ],
 });
+```
+
+```yaml
+app:
+  extensions:
+    # Enable the catalog-unprocessed-entities tab in devtools
+    - devtools-content:catalog-unprocessed-entities: true
+    # Disable the catalog-unprocessed-entities element outside devtools including the sidebar
+    - page:catalog-unprocessed-entities: false
 ```
 
 ## Customization
