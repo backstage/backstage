@@ -98,9 +98,16 @@ export function useTable<T extends TableItem, TFilter = unknown>(
 ): UseTableResult<T, TFilter> {
   const query = useQueryState<TFilter>(options);
 
+  const initialModeRef = useRef(options.mode);
+  if (initialModeRef.current !== options.mode) {
+    throw new Error(
+      `useTable mode cannot change from '${initialModeRef.current}' to '${options.mode}'. ` +
+        `The mode must remain stable for the lifetime of the component.`,
+    );
+  }
+
   let pagination: PaginationResult<T> & { reload: () => void };
 
-  // Conditional hooks - mode is stable for lifetime of component
   if (options.mode === 'complete') {
     pagination = useCompletePagination(options, query);
   } else if (options.mode === 'offset') {
@@ -125,7 +132,7 @@ export function useTable<T extends TableItem, TFilter = unknown>(
   return {
     tableProps,
     reload: pagination.reload,
-    filter: { value: query.filter, onFilterChange: query.setFilter },
-    search: { value: query.search, onSearchChange: query.setSearch },
+    filter: { value: query.filter, onChange: query.setFilter },
+    search: { value: query.search, onChange: query.setSearch },
   };
 }

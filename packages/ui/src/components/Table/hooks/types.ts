@@ -20,13 +20,13 @@ import type { SortDescriptor, TableItem, TableProps } from '../types';
 /** @public */
 export interface FilterState<TFilter> {
   value: TFilter | undefined;
-  onFilterChange: (filter: TFilter) => void;
+  onChange: (value: TFilter) => void;
 }
 
 /** @public */
 export interface SearchState {
   value: string;
-  onSearchChange: (value: string) => void;
+  onChange: (value: string) => void;
 }
 
 /** @public */

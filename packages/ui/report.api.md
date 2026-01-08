@@ -679,7 +679,7 @@ export interface FieldLabelProps
 // @public (undocumented)
 export interface FilterState<TFilter> {
   // (undocumented)
-  onFilterChange: (filter: TFilter) => void;
+  onChange: (value: TFilter) => void;
   // (undocumented)
   value: TFilter | undefined;
 }
@@ -1258,7 +1258,7 @@ export interface SearchFieldProps
 // @public (undocumented)
 export interface SearchState {
   // (undocumented)
-  onSearchChange: (value: string) => void;
+  onChange: (value: string) => void;
   // (undocumented)
   value: string;
 }

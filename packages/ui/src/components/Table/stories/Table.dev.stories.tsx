@@ -30,12 +30,12 @@ import {
   type ColumnConfig,
 } from '..';
 import { Button } from '../../Button';
-import { TextField } from '../../TextField';
 import { Select } from '../../Select';
 import { Flex } from '../../Flex';
 import { data as data1 } from './mocked-data1';
 import { data as data4 } from './mocked-data4';
 import { selectionData, selectionColumns, tableStoriesMeta } from './utils';
+import { SearchField } from '../../SearchField';
 
 const meta = {
   title: 'Backstage UI/Table/dev',
@@ -186,12 +186,11 @@ export const Search: Story = {
 
     return (
       <div>
-        <TextField
+        <SearchField
           aria-label="Search"
           placeholder="Search..."
-          value={search.value}
-          onChange={value => search.onSearchChange(value)}
           style={{ marginBottom: '16px' }}
+          {...search}
         />
         <Table
           columnConfig={columns}
@@ -924,20 +923,19 @@ export const ComprehensiveServerSide: Story = {
     return (
       <Flex direction="column" gap="4">
         <Flex gap="4" align="end">
-          <TextField
+          <SearchField
             aria-label="Search"
             label="Search"
             placeholder="Search by name, owner, or description..."
-            value={search.value}
-            onChange={search.onSearchChange}
             style={{ width: 300 }}
+            {...search}
           />
           <Select
             label="Type"
             options={typeOptions}
-            selectedKey={filter.value?.type ?? ''}
-            onSelectionChange={key =>
-              filter.onFilterChange({ type: key === '' ? null : String(key) })
+            value={filter.value?.type ?? ''}
+            onChange={key =>
+              filter.onChange({ type: key === '' ? null : String(key) })
             }
             style={{ width: 180 }}
           />
