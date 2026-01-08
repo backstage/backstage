@@ -99,6 +99,7 @@ dataflow
 dataloader
 dayjs
 debounce
+debounced
 debounces
 debuggability
 declaratively

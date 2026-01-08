@@ -22,6 +22,11 @@
     caption-side: bottom;
     border-collapse: collapse;
     table-layout: fixed;
+    transition: opacity 0.2s ease-in-out;
+
+    &[data-stale='true'] {
+      opacity: 0.6;
+    }
   }
 
   .bui-TableHeader {
