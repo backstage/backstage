@@ -509,7 +509,7 @@
 <header>
   <div class="wrap">
     <h1>Components Manifest</h1>
-    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><span class="filter-pill ok" aria-disabled="true">34 components ok</span><a class="filter-pill info" data-k="infos" href="#filter-infos">26/34 infos</a><span class="filter-pill ok" aria-disabled="true">299 stories ok</span></div>
+    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><span class="filter-pill ok" aria-disabled="true">36 components ok</span><a class="filter-pill info" data-k="infos" href="#filter-infos">28/36 infos</a><span class="filter-pill ok" aria-disabled="true">317 stories ok</span></div>
   </div>
 </header>
 <main>
@@ -2716,14 +2716,1119 @@ style?: React.CSSProperties</code></pre>
   has-info 
   no-story-error"
   role="listitem"
+  aria-label="dev">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> dev</h2>
+      <div class="badges">
+        <label for="c-9-backstage-ui-table-dev-props" class="badge ok as-toggle">10 prop types</label>
+        <label for="c-9-backstage-ui-table-dev-info" class="badge info as-toggle">1 info</label>
+        <label for="c-9-backstage-ui-table-dev-stories" class="badge ok as-toggle">21 stories</label>
+      </div>
+    </div>
+    <div class="meta" title="./packages/ui/src/components/Table/stories/Table.dev.stories.tsx">backstage-ui-table-dev · ./packages/ui/src/components/Table/stories/Table.dev.stories.tsx</div>
+    
+    
+    <div class="kv"><span class="chip">public:  </span></div>
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  
+  <input id="c-9-backstage-ui-table-dev-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-9-backstage-ui-table-dev-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-9-backstage-ui-table-dev-props" class="tg tg-props" type="checkbox" hidden />
+
+  <div class="panels">
+    
+    
+        <div class="panel panel-info">
+          
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
+    </div>
+        </div>
+    
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types</span>
+              <span class="badge ok">10 prop types</span>
+            </div>
+            <pre><code>Component: packages/ui/src/components/Table/components/Table.tsx::Table</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>columnConfig: unknown
+
+data: T[] | undefined
+
+emptyState?: ReactNode
+
+error?: Error
+
+isStale?: boolean = false
+
+loading?: boolean = false
+
+pagination: NoPagination | PagePagination
+
+rowConfig?: RowConfig&lt;T&gt; | RowRenderFn&lt;T&gt;
+
+selection?: TableSelection
+
+sort?: SortState</code></pre>
+          </div>
+        </div>
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import {
+    Button,
+    CellProfile,
+    CellText,
+    Column,
+    Flex,
+    Row,
+    SearchField,
+    Select,
+    Table,
+    TableBody,
+    TableHeader,
+    TableRoot,
+} from "@backstage/ui";
+import { Fragment } from "react";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">BasicLocalData</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const BasicLocalData = () =&gt; {
+  const columns: ColumnConfig&lt;Data1Item&gt;[] = [
+    {
+      id: &#39;name&#39;,
+      label: &#39;Name&#39;,
+      isRowHeader: true,
+      cell: item =&gt; (
+        &lt;CellText title={item.name} description={item.description} /&gt;
+      ),
+    },
+    {
+      id: &#39;owner&#39;,
+      label: &#39;Owner&#39;,
+      cell: item =&gt; &lt;CellText title={item.owner.name} /&gt;,
+    },
+    {
+      id: &#39;type&#39;,
+      label: &#39;Type&#39;,
+      cell: item =&gt; &lt;CellText title={item.type} /&gt;,
+    },
+    {
+      id: &#39;lifecycle&#39;,
+      label: &#39;Lifecycle&#39;,
+      cell: item =&gt; &lt;CellText title={item.lifecycle} /&gt;,
+    },
+  ];
+
+  const { tableProps } = useTable({
+    mode: &#39;complete&#39;,
+    getData: () =&gt; data1,
+    paginationOptions: { pageSize: 5 },
+  });
+
+  return &lt;Table columnConfig={columns} {...tableProps} /&gt;;
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Sorting</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Sorting = () =&gt; {
+  const columns: ColumnConfig&lt;Data1Item&gt;[] = [
+    {
+      id: &#39;name&#39;,
+      label: &#39;Name&#39;,
+      isRowHeader: true,
+      cell: item =&gt; &lt;CellText title={item.name} /&gt;,
+      isSortable: true,
+    },
+    {
+      id: &#39;owner&#39;,
+      label: &#39;Owner&#39;,
+      cell: item =&gt; &lt;CellText title={item.owner.name} /&gt;,
+      isSortable: true,
+    },
+    {
+      id: &#39;type&#39;,
+      label: &#39;Type&#39;,
+      cell: item =&gt; &lt;CellText title={item.type} /&gt;,
+      isSortable: true,
+    },
+    {
+      id: &#39;lifecycle&#39;,
+      label: &#39;Lifecycle&#39;,
+      cell: item =&gt; &lt;CellText title={item.lifecycle} /&gt;,
+      isSortable: true,
+    },
+  ];
+
+  const { tableProps } = useTable({
+    mode: &#39;complete&#39;,
+    getData: () =&gt; data1,
+    paginationOptions: { pageSize: 5 },
+    initialSort: { column: &#39;name&#39;, direction: &#39;ascending&#39; },
+    sortFn: (items, { column, direction }) =&gt; {
+      return [...items].sort((a, b) =&gt; {
+        let aVal: string;
+        let bVal: string;
+        if (column === &#39;name&#39;) {
+          aVal = a.name;
+          bVal = b.name;
+        } else if (column === &#39;owner&#39;) {
+          aVal = a.owner.name;
+          bVal = b.owner.name;
+        } else if (column === &#39;type&#39;) {
+          aVal = a.type;
+          bVal = b.type;
+        } else {
+          aVal = a.lifecycle;
+          bVal = b.lifecycle;
+        }
+        const cmp = aVal.localeCompare(bVal);
+        return direction === &#39;descending&#39; ? -cmp : cmp;
+      });
+    },
+  });
+
+  return &lt;Table columnConfig={columns} {...tableProps} /&gt;;
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Search</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Search = () =&gt; {
+  const columns: ColumnConfig&lt;Data1Item&gt;[] = [
+    {
+      id: &#39;name&#39;,
+      label: &#39;Name&#39;,
+      isRowHeader: true,
+      cell: item =&gt; &lt;CellText title={item.name} /&gt;,
+      isSortable: true,
+    },
+    {
+      id: &#39;owner&#39;,
+      label: &#39;Owner&#39;,
+      cell: item =&gt; &lt;CellText title={item.owner.name} /&gt;,
+    },
+    {
+      id: &#39;type&#39;,
+      label: &#39;Type&#39;,
+      cell: item =&gt; &lt;CellText title={item.type} /&gt;,
+    },
+  ];
+
+  const { tableProps, search } = useTable({
+    mode: &#39;complete&#39;,
+    getData: () =&gt; data1,
+    paginationOptions: { pageSize: 5 },
+    searchFn: (items, query) =&gt; {
+      const lowerQuery = query.toLowerCase();
+      return items.filter(
+        item =&gt;
+          item.name.toLowerCase().includes(lowerQuery) ||
+          item.owner.name.toLowerCase().includes(lowerQuery) ||
+          item.type.toLowerCase().includes(lowerQuery),
+      );
+    },
+  });
+
+  return (
+    &lt;div&gt;
+      &lt;SearchField
+        aria-label=&quot;Search&quot;
+        placeholder=&quot;Search...&quot;
+        style={{ marginBottom: &#39;16px&#39; }}
+        {...search}
+      /&gt;
+      &lt;Table
+        columnConfig={columns}
+        emptyState={
+          search.value ? (
+            &lt;div&gt;No results found&lt;/div&gt;
+          ) : (
+            &lt;div&gt;No data available&lt;/div&gt;
+          )
+        }
+        {...tableProps}
+      /&gt;
+    &lt;/div&gt;
+  );
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Selection</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Selection = () =&gt; {
+  const [selected, setSelected] = useState&lt;Set&lt;string | number&gt; | &#39;all&#39;&gt;(
+    new Set(),
+  );
+
+  const columns: ColumnConfig&lt;Data1Item&gt;[] = [
+    {
+      id: &#39;name&#39;,
+      label: &#39;Name&#39;,
+      isRowHeader: true,
+      cell: item =&gt; &lt;CellText title={item.name} /&gt;,
+    },
+    {
+      id: &#39;owner&#39;,
+      label: &#39;Owner&#39;,
+      cell: item =&gt; &lt;CellText title={item.owner.name} /&gt;,
+    },
+    {
+      id: &#39;type&#39;,
+      label: &#39;Type&#39;,
+      cell: item =&gt; &lt;CellText title={item.type} /&gt;,
+    },
+  ];
+
+  const { tableProps } = useTable({
+    mode: &#39;complete&#39;,
+    getData: () =&gt; data1,
+    paginationOptions: { pageSize: 5 },
+  });
+
+  return (
+    &lt;Table
+      {...tableProps}
+      columnConfig={columns}
+      selection={{
+        mode: &#39;multiple&#39;,
+        selected,
+        onSelectionChange: setSelected,
+      }}
+    /&gt;
+  );
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">RowLinks</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const RowLinks = () =&gt; {
+  const columns: ColumnConfig&lt;Data4Item&gt;[] = [
+    {
+      id: &#39;name&#39;,
+      label: &#39;Band name&#39;,
+      isRowHeader: true,
+      cell: item =&gt; &lt;CellProfile name={item.name} src={item.image} /&gt;,
+    },
+    {
+      id: &#39;genre&#39;,
+      label: &#39;Genre&#39;,
+      cell: item =&gt; &lt;CellText title={item.genre} /&gt;,
+    },
+    {
+      id: &#39;yearFormed&#39;,
+      label: &#39;Year formed&#39;,
+      cell: item =&gt; &lt;CellText title={item.yearFormed.toString()} /&gt;,
+    },
+  ];
+
+  const { tableProps } = useTable({
+    mode: &#39;complete&#39;,
+    getData: () =&gt; data4,
+    paginationOptions: { pageSize: 5 },
+  });
+
+  return (
+    &lt;Table
+      {...tableProps}
+      columnConfig={columns}
+      rowConfig={{ getHref: item =&gt; `/bands/${item.id}` }}
+    /&gt;
+  );
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Reload</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Reload = () =&gt; {
+  const columns: ColumnConfig&lt;Data1Item&gt;[] = [
+    {
+      id: &#39;name&#39;,
+      label: &#39;Name&#39;,
+      isRowHeader: true,
+      cell: item =&gt; &lt;CellText title={item.name} /&gt;,
+    },
+    {
+      id: &#39;type&#39;,
+      label: &#39;Type&#39;,
+      cell: item =&gt; &lt;CellText title={item.type} /&gt;,
+    },
+  ];
+
+  const { tableProps, reload } = useTable({
+    mode: &#39;complete&#39;,
+    getData: () =&gt; data1,
+    paginationOptions: { pageSize: 5 },
+  });
+
+  return (
+    &lt;div&gt;
+      &lt;Button onPress={() =&gt; reload()}&gt;Refresh Data&lt;/Button&gt;
+      &lt;Table columnConfig={columns} {...tableProps} /&gt;
+    &lt;/div&gt;
+  );
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">ServerSidePaginationOffset</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const ServerSidePaginationOffset = () =&gt; {
+  const columns: ColumnConfig&lt;Data1Item&gt;[] = [
+    {
+      id: &#39;name&#39;,
+      label: &#39;Name&#39;,
+      isRowHeader: true,
+      cell: item =&gt; &lt;CellText title={item.name} /&gt;,
+    },
+    {
+      id: &#39;owner&#39;,
+      label: &#39;Owner&#39;,
+      cell: item =&gt; &lt;CellText title={item.owner.name} /&gt;,
+    },
+    {
+      id: &#39;type&#39;,
+      label: &#39;Type&#39;,
+      cell: item =&gt; &lt;CellText title={item.type} /&gt;,
+    },
+  ];
+
+  const { tableProps } = useTable({
+    mode: &#39;offset&#39;,
+    getData: async ({ offset, pageSize }) =&gt; {
+      await new Promise(resolve =&gt; setTimeout(resolve, 500));
+      return {
+        data: data1.slice(offset, offset + pageSize),
+        totalCount: data1.length,
+      };
+    },
+    paginationOptions: { pageSize: 5 },
+  });
+
+  return &lt;Table columnConfig={columns} {...tableProps} /&gt;;
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">ServerSidePaginationCursor</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const ServerSidePaginationCursor = () =&gt; {
+  const columns: ColumnConfig&lt;Data4Item&gt;[] = [
+    {
+      id: &#39;name&#39;,
+      label: &#39;Band name&#39;,
+      isRowHeader: true,
+      cell: item =&gt; &lt;CellProfile name={item.name} src={item.image} /&gt;,
+    },
+    {
+      id: &#39;genre&#39;,
+      label: &#39;Genre&#39;,
+      cell: item =&gt; &lt;CellText title={item.genre} /&gt;,
+    },
+  ];
+
+  const { tableProps } = useTable({
+    mode: &#39;cursor&#39;,
+    getData: async ({ cursor, pageSize }) =&gt; {
+      await new Promise(resolve =&gt; setTimeout(resolve, 500));
+      const startIndex = cursor ? parseInt(cursor, 10) : 0;
+      const nextIndex = startIndex + pageSize;
+      return {
+        data: data4.slice(startIndex, nextIndex),
+        totalCount: data4.length,
+        nextCursor: nextIndex &lt; data4.length ? String(nextIndex) : undefined,
+        prevCursor:
+          startIndex &gt; 0
+            ? String(Math.max(0, startIndex - pageSize))
+            : undefined,
+      };
+    },
+    paginationOptions: { pageSize: 5 },
+  });
+
+  return &lt;Table columnConfig={columns} {...tableProps} /&gt;;
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">CustomRowRender</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const CustomRowRender = () =&gt; {
+  const columns: ColumnConfig&lt;Data1Item&gt;[] = [
+    {
+      id: &#39;name&#39;,
+      label: &#39;Name&#39;,
+      isRowHeader: true,
+      cell: item =&gt; &lt;CellText title={item.name} /&gt;,
+    },
+    {
+      id: &#39;type&#39;,
+      label: &#39;Type&#39;,
+      cell: item =&gt; &lt;CellText title={item.type} /&gt;,
+    },
+    {
+      id: &#39;lifecycle&#39;,
+      label: &#39;Lifecycle&#39;,
+      cell: item =&gt; &lt;CellText title={item.lifecycle} /&gt;,
+    },
+  ];
+
+  const { tableProps } = useTable({
+    mode: &#39;complete&#39;,
+    getData: () =&gt; data1,
+    paginationOptions: { pageSize: 5 },
+  });
+
+  return (
+    &lt;Table
+      {...tableProps}
+      columnConfig={columns}
+      rowConfig={({ item }) =&gt; (
+        &lt;Row
+          id={String(item.id)}
+          columns={columns}
+          style={{
+            background:
+              item.lifecycle === &#39;experimental&#39;
+                ? &#39;var(--bui-bg-warning)&#39;
+                : undefined,
+            borderLeft:
+              item.lifecycle === &#39;experimental&#39;
+                ? &#39;3px solid var(--bui-fg-warning)&#39;
+                : &#39;3px solid transparent&#39;,
+          }}
+        &gt;
+          {column =&gt; (
+            &lt;Fragment key={column.id}&gt;
+              {column.id === &#39;name&#39; ? (
+                &lt;CellText title={item.name} description={item.description} /&gt;
+              ) : (
+                column.cell(item)
+              )}
+            &lt;/Fragment&gt;
+          )}
+        &lt;/Row&gt;
+      )}
+    /&gt;
+  );
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">AtomicComponents</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const AtomicComponents = () =&gt; {
+  const displayData = data1.slice(0, 5);
+
+  return (
+    &lt;TableRoot&gt;
+      &lt;TableHeader&gt;
+        &lt;Column isRowHeader&gt;Name&lt;/Column&gt;
+        &lt;Column&gt;Owner&lt;/Column&gt;
+        &lt;Column&gt;Type&lt;/Column&gt;
+      &lt;/TableHeader&gt;
+      &lt;TableBody&gt;
+        {displayData.map(item =&gt; (
+          &lt;Row key={item.id} id={String(item.id)}&gt;
+            &lt;CellText title={item.name} /&gt;
+            &lt;CellText title={item.owner.name} /&gt;
+            &lt;CellText title={item.type} /&gt;
+          &lt;/Row&gt;
+        ))}
+      &lt;/TableBody&gt;
+    &lt;/TableRoot&gt;
+  );
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">RowClick</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const RowClick = () =&gt; {
+  const columns: ColumnConfig&lt;Data4Item&gt;[] = [
+    {
+      id: &#39;name&#39;,
+      label: &#39;Band name&#39;,
+      isRowHeader: true,
+      cell: item =&gt; (
+        &lt;CellProfile name={item.name} src={item.image} href={item.website} /&gt;
+      ),
+    },
+    {
+      id: &#39;genre&#39;,
+      label: &#39;Genre&#39;,
+      cell: item =&gt; &lt;CellText title={item.genre} /&gt;,
+    },
+    {
+      id: &#39;yearFormed&#39;,
+      label: &#39;Year formed&#39;,
+      cell: item =&gt; &lt;CellText title={item.yearFormed.toString()} /&gt;,
+    },
+    {
+      id: &#39;albums&#39;,
+      label: &#39;Albums&#39;,
+      cell: item =&gt; &lt;CellText title={item.albums.toString()} /&gt;,
+    },
+  ];
+
+  const { tableProps } = useTable({
+    mode: &#39;complete&#39;,
+    getData: () =&gt; data4,
+    paginationOptions: { pageSize: 5 },
+  });
+
+  return (
+    &lt;Table
+      {...tableProps}
+      columnConfig={columns}
+      rowConfig={{ onClick: item =&gt; alert(`Clicked: ${item.name}`) }}
+    /&gt;
+  );
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">SelectionSingleToggle</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const SelectionSingleToggle = () =&gt; {
+  const [selected, setSelected] = useState&lt;Set&lt;string | number&gt; | &#39;all&#39;&gt;(
+    new Set(),
+  );
+
+  const { tableProps } = useTable({
+    mode: &#39;complete&#39;,
+    getData: () =&gt; selectionData,
+    paginationOptions: { pageSize: 10 },
+  });
+
+  return (
+    &lt;Table
+      {...tableProps}
+      columnConfig={selectionColumns}
+      selection={{
+        mode: &#39;single&#39;,
+        behavior: &#39;toggle&#39;,
+        selected,
+        onSelectionChange: setSelected,
+      }}
+    /&gt;
+  );
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">SelectionMultiToggle</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const SelectionMultiToggle = () =&gt; {
+  const [selected, setSelected] = useState&lt;Set&lt;string | number&gt; | &#39;all&#39;&gt;(
+    new Set(),
+  );
+
+  const { tableProps } = useTable({
+    mode: &#39;complete&#39;,
+    getData: () =&gt; selectionData,
+    paginationOptions: { pageSize: 10 },
+  });
+
+  return (
+    &lt;Table
+      {...tableProps}
+      columnConfig={selectionColumns}
+      selection={{
+        mode: &#39;multiple&#39;,
+        behavior: &#39;toggle&#39;,
+        selected,
+        onSelectionChange: setSelected,
+      }}
+    /&gt;
+  );
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">SelectionWithRowClick</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const SelectionWithRowClick = () =&gt; {
+  const [selected, setSelected] = useState&lt;Set&lt;string | number&gt; | &#39;all&#39;&gt;(
+    new Set(),
+  );
+
+  const { tableProps } = useTable({
+    mode: &#39;complete&#39;,
+    getData: () =&gt; selectionData,
+    paginationOptions: { pageSize: 10 },
+  });
+
+  return (
+    &lt;Table
+      {...tableProps}
+      columnConfig={selectionColumns}
+      selection={{
+        mode: &#39;multiple&#39;,
+        behavior: &#39;toggle&#39;,
+        selected,
+        onSelectionChange: setSelected,
+      }}
+      rowConfig={{ onClick: item =&gt; alert(`Clicked: ${item.name}`) }}
+    /&gt;
+  );
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">SelectionWithRowLinks</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const SelectionWithRowLinks = () =&gt; {
+  const [selected, setSelected] = useState&lt;Set&lt;string | number&gt; | &#39;all&#39;&gt;(
+    new Set(),
+  );
+
+  const { tableProps } = useTable({
+    mode: &#39;complete&#39;,
+    getData: () =&gt; selectionData,
+    paginationOptions: { pageSize: 10 },
+  });
+
+  return (
+    &lt;Table
+      {...tableProps}
+      columnConfig={selectionColumns}
+      selection={{
+        mode: &#39;multiple&#39;,
+        behavior: &#39;toggle&#39;,
+        selected,
+        onSelectionChange: setSelected,
+      }}
+      rowConfig={{ getHref: item =&gt; `/items/${item.id}` }}
+    /&gt;
+  );
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">SelectionWithPagination</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const SelectionWithPagination = () =&gt; {
+  const [selected, setSelected] = useState&lt;Set&lt;string | number&gt; | &#39;all&#39;&gt;(
+    new Set(),
+  );
+
+  const { tableProps } = useTable({
+    mode: &#39;complete&#39;,
+    getData: () =&gt; data1,
+    paginationOptions: { pageSize: 5 },
+  });
+
+  const columns: ColumnConfig&lt;Data1Item&gt;[] = [
+    {
+      id: &#39;name&#39;,
+      label: &#39;Name&#39;,
+      isRowHeader: true,
+      cell: item =&gt; &lt;CellText title={item.name} /&gt;,
+    },
+    {
+      id: &#39;owner&#39;,
+      label: &#39;Owner&#39;,
+      cell: item =&gt; &lt;CellText title={item.owner.name} /&gt;,
+    },
+    {
+      id: &#39;type&#39;,
+      label: &#39;Type&#39;,
+      cell: item =&gt; &lt;CellText title={item.type} /&gt;,
+    },
+  ];
+
+  return (
+    &lt;Table
+      {...tableProps}
+      columnConfig={columns}
+      selection={{
+        mode: &#39;multiple&#39;,
+        behavior: &#39;toggle&#39;,
+        selected,
+        onSelectionChange: setSelected,
+      }}
+    /&gt;
+  );
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">SelectionSingleReplace</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const SelectionSingleReplace = () =&gt; {
+  const [selected, setSelected] = useState&lt;Set&lt;string | number&gt; | &#39;all&#39;&gt;(
+    new Set(),
+  );
+
+  const { tableProps } = useTable({
+    mode: &#39;complete&#39;,
+    getData: () =&gt; selectionData,
+    paginationOptions: { pageSize: 10 },
+  });
+
+  return (
+    &lt;Table
+      {...tableProps}
+      columnConfig={selectionColumns}
+      selection={{
+        mode: &#39;single&#39;,
+        behavior: &#39;replace&#39;,
+        selected,
+        onSelectionChange: setSelected,
+      }}
+    /&gt;
+  );
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">SelectionMultiReplace</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const SelectionMultiReplace = () =&gt; {
+  const [selected, setSelected] = useState&lt;Set&lt;string | number&gt; | &#39;all&#39;&gt;(
+    new Set(),
+  );
+
+  const { tableProps } = useTable({
+    mode: &#39;complete&#39;,
+    getData: () =&gt; selectionData,
+    paginationOptions: { pageSize: 10 },
+  });
+
+  return (
+    &lt;Table
+      {...tableProps}
+      columnConfig={selectionColumns}
+      selection={{
+        mode: &#39;multiple&#39;,
+        behavior: &#39;replace&#39;,
+        selected,
+        onSelectionChange: setSelected,
+      }}
+    /&gt;
+  );
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">SelectionReplaceWithRowClick</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const SelectionReplaceWithRowClick = () =&gt; {
+  const [selected, setSelected] = useState&lt;Set&lt;string | number&gt; | &#39;all&#39;&gt;(
+    new Set(),
+  );
+
+  const { tableProps } = useTable({
+    mode: &#39;complete&#39;,
+    getData: () =&gt; selectionData,
+    paginationOptions: { pageSize: 10 },
+  });
+
+  return (
+    &lt;Table
+      {...tableProps}
+      columnConfig={selectionColumns}
+      selection={{
+        mode: &#39;multiple&#39;,
+        behavior: &#39;replace&#39;,
+        selected,
+        onSelectionChange: setSelected,
+      }}
+      rowConfig={{ onClick: item =&gt; alert(`Opening ${item.name}`) }}
+    /&gt;
+  );
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">SelectionReplaceWithRowLinks</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const SelectionReplaceWithRowLinks = () =&gt; {
+  const [selected, setSelected] = useState&lt;Set&lt;string | number&gt; | &#39;all&#39;&gt;(
+    new Set(),
+  );
+
+  const { tableProps } = useTable({
+    mode: &#39;complete&#39;,
+    getData: () =&gt; selectionData,
+    paginationOptions: { pageSize: 10 },
+  });
+
+  return (
+    &lt;Table
+      {...tableProps}
+      columnConfig={selectionColumns}
+      selection={{
+        mode: &#39;multiple&#39;,
+        behavior: &#39;replace&#39;,
+        selected,
+        onSelectionChange: setSelected,
+      }}
+      rowConfig={{ getHref: item =&gt; `/items/${item.id}` }}
+    /&gt;
+  );
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">ComprehensiveServerSide</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              <div class="hint">Comprehensive example showcasing a common complex use case: - Server-side offset pagination - Search/filtering - Sorting - Multi-selection - Type filter dropdown</div>
+              <pre><code>const ComprehensiveServerSide = () =&gt; {
+  const [selected, setSelected] = useState&lt;Set&lt;string | number&gt; | &#39;all&#39;&gt;(
+    new Set(),
+  );
+
+  const typeOptions = [
+    { value: &#39;&#39;, label: &#39;All types&#39; },
+    { value: &#39;service&#39;, label: &#39;Service&#39; },
+    { value: &#39;website&#39;, label: &#39;Website&#39; },
+    { value: &#39;library&#39;, label: &#39;Library&#39; },
+    { value: &#39;documentation&#39;, label: &#39;Documentation&#39; },
+    { value: &#39;other&#39;, label: &#39;Other&#39; },
+  ];
+
+  const columns: ColumnConfig&lt;Data1Item&gt;[] = [
+    {
+      id: &#39;name&#39;,
+      label: &#39;Name&#39;,
+      isRowHeader: true,
+      isSortable: true,
+      cell: item =&gt; (
+        &lt;CellText title={item.name} description={item.description} /&gt;
+      ),
+    },
+    {
+      id: &#39;owner&#39;,
+      label: &#39;Owner&#39;,
+      isSortable: true,
+      cell: item =&gt; &lt;CellText title={item.owner.name} /&gt;,
+    },
+    {
+      id: &#39;type&#39;,
+      label: &#39;Type&#39;,
+      isSortable: true,
+      cell: item =&gt; &lt;CellText title={item.type} /&gt;,
+    },
+    {
+      id: &#39;lifecycle&#39;,
+      label: &#39;Lifecycle&#39;,
+      isSortable: true,
+      cell: item =&gt; &lt;CellText title={item.lifecycle} /&gt;,
+    },
+  ];
+
+  const { tableProps, search, filter } = useTable&lt;Data1Item, TypeFilter&gt;({
+    mode: &#39;offset&#39;,
+    initialSort: { column: &#39;name&#39;, direction: &#39;ascending&#39; },
+    getData: async ({
+      offset,
+      pageSize,
+      sort,
+      filter: typeFilter,
+      search: searchQuery,
+    }) =&gt; {
+      // Simulate server-side filtering, sorting, and pagination
+      // with slower and slower responses
+      const page = Math.floor(offset / pageSize) + 1;
+      await new Promise(resolve =&gt; setTimeout(resolve, 300 * page));
+
+      let filtered = [...data1];
+
+      // Apply search filter
+      if (searchQuery) {
+        const query = searchQuery.toLowerCase();
+        filtered = filtered.filter(
+          item =&gt;
+            item.name.toLowerCase().includes(query) ||
+            item.owner.name.toLowerCase().includes(query) ||
+            item.description?.toLowerCase().includes(query),
+        );
+      }
+
+      // Apply type filter
+      if (typeFilter?.type) {
+        filtered = filtered.filter(item =&gt; item.type === typeFilter.type);
+      }
+
+      // Apply sorting
+      if (sort) {
+        filtered.sort((a, b) =&gt; {
+          let aVal: string;
+          let bVal: string;
+          switch (sort.column) {
+            case &#39;owner&#39;:
+              aVal = a.owner.name;
+              bVal = b.owner.name;
+              break;
+            case &#39;type&#39;:
+              aVal = a.type;
+              bVal = b.type;
+              break;
+            case &#39;lifecycle&#39;:
+              aVal = a.lifecycle;
+              bVal = b.lifecycle;
+              break;
+            default:
+              aVal = a.name;
+              bVal = b.name;
+          }
+          const cmp = aVal.localeCompare(bVal);
+          return sort.direction === &#39;descending&#39; ? -cmp : cmp;
+        });
+      }
+
+      return {
+        data: filtered.slice(offset, offset + pageSize),
+        totalCount: filtered.length,
+      };
+    },
+    paginationOptions: { pageSize: 10 },
+  });
+
+  return (
+    &lt;Flex direction=&quot;column&quot; gap=&quot;4&quot;&gt;
+      &lt;Flex gap=&quot;4&quot; align=&quot;end&quot;&gt;
+        &lt;SearchField
+          aria-label=&quot;Search&quot;
+          label=&quot;Search&quot;
+          placeholder=&quot;Search by name, owner, or description...&quot;
+          style={{ width: 300 }}
+          {...search}
+        /&gt;
+        &lt;Select
+          label=&quot;Type&quot;
+          options={typeOptions}
+          value={filter.value?.type ?? &#39;&#39;}
+          onChange={key =&gt;
+            filter.onChange({ type: key === &#39;&#39; ? null : String(key) })
+          }
+          style={{ width: 180 }}
+        /&gt;
+      &lt;/Flex&gt;
+      &lt;Table
+        {...tableProps}
+        columnConfig={columns}
+        selection={{
+          mode: &#39;multiple&#39;,
+          behavior: &#39;toggle&#39;,
+          selected,
+          onSelectionChange: setSelected,
+        }}
+        emptyState={
+          search.value || filter.value?.type ? (
+            &lt;div&gt;No results match your filters&lt;/div&gt;
+          ) : (
+            &lt;div&gt;No data available&lt;/div&gt;
+          )
+        }
+      /&gt;
+    &lt;/Flex&gt;
+  );
+};</code></pre>
+            </div>
+        </div>
+  </div>
+</article>
+<article
+  class="card 
+  no-error 
+  has-info 
+  no-story-error"
+  role="listitem"
   aria-label="Dialog">
   <div class="head">
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Dialog</h2>
       <div class="badges">
-        <label for="c-9-backstage-ui-dialog-props" class="badge ok as-toggle">4 prop types</label>
-        <label for="c-9-backstage-ui-dialog-info" class="badge info as-toggle">1 info</label>
-        <label for="c-9-backstage-ui-dialog-stories" class="badge ok as-toggle">11 stories</label>
+        <label for="c-10-backstage-ui-dialog-props" class="badge ok as-toggle">4 prop types</label>
+        <label for="c-10-backstage-ui-dialog-info" class="badge info as-toggle">1 info</label>
+        <label for="c-10-backstage-ui-dialog-stories" class="badge ok as-toggle">11 stories</label>
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Dialog/Dialog.stories.tsx">backstage-ui-dialog · ./packages/ui/src/components/Dialog/Dialog.stories.tsx</div>
@@ -2734,9 +3839,9 @@ style?: React.CSSProperties</code></pre>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
-  <input id="c-9-backstage-ui-dialog-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-9-backstage-ui-dialog-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-9-backstage-ui-dialog-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-10-backstage-ui-dialog-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-10-backstage-ui-dialog-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-10-backstage-ui-dialog-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -3006,14 +4111,282 @@ width?: number | string</code></pre>
   has-info 
   no-story-error"
   role="listitem"
+  aria-label="docs">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> docs</h2>
+      <div class="badges">
+        <label for="c-11-backstage-ui-table-docs-props" class="badge ok as-toggle">10 prop types</label>
+        <label for="c-11-backstage-ui-table-docs-info" class="badge info as-toggle">1 info</label>
+        <label for="c-11-backstage-ui-table-docs-stories" class="badge ok as-toggle">4 stories</label>
+      </div>
+    </div>
+    <div class="meta" title="./packages/ui/src/components/Table/stories/Table.docs.stories.tsx">backstage-ui-table-docs · ./packages/ui/src/components/Table/stories/Table.docs.stories.tsx</div>
+    
+    
+    <div class="kv"><span class="chip">public:  </span></div>
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  
+  <input id="c-11-backstage-ui-table-docs-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-11-backstage-ui-table-docs-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-11-backstage-ui-table-docs-props" class="tg tg-props" type="checkbox" hidden />
+
+  <div class="panels">
+    
+    
+        <div class="panel panel-info">
+          
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
+    </div>
+        </div>
+    
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types</span>
+              <span class="badge ok">10 prop types</span>
+            </div>
+            <pre><code>Component: packages/ui/src/components/Table/components/Table.tsx::Table</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>columnConfig: unknown
+
+data: T[] | undefined
+
+emptyState?: ReactNode
+
+error?: Error
+
+isStale?: boolean = false
+
+loading?: boolean = false
+
+pagination: NoPagination | PagePagination
+
+rowConfig?: RowConfig&lt;T&gt; | RowRenderFn&lt;T&gt;
+
+selection?: TableSelection
+
+sort?: SortState</code></pre>
+          </div>
+        </div>
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { CellProfile, CellText, Flex, Radio, RadioGroup, Table, Text } from "@backstage/ui";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">TableRockBand</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const TableRockBand = () =&gt; {
+  const columns: ColumnConfig&lt;Data4Item&gt;[] = [
+    {
+      id: &#39;name&#39;,
+      label: &#39;Band name&#39;,
+      isRowHeader: true,
+      cell: item =&gt; (
+        &lt;CellProfile name={item.name} src={item.image} href={item.website} /&gt;
+      ),
+    },
+    {
+      id: &#39;genre&#39;,
+      label: &#39;Genre&#39;,
+      cell: item =&gt; &lt;CellText title={item.genre} /&gt;,
+    },
+    {
+      id: &#39;yearFormed&#39;,
+      label: &#39;Year formed&#39;,
+      cell: item =&gt; &lt;CellText title={item.yearFormed.toString()} /&gt;,
+    },
+    {
+      id: &#39;albums&#39;,
+      label: &#39;Albums&#39;,
+      cell: item =&gt; &lt;CellText title={item.albums.toString()} /&gt;,
+    },
+  ];
+
+  const { tableProps } = useTable({
+    mode: &#39;complete&#39;,
+    getData: () =&gt; data4,
+    paginationOptions: { pageSize: 5 },
+  });
+
+  return &lt;Table columnConfig={columns} {...tableProps} /&gt;;
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">SelectionToggleWithActions</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const SelectionToggleWithActions = () =&gt; {
+  const [selected, setSelected] = useState&lt;Set&lt;string | number&gt; | &#39;all&#39;&gt;(
+    new Set(),
+  );
+
+  const { tableProps } = useTable({
+    mode: &#39;complete&#39;,
+    getData: () =&gt; selectionData,
+    paginationOptions: { pageSize: 10 },
+  });
+
+  return (
+    &lt;Table
+      {...tableProps}
+      columnConfig={selectionColumns}
+      selection={{
+        mode: &#39;multiple&#39;,
+        behavior: &#39;toggle&#39;,
+        selected,
+        onSelectionChange: setSelected,
+      }}
+      rowConfig={{ onClick: item =&gt; alert(`Clicked: ${item.name}`) }}
+    /&gt;
+  );
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">SelectionModePlayground</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const SelectionModePlayground = () =&gt; {
+  const [selectionMode, setSelectionMode] = useState&lt;&#39;single&#39; | &#39;multiple&#39;&gt;(
+    &#39;multiple&#39;,
+  );
+  const [selected, setSelected] = useState&lt;Set&lt;string | number&gt; | &#39;all&#39;&gt;(
+    new Set(),
+  );
+
+  const { tableProps } = useTable({
+    mode: &#39;complete&#39;,
+    getData: () =&gt; selectionData,
+    paginationOptions: { pageSize: 10 },
+  });
+
+  return (
+    &lt;Flex direction=&quot;column&quot; gap=&quot;8&quot;&gt;
+      &lt;Table
+        {...tableProps}
+        columnConfig={selectionColumns}
+        selection={{
+          mode: selectionMode,
+          behavior: &#39;toggle&#39;,
+          selected,
+          onSelectionChange: setSelected,
+        }}
+      /&gt;
+      &lt;div&gt;
+        &lt;Text as=&quot;h4&quot; style={{ marginBottom: &#39;var(--bui-space-2)&#39; }}&gt;
+          Selection mode:
+        &lt;/Text&gt;
+        &lt;RadioGroup
+          aria-label=&quot;Selection mode&quot;
+          orientation=&quot;horizontal&quot;
+          value={selectionMode}
+          onChange={value =&gt; {
+            setSelectionMode(value as &#39;single&#39; | &#39;multiple&#39;);
+            setSelected(new Set());
+          }}
+        &gt;
+          &lt;Radio value=&quot;single&quot;&gt;single&lt;/Radio&gt;
+          &lt;Radio value=&quot;multiple&quot;&gt;multiple&lt;/Radio&gt;
+        &lt;/RadioGroup&gt;
+      &lt;/div&gt;
+    &lt;/Flex&gt;
+  );
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">SelectionBehaviorPlayground</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const SelectionBehaviorPlayground = () =&gt; {
+  const [selectionBehavior, setSelectionBehavior] = useState&lt;
+    &#39;toggle&#39; | &#39;replace&#39;
+  &gt;(&#39;toggle&#39;);
+  const [selected, setSelected] = useState&lt;Set&lt;string | number&gt; | &#39;all&#39;&gt;(
+    new Set(),
+  );
+
+  const { tableProps } = useTable({
+    mode: &#39;complete&#39;,
+    getData: () =&gt; selectionData,
+    paginationOptions: { pageSize: 10 },
+  });
+
+  return (
+    &lt;Flex direction=&quot;column&quot; gap=&quot;8&quot;&gt;
+      &lt;Table
+        {...tableProps}
+        columnConfig={selectionColumns}
+        selection={{
+          mode: &#39;multiple&#39;,
+          behavior: selectionBehavior,
+          selected,
+          onSelectionChange: setSelected,
+        }}
+      /&gt;
+      &lt;div&gt;
+        &lt;Text as=&quot;h4&quot; style={{ marginBottom: &#39;var(--bui-space-2)&#39; }}&gt;
+          Selection behavior:
+        &lt;/Text&gt;
+        &lt;RadioGroup
+          aria-label=&quot;Selection behavior&quot;
+          orientation=&quot;horizontal&quot;
+          value={selectionBehavior}
+          onChange={value =&gt; {
+            setSelectionBehavior(value as &#39;toggle&#39; | &#39;replace&#39;);
+            setSelected(new Set());
+          }}
+        &gt;
+          &lt;Radio value=&quot;toggle&quot;&gt;toggle&lt;/Radio&gt;
+          &lt;Radio value=&quot;replace&quot;&gt;replace&lt;/Radio&gt;
+        &lt;/RadioGroup&gt;
+      &lt;/div&gt;
+    &lt;/Flex&gt;
+  );
+};</code></pre>
+            </div>
+        </div>
+  </div>
+</article>
+<article
+  class="card 
+  no-error 
+  has-info 
+  no-story-error"
+  role="listitem"
   aria-label="FieldError">
   <div class="head">
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> FieldError</h2>
       <div class="badges">
         
-        <label for="c-10-backstage-ui-fielderror-info" class="badge info as-toggle">1 info</label>
-        <label for="c-10-backstage-ui-fielderror-stories" class="badge ok as-toggle">3 stories</label>
+        <label for="c-12-backstage-ui-fielderror-info" class="badge info as-toggle">1 info</label>
+        <label for="c-12-backstage-ui-fielderror-stories" class="badge ok as-toggle">3 stories</label>
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/FieldError/FieldError.stories.tsx">backstage-ui-fielderror · ./packages/ui/src/components/FieldError/FieldError.stories.tsx</div>
@@ -3024,8 +4397,8 @@ width?: number | string</code></pre>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
-  <input id="c-10-backstage-ui-fielderror-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-10-backstage-ui-fielderror-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-12-backstage-ui-fielderror-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-12-backstage-ui-fielderror-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -3139,9 +4512,9 @@ import { Form, Input, TextField } from "react-aria-components";</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> FieldLabel</h2>
       <div class="badges">
-        <label for="c-11-backstage-ui-fieldlabel-props" class="badge ok as-toggle">5 prop types</label>
-        <label for="c-11-backstage-ui-fieldlabel-info" class="badge info as-toggle">1 info</label>
-        <label for="c-11-backstage-ui-fieldlabel-stories" class="badge ok as-toggle">4 stories</label>
+        <label for="c-13-backstage-ui-fieldlabel-props" class="badge ok as-toggle">5 prop types</label>
+        <label for="c-13-backstage-ui-fieldlabel-info" class="badge info as-toggle">1 info</label>
+        <label for="c-13-backstage-ui-fieldlabel-stories" class="badge ok as-toggle">4 stories</label>
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/FieldLabel/FieldLabel.stories.tsx">backstage-ui-fieldlabel · ./packages/ui/src/components/FieldLabel/FieldLabel.stories.tsx</div>
@@ -3152,9 +4525,9 @@ import { Form, Input, TextField } from "react-aria-components";</code></pre>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
-  <input id="c-11-backstage-ui-fieldlabel-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-11-backstage-ui-fieldlabel-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-11-backstage-ui-fieldlabel-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-13-backstage-ui-fieldlabel-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-13-backstage-ui-fieldlabel-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-13-backstage-ui-fieldlabel-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -3264,9 +4637,9 @@ secondaryLabel?: string | null</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Flex</h2>
       <div class="badges">
-        <label for="c-12-backstage-ui-flex-props" class="badge ok as-toggle">22 prop types</label>
-        <label for="c-12-backstage-ui-flex-info" class="badge info as-toggle">1 info</label>
-        <label for="c-12-backstage-ui-flex-stories" class="badge ok as-toggle">15 stories</label>
+        <label for="c-14-backstage-ui-flex-props" class="badge ok as-toggle">22 prop types</label>
+        <label for="c-14-backstage-ui-flex-info" class="badge info as-toggle">1 info</label>
+        <label for="c-14-backstage-ui-flex-stories" class="badge ok as-toggle">15 stories</label>
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Flex/Flex.stories.tsx">backstage-ui-flex · ./packages/ui/src/components/Flex/Flex.stories.tsx</div>
@@ -3277,9 +4650,9 @@ secondaryLabel?: string | null</code></pre>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
-  <input id="c-12-backstage-ui-flex-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-12-backstage-ui-flex-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-12-backstage-ui-flex-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-14-backstage-ui-flex-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-14-backstage-ui-flex-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-14-backstage-ui-flex-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -3601,9 +4974,9 @@ surface?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Header</h2>
       <div class="badges">
-        <label for="c-13-backstage-ui-header-props" class="badge ok as-toggle">7 prop types</label>
+        <label for="c-15-backstage-ui-header-props" class="badge ok as-toggle">7 prop types</label>
         
-        <label for="c-13-backstage-ui-header-stories" class="badge ok as-toggle">14 stories</label>
+        <label for="c-15-backstage-ui-header-stories" class="badge ok as-toggle">14 stories</label>
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Header/Header.stories.tsx">backstage-ui-header · ./packages/ui/src/components/Header/Header.stories.tsx</div>
@@ -3615,8 +4988,8 @@ surface?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;</code></pre>
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-13-backstage-ui-header-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-13-backstage-ui-header-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-15-backstage-ui-header-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-15-backstage-ui-header-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -4022,9 +5395,9 @@ import { RiCloudy2Line, RiEmotionHappyLine, RiHeartLine, RiMore2Line } from "@re
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> HeaderPage</h2>
       <div class="badges">
-        <label for="c-14-backstage-ui-headerpage-props" class="badge ok as-toggle">5 prop types</label>
+        <label for="c-16-backstage-ui-headerpage-props" class="badge ok as-toggle">5 prop types</label>
         
-        <label for="c-14-backstage-ui-headerpage-stories" class="badge ok as-toggle">10 stories</label>
+        <label for="c-16-backstage-ui-headerpage-stories" class="badge ok as-toggle">10 stories</label>
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/HeaderPage/HeaderPage.stories.tsx">backstage-ui-headerpage · ./packages/ui/src/components/HeaderPage/HeaderPage.stories.tsx</div>
@@ -4036,8 +5409,8 @@ import { RiCloudy2Line, RiEmotionHappyLine, RiHeartLine, RiMore2Line } from "@re
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-14-backstage-ui-headerpage-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-14-backstage-ui-headerpage-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-16-backstage-ui-headerpage-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-16-backstage-ui-headerpage-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -4345,9 +5718,9 @@ import { RiMore2Line } from "@remixicon/react";</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Link</h2>
       <div class="badges">
-        <label for="c-15-backstage-ui-link-props" class="badge ok as-toggle">6 prop types</label>
-        <label for="c-15-backstage-ui-link-info" class="badge info as-toggle">1 info</label>
-        <label for="c-15-backstage-ui-link-stories" class="badge ok as-toggle">8 stories</label>
+        <label for="c-17-backstage-ui-link-props" class="badge ok as-toggle">6 prop types</label>
+        <label for="c-17-backstage-ui-link-info" class="badge info as-toggle">1 info</label>
+        <label for="c-17-backstage-ui-link-stories" class="badge ok as-toggle">8 stories</label>
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Link/Link.stories.tsx">backstage-ui-link · ./packages/ui/src/components/Link/Link.stories.tsx</div>
@@ -4358,9 +5731,9 @@ import { RiMore2Line } from "@remixicon/react";</code></pre>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
-  <input id="c-15-backstage-ui-link-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-15-backstage-ui-link-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-15-backstage-ui-link-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-17-backstage-ui-link-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-17-backstage-ui-link-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-17-backstage-ui-link-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -4673,8 +6046,8 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
       <h2><span class="status-dot dot-ok"></span> MenuTrigger</h2>
       <div class="badges">
         
-        <label for="c-16-backstage-ui-menu-info" class="badge info as-toggle">1 info</label>
-        <label for="c-16-backstage-ui-menu-stories" class="badge ok as-toggle">16 stories</label>
+        <label for="c-18-backstage-ui-menu-info" class="badge info as-toggle">1 info</label>
+        <label for="c-18-backstage-ui-menu-stories" class="badge ok as-toggle">16 stories</label>
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Menu/Menu.stories.tsx">backstage-ui-menu · ./packages/ui/src/components/Menu/Menu.stories.tsx</div>
@@ -4685,8 +6058,8 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
-  <input id="c-16-backstage-ui-menu-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-16-backstage-ui-menu-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-18-backstage-ui-menu-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-18-backstage-ui-menu-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -5156,8 +6529,8 @@ import {
       <h2><span class="status-dot dot-ok"></span> MenuTrigger</h2>
       <div class="badges">
         
-        <label for="c-17-backstage-ui-menuautocomplete-info" class="badge info as-toggle">1 info</label>
-        <label for="c-17-backstage-ui-menuautocomplete-stories" class="badge ok as-toggle">5 stories</label>
+        <label for="c-19-backstage-ui-menuautocomplete-info" class="badge info as-toggle">1 info</label>
+        <label for="c-19-backstage-ui-menuautocomplete-stories" class="badge ok as-toggle">5 stories</label>
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Menu/MenuAutocomplete.stories.tsx">backstage-ui-menuautocomplete · ./packages/ui/src/components/Menu/MenuAutocomplete.stories.tsx</div>
@@ -5168,8 +6541,8 @@ import {
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
-  <input id="c-17-backstage-ui-menuautocomplete-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-17-backstage-ui-menuautocomplete-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-19-backstage-ui-menuautocomplete-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-19-backstage-ui-menuautocomplete-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -5368,8 +6741,8 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
       <h2><span class="status-dot dot-ok"></span> MenuTrigger</h2>
       <div class="badges">
         
-        <label for="c-18-backstage-ui-menuautocompletelistbox-info" class="badge info as-toggle">1 info</label>
-        <label for="c-18-backstage-ui-menuautocompletelistbox-stories" class="badge ok as-toggle">6 stories</label>
+        <label for="c-20-backstage-ui-menuautocompletelistbox-info" class="badge info as-toggle">1 info</label>
+        <label for="c-20-backstage-ui-menuautocompletelistbox-stories" class="badge ok as-toggle">6 stories</label>
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Menu/MenuAutocompleteListBox.stories.tsx">backstage-ui-menuautocompletelistbox · ./packages/ui/src/components/Menu/MenuAutocompleteListBox.stories.tsx</div>
@@ -5380,8 +6753,8 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
-  <input id="c-18-backstage-ui-menuautocompletelistbox-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-18-backstage-ui-menuautocompletelistbox-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-20-backstage-ui-menuautocompletelistbox-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-20-backstage-ui-menuautocompletelistbox-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -5654,8 +7027,8 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
       <h2><span class="status-dot dot-ok"></span> MenuTrigger</h2>
       <div class="badges">
         
-        <label for="c-19-backstage-ui-menulistbox-info" class="badge info as-toggle">1 info</label>
-        <label for="c-19-backstage-ui-menulistbox-stories" class="badge ok as-toggle">4 stories</label>
+        <label for="c-21-backstage-ui-menulistbox-info" class="badge info as-toggle">1 info</label>
+        <label for="c-21-backstage-ui-menulistbox-stories" class="badge ok as-toggle">4 stories</label>
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Menu/MenuListBox.stories.tsx">backstage-ui-menulistbox · ./packages/ui/src/components/Menu/MenuListBox.stories.tsx</div>
@@ -5666,8 +7039,8 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
-  <input id="c-19-backstage-ui-menulistbox-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-19-backstage-ui-menulistbox-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-21-backstage-ui-menulistbox-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-21-backstage-ui-menulistbox-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -5839,9 +7212,9 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> PasswordField</h2>
       <div class="badges">
-        <label for="c-20-backstage-ui-passwordfield-props" class="badge ok as-toggle">3 prop types</label>
-        <label for="c-20-backstage-ui-passwordfield-info" class="badge info as-toggle">1 info</label>
-        <label for="c-20-backstage-ui-passwordfield-stories" class="badge ok as-toggle">12 stories</label>
+        <label for="c-22-backstage-ui-passwordfield-props" class="badge ok as-toggle">3 prop types</label>
+        <label for="c-22-backstage-ui-passwordfield-info" class="badge info as-toggle">1 info</label>
+        <label for="c-22-backstage-ui-passwordfield-stories" class="badge ok as-toggle">12 stories</label>
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/PasswordField/PasswordField.stories.tsx">backstage-ui-passwordfield · ./packages/ui/src/components/PasswordField/PasswordField.stories.tsx</div>
@@ -5852,9 +7225,9 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
-  <input id="c-20-backstage-ui-passwordfield-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-20-backstage-ui-passwordfield-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-20-backstage-ui-passwordfield-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-22-backstage-ui-passwordfield-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-22-backstage-ui-passwordfield-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-22-backstage-ui-passwordfield-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -6053,9 +7426,9 @@ import { RiSparklingLine } from "@remixicon/react";</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> RadioGroup</h2>
       <div class="badges">
-        <label for="c-21-backstage-ui-radiogroup-props" class="badge ok as-toggle">1 prop type</label>
-        <label for="c-21-backstage-ui-radiogroup-info" class="badge info as-toggle">1 info</label>
-        <label for="c-21-backstage-ui-radiogroup-stories" class="badge ok as-toggle">8 stories</label>
+        <label for="c-23-backstage-ui-radiogroup-props" class="badge ok as-toggle">1 prop type</label>
+        <label for="c-23-backstage-ui-radiogroup-info" class="badge info as-toggle">1 info</label>
+        <label for="c-23-backstage-ui-radiogroup-stories" class="badge ok as-toggle">8 stories</label>
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/RadioGroup/RadioGroup.stories.tsx">backstage-ui-radiogroup · ./packages/ui/src/components/RadioGroup/RadioGroup.stories.tsx</div>
@@ -6066,9 +7439,9 @@ import { RiSparklingLine } from "@remixicon/react";</code></pre>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
-  <input id="c-21-backstage-ui-radiogroup-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-21-backstage-ui-radiogroup-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-21-backstage-ui-radiogroup-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-23-backstage-ui-radiogroup-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-23-backstage-ui-radiogroup-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-23-backstage-ui-radiogroup-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -6230,9 +7603,9 @@ import { RiSparklingLine } from "@remixicon/react";</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> SearchField</h2>
       <div class="badges">
-        <label for="c-22-backstage-ui-searchfield-props" class="badge ok as-toggle">4 prop types</label>
-        <label for="c-22-backstage-ui-searchfield-info" class="badge info as-toggle">1 info</label>
-        <label for="c-22-backstage-ui-searchfield-stories" class="badge ok as-toggle">20 stories</label>
+        <label for="c-24-backstage-ui-searchfield-props" class="badge ok as-toggle">4 prop types</label>
+        <label for="c-24-backstage-ui-searchfield-info" class="badge info as-toggle">1 info</label>
+        <label for="c-24-backstage-ui-searchfield-stories" class="badge ok as-toggle">20 stories</label>
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/SearchField/SearchField.stories.tsx">backstage-ui-searchfield · ./packages/ui/src/components/SearchField/SearchField.stories.tsx</div>
@@ -6243,9 +7616,9 @@ import { RiSparklingLine } from "@remixicon/react";</code></pre>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
-  <input id="c-22-backstage-ui-searchfield-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-22-backstage-ui-searchfield-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-22-backstage-ui-searchfield-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-24-backstage-ui-searchfield-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-24-backstage-ui-searchfield-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-24-backstage-ui-searchfield-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -6617,9 +7990,9 @@ import { RiCactusLine, RiEBike2Line } from "@remixicon/react";</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Select</h2>
       <div class="badges">
-        <label for="c-23-backstage-ui-select-props" class="badge ok as-toggle">6 prop types</label>
-        <label for="c-23-backstage-ui-select-info" class="badge info as-toggle">1 info</label>
-        <label for="c-23-backstage-ui-select-stories" class="badge ok as-toggle">21 stories</label>
+        <label for="c-25-backstage-ui-select-props" class="badge ok as-toggle">6 prop types</label>
+        <label for="c-25-backstage-ui-select-info" class="badge info as-toggle">1 info</label>
+        <label for="c-25-backstage-ui-select-stories" class="badge ok as-toggle">21 stories</label>
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Select/Select.stories.tsx">backstage-ui-select · ./packages/ui/src/components/Select/Select.stories.tsx</div>
@@ -6630,9 +8003,9 @@ import { RiCactusLine, RiEBike2Line } from "@remixicon/react";</code></pre>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
-  <input id="c-23-backstage-ui-select-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-23-backstage-ui-select-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-23-backstage-ui-select-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-25-backstage-ui-select-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-25-backstage-ui-select-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-25-backstage-ui-select-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -6998,9 +8371,9 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Skeleton</h2>
       <div class="badges">
-        <label for="c-24-backstage-ui-skeleton-props" class="badge ok as-toggle">3 prop types</label>
-        <label for="c-24-backstage-ui-skeleton-info" class="badge info as-toggle">1 info</label>
-        <label for="c-24-backstage-ui-skeleton-stories" class="badge ok as-toggle">4 stories</label>
+        <label for="c-26-backstage-ui-skeleton-props" class="badge ok as-toggle">3 prop types</label>
+        <label for="c-26-backstage-ui-skeleton-info" class="badge info as-toggle">1 info</label>
+        <label for="c-26-backstage-ui-skeleton-stories" class="badge ok as-toggle">4 stories</label>
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Skeleton/Skeleton.stories.tsx">backstage-ui-skeleton · ./packages/ui/src/components/Skeleton/Skeleton.stories.tsx</div>
@@ -7011,9 +8384,9 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
-  <input id="c-24-backstage-ui-skeleton-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-24-backstage-ui-skeleton-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-24-backstage-ui-skeleton-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-26-backstage-ui-skeleton-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-26-backstage-ui-skeleton-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-26-backstage-ui-skeleton-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -7123,9 +8496,9 @@ width?: number | string</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Switch</h2>
       <div class="badges">
-        <label for="c-25-backstage-ui-switch-props" class="badge ok as-toggle">1 prop type</label>
-        <label for="c-25-backstage-ui-switch-info" class="badge info as-toggle">1 info</label>
-        <label for="c-25-backstage-ui-switch-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-27-backstage-ui-switch-props" class="badge ok as-toggle">1 prop type</label>
+        <label for="c-27-backstage-ui-switch-info" class="badge info as-toggle">1 info</label>
+        <label for="c-27-backstage-ui-switch-stories" class="badge ok as-toggle">2 stories</label>
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Switch/Switch.stories.tsx">backstage-ui-switch · ./packages/ui/src/components/Switch/Switch.stories.tsx</div>
@@ -7136,9 +8509,9 @@ width?: number | string</code></pre>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
-  <input id="c-25-backstage-ui-switch-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-25-backstage-ui-switch-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-25-backstage-ui-switch-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-27-backstage-ui-switch-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-27-backstage-ui-switch-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-27-backstage-ui-switch-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -7202,1038 +8575,6 @@ label?: string</code></pre>
 <article
   class="card 
   no-error 
-  has-info 
-  no-story-error"
-  role="listitem"
-  aria-label="Table">
-  <div class="head">
-    <div class="title">
-      <h2><span class="status-dot dot-ok"></span> Table</h2>
-      <div class="badges">
-        
-        <label for="c-26-backstage-ui-table-info" class="badge info as-toggle">1 info</label>
-        <label for="c-26-backstage-ui-table-stories" class="badge ok as-toggle">22 stories</label>
-      </div>
-    </div>
-    <div class="meta" title="./packages/ui/src/components/Table/Table.stories.tsx">backstage-ui-table · ./packages/ui/src/components/Table/Table.stories.tsx</div>
-    
-    
-    <div class="kv"><span class="chip">public:  </span></div>
-  </div>
-
-  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
-  
-  <input id="c-26-backstage-ui-table-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-26-backstage-ui-table-stories" class="tg tg-stories" type="checkbox" hidden />
-  
-
-  <div class="panels">
-    
-    
-        <div class="panel panel-info">
-          
-    <div class="note info">
-      <div class="note-title">Info</div>
-      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
-    </div>
-        </div>
-    
-    
-        <div class="panel panel-stories">
-          
-          
-          
-          <div class="note ok">
-                <div class="row">
-                  <span class="ex-name">Imports</span>
-                </div>
-                <pre><code>import {
-    Cell,
-    CellProfile,
-    CellText,
-    Column,
-    Flex,
-    Radio,
-    RadioGroup,
-    Row,
-    Table,
-    TableBody,
-    TableHeader,
-    TablePagination,
-    Text,
-} from "@backstage/ui";
-import { MemoryRouter } from "react-router-dom";
-import { RiCactusLine } from "@remixicon/react";</code></pre>
-              </div>
-          
-          
-            <div class="note ok">
-              <div class="row">
-                <span class="ex-name">TableOnly</span>
-                <span class="badge ok">story ok</span>
-              </div>
-              
-              
-              <pre><code>const TableOnly = () =&gt; {
-  return (
-    &lt;Table&gt;
-      &lt;TableHeader&gt;
-        &lt;Column isRowHeader&gt;Name&lt;/Column&gt;
-        &lt;Column&gt;Owner&lt;/Column&gt;
-        &lt;Column&gt;Type&lt;/Column&gt;
-        &lt;Column&gt;Lifecycle&lt;/Column&gt;
-      &lt;/TableHeader&gt;
-      &lt;TableBody&gt;
-        {data1.map(item =&gt; (
-          &lt;Row key={item.name}&gt;
-            &lt;CellText
-              title={item.name}
-              leadingIcon={&lt;RiCactusLine /&gt;}
-              description={item.description}
-            /&gt;
-            &lt;CellProfile
-              name={item.owner.name}
-              src={item.owner.profilePicture}
-              href={item.owner.link}
-            /&gt;
-            &lt;CellText title={item.type} /&gt;
-            &lt;CellText title={item.lifecycle} /&gt;
-          &lt;/Row&gt;
-        ))}
-      &lt;/TableBody&gt;
-    &lt;/Table&gt;
-  );
-};</code></pre>
-            </div>
-            <div class="note ok">
-              <div class="row">
-                <span class="ex-name">WithPaginationUncontrolled</span>
-                <span class="badge ok">story ok</span>
-              </div>
-              
-              
-              <pre><code>const WithPaginationUncontrolled = () =&gt; {
-  const { data, paginationProps } = useTable({ data: data1 });
-
-  return (
-    &lt;&gt;
-      &lt;Table&gt;
-        &lt;TableHeader&gt;
-          &lt;Column isRowHeader&gt;Name&lt;/Column&gt;
-          &lt;Column&gt;Owner&lt;/Column&gt;
-          &lt;Column&gt;Type&lt;/Column&gt;
-          &lt;Column&gt;Lifecycle&lt;/Column&gt;
-        &lt;/TableHeader&gt;
-        &lt;TableBody&gt;
-          {data?.map(item =&gt; (
-            &lt;Row key={item.name}&gt;
-              &lt;CellText
-                title={item.name}
-                leadingIcon={&lt;RiCactusLine /&gt;}
-                description={item.description}
-              /&gt;
-              &lt;CellText title={item.owner.name} /&gt;
-              &lt;CellText title={item.type} /&gt;
-              &lt;CellText title={item.lifecycle} /&gt;
-            &lt;/Row&gt;
-          ))}
-        &lt;/TableBody&gt;
-      &lt;/Table&gt;
-      &lt;TablePagination {...paginationProps} /&gt;
-    &lt;/&gt;
-  );
-};</code></pre>
-            </div>
-            <div class="note ok">
-              <div class="row">
-                <span class="ex-name">WithPaginationControlled</span>
-                <span class="badge ok">story ok</span>
-              </div>
-              
-              
-              <pre><code>const WithPaginationControlled = () =&gt; {
-  const [offset, setOffset] = useState(0);
-  const [pageSize, setPageSize] = useState(5);
-
-  const { data, paginationProps } = useTable({
-    data: data4,
-    pagination: {
-      offset,
-      pageSize,
-      onOffsetChange: setOffset,
-      onPageSizeChange: setPageSize,
-      onNextPage: () =&gt; console.log(&#39;Next page analytics&#39;),
-      onPreviousPage: () =&gt; console.log(&#39;Previous page analytics&#39;),
-    },
-  });
-
-  return (
-    &lt;&gt;
-      &lt;Table&gt;
-        &lt;TableHeader&gt;
-          &lt;Column isRowHeader&gt;Band name&lt;/Column&gt;
-          &lt;Column&gt;Genre&lt;/Column&gt;
-          &lt;Column&gt;Year formed&lt;/Column&gt;
-          &lt;Column&gt;Albums&lt;/Column&gt;
-        &lt;/TableHeader&gt;
-        &lt;TableBody&gt;
-          {data?.map(item =&gt; (
-            &lt;Row key={item.name}&gt;
-              &lt;CellProfile
-                name={item.name}
-                src={item.image}
-                href={item.website}
-              /&gt;
-              &lt;CellText title={item.genre} /&gt;
-              &lt;CellText title={item.yearFormed.toString()} /&gt;
-              &lt;CellText title={item.albums.toString()} /&gt;
-            &lt;/Row&gt;
-          ))}
-        &lt;/TableBody&gt;
-      &lt;/Table&gt;
-      &lt;TablePagination {...paginationProps} /&gt;
-      &lt;div style={{ marginTop: &#39;16px&#39;, fontSize: &#39;12px&#39;, color: &#39;#666&#39; }}&gt;
-        Current state: offset={offset}, pageSize={pageSize}
-      &lt;/div&gt;
-    &lt;/&gt;
-  );
-};</code></pre>
-            </div>
-            <div class="note ok">
-              <div class="row">
-                <span class="ex-name">Sorting</span>
-                <span class="badge ok">story ok</span>
-              </div>
-              
-              
-              <pre><code>const Sorting = () =&gt; {
-  return (
-    &lt;Table&gt;
-      &lt;TableHeader&gt;
-        &lt;Column isRowHeader allowsSorting&gt;
-          Name
-        &lt;/Column&gt;
-        &lt;Column allowsSorting&gt;Owner&lt;/Column&gt;
-        &lt;Column allowsSorting&gt;Type&lt;/Column&gt;
-        &lt;Column allowsSorting&gt;Lifecycle&lt;/Column&gt;
-      &lt;/TableHeader&gt;
-      &lt;TableBody&gt;
-        {data1.map(item =&gt; (
-          &lt;Row key={item.name}&gt;
-            &lt;CellText
-              title={item.name}
-              leadingIcon={&lt;RiCactusLine /&gt;}
-              description={item.description}
-            /&gt;
-            &lt;CellProfile
-              name={item.owner.name}
-              src={item.owner.profilePicture}
-              href={item.owner.link}
-            /&gt;
-            &lt;CellText title={item.type} /&gt;
-            &lt;CellText title={item.lifecycle} /&gt;
-          &lt;/Row&gt;
-        ))}
-      &lt;/TableBody&gt;
-    &lt;/Table&gt;
-  );
-};</code></pre>
-            </div>
-            <div class="note ok">
-              <div class="row">
-                <span class="ex-name">TableRockBand</span>
-                <span class="badge ok">story ok</span>
-              </div>
-              
-              
-              <pre><code>const TableRockBand = () =&gt; {
-  const { data, paginationProps } = useTable({
-    data: data4,
-    pagination: {
-      defaultPageSize: 5,
-    },
-  });
-
-  return (
-    &lt;&gt;
-      &lt;Table&gt;
-        &lt;TableHeader&gt;
-          &lt;Column isRowHeader&gt;Band name&lt;/Column&gt;
-          &lt;Column&gt;Genre&lt;/Column&gt;
-          &lt;Column&gt;Year formed&lt;/Column&gt;
-          &lt;Column&gt;Albums&lt;/Column&gt;
-        &lt;/TableHeader&gt;
-        &lt;TableBody&gt;
-          {data?.map(item =&gt; (
-            &lt;Row key={item.name}&gt;
-              &lt;CellProfile
-                name={item.name}
-                src={item.image}
-                href={item.website}
-              /&gt;
-              &lt;CellText title={item.genre} /&gt;
-              &lt;CellText title={item.yearFormed.toString()} /&gt;
-              &lt;CellText title={item.albums.toString()} /&gt;
-            &lt;/Row&gt;
-          ))}
-        &lt;/TableBody&gt;
-      &lt;/Table&gt;
-      &lt;TablePagination {...paginationProps} /&gt;
-    &lt;/&gt;
-  );
-};</code></pre>
-            </div>
-            <div class="note ok">
-              <div class="row">
-                <span class="ex-name">RowClick</span>
-                <span class="badge ok">story ok</span>
-              </div>
-              
-              
-              <pre><code>const RowClick = () =&gt; {
-  const { data, paginationProps } = useTable({
-    data: data4,
-    pagination: {
-      defaultPageSize: 5,
-    },
-  });
-
-  return (
-    &lt;&gt;
-      &lt;Table&gt;
-        &lt;TableHeader&gt;
-          &lt;Column isRowHeader&gt;Band name&lt;/Column&gt;
-          &lt;Column&gt;Genre&lt;/Column&gt;
-          &lt;Column&gt;Year formed&lt;/Column&gt;
-          &lt;Column&gt;Albums&lt;/Column&gt;
-        &lt;/TableHeader&gt;
-        &lt;TableBody&gt;
-          {data?.map(item =&gt; (
-            &lt;Row key={item.name} onAction={() =&gt; alert(&#39;Row clicked&#39;)}&gt;
-              &lt;CellProfile
-                name={item.name}
-                src={item.image}
-                href={item.website}
-              /&gt;
-              &lt;CellText title={item.genre} /&gt;
-              &lt;CellText title={item.yearFormed.toString()} /&gt;
-              &lt;CellText title={item.albums.toString()} /&gt;
-            &lt;/Row&gt;
-          ))}
-        &lt;/TableBody&gt;
-      &lt;/Table&gt;
-      &lt;TablePagination {...paginationProps} /&gt;
-    &lt;/&gt;
-  );
-};</code></pre>
-            </div>
-            <div class="note ok">
-              <div class="row">
-                <span class="ex-name">RowLink</span>
-                <span class="badge ok">story ok</span>
-              </div>
-              
-              
-              <pre><code>const RowLink = () =&gt; {
-  const { data, paginationProps } = useTable({
-    data: data4,
-    pagination: {
-      defaultPageSize: 5,
-    },
-  });
-
-  return (
-    &lt;&gt;
-      &lt;Table&gt;
-        &lt;TableHeader&gt;
-          &lt;Column isRowHeader&gt;Band name&lt;/Column&gt;
-          &lt;Column&gt;Genre&lt;/Column&gt;
-          &lt;Column&gt;Year formed&lt;/Column&gt;
-          &lt;Column&gt;Albums&lt;/Column&gt;
-        &lt;/TableHeader&gt;
-        &lt;TableBody&gt;
-          {data?.map(item =&gt; (
-            &lt;Row key={item.name} href=&quot;/band&quot;&gt;
-              &lt;CellProfile
-                name={item.name}
-                src={item.image}
-                href={item.website}
-              /&gt;
-              &lt;CellText title={item.genre} /&gt;
-              &lt;CellText title={item.yearFormed.toString()} /&gt;
-              &lt;CellText title={item.albums.toString()} /&gt;
-            &lt;/Row&gt;
-          ))}
-        &lt;/TableBody&gt;
-      &lt;/Table&gt;
-      &lt;TablePagination {...paginationProps} /&gt;
-    &lt;/&gt;
-  );
-};</code></pre>
-            </div>
-            <div class="note ok">
-              <div class="row">
-                <span class="ex-name">CellComponent</span>
-                <span class="badge ok">story ok</span>
-              </div>
-              
-              
-              <pre><code>const CellComponent = () =&gt; {
-  return (
-    &lt;Table&gt;
-      &lt;TableHeader&gt;
-        &lt;Column isRowHeader&gt;Name&lt;/Column&gt;
-      &lt;/TableHeader&gt;
-      &lt;TableBody&gt;
-        &lt;Row&gt;
-          &lt;Cell&gt;Hello world&lt;/Cell&gt;
-        &lt;/Row&gt;
-        &lt;Row&gt;
-          &lt;Cell&gt;
-            This is a very long text that demonstrates how the Cell component
-            handles lengthy content. It should wrap appropriately and maintain
-            proper styling even when the text extends beyond the normal cell
-            width. This helps ensure that the table remains readable and
-            visually consistent regardless of the content length.
-          &lt;/Cell&gt;
-        &lt;/Row&gt;
-        &lt;Row&gt;
-          &lt;Cell&gt;Hello world&lt;/Cell&gt;
-        &lt;/Row&gt;
-      &lt;/TableBody&gt;
-    &lt;/Table&gt;
-  );
-};</code></pre>
-            </div>
-            <div class="note ok">
-              <div class="row">
-                <span class="ex-name">CellTextComponent</span>
-                <span class="badge ok">story ok</span>
-              </div>
-              
-              
-              <pre><code>const CellTextComponent = () =&gt; {
-  return (
-    &lt;Table&gt;
-      &lt;TableHeader&gt;
-        &lt;Column isRowHeader&gt;Name&lt;/Column&gt;
-      &lt;/TableHeader&gt;
-      &lt;TableBody&gt;
-        {data2.map(item =&gt; (
-          &lt;Row key={item.name}&gt;
-            &lt;CellText
-              title={item.name}
-              leadingIcon={item.icon}
-              description={item.description}
-              href={item.href}
-            /&gt;
-          &lt;/Row&gt;
-        ))}
-      &lt;/TableBody&gt;
-    &lt;/Table&gt;
-  );
-};</code></pre>
-            </div>
-            <div class="note ok">
-              <div class="row">
-                <span class="ex-name">CellProfileComponent</span>
-                <span class="badge ok">story ok</span>
-              </div>
-              
-              
-              <pre><code>const CellProfileComponent = () =&gt; {
-  return (
-    &lt;Table&gt;
-      &lt;TableHeader&gt;
-        &lt;Column isRowHeader&gt;Name&lt;/Column&gt;
-      &lt;/TableHeader&gt;
-      &lt;TableBody&gt;
-        {data3.map(item =&gt; (
-          &lt;Row key={item.name}&gt;
-            &lt;CellProfile
-              name={item.name}
-              src={item.profilePicture}
-              href={item.link}
-              description={item.description}
-            /&gt;
-          &lt;/Row&gt;
-        ))}
-      &lt;/TableBody&gt;
-    &lt;/Table&gt;
-  );
-};</code></pre>
-            </div>
-            <div class="note ok">
-              <div class="row">
-                <span class="ex-name">SelectionSingleToggle</span>
-                <span class="badge ok">story ok</span>
-              </div>
-              
-              
-              <pre><code>const SelectionSingleToggle = () =&gt; {
-  const [selectedKeys, setSelectedKeys] = useState&lt;Selection&gt;(new Set([]));
-
-  return (
-    &lt;Table
-      selectionMode=&quot;single&quot;
-      selectionBehavior=&quot;toggle&quot;
-      selectedKeys={selectedKeys}
-      onSelectionChange={setSelectedKeys}
-    &gt;
-      &lt;TableHeader&gt;
-        &lt;Column isRowHeader&gt;Name&lt;/Column&gt;
-        &lt;Column&gt;Owner&lt;/Column&gt;
-        &lt;Column&gt;Type&lt;/Column&gt;
-      &lt;/TableHeader&gt;
-      &lt;TableBody&gt;
-        &lt;Row id=&quot;1&quot;&gt;
-          &lt;CellText title=&quot;Component Library&quot; /&gt;
-          &lt;CellText title=&quot;Design System&quot; /&gt;
-          &lt;CellText title=&quot;library&quot; /&gt;
-        &lt;/Row&gt;
-        &lt;Row id=&quot;2&quot;&gt;
-          &lt;CellText title=&quot;API Gateway&quot; /&gt;
-          &lt;CellText title=&quot;Platform&quot; /&gt;
-          &lt;CellText title=&quot;service&quot; /&gt;
-        &lt;/Row&gt;
-        &lt;Row id=&quot;3&quot;&gt;
-          &lt;CellText title=&quot;Documentation Site&quot; /&gt;
-          &lt;CellText title=&quot;DevEx&quot; /&gt;
-          &lt;CellText title=&quot;website&quot; /&gt;
-        &lt;/Row&gt;
-      &lt;/TableBody&gt;
-    &lt;/Table&gt;
-  );
-};</code></pre>
-            </div>
-            <div class="note ok">
-              <div class="row">
-                <span class="ex-name">SelectionMultiToggle</span>
-                <span class="badge ok">story ok</span>
-              </div>
-              
-              
-              <pre><code>const SelectionMultiToggle = () =&gt; {
-  const [selectedKeys, setSelectedKeys] = useState&lt;Selection&gt;(new Set([]));
-
-  return (
-    &lt;Table
-      selectionMode=&quot;multiple&quot;
-      selectionBehavior=&quot;toggle&quot;
-      selectedKeys={selectedKeys}
-      onSelectionChange={setSelectedKeys}
-    &gt;
-      &lt;TableHeader&gt;
-        &lt;Column isRowHeader&gt;Name&lt;/Column&gt;
-        &lt;Column&gt;Owner&lt;/Column&gt;
-        &lt;Column&gt;Type&lt;/Column&gt;
-      &lt;/TableHeader&gt;
-      &lt;TableBody&gt;
-        &lt;Row id=&quot;1&quot;&gt;
-          &lt;CellText title=&quot;Component Library&quot; /&gt;
-          &lt;CellText title=&quot;Design System&quot; /&gt;
-          &lt;CellText title=&quot;library&quot; /&gt;
-        &lt;/Row&gt;
-        &lt;Row id=&quot;2&quot;&gt;
-          &lt;CellText title=&quot;API Gateway&quot; /&gt;
-          &lt;CellText title=&quot;Platform&quot; /&gt;
-          &lt;CellText title=&quot;service&quot; /&gt;
-        &lt;/Row&gt;
-        &lt;Row id=&quot;3&quot;&gt;
-          &lt;CellText title=&quot;Documentation Site&quot; /&gt;
-          &lt;CellText title=&quot;DevEx&quot; /&gt;
-          &lt;CellText title=&quot;website&quot; /&gt;
-        &lt;/Row&gt;
-      &lt;/TableBody&gt;
-    &lt;/Table&gt;
-  );
-};</code></pre>
-            </div>
-            <div class="note ok">
-              <div class="row">
-                <span class="ex-name">SelectionSingleReplace</span>
-                <span class="badge ok">story ok</span>
-              </div>
-              
-              
-              <pre><code>const SelectionSingleReplace = () =&gt; {
-  const [selectedKeys, setSelectedKeys] = useState&lt;Selection&gt;(new Set([]));
-
-  return (
-    &lt;Table
-      selectionMode=&quot;single&quot;
-      selectionBehavior=&quot;replace&quot;
-      selectedKeys={selectedKeys}
-      onSelectionChange={setSelectedKeys}
-    &gt;
-      &lt;TableHeader&gt;
-        &lt;Column isRowHeader&gt;Name&lt;/Column&gt;
-        &lt;Column&gt;Owner&lt;/Column&gt;
-        &lt;Column&gt;Type&lt;/Column&gt;
-      &lt;/TableHeader&gt;
-      &lt;TableBody&gt;
-        &lt;Row id=&quot;1&quot;&gt;
-          &lt;CellText title=&quot;Component Library&quot; /&gt;
-          &lt;CellText title=&quot;Design System&quot; /&gt;
-          &lt;CellText title=&quot;library&quot; /&gt;
-        &lt;/Row&gt;
-        &lt;Row id=&quot;2&quot;&gt;
-          &lt;CellText title=&quot;API Gateway&quot; /&gt;
-          &lt;CellText title=&quot;Platform&quot; /&gt;
-          &lt;CellText title=&quot;service&quot; /&gt;
-        &lt;/Row&gt;
-        &lt;Row id=&quot;3&quot;&gt;
-          &lt;CellText title=&quot;Documentation Site&quot; /&gt;
-          &lt;CellText title=&quot;DevEx&quot; /&gt;
-          &lt;CellText title=&quot;website&quot; /&gt;
-        &lt;/Row&gt;
-      &lt;/TableBody&gt;
-    &lt;/Table&gt;
-  );
-};</code></pre>
-            </div>
-            <div class="note ok">
-              <div class="row">
-                <span class="ex-name">SelectionMultiReplace</span>
-                <span class="badge ok">story ok</span>
-              </div>
-              
-              
-              <pre><code>const SelectionMultiReplace = () =&gt; {
-  const [selectedKeys, setSelectedKeys] = useState&lt;Selection&gt;(new Set([]));
-
-  return (
-    &lt;Table
-      selectionMode=&quot;multiple&quot;
-      selectionBehavior=&quot;replace&quot;
-      selectedKeys={selectedKeys}
-      onSelectionChange={setSelectedKeys}
-    &gt;
-      &lt;TableHeader&gt;
-        &lt;Column isRowHeader&gt;Name&lt;/Column&gt;
-        &lt;Column&gt;Owner&lt;/Column&gt;
-        &lt;Column&gt;Type&lt;/Column&gt;
-      &lt;/TableHeader&gt;
-      &lt;TableBody&gt;
-        &lt;Row id=&quot;1&quot;&gt;
-          &lt;CellText title=&quot;Component Library&quot; /&gt;
-          &lt;CellText title=&quot;Design System&quot; /&gt;
-          &lt;CellText title=&quot;library&quot; /&gt;
-        &lt;/Row&gt;
-        &lt;Row id=&quot;2&quot;&gt;
-          &lt;CellText title=&quot;API Gateway&quot; /&gt;
-          &lt;CellText title=&quot;Platform&quot; /&gt;
-          &lt;CellText title=&quot;service&quot; /&gt;
-        &lt;/Row&gt;
-        &lt;Row id=&quot;3&quot;&gt;
-          &lt;CellText title=&quot;Documentation Site&quot; /&gt;
-          &lt;CellText title=&quot;DevEx&quot; /&gt;
-          &lt;CellText title=&quot;website&quot; /&gt;
-        &lt;/Row&gt;
-      &lt;/TableBody&gt;
-    &lt;/Table&gt;
-  );
-};</code></pre>
-            </div>
-            <div class="note ok">
-              <div class="row">
-                <span class="ex-name">SelectionToggleWithActions</span>
-                <span class="badge ok">story ok</span>
-              </div>
-              
-              
-              <pre><code>const SelectionToggleWithActions = () =&gt; {
-  const [selectedKeys, setSelectedKeys] = useState&lt;Selection&gt;(new Set([]));
-
-  return (
-    &lt;Table
-      selectionMode=&quot;multiple&quot;
-      selectionBehavior=&quot;toggle&quot;
-      selectedKeys={selectedKeys}
-      onSelectionChange={setSelectedKeys}
-      onRowAction={key =&gt; alert(`Opening ${key}`)}
-    &gt;
-      &lt;TableHeader&gt;
-        &lt;Column isRowHeader&gt;Name&lt;/Column&gt;
-        &lt;Column&gt;Owner&lt;/Column&gt;
-        &lt;Column&gt;Type&lt;/Column&gt;
-      &lt;/TableHeader&gt;
-      &lt;TableBody&gt;
-        &lt;Row id=&quot;1&quot;&gt;
-          &lt;CellText title=&quot;Component Library&quot; /&gt;
-          &lt;CellText title=&quot;Design System&quot; /&gt;
-          &lt;CellText title=&quot;library&quot; /&gt;
-        &lt;/Row&gt;
-        &lt;Row id=&quot;2&quot;&gt;
-          &lt;CellText title=&quot;API Gateway&quot; /&gt;
-          &lt;CellText title=&quot;Platform&quot; /&gt;
-          &lt;CellText title=&quot;service&quot; /&gt;
-        &lt;/Row&gt;
-        &lt;Row id=&quot;3&quot;&gt;
-          &lt;CellText title=&quot;Documentation Site&quot; /&gt;
-          &lt;CellText title=&quot;DevEx&quot; /&gt;
-          &lt;CellText title=&quot;website&quot; /&gt;
-        &lt;/Row&gt;
-      &lt;/TableBody&gt;
-    &lt;/Table&gt;
-  );
-};</code></pre>
-            </div>
-            <div class="note ok">
-              <div class="row">
-                <span class="ex-name">SelectionReplaceWithActions</span>
-                <span class="badge ok">story ok</span>
-              </div>
-              
-              
-              <pre><code>const SelectionReplaceWithActions = () =&gt; {
-  const [selectedKeys, setSelectedKeys] = useState&lt;Selection&gt;(new Set([]));
-
-  return (
-    &lt;Table
-      selectionMode=&quot;multiple&quot;
-      selectionBehavior=&quot;replace&quot;
-      selectedKeys={selectedKeys}
-      onSelectionChange={setSelectedKeys}
-      onRowAction={key =&gt; alert(`Opening ${key}`)}
-    &gt;
-      &lt;TableHeader&gt;
-        &lt;Column isRowHeader&gt;Name&lt;/Column&gt;
-        &lt;Column&gt;Owner&lt;/Column&gt;
-        &lt;Column&gt;Type&lt;/Column&gt;
-      &lt;/TableHeader&gt;
-      &lt;TableBody&gt;
-        &lt;Row id=&quot;1&quot;&gt;
-          &lt;CellText title=&quot;Component Library&quot; /&gt;
-          &lt;CellText title=&quot;Design System&quot; /&gt;
-          &lt;CellText title=&quot;library&quot; /&gt;
-        &lt;/Row&gt;
-        &lt;Row id=&quot;2&quot;&gt;
-          &lt;CellText title=&quot;API Gateway&quot; /&gt;
-          &lt;CellText title=&quot;Platform&quot; /&gt;
-          &lt;CellText title=&quot;service&quot; /&gt;
-        &lt;/Row&gt;
-        &lt;Row id=&quot;3&quot;&gt;
-          &lt;CellText title=&quot;Documentation Site&quot; /&gt;
-          &lt;CellText title=&quot;DevEx&quot; /&gt;
-          &lt;CellText title=&quot;website&quot; /&gt;
-        &lt;/Row&gt;
-      &lt;/TableBody&gt;
-    &lt;/Table&gt;
-  );
-};</code></pre>
-            </div>
-            <div class="note ok">
-              <div class="row">
-                <span class="ex-name">SelectionToggleWithLinks</span>
-                <span class="badge ok">story ok</span>
-              </div>
-              
-              
-              <pre><code>const SelectionToggleWithLinks = () =&gt; {
-  const [selectedKeys, setSelectedKeys] = useState&lt;Selection&gt;(new Set([]));
-
-  return (
-    &lt;Table
-      selectionMode=&quot;multiple&quot;
-      selectionBehavior=&quot;toggle&quot;
-      selectedKeys={selectedKeys}
-      onSelectionChange={setSelectedKeys}
-    &gt;
-      &lt;TableHeader&gt;
-        &lt;Column isRowHeader&gt;Name&lt;/Column&gt;
-        &lt;Column&gt;Owner&lt;/Column&gt;
-        &lt;Column&gt;Type&lt;/Column&gt;
-      &lt;/TableHeader&gt;
-      &lt;TableBody&gt;
-        &lt;Row id=&quot;1&quot; href=&quot;https://example.com/library&quot;&gt;
-          &lt;CellText title=&quot;Component Library&quot; /&gt;
-          &lt;CellText title=&quot;Design System&quot; /&gt;
-          &lt;CellText title=&quot;library&quot; /&gt;
-        &lt;/Row&gt;
-        &lt;Row id=&quot;2&quot; href=&quot;https://example.com/gateway&quot;&gt;
-          &lt;CellText title=&quot;API Gateway&quot; /&gt;
-          &lt;CellText title=&quot;Platform&quot; /&gt;
-          &lt;CellText title=&quot;service&quot; /&gt;
-        &lt;/Row&gt;
-        &lt;Row id=&quot;3&quot; href=&quot;https://example.com/docs&quot;&gt;
-          &lt;CellText title=&quot;Documentation Site&quot; /&gt;
-          &lt;CellText title=&quot;DevEx&quot; /&gt;
-          &lt;CellText title=&quot;website&quot; /&gt;
-        &lt;/Row&gt;
-      &lt;/TableBody&gt;
-    &lt;/Table&gt;
-  );
-};</code></pre>
-            </div>
-            <div class="note ok">
-              <div class="row">
-                <span class="ex-name">SelectionReplaceWithLinks</span>
-                <span class="badge ok">story ok</span>
-              </div>
-              
-              
-              <pre><code>const SelectionReplaceWithLinks = () =&gt; {
-  const [selectedKeys, setSelectedKeys] = useState&lt;Selection&gt;(new Set([]));
-
-  return (
-    &lt;Table
-      selectionMode=&quot;multiple&quot;
-      selectionBehavior=&quot;replace&quot;
-      selectedKeys={selectedKeys}
-      onSelectionChange={setSelectedKeys}
-    &gt;
-      &lt;TableHeader&gt;
-        &lt;Column isRowHeader&gt;Name&lt;/Column&gt;
-        &lt;Column&gt;Owner&lt;/Column&gt;
-        &lt;Column&gt;Type&lt;/Column&gt;
-      &lt;/TableHeader&gt;
-      &lt;TableBody&gt;
-        &lt;Row id=&quot;1&quot; href=&quot;https://example.com/library&quot;&gt;
-          &lt;CellText title=&quot;Component Library&quot; /&gt;
-          &lt;CellText title=&quot;Design System&quot; /&gt;
-          &lt;CellText title=&quot;library&quot; /&gt;
-        &lt;/Row&gt;
-        &lt;Row id=&quot;2&quot; href=&quot;https://example.com/gateway&quot;&gt;
-          &lt;CellText title=&quot;API Gateway&quot; /&gt;
-          &lt;CellText title=&quot;Platform&quot; /&gt;
-          &lt;CellText title=&quot;service&quot; /&gt;
-        &lt;/Row&gt;
-        &lt;Row id=&quot;3&quot; href=&quot;https://example.com/docs&quot;&gt;
-          &lt;CellText title=&quot;Documentation Site&quot; /&gt;
-          &lt;CellText title=&quot;DevEx&quot; /&gt;
-          &lt;CellText title=&quot;website&quot; /&gt;
-        &lt;/Row&gt;
-      &lt;/TableBody&gt;
-    &lt;/Table&gt;
-  );
-};</code></pre>
-            </div>
-            <div class="note ok">
-              <div class="row">
-                <span class="ex-name">SelectionWithDisabledRows</span>
-                <span class="badge ok">story ok</span>
-              </div>
-              
-              
-              <pre><code>const SelectionWithDisabledRows = () =&gt; {
-  const [selectedKeys, setSelectedKeys] = useState&lt;Selection&gt;(new Set([]));
-
-  return (
-    &lt;Table
-      selectionMode=&quot;multiple&quot;
-      selectionBehavior=&quot;toggle&quot;
-      selectedKeys={selectedKeys}
-      onSelectionChange={setSelectedKeys}
-      disabledKeys={[&#39;2&#39;]}
-    &gt;
-      &lt;TableHeader&gt;
-        &lt;Column isRowHeader&gt;Name&lt;/Column&gt;
-        &lt;Column&gt;Owner&lt;/Column&gt;
-        &lt;Column&gt;Type&lt;/Column&gt;
-      &lt;/TableHeader&gt;
-      &lt;TableBody&gt;
-        &lt;Row id=&quot;1&quot;&gt;
-          &lt;CellText title=&quot;Component Library&quot; /&gt;
-          &lt;CellText title=&quot;Design System&quot; /&gt;
-          &lt;CellText title=&quot;library&quot; /&gt;
-        &lt;/Row&gt;
-        &lt;Row id=&quot;2&quot;&gt;
-          &lt;CellText title=&quot;API Gateway (Disabled)&quot; /&gt;
-          &lt;CellText title=&quot;Platform&quot; /&gt;
-          &lt;CellText title=&quot;service&quot; /&gt;
-        &lt;/Row&gt;
-        &lt;Row id=&quot;3&quot;&gt;
-          &lt;CellText title=&quot;Documentation Site&quot; /&gt;
-          &lt;CellText title=&quot;DevEx&quot; /&gt;
-          &lt;CellText title=&quot;website&quot; /&gt;
-        &lt;/Row&gt;
-      &lt;/TableBody&gt;
-    &lt;/Table&gt;
-  );
-};</code></pre>
-            </div>
-            <div class="note ok">
-              <div class="row">
-                <span class="ex-name">SelectionWithPagination</span>
-                <span class="badge ok">story ok</span>
-              </div>
-              
-              
-              <pre><code>const SelectionWithPagination = () =&gt; {
-  const [selectedKeys, setSelectedKeys] = useState&lt;Selection&gt;(new Set([]));
-
-  const { data, paginationProps } = useTable({
-    data: data1,
-    pagination: {
-      defaultPageSize: 5,
-    },
-  });
-
-  return (
-    &lt;&gt;
-      &lt;Table
-        selectionMode=&quot;multiple&quot;
-        selectionBehavior=&quot;toggle&quot;
-        selectedKeys={selectedKeys}
-        onSelectionChange={setSelectedKeys}
-      &gt;
-        &lt;TableHeader&gt;
-          &lt;Column isRowHeader&gt;Name&lt;/Column&gt;
-          &lt;Column&gt;Owner&lt;/Column&gt;
-          &lt;Column&gt;Type&lt;/Column&gt;
-        &lt;/TableHeader&gt;
-        &lt;TableBody&gt;
-          {data?.map(item =&gt; (
-            &lt;Row key={item.name} id={item.name}&gt;
-              &lt;CellText title={item.name} /&gt;
-              &lt;CellText title={item.owner.name} /&gt;
-              &lt;CellText title={item.type} /&gt;
-            &lt;/Row&gt;
-          ))}
-        &lt;/TableBody&gt;
-      &lt;/Table&gt;
-      &lt;TablePagination {...paginationProps} /&gt;
-    &lt;/&gt;
-  );
-};</code></pre>
-            </div>
-            <div class="note ok">
-              <div class="row">
-                <span class="ex-name">SelectionModePlayground</span>
-                <span class="badge ok">story ok</span>
-              </div>
-              
-              
-              <pre><code>const SelectionModePlayground = () =&gt; {
-  const [selectionMode, setSelectionMode] = useState&lt;&#39;single&#39; | &#39;multiple&#39;&gt;(
-    &#39;multiple&#39;,
-  );
-  const [selectedKeys, setSelectedKeys] = useState&lt;Selection&gt;(new Set([]));
-
-  return (
-    &lt;Flex direction=&quot;column&quot; gap=&quot;8&quot;&gt;
-      &lt;Table
-        selectionMode={selectionMode}
-        selectionBehavior=&quot;toggle&quot;
-        selectedKeys={selectedKeys}
-        onSelectionChange={setSelectedKeys}
-      &gt;
-        &lt;TableHeader&gt;
-          &lt;Column isRowHeader&gt;Name&lt;/Column&gt;
-          &lt;Column&gt;Owner&lt;/Column&gt;
-          &lt;Column&gt;Type&lt;/Column&gt;
-        &lt;/TableHeader&gt;
-        &lt;TableBody&gt;
-          &lt;Row id=&quot;1&quot;&gt;
-            &lt;CellText title=&quot;Component Library&quot; /&gt;
-            &lt;CellText title=&quot;Design System&quot; /&gt;
-            &lt;CellText title=&quot;library&quot; /&gt;
-          &lt;/Row&gt;
-          &lt;Row id=&quot;2&quot;&gt;
-            &lt;CellText title=&quot;API Gateway&quot; /&gt;
-            &lt;CellText title=&quot;Platform&quot; /&gt;
-            &lt;CellText title=&quot;service&quot; /&gt;
-          &lt;/Row&gt;
-          &lt;Row id=&quot;3&quot;&gt;
-            &lt;CellText title=&quot;Documentation Site&quot; /&gt;
-            &lt;CellText title=&quot;DevEx&quot; /&gt;
-            &lt;CellText title=&quot;website&quot; /&gt;
-          &lt;/Row&gt;
-        &lt;/TableBody&gt;
-      &lt;/Table&gt;
-      &lt;div&gt;
-        &lt;Text as=&quot;h4&quot; style={{ marginBottom: &#39;var(--bui-space-2)&#39; }}&gt;
-          Selection mode:
-        &lt;/Text&gt;
-        &lt;RadioGroup
-          aria-label=&quot;Selection mode&quot;
-          orientation=&quot;horizontal&quot;
-          value={selectionMode}
-          onChange={value =&gt; {
-            setSelectionMode(value as &#39;single&#39; | &#39;multiple&#39;);
-            setSelectedKeys(new Set([]));
-          }}
-        &gt;
-          &lt;Radio value=&quot;single&quot;&gt;single&lt;/Radio&gt;
-          &lt;Radio value=&quot;multiple&quot;&gt;multiple&lt;/Radio&gt;
-        &lt;/RadioGroup&gt;
-      &lt;/div&gt;
-    &lt;/Flex&gt;
-  );
-};</code></pre>
-            </div>
-            <div class="note ok">
-              <div class="row">
-                <span class="ex-name">SelectionBehaviorPlayground</span>
-                <span class="badge ok">story ok</span>
-              </div>
-              
-              
-              <pre><code>const SelectionBehaviorPlayground = () =&gt; {
-  const [selectionBehavior, setSelectionBehavior] = useState&lt;
-    &#39;toggle&#39; | &#39;replace&#39;
-  &gt;(&#39;toggle&#39;);
-  const [selectedKeys, setSelectedKeys] = useState&lt;Selection&gt;(new Set([]));
-
-  return (
-    &lt;Flex direction=&quot;column&quot; gap=&quot;8&quot;&gt;
-      &lt;Table
-        selectionMode=&quot;multiple&quot;
-        selectionBehavior={selectionBehavior}
-        selectedKeys={selectedKeys}
-        onSelectionChange={setSelectedKeys}
-      &gt;
-        &lt;TableHeader&gt;
-          &lt;Column isRowHeader&gt;Name&lt;/Column&gt;
-          &lt;Column&gt;Owner&lt;/Column&gt;
-          &lt;Column&gt;Type&lt;/Column&gt;
-        &lt;/TableHeader&gt;
-        &lt;TableBody&gt;
-          &lt;Row id=&quot;1&quot;&gt;
-            &lt;CellText title=&quot;Component Library&quot; /&gt;
-            &lt;CellText title=&quot;Design System&quot; /&gt;
-            &lt;CellText title=&quot;library&quot; /&gt;
-          &lt;/Row&gt;
-          &lt;Row id=&quot;2&quot;&gt;
-            &lt;CellText title=&quot;API Gateway&quot; /&gt;
-            &lt;CellText title=&quot;Platform&quot; /&gt;
-            &lt;CellText title=&quot;service&quot; /&gt;
-          &lt;/Row&gt;
-          &lt;Row id=&quot;3&quot;&gt;
-            &lt;CellText title=&quot;Documentation Site&quot; /&gt;
-            &lt;CellText title=&quot;DevEx&quot; /&gt;
-            &lt;CellText title=&quot;website&quot; /&gt;
-          &lt;/Row&gt;
-        &lt;/TableBody&gt;
-      &lt;/Table&gt;
-      &lt;div&gt;
-        &lt;Text as=&quot;h4&quot; style={{ marginBottom: &#39;var(--bui-space-2)&#39; }}&gt;
-          Selection behavior:
-        &lt;/Text&gt;
-        &lt;RadioGroup
-          aria-label=&quot;Selection behavior&quot;
-          orientation=&quot;horizontal&quot;
-          value={selectionBehavior}
-          onChange={value =&gt; {
-            setSelectionBehavior(value as &#39;toggle&#39; | &#39;replace&#39;);
-            setSelectedKeys(new Set([]));
-          }}
-        &gt;
-          &lt;Radio value=&quot;toggle&quot;&gt;toggle&lt;/Radio&gt;
-          &lt;Radio value=&quot;replace&quot;&gt;replace&lt;/Radio&gt;
-        &lt;/RadioGroup&gt;
-      &lt;/div&gt;
-    &lt;/Flex&gt;
-  );
-};</code></pre>
-            </div>
-        </div>
-  </div>
-</article>
-<article
-  class="card 
-  no-error 
   no-info 
   no-story-error"
   role="listitem"
@@ -8242,9 +8583,9 @@ import { RiCactusLine } from "@remixicon/react";</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> TablePagination</h2>
       <div class="badges">
-        <label for="c-27-backstage-ui-tablepagination-props" class="badge ok as-toggle">9 prop types</label>
+        <label for="c-28-backstage-ui-tablepagination-props" class="badge ok as-toggle">10 prop types</label>
         
-        <label for="c-27-backstage-ui-tablepagination-stories" class="badge ok as-toggle">1 story</label>
+        <label for="c-28-backstage-ui-tablepagination-stories" class="badge ok as-toggle">8 stories</label>
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/TablePagination/TablePagination.stories.tsx">backstage-ui-tablepagination · ./packages/ui/src/components/TablePagination/TablePagination.stories.tsx</div>
@@ -8256,8 +8597,8 @@ import { RiCactusLine } from "@remixicon/react";</code></pre>
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-27-backstage-ui-tablepagination-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-27-backstage-ui-tablepagination-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-28-backstage-ui-tablepagination-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-28-backstage-ui-tablepagination-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -8267,27 +8608,33 @@ import { RiCactusLine } from "@remixicon/react";</code></pre>
           <div class="note ok">
             <div class="row">
               <span class="ex-name">Prop types</span>
-              <span class="badge ok">9 prop types</span>
+              <span class="badge ok">10 prop types</span>
             </div>
             <pre><code>Component: packages/ui/src/components/TablePagination/TablePagination.tsx::TablePagination</code></pre>
             <pre><code>Props:</code></pre>
-            <pre><code>offset?: number
+            <pre><code>getLabel?: (params: {
+  pageSize: number;
+  offset?: number;
+  totalCount?: number;
+}) =&gt; string
 
-onNextPage?: () =&gt; void
+hasNextPage: boolean
 
-onPageSizeChange?: (pageSize: number) =&gt; void
+hasPreviousPage: boolean
 
-onPreviousPage?: () =&gt; void
+offset?: number
 
-pageSize?: number
+onNextPage: () =&gt; void
 
-rowCount?: number
+onPageSizeChange?: (size: number) =&gt; void
 
-setOffset?: (offset: number) =&gt; void
+onPreviousPage: () =&gt; void
 
-setPageSize?: (pageSize: number) =&gt; void
+pageSize: number
 
-showPageSizeOptions?: boolean</code></pre>
+showPageSizeOptions?: boolean = true
+
+totalCount?: number</code></pre>
           </div>
         </div>
     
@@ -8310,9 +8657,86 @@ showPageSizeOptions?: boolean</code></pre>
               </div>
               
               
-              <pre><code>const Default = () =&gt; {
-    return &lt;TablePagination offset={0} pageSize={10} rowCount={100} /&gt;;
-};</code></pre>
+              <pre><code>const Default = () =&gt; &lt;TablePagination
+    offset={0}
+    pageSize={10}
+    totalCount={100}
+    hasNextPage
+    hasPreviousPage={false}
+    onNextPage={noop}
+    onPreviousPage={noop}
+    onPageSizeChange={noop}
+    showPageSizeOptions /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">FirstPage</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const FirstPage = () =&gt; &lt;TablePagination /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">LastPage</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const LastPage = () =&gt; &lt;TablePagination offset={90} hasNextPage={false} hasPreviousPage /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">MiddlePage</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const MiddlePage = () =&gt; &lt;TablePagination offset={40} hasPreviousPage /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">WithoutPageSizeOptions</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithoutPageSizeOptions = () =&gt; &lt;TablePagination showPageSizeOptions={false} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">CursorPagination</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const CursorPagination = () =&gt; &lt;TablePagination offset={undefined} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">CustomLabel</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const CustomLabel = () =&gt; &lt;TablePagination
+    offset={20}
+    hasPreviousPage
+    getLabel={({ offset, pageSize, totalCount }) =&gt; {
+      const page = Math.floor((offset ?? 0) / pageSize) + 1;
+      const totalPages = Math.ceil((totalCount ?? 0) / pageSize);
+      return `Page ${page} of ${totalPages}`;
+    }} /&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">EmptyState</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const EmptyState = () =&gt; &lt;TablePagination totalCount={0} hasNextPage={false} /&gt;;</code></pre>
             </div>
         </div>
   </div>
@@ -8330,7 +8754,7 @@ showPageSizeOptions?: boolean</code></pre>
       <div class="badges">
         
         
-        <label for="c-28-backstage-ui-tabs-stories" class="badge ok as-toggle">13 stories</label>
+        <label for="c-29-backstage-ui-tabs-stories" class="badge ok as-toggle">13 stories</label>
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Tabs/Tabs.stories.tsx">backstage-ui-tabs · ./packages/ui/src/components/Tabs/Tabs.stories.tsx</div>
@@ -8342,7 +8766,7 @@ showPageSizeOptions?: boolean</code></pre>
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-28-backstage-ui-tabs-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-29-backstage-ui-tabs-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -8880,7 +9304,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
       <div class="badges">
         
         
-        <label for="c-29-backstage-ui-taggroup-stories" class="badge ok as-toggle">9 stories</label>
+        <label for="c-30-backstage-ui-taggroup-stories" class="badge ok as-toggle">9 stories</label>
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/TagGroup/TagGroup.stories.tsx">backstage-ui-taggroup · ./packages/ui/src/components/TagGroup/TagGroup.stories.tsx</div>
@@ -8892,7 +9316,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-29-backstage-ui-taggroup-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-30-backstage-ui-taggroup-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -9108,9 +9532,9 @@ import { RiAccountCircleLine, RiBugLine, RiEyeLine, RiHeartLine } from "@remixic
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Text</h2>
       <div class="badges">
-        <label for="c-30-backstage-ui-text-props" class="badge ok as-toggle">5 prop types</label>
-        <label for="c-30-backstage-ui-text-info" class="badge info as-toggle">1 info</label>
-        <label for="c-30-backstage-ui-text-stories" class="badge ok as-toggle">9 stories</label>
+        <label for="c-31-backstage-ui-text-props" class="badge ok as-toggle">5 prop types</label>
+        <label for="c-31-backstage-ui-text-info" class="badge info as-toggle">1 info</label>
+        <label for="c-31-backstage-ui-text-stories" class="badge ok as-toggle">9 stories</label>
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Text/Text.stories.tsx">backstage-ui-text · ./packages/ui/src/components/Text/Text.stories.tsx</div>
@@ -9121,9 +9545,9 @@ import { RiAccountCircleLine, RiBugLine, RiEyeLine, RiHeartLine } from "@remixic
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
-  <input id="c-30-backstage-ui-text-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-30-backstage-ui-text-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-30-backstage-ui-text-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-31-backstage-ui-text-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-31-backstage-ui-text-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-31-backstage-ui-text-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -9359,9 +9783,9 @@ weight?: TextWeights | Partial&lt;Record&lt;Breakpoint, TextWeights&gt;&gt;</cod
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> TextField</h2>
       <div class="badges">
-        <label for="c-31-backstage-ui-textfield-props" class="badge ok as-toggle">4 prop types</label>
-        <label for="c-31-backstage-ui-textfield-info" class="badge info as-toggle">1 info</label>
-        <label for="c-31-backstage-ui-textfield-stories" class="badge ok as-toggle">12 stories</label>
+        <label for="c-32-backstage-ui-textfield-props" class="badge ok as-toggle">4 prop types</label>
+        <label for="c-32-backstage-ui-textfield-info" class="badge info as-toggle">1 info</label>
+        <label for="c-32-backstage-ui-textfield-stories" class="badge ok as-toggle">12 stories</label>
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/TextField/TextField.stories.tsx">backstage-ui-textfield · ./packages/ui/src/components/TextField/TextField.stories.tsx</div>
@@ -9372,9 +9796,9 @@ weight?: TextWeights | Partial&lt;Record&lt;Breakpoint, TextWeights&gt;&gt;</cod
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
-  <input id="c-31-backstage-ui-textfield-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-31-backstage-ui-textfield-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-31-backstage-ui-textfield-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-32-backstage-ui-textfield-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-32-backstage-ui-textfield-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-32-backstage-ui-textfield-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -9583,8 +10007,8 @@ import { RiEyeLine, RiSparklingLine } from "@remixicon/react";</code></pre>
       <h2><span class="status-dot dot-ok"></span> TooltipTrigger</h2>
       <div class="badges">
         
-        <label for="c-32-backstage-ui-tooltip-info" class="badge info as-toggle">1 info</label>
-        <label for="c-32-backstage-ui-tooltip-stories" class="badge ok as-toggle">6 stories</label>
+        <label for="c-33-backstage-ui-tooltip-info" class="badge info as-toggle">1 info</label>
+        <label for="c-33-backstage-ui-tooltip-stories" class="badge ok as-toggle">6 stories</label>
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Tooltip/Tooltip.stories.tsx">backstage-ui-tooltip · ./packages/ui/src/components/Tooltip/Tooltip.stories.tsx</div>
@@ -9595,8 +10019,8 @@ import { RiEyeLine, RiSparklingLine } from "@remixicon/react";</code></pre>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
-  <input id="c-32-backstage-ui-tooltip-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-32-backstage-ui-tooltip-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-33-backstage-ui-tooltip-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-33-backstage-ui-tooltip-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -9743,6 +10167,409 @@ import { RiEyeLine, RiSparklingLine } from "@remixicon/react";</code></pre>
 <article
   class="card 
   no-error 
+  has-info 
+  no-story-error"
+  role="listitem"
+  aria-label="visual">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> visual</h2>
+      <div class="badges">
+        <label for="c-34-backstage-ui-table-visual-props" class="badge ok as-toggle">10 prop types</label>
+        <label for="c-34-backstage-ui-table-visual-info" class="badge info as-toggle">1 info</label>
+        <label for="c-34-backstage-ui-table-visual-stories" class="badge ok as-toggle">8 stories</label>
+      </div>
+    </div>
+    <div class="meta" title="./packages/ui/src/components/Table/stories/Table.visual.stories.tsx">backstage-ui-table-visual · ./packages/ui/src/components/Table/stories/Table.visual.stories.tsx</div>
+    
+    
+    <div class="kv"><span class="chip">public:  </span></div>
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  
+  <input id="c-34-backstage-ui-table-visual-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-34-backstage-ui-table-visual-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-34-backstage-ui-table-visual-props" class="tg tg-props" type="checkbox" hidden />
+
+  <div class="panels">
+    
+    
+        <div class="panel panel-info">
+          
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
+    </div>
+        </div>
+    
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types</span>
+              <span class="badge ok">10 prop types</span>
+            </div>
+            <pre><code>Component: packages/ui/src/components/Table/components/Table.tsx::Table</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>columnConfig: unknown
+
+data: T[] | undefined
+
+emptyState?: ReactNode
+
+error?: Error
+
+isStale?: boolean = false
+
+loading?: boolean = false
+
+pagination: NoPagination | PagePagination
+
+rowConfig?: RowConfig&lt;T&gt; | RowRenderFn&lt;T&gt;
+
+selection?: TableSelection
+
+sort?: SortState</code></pre>
+          </div>
+        </div>
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { CellProfile, CellText, Table } from "@backstage/ui";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">ProfileCells</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const ProfileCells = () =&gt; {
+  const columns: ColumnConfig&lt;Data4Item&gt;[] = [
+    {
+      id: &#39;name&#39;,
+      label: &#39;Band name&#39;,
+      isRowHeader: true,
+      cell: item =&gt; (
+        &lt;CellProfile name={item.name} src={item.image} href={item.website} /&gt;
+      ),
+    },
+    {
+      id: &#39;genre&#39;,
+      label: &#39;Genre&#39;,
+      cell: item =&gt; &lt;CellText title={item.genre} /&gt;,
+    },
+    {
+      id: &#39;yearFormed&#39;,
+      label: &#39;Year formed&#39;,
+      cell: item =&gt; &lt;CellText title={item.yearFormed.toString()} /&gt;,
+    },
+    {
+      id: &#39;albums&#39;,
+      label: &#39;Albums&#39;,
+      cell: item =&gt; &lt;CellText title={item.albums.toString()} /&gt;,
+    },
+  ];
+
+  const { tableProps } = useTable({
+    mode: &#39;complete&#39;,
+    getData: () =&gt; data4,
+    paginationOptions: { pageSize: 5 },
+  });
+
+  return &lt;Table columnConfig={columns} {...tableProps} /&gt;;
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">EmptyState</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const EmptyState = () =&gt; {
+  const columns: ColumnConfig&lt;Data1Item&gt;[] = [
+    {
+      id: &#39;name&#39;,
+      label: &#39;Name&#39;,
+      isRowHeader: true,
+      cell: item =&gt; &lt;CellText title={item.name} /&gt;,
+    },
+    {
+      id: &#39;type&#39;,
+      label: &#39;Type&#39;,
+      cell: item =&gt; &lt;CellText title={item.type} /&gt;,
+    },
+  ];
+
+  const { tableProps } = useTable({
+    mode: &#39;complete&#39;,
+    getData: () =&gt; [],
+    paginationOptions: { pageSize: 5 },
+  });
+
+  return (
+    &lt;Table
+      columnConfig={columns}
+      {...tableProps}
+      emptyState={&lt;div&gt;No data available&lt;/div&gt;}
+    /&gt;
+  );
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">NoPagination</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const NoPagination = () =&gt; {
+  const columns: ColumnConfig&lt;Data1Item&gt;[] = [
+    {
+      id: &#39;name&#39;,
+      label: &#39;Name&#39;,
+      isRowHeader: true,
+      cell: item =&gt; &lt;CellText title={item.name} /&gt;,
+    },
+    {
+      id: &#39;owner&#39;,
+      label: &#39;Owner&#39;,
+      cell: item =&gt; &lt;CellText title={item.owner.name} /&gt;,
+    },
+    {
+      id: &#39;type&#39;,
+      label: &#39;Type&#39;,
+      cell: item =&gt; &lt;CellText title={item.type} /&gt;,
+    },
+  ];
+
+  return (
+    &lt;Table
+      columnConfig={columns}
+      data={data1.slice(0, 10)}
+      pagination={{ type: &#39;none&#39; }}
+    /&gt;
+  );
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">SelectionWithDisabledRows</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const SelectionWithDisabledRows = () =&gt; {
+  const [selected, setSelected] = useState&lt;Set&lt;string | number&gt; | &#39;all&#39;&gt;(
+    new Set(),
+  );
+
+  const { tableProps } = useTable({
+    mode: &#39;complete&#39;,
+    getData: () =&gt; selectionData,
+    paginationOptions: { pageSize: 10 },
+  });
+
+  return (
+    &lt;Table
+      {...tableProps}
+      columnConfig={selectionColumns}
+      selection={{
+        mode: &#39;multiple&#39;,
+        behavior: &#39;toggle&#39;,
+        selected,
+        onSelectionChange: setSelected,
+      }}
+      rowConfig={{
+        getIsDisabled: item =&gt; item.id === 2,
+      }}
+    /&gt;
+  );
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">CellTextVariants</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const CellTextVariants = () =&gt; {
+  const [selected, setSelected] = useState&lt;Set&lt;string | number&gt; | &#39;all&#39;&gt;(
+    new Set([&#39;1&#39;, &#39;3&#39;]),
+  );
+  const [sortDescriptor, setSortDescriptor] = useState&lt;{
+    column: string;
+    direction: &#39;ascending&#39; | &#39;descending&#39;;
+  }&gt;({ column: &#39;name&#39;, direction: &#39;ascending&#39; });
+
+  const columns: ColumnConfig&lt;CellTextVariantsItem&gt;[] = [
+    {
+      id: &#39;name&#39;,
+      label: &#39;Name&#39;,
+      isRowHeader: true,
+      isSortable: true,
+      cell: item =&gt; (
+        &lt;CellText title={item.name} description={item.description} /&gt;
+      ),
+    },
+    {
+      id: &#39;type&#39;,
+      label: &#39;Type&#39;,
+      isSortable: true,
+      cell: item =&gt; (
+        &lt;CellText
+          title={item.type}
+          leadingIcon={&lt;span style={{ fontSize: &#39;16px&#39; }}&gt;📦&lt;/span&gt;}
+        /&gt;
+      ),
+    },
+    {
+      id: &#39;owner&#39;,
+      label: &#39;Owner&#39;,
+      cell: item =&gt; &lt;CellText title={item.owner} href=&quot;#&quot; /&gt;,
+    },
+  ];
+
+  return (
+    &lt;Table
+      columnConfig={columns}
+      data={cellTextVariantsData}
+      pagination={{ type: &#39;none&#39; }}
+      selection={{
+        mode: &#39;multiple&#39;,
+        behavior: &#39;toggle&#39;,
+        selected,
+        onSelectionChange: setSelected,
+      }}
+      sort={{
+        descriptor: sortDescriptor,
+        onSortChange: descriptor =&gt;
+          setSortDescriptor({
+            column: String(descriptor.column),
+            direction: descriptor.direction,
+          }),
+      }}
+    /&gt;
+  );
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">LoadingState</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const LoadingState = () =&gt; {
+  const columns: ColumnConfig&lt;Data1Item&gt;[] = [
+    {
+      id: &#39;name&#39;,
+      label: &#39;Name&#39;,
+      isRowHeader: true,
+      cell: item =&gt; &lt;CellText title={item.name} /&gt;,
+    },
+    {
+      id: &#39;type&#39;,
+      label: &#39;Type&#39;,
+      cell: item =&gt; &lt;CellText title={item.type} /&gt;,
+    },
+  ];
+
+  return (
+    &lt;Table
+      columnConfig={columns}
+      data={undefined}
+      loading={true}
+      pagination={{ type: &#39;none&#39; }}
+    /&gt;
+  );
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">ErrorState</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const ErrorState = () =&gt; {
+  const columns: ColumnConfig&lt;Data1Item&gt;[] = [
+    {
+      id: &#39;name&#39;,
+      label: &#39;Name&#39;,
+      isRowHeader: true,
+      cell: item =&gt; &lt;CellText title={item.name} /&gt;,
+    },
+    {
+      id: &#39;type&#39;,
+      label: &#39;Type&#39;,
+      cell: item =&gt; &lt;CellText title={item.type} /&gt;,
+    },
+  ];
+
+  return (
+    &lt;Table
+      columnConfig={columns}
+      data={undefined}
+      error={new Error(&#39;Failed to fetch data from the server&#39;)}
+      pagination={{ type: &#39;none&#39; }}
+    /&gt;
+  );
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">StaleState</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const StaleState = () =&gt; {
+  const columns: ColumnConfig&lt;Data1Item&gt;[] = [
+    {
+      id: &#39;name&#39;,
+      label: &#39;Name&#39;,
+      isRowHeader: true,
+      cell: item =&gt; &lt;CellText title={item.name} /&gt;,
+    },
+    {
+      id: &#39;owner&#39;,
+      label: &#39;Owner&#39;,
+      cell: item =&gt; &lt;CellText title={item.owner.name} /&gt;,
+    },
+    {
+      id: &#39;type&#39;,
+      label: &#39;Type&#39;,
+      cell: item =&gt; &lt;CellText title={item.type} /&gt;,
+    },
+  ];
+
+  return (
+    &lt;Table
+      columnConfig={columns}
+      data={data1.slice(0, 5)}
+      isStale={true}
+      pagination={{ type: &#39;none&#39; }}
+    /&gt;
+  );
+};</code></pre>
+            </div>
+        </div>
+  </div>
+</article>
+<article
+  class="card 
+  no-error 
   no-info 
   no-story-error"
   role="listitem"
@@ -9751,9 +10578,9 @@ import { RiEyeLine, RiSparklingLine } from "@remixicon/react";</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> VisuallyHidden</h2>
       <div class="badges">
-        <label for="c-33-backstage-ui-visuallyhidden-props" class="badge ok as-toggle">1 prop type</label>
+        <label for="c-35-backstage-ui-visuallyhidden-props" class="badge ok as-toggle">1 prop type</label>
         
-        <label for="c-33-backstage-ui-visuallyhidden-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-35-backstage-ui-visuallyhidden-stories" class="badge ok as-toggle">2 stories</label>
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/VisuallyHidden/VisuallyHidden.stories.tsx">backstage-ui-visuallyhidden · ./packages/ui/src/components/VisuallyHidden/VisuallyHidden.stories.tsx</div>
@@ -9765,8 +10592,8 @@ import { RiEyeLine, RiSparklingLine } from "@remixicon/react";</code></pre>
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-33-backstage-ui-visuallyhidden-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-33-backstage-ui-visuallyhidden-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-35-backstage-ui-visuallyhidden-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-35-backstage-ui-visuallyhidden-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
