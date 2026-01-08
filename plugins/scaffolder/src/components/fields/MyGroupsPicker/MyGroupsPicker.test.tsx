@@ -63,19 +63,19 @@ describe('<MyGroupsPicker />', () => {
       {
         apiVersion: 'backstage.io/v1alpha1',
         kind: 'Group',
-        metadata: { name: 'group1' },
+        metadata: { name: 'group1', namespace: 'ns1', title: 'Group 1' },
         spec: { members: ['Bob'] },
       },
       {
         apiVersion: 'backstage.io/v1alpha1',
         kind: 'Group',
-        metadata: { name: 'group2' },
+        metadata: { name: 'group2', namespace: 'ns2', title: 'Group 2' },
         spec: { members: ['Bob'] },
       },
       {
         apiVersion: 'backstage.io/v1alpha1',
         kind: 'Group',
-        metadata: { name: 'group3' },
+        metadata: { name: 'group3', namespace: 'ns1', title: 'Group 3' },
         spec: { members: ['Alice'] },
       },
     ];
@@ -139,13 +139,13 @@ describe('<MyGroupsPicker />', () => {
           {
             apiVersion: 'backstage.io/v1alpha1',
             kind: 'Group',
-            metadata: { name: 'group1' },
+            metadata: { name: 'group1', namespace: 'ns1', title: 'Group 1' },
             spec: { members: ['Bob'] },
           },
           {
             apiVersion: 'backstage.io/v1alpha1',
             kind: 'Group',
-            metadata: { name: 'group2' },
+            metadata: { name: 'group2', namespace: 'ns2', title: 'Group 2' },
             spec: { members: ['Bob'] },
           },
         ],
@@ -158,7 +158,7 @@ describe('<MyGroupsPicker />', () => {
       expect.objectContaining({
         items: expect.arrayContaining([
           expect.objectContaining({
-            metadata: { name: 'group3' },
+            metadata: expect.objectContaining({ name: 'group3' }),
           }),
         ]),
       }),
@@ -205,18 +205,16 @@ describe('<MyGroupsPicker />', () => {
     // Simulate user input
     const inputField = getByRole('combobox');
     await userEvent.click(inputField);
-    await userEvent.type(inputField, 'group');
+    await userEvent.type(inputField, 'Group');
 
     // Wait for the dropdown elements to appear
     await waitFor(() => {
-      const group1Element = queryByText('group1');
-      const group2Element = queryByText('group2');
-      expect(group1Element).toBeInTheDocument();
-      expect(group2Element).toBeInTheDocument();
+      expect(queryByText('Group 1')).toBeInTheDocument();
+      expect(queryByText('Group 2')).toBeInTheDocument();
     });
 
-    // Assert that 'group3' is not rendered in the component
-    expect(queryByText('group3')).not.toBeInTheDocument();
+    // Assert that 'Group 3' is not rendered in the component
+    expect(queryByText('Group 3')).not.toBeInTheDocument();
   });
 
   it('should call the onChange handler with the correct entityRef and and use a nice display name', async () => {
@@ -224,13 +222,17 @@ describe('<MyGroupsPicker />', () => {
       {
         apiVersion: 'backstage.io/v1alpha1',
         kind: 'Group',
-        metadata: { name: 'group1', title: 'My First Group' },
+        metadata: { name: 'group1', title: 'My First Group', namespace: 'ns1' },
         spec: { members: ['Bob'] },
       },
       {
         apiVersion: 'backstage.io/v1alpha1',
         kind: 'Group',
-        metadata: { name: 'group2', title: 'My Second Group' },
+        metadata: {
+          name: 'group2',
+          title: 'My Second Group',
+          namespace: 'ns2',
+        },
         spec: { members: ['Bob'] },
       },
     ];
@@ -279,7 +281,7 @@ describe('<MyGroupsPicker />', () => {
 
     await waitFor(() => {
       expect(onChange).toHaveBeenCalledTimes(1);
-      expect(onChange).toHaveBeenCalledWith('group:default/group1');
+      expect(onChange).toHaveBeenCalledWith('group:ns1/group1');
     });
   });
 
@@ -288,13 +290,17 @@ describe('<MyGroupsPicker />', () => {
       {
         apiVersion: 'backstage.io/v1alpha1',
         kind: 'Group',
-        metadata: { name: 'group1', title: 'My First Group' },
+        metadata: { name: 'group1', title: 'My First Group', namespace: 'ns1' },
         spec: { members: ['Bob'] },
       },
       {
         apiVersion: 'backstage.io/v1alpha1',
         kind: 'Group',
-        metadata: { name: 'group2', title: 'My Second Group' },
+        metadata: {
+          name: 'group2',
+          title: 'My Second Group',
+          namespace: 'ns2',
+        },
         spec: { members: ['Bob'] },
       },
     ];
@@ -306,7 +312,7 @@ describe('<MyGroupsPicker />', () => {
       schema,
       required,
       uiSchema: {},
-      formData: 'group:default/group1',
+      formData: 'group:ns1/group1',
     } as unknown as FieldProps<string>;
 
     const { getByRole } = await renderInTestApp(
@@ -370,7 +376,7 @@ describe('<MyGroupsPicker />', () => {
         schema,
         required: true,
         uiSchema: {},
-        formData: 'group:default/group1',
+        formData: 'group:ns1/group1',
       } as unknown as FieldProps<string>;
 
       const { getByText, queryByText } = await renderInTestApp(
@@ -392,7 +398,7 @@ describe('<MyGroupsPicker />', () => {
         },
         required: true,
         uiSchema: {},
-        formData: 'group:default/group1',
+        formData: 'group:ns1/group1',
       } as unknown as FieldProps<string>;
 
       const { getByText, queryByText } = await renderInTestApp(
@@ -416,7 +422,7 @@ describe('<MyGroupsPicker />', () => {
         uiSchema: {
           'ui:description': description.fromUiSchema,
         },
-        formData: 'group:default/group1',
+        formData: 'group:ns1/group1',
       } as unknown as FieldProps<string>;
 
       const { getByText, queryByText } = await renderInTestApp(
@@ -427,6 +433,130 @@ describe('<MyGroupsPicker />', () => {
       expect(queryByText(description.default!)).toBe(null);
       expect(queryByText(description.fromSchema)).toBe(null);
       expect(getByText(description.fromUiSchema)).toBeInTheDocument();
+    });
+  });
+
+  describe('namespace filtering combinations', () => {
+    it('should filter by namespace and membership correctly', async () => {
+      // Scenario: Filter by 'ns1'
+      // group1: Bob in, ns1 -> Should be in filter
+      // group2: Bob in, ns2 -> Should NOT be in filter
+      // group3: Alice in, ns1 -> Should NOT be in filter (because of membership)
+
+      const props = {
+        onChange,
+        schema,
+        required,
+        uiSchema: {
+          'ui:options': {
+            namespaces: ['ns1'],
+          },
+        },
+      } as unknown as FieldProps<string>;
+
+      await renderInTestApp(
+        <TestApiProvider
+          apis={[
+            [identityApiRef, mockIdentityApi],
+            [catalogApiRef, catalogApi],
+            [errorApiRef, mockErrorApi],
+            [
+              entityPresentationApiRef,
+              DefaultEntityPresentationApi.create({ catalogApi }),
+            ],
+          ]}
+        >
+          <MyGroupsPicker {...props} />
+        </TestApiProvider>,
+      );
+
+      await waitFor(() =>
+        expect(catalogApi.getEntities).toHaveBeenCalledWith({
+          filter: {
+            kind: 'Group',
+            'relations.hasMember': ['user:default/bob'],
+            'metadata.namespace': ['ns1'],
+          },
+        }),
+      );
+    });
+
+    it('should show all groups for user when no namespace filter is provided', async () => {
+      // Scenario: No namespace filter
+      // group1: Bob in, ns1 -> Should be in filter
+      // group2: Bob in, ns2 -> Should be in filter
+      // group3: Alice in, ns1 -> Should NOT be in filter (because of membership)
+
+      const props = {
+        onChange,
+        schema,
+        required,
+        uiSchema: {},
+      } as unknown as FieldProps<string>;
+
+      await renderInTestApp(
+        <TestApiProvider
+          apis={[
+            [identityApiRef, mockIdentityApi],
+            [catalogApiRef, catalogApi],
+            [errorApiRef, mockErrorApi],
+            [
+              entityPresentationApiRef,
+              DefaultEntityPresentationApi.create({ catalogApi }),
+            ],
+          ]}
+        >
+          <MyGroupsPicker {...props} />
+        </TestApiProvider>,
+      );
+
+      await waitFor(() =>
+        expect(catalogApi.getEntities).toHaveBeenCalledWith({
+          filter: {
+            kind: 'Group',
+            'relations.hasMember': ['user:default/bob'],
+          },
+        }),
+      );
+    });
+
+    it('should return empty list if user is not in any group in the specified namespace', async () => {
+      const props = {
+        onChange,
+        schema,
+        required,
+        uiSchema: {
+          'ui:options': {
+            namespaces: ['non-existent-ns'],
+          },
+        },
+      } as unknown as FieldProps<string>;
+
+      await renderInTestApp(
+        <TestApiProvider
+          apis={[
+            [identityApiRef, mockIdentityApi],
+            [catalogApiRef, catalogApi],
+            [errorApiRef, mockErrorApi],
+            [
+              entityPresentationApiRef,
+              DefaultEntityPresentationApi.create({ catalogApi }),
+            ],
+          ]}
+        >
+          <MyGroupsPicker {...props} />
+        </TestApiProvider>,
+      );
+
+      await waitFor(() =>
+        expect(catalogApi.getEntities).toHaveBeenCalledWith({
+          filter: {
+            kind: 'Group',
+            'relations.hasMember': ['user:default/bob'],
+            'metadata.namespace': ['non-existent-ns'],
+          },
+        }),
+      );
     });
   });
 });
