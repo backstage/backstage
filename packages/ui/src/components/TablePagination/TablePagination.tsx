@@ -36,6 +36,7 @@ export function TablePagination(props: TablePaginationProps) {
     className,
     offset,
     pageSize,
+    pageSizeOptions,
     rowCount,
     onNextPage,
     onPreviousPage,
@@ -83,14 +84,16 @@ export function TablePagination(props: TablePaginationProps) {
             name="pageSize"
             size="small"
             placeholder="Show 10 results"
-            options={[
-              { label: 'Show 5 results', value: '5' },
-              { label: 'Show 10 results', value: '10' },
-              { label: 'Show 20 results', value: '20' },
-              { label: 'Show 30 results', value: '30' },
-              { label: 'Show 40 results', value: '40' },
-              { label: 'Show 50 results', value: '50' },
-            ]}
+            options={
+              pageSizeOptions ?? [
+                { label: 'Show 5 results', value: '5' },
+                { label: 'Show 10 results', value: '10' },
+                { label: 'Show 20 results', value: '20' },
+                { label: 'Show 30 results', value: '30' },
+                { label: 'Show 40 results', value: '40' },
+                { label: 'Show 50 results', value: '50' },
+              ]
+            }
             selectedKey={pageSize?.toString()}
             onSelectionChange={value => {
               const newPageSize = Number(value);

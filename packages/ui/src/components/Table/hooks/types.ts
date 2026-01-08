@@ -37,6 +37,12 @@ export interface UseTablePaginationConfig {
   /** Default offset for uncontrolled mode */
   defaultOffset?: number;
 
+  /** Page size options */
+  pageSizeOptions?: {
+    value: string;
+    label: string;
+  }[];
+
   // Analytics callbacks
   /** Callback when next page is clicked */
   onNextPage?: () => void;
