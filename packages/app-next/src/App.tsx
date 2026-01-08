@@ -45,8 +45,6 @@ import { convertLegacyPageExtension } from '@backstage/core-compat-api';
 import { convertLegacyEntityContentExtension } from '@backstage/plugin-catalog-react/alpha';
 import { pluginInfoResolver } from './pluginInfoResolver';
 import { appModuleNav } from './modules/appModuleNav';
-import devtoolsPlugin from '@backstage/plugin-devtools/alpha';
-import { unprocessedEntitiesDevToolsContent } from '@backstage/plugin-catalog-unprocessed-entities/alpha';
 
 /*
 
@@ -115,7 +113,7 @@ const customHomePageModule = createFrontendModule({
 
 const notFoundErrorPageModule = createFrontendModule({
   pluginId: 'app',
-  extensions: [notFoundErrorPage, unprocessedEntitiesDevToolsContent],
+  extensions: [notFoundErrorPage],
 });
 
 const collectedLegacyPlugins = convertLegacyAppRoot(
@@ -135,7 +133,6 @@ const app = createApp({
     notFoundErrorPageModule,
     appModuleNav,
     customHomePageModule,
-    devtoolsPlugin,
     ...collectedLegacyPlugins,
   ],
   advanced: {

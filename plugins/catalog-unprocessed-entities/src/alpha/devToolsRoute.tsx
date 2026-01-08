@@ -15,7 +15,6 @@
  */
 
 import { DevToolsContentBlueprint } from '@backstage/plugin-devtools-react';
-import { compatWrapper } from '@backstage/core-compat-api';
 
 /**
  * DevTools content for catalog unprocessed entities.
@@ -28,9 +27,9 @@ export const unprocessedEntitiesDevToolsContent = DevToolsContentBlueprint.make(
       path: 'unprocessed-entities',
       title: 'Unprocessed Entities',
       loader: () =>
-        import('../components/UnprocessedEntities').then(m =>
-          compatWrapper(<m.UnprocessedEntitiesContent />),
-        ),
+        import('../components/UnprocessedEntities').then(m => (
+          <m.UnprocessedEntitiesContent />
+        )),
     },
   },
 );
