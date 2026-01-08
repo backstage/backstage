@@ -115,7 +115,7 @@ jobs:
         with:
           issue-number: ${{ needs.setup.outputs.pr-number }}
           comment-author: 'github-actions[bot]'
-          body-includes: API changes
+          body-includes: api-breaking-changes-comment
           direction: last
 
       - name: Create or Update Comment with API Changes
