@@ -36,9 +36,57 @@
   }
 
   .bui-ToggleButton[data-variant='secondary'] {
-    background: transparent;
+    background-color: var(--bui-bg-neutral-on-surface-0);
     color: var(--bui-fg-primary);
-    box-shadow: inset 0 0 0 1px var(--bui-border);
+    box-shadow: none;
+
+    &[data-hovered]:not([data-disabled]) {
+      background-color: var(--bui-bg-neutral-on-surface-0-hover);
+    }
+
+    &[data-pressed]:not([data-disabled]),
+    &[data-selected]:not([data-disabled]) {
+      background-color: var(--bui-bg-neutral-on-surface-0-pressed);
+    }
+
+    &[data-on-surface='1'] {
+      background-color: var(--bui-bg-neutral-on-surface-1);
+
+      &[data-hovered]:not([data-disabled]) {
+        background-color: var(--bui-bg-neutral-on-surface-1-hover);
+      }
+
+      &[data-pressed]:not([data-disabled]),
+      &[data-selected]:not([data-disabled]) {
+        background-color: var(--bui-bg-neutral-on-surface-1-pressed);
+      }
+    }
+
+    &[data-on-surface='2'] {
+      background-color: var(--bui-bg-neutral-on-surface-2);
+
+      &[data-hovered]:not([data-disabled]) {
+        background-color: var(--bui-bg-neutral-on-surface-2-hover);
+      }
+
+      &[data-pressed]:not([data-disabled]),
+      &[data-selected]:not([data-disabled]) {
+        background-color: var(--bui-bg-neutral-on-surface-2-pressed);
+      }
+    }
+
+    &[data-on-surface='3'] {
+      background-color: var(--bui-bg-neutral-on-surface-3);
+
+      &[data-hovered]:not([data-disabled]) {
+        background-color: var(--bui-bg-neutral-on-surface-3-hover);
+      }
+
+      &[data-pressed]:not([data-disabled]),
+      &[data-selected]:not([data-disabled]) {
+        background-color: var(--bui-bg-neutral-on-surface-3-pressed);
+      }
+    }
   }
 
   .bui-ToggleButton[data-variant='primary'][data-selected],
@@ -51,21 +99,15 @@
     background: var(--bui-bg-surface-2);
   }
 
-  .bui-ToggleButton[data-variant='secondary'][data-selected],
-  .bui-ToggleButton[data-variant='secondary'][data-pressed] {
-    background: var(--bui-bg-surface-2);
-    box-shadow: inset 0 0 0 1px var(--bui-border-hover);
-  }
-
   .bui-ToggleButton[data-focus-visible] {
-    outline: 2px solid var(--bui-ring);
-    outline-offset: 2px;
+    outline: none;
+    box-shadow: inset 0 0 0 2px var(--bui-ring);
   }
 
   .bui-ToggleButton[data-disabled] {
     cursor: not-allowed;
     color: var(--bui-fg-disabled);
-    background: var(--bui-bg-disabled);
+    background: var(--bui-bg-neutral-on-surface-0-disabled);
     box-shadow: inset 0 0 0 1px var(--bui-border-disabled);
   }
 

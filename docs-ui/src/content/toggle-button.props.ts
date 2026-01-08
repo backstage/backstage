@@ -17,6 +17,12 @@ export const toggleButtonPropDefs: Record<string, PropDef> = {
     default: 'small',
     responsive: true,
   },
+  onSurface: {
+    type: 'enum',
+    values: ['0', '1', '2', '3', 'danger', 'warning', 'success', 'auto'],
+    description: 'Surface level this toggle is placed on',
+    responsive: true,
+  },
   iconStart: { type: 'enum', values: ['ReactNode'] },
   iconEnd: { type: 'enum', values: ['ReactNode'] },
   isSelected: { type: 'boolean' },

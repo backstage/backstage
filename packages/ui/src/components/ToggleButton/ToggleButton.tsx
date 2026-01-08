@@ -21,6 +21,7 @@ import type { ToggleButtonProps } from './types';
 import { useStyles } from '../../hooks/useStyles';
 import { ToggleButtonDefinition } from './definition';
 import styles from './ToggleButton.module.css';
+import { useSurface } from '../../hooks/useSurface';
 
 /** @public */
 export const ToggleButton = forwardRef(
@@ -34,13 +35,17 @@ export const ToggleButton = forwardRef(
       },
     );
 
-    const { children, className, iconStart, iconEnd, ...rest } = cleanedProps;
+    const { children, className, iconStart, iconEnd, onSurface, ...rest } =
+      cleanedProps;
+
+    const { surface } = useSurface({ onSurface });
 
     return (
       <AriaToggleButton
         className={clsx(classNames.root, styles[classNames.root], className)}
         ref={ref}
         {...dataAttributes}
+        {...(typeof surface === 'string' ? { 'data-on-surface': surface } : {})}
         {...rest}
       >
         <span
