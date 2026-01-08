@@ -56,10 +56,9 @@ core
 ```
 
 :::note Note
- 
+
 Make sure your component story file has the following format
 componentName.stories.tsx
-
 :::
 
 ## Running locally
