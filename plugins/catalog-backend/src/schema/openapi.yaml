@@ -6,7 +6,7 @@ info:
     The API surface consists of a few distinct groups of functionality. Each has a
     dedicated section below.
 
-    :::note Note
+    :::note Note 
       This page only describes some of the most commonly used parts of the API, and is a work in progress.
     :::
 
@@ -786,11 +786,11 @@ components:
       properties:
         type:
           type: string
-        name:
+        target:
           type: string
       required:
         - type
-        - name
+        - target
       additionalProperties: false
     EntitiesQueryResponse:
       type: object
