@@ -170,25 +170,21 @@ export class DefaultActionsService implements ActionsService {
     );
 
     return actions.filter(action => {
-      // If include rules exist, must match at least one
-      if (includeRules.length > 0) {
-        const included = includeRules.some(rule =>
-          this.matchesRule(action, rule),
-        );
-        if (!included) {
-          return false;
-        }
-      }
-
-      // Must not match any exclude rule
       const excluded = excludeRules.some(rule =>
         this.matchesRule(action, rule),
       );
+
       if (excluded) {
         return false;
       }
 
-      return true;
+      // If no include rules, include by default
+      if (includeRules.length === 0) {
+        return true;
+      }
+
+      // Must match at least one include rule
+      return includeRules.some(rule => this.matchesRule(action, rule));
     });
   }
 
@@ -198,10 +194,6 @@ export class DefaultActionsService implements ActionsService {
       Record<'destructive' | 'readOnly' | 'idempotent', boolean>
     >;
   }> {
-    if (!configArray) {
-      return [];
-    }
-
     return configArray.map(ruleConfig => {
       const idPattern = ruleConfig.getOptionalString('id');
       const attributesConfig = ruleConfig.getOptionalConfig('attributes');
