@@ -23,6 +23,7 @@ import { Observable } from '@backstage/types';
 import { OutlinedTextFieldProps } from '@material-ui/core/TextField';
 import { Overrides } from '@material-ui/core/styles/overrides';
 import { PropsWithChildren } from 'react';
+import { ReactElement } from 'react';
 import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
@@ -605,7 +606,7 @@ export interface EntityTableProps<T extends Entity> {
   // (undocumented)
   tableOptions?: TableOptions;
   // (undocumented)
-  title: string;
+  title: string | ReactElement;
   // (undocumented)
   variant?: InfoCardVariants;
 }
