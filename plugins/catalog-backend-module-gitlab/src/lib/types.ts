@@ -45,6 +45,21 @@ export type GitLabProject = {
   forked_from_project?: GitlabProjectForkedFrom;
 };
 
+export type GitLabCommit = {
+  id: string;
+  short_id: string;
+  title: string;
+  message: string;
+  created_at: string;
+  author_name: string;
+  author_email: string;
+  authored_date: string;
+  committed_date: string;
+  committer_name: string;
+  committer_email: string;
+  web_url: string;
+};
+
 /**
  * Representation of a GitLab user in the GitLab API
  *

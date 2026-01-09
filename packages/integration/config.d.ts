@@ -386,6 +386,28 @@ export interface Config {
        * @visibility secret
        */
       commitSigningKey?: string;
+
+      /**
+       * Retry configuration for requests.
+       * @visibility frontend
+       */
+      retry?: {
+        /**
+         * Maximum number of retries for failed requests.
+         * @visibility frontend
+         */
+        maxRetries?: number;
+        /**
+         * HTTP status codes that should trigger a retry.
+         * @visibility frontend
+         */
+        retryStatusCodes?: number[];
+        /**
+         * Maximum number of API requests allowed per minute. Set to -1 to disable rate limiting.
+         * @visibility frontend
+         */
+        maxApiRequestsPerMinute?: number;
+      };
     }>;
 
     /** Integration configuration for Google Cloud Storage */
