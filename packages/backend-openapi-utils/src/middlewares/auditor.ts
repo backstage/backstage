@@ -83,6 +83,14 @@ interface WithCapturedResponseBody {
   [CAPTURED_RESPONSE_BODY_SYMBOL]?: JsonObject;
 }
 
+const VARIANT_LOOKUP: Record<string, string> = {
+  GET: 'fetch',
+  POST: 'create',
+  PATCH: 'update',
+  PUT: 'update',
+  DELETE: 'delete',
+};
+
 /**
  *
  * Middleware factory for auditing OpenAPI requests and responses.
@@ -133,7 +141,14 @@ export function auditorMiddlewareFactory(dependencies: {
 
     // Capture metadata from request
     const captureRequestMetadata = (): JsonObject => {
-      const meta: JsonObject = { ...staticMeta };
+      const meta: JsonObject = {
+        route: req.openapi?.expressRoute,
+        ...staticMeta,
+      };
+      const variant = VARIANT_LOOKUP[req.method];
+      if (variant) {
+        meta.variant = variant;
+      }
 
       if (captureMetaFromRequest) {
         const { body, params, query } = captureMetaFromRequest;

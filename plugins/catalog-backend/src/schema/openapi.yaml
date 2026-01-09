@@ -874,7 +874,7 @@ paths:
         eventId: entity-mutate
         severityLevel: medium
         meta:
-          queryType: refresh
+          variant: update
         captureMetaFromRequest:
           body: [entityRef]
       responses:
@@ -912,8 +912,6 @@ paths:
       description: Get all entities matching a given filter.
       x-backstage-auditor:
         eventId: entity-fetch
-        meta:
-          queryType: all
       responses:
         '200':
           description: ''
@@ -952,8 +950,6 @@ paths:
       description: Get a single entity by the UID.
       x-backstage-auditor:
         eventId: entity-fetch
-        meta:
-          queryType: by-uid
         captureMetaFromRequest:
           params: [uid]
       responses:
@@ -980,8 +976,6 @@ paths:
       x-backstage-auditor:
         eventId: entity-mutate
         severityLevel: medium
-        meta:
-          actionType: delete
         captureMetaFromRequest:
           params: [uid]
       responses:
@@ -1004,8 +998,6 @@ paths:
       description: Get an entity by an entity ref.
       x-backstage-auditor:
         eventId: entity-fetch
-        meta:
-          queryType: by-name
         captureMetaFromRequest:
           params: [kind, namespace, name]
       responses:
@@ -1034,8 +1026,6 @@ paths:
       description: Get an entity's ancestry by entity ref.
       x-backstage-auditor:
         eventId: entity-fetch
-        meta:
-          actionType: ancestry
         captureMetaFromRequest:
           params: [kind, namespace, name]
       responses:
@@ -1065,7 +1055,7 @@ paths:
       x-backstage-auditor:
         eventId: entity-fetch
         meta:
-          queryType: by-refs
+          variant: fetch
       responses:
         '200':
           description: Ok
@@ -1121,8 +1111,6 @@ paths:
       description: Search for entities by a given query.
       x-backstage-auditor:
         eventId: entity-fetch
-        meta:
-          queryType: by-query
       responses:
         '200':
           description: Ok
@@ -1316,8 +1304,6 @@ paths:
       x-backstage-auditor:
         eventId: location-mutate
         severityLevel: medium
-        meta:
-          actionType: create
         captureMetaFromRequest:
           body: [type, target]
           query: [dryRun]
@@ -1389,7 +1375,7 @@ paths:
       x-backstage-auditor:
         eventId: location-fetch
         meta:
-          queryType: all
+          variant: fetch
       responses:
         '200':
           description: Ok
@@ -1449,8 +1435,6 @@ paths:
       description: Get a location by id.
       x-backstage-auditor:
         eventId: location-fetch
-        meta:
-          queryType: by-id
         captureMetaFromRequest:
           params: [id]
       responses:
@@ -1508,8 +1492,6 @@ paths:
       x-backstage-auditor:
         eventId: location-mutate
         severityLevel: medium
-        meta:
-          actionType: delete
         captureMetaFromRequest:
           params: [id]
       responses:
@@ -1536,8 +1518,6 @@ paths:
       description: Get a location for entity.
       x-backstage-auditor:
         eventId: location-fetch
-        meta:
-          queryType: by-entity
         captureMetaFromRequest:
           params: [kind, namespace, name]
       responses:
