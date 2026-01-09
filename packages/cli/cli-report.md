@@ -149,30 +149,7 @@ Usage: <none>
 
 Options:
   --help
-  --include
-  --output-file
   --version
-```
-
-#### Examples
-
-Include additional packages using glob patterns:
-
-```bash
-backstage-cli info --include "@spotify/*"
-backstage-cli info --include "@internal/*" --include "@myorg/backstage-*"
-```
-
-Export the info output to a JSON file:
-
-```bash
-backstage-cli info --output-file backstage-info.json
-```
-
-Combine both options:
-
-```bash
-backstage-cli info --include "@spotify/*" --output-file backstage-info.json
 ```
 
 ### `backstage-cli migrate`
