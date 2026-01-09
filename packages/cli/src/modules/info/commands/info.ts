@@ -48,10 +48,7 @@ function tryReadPackageJson(
 /**
  * Checks if a package has a backstage field in its package.json
  */
-function hasBackstageField(
-  packageName: string,
-  targetPath: string,
-): boolean {
+function hasBackstageField(packageName: string, targetPath: string): boolean {
   const pkg = tryReadPackageJson(packageName, targetPath);
   return pkg?.backstage !== undefined;
 }
@@ -171,7 +168,10 @@ export default async (options: InfoOptions) => {
           sortedInstalled.map(dep => [dep, getVersions(dep)]),
         ),
         local: Object.fromEntries(
-          sortedLocal.map(dep => [dep, workspacePackages.get(dep) ?? 'unknown']),
+          sortedLocal.map(dep => [
+            dep,
+            workspacePackages.get(dep) ?? 'unknown',
+          ]),
         ),
       };
 
