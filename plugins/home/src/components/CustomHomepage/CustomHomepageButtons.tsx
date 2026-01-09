@@ -45,6 +45,7 @@ interface CustomHomepageButtonsProps {
   changeEditMode: (mode: boolean) => void;
   defaultConfigAvailable: boolean;
   restoreDefault: () => void;
+  cancel: () => void;
 }
 export const CustomHomepageButtons = (props: CustomHomepageButtonsProps) => {
   const {
@@ -55,6 +56,7 @@ export const CustomHomepageButtons = (props: CustomHomepageButtonsProps) => {
     changeEditMode,
     defaultConfigAvailable,
     restoreDefault,
+    cancel,
   } = props;
   const styles = useStyles();
   const { t } = useTranslationRef(homeTranslationRef);
@@ -73,6 +75,9 @@ export const CustomHomepageButtons = (props: CustomHomepageButtonsProps) => {
         </Button>
       ) : (
         <>
+          <Button variant="contained" onClick={cancel} size="small">
+            {t('customHomepageButtons.cancel')}
+          </Button>
           {defaultConfigAvailable && (
             <Button
               variant="contained"

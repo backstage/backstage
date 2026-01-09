@@ -1,5 +1,33 @@
 # @backstage/backend-defaults
 
+## 0.14.1-next.1
+
+### Patch Changes
+
+- 3afeab4: Implementing `readTree` for `GoogleGcsReader`
+- Updated dependencies
+  - @backstage/integration@1.19.2-next.0
+
+## 0.14.1-next.0
+
+### Patch Changes
+
+- 7126bf2: Fixed a spelling mistake in root health service shutdown response.
+- Updated dependencies
+  - @backstage/backend-app-api@1.4.0
+  - @backstage/backend-dev-utils@0.1.6
+  - @backstage/backend-plugin-api@1.6.0
+  - @backstage/cli-node@0.2.16
+  - @backstage/config@1.3.6
+  - @backstage/config-loader@1.10.7
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.19.0
+  - @backstage/integration-aws-node@0.1.19
+  - @backstage/types@1.2.2
+  - @backstage/plugin-auth-node@0.6.10
+  - @backstage/plugin-events-node@0.4.18
+  - @backstage/plugin-permission-node@0.10.7
+
 ## 0.14.0
 
 ### Minor Changes

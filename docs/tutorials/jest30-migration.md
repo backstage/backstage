@@ -8,8 +8,27 @@ Starting with a recent version of `@backstage/cli`, `jest` is a peer dependency.
 
 You can choose to install either Jest 29 or Jest 30. The built-in Jest version before this change was Jest 29, however, we recommend that you switch to Jest 30. Upgrading will solve the `Could not parse CSS stylesheet` errors, allow you to use MSW v2 in web packages, and ensure that you remain compatible with future versions of the Backstage CLI. Support for Jest 29 is temporary, with the purpose of allowing you to upgrade at your own pace, but it will eventually be removed.
 
-- **Jest 29**: Install `jest@^29` and `jest-environment-jsdom@^29`. No migration needed, but you may see `Could not parse CSS stylesheet` warnings/errors when testing components from `@backstage/ui` or other packages using CSS `@layer` declarations.
-- **Jest 30**: Install `jest@^30`, `@jest/environment-jsdom-abstract@^30`, and `jsdom@^27`. Fixes the stylesheet parsing warnings/errors, but requires the migration steps below.
+- **Jest 29**:
+
+  ```bash
+  # in your repository root, run:
+  yarn add --dev jest@^29 @types/jest@^29 jest-environment-jsdom@^29
+  ```
+
+  Pros: No migration needed
+
+  Cons: You may see `Could not parse CSS stylesheet` warnings/errors when testing components from `@backstage/ui` or other packages using CSS `@layer` declarations
+
+- **Jest 30**:
+
+  ```bash
+  # in your repository root, run:
+  yarn add --dev jest@^30 @types/jest@^30 @jest/environment-jsdom-abstract@^30 jsdom@^27
+  ```
+
+  Pros: Fixes the stylesheet parsing warnings/errors
+
+  Cons: Requires migration steps (see below) in your tests
 
 ## Migration Guide
 

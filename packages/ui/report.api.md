@@ -37,11 +37,12 @@ import { RowProps } from 'react-aria-components';
 import type { SearchFieldProps as SearchFieldProps_2 } from 'react-aria-components';
 import type { SelectProps as SelectProps_2 } from 'react-aria-components';
 import type { SeparatorProps } from 'react-aria-components';
+import type { SortDescriptor as SortDescriptor_2 } from 'react-stately';
 import type { SubmenuTriggerProps as SubmenuTriggerProps_2 } from 'react-aria-components';
 import type { SwitchProps as SwitchProps_2 } from 'react-aria-components';
 import { TableBodyProps } from 'react-aria-components';
 import { TableHeaderProps } from 'react-aria-components';
-import { TableProps } from 'react-aria-components';
+import { TableProps as TableProps_2 } from 'react-aria-components';
 import type { TabListProps as TabListProps_2 } from 'react-aria-components';
 import type { TabPanelProps as TabPanelProps_2 } from 'react-aria-components';
 import type { TabProps as TabProps_2 } from 'react-aria-components';
@@ -194,6 +195,17 @@ export const BoxDefinition: {
     'minHeight',
     'maxHeight',
   ];
+  readonly dataAttributes: {
+    readonly surface: readonly [
+      '0',
+      '1',
+      '2',
+      '3',
+      'danger',
+      'warning',
+      'success',
+    ];
+  };
 };
 
 // @public (undocumented)
@@ -223,13 +235,15 @@ export interface BoxProps extends SpaceProps {
   // (undocumented)
   style?: React.CSSProperties;
   // (undocumented)
+  surface?: Responsive<Surface>;
+  // (undocumented)
   width?: Responsive<string>;
 }
 
 // @public (undocumented)
 export type Breakpoint = 'initial' | 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
-// @public (undocumented)
+// @public
 export const Button: ForwardRefExoticComponent<
   ButtonProps & RefAttributes<HTMLButtonElement>
 >;
@@ -318,6 +332,7 @@ export interface ButtonProps extends ButtonProps_2 {
   iconStart?: ReactElement;
   // (undocumented)
   loading?: boolean;
+  onSurface?: Responsive<Surface>;
   // (undocumented)
   size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
   // (undocumented)
@@ -457,6 +472,26 @@ export type ClassNamesMap = Record<string, string>;
 export const Column: (props: ColumnProps) => JSX_2.Element;
 
 // @public (undocumented)
+export interface ColumnConfig<T extends TableItem> {
+  // (undocumented)
+  cell: (item: T) => ReactNode;
+  // (undocumented)
+  header?: () => ReactNode;
+  // (undocumented)
+  id: string;
+  // (undocumented)
+  isHidden?: boolean;
+  // (undocumented)
+  isRowHeader?: boolean;
+  // (undocumented)
+  isSortable?: boolean;
+  // (undocumented)
+  label: string;
+  // (undocumented)
+  width?: number | string;
+}
+
+// @public (undocumented)
 export interface ColumnProps extends Omit<ColumnProps_2, 'children'> {
   // (undocumented)
   children?: React.ReactNode;
@@ -521,6 +556,34 @@ export interface ContainerProps {
   py?: SpaceProps['py'];
   // (undocumented)
   style?: React.CSSProperties;
+}
+
+// @public (undocumented)
+export interface CursorParams<TFilter> {
+  // (undocumented)
+  cursor: string | undefined;
+  // (undocumented)
+  filter: TFilter | undefined;
+  // (undocumented)
+  pageSize: number;
+  // (undocumented)
+  search: string;
+  // (undocumented)
+  signal: AbortSignal;
+  // (undocumented)
+  sort: SortDescriptor | null;
+}
+
+// @public (undocumented)
+export interface CursorResponse<T> {
+  // (undocumented)
+  data: T[];
+  // (undocumented)
+  nextCursor?: string;
+  // (undocumented)
+  prevCursor?: string;
+  // (undocumented)
+  totalCount?: number;
 }
 
 // @public
@@ -628,6 +691,14 @@ export interface FieldLabelProps
 }
 
 // @public (undocumented)
+export interface FilterState<TFilter> {
+  // (undocumented)
+  onChange: (value: TFilter) => void;
+  // (undocumented)
+  value: TFilter | undefined;
+}
+
+// @public (undocumented)
 export const Flex: ForwardRefExoticComponent<
   FlexProps & RefAttributes<HTMLDivElement>
 >;
@@ -657,6 +728,17 @@ export const FlexDefinition: {
     'justify',
     'direction',
   ];
+  readonly dataAttributes: {
+    readonly surface: readonly [
+      '0',
+      '1',
+      '2',
+      '3',
+      'danger',
+      'warning',
+      'success',
+    ];
+  };
 };
 
 // @public (undocumented)
@@ -678,6 +760,8 @@ export interface FlexProps extends SpaceProps {
   justify?: Responsive<'start' | 'center' | 'end' | 'between'>;
   // (undocumented)
   style?: React.CSSProperties;
+  // (undocumented)
+  surface?: Responsive<Surface>;
 }
 
 // @public (undocumented)
@@ -714,6 +798,17 @@ export const GridDefinition: {
     'px',
     'py',
   ];
+  readonly dataAttributes: {
+    readonly surface: readonly [
+      '0',
+      '1',
+      '2',
+      '3',
+      'danger',
+      'warning',
+      'success',
+    ];
+  };
 };
 
 // @public
@@ -722,6 +817,17 @@ export const GridItemDefinition: {
     readonly root: 'bui-GridItem';
   };
   readonly utilityProps: ['colSpan', 'colEnd', 'colStart', 'rowSpan'];
+  readonly dataAttributes: {
+    readonly surface: readonly [
+      '0',
+      '1',
+      '2',
+      '3',
+      'danger',
+      'warning',
+      'success',
+    ];
+  };
 };
 
 // @public (undocumented)
@@ -740,6 +846,8 @@ export interface GridItemProps {
   rowSpan?: Responsive<Columns>;
   // (undocumented)
   style?: React.CSSProperties;
+  // (undocumented)
+  surface?: Responsive<Surface>;
 }
 
 // @public (undocumented)
@@ -754,6 +862,8 @@ export interface GridProps extends SpaceProps {
   gap?: Responsive<Space>;
   // (undocumented)
   style?: React.CSSProperties;
+  // (undocumented)
+  surface?: Responsive<Surface>;
 }
 
 // @public
@@ -1039,12 +1149,82 @@ export const MenuTrigger: (props: MenuTriggerProps) => JSX_2.Element;
 export interface MenuTriggerProps extends MenuTriggerProps_2 {}
 
 // @public (undocumented)
+export interface NoPagination {
+  // (undocumented)
+  type: 'none';
+}
+
+// @public (undocumented)
+export interface OffsetParams<TFilter> {
+  // (undocumented)
+  filter: TFilter | undefined;
+  // (undocumented)
+  offset: number;
+  // (undocumented)
+  pageSize: number;
+  // (undocumented)
+  search: string;
+  // (undocumented)
+  signal: AbortSignal;
+  // (undocumented)
+  sort: SortDescriptor | null;
+}
+
+// @public (undocumented)
+export interface OffsetResponse<T> {
+  // (undocumented)
+  data: T[];
+  // (undocumented)
+  totalCount: number;
+}
+
+// @public (undocumented)
 type Option_2 = {
   value: string;
   label: string;
   disabled?: boolean;
 };
 export { Option_2 as Option };
+
+// @public (undocumented)
+export interface PagePagination extends TablePaginationProps {
+  // (undocumented)
+  type: 'page';
+}
+
+// @public (undocumented)
+export interface PaginationOptions {
+  // (undocumented)
+  getLabel?: TablePaginationProps['getLabel'];
+  // (undocumented)
+  initialOffset?: number;
+  // (undocumented)
+  pageSize?: number;
+  // (undocumented)
+  showPageSizeOptions?: boolean;
+}
+
+// @public (undocumented)
+export interface QueryOptions<TFilter> {
+  // (undocumented)
+  filter?: TFilter;
+  // (undocumented)
+  initialFilter?: TFilter;
+  // (undocumented)
+  initialSearch?: string;
+  // (undocumented)
+  initialSort?: SortDescriptor;
+  // (undocumented)
+  onFilterChange?: (filter: TFilter) => void;
+  // (undocumented)
+  onSearchChange?: (search: string) => void;
+  // (undocumented)
+  onSortChange?: (sort: SortDescriptor) => void;
+  // (undocumented)
+  search?: string;
+  // (undocumented)
+  sort?: SortDescriptor | null;
+}
 
 // @public (undocumented)
 export const Radio: ForwardRefExoticComponent<
@@ -1083,6 +1263,22 @@ export type Responsive<T> = T | Partial<Record<Breakpoint, T>>;
 export function Row<T extends object>(props: RowProps<T>): JSX_2.Element;
 
 // @public (undocumented)
+export interface RowConfig<T extends TableItem> {
+  // (undocumented)
+  getHref?: (item: T) => string | undefined;
+  // (undocumented)
+  getIsDisabled?: (item: T) => boolean;
+  // (undocumented)
+  onClick?: (item: T) => void;
+}
+
+// @public (undocumented)
+export type RowRenderFn<T extends TableItem> = (params: {
+  item: T;
+  index: number;
+}) => ReactNode;
+
+// @public (undocumented)
 export const SearchField: ForwardRefExoticComponent<
   SearchFieldProps & RefAttributes<HTMLDivElement>
 >;
@@ -1110,6 +1306,14 @@ export interface SearchFieldProps
   placeholder?: string;
   size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
   startCollapsed?: boolean;
+}
+
+// @public (undocumented)
+export interface SearchState {
+  // (undocumented)
+  onChange: (value: string) => void;
+  // (undocumented)
+  value: string;
 }
 
 // @public (undocumented)
@@ -1172,6 +1376,17 @@ export interface SkeletonProps extends ComponentProps<'div'> {
 }
 
 // @public (undocumented)
+export type SortDescriptor = SortDescriptor_2;
+
+// @public (undocumented)
+export interface SortState {
+  // (undocumented)
+  descriptor: SortDescriptor | null;
+  // (undocumented)
+  onSortChange: (descriptor: SortDescriptor) => void;
+}
+
+// @public (undocumented)
 export type Space =
   | '0.5'
   | '1'
@@ -1229,6 +1444,17 @@ export const SubmenuTrigger: (props: SubmenuTriggerProps) => JSX_2.Element;
 // @public (undocumented)
 export interface SubmenuTriggerProps extends SubmenuTriggerProps_2 {}
 
+// @public
+export type Surface =
+  | '0'
+  | '1'
+  | '2'
+  | '3'
+  | 'danger'
+  | 'warning'
+  | 'success'
+  | 'auto';
+
 // @public (undocumented)
 export const Switch: ForwardRefExoticComponent<
   SwitchProps & RefAttributes<HTMLLabelElement>
@@ -1251,7 +1477,18 @@ export interface SwitchProps extends SwitchProps_2 {
 export const Tab: (props: TabProps) => JSX_2.Element;
 
 // @public (undocumented)
-export const Table: (props: TableProps) => JSX_2.Element;
+export function Table<T extends TableItem>({
+  columnConfig,
+  data,
+  loading,
+  isStale,
+  error,
+  pagination,
+  sort,
+  rowConfig,
+  selection,
+  emptyState,
+}: TableProps<T>): JSX_2.Element;
 
 // @public (undocumented)
 export const TableBody: <T extends object>(
@@ -1281,6 +1518,9 @@ export const TableDefinition: {
     readonly headSelection: 'bui-TableHeadSelection';
     readonly cellSelection: 'bui-TableCellSelection';
   };
+  readonly dataAttributes: {
+    readonly stale: readonly [true, false];
+  };
 };
 
 // @public (undocumented)
@@ -1288,8 +1528,25 @@ export const TableHeader: <T extends object>(
   props: TableHeaderProps<T>,
 ) => JSX_2.Element;
 
+// @public (undocumented)
+export interface TableItem {
+  // (undocumented)
+  id: string | number;
+}
+
 // @public
-export function TablePagination(props: TablePaginationProps): JSX_2.Element;
+export function TablePagination({
+  pageSize,
+  offset,
+  totalCount,
+  hasNextPage,
+  hasPreviousPage,
+  onNextPage,
+  onPreviousPage,
+  onPageSizeChange,
+  showPageSizeOptions,
+  getLabel,
+}: TablePaginationProps): JSX_2.Element;
 
 // @public
 export const TablePaginationDefinition: {
@@ -1302,26 +1559,79 @@ export const TablePaginationDefinition: {
 };
 
 // @public (undocumented)
-export interface TablePaginationProps
-  extends React.HTMLAttributes<HTMLDivElement> {
+export interface TablePaginationProps {
+  // (undocumented)
+  getLabel?: (params: {
+    pageSize: number;
+    offset?: number;
+    totalCount?: number;
+  }) => string;
+  // (undocumented)
+  hasNextPage: boolean;
+  // (undocumented)
+  hasPreviousPage: boolean;
   // (undocumented)
   offset?: number;
   // (undocumented)
-  onNextPage?: () => void;
+  onNextPage: () => void;
   // (undocumented)
-  onPageSizeChange?: (pageSize: number) => void;
+  onPageSizeChange?: (size: number) => void;
   // (undocumented)
-  onPreviousPage?: () => void;
+  onPreviousPage: () => void;
   // (undocumented)
-  pageSize?: number;
-  // (undocumented)
-  rowCount?: number;
-  // (undocumented)
-  setOffset?: (offset: number) => void;
-  // (undocumented)
-  setPageSize?: (pageSize: number) => void;
+  pageSize: number;
   // (undocumented)
   showPageSizeOptions?: boolean;
+  // (undocumented)
+  totalCount?: number;
+}
+
+// @public (undocumented)
+export type TablePaginationType = NoPagination | PagePagination;
+
+// @public (undocumented)
+export interface TableProps<T extends TableItem> {
+  // (undocumented)
+  columnConfig: readonly ColumnConfig<T>[];
+  // (undocumented)
+  data: T[] | undefined;
+  // (undocumented)
+  emptyState?: ReactNode;
+  // (undocumented)
+  error?: Error;
+  // (undocumented)
+  isStale?: boolean;
+  // (undocumented)
+  loading?: boolean;
+  // (undocumented)
+  pagination: TablePaginationType;
+  // (undocumented)
+  rowConfig?: RowConfig<T> | RowRenderFn<T>;
+  // (undocumented)
+  selection?: TableSelection;
+  // (undocumented)
+  sort?: SortState;
+}
+
+// @public (undocumented)
+export const TableRoot: (props: TableRootProps) => JSX_2.Element;
+
+// @public (undocumented)
+export interface TableRootProps extends TableProps_2 {
+  // (undocumented)
+  stale?: boolean;
+}
+
+// @public (undocumented)
+export interface TableSelection {
+  // (undocumented)
+  behavior?: TableProps_2['selectionBehavior'];
+  // (undocumented)
+  mode?: TableProps_2['selectionMode'];
+  // (undocumented)
+  onSelectionChange?: TableProps_2['onSelectionChange'];
+  // (undocumented)
+  selected?: TableProps_2['selectedKeys'];
 }
 
 // @public
@@ -1535,48 +1845,69 @@ export const useBreakpoint: () => {
   down: (key: Breakpoint) => boolean;
 };
 
-// @public
-export function useTable<T = any>(
-  config?: UseTableConfig<T>,
-): UseTableResult<T>;
+// @public (undocumented)
+export function useTable<T extends TableItem, TFilter = unknown>(
+  options: UseTableOptions<T, TFilter>,
+): UseTableResult<T, TFilter>;
 
 // @public (undocumented)
-export interface UseTableConfig<T = any> {
-  data?: T[];
-  pagination?: UseTablePaginationConfig;
+export interface UseTableCompleteOptions<T extends TableItem, TFilter = unknown>
+  extends QueryOptions<TFilter> {
+  // (undocumented)
+  filterFn?: (data: T[], filter: TFilter) => T[];
+  // (undocumented)
+  getData: () => T[] | Promise<T[]>;
+  // (undocumented)
+  mode: 'complete';
+  // (undocumented)
+  paginationOptions?: PaginationOptions;
+  // (undocumented)
+  searchFn?: (data: T[], search: string) => T[];
+  // (undocumented)
+  sortFn?: (data: T[], sort: SortDescriptor) => T[];
 }
 
 // @public (undocumented)
-export interface UseTablePagination<T = any> {
-  data?: T[];
-  nextPage: () => void;
-  offset: number;
-  pageSize: number;
-  paginationProps: TablePaginationProps;
-  previousPage: () => void;
-  setOffset: (offset: number) => void;
-  setPageSize: (pageSize: number) => void;
+export interface UseTableCursorOptions<T extends TableItem, TFilter = unknown>
+  extends QueryOptions<TFilter> {
+  // (undocumented)
+  getData: (params: CursorParams<TFilter>) => Promise<CursorResponse<T>>;
+  // (undocumented)
+  mode: 'cursor';
+  // (undocumented)
+  paginationOptions?: Omit<PaginationOptions, 'initialOffset'>;
 }
 
 // @public (undocumented)
-export interface UseTablePaginationConfig {
-  defaultOffset?: number;
-  defaultPageSize?: number;
-  offset?: number;
-  onNextPage?: () => void;
-  onOffsetChange?: (offset: number) => void;
-  onPageSizeChange?: (pageSize: number) => void;
-  onPreviousPage?: () => void;
-  pageSize?: number;
-  rowCount?: number;
-  showPageSizeOptions?: boolean;
+export interface UseTableOffsetOptions<T extends TableItem, TFilter = unknown>
+  extends QueryOptions<TFilter> {
+  // (undocumented)
+  getData: (params: OffsetParams<TFilter>) => Promise<OffsetResponse<T>>;
+  // (undocumented)
+  mode: 'offset';
+  // (undocumented)
+  paginationOptions?: PaginationOptions;
 }
 
 // @public (undocumented)
-export interface UseTableResult<T = any> {
-  data?: T[];
-  pagination: UseTablePagination<T>;
-  paginationProps: TablePaginationProps;
+export type UseTableOptions<T extends TableItem, TFilter = unknown> =
+  | UseTableCompleteOptions<T, TFilter>
+  | UseTableOffsetOptions<T, TFilter>
+  | UseTableCursorOptions<T, TFilter>;
+
+// @public (undocumented)
+export interface UseTableResult<T extends TableItem, TFilter = unknown> {
+  // (undocumented)
+  filter: FilterState<TFilter>;
+  // (undocumented)
+  reload: () => void;
+  // (undocumented)
+  search: SearchState;
+  // (undocumented)
+  tableProps: Omit<
+    TableProps<T>,
+    'columnConfig' | 'rowConfig' | 'selection' | 'emptyState'
+  >;
 }
 
 // @public (undocumented)

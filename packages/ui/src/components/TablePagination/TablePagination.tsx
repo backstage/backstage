@@ -21,67 +21,47 @@ import { useStyles } from '../../hooks/useStyles';
 import { TablePaginationDefinition } from './definition';
 import styles from './TablePagination.module.css';
 import { RiArrowLeftSLine, RiArrowRightSLine } from '@remixicon/react';
+import { useId } from 'react';
 
 /**
  * Pagination controls for Table components with page navigation and size selection.
  *
  * @public
  */
-export function TablePagination(props: TablePaginationProps) {
-  const { classNames, cleanedProps } = useStyles(TablePaginationDefinition, {
-    showPageSizeOptions: true,
-    ...props,
-  });
-  const {
-    className,
-    offset,
-    pageSize,
-    rowCount,
-    onNextPage,
-    onPreviousPage,
-    onPageSizeChange,
-    setOffset,
-    setPageSize,
-    showPageSizeOptions,
-    ...rest
-  } = cleanedProps;
+export function TablePagination({
+  pageSize,
+  offset,
+  totalCount,
+  hasNextPage,
+  hasPreviousPage,
+  onNextPage,
+  onPreviousPage,
+  onPageSizeChange,
+  showPageSizeOptions = true,
+  getLabel,
+}: TablePaginationProps) {
+  const { classNames } = useStyles(TablePaginationDefinition, {});
+  const labelId = useId();
 
-  const currentOffset = offset ?? 0;
-  const currentPageSize = pageSize ?? 10;
+  const hasItems = totalCount !== undefined && totalCount !== 0;
 
-  const fromCount = currentOffset + 1;
-  const toCount = Math.min(currentOffset + currentPageSize, rowCount ?? 0);
-
-  const nextPage = () => {
-    const totalRows = rowCount ?? 0;
-    const nextOffset = currentOffset + currentPageSize;
-
-    // Check if there are more items to navigate to
-    if (nextOffset < totalRows) {
-      onNextPage?.(); // Analytics tracking
-      setOffset?.(nextOffset); // Navigate to next page
-    }
-  };
-
-  const previousPage = () => {
-    // Check if we can go to previous page
-    if (currentOffset > 0) {
-      onPreviousPage?.(); // Analytics tracking
-      const prevOffset = Math.max(0, currentOffset - currentPageSize);
-      setOffset?.(prevOffset); // Navigate to previous page
-    }
-  };
+  let label = `${totalCount} items`;
+  if (getLabel) {
+    label = getLabel({ pageSize, offset, totalCount });
+  } else if (offset !== undefined) {
+    const fromCount = offset + 1;
+    const toCount = Math.min(offset + pageSize, totalCount ?? 0);
+    label = `${fromCount} - ${toCount} of ${totalCount}`;
+  }
 
   return (
-    <div
-      className={clsx(classNames.root, styles[classNames.root], className)}
-      {...rest}
-    >
+    <div className={clsx(classNames.root, styles[classNames.root])}>
       <div className={clsx(classNames.left, styles[classNames.left])}>
         {showPageSizeOptions && (
           <Select
             name="pageSize"
             size="small"
+            aria-label="Select table page size"
             placeholder="Show 10 results"
             options={[
               { label: 'Show 5 results', value: '5' },
@@ -91,10 +71,9 @@ export function TablePagination(props: TablePaginationProps) {
               { label: 'Show 40 results', value: '40' },
               { label: 'Show 50 results', value: '50' },
             ]}
-            selectedKey={pageSize?.toString()}
-            onSelectionChange={value => {
+            defaultValue={pageSize.toString()}
+            onChange={value => {
               const newPageSize = Number(value);
-              setPageSize?.(newPageSize);
               onPageSizeChange?.(newPageSize);
             }}
             className={clsx(classNames.select, styles[classNames.select])}
@@ -102,28 +81,28 @@ export function TablePagination(props: TablePaginationProps) {
         )}
       </div>
       <div className={clsx(classNames.right, styles[classNames.right])}>
-        <Text
-          as="p"
-          variant="body-medium"
-        >{`${fromCount} - ${toCount} of ${rowCount}`}</Text>
+        {hasItems && (
+          <Text as="p" variant="body-medium" id={labelId}>
+            {label}
+          </Text>
+        )}
         <ButtonIcon
           variant="secondary"
           size="small"
-          onClick={previousPage}
-          isDisabled={currentOffset === 0}
+          onClick={onPreviousPage}
+          isDisabled={!hasPreviousPage}
           icon={<RiArrowLeftSLine />}
-          aria-label="Previous"
+          aria-label="Previous table page"
+          aria-describedby={hasItems ? labelId : undefined}
         />
         <ButtonIcon
           variant="secondary"
           size="small"
-          onClick={nextPage}
-          isDisabled={
-            rowCount !== undefined &&
-            currentOffset + currentPageSize >= rowCount
-          }
+          onClick={onNextPage}
+          isDisabled={!hasNextPage}
           icon={<RiArrowRightSLine />}
-          aria-label="Next"
+          aria-label="Next table page"
+          aria-describedby={hasItems ? labelId : undefined}
         />
       </div>
     </div>

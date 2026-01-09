@@ -23,11 +23,17 @@ import { UrlReaderPredicateTuple } from './types';
 import packageinfo from '../../../../package.json';
 import { mockServices } from '@backstage/backend-test-utils';
 import { UrlReaderServiceReadUrlResponse } from '@backstage/backend-plugin-api';
+import { Readable } from 'stream';
 
 const bucketGetFilesMock = jest.fn();
 class Bucket {
   getFiles(query: any) {
     return bucketGetFilesMock(query);
+  }
+  file(_name: string) {
+    return {
+      createReadStream: () => Readable.from(Buffer.from('mock content')),
+    };
   }
 }
 class Storage {
@@ -184,6 +190,58 @@ describe('GcsUrlReader', () => {
         'https://storage.cloud.google.com/bucket/path/some-prefix-1.txt',
       );
       expect((await data.files[0].content()).toString()).toEqual('content');
+    });
+  });
+
+  describe('readTree', () => {
+    const { reader } = createReader({ integrations: { googleGcs: {} } })[0];
+
+    beforeEach(() => {
+      jest.clearAllMocks();
+    });
+
+    it('returns files with relative paths', async () => {
+      const mockFile1 = {
+        name: 'prefix/file1.yaml',
+        metadata: { updated: '2024-01-01T00:00:00Z' },
+        createReadStream: () => Readable.from(Buffer.from('content1')),
+      };
+      const mockFile2 = {
+        name: 'prefix/subdir/file2.yaml',
+        metadata: { updated: '2024-01-02T00:00:00Z' },
+        createReadStream: () => Readable.from(Buffer.from('content2')),
+      };
+      bucketGetFilesMock.mockResolvedValue([[mockFile1, mockFile2]]);
+
+      const result = await reader.readTree(
+        'https://storage.cloud.google.com/bucket/prefix/',
+      );
+      const files = await result.files();
+
+      expect(files).toHaveLength(2);
+      expect(files[0].path).toBe('file1.yaml');
+      expect(files[1].path).toBe('subdir/file2.yaml');
+    });
+
+    it('calls getFiles with correct prefix', async () => {
+      bucketGetFilesMock.mockResolvedValue([[]]);
+
+      await reader.readTree(
+        'https://storage.cloud.google.com/bucket/some/prefix/',
+      );
+
+      expect(bucketGetFilesMock).toHaveBeenCalledWith({
+        autoPaginate: true,
+        prefix: 'some/prefix/',
+      });
+    });
+
+    it('throws if readTree url contains glob pattern', async () => {
+      await expect(
+        reader.readTree('https://storage.cloud.google.com/bucket/path/*'),
+      ).rejects.toThrow(
+        'GcsUrlReader readTree does not support glob patterns, use search instead',
+      );
     });
   });
 });

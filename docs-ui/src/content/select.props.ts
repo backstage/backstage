@@ -209,3 +209,16 @@ export const selectSearchableMultipleSnippet = `<Select
     // ... more options
   ]}
 />`;
+
+export const selectDisabledOptionsSnippet = `<Select
+  name="font"
+  label="Font Family"
+  placeholder="Select a font"
+  disabledKeys={['cursive', 'serif']}
+  options={[
+    { value: 'sans', label: 'Sans-serif' },
+    { value: 'serif', label: 'Serif' },
+    { value: 'mono', label: 'Monospace' },
+    { value: 'cursive', label: 'Cursive' },
+  ]}
+/>`;

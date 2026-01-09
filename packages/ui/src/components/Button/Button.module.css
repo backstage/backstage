@@ -31,6 +31,7 @@
     flex-shrink: 0;
     transition: background-color var(--loading-duration) ease-out,
       box-shadow var(--loading-duration) ease-out;
+    background-color: transparent;
 
     &[data-disabled='true'] {
       cursor: not-allowed;
@@ -67,17 +68,52 @@
   }
 
   .bui-Button[data-variant='secondary'] {
-    background-color: var(--bui-bg-surface-1);
-    box-shadow: inset 0 0 0 1px var(--bui-border);
     color: var(--bui-fg-primary);
+    background-color: var(--bui-bg-neutral-on-surface-0);
 
     &:hover {
-      box-shadow: inset 0 0 0 1px var(--bui-border-hover);
-      transition: box-shadow 150ms ease;
+      background-color: var(--bui-bg-neutral-on-surface-0-hover);
+      transition: background-color 150ms ease;
     }
 
     &:active {
-      box-shadow: inset 0 0 0 1px var(--bui-border-pressed);
+      background-color: var(--bui-bg-neutral-on-surface-0-pressed);
+    }
+
+    &[data-on-surface='1'] {
+      background-color: var(--bui-bg-neutral-on-surface-1);
+
+      &:hover {
+        background-color: var(--bui-bg-neutral-on-surface-1-hover);
+      }
+
+      &:active {
+        background-color: var(--bui-bg-neutral-on-surface-1-pressed);
+      }
+    }
+
+    &[data-on-surface='2'] {
+      background-color: var(--bui-bg-neutral-on-surface-2);
+
+      &:hover {
+        background-color: var(--bui-bg-neutral-on-surface-2-hover);
+      }
+
+      &:active {
+        background-color: var(--bui-bg-neutral-on-surface-2-pressed);
+      }
+    }
+
+    &[data-on-surface='3'] {
+      background-color: var(--bui-bg-neutral-on-surface-3);
+
+      &:hover {
+        background-color: var(--bui-bg-neutral-on-surface-3-hover);
+      }
+
+      &:active {
+        background-color: var(--bui-bg-neutral-on-surface-3-pressed);
+      }
     }
 
     &:focus-visible {
@@ -98,12 +134,42 @@
     color: var(--bui-fg-primary);
 
     &:hover {
-      background-color: var(--bui-bg-surface-1);
+      background-color: var(--bui-bg-neutral-on-surface-0-hover);
       transition: background-color 200ms ease;
     }
 
     &:active {
-      background-color: var(--bui-bg-surface-2);
+      background-color: var(--bui-bg-neutral-on-surface-0-pressed);
+    }
+
+    &[data-on-surface='1'] {
+      &:hover {
+        background-color: var(--bui-bg-neutral-on-surface-1-hover);
+      }
+
+      &:active {
+        background-color: var(--bui-bg-neutral-on-surface-1-pressed);
+      }
+    }
+
+    &[data-on-surface='2'] {
+      &:hover {
+        background-color: var(--bui-bg-neutral-on-surface-2-hover);
+      }
+
+      &:active {
+        background-color: var(--bui-bg-neutral-on-surface-2-pressed);
+      }
+    }
+
+    &[data-on-surface='3'] {
+      &:hover {
+        background-color: var(--bui-bg-neutral-on-surface-3-hover);
+      }
+
+      &:active {
+        background-color: var(--bui-bg-neutral-on-surface-3-pressed);
+      }
     }
 
     &:focus-visible {
