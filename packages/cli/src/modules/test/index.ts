@@ -54,6 +54,10 @@ export default createCliPlugin({
 
         command.allowUnknownOption(true);
         command.helpOption(', --backstage-cli-help');
+        command.option(
+          '--experimental-vitest',
+          'Use Vitest as the test runner instead of Jest',
+        );
         command.action(
           lazy(() => import('./commands/package/test'), 'default'),
         );
