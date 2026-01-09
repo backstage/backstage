@@ -29,6 +29,7 @@ export * from './components/Container';
 // UI components
 export * from './components/Avatar';
 export * from './components/Button';
+export * from './components/ToggleButton';
 export * from './components/Card';
 export * from './components/Accordion';
 export * from './components/Dialog';
