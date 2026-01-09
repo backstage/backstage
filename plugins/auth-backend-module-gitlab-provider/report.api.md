@@ -17,13 +17,26 @@ export default authModuleGitlabProvider;
 // @public (undocumented)
 export const gitlabAuthenticator: OAuthAuthenticator<
   PassportOAuthAuthenticatorHelper,
-  PassportProfile
+  GitlabProfile
 >;
+
+// @public (undocumented)
+export type GitlabProfile = PassportProfile & {
+  id?: string;
+  profileUrl?: string;
+};
 
 // @public
 export namespace gitlabSignInResolvers {
   const usernameMatchingUserEntityName: SignInResolverFactory<
-    OAuthAuthenticatorResult<PassportProfile>,
+    OAuthAuthenticatorResult<GitlabProfile>,
+    | {
+        dangerouslyAllowSignInWithoutUserInCatalog?: boolean | undefined;
+      }
+    | undefined
+  >;
+  const userIdMatchingUserEntityAnnotation: SignInResolverFactory<
+    OAuthAuthenticatorResult<GitlabProfile>,
     | {
         dangerouslyAllowSignInWithoutUserInCatalog?: boolean | undefined;
       }
