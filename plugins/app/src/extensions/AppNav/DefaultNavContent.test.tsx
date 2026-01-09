@@ -16,7 +16,7 @@
 
 import { renderInTestApp } from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
-import { createRouteRef } from '@backstage/frontend-plugin-api';
+import { createRouteRef, NavContentItem } from '@backstage/frontend-plugin-api';
 import { DefaultNavContent } from './DefaultNavContent';
 
 const routeRef = createRouteRef();
@@ -33,49 +33,46 @@ describe('DefaultNavContent', () => {
       <DefaultNavContent
         Logo={Logo}
         Search={Search}
-        items={[
-          {
-            title: 'Alpha',
-            text: 'Alpha',
-            to: '/alpha',
-            icon: TestIcon,
-            routeRef,
-          },
-          {
-            title: 'Beta',
-            text: 'Beta',
-            to: '/beta',
-            icon: TestIcon,
-            position: 2,
-            dividerBelow: true,
-            routeRef,
-          },
-          {
-            title: 'Charlie',
-            text: 'Charlie',
-            to: '/charlie',
-            icon: TestIcon,
-            position: 0,
-            routeRef,
-          },
-          {
-            title: 'Delta',
-            text: 'Delta',
-            to: '/delta',
-            icon: TestIcon,
-            hide: true,
-            routeRef,
-          },
-          {
-            title: 'Echo',
-            text: 'Echo',
-            to: '/echo',
-            icon: TestIcon,
-            position: 2,
-            CustomComponent: CustomItem,
-            routeRef,
-          },
-        ]}
+        items={
+          [
+            {
+              title: 'Alpha',
+              text: 'Alpha',
+              to: '/alpha',
+              icon: TestIcon,
+              routeRef,
+            },
+            {
+              title: 'Beta',
+              text: 'Beta',
+              to: '/beta',
+              icon: TestIcon,
+              position: 2,
+              dividerBelow: true,
+              routeRef,
+            },
+            {
+              title: 'Charlie',
+              text: 'Charlie',
+              to: '/charlie',
+              icon: TestIcon,
+              position: 0,
+              routeRef,
+            },
+            {
+              title: 'Delta',
+              text: 'Delta',
+              to: '/delta',
+              icon: TestIcon,
+              hide: true,
+              routeRef,
+            },
+            {
+              position: 3,
+              CustomComponent: CustomItem,
+            },
+          ] as NavContentItem[]
+        }
       />,
     );
 

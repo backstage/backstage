@@ -56,26 +56,33 @@ export function DefaultNavContent({
         }
 
         return sortedItems.map((item, displayIndex) => {
-          const CustomComponent = item.CustomComponent;
           if (item.hide) {
             return null;
           }
 
-          if (CustomComponent) {
+          if ('CustomComponent' in item && item.CustomComponent) {
             return (
               <>
-                <CustomComponent key={displayIndex} />
+                <item.CustomComponent key={displayIndex} />
+                {item.dividerBelow && <SidebarDivider />}
+              </>
+            );
+          }
+          if (
+            'to' in item &&
+            'text' in item &&
+            item.to !== undefined &&
+            item.text !== undefined
+          ) {
+            return (
+              <>
+                <SidebarItem to={item.to} icon={item.icon} key={displayIndex} />{' '}
                 {item.dividerBelow && <SidebarDivider />}
               </>
             );
           }
 
-          return (
-            <>
-              <SidebarItem {...item} key={displayIndex} />{' '}
-              {item.dividerBelow && <SidebarDivider />}
-            </>
-          );
+          return null;
         });
       })()}
     </Sidebar>

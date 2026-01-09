@@ -24,6 +24,7 @@ import {
   useApi,
   NavItem,
   NavContentComponent,
+  NavContentItem,
 } from '@backstage/frontend-plugin-api';
 
 import { useMemo } from 'react';
@@ -38,22 +39,35 @@ function NavContentRenderer(props: {
   const routeResolutionApi = useApi(routeResolutionApiRef);
 
   const items = useMemo(() => {
-    return props.items.flatMap(item => {
+    const validItems = props.items.filter(item => {
+      if ('CustomComponent' in item && item.CustomComponent) {
+        return true;
+      }
       const link = routeResolutionApi.resolve(item.routeRef);
       if (!link) {
         // eslint-disable-next-line no-console
         console.warn(
           `NavItemBlueprint: unable to resolve route ref ${item.routeRef}`,
         );
-        return [];
+        return false;
       }
-      return [
-        {
+      return true;
+    });
+
+    return validItems.map(item => {
+      if ('CustomComponent' in item && item.CustomComponent) {
+        return {
           ...item,
-          to: link(),
-          text: item.title,
-        },
-      ];
+          to: undefined,
+          text: undefined,
+        } satisfies NavContentItem;
+      }
+      const link = routeResolutionApi.resolve(item.routeRef)!;
+      return {
+        ...item,
+        to: link(),
+        text: item.title,
+      } satisfies NavContentItem;
     });
   }, [props.items, routeResolutionApi]);
 

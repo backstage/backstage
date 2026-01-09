@@ -15,7 +15,7 @@
  */
 
 import { createRouteRef } from '@backstage/frontend-plugin-api';
-import { NavContentBlueprint } from './NavContentBlueprint';
+import { NavContentBlueprint, NavContentItem } from './NavContentBlueprint';
 import { createExtensionTester } from '@backstage/frontend-test-utils';
 
 const routeRef = createRouteRef();
@@ -132,17 +132,11 @@ describe('NavContentBlueprint', () => {
             routeRef,
           },
           {
-            to: '/settings',
-            text: 'Settings',
-            title: 'Settings',
-            icon: () => null,
-            hide: true,
             CustomComponent: CustomItem,
             position: 2,
             dividerBelow: false,
-            routeRef,
           },
-        ],
+        ] as NavContentItem[],
       }),
     ).toEqual(
       <div>

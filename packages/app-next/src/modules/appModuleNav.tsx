@@ -154,7 +154,7 @@ export const appModuleNav = createFrontendModule({
                         return null;
                       }
 
-                      if (CustomComponent) {
+                      if ('CustomComponent' in item && CustomComponent) {
                         return (
                           <>
                             <CustomComponent key={displayIndex} />
@@ -165,7 +165,11 @@ export const appModuleNav = createFrontendModule({
 
                       return (
                         <>
-                          <SidebarItem {...item} key={displayIndex} />{' '}
+                          <SidebarItem
+                            {...item}
+                            to={item.to!}
+                            key={displayIndex}
+                          />{' '}
                           {item.dividerBelow && <SidebarDivider />}
                         </>
                       );

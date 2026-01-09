@@ -19,13 +19,13 @@ import { NavItem } from './NavItemBlueprint';
 
 /** Nav Content items
  * *
- * @public
+ * @private
  */
-export interface NavContentItem extends NavItem {
+export type NavContentItem = NavItem & {
   // Additional props to simplify item rendering
-  to: string;
-  text: string;
-}
+  to: string | undefined;
+  text: string | undefined;
+};
 
 /**
  * The props for the {@link NavContentComponent}.

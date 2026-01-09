@@ -67,12 +67,10 @@ describe('NavItemBlueprint', () => {
   });
 
   it('should return the correct extension data', () => {
-    const CustomComponent = () => <div>Custom</div>;
     const extension = NavItemBlueprint.make({
       params: {
         icon: MockIcon,
         hide: true,
-        CustomComponent,
         position: 3,
         dividerBelow: true,
         routeRef: mockRouteRef,
@@ -86,20 +84,36 @@ describe('NavItemBlueprint', () => {
       title: 'TEST',
       icon: MockIcon,
       hide: true,
-      CustomComponent,
       position: 3,
       dividerBelow: true,
       routeRef: mockRouteRef,
     });
   });
 
-  it('should allow overriding of the title using config', () => {
+  it('should return the correct extension when using custom component', () => {
     const CustomComponent = () => <div>Custom</div>;
+    const extension = NavItemBlueprint.make({
+      params: {
+        CustomComponent,
+        position: 3,
+        dividerBelow: true,
+      },
+    });
+
+    const tester = createExtensionTester(extension);
+
+    expect(tester.get(NavItemBlueprint.dataRefs.target)).toEqual({
+      CustomComponent,
+      position: 3,
+      dividerBelow: true,
+    });
+  });
+
+  it('should allow overriding of the title using config', () => {
     const extension = NavItemBlueprint.make({
       params: {
         icon: MockIcon,
         hide: false,
-        CustomComponent,
         position: 5,
         dividerBelow: false,
         routeRef: mockRouteRef,
@@ -115,7 +129,6 @@ describe('NavItemBlueprint', () => {
       title: 'OVERRIDDEN',
       icon: MockIcon,
       hide: false,
-      CustomComponent,
       position: 5,
       dividerBelow: false,
       routeRef: mockRouteRef,

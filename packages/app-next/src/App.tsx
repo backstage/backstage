@@ -26,6 +26,8 @@ import {
   coreExtensionData,
   createExtension,
   createFrontendModule,
+  createFrontendPlugin,
+  NavItemBlueprint,
 } from '@backstage/frontend-plugin-api';
 import {
   techdocsPlugin,
@@ -45,6 +47,9 @@ import { convertLegacyPageExtension } from '@backstage/core-compat-api';
 import { convertLegacyEntityContentExtension } from '@backstage/plugin-catalog-react/alpha';
 import { pluginInfoResolver } from './pluginInfoResolver';
 import { appModuleNav } from './modules/appModuleNav';
+import { SidebarItem, DocsIcon } from '@backstage/core-components';
+import Badge from '@material-ui/core/Badge';
+import Avatar from '@material-ui/core/Avatar';
 
 /*
 
@@ -125,6 +130,54 @@ const collectedLegacyPlugins = convertLegacyAppRoot(
 const app = createApp({
   features: [
     pagesPlugin,
+    createFrontendPlugin({
+      pluginId: 'testmodule',
+      extensions: [
+        NavItemBlueprint.make({
+          name: 'nav-1',
+          params: {
+            dividerBelow: true,
+            position: 1,
+            CustomComponent: () => (
+              <SidebarItem icon={DocsIcon} to="/the-sun">
+                <div
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '8px',
+                  }}
+                >
+                  <Avatar>OG</Avatar>Custom item at pos 2
+                </div>
+              </SidebarItem>
+            ),
+          },
+        }),
+        NavItemBlueprint.make({
+          name: 'nav-2',
+          params: {
+            dividerBelow: true,
+            position: 2,
+            CustomComponent: () => (
+              <SidebarItem icon={DocsIcon} to="/the-moon">
+                <Badge color="secondary" badgeContent="14">
+                  Custom item at pos 3!
+                </Badge>
+              </SidebarItem>
+            ),
+          },
+        }),
+        NavItemBlueprint.make({
+          name: 'nav-3',
+          params: {
+            position: 0,
+            title: 'Native element with pos 1',
+            routeRef: pagesPlugin.routes.pageX,
+            icon: () => '📄',
+          },
+        }),
+      ],
+    }),
     convertedTechdocsPlugin,
     userSettingsPlugin,
     homePlugin,

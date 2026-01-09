@@ -24,8 +24,8 @@ export { AppRootWrapperBlueprint } from './AppRootWrapperBlueprint';
 export { IconBundleBlueprint } from './IconBundleBlueprint';
 export {
   NavContentBlueprint,
-  type NavContentItem,
   type NavContentComponent,
+  type NavContentItem,
   type NavContentComponentProps,
 } from './NavContentBlueprint';
 export { NavItemBlueprint, type NavItem } from './NavItemBlueprint';

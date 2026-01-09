@@ -18,22 +18,54 @@ import { IconComponent, RouteRef } from '@backstage/frontend-plugin-api';
 import { createExtensionBlueprint, createExtensionDataRef } from '../wiring';
 
 /**
- * Creates extensions that make up the items of the nav bar.
+ * Base fields for standard nav items.
  *
  * @private
  */
-export interface NavItem {
-  // Original props from nav items
+type NavItemBase = {
   icon: IconComponent;
-  hide?: boolean;
-  // Custom component that can be rendered instead of the default sidebar item
-  CustomComponent?: () => JSX.Element | null;
-  // The position index of the item in the nav
-  position?: number;
-  dividerBelow?: boolean;
   title: string;
   routeRef: RouteRef<undefined>;
-}
+  hide?: boolean;
+  position?: number;
+  dividerBelow?: boolean;
+};
+
+/**
+ * Nav item variant when a custom component is provided.
+ * Other mandatory fields become optional.
+ *
+ * @private
+ */
+export type NavItemCustom = Pick<
+  NavItemBase,
+  'hide' | 'position' | 'dividerBelow'
+> & {
+  CustomComponent: () => JSX.Element | null;
+  hide?: boolean;
+  position?: number;
+  dividerBelow?: boolean;
+  title?: never;
+  routeRef?: never;
+  icon?: never;
+};
+
+/**
+ * Nav item variant without a custom component.
+ * Keeps required fields and disallows `CustomComponent`.
+ *
+ * @private
+ */
+export type NavItemStandard = NavItemBase & {
+  CustomComponent?: never;
+};
+
+/**
+ * Union type for nav items.
+ *
+ * @private
+ */
+export type NavItem = NavItemCustom | NavItemStandard;
 
 // TODO(Rugvip): Should this be broken apart into separate refs? title/icon/routeRef
 const targetDataRef = createExtensionDataRef<NavItem>().with({
@@ -52,28 +84,28 @@ export const NavItemBlueprint = createExtensionBlueprint({
   dataRefs: {
     target: targetDataRef,
   },
-  factory: (
-    {
-      icon,
-      hide,
-      CustomComponent,
-      position,
-      dividerBelow,
-      routeRef,
-      title,
-    }: NavItem,
-    { config },
-  ) => [
-    targetDataRef({
-      title: config.title ?? title,
-      icon,
-      hide,
-      CustomComponent,
-      position,
-      dividerBelow,
-      routeRef,
-    }),
-  ],
+  factory: (params: NavItem, { config }) => {
+    if ('CustomComponent' in params && params.CustomComponent) {
+      const out: NavItemCustom = {
+        CustomComponent: params.CustomComponent,
+        hide: params.hide,
+        position: params.position,
+        dividerBelow: params.dividerBelow,
+      };
+      return [targetDataRef(out)];
+    }
+
+    const out: NavItemStandard = {
+      title: config.title ?? params.title,
+      icon: params.icon,
+      routeRef: params.routeRef,
+      hide: params.hide,
+      position: params.position,
+      dividerBelow: params.dividerBelow,
+      CustomComponent: undefined,
+    };
+    return [targetDataRef(out)];
+  },
   config: {
     schema: {
       title: z => z.string().optional(),
