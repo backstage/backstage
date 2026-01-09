@@ -63,6 +63,8 @@ export async function runVitest(args: string[]): Promise<void> {
     passWithNoTests: true,
     // Setup file that provides Jest compatibility (jest global as alias for vi)
     setupFiles: [paths.resolveOwn('config/vitestSetup.js')],
+    // Use forks pool for better Node.js built-in module compatibility
+    pool: 'forks',
   };
 
   // Filter out args that don't apply to vitest
