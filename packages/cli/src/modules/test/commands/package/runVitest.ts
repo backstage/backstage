@@ -61,6 +61,8 @@ export async function runVitest(args: string[]): Promise<void> {
     globals: true,
     environment,
     passWithNoTests: true,
+    // Setup file that provides Jest compatibility (jest global as alias for vi)
+    setupFiles: [paths.resolveOwn('config/vitestSetup.js')],
   };
 
   // Filter out args that don't apply to vitest

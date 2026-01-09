@@ -104,7 +104,7 @@ async function runJest(args: string[]): Promise<void> {
   await require('jest').run(args);
 }
 
-export default async (_opts: OptionValues, cmd: Command) => {
+export default async (opts: OptionValues, cmd: Command) => {
   // all args are forwarded to the test runner
   let parent = cmd;
   while (parent.parent) {
@@ -113,11 +113,13 @@ export default async (_opts: OptionValues, cmd: Command) => {
   const allArgs = parent.args as string[];
   const args = allArgs.slice(allArgs.indexOf('test') + 1);
 
-  // Check if vitest flag is present
-  const useVitest = args.includes('--experimental-vitest');
+  // Check if vitest flag is present (Commander parses it into opts.experimentalVitest)
+  const useVitest = opts.experimentalVitest === true;
 
   if (useVitest) {
-    const { runVitest } = await import('./runVitest');
+    // Use require for CJS compatibility
+    const { runVitest } =
+      require('./runVitest') as typeof import('./runVitest');
     await runVitest(args);
   } else {
     await runJest(args);
