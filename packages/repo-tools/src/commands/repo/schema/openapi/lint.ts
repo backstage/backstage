@@ -58,7 +58,7 @@ async function lint(directoryPath: string, config?: { strict: boolean }) {
           severity: 'error',
         },
         'valid-backstage-permissions': {
-          given: '$.paths..[?(@.x-backstage-permissions)]',
+          given: "$.paths..[?(@['x-backstage-permissions'])]",
           then: {
             field: 'x-backstage-permissions',
             function: schema,
@@ -94,38 +94,21 @@ async function lint(directoryPath: string, config?: { strict: boolean }) {
                     additionalProperties: false,
                   },
                   onDeny: {
-                    oneOf: [
-                      {
-                        type: 'object',
-                        required: ['statusCode'],
-                        properties: {
-                          statusCode: {
-                            type: 'number',
-                            enum: [403, 404],
-                          },
-                        },
-                        additionalProperties: false,
+                    type: 'object',
+                    properties: {
+                      statusCode: {
+                        type: 'number',
+                        description: 'HTTP status code to return on denial',
                       },
-                      {
-                        type: 'object',
-                        required: ['body'],
-                        properties: {
-                          body: {
-                            description: 'Custom response body to return',
-                          },
-                          statusCode: {
-                            type: 'number',
-                            description:
-                              'Optional status code (defaults to 200)',
-                          },
-                        },
-                        additionalProperties: false,
+                      body: {
+                        description: 'Custom response body to return',
                       },
-                    ],
+                    },
                   },
                 },
                 additionalProperties: false,
               },
+              allErrors: true,
             },
           },
           severity: 'error',
@@ -152,18 +135,26 @@ async function lint(directoryPath: string, config?: { strict: boolean }) {
   );
   spectral.setRuleset(backstageRuleset);
 
-  // we lint our document using the ruleset we passed to the Spectral object
-  const result = await spectral.run(document);
-  const errors = result.filter(e => e.severity === DiagnosticSeverity.Error);
-  const numberOfErrors = (strict && result.length) || errors.length;
-  if (numberOfErrors > 0) {
-    console.error(
-      pretty(result, {
-        // Used to fulfill the types, but not used for prettier output.
-        failSeverity: DiagnosticSeverity.Error,
-      }),
-    );
-    throw new Error(`${numberOfErrors} error(s) found when linting your spec.`);
+  try {
+    // we lint our document using the ruleset we passed to the Spectral object
+    const result = await spectral.run(document);
+    const errors = result.filter(e => e.severity === DiagnosticSeverity.Error);
+    const numberOfErrors = (strict && result.length) || errors.length;
+    if (numberOfErrors > 0) {
+      console.error(errors);
+      console.error(
+        pretty(result, {
+          // Used to fulfill the types, but not used for prettier output.
+          failSeverity: DiagnosticSeverity.Error,
+        }),
+      );
+      throw new Error(
+        `${numberOfErrors} error(s) found when linting your spec.`,
+      );
+    }
+  } catch (error) {
+    console.error(error);
+    throw error;
   }
 }
 
@@ -171,9 +162,10 @@ export async function bulkCommand(
   paths: string[] = [],
   options: { strict?: boolean },
 ): Promise<void> {
-  const resultsList = await runner(paths, (dir: string) =>
-    lint(dir, { strict: !!options.strict }),
-  );
+  const resultsList = await runner(paths, async (dir: string) => {
+    console.log(dir);
+    await lint(dir, { strict: !!options.strict });
+  });
 
   let failed = false;
   for (const { relativeDir, resultText } of resultsList) {
