@@ -34,7 +34,7 @@ We call `createApp` to create a new app instance, which is responsible for wirin
 
 It is possible to explicitly install features when creating the app, although typically these will instead be discovered automatically which we'll explore later on. Nevertheless these features are what build out the actual functionality of the app by providing [Extensions](./20-extensions.md). These extensions are wired together by the app into a tree structure known as the app extension tree. Each node in this tree receives data from its child nodes, and passes along data to its parent. The following diagram illustrates the shape of a small app extension tree.
 
-![frontend system app structure diagram](../../assets/frontend-system/architecture-app.drawio.svg)
+![frontend system app structure diagram](../../assets/frontend-system/architecture-app.drawio.png)
 
 Each node in this tree is an extension with a parent node and children. The colored shapes represent extension data inputs and output, where each color is one unique type of data. You can see that there are both extensions that output data that is ignored by the parent, as well as extensions that accept inputs but do not have any children. There are a couple of different tools at your disposal when creating and extension that lets you define different requirements for your inputs and output, which we will cover in greater details in the [Extensions](./20-extensions.md) section.
 

@@ -13,7 +13,7 @@ A common example of a utility API is a client interface to interact with the bac
 
 The following diagram shows a hypothetical application, which depends on two plugins and also provides some extra overrides. Note that both the plugins and the core framework provide utility APIs, and that they depend on each other. The app also chooses to use its overrides mechanism to supply a replacement implementation of one API, which takes precedence over the default one. Thus, all consumers of that API will be sure to get that new implementation provided to them.
 
-![frontend system utility apis diagram](../../assets/frontend-system/architecture-utility-apis.drawio.svg)
+![frontend system utility apis diagram](../../assets/frontend-system/architecture-utility-apis.drawio.png)
 
 ## Extension structure
 

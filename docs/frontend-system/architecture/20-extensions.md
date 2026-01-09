@@ -11,7 +11,7 @@ As mentioned in the [previous section](./10-app.md), Backstage apps are built up
 
 Each extensions has a number of different properties that define how it behaves and how it interacts with other extensions and the rest of the app. Some of these properties are fixed, while others can be customized by integrators. The diagram below illustrates the structure of an extension.
 
-![frontend extension structure diagram](../../assets/frontend-system/architecture-extension.drawio.svg)
+![frontend extension structure diagram](../../assets/frontend-system/architecture-extension.drawio.png)
 
 ### ID
 

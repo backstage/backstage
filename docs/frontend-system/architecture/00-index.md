@@ -17,7 +17,7 @@ important to understand these concepts.
 
 The diagram below provides an overview of the different building blocks and the other blocks that each of them interacts with.
 
-![frontend system building blocks diagram](../../assets/frontend-system/architecture-building-blocks.drawio.svg)
+![frontend system building blocks diagram](../../assets/frontend-system/architecture-building-blocks.drawio.png)
 
 ### App
 
