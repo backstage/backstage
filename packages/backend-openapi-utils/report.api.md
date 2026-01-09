@@ -8,6 +8,7 @@ import type core from 'express-serve-static-core';
 import { FromSchema } from 'json-schema-to-ts';
 import type { HttpAuthService } from '@backstage/backend-plugin-api';
 import { JSONSchema } from 'json-schema-to-ts';
+import type { LoggerService } from '@backstage/backend-plugin-api';
 import { middleware } from 'express-openapi-validator';
 import { NextFunction } from 'express';
 import type { OpenAPIObject } from 'openapi3-ts';
@@ -668,9 +669,10 @@ export function permissionsMiddlewareFactory(dependencies: {
   permissions: PermissionsService;
   permissionsRegistry: PermissionsRegistryService;
   httpAuth: HttpAuthService;
+  logger: LoggerService;
 }): (
   req: Request_3 & WithOpenapi,
-  _res: Response_4,
+  res: Response_4,
   next: NextFunction,
 ) => Promise<void>;
 
