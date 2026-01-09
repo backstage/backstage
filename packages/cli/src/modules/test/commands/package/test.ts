@@ -27,15 +27,7 @@ function includesAnyOf(hayStack: string[], ...needles: string[]) {
   return false;
 }
 
-export default async (_opts: OptionValues, cmd: Command) => {
-  // all args are forwarded to jest
-  let parent = cmd;
-  while (parent.parent) {
-    parent = parent.parent;
-  }
-  const allArgs = parent.args as string[];
-  const args = allArgs.slice(allArgs.indexOf('test') + 1);
-
+async function runJest(args: string[]): Promise<void> {
   // Only include our config if caller isn't passing their own config
   if (!includesAnyOf(args, '-c', '--config')) {
     args.push('--config', paths.resolveOwn('config/jest.js'));
@@ -110,4 +102,24 @@ export default async (_opts: OptionValues, cmd: Command) => {
   }
 
   await require('jest').run(args);
+}
+
+export default async (_opts: OptionValues, cmd: Command) => {
+  // all args are forwarded to the test runner
+  let parent = cmd;
+  while (parent.parent) {
+    parent = parent.parent;
+  }
+  const allArgs = parent.args as string[];
+  const args = allArgs.slice(allArgs.indexOf('test') + 1);
+
+  // Check if vitest flag is present
+  const useVitest = args.includes('--experimental-vitest');
+
+  if (useVitest) {
+    const { runVitest } = await import('./runVitest');
+    await runVitest(args);
+  } else {
+    await runJest(args);
+  }
 };
