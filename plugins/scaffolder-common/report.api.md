@@ -503,6 +503,7 @@ export interface TemplatePresentationV1beta3 extends JsonObject {
     createButtonText?: string;
     reviewButtonText?: string;
   };
+  showDescription?: boolean;
 }
 
 // @public
