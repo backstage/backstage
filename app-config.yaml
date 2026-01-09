@@ -40,6 +40,12 @@ backend:
   #   windowMs: 1m
   #   incomingRequestLimit: 1
   #   ipAllowList: []
+  auditor:
+    severityLogLevelMappings:
+      low: error
+      medium: error
+      high: error
+      critical: error
 
   auth:
     # TODO: once plugins have been migrated we can remove this, but right now it

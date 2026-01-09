@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 The Backstage Authors
+ * Copyright 2026 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ export const spec = {
     title: 'catalog',
     version: '1',
     description:
-      'The API surface consists of a few distinct groups of functionality. Each has a\ndedicated section below.\n\n:::note Note \n  This page only describes some of the most commonly used parts of the API, and is a work in progress.\n:::\n\nAll of the URL paths in this article are assumed to be on top of some base URL\npointing at your catalog installation. For example, if the path given in a\nsection below is `/entities`, and the catalog is located at\n`http://localhost:7007/api/catalog` during local development, the full URL would\nbe `http://localhost:7007/api/catalog/entities`. The actual URL may vary from\none organization to the other, especially in production, but is commonly your\n`backend.baseUrl` in your app config, plus `/api/catalog` at the end.\n\nSome or all of the endpoints may accept or require an `Authorization` header\nwith a `Bearer` token, which should then be the Backstage token returned by the\n[`identity API`](https://backstage.io/docs/reference/core-plugin-api.identityapiref).\n',
+      'The API surface consists of a few distinct groups of functionality. Each has a\ndedicated section below.\n\n:::note Note\n  This page only describes some of the most commonly used parts of the API, and is a work in progress.\n:::\n\nAll of the URL paths in this article are assumed to be on top of some base URL\npointing at your catalog installation. For example, if the path given in a\nsection below is `/entities`, and the catalog is located at\n`http://localhost:7007/api/catalog` during local development, the full URL would\nbe `http://localhost:7007/api/catalog/entities`. The actual URL may vary from\none organization to the other, especially in production, but is commonly your\n`backend.baseUrl` in your app config, plus `/api/catalog` at the end.\n\nSome or all of the endpoints may accept or require an `Authorization` header\nwith a `Bearer` token, which should then be the Backstage token returned by the\n[`identity API`](https://backstage.io/docs/reference/core-plugin-api.identityapiref).\n',
     license: {
       name: 'Apache-2.0',
       url: 'http://www.apache.org/licenses/LICENSE-2.0.html',
@@ -798,7 +798,7 @@ export const spec = {
           eventId: 'entity-mutate',
           severityLevel: 'medium',
           meta: {
-            queryType: 'refresh',
+            variant: 'update',
           },
           captureMetaFromRequest: {
             body: ['entityRef'],
@@ -855,9 +855,6 @@ export const spec = {
         description: 'Get all entities matching a given filter.',
         'x-backstage-auditor': {
           eventId: 'entity-fetch',
-          meta: {
-            queryType: 'all',
-          },
         },
         responses: {
           '200': {
@@ -924,9 +921,6 @@ export const spec = {
         description: 'Get a single entity by the UID.',
         'x-backstage-auditor': {
           eventId: 'entity-fetch',
-          meta: {
-            queryType: 'by-uid',
-          },
           captureMetaFromRequest: {
             params: ['uid'],
           },
@@ -968,9 +962,6 @@ export const spec = {
         'x-backstage-auditor': {
           eventId: 'entity-mutate',
           severityLevel: 'medium',
-          meta: {
-            actionType: 'delete',
-          },
           captureMetaFromRequest: {
             params: ['uid'],
           },
@@ -1006,9 +997,6 @@ export const spec = {
         description: 'Get an entity by an entity ref.',
         'x-backstage-auditor': {
           eventId: 'entity-fetch',
-          meta: {
-            queryType: 'by-name',
-          },
           captureMetaFromRequest: {
             params: ['kind', 'namespace', 'name'],
           },
@@ -1057,9 +1045,6 @@ export const spec = {
         description: "Get an entity's ancestry by entity ref.",
         'x-backstage-auditor': {
           eventId: 'entity-fetch',
-          meta: {
-            actionType: 'ancestry',
-          },
           captureMetaFromRequest: {
             params: ['kind', 'namespace', 'name'],
           },
@@ -1110,7 +1095,7 @@ export const spec = {
         'x-backstage-auditor': {
           eventId: 'entity-fetch',
           meta: {
-            queryType: 'by-refs',
+            variant: 'fetch',
           },
         },
         responses: {
@@ -1192,9 +1177,6 @@ export const spec = {
         description: 'Search for entities by a given query.',
         'x-backstage-auditor': {
           eventId: 'entity-fetch',
-          meta: {
-            queryType: 'by-query',
-          },
         },
         responses: {
           '200': {
@@ -1335,9 +1317,6 @@ export const spec = {
         'x-backstage-auditor': {
           eventId: 'location-mutate',
           severityLevel: 'medium',
-          meta: {
-            actionType: 'create',
-          },
           captureMetaFromRequest: {
             body: ['type', 'target'],
             query: ['dryRun'],
@@ -1420,7 +1399,7 @@ export const spec = {
         'x-backstage-auditor': {
           eventId: 'location-fetch',
           meta: {
-            queryType: 'all',
+            variant: 'fetch',
           },
         },
         responses: {
@@ -1463,9 +1442,6 @@ export const spec = {
         description: 'Get a location by id.',
         'x-backstage-auditor': {
           eventId: 'location-fetch',
-          meta: {
-            queryType: 'by-id',
-          },
           captureMetaFromRequest: {
             params: ['id'],
           },
@@ -1510,9 +1486,6 @@ export const spec = {
         'x-backstage-auditor': {
           eventId: 'location-mutate',
           severityLevel: 'medium',
-          meta: {
-            actionType: 'delete',
-          },
           captureMetaFromRequest: {
             params: ['id'],
           },
@@ -1554,9 +1527,6 @@ export const spec = {
         description: 'Get a location for entity.',
         'x-backstage-auditor': {
           eventId: 'location-fetch',
-          meta: {
-            queryType: 'by-entity',
-          },
           captureMetaFromRequest: {
             params: ['kind', 'namespace', 'name'],
           },
