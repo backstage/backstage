@@ -4,7 +4,7 @@ import type { PropDef } from '@/utils/propDefs';
 export const buttonPropDefs: Record<string, PropDef> = {
   variant: {
     type: 'enum',
-    values: ['primary', 'secondary'],
+    values: ['primary', 'secondary', 'tertiary'],
     default: 'primary',
     responsive: true,
   },
@@ -40,6 +40,9 @@ export const buttonVariantsSnippet = `<Flex align="center">
   <Button iconStart="cloud" variant="secondary">
     Button
   </Button>
+  <Button iconStart="cloud" variant="tertiary">
+    Button
+  </Button>
 </Flex>`;
 
 export const buttonSizesSnippet = `<Flex align="center">
@@ -59,6 +62,9 @@ export const buttonDisabledSnippet = `<Flex gap="4">
   </Button>
   <Button variant="secondary" isDisabled>
     Secondary
+  </Button>
+  <Button variant="tertiary" isDisabled>
+    Tertiary
   </Button>
 </Flex>`;
 
