@@ -33,6 +33,11 @@ export default createCliPlugin({
               description:
                 'Glob patterns for additional packages to include (e.g., @spotify/backstage*)',
             },
+            'output-file': {
+              type: 'string',
+              description:
+                'Write the info output to a JSON file instead of stdout',
+            },
           })
           .help()
           .parse(args);

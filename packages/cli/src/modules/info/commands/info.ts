@@ -25,6 +25,7 @@ import fs from 'fs-extra';
 
 interface InfoOptions {
   include: string[];
+  outputFile?: string;
 }
 
 /**
@@ -67,17 +68,23 @@ export default async (options: InfoOptions) => {
         const backstageJson = await fs.readJSON(backstageFile);
         backstageVersion = backstageJson.version ?? 'N/A';
       } catch (error) {
-        console.warn('The "backstage.json" file is not in the expected format');
-        console.log();
+        if (!options.outputFile) {
+          console.warn(
+            'The "backstage.json" file is not in the expected format',
+          );
+          console.log();
+        }
       }
     }
 
-    console.log(`OS:   ${os.type} ${os.release} - ${os.platform}/${os.arch}`);
-    console.log(`node: ${process.version}`);
-    console.log(`yarn: ${yarnVersion}`);
-    console.log(`cli:  ${cliVersion} (${isLocal ? 'local' : 'installed'})`);
-    console.log(`backstage:  ${backstageVersion}`);
-    console.log();
+    // Build system info
+    const systemInfo = {
+      os: `${os.type} ${os.release} - ${os.platform}/${os.arch}`,
+      node: process.version,
+      yarn: yarnVersion,
+      cli: { version: cliVersion, local: isLocal },
+      backstage: backstageVersion,
+    };
 
     const lockfilePath = paths.resolveTargetRoot('yarn.lock');
     const lockfile = await Lockfile.load(lockfilePath);
@@ -153,9 +160,37 @@ export default async (options: InfoOptions) => {
       return versions.join(', ');
     };
 
+    const sortedInstalled = [...installedDeps].sort();
+    const sortedLocal = [...localDeps].sort();
+
+    // If outputFile is specified, write JSON to file
+    if (options.outputFile) {
+      const output = {
+        system: systemInfo,
+        dependencies: Object.fromEntries(
+          sortedInstalled.map(dep => [dep, getVersions(dep)]),
+        ),
+        local: Object.fromEntries(
+          sortedLocal.map(dep => [dep, workspacePackages.get(dep) ?? 'unknown']),
+        ),
+      };
+
+      const outputPath = paths.resolveTargetRoot(options.outputFile);
+      await fs.writeFile(outputPath, JSON.stringify(output, null, 2));
+      console.log(`Info exported to ${outputPath}`);
+      return;
+    }
+
+    // Print to console
+    console.log(`OS:   ${systemInfo.os}`);
+    console.log(`node: ${systemInfo.node}`);
+    console.log(`yarn: ${systemInfo.yarn}`);
+    console.log(`cli:  ${cliVersion} (${isLocal ? 'local' : 'installed'})`);
+    console.log(`backstage:  ${backstageVersion}`);
+    console.log();
+
     // Print installed dependencies
     console.log('Dependencies:');
-    const sortedInstalled = [...installedDeps].sort();
     if (sortedInstalled.length > 0) {
       const maxLength = Math.max(...sortedInstalled.map(d => d.length));
       for (const dep of sortedInstalled) {
@@ -170,7 +205,6 @@ export default async (options: InfoOptions) => {
     if (localDeps.size > 0) {
       console.log();
       console.log('Local:');
-      const sortedLocal = [...localDeps].sort();
       const maxLength = Math.max(...sortedLocal.map(d => d.length));
       for (const dep of sortedLocal) {
         const version = workspacePackages.get(dep) ?? 'unknown';
