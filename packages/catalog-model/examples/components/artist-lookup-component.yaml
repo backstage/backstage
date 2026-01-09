@@ -31,9 +31,11 @@ metadata:
   annotations:
     backstage.io/source-template: template:default/springboot-template
     backstage.io/linguist: 'https://github.com/backstage/backstage/tree/master/plugins/playlist'
+    estimated-time-saved: "40 hours"
+    estimated-cost-saved: "$5,000"
 spec:
   type: service
-  lifecycle: experimental
+  lifecycle: experimental, dev
   owner: team-a
   system: artist-engagement-portal
   dependsOn: ['resource:artists-db']
