@@ -14,52 +14,54 @@
  * limitations under the License.
  */
 
-import { useState, useEffect } from 'react';
-
-import { Table, TableProps } from '@backstage/core-components';
-import { CatalogTableRow } from './types';
+import { ReactNode } from 'react';
 import { useEntityList } from '@backstage/plugin-catalog-react';
-import { CatalogTableToolbar } from './CatalogTableToolbar';
+import { TableColumn, TableProps } from '@backstage/core-components';
+import { CatalogTableRow } from './types';
+import { CatalogTableBase } from './CatalogTableBase';
+
+interface OffsetPaginatedCatalogTableProps {
+  columns: TableColumn<CatalogTableRow>[];
+  data: CatalogTableRow[];
+  title?: string;
+  subtitle?: string;
+  emptyContent?: ReactNode;
+  isLoading?: boolean;
+  actions?: TableProps<CatalogTableRow>['actions'];
+}
 
 /**
  * @internal
  */
 export function OffsetPaginatedCatalogTable(
-  props: TableProps<CatalogTableRow>,
+  props: OffsetPaginatedCatalogTableProps,
 ) {
-  const { columns, data, options, ...restProps } = props;
+  const { columns, data, title, subtitle, emptyContent, isLoading, actions } =
+    props;
   const { setLimit, setOffset, limit, totalItems, offset } = useEntityList();
 
-  const [page, setPage] = useState(
-    offset && limit ? Math.floor(offset / limit) : 0,
-  );
-
-  useEffect(() => {
-    if (totalItems && page * limit >= totalItems) {
-      setOffset!(Math.max(0, totalItems - limit));
-    } else {
-      setOffset!(Math.max(0, page * limit));
-    }
-  }, [setOffset, page, limit, totalItems]);
-
   return (
-    <Table
+    <CatalogTableBase
       columns={columns}
       data={data}
-      options={{
-        pageSizeOptions: [5, 10, 20, 50, 100],
-        pageSize: limit,
-        emptyRowsWhenPaging: false,
-        ...options,
+      title={title}
+      subtitle={subtitle}
+      emptyContent={emptyContent}
+      isLoading={isLoading}
+      actions={actions}
+      pagination={{
+        mode: 'server',
+        offset: offset ?? 0,
+        limit: limit ?? 10,
+        totalItems: totalItems ?? 0,
+        onOffsetChange: (newOffset: number) => {
+          setOffset!(newOffset);
+        },
+        onPageSizeChange: (newPageSize: number) => {
+          setLimit!(newPageSize);
+          setOffset!(0);
+        },
       }}
-      components={{
-        Toolbar: CatalogTableToolbar,
-      }}
-      page={page}
-      onPageChange={setPage}
-      onRowsPerPageChange={setLimit}
-      totalCount={totalItems}
-      {...restProps}
     />
   );
 }
