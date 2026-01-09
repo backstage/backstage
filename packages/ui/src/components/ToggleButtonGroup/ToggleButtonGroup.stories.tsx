@@ -72,7 +72,7 @@ export const MultipleSelection = meta.story({
   ),
 });
 
-export const Variants = meta.story({
+export const Surfaces = meta.story({
   args: {
     selectionMode: 'single',
     defaultSelectedKeys: ['option1'],
@@ -93,29 +93,9 @@ export const Variants = meta.story({
             selectionMode="single"
             defaultSelectedKeys={['option1']}
           >
-            <ToggleButton id="option1" variant="primary">
-              Primary 1
-            </ToggleButton>
-            <ToggleButton id="option2" variant="primary">
-              Option 2
-            </ToggleButton>
-            <ToggleButton id="option3" variant="primary">
-              Option 3
-            </ToggleButton>
-          </ToggleButtonGroup>
-          <ToggleButtonGroup
-            selectionMode="single"
-            defaultSelectedKeys={['option1']}
-          >
-            <ToggleButton id="option1" variant="secondary">
-              Secondary 1
-            </ToggleButton>
-            <ToggleButton id="option2" variant="secondary">
-              Option 2
-            </ToggleButton>
-            <ToggleButton id="option3" variant="secondary">
-              Option 3
-            </ToggleButton>
+            <ToggleButton id="option1">Option 1</ToggleButton>
+            <ToggleButton id="option2">Option 2</ToggleButton>
+            <ToggleButton id="option3">Option 3</ToggleButton>
           </ToggleButtonGroup>
         </Flex>
       </Flex>
@@ -126,29 +106,9 @@ export const Variants = meta.story({
             selectionMode="single"
             defaultSelectedKeys={['option1']}
           >
-            <ToggleButton id="option1" variant="primary">
-              Primary 1
-            </ToggleButton>
-            <ToggleButton id="option2" variant="primary">
-              Option 2
-            </ToggleButton>
-            <ToggleButton id="option3" variant="primary">
-              Option 3
-            </ToggleButton>
-          </ToggleButtonGroup>
-          <ToggleButtonGroup
-            selectionMode="single"
-            defaultSelectedKeys={['option1']}
-          >
-            <ToggleButton id="option1" variant="secondary">
-              Secondary 1
-            </ToggleButton>
-            <ToggleButton id="option2" variant="secondary">
-              Option 2
-            </ToggleButton>
-            <ToggleButton id="option3" variant="secondary">
-              Option 3
-            </ToggleButton>
+            <ToggleButton id="option1">Option 1</ToggleButton>
+            <ToggleButton id="option2">Option 2</ToggleButton>
+            <ToggleButton id="option3">Option 3</ToggleButton>
           </ToggleButtonGroup>
         </Flex>
       </Flex>
@@ -159,29 +119,9 @@ export const Variants = meta.story({
             selectionMode="single"
             defaultSelectedKeys={['option1']}
           >
-            <ToggleButton id="option1" variant="primary">
-              Primary 1
-            </ToggleButton>
-            <ToggleButton id="option2" variant="primary">
-              Option 2
-            </ToggleButton>
-            <ToggleButton id="option3" variant="primary">
-              Option 3
-            </ToggleButton>
-          </ToggleButtonGroup>
-          <ToggleButtonGroup
-            selectionMode="single"
-            defaultSelectedKeys={['option1']}
-          >
-            <ToggleButton id="option1" variant="secondary">
-              Secondary 1
-            </ToggleButton>
-            <ToggleButton id="option2" variant="secondary">
-              Option 2
-            </ToggleButton>
-            <ToggleButton id="option3" variant="secondary">
-              Option 3
-            </ToggleButton>
+            <ToggleButton id="option1">Option 1</ToggleButton>
+            <ToggleButton id="option2">Option 2</ToggleButton>
+            <ToggleButton id="option3">Option 3</ToggleButton>
           </ToggleButtonGroup>
         </Flex>
       </Flex>
@@ -192,29 +132,9 @@ export const Variants = meta.story({
             selectionMode="single"
             defaultSelectedKeys={['option1']}
           >
-            <ToggleButton id="option1" variant="primary">
-              Primary 1
-            </ToggleButton>
-            <ToggleButton id="option2" variant="primary">
-              Option 2
-            </ToggleButton>
-            <ToggleButton id="option3" variant="primary">
-              Option 3
-            </ToggleButton>
-          </ToggleButtonGroup>
-          <ToggleButtonGroup
-            selectionMode="single"
-            defaultSelectedKeys={['option1']}
-          >
-            <ToggleButton id="option1" variant="secondary">
-              Secondary 1
-            </ToggleButton>
-            <ToggleButton id="option2" variant="secondary">
-              Option 2
-            </ToggleButton>
-            <ToggleButton id="option3" variant="secondary">
-              Option 3
-            </ToggleButton>
+            <ToggleButton id="option1">Option 1</ToggleButton>
+            <ToggleButton id="option2">Option 2</ToggleButton>
+            <ToggleButton id="option3">Option 3</ToggleButton>
           </ToggleButtonGroup>
         </Flex>
       </Flex>
@@ -225,29 +145,9 @@ export const Variants = meta.story({
             selectionMode="single"
             defaultSelectedKeys={['option1']}
           >
-            <ToggleButton id="option1" variant="primary">
-              Primary 1
-            </ToggleButton>
-            <ToggleButton id="option2" variant="primary">
-              Option 2
-            </ToggleButton>
-            <ToggleButton id="option3" variant="primary">
-              Option 3
-            </ToggleButton>
-          </ToggleButtonGroup>
-          <ToggleButtonGroup
-            selectionMode="single"
-            defaultSelectedKeys={['option1']}
-          >
-            <ToggleButton id="option1" variant="secondary">
-              Secondary 1
-            </ToggleButton>
-            <ToggleButton id="option2" variant="secondary">
-              Option 2
-            </ToggleButton>
-            <ToggleButton id="option3" variant="secondary">
-              Option 3
-            </ToggleButton>
+            <ToggleButton id="option1">Option 1</ToggleButton>
+            <ToggleButton id="option2">Option 2</ToggleButton>
+            <ToggleButton id="option3">Option 3</ToggleButton>
           </ToggleButtonGroup>
         </Flex>
       </Flex>

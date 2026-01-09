@@ -26,10 +26,6 @@ import type { Responsive, Surface } from '../../types';
  */
 export interface ToggleButtonProps extends AriaToggleButtonProps {
   size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
-  variant?:
-    | 'primary'
-    | 'secondary'
-    | Partial<Record<Breakpoint, 'primary' | 'secondary'>>;
   iconStart?: ReactElement;
   iconEnd?: ReactElement;
   children?: ReactNode;

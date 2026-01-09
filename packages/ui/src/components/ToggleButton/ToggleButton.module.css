@@ -33,70 +33,30 @@
     cursor: pointer;
     transition: background-color 150ms ease, box-shadow 150ms ease,
       color 150ms ease, transform 100ms ease;
-  }
 
-  .bui-ToggleButton[data-variant='secondary'] {
-    background-color: var(--bui-bg-neutral-on-surface-0);
-    color: var(--bui-fg-primary);
-    box-shadow: none;
-
-    &[data-hovered]:not([data-disabled]) {
-      background-color: var(--bui-bg-neutral-on-surface-0-hover);
+    &[data-selected],
+    &[data-pressed] {
+      background: var(--bui-bg-solid);
+      color: var(--bui-fg-solid);
     }
 
-    &[data-pressed]:not([data-disabled]),
-    &[data-selected]:not([data-disabled]) {
-      background-color: var(--bui-bg-neutral-on-surface-0-pressed);
+    &:not([data-selected])[data-hovered] {
+      background: var(--bui-bg-surface-2);
     }
 
-    &[data-on-surface='1'] {
-      background-color: var(--bui-bg-neutral-on-surface-1);
-
-      &[data-hovered]:not([data-disabled]) {
-        background-color: var(--bui-bg-neutral-on-surface-1-hover);
-      }
-
-      &[data-pressed]:not([data-disabled]),
-      &[data-selected]:not([data-disabled]) {
-        background-color: var(--bui-bg-neutral-on-surface-1-pressed);
-      }
+    &[data-disabled] {
+      background: var(--bui-bg-neutral-on-surface-0-disabled);
+      color: var(--bui-fg-disabled);
     }
 
-    &[data-on-surface='2'] {
-      background-color: var(--bui-bg-neutral-on-surface-2);
-
-      &[data-hovered]:not([data-disabled]) {
-        background-color: var(--bui-bg-neutral-on-surface-2-hover);
-      }
-
-      &[data-pressed]:not([data-disabled]),
-      &[data-selected]:not([data-disabled]) {
-        background-color: var(--bui-bg-neutral-on-surface-2-pressed);
-      }
+    &[data-disabled][data-hovered] {
+      background: var(--bui-bg-neutral-on-surface-0-disabled);
     }
 
-    &[data-on-surface='3'] {
-      background-color: var(--bui-bg-neutral-on-surface-3);
-
-      &[data-hovered]:not([data-disabled]) {
-        background-color: var(--bui-bg-neutral-on-surface-3-hover);
-      }
-
-      &[data-pressed]:not([data-disabled]),
-      &[data-selected]:not([data-disabled]) {
-        background-color: var(--bui-bg-neutral-on-surface-3-pressed);
-      }
+    &[data-disabled][data-selected] {
+      background: var(--bui-bg-solid-disabled);
+      color: var(--bui-fg-disabled);
     }
-  }
-
-  .bui-ToggleButton[data-variant='primary'][data-selected],
-  .bui-ToggleButton[data-variant='primary'][data-pressed] {
-    background: var(--bui-bg-solid);
-    color: var(--bui-fg-solid);
-  }
-
-  .bui-ToggleButton[data-variant='primary']:not([data-selected])[data-hovered] {
-    background: var(--bui-bg-surface-2);
   }
 
   .bui-ToggleButton[data-focus-visible] {
@@ -106,13 +66,14 @@
 
   .bui-ToggleButton[data-disabled] {
     cursor: not-allowed;
-    color: var(--bui-fg-disabled);
-    background: var(--bui-bg-neutral-on-surface-0-disabled);
-    box-shadow: inset 0 0 0 1px var(--bui-border-disabled);
   }
 
-  .bui-ToggleButton[data-pressed]:not([data-disabled]) {
+  .bui-ToggleButton[data-pressed] {
     transform: scale(0.98);
+  }
+
+  .bui-ToggleButton[data-disabled][data-pressed] {
+    transform: none;
   }
 
   .bui-ToggleButton[data-size='small'] {

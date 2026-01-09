@@ -27,6 +27,5 @@ export const ToggleButtonDefinition = {
   },
   dataAttributes: {
     size: ['small', 'medium'] as const,
-    variant: ['primary', 'secondary'] as const,
   },
 } as const satisfies ComponentDefinition;

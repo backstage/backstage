@@ -30,7 +30,6 @@ export const ToggleButton = forwardRef(
       ToggleButtonDefinition,
       {
         size: 'small',
-        variant: 'primary',
         ...props,
       },
     );

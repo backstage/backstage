@@ -37,10 +37,6 @@ const meta = preview.meta({
       control: 'select',
       options: ['small', 'medium'],
     },
-    variant: {
-      control: 'select',
-      options: ['primary', 'secondary'],
-    },
   },
 });
 
@@ -50,13 +46,13 @@ export const Default = meta.story({
   },
 });
 
-export const Variants = meta.story({
+export const Surfaces = meta.story({
   args: {
     children: 'Toggle',
   },
   parameters: {
     argTypes: {
-      variant: {
+      size: {
         control: false,
       },
     },
@@ -66,36 +62,31 @@ export const Variants = meta.story({
       <Flex direction="column" gap="4">
         <Text>Default</Text>
         <Flex align="center" p="4">
-          <ToggleButton variant="primary">Primary</ToggleButton>
-          <ToggleButton variant="secondary">Secondary</ToggleButton>
+          <ToggleButton>Toggle</ToggleButton>
         </Flex>
       </Flex>
       <Flex direction="column" gap="4">
         <Text>On Surface 0</Text>
         <Flex align="center" surface="0" p="4">
-          <ToggleButton variant="primary">Primary</ToggleButton>
-          <ToggleButton variant="secondary">Secondary</ToggleButton>
+          <ToggleButton>Toggle</ToggleButton>
         </Flex>
       </Flex>
       <Flex direction="column" gap="4">
         <Text>On Surface 1</Text>
         <Flex align="center" surface="1" p="4">
-          <ToggleButton variant="primary">Primary</ToggleButton>
-          <ToggleButton variant="secondary">Secondary</ToggleButton>
+          <ToggleButton>Toggle</ToggleButton>
         </Flex>
       </Flex>
       <Flex direction="column" gap="4">
         <Text>On Surface 2</Text>
         <Flex align="center" surface="2" p="4">
-          <ToggleButton variant="primary">Primary</ToggleButton>
-          <ToggleButton variant="secondary">Secondary</ToggleButton>
+          <ToggleButton>Toggle</ToggleButton>
         </Flex>
       </Flex>
       <Flex direction="column" gap="4">
         <Text>On Surface 3</Text>
         <Flex align="center" surface="3" p="4">
-          <ToggleButton variant="primary">Primary</ToggleButton>
-          <ToggleButton variant="secondary">Secondary</ToggleButton>
+          <ToggleButton>Toggle</ToggleButton>
         </Flex>
       </Flex>
     </Flex>
@@ -176,13 +167,8 @@ export const MixedIcons = meta.story({
 export const Disabled = meta.story({
   render: () => (
     <Flex align="center">
-      <ToggleButton variant="primary" isDisabled>
-        Primary
-      </ToggleButton>
-      <ToggleButton variant="secondary" isDisabled>
-        Secondary
-      </ToggleButton>
-      <ToggleButton variant="primary" defaultSelected isDisabled>
+      <ToggleButton isDisabled>Disabled</ToggleButton>
+      <ToggleButton defaultSelected isDisabled>
         Selected
       </ToggleButton>
     </Flex>

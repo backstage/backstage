@@ -39,10 +39,6 @@
     border: 0;
   }
 
-  .bui-ToggleButtonGroup :global(.bui-ToggleButton)[data-variant='secondary'] {
-    box-shadow: none;
-  }
-
   /* Horizontal radius rules (default orientation) */
   .bui-ToggleButtonGroup:not([data-orientation='vertical'])
     > :global(.bui-ToggleButton) {
