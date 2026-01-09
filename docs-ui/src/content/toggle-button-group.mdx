@@ -11,6 +11,7 @@ import {
   toggleButtonGroupDisallowEmptySnippet,
   toggleButtonGroupIconsSnippet,
   toggleButtonGroupIconsOnlySnippet,
+  toggleButtonGroupVariantsSnippet,
 } from './toggle-button-group.props';
 import { ToggleButtonGroupSnippet } from '@/snippets/stories-snippets';
 import { PageTitle } from '@/components/PageTitle';
@@ -39,6 +40,16 @@ import { ToggleButtonGroupDefinition } from '../utils/definitions';
 <PropsTable data={toggleButtonGroupPropDefs} />
 
 ## Examples
+
+### Variants
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<ToggleButtonGroupSnippet story="Variants" />}
+  code={toggleButtonGroupVariantsSnippet}
+/>
 
 ### Single Selection
 

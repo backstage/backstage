@@ -32,10 +32,10 @@ export const toggleButtonGroupUsageSnippet = `import { ToggleButtonGroup, Toggle
   <ToggleButton id="cats">Cats</ToggleButton>
 </ToggleButtonGroup>`;
 
-export const toggleButtonGroupSingleSnippet = `<ToggleButtonGroup selectionMode="single" defaultSelectedKeys={['apples']}>
-  <ToggleButton id="apples">Apples</ToggleButton>
-  <ToggleButton id="oranges">Oranges</ToggleButton>
-  <ToggleButton id="bananas">Bananas</ToggleButton>
+export const toggleButtonGroupSingleSnippet = `<ToggleButtonGroup selectionMode="single" defaultSelectedKeys={['dogs']}>
+  <ToggleButton id="dogs">Dogs</ToggleButton>
+  <ToggleButton id="cat">Cats</ToggleButton>
+  <ToggleButton id="bird">Birds</ToggleButton>
 </ToggleButtonGroup>`;
 
 export const toggleButtonGroupMultipleSnippet = `<ToggleButtonGroup selectionMode="multiple" defaultSelectedKeys={['frontend']}>
@@ -73,3 +73,81 @@ export const toggleButtonGroupIconsOnlySnippet = `<ToggleButtonGroup selectionMo
   <ToggleButton id="star" aria-label="Star" iconStart="starLine" />
   <ToggleButton id="next" aria-label="Next" iconEnd="arrowRight" />
 </ToggleButtonGroup>`;
+
+export const toggleButtonGroupVariantsSnippet = `<Flex direction="column" gap="4">
+  <Flex direction="column" gap="4">
+    <Text>Default</Text>
+    <Flex align="center" p="4" gap="4">
+      <ToggleButtonGroup selectionMode="single" defaultSelectedKeys={['option1']}>
+        <ToggleButton id="option1" variant="primary">Primary 1</ToggleButton>
+        <ToggleButton id="option2" variant="primary">Option 2</ToggleButton>
+        <ToggleButton id="option3" variant="primary">Option 3</ToggleButton>
+      </ToggleButtonGroup>
+      <ToggleButtonGroup selectionMode="single" defaultSelectedKeys={['option1']}>
+        <ToggleButton id="option1" variant="secondary">Secondary 1</ToggleButton>
+        <ToggleButton id="option2" variant="secondary">Option 2</ToggleButton>
+        <ToggleButton id="option3" variant="secondary">Option 3</ToggleButton>
+      </ToggleButtonGroup>
+    </Flex>
+  </Flex>
+  <Flex direction="column" gap="4">
+    <Text>On Surface 0</Text>
+    <Flex align="center" surface="0" p="4" gap="4">
+      <ToggleButtonGroup selectionMode="single" defaultSelectedKeys={['option1']}>
+        <ToggleButton id="option1" variant="primary">Primary 1</ToggleButton>
+        <ToggleButton id="option2" variant="primary">Option 2</ToggleButton>
+        <ToggleButton id="option3" variant="primary">Option 3</ToggleButton>
+      </ToggleButtonGroup>
+      <ToggleButtonGroup selectionMode="single" defaultSelectedKeys={['option1']}>
+        <ToggleButton id="option1" variant="secondary">Secondary 1</ToggleButton>
+        <ToggleButton id="option2" variant="secondary">Option 2</ToggleButton>
+        <ToggleButton id="option3" variant="secondary">Option 3</ToggleButton>
+      </ToggleButtonGroup>
+    </Flex>
+  </Flex>
+  <Flex direction="column" gap="4">
+    <Text>On Surface 1</Text>
+    <Flex align="center" surface="1" p="4" gap="4">
+      <ToggleButtonGroup selectionMode="single" defaultSelectedKeys={['option1']}>
+        <ToggleButton id="option1" variant="primary">Primary 1</ToggleButton>
+        <ToggleButton id="option2" variant="primary">Option 2</ToggleButton>
+        <ToggleButton id="option3" variant="primary">Option 3</ToggleButton>
+      </ToggleButtonGroup>
+      <ToggleButtonGroup selectionMode="single" defaultSelectedKeys={['option1']}>
+        <ToggleButton id="option1" variant="secondary">Secondary 1</ToggleButton>
+        <ToggleButton id="option2" variant="secondary">Option 2</ToggleButton>
+        <ToggleButton id="option3" variant="secondary">Option 3</ToggleButton>
+      </ToggleButtonGroup>
+    </Flex>
+  </Flex>
+  <Flex direction="column" gap="4">
+    <Text>On Surface 2</Text>
+    <Flex align="center" surface="2" p="4" gap="4">
+      <ToggleButtonGroup selectionMode="single" defaultSelectedKeys={['option1']}>
+        <ToggleButton id="option1" variant="primary">Primary 1</ToggleButton>
+        <ToggleButton id="option2" variant="primary">Option 2</ToggleButton>
+        <ToggleButton id="option3" variant="primary">Option 3</ToggleButton>
+      </ToggleButtonGroup>
+      <ToggleButtonGroup selectionMode="single" defaultSelectedKeys={['option1']}>
+        <ToggleButton id="option1" variant="secondary">Secondary 1</ToggleButton>
+        <ToggleButton id="option2" variant="secondary">Option 2</ToggleButton>
+        <ToggleButton id="option3" variant="secondary">Option 3</ToggleButton>
+      </ToggleButtonGroup>
+    </Flex>
+  </Flex>
+  <Flex direction="column" gap="4">
+    <Text>On Surface 3</Text>
+    <Flex align="center" surface="3" p="4" gap="4">
+      <ToggleButtonGroup selectionMode="single" defaultSelectedKeys={['option1']}>
+        <ToggleButton id="option1" variant="primary">Primary 1</ToggleButton>
+        <ToggleButton id="option2" variant="primary">Option 2</ToggleButton>
+        <ToggleButton id="option3" variant="primary">Option 3</ToggleButton>
+      </ToggleButtonGroup>
+      <ToggleButtonGroup selectionMode="single" defaultSelectedKeys={['option1']}>
+        <ToggleButton id="option1" variant="secondary">Secondary 1</ToggleButton>
+        <ToggleButton id="option2" variant="secondary">Option 2</ToggleButton>
+        <ToggleButton id="option3" variant="secondary">Option 3</ToggleButton>
+      </ToggleButtonGroup>
+    </Flex>
+  </Flex>
+</Flex>`;

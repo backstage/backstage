@@ -72,6 +72,189 @@ export const MultipleSelection = meta.story({
   ),
 });
 
+export const Variants = meta.story({
+  args: {
+    selectionMode: 'single',
+    defaultSelectedKeys: ['option1'],
+  },
+  parameters: {
+    argTypes: {
+      selectionMode: {
+        control: false,
+      },
+    },
+  },
+  render: () => (
+    <Flex direction="column" gap="4">
+      <Flex direction="column" gap="4">
+        <Text>Default</Text>
+        <Flex align="center" p="4" gap="4">
+          <ToggleButtonGroup
+            selectionMode="single"
+            defaultSelectedKeys={['option1']}
+          >
+            <ToggleButton id="option1" variant="primary">
+              Primary 1
+            </ToggleButton>
+            <ToggleButton id="option2" variant="primary">
+              Option 2
+            </ToggleButton>
+            <ToggleButton id="option3" variant="primary">
+              Option 3
+            </ToggleButton>
+          </ToggleButtonGroup>
+          <ToggleButtonGroup
+            selectionMode="single"
+            defaultSelectedKeys={['option1']}
+          >
+            <ToggleButton id="option1" variant="secondary">
+              Secondary 1
+            </ToggleButton>
+            <ToggleButton id="option2" variant="secondary">
+              Option 2
+            </ToggleButton>
+            <ToggleButton id="option3" variant="secondary">
+              Option 3
+            </ToggleButton>
+          </ToggleButtonGroup>
+        </Flex>
+      </Flex>
+      <Flex direction="column" gap="4">
+        <Text>On Surface 0</Text>
+        <Flex align="center" surface="0" p="4" gap="4">
+          <ToggleButtonGroup
+            selectionMode="single"
+            defaultSelectedKeys={['option1']}
+          >
+            <ToggleButton id="option1" variant="primary">
+              Primary 1
+            </ToggleButton>
+            <ToggleButton id="option2" variant="primary">
+              Option 2
+            </ToggleButton>
+            <ToggleButton id="option3" variant="primary">
+              Option 3
+            </ToggleButton>
+          </ToggleButtonGroup>
+          <ToggleButtonGroup
+            selectionMode="single"
+            defaultSelectedKeys={['option1']}
+          >
+            <ToggleButton id="option1" variant="secondary">
+              Secondary 1
+            </ToggleButton>
+            <ToggleButton id="option2" variant="secondary">
+              Option 2
+            </ToggleButton>
+            <ToggleButton id="option3" variant="secondary">
+              Option 3
+            </ToggleButton>
+          </ToggleButtonGroup>
+        </Flex>
+      </Flex>
+      <Flex direction="column" gap="4">
+        <Text>On Surface 1</Text>
+        <Flex align="center" surface="1" p="4" gap="4">
+          <ToggleButtonGroup
+            selectionMode="single"
+            defaultSelectedKeys={['option1']}
+          >
+            <ToggleButton id="option1" variant="primary">
+              Primary 1
+            </ToggleButton>
+            <ToggleButton id="option2" variant="primary">
+              Option 2
+            </ToggleButton>
+            <ToggleButton id="option3" variant="primary">
+              Option 3
+            </ToggleButton>
+          </ToggleButtonGroup>
+          <ToggleButtonGroup
+            selectionMode="single"
+            defaultSelectedKeys={['option1']}
+          >
+            <ToggleButton id="option1" variant="secondary">
+              Secondary 1
+            </ToggleButton>
+            <ToggleButton id="option2" variant="secondary">
+              Option 2
+            </ToggleButton>
+            <ToggleButton id="option3" variant="secondary">
+              Option 3
+            </ToggleButton>
+          </ToggleButtonGroup>
+        </Flex>
+      </Flex>
+      <Flex direction="column" gap="4">
+        <Text>On Surface 2</Text>
+        <Flex align="center" surface="2" p="4" gap="4">
+          <ToggleButtonGroup
+            selectionMode="single"
+            defaultSelectedKeys={['option1']}
+          >
+            <ToggleButton id="option1" variant="primary">
+              Primary 1
+            </ToggleButton>
+            <ToggleButton id="option2" variant="primary">
+              Option 2
+            </ToggleButton>
+            <ToggleButton id="option3" variant="primary">
+              Option 3
+            </ToggleButton>
+          </ToggleButtonGroup>
+          <ToggleButtonGroup
+            selectionMode="single"
+            defaultSelectedKeys={['option1']}
+          >
+            <ToggleButton id="option1" variant="secondary">
+              Secondary 1
+            </ToggleButton>
+            <ToggleButton id="option2" variant="secondary">
+              Option 2
+            </ToggleButton>
+            <ToggleButton id="option3" variant="secondary">
+              Option 3
+            </ToggleButton>
+          </ToggleButtonGroup>
+        </Flex>
+      </Flex>
+      <Flex direction="column" gap="4">
+        <Text>On Surface 3</Text>
+        <Flex align="center" surface="3" p="4" gap="4">
+          <ToggleButtonGroup
+            selectionMode="single"
+            defaultSelectedKeys={['option1']}
+          >
+            <ToggleButton id="option1" variant="primary">
+              Primary 1
+            </ToggleButton>
+            <ToggleButton id="option2" variant="primary">
+              Option 2
+            </ToggleButton>
+            <ToggleButton id="option3" variant="primary">
+              Option 3
+            </ToggleButton>
+          </ToggleButtonGroup>
+          <ToggleButtonGroup
+            selectionMode="single"
+            defaultSelectedKeys={['option1']}
+          >
+            <ToggleButton id="option1" variant="secondary">
+              Secondary 1
+            </ToggleButton>
+            <ToggleButton id="option2" variant="secondary">
+              Option 2
+            </ToggleButton>
+            <ToggleButton id="option3" variant="secondary">
+              Option 3
+            </ToggleButton>
+          </ToggleButtonGroup>
+        </Flex>
+      </Flex>
+    </Flex>
+  ),
+});
+
 export const DisabledGroup = meta.story({
   args: {
     selectionMode: 'single',
