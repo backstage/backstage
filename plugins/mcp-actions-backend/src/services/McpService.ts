@@ -16,8 +16,8 @@
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { Server as McpServer } from '@modelcontextprotocol/sdk/server/index.js';
 import {
-  ListToolsRequestSchema,
   CallToolRequestSchema,
+  ListToolsRequestSchema,
 } from '@modelcontextprotocol/sdk/types.js';
 import { JsonObject } from '@backstage/types';
 import { ActionsService } from '@backstage/backend-plugin-api/alpha';
@@ -52,21 +52,23 @@ export class McpService {
       const { actions } = await this.actions.list({ credentials });
 
       return {
-        tools: actions.map(action => ({
-          inputSchema: action.schema.input,
-          // todo(blam): this is unfortunately not supported by most clients yet.
-          // When this is provided you need to provide structuredContent instead.
-          // outputSchema: action.schema.output,
-          name: action.name,
-          description: action.description,
-          annotations: {
-            title: action.title,
-            destructiveHint: action.attributes.destructive,
-            idempotentHint: action.attributes.idempotent,
-            readOnlyHint: action.attributes.readOnly,
-            openWorldHint: false,
-          },
-        })),
+        tools: actions
+          .filter(a => a.authorized)
+          .map(action => ({
+            inputSchema: action.schema.input,
+            // todo(blam): this is unfortunately not supported by most clients yet.
+            // When this is provided you need to provide structuredContent instead.
+            // outputSchema: action.schema.output,
+            name: action.name,
+            description: action.description,
+            annotations: {
+              title: action.title,
+              destructiveHint: action.attributes.destructive,
+              idempotentHint: action.attributes.idempotent,
+              readOnlyHint: action.attributes.readOnly,
+              openWorldHint: false,
+            },
+          })),
       };
     });
 

@@ -16,13 +16,15 @@
 
 import {
   AuthService,
+  BackstageCredentials,
   HttpAuthService,
   LoggerService,
+  PermissionsService,
   PluginMetadataService,
 } from '@backstage/backend-plugin-api';
 import PromiseRouter from 'express-promise-router';
-import { Router, json } from 'express';
-import { z, AnyZodObject } from 'zod';
+import { json, Router } from 'express';
+import { AnyZodObject, z } from 'zod';
 import zodToJsonSchema from 'zod-to-json-schema';
 import {
   ActionsRegistryActionOptions,
@@ -34,6 +36,14 @@ import {
   NotAllowedError,
   NotFoundError,
 } from '@backstage/errors';
+import {
+  AuthorizePermissionRequest,
+  AuthorizeResult,
+  createPermission,
+  isResourcePermission,
+  PermissionAttributes,
+} from '@backstage/plugin-permission-common';
+import { Config } from '@backstage/config';
 
 export class DefaultActionsRegistryService implements ActionsRegistryService {
   private actions: Map<string, ActionsRegistryActionOptions<any, any>> =
@@ -43,17 +53,23 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
   private readonly httpAuth: HttpAuthService;
   private readonly auth: AuthService;
   private readonly metadata: PluginMetadataService;
+  private readonly config: Config;
+  private readonly permissions: PermissionsService;
 
   private constructor(
     logger: LoggerService,
     httpAuth: HttpAuthService,
     auth: AuthService,
     metadata: PluginMetadataService,
+    config: Config,
+    permissions: PermissionsService,
   ) {
     this.logger = logger;
     this.httpAuth = httpAuth;
     this.auth = auth;
     this.metadata = metadata;
+    this.config = config;
+    this.permissions = permissions;
   }
 
   static create({
@@ -61,20 +77,128 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
     logger,
     auth,
     metadata,
+    config,
+    permissions,
   }: {
     httpAuth: HttpAuthService;
     logger: LoggerService;
     auth: AuthService;
     metadata: PluginMetadataService;
+    config: Config;
+    permissions: PermissionsService;
   }): DefaultActionsRegistryService {
-    return new DefaultActionsRegistryService(logger, httpAuth, auth, metadata);
+    return new DefaultActionsRegistryService(
+      logger,
+      httpAuth,
+      auth,
+      metadata,
+      config,
+      permissions,
+    );
   }
 
   createRouter(): Router {
     const router = PromiseRouter();
     router.use(json());
 
-    router.get('/.backstage/actions/v1/actions', (_, res) => {
+    const authorizeAction = async (
+      actionId: string,
+      credentials: BackstageCredentials,
+      input?: AnyZodObject,
+    ) => {
+      const action = this.actions.get(actionId);
+      if (!action) {
+        return false;
+      }
+
+      try {
+        // First check if a permission is defined for the action in the config
+        const permissionConfigPath = `backend.actions.actionConfig.${actionId}.permissions`;
+        if (
+          this.config.getOptionalBoolean(`${permissionConfigPath}.disabled`) ===
+          true
+        ) {
+          return true;
+        }
+        const permissionsConfig =
+          this.config.getOptionalConfigArray(permissionConfigPath);
+
+        if (permissionsConfig) {
+          const permissionRequests: AuthorizePermissionRequest[] = [];
+          for (const permConfig of permissionsConfig) {
+            const permissionName = permConfig.getString('name');
+            const permissionAttributes = (permConfig.getOptionalConfig(
+              'attributes',
+            ) ?? {}) as PermissionAttributes;
+            const resourceType = permConfig.getOptionalString('resourceType');
+            const resourceRef = permConfig.getOptionalString('resourceRef');
+            const permission = resourceType
+              ? createPermission({
+                  name: permissionName,
+                  attributes: permissionAttributes,
+                  resourceType,
+                })
+              : createPermission({
+                  name: permissionName,
+                  attributes: permissionAttributes,
+                });
+
+            if (isResourcePermission(permission)) {
+              if (!resourceRef) {
+                throw new Error(
+                  `Permission "${permissionName}" for action "${actionId}" is a resource permission but no resourceRef is defined in the config at ${permissionConfigPath}`,
+                );
+              }
+              const permissionRequest: AuthorizePermissionRequest = {
+                permission,
+                resourceRef,
+              };
+              permissionRequests.push(permissionRequest);
+            } else {
+              const permissionRequest: AuthorizePermissionRequest = {
+                permission,
+              };
+              permissionRequests.push(permissionRequest);
+            }
+          }
+          const decisions = await this.permissions.authorize(
+            permissionRequests,
+            {
+              credentials,
+            },
+          );
+          return decisions.every(
+            decision => decision.result === AuthorizeResult.ALLOW,
+          );
+        }
+
+        if (!action.authorize) {
+          return true;
+        }
+
+        const decision = await action.authorize({ credentials, input });
+        return decision.result === AuthorizeResult.ALLOW;
+      } catch (err) {
+        this.logger.error(`Failed to authorize action ${actionId}`, err);
+        return false;
+      }
+    };
+
+    router.get('/.backstage/actions/v1/actions', async (req, res) => {
+      const credentials = await this.httpAuth.credentials(req);
+      const allowedActionIds = new Set(
+        (
+          await Promise.all(
+            Array.from(this.actions.keys()).map(async actionId => ({
+              actionId,
+              allowed: await authorizeAction(actionId, credentials),
+            })),
+          )
+        )
+          .filter(a => a.allowed)
+          .map(a => a.actionId),
+      );
+
       return res.json({
         actions: Array.from(this.actions.entries()).map(([id, action]) => ({
           id,
@@ -94,6 +218,7 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
               ? zodToJsonSchema(action.schema.output(z))
               : zodToJsonSchema(z.object({})),
           },
+          authorized: allowedActionIds.has(id),
         })),
       });
     });
@@ -128,6 +253,17 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
           throw new InputError(
             `Invalid input to action "${req.params.actionId}"`,
             input.error,
+          );
+        }
+
+        const allowed = await authorizeAction(
+          req.params.actionId,
+          credentials,
+          input,
+        );
+        if (!allowed) {
+          throw new NotAllowedError(
+            `You are not authorized to invoke action "${req.params.actionId}"`,
           );
         }
 
