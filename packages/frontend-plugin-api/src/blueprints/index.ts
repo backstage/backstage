@@ -24,10 +24,11 @@ export { AppRootWrapperBlueprint } from './AppRootWrapperBlueprint';
 export { IconBundleBlueprint } from './IconBundleBlueprint';
 export {
   NavContentBlueprint,
+  type NavContentItem,
   type NavContentComponent,
   type NavContentComponentProps,
 } from './NavContentBlueprint';
-export { NavItemBlueprint } from './NavItemBlueprint';
+export { NavItemBlueprint, type NavItem } from './NavItemBlueprint';
 export { PageBlueprint } from './PageBlueprint';
 export { RouterBlueprint } from './RouterBlueprint';
 export { SignInPageBlueprint } from './SignInPageBlueprint';

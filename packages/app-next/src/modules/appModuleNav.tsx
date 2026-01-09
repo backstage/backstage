@@ -106,19 +106,71 @@ export const appModuleNav = createFrontendModule({
   extensions: [
     NavContentBlueprint.make({
       params: {
-        component: ({ items }) => {
+        component: ({ items, Logo, Search }) => {
           return compatWrapper(
             <Sidebar>
-              <SidebarLogo />
+              {Logo ? <Logo /> : <SidebarLogo />}
+              {Search ? (
+                <Search />
+              ) : (
+                <SidebarGroup label="Search" icon={<SearchIcon />} to="/search">
+                  <SidebarSearchModal />
+                </SidebarGroup>
+              )}
               <SidebarGroup label="Search" icon={<SearchIcon />} to="/search">
                 <SidebarSearchModal />
               </SidebarGroup>
               <SidebarDivider />
               <SidebarGroup label="Menu" icon={<MenuIcon />}>
                 <SidebarScrollWrapper>
-                  {items.map((item, index) => (
-                    <SidebarItem {...item} key={index} />
-                  ))}
+                  {(() => {
+                    // Separate items with and without positions
+
+                    const length = items.length;
+                    const itemsWithPosition = [
+                      ...items.filter(i => typeof i.position === 'number'),
+                    ];
+                    const itemsWithoutPosition = [
+                      ...items.filter(i => typeof i.position !== 'number'),
+                    ];
+                    const sortedItems = [];
+
+                    for (let i = 0; i < length; i++) {
+                      const itemAtPosition = itemsWithPosition.filter(
+                        item => item.position === i,
+                      );
+                      if (itemAtPosition.length) {
+                        // If there are multiple items at the same position, maintain their original order
+                        sortedItems.push(...itemAtPosition);
+                      } else if (itemsWithoutPosition.length) {
+                        // Fill gaps with unpositioned items in their original order
+                        sortedItems.push(itemsWithoutPosition.shift()!);
+                      }
+                    }
+
+                    return sortedItems.map((item, displayIndex) => {
+                      const CustomComponent = item.CustomComponent;
+                      if (item.hide) {
+                        return null;
+                      }
+
+                      if (CustomComponent) {
+                        return (
+                          <>
+                            <CustomComponent key={displayIndex} />
+                            {item.dividerBelow && <SidebarDivider />}
+                          </>
+                        );
+                      }
+
+                      return (
+                        <>
+                          <SidebarItem {...item} key={displayIndex} />{' '}
+                          {item.dividerBelow && <SidebarDivider />}
+                        </>
+                      );
+                    });
+                  })()}
                 </SidebarScrollWrapper>
               </SidebarGroup>
               <SidebarDivider />

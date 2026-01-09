@@ -14,16 +14,31 @@
  * limitations under the License.
  */
 
-import { IconComponent } from '@backstage/core-plugin-api';
-import { RouteRef } from '../routing';
+import { IconComponent, RouteRef } from '@backstage/frontend-plugin-api';
 import { createExtensionBlueprint, createExtensionDataRef } from '../wiring';
 
-// TODO(Rugvip): Should this be broken apart into separate refs? title/icon/routeRef
-const targetDataRef = createExtensionDataRef<{
-  title: string;
+/**
+ * Creates extensions that make up the items of the nav bar.
+ *
+ * @private
+ */
+export interface NavItem {
+  // Original props from nav items
   icon: IconComponent;
+  hide?: boolean;
+  // Custom component that can be rendered instead of the default sidebar item
+  CustomComponent?: () => JSX.Element | null;
+  // The position index of the item in the nav
+  position?: number;
+  dividerBelow?: boolean;
+  title: string;
   routeRef: RouteRef<undefined>;
-}>().with({ id: 'core.nav-item.target' });
+}
+
+// TODO(Rugvip): Should this be broken apart into separate refs? title/icon/routeRef
+const targetDataRef = createExtensionDataRef<NavItem>().with({
+  id: 'core.nav-item.target',
+});
 
 /**
  * Creates extensions that make up the items of the nav bar.
@@ -40,18 +55,22 @@ export const NavItemBlueprint = createExtensionBlueprint({
   factory: (
     {
       icon,
+      hide,
+      CustomComponent,
+      position,
+      dividerBelow,
       routeRef,
       title,
-    }: {
-      title: string;
-      icon: IconComponent;
-      routeRef: RouteRef<undefined>;
-    },
+    }: NavItem,
     { config },
   ) => [
     targetDataRef({
       title: config.title ?? title,
       icon,
+      hide,
+      CustomComponent,
+      position,
+      dividerBelow,
       routeRef,
     }),
   ],

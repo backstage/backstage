@@ -14,8 +14,18 @@
  * limitations under the License.
  */
 
-import { IconComponent, RouteRef } from '@backstage/frontend-plugin-api';
 import { createExtensionBlueprint, createExtensionDataRef } from '../wiring';
+import { NavItem } from './NavItemBlueprint';
+
+/** Nav Content items
+ * *
+ * @public
+ */
+export interface NavContentItem extends NavItem {
+  // Additional props to simplify item rendering
+  to: string;
+  text: string;
+}
 
 /**
  * The props for the {@link NavContentComponent}.
@@ -23,24 +33,9 @@ import { createExtensionBlueprint, createExtensionDataRef } from '../wiring';
  * @public
  */
 export interface NavContentComponentProps {
-  /**
-   * The nav items available to the component. These are all the items created
-   * with the {@link NavItemBlueprint} in the app.
-   *
-   * In addition to the original properties from the nav items, these also
-   * include a resolved route path as `to`, and duplicated `title` as `text` to
-   * simplify rendering.
-   */
-  items: Array<{
-    // Original props from nav items
-    icon: IconComponent;
-    title: string;
-    routeRef: RouteRef<undefined>;
-
-    // Additional props to simplify item rendering
-    to: string;
-    text: string;
-  }>;
+  Logo?: () => JSX.Element | null;
+  Search?: () => JSX.Element | null;
+  items: Array<NavContentItem>;
 }
 
 /**
