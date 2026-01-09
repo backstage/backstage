@@ -2,4 +2,4 @@
 '@backstage/ui': minor
 ---
 
-feat: Introduce new `ToggleButton` & `ToggleButtonGroup` components
+Introduce new `ToggleButton` & `ToggleButtonGroup` components in Backstage UI
