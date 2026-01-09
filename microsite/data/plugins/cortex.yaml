@@ -7,8 +7,4 @@ description: Grade the quality of your Backstage services using Scorecards. Auto
 documentation: https://github.com/cortexapps/backstage-plugin
 iconUrl: /img/cortex.png
 npmPackageName: '@cortexapps/backstage-plugin'
-tags:
-  - web
-  - monitoring
-  - sre
 addedDate: '2021-06-03'

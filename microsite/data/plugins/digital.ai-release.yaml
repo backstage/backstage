@@ -7,12 +7,4 @@ description: The plugin offers integration with Digital.ai Release and backstage
 documentation: https://docs.digital.ai/release/docs/concept/release-backstage-overview
 iconUrl: /img/digital.ai-release.svg
 npmPackageName: '@digital-ai/plugin-dai-release'
-tags:
-  - ci
-  - cd
-  - release
-  - orchestration
-  - devops
-  - pipeline
-  - automation
 addedDate: '2024-05-28'

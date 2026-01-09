@@ -7,6 +7,4 @@ description: Visualize, understand and optimize your team's cloud costs.
 documentation: https://github.com/backstage/community-plugins/tree/main/workspaces/cost-insights/plugins/cost-insights
 iconUrl: /img/cost-insights.png
 npmPackageName: '@backstage-community/plugin-cost-insights'
-tags:
-  - web
 addedDate: '2021-04-28'
