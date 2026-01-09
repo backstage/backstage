@@ -24,6 +24,8 @@ import { Observable } from '@backstage/types';
 import { AppLanguageSelector } from '../AppLanguageApi';
 import { I18nextTranslationApi } from './I18nextTranslationApi';
 import { render } from '@testing-library/react';
+import { mockApis } from '@backstage/test-utils';
+import { MockErrorApi } from '@backstage/test-utils';
 
 const plainRef = createTranslationRef({
   id: 'plain',
@@ -81,7 +83,11 @@ describe('I18nextTranslationApi', () => {
 
   it('should get a translation snapshot', () => {
     const translationApi = I18nextTranslationApi.create({
-      languageApi: AppLanguageSelector.create(),
+      languageApi: AppLanguageSelector.createWithStorage({
+        availableLanguages: ['en'],
+        storageApi: mockApis.storage(),
+        errorApi: new MockErrorApi(),
+      }),
     });
 
     const snapshot = assertReady(translationApi.getTranslation(plainRef));
@@ -91,6 +97,7 @@ describe('I18nextTranslationApi', () => {
   it('should get a translation snapshot for ref with translations', async () => {
     const languageApi = AppLanguageSelector.create({
       availableLanguages: ['en', 'sv'],
+      storageApi: mockApis.storage(),
     });
     const translationApi = I18nextTranslationApi.create({ languageApi });
 
@@ -103,6 +110,7 @@ describe('I18nextTranslationApi', () => {
   it('should wait for translations to be loaded', async () => {
     const languageApi = AppLanguageSelector.create({
       availableLanguages: ['en', 'sv'],
+      storageApi: mockApis.storage(),
     });
     const translationApi = I18nextTranslationApi.create({ languageApi });
     expect(translationApi.getTranslation(resourceRef).ready).toBe(true);
@@ -117,7 +125,9 @@ describe('I18nextTranslationApi', () => {
   });
 
   it('should create an instance with message overrides', () => {
-    const languageApi = AppLanguageSelector.create();
+    const languageApi = AppLanguageSelector.create({
+      storageApi: mockApis.storage(),
+    });
     const translationApi = I18nextTranslationApi.create({
       languageApi,
       resources: [
@@ -133,7 +143,9 @@ describe('I18nextTranslationApi', () => {
   });
 
   it('should create an instance and ignore null overrides', () => {
-    const languageApi = AppLanguageSelector.create();
+    const languageApi = AppLanguageSelector.create({
+      storageApi: mockApis.storage(),
+    });
     const translationApi = I18nextTranslationApi.create({
       languageApi,
       resources: [
@@ -151,6 +163,7 @@ describe('I18nextTranslationApi', () => {
   it('should create an instance with translation resources', async () => {
     const languageApi = AppLanguageSelector.create({
       availableLanguages: ['en', 'sv'],
+      storageApi: mockApis.storage(),
     });
     const translationApi = I18nextTranslationApi.create({
       languageApi,
@@ -176,7 +189,9 @@ describe('I18nextTranslationApi', () => {
   });
 
   it('should wait for default language translations to be loaded', async () => {
-    const languageApi = AppLanguageSelector.create();
+    const languageApi = AppLanguageSelector.create({
+      storageApi: mockApis.storage(),
+    });
     const translationApi = I18nextTranslationApi.create({
       languageApi,
       resources: [
@@ -199,6 +214,7 @@ describe('I18nextTranslationApi', () => {
     const languageApi = AppLanguageSelector.create({
       defaultLanguage: 'sv',
       availableLanguages: ['en', 'sv'],
+      storageApi: mockApis.storage(),
     });
     const translationApi = I18nextTranslationApi.create({
       languageApi,
@@ -221,6 +237,7 @@ describe('I18nextTranslationApi', () => {
   it('should prefer the last loaded resource', async () => {
     const languageApi = AppLanguageSelector.create({
       availableLanguages: ['en', 'sv'],
+      storageApi: mockApis.storage(),
     });
     const translationApi = I18nextTranslationApi.create({
       languageApi,
@@ -257,7 +274,9 @@ describe('I18nextTranslationApi', () => {
   });
 
   it('should forward loading errors and then ignore them', async () => {
-    const languageApi = AppLanguageSelector.create();
+    const languageApi = AppLanguageSelector.create({
+      storageApi: mockApis.storage(),
+    });
     const translationApi = I18nextTranslationApi.create({
       languageApi,
       resources: [
@@ -277,7 +296,9 @@ describe('I18nextTranslationApi', () => {
   });
 
   it('should only call the loader once', async () => {
-    const languageApi = AppLanguageSelector.create();
+    const languageApi = AppLanguageSelector.create({
+      storageApi: mockApis.storage(),
+    });
     const loader = jest
       .fn()
       .mockResolvedValue({ default: { foo: 'OtherFoo' } });
@@ -309,6 +330,7 @@ describe('I18nextTranslationApi', () => {
   it('should handle interrupted loads gracefully', async () => {
     const languageApi = AppLanguageSelector.create({
       availableLanguages: ['en', 'sv', 'no'],
+      storageApi: mockApis.storage(),
     });
     const translationApi = I18nextTranslationApi.create({
       languageApi,
@@ -341,6 +363,7 @@ describe('I18nextTranslationApi', () => {
   it('should only emit changes', async () => {
     const languageApi = AppLanguageSelector.create({
       availableLanguages: ['en', 'dk', 'sv', 'no'],
+      storageApi: mockApis.storage(),
     });
     const translationApi = I18nextTranslationApi.create({
       languageApi,
@@ -386,7 +409,9 @@ describe('I18nextTranslationApi', () => {
       const TMessages extends { [key in string]: string },
     >(messages: TMessages) {
       const translationApi = I18nextTranslationApi.create({
-        languageApi: AppLanguageSelector.create(),
+        languageApi: AppLanguageSelector.create({
+          storageApi: mockApis.storage(),
+        }),
       });
       const ref = createTranslationRef({
         id: 'test',

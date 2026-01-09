@@ -55,6 +55,8 @@
     "@backstage/frontend-plugin-api": "workspace:^",
     "@backstage/integration-react": "workspace:^",
     "@backstage/plugin-permission-react": "workspace:^",
+    "@backstage/plugin-signals-react": "workspace:^",
+    "@backstage/plugin-user-settings-common": "workspace:^",
     "@backstage/theme": "workspace:^",
     "@backstage/types": "workspace:^",
     "@backstage/version-bridge": "workspace:^",
