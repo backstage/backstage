@@ -141,14 +141,12 @@ export function auditorMiddlewareFactory(dependencies: {
 
     // Capture metadata from request
     const captureRequestMetadata = (): JsonObject => {
+      const variant = VARIANT_LOOKUP[req.method];
       const meta: JsonObject = {
         route: req.openapi?.expressRoute,
+        ...(variant ? { variant } : {}),
         ...staticMeta,
       };
-      const variant = VARIANT_LOOKUP[req.method];
-      if (variant) {
-        meta.variant = variant;
-      }
 
       if (captureMetaFromRequest) {
         const { body, params, query } = captureMetaFromRequest;
