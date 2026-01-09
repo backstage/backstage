@@ -347,7 +347,9 @@ export function createSpecializedApp(options?: CreateSpecializedAppOptions): {
         OpaqueFrontendPlugin.toInternal(feature).featureFlags.forEach(flag =>
           featureFlagApi.registerFlag({
             name: flag.name,
+            description: flag.description,
             pluginId: feature.id,
+            persisted: flag.persisted ?? false,
           }),
         );
       }
@@ -355,11 +357,14 @@ export function createSpecializedApp(options?: CreateSpecializedAppOptions): {
         toInternalFrontendModule(feature).featureFlags.forEach(flag =>
           featureFlagApi.registerFlag({
             name: flag.name,
+            description: flag.description,
             pluginId: feature.pluginId,
+            persisted: flag.persisted ?? false,
           }),
         );
       }
     }
+    featureFlagApi.initialize?.();
   }
 
   // Now instantiate the entire tree, which will skip anything that's already been instantiated

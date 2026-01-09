@@ -15,3 +15,4 @@
  */
 
 export { LocalStorageFeatureFlags } from './LocalStorageFeatureFlags';
+export { MultiStorageFeatureFlags } from './MultiStorageFeatureFlags';

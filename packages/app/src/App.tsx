@@ -85,7 +85,6 @@ const app = createApp({
     {
       name: 'scaffolder-next-preview',
       description: 'Preview the new Scaffolder Next',
-      pluginId: '',
     },
   ],
   components: {
