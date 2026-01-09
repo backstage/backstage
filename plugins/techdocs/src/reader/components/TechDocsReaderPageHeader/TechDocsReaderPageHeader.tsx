@@ -39,8 +39,8 @@ import {
   CompoundEntityRef,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
-import { Header, HeaderLabel } from '@backstage/core-components';
-import { useRouteRef, configApiRef, useApi } from '@backstage/core-plugin-api';
+import { Header, HeaderLabel, useAppTitle } from '@backstage/core-components';
+import { useRouteRef, useApi } from '@backstage/core-plugin-api';
 
 import capitalize from 'lodash/capitalize';
 
@@ -72,7 +72,7 @@ export const TechDocsReaderPageHeader = (
 ) => {
   const { children } = props;
   const addons = useTechDocsAddons();
-  const configApi = useApi(configApiRef);
+  const appTitle = useAppTitle();
 
   const entityPresentationApi = useApi(entityPresentationApiRef);
   const { '*': path = '' } = useParams();
@@ -98,8 +98,6 @@ export const TechDocsReaderPageHeader = (
       return site_description;
     });
   }, [metadata, setTitle, setSubtitle]);
-
-  const appTitle = configApi.getOptional('app.title') || 'Backstage';
 
   const { locationMetadata, spec } = entityMetadata || {};
   const lifecycle = spec?.lifecycle;

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { configApiRef, useApi } from '@backstage/core-plugin-api';
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
@@ -25,6 +24,7 @@ import { Helmet } from 'react-helmet';
 import { Link } from '../../components/Link';
 import { Breadcrumbs } from '../Breadcrumbs';
 import { useContent } from '../Sidebar';
+import { useAppTitle } from '../../hooks';
 
 /** @public */
 export type HeaderClassKey =
@@ -218,8 +218,7 @@ export function Header(props: PropsWithChildren<Props>) {
     typeLink,
   } = props;
   const classes = useStyles();
-  const configApi = useApi(configApiRef);
-  const appTitle = configApi.getOptionalString('app.title') || 'Backstage';
+  const appTitle = useAppTitle();
   const documentTitle = pageTitleOverride || title;
   const pageTitle = title || pageTitleOverride;
   const titleTemplate = `${documentTitle} | %s | ${appTitle}`;

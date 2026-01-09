@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+export { useAppTitle } from './useAppTitle';
 export { useQueryParamState } from './useQueryParamState';
 export { useSupportConfig } from './useSupportConfig';
 export type {
