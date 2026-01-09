@@ -148,7 +148,7 @@ We've now split the backend into two separate deployments, but we still need to 
 
 Below is an example of a more elaborate setup where we have three different backend deployments, each with their own set of plugins and modules. Between our frontend app and the backend instances we have a reverse proxy that routes the traffic to the appropriate instance. As an option for securing the Backstage deployment the proxy can be set up as an authenticating reverse proxy as well, denying unauthenticated users access to the backend instances.
 
-![diagram of a backstage deployment with three separate horizontally scaled backend systems](../../assets/backend-system/scaled-deployments.drawio.svg)
+![diagram of a backstage deployment with three separate horizontally scaled backend systems](../../assets/backend-system/scaled-deployments.drawio.png)
 
 In this example we have split out the Catalog and Search plugins into one backend deployment. The proxy routes all traffic for `/api/catalog/` and `/api/search/` to this instance. With this separation we're able to scale and deploy these two plugins independently, and they are also isolated from both a performance and security perspective. Likewise the TechDocs and Scaffolder plugins are split out as well, and then we route the rest of the traffic to our instance that contains the App, Auth, and Proxy plugins.
 

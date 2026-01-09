@@ -16,7 +16,7 @@ important to understand these concepts.
 
 The diagram below provides an overview of the different building blocks, and the other blocks that each of them interact with.
 
-![backend system building blocks diagram](../../assets/backend-system/architecture-building-blocks.drawio.svg)
+![backend system building blocks diagram](../../assets/backend-system/architecture-building-blocks.drawio.png)
 
 :::note Note
 
