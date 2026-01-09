@@ -1367,11 +1367,9 @@ export const SkeletonDefinition: {
 
 // @public (undocumented)
 export interface SkeletonProps extends ComponentProps<'div'> {
-  // (undocumented)
+  children?: ReactNode;
   height?: number | string;
-  // (undocumented)
   rounded?: boolean;
-  // (undocumented)
   width?: number | string;
 }
 
