@@ -36,12 +36,14 @@ import {
   AuthResolverContext,
   ClientAuthResponse,
   CookieConfigurer,
+  ProfileInfo,
   ProfileTransform,
   SignInResolver,
 } from '../types';
 import { OAuthAuthenticator, OAuthAuthenticatorResult } from './types';
 import { Config, readDurationFromConfig } from '@backstage/config';
 import { CookieScopeManager } from './CookieScopeManager';
+import { AuditorService } from '@backstage/backend-plugin-api';
 
 /** @public */
 export interface OAuthRouteHandlersOptions<TProfile> {
@@ -57,6 +59,7 @@ export interface OAuthRouteHandlersOptions<TProfile> {
   profileTransform?: ProfileTransform<OAuthAuthenticatorResult<TProfile>>;
   cookieConfigurer?: CookieConfigurer;
   signInResolver?: SignInResolver<OAuthAuthenticatorResult<TProfile>>;
+  auditor?: AuditorService;
 }
 
 /** @internal */
@@ -93,6 +96,7 @@ export function createOAuthRouteHandlers<TProfile>(
     cookieConfigurer,
     resolverContext,
     signInResolver,
+    auditor,
   } = options;
 
   const defaultAppOrigin = new URL(appUrl).origin;
@@ -169,6 +173,7 @@ export function createOAuthRouteHandlers<TProfile>(
     ): Promise<void> {
       let origin = defaultAppOrigin;
       let state;
+      let profile: ProfileInfo | undefined;
 
       try {
         state = decodeOAuthState(req.query.state?.toString() ?? '');
@@ -198,7 +203,18 @@ export function createOAuthRouteHandlers<TProfile>(
           { req },
           authenticatorCtx,
         );
-        const { profile } = await profileTransform(result, resolverContext);
+        const { profile: resolvedProfile } = await profileTransform(
+          result,
+          resolverContext,
+        );
+        profile = resolvedProfile;
+
+        const auditEvent = await auditor?.createEvent({
+          eventId: 'auth-login',
+          request: req,
+          severityLevel: 'low',
+          meta: { providerId, email: profile?.email },
+        });
 
         const signInResult =
           signInResolver &&
@@ -240,19 +256,31 @@ export function createOAuthRouteHandlers<TProfile>(
               'No redirectUrl provided in request query parameters',
             );
           }
+          auditEvent?.success().catch(() => {});
           res.redirect(state.redirectUrl);
           return;
         }
 
         // post message back to popup if successful
+        auditEvent?.success().catch(() => {});
         sendWebMessageResponse(res, origin, {
           type: 'authorization_response',
           response,
         });
       } catch (error) {
-        const { name, message } = isError(error)
+        const auditEvent = await auditor?.createEvent({
+          eventId: 'auth-login',
+          request: req,
+          severityLevel: 'low',
+          meta: { providerId, email: profile?.email },
+        });
+
+        const authError = isError(error)
           ? error
           : new Error('Encountered invalid error'); // Being a bit safe and not forwarding the bad value
+        const { name, message } = authError;
+
+        auditEvent?.fail({ error: authError }).catch(() => {});
 
         if (state?.flow === 'redirect' && state?.redirectUrl) {
           const redirectUrl = new URL(state.redirectUrl);
@@ -290,6 +318,14 @@ export function createOAuthRouteHandlers<TProfile>(
 
       // remove persisted scopes
       await scopeManager.clear(req);
+
+      const auditEvent = await auditor?.createEvent({
+        eventId: 'auth-logout',
+        request: req,
+        severityLevel: 'low',
+        meta: { providerId },
+      });
+      auditEvent?.success().catch(() => {});
 
       res.status(200).end();
     },

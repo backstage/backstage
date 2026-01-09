@@ -24,6 +24,7 @@ import {
   HttpAuthService,
   LoggerService,
   RootConfigService,
+  AuditorService,
 } from '@backstage/backend-plugin-api';
 import { AuthOwnershipResolver } from '@backstage/plugin-auth-node';
 import { CatalogService } from '@backstage/plugin-catalog-node';
@@ -56,6 +57,7 @@ interface RouterOptions {
   catalog: CatalogService;
   ownershipResolver?: AuthOwnershipResolver;
   httpAuth: HttpAuthService;
+  auditor: AuditorService;
 }
 
 export async function createRouter(
@@ -159,6 +161,7 @@ export async function createRouter(
     ...options,
     auth: options.auth,
     userInfo,
+    auditor: options.auditor,
   });
 
   const dcrTokenExpiration = readDcrTokenExpiration(config);
