@@ -11,8 +11,8 @@ Add prompts and resources support to the Actions Registry and MCP integration.
 **New Features:**
 
 - **ActionsRegistryService**: Added `registerPrompt()` and `registerResource()` methods allowing plugins to register prompts and resources alongside actions
-- **ActionsService**: Added `listPrompts()` and `listResources()` methods to discover prompts and resources from configured plugin sources
-- **MCP Actions Backend**: Updated to expose prompts and resources via the Model Context Protocol, enabling AI clients to receive contextual guidance and browse available data
+- **ActionsService**: Added `listPrompts()`, `listResources()`, and `readResource()` methods to discover and read prompts and resources from configured plugin sources
+- **MCP Actions Backend**: Updated to expose prompts and resources via the Model Context Protocol, enabling AI clients to receive contextual guidance and browse available data. Full support for reading resource contents is included.
 - **Catalog Backend**: Added example prompts ("explore-catalog", "catalog-metadata") and resources ("catalog://entities/{kind}", "catalog://summary") demonstrating the new capabilities
 
 **Why This Change:**
@@ -49,4 +49,12 @@ actionsRegistry.registerResource({
 });
 ```
 
-**Note:** Resource reading (ReadResourceRequestSchema) is not yet implemented in the MCP service and would require exposing resource handlers through the ActionsService in a future enhancement.
+**Resource Reading:**
+
+Resources can be both listed and read. When an MCP client requests a resource by URI (e.g., `catalog://entities/Component`), the MCP server:
+
+1. Calls `ActionsService.readResource()` with the URI
+2. The service tries each configured plugin source to find a matching resource handler
+3. URI parameters are extracted (e.g., `{kind}` → `Component`)
+4. The handler is invoked and returns the resource contents
+5. Contents are returned to the AI client for browsing

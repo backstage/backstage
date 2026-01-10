@@ -126,7 +126,7 @@ actionsRegistry.registerResource({
 });
 ```
 
-**Note:** Resource reading (accessing the actual data via the handler) is not yet exposed through the MCP server. Currently, resources are listed but cannot be read. This may be added in a future enhancement.
+MCP clients can both list available resources and read their contents. When a resource is requested by URI (e.g., `plugin://items/electronics`), the handler is invoked with the extracted parameters (`category: "electronics"`), and the resource data is returned to the AI client.
 
 ### Error Handling
 
