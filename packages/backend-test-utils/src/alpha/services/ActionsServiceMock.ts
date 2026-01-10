@@ -30,5 +30,7 @@ export namespace actionsServiceMock {
   export const mock = simpleMock<ActionsService>(actionsServiceRef, () => ({
     invoke: jest.fn(),
     list: jest.fn(),
+    listPrompts: jest.fn(),
+    listResources: jest.fn(),
   }));
 }
