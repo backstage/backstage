@@ -1829,7 +1829,6 @@ export const ToggleButtonDefinition: {
   };
   readonly dataAttributes: {
     readonly size: readonly ['small', 'medium'];
-    readonly variant: readonly ['primary', 'secondary'];
   };
 };
 
@@ -1852,9 +1851,7 @@ export const ToggleButtonGroupDefinition: {
 export interface ToggleButtonGroupProps
   extends Omit<ToggleButtonGroupProps_2, 'orientation'> {
   // (undocumented)
-  orientation?: Responsive<
-    NonNullable<ToggleButtonGroupProps_2['orientation']>
-  >;
+  orientation?: NonNullable<ToggleButtonGroupProps_2['orientation']>;
 }
 
 // @public
@@ -1868,11 +1865,6 @@ export interface ToggleButtonProps extends ToggleButtonProps_2 {
   onSurface?: Responsive<Surface>;
   // (undocumented)
   size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
-  // (undocumented)
-  variant?:
-    | 'primary'
-    | 'secondary'
-    | Partial<Record<Breakpoint, 'primary' | 'secondary'>>;
 }
 
 // @public (undocumented)

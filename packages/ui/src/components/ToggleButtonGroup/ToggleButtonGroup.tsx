@@ -21,7 +21,6 @@ import type { ToggleButtonGroupProps } from './types';
 import { useStyles } from '../../hooks/useStyles';
 import { ToggleButtonGroupDefinition } from './definition';
 import styles from './ToggleButtonGroup.module.css';
-import type { Breakpoint } from '../..';
 
 /** @internal */
 export interface ToggleButtonGroupContextValue {}
@@ -44,18 +43,11 @@ export const ToggleButtonGroup = forwardRef(
     const { classNames, dataAttributes, cleanedProps } = useStyles(
       ToggleButtonGroupDefinition,
       {
-        orientation: 'horizontal' as const,
         ...props,
       },
     );
 
-    const {
-      className,
-      children,
-      orientation: _orientation,
-      ...rest
-    } = cleanedProps;
-    const resolvedOrientation = dataAttributes['data-orientation'];
+    const { className, children, ...rest } = cleanedProps;
 
     const contextValue: ToggleButtonGroupContextValue = {};
 
@@ -64,7 +56,6 @@ export const ToggleButtonGroup = forwardRef(
         <AriaToggleButtonGroup
           className={clsx(classNames.root, styles[classNames.root], className)}
           ref={ref}
-          orientation={resolvedOrientation}
           {...dataAttributes}
           {...rest}
         >

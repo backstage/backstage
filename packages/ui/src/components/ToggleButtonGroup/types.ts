@@ -15,13 +15,9 @@
  */
 
 import type { ToggleButtonGroupProps as AriaToggleButtonGroupProps } from 'react-aria-components';
-import { Responsive } from '../../types';
-import type { Breakpoint } from '../..';
 
 /** @public */
 export interface ToggleButtonGroupProps
   extends Omit<AriaToggleButtonGroupProps, 'orientation'> {
-  orientation?: Responsive<
-    NonNullable<AriaToggleButtonGroupProps['orientation']>
-  >;
+  orientation?: NonNullable<AriaToggleButtonGroupProps['orientation']>;
 }
