@@ -609,6 +609,19 @@ export interface Config {
                    */
                   retries?: number;
                 };
+                /**
+                 * (Optional) Forward Backstage event metadata as Kafka headers.
+                 * Defaults to not forwarding unless enabled. When forwarding is enabled,
+                 * the Authorization header is excluded by default unless a whitelist is provided.
+                 */
+                headers?: {
+                  /** Enable forwarding metadata as headers */
+                  forward?: boolean;
+                  /** Only include these header keys (case-insensitive). If set, blacklist is ignored. */
+                  whitelist?: string[];
+                  /** Exclude these header keys (case-insensitive). Default: ['authorization'] */
+                  blacklist?: string[];
+                };
               };
             }>;
           };
