@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 import { metricsServiceRef } from '@backstage/backend-plugin-api/alpha';
-import {
-  coreServices,
-  createServiceFactory,
-} from '@backstage/backend-plugin-api';
+import { createServiceFactory } from '@backstage/backend-plugin-api';
 import { DefaultMetricsService } from './DefaultMetricsService';
 
 /**
@@ -27,9 +24,7 @@ import { DefaultMetricsService } from './DefaultMetricsService';
  */
 export const metricsServiceFactory = createServiceFactory({
   service: metricsServiceRef,
-  deps: {
-    pluginMetadata: coreServices.pluginMetadata,
-  },
+  deps: {},
   factory: () => {
     return DefaultMetricsService.create();
   },
