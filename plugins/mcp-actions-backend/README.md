@@ -1,6 +1,12 @@
 # MCP Actions Backend
 
-This plugin exposes Backstage actions as MCP (Model Context Protocol) tools, allowing AI clients to discover and invoke registered actions in your Backstage backend.
+This plugin exposes Backstage actions as MCP (Model Context Protocol) tools, prompts, and resources. It allows AI clients to:
+
+- Discover and invoke registered actions (**tools** in MCP terminology)
+- Access contextual prompts that guide how to use actions effectively
+- Browse available resources for additional context
+
+This enables rich AI integration with your Backstage backend.
 
 ## Installation
 
@@ -70,6 +76,57 @@ export const myPlugin = createBackendPlugin({
   },
 });
 ```
+
+### Registering Prompts and Resources
+
+In addition to actions (tools), plugins can register **prompts** and **resources** to provide context and browsable data to AI clients:
+
+#### Prompts
+
+Prompts provide contextual guidance that helps AI clients understand how to use your plugin's actions effectively:
+
+```ts
+actionsRegistry.registerPrompt({
+  name: 'explore-features',
+  title: 'Explore Plugin Features',
+  description: 'Learn about available features and how to use them',
+  template: `
+This plugin provides the following capabilities:
+- Feature A: Does X
+- Feature B: Does Y
+
+Use the actions to perform these operations...
+  `,
+});
+```
+
+#### Resources
+
+Resources expose browsable, read-only data that AI clients can access for context:
+
+```ts
+actionsRegistry.registerResource({
+  name: 'list-items',
+  uri: 'plugin://items/{category}',
+  title: 'Browse Items by Category',
+  description: 'List all items in a specific category',
+  mimeType: 'application/json',
+  handler: async (uri, params, { credentials }) => {
+    const items = await fetchItems(params.category, credentials);
+    return {
+      contents: [
+        {
+          uri: uri.href,
+          text: JSON.stringify(items, null, 2),
+          mimeType: 'application/json',
+        },
+      ],
+    };
+  },
+});
+```
+
+**Note:** Resource reading (accessing the actual data via the handler) is not yet exposed through the MCP server. Currently, resources are listed but cannot be read. This may be added in a future enhancement.
 
 ### Error Handling
 
