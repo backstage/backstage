@@ -85,5 +85,5 @@ export const convertMetadataToHeaders = (
     }
   }
 
-  return result;
+  return Object.keys(result).length > 0 ? result : undefined;
 };
