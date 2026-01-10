@@ -207,7 +207,9 @@ export class MockActionsRegistry
         description: prompt.description,
         template: prompt.template,
         argsSchema: prompt.argsSchema
-          ? zodToJsonSchema(prompt.argsSchema(z))
+          ? (zodToJsonSchema(
+              prompt.argsSchema(z),
+            ) as ActionsServicePrompt['argsSchema'])
           : undefined,
       })),
     };
