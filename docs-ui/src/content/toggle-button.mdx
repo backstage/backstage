@@ -10,6 +10,7 @@ import {
   toggleButtonIconsSnippet,
   toggleButtonDisabledSnippet,
   toggleButtonControlledSnippet,
+  toggleButtonFunctionChildrenSnippet,
 } from './toggle-button.props';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
@@ -86,6 +87,18 @@ import { ToggleButtonDefinition } from '../utils/definitions';
   open
   preview={<ToggleButtonSnippet story="Controlled" />}
   code={toggleButtonControlledSnippet}
+/>
+
+### Dynamic Content with Function Children
+
+The `children` prop can be a function that receives render props, allowing you to dynamically customize the button content based on component state (such as `isSelected`, `isDisabled`, `isHovered`, etc.).
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<ToggleButtonSnippet story="DynamicContent" />}
+  code={toggleButtonFunctionChildrenSnippet}
 />
 
 <Theming definition={ToggleButtonDefinition} />

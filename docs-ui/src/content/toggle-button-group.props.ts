@@ -30,6 +30,7 @@ export const toggleButtonGroupUsageSnippet = `import { ToggleButtonGroup, Toggle
 <ToggleButtonGroup selectionMode="single">
   <ToggleButton id="dogs">Dogs</ToggleButton>
   <ToggleButton id="cats">Cats</ToggleButton>
+  <ToggleButton id="birds">Birds</ToggleButton>
 </ToggleButtonGroup>`;
 
 export const toggleButtonGroupSingleSnippet = `<ToggleButtonGroup selectionMode="single" defaultSelectedKeys={['dogs']}>
@@ -45,9 +46,9 @@ export const toggleButtonGroupMultipleSnippet = `<ToggleButtonGroup selectionMod
 </ToggleButtonGroup>`;
 
 export const toggleButtonGroupVerticalSnippet = `<ToggleButtonGroup selectionMode="single" orientation="vertical">
-  <ToggleButton id="low">Low</ToggleButton>
-  <ToggleButton id="medium">Medium</ToggleButton>
-  <ToggleButton id="high">High</ToggleButton>
+  <ToggleButton id="morning">Morning</ToggleButton>
+  <ToggleButton id="afternoon">Afternoon</ToggleButton>
+  <ToggleButton id="evening">Evening</ToggleButton>
 </ToggleButtonGroup>`;
 
 export const toggleButtonGroupDisabledSnippet = `<ToggleButtonGroup selectionMode="single" isDisabled>
@@ -62,16 +63,29 @@ export const toggleButtonGroupDisallowEmptySnippet = `<ToggleButtonGroup selecti
   <ToggleButton id="three">Three</ToggleButton>
 </ToggleButtonGroup>`;
 
-export const toggleButtonGroupIconsSnippet = `<ToggleButtonGroup selectionMode="single" defaultSelectedKeys={['cloud']}>
-  <ToggleButton id="cloud" iconStart="cloud">Cloud</ToggleButton>
-  <ToggleButton id="starred" iconStart="starFill">Starred</ToggleButton>
-  <ToggleButton id="next" iconEnd="arrowRight">Next</ToggleButton>
+export const toggleButtonGroupIconsSnippet = `import { RiCloudLine, RiStarFill, RiStarLine, RiArrowRightSLine } from '@remixicon/react';
+
+<ToggleButtonGroup selectionMode="multiple" defaultSelectedKeys={['cloud']}>
+  <ToggleButton id="cloud" aria-label="Cloud" iconStart={<RiCloudLine />} />
+  <ToggleButton
+    id="starred"
+    aria-label="Starred"
+    iconStart={<RiStarFill />}
+  />
+  <ToggleButton id="star" iconStart={<RiStarLine />}>
+    Star
+  </ToggleButton>
+  <ToggleButton id="next" iconEnd={<RiArrowRightSLine />}>
+    Next
+  </ToggleButton>
 </ToggleButtonGroup>`;
 
-export const toggleButtonGroupIconsOnlySnippet = `<ToggleButtonGroup selectionMode="multiple" defaultSelectedKeys={['cloud']}>
-  <ToggleButton id="cloud" aria-label="Cloud" iconStart="cloud" />
-  <ToggleButton id="star" aria-label="Star" iconStart="starLine" />
-  <ToggleButton id="next" aria-label="Next" iconEnd="arrowRight" />
+export const toggleButtonGroupIconsOnlySnippet = `import { RiCloudLine, RiStarLine, RiArrowRightSLine } from '@remixicon/react';
+
+<ToggleButtonGroup selectionMode="multiple" defaultSelectedKeys={['cloud']}>
+  <ToggleButton id="cloud" iconStart={<RiCloudLine />} />
+  <ToggleButton id="star" iconStart={<RiStarLine />} />
+  <ToggleButton id="next" iconEnd={<RiArrowRightSLine />} />
 </ToggleButtonGroup>`;
 
 export const toggleButtonGroupSurfacesSnippet = `<Flex direction="column" gap="4">

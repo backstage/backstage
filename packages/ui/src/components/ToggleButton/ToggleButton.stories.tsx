@@ -16,13 +16,11 @@
 
 import preview from '../../../../../.storybook/preview';
 import { ToggleButton } from './ToggleButton';
-import { ToggleButtonGroup } from '../ToggleButtonGroup/ToggleButtonGroup';
 import { Flex } from '../Flex';
 import { Text } from '../Text';
 import { useState } from 'react';
 import {
   RiCheckLine,
-  RiHeartLine,
   RiStarFill,
   RiStarLine,
   RiCloudLine,
@@ -150,20 +148,6 @@ export const IconsAndText = meta.story({
   ),
 });
 
-export const MixedIcons = meta.story({
-  render: () => (
-    <ToggleButtonGroup selectionMode="multiple" defaultSelectedKeys={['cloud']}>
-      <ToggleButton id="cloud" iconStart={<RiCloudLine />}>
-        Cloud
-      </ToggleButton>
-      <ToggleButton id="star" iconStart={<RiStarLine />} />
-      <ToggleButton id="arrow" iconEnd={<RiArrowRightSLine />}>
-        Next
-      </ToggleButton>
-    </ToggleButtonGroup>
-  ),
-});
-
 export const Disabled = meta.story({
   render: () => (
     <Flex align="center">
@@ -194,52 +178,128 @@ export const Controlled = meta.story({
   },
 });
 
-export const GroupSingle = meta.story({
-  render: () => (
-    <ToggleButtonGroup selectionMode="single" defaultSelectedKeys={['apples']}>
-      <ToggleButton id="apples">Apples</ToggleButton>
-      <ToggleButton id="oranges">Oranges</ToggleButton>
-      <ToggleButton id="bananas">Bananas</ToggleButton>
-    </ToggleButtonGroup>
-  ),
+export const FunctionChildren = meta.story({
+  render: () => {
+    const [disabled, setDisabled] = useState(false);
+    return (
+      <Flex direction="column" gap="3">
+        <Flex align="center" gap="2">
+          <ToggleButton isDisabled={disabled}>
+            {({ isDisabled, isSelected }) =>
+              isDisabled
+                ? `Disabled ${isSelected ? '(Selected)' : '(Unselected)'}`
+                : `Enabled ${isSelected ? '(Selected)' : '(Unselected)'}`
+            }
+          </ToggleButton>
+          <ToggleButton
+            aria-label="Toggle disabled state"
+            onChange={() => setDisabled(!disabled)}
+          >
+            {disabled ? 'Enable' : 'Disable'}
+          </ToggleButton>
+        </Flex>
+        <Text>
+          Toggle the button to change the disabled state and see text update
+        </Text>
+      </Flex>
+    );
+  },
 });
 
-export const GroupMultiple = meta.story({
-  render: () => (
-    <ToggleButtonGroup selectionMode="multiple" defaultSelectedKeys={['dogs']}>
-      <ToggleButton id="dogs">Dogs</ToggleButton>
-      <ToggleButton id="cats">Cats</ToggleButton>
-      <ToggleButton id="rabbits">Rabbits</ToggleButton>
-    </ToggleButtonGroup>
-  ),
-});
+export const DynamicContent = meta.story({
+  render: () => {
+    return (
+      <Flex direction="column" gap="4">
+        <Flex direction="column" gap="2">
+          <Text weight="bold">Example 1: Selection State</Text>
+          <Flex align="center" gap="2">
+            <ToggleButton defaultSelected>
+              {({ isSelected }) => (isSelected ? '✓ Selected' : 'Not Selected')}
+            </ToggleButton>
+            <ToggleButton>
+              {({ isSelected }) => (isSelected ? '✓ Selected' : 'Not Selected')}
+            </ToggleButton>
+          </Flex>
+        </Flex>
 
-export const GroupWithIcons = meta.story({
-  render: () => (
-    <ToggleButtonGroup
-      selectionMode="multiple"
-      defaultSelectedKeys={['chill']}
-      orientation="horizontal"
-    >
-      <ToggleButton id="chill" iconStart={<RiHeartLine />}>
-        Chill
-      </ToggleButton>
-      <ToggleButton id="focus" iconStart={<RiCheckLine />}>
-        Focus
-      </ToggleButton>
-      <ToggleButton id="party" iconStart={<RiStarLine />}>
-        Party
-      </ToggleButton>
-    </ToggleButtonGroup>
-  ),
-});
+        <Flex direction="column" gap="2">
+          <Text weight="bold">Example 2: Multiple States</Text>
+          <Flex align="center" gap="2">
+            <ToggleButton defaultSelected>
+              {({ isSelected, isHovered }) => {
+                const states = [];
+                if (isSelected) states.push('on');
+                else states.push('off');
+                if (isHovered) states.push('hovered');
+                return `Email (${states.join(', ')})`;
+              }}
+            </ToggleButton>
+            <ToggleButton>
+              {({ isSelected, isHovered }) => {
+                const states = [];
+                if (isSelected) states.push('on');
+                else states.push('off');
+                if (isHovered) states.push('hovered');
+                return `Push (${states.join(', ')})`;
+              }}
+            </ToggleButton>
+          </Flex>
+        </Flex>
 
-export const VerticalGroup = meta.story({
-  render: () => (
-    <ToggleButtonGroup selectionMode="single" orientation="vertical">
-      <ToggleButton id="low">Low</ToggleButton>
-      <ToggleButton id="medium">Medium</ToggleButton>
-      <ToggleButton id="high">High</ToggleButton>
-    </ToggleButtonGroup>
-  ),
+        <Flex direction="column" gap="2">
+          <Text weight="bold">Example 3: Conditional Icons</Text>
+          <Flex align="center" gap="2">
+            <ToggleButton>
+              {({ isSelected }) => (
+                <>
+                  {isSelected ? <RiStarFill /> : <RiStarLine />}
+                  <span>{isSelected ? 'Starred' : 'Star'}</span>
+                </>
+              )}
+            </ToggleButton>
+          </Flex>
+        </Flex>
+
+        <Flex direction="column" gap="2">
+          <Text weight="bold">Example 4: Status Indicators</Text>
+          <Flex align="center" gap="2">
+            <ToggleButton defaultSelected>
+              {({ isSelected }) => (
+                <Flex align="center" gap="2">
+                  <span
+                    style={{
+                      width: 8,
+                      height: 8,
+                      borderRadius: '50%',
+                      backgroundColor: isSelected
+                        ? 'var(--bui-fg-success)'
+                        : 'var(--bui-fg-secondary)',
+                    }}
+                  />
+                  <span>Active</span>
+                </Flex>
+              )}
+            </ToggleButton>
+            <ToggleButton>
+              {({ isSelected }) => (
+                <Flex align="center" gap="2">
+                  <span
+                    style={{
+                      width: 8,
+                      height: 8,
+                      borderRadius: '50%',
+                      backgroundColor: isSelected
+                        ? 'var(--bui-fg-danger)'
+                        : 'var(--bui-fg-secondary)',
+                    }}
+                  />
+                  <span>Inactive</span>
+                </Flex>
+              )}
+            </ToggleButton>
+          </Flex>
+        </Flex>
+      </Flex>
+    );
+  },
 });

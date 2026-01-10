@@ -47,14 +47,22 @@ export const ToggleButton = forwardRef(
         {...(typeof surface === 'string' ? { 'data-on-surface': surface } : {})}
         {...rest}
       >
-        <span
-          className={clsx(classNames.content, styles[classNames.content])}
-          data-slot="content"
-        >
-          {iconStart}
-          {children}
-          {iconEnd}
-        </span>
+        {renderProps => {
+          // If children is a function, call it with render props; otherwise use children as-is
+          const renderedChildren =
+            typeof children === 'function' ? children(renderProps) : children;
+
+          return (
+            <span
+              className={clsx(classNames.content, styles[classNames.content])}
+              data-slot="content"
+            >
+              {iconStart}
+              {renderedChildren}
+              {iconEnd}
+            </span>
+          );
+        }}
       </AriaToggleButton>
     );
   },

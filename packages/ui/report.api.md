@@ -1857,8 +1857,6 @@ export interface ToggleButtonGroupProps
 // @public
 export interface ToggleButtonProps extends ToggleButtonProps_2 {
   // (undocumented)
-  children?: ReactNode;
-  // (undocumented)
   iconEnd?: ReactElement;
   // (undocumented)
   iconStart?: ReactElement;

@@ -23,7 +23,12 @@ export const toggleButtonPropDefs: Record<string, PropDef> = {
   defaultSelected: { type: 'boolean' },
   onChange: { type: 'enum', values: ['(isSelected: boolean) => void'] },
   isDisabled: { type: 'boolean', default: 'false' },
-  children: { type: 'enum', values: ['ReactNode'] },
+  children: {
+    type: 'enum',
+    values: ['ReactNode', '(values: ToggleButtonRenderProps) => ReactNode'],
+    description:
+      'The children of the component. A function may be provided to alter the children based on component state (such as `isSelected`, `isDisabled`, `isHovered`, etc.).',
+  },
   ...classNamePropDefs,
   ...stylePropDefs,
 };
@@ -70,9 +75,12 @@ export const toggleButtonSizesSnippet = `<Flex align="center">
   <ToggleButton size="medium">Medium</ToggleButton>
 </Flex>`;
 
-export const toggleButtonIconsSnippet = `<Flex align="center">
-  <ToggleButton iconStart="star">Favorite</ToggleButton>
-  <ToggleButton iconEnd="check">Confirm</ToggleButton>
+export const toggleButtonIconsSnippet = `import { RiStarLine, RiStarFill, RiCheckLine } from '@remixicon/react';
+
+<Flex align="center">
+  <ToggleButton iconStart={<RiStarLine />}>Favorite</ToggleButton>
+  <ToggleButton iconStart={<RiStarFill />} defaultSelected>Starred</ToggleButton>
+  <ToggleButton iconEnd={<RiCheckLine />}>Confirm</ToggleButton>
 </Flex>`;
 
 export const toggleButtonDisabledSnippet = `<Flex align="center">
@@ -80,8 +88,108 @@ export const toggleButtonDisabledSnippet = `<Flex align="center">
   <ToggleButton defaultSelected isDisabled>Selected</ToggleButton>
 </Flex>`;
 
-export const toggleButtonControlledSnippet = `const [selected, setSelected] = useState(false);
+export const toggleButtonControlledSnippet = `import { useState } from 'react';
+import { RiStarFill, RiStarLine } from '@remixicon/react';
 
-<ToggleButton isSelected={selected} onChange={setSelected}>
-  {selected ? 'On' : 'Off'}
+const [selected, setSelected] = useState(false);
+
+<ToggleButton
+  isSelected={selected}
+  onChange={setSelected}
+  iconStart={selected ? <RiStarFill /> : <RiStarLine />}
+>
+  {selected ? 'Starred' : 'Not starred'}
 </ToggleButton>`;
+
+export const toggleButtonFunctionChildrenSnippet = `import { RiStarFill, RiStarLine } from '@remixicon/react';
+<Flex direction="column" gap="4">
+  <Flex direction="column" gap="2">
+    <Text weight="bold">Example 1: Selection State</Text>
+    <Flex align="center" gap="2">
+      <ToggleButton defaultSelected>
+        {({ isSelected }) => (isSelected ? '✓ Selected' : 'Not Selected')}
+      </ToggleButton>
+      <ToggleButton>
+        {({ isSelected }) => (isSelected ? '✓ Selected' : 'Not Selected')}
+      </ToggleButton>
+    </Flex>
+  </Flex>
+
+  <Flex direction="column" gap="2">
+    <Text weight="bold">Example 2: Multiple States</Text>
+    <Flex align="center" gap="2">
+      <ToggleButton defaultSelected>
+        {({ isSelected, isHovered }) => {
+          const states = [];
+          if (isSelected) states.push('on');
+          else states.push('off');
+          if (isHovered) states.push('hovered');
+          return \`Email (\${states.join(', ')})\`;
+        }}
+      </ToggleButton>
+      <ToggleButton>
+        {({ isSelected, isHovered }) => {
+          const states = [];
+          if (isSelected) states.push('on');
+          else states.push('off');
+          if (isHovered) states.push('hovered');
+          return \`Push (\${states.join(', ')})\`;
+        }}
+      </ToggleButton>
+    </Flex>
+  </Flex>
+
+  <Flex direction="column" gap="2">
+    <Text weight="bold">Example 3: Conditional Icons</Text>
+    <Flex align="center" gap="2">
+      <ToggleButton>
+        {({ isSelected }) => (
+          <>
+            {isSelected ? <RiStarFill /> : <RiStarLine />}
+            <span>{isSelected ? 'Starred' : 'Star'}</span>
+          </>
+        )}
+      </ToggleButton>
+    </Flex>
+  </Flex>
+
+  <Flex direction="column" gap="2">
+    <Text weight="bold">Example 4: Status Indicators</Text>
+    <Flex align="center" gap="2">
+      <ToggleButton defaultSelected>
+        {({ isSelected }) => (
+          <Flex align="center" gap="2">
+            <span
+              style={{
+                width: 8,
+                height: 8,
+                borderRadius: '50%',
+                backgroundColor: isSelected
+                  ? 'var(--bui-fg-success)'
+                  : 'var(--bui-fg-secondary)',
+              }}
+            />
+            <span>Active</span>
+          </Flex>
+        )}
+      </ToggleButton>
+      <ToggleButton>
+        {({ isSelected }) => (
+          <Flex align="center" gap="2">
+            <span
+              style={{
+                width: 8,
+                height: 8,
+                borderRadius: '50%',
+                backgroundColor: isSelected
+                  ? 'var(--bui-fg-danger)'
+                  : 'var(--bui-fg-secondary)',
+              }}
+            />
+            <span>Inactive</span>
+          </Flex>
+        )}
+      </ToggleButton>
+    </Flex>
+  </Flex>
+</Flex>`;

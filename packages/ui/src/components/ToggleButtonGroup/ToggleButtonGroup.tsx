@@ -15,27 +15,12 @@
  */
 
 import clsx from 'clsx';
-import { forwardRef, Ref, createContext, useContext } from 'react';
+import { forwardRef, Ref } from 'react';
 import { ToggleButtonGroup as AriaToggleButtonGroup } from 'react-aria-components';
 import type { ToggleButtonGroupProps } from './types';
 import { useStyles } from '../../hooks/useStyles';
 import { ToggleButtonGroupDefinition } from './definition';
 import styles from './ToggleButtonGroup.module.css';
-
-/** @internal */
-export interface ToggleButtonGroupContextValue {}
-
-const ToggleButtonGroupContext = createContext<
-  ToggleButtonGroupContextValue | undefined
->(undefined);
-
-/**
- * Hook to access the ToggleButtonGroup context.
- * @internal
- */
-export const useToggleButtonGroupContext = () => {
-  return useContext(ToggleButtonGroupContext);
-};
 
 /** @public */
 export const ToggleButtonGroup = forwardRef(
@@ -49,19 +34,15 @@ export const ToggleButtonGroup = forwardRef(
 
     const { className, children, ...rest } = cleanedProps;
 
-    const contextValue: ToggleButtonGroupContextValue = {};
-
     return (
-      <ToggleButtonGroupContext.Provider value={contextValue}>
-        <AriaToggleButtonGroup
-          className={clsx(classNames.root, styles[classNames.root], className)}
-          ref={ref}
-          {...dataAttributes}
-          {...rest}
-        >
-          {children}
-        </AriaToggleButtonGroup>
-      </ToggleButtonGroupContext.Provider>
+      <AriaToggleButtonGroup
+        className={clsx(classNames.root, styles[classNames.root], className)}
+        ref={ref}
+        {...dataAttributes}
+        {...rest}
+      >
+        {children}
+      </AriaToggleButtonGroup>
     );
   },
 );

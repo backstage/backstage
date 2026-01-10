@@ -15,7 +15,7 @@
  */
 
 import type { Breakpoint } from '../..';
-import type { ReactElement, ReactNode } from 'react';
+import type { ReactElement } from 'react';
 import type { ToggleButtonProps as AriaToggleButtonProps } from 'react-aria-components';
 import type { Responsive, Surface } from '../../types';
 
@@ -28,7 +28,6 @@ export interface ToggleButtonProps extends AriaToggleButtonProps {
   size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
   iconStart?: ReactElement;
   iconEnd?: ReactElement;
-  children?: ReactNode;
   /** Surface the toggle button is placed on. Defaults to context surface if available */
   onSurface?: Responsive<Surface>;
 }

@@ -24,6 +24,7 @@
     border-radius: var(--bui-radius-2);
     overflow: hidden;
     box-shadow: inset 0 0 0 1px var(--bui-border);
+    width: fit-content;
   }
 
   .bui-ToggleButtonGroup[data-orientation='vertical'] {
