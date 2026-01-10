@@ -26,6 +26,8 @@ import { z, AnyZodObject } from 'zod';
 import zodToJsonSchema from 'zod-to-json-schema';
 import {
   ActionsRegistryActionOptions,
+  ActionsRegistryPromptOptions,
+  ActionsRegistryResourceOptions,
   ActionsRegistryService,
 } from '@backstage/backend-plugin-api/alpha';
 import {
@@ -38,6 +40,8 @@ import {
 export class DefaultActionsRegistryService implements ActionsRegistryService {
   private actions: Map<string, ActionsRegistryActionOptions<any, any>> =
     new Map();
+  private prompts: Map<string, ActionsRegistryPromptOptions<any>> = new Map();
+  private resources: Map<string, ActionsRegistryResourceOptions> = new Map();
 
   private readonly logger: LoggerService;
   private readonly httpAuth: HttpAuthService;
@@ -158,6 +162,35 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
         }
       },
     );
+
+    router.get('/.backstage/actions/v1/prompts', (_, res) => {
+      return res.json({
+        prompts: Array.from(this.prompts.entries()).map(([id, prompt]) => ({
+          id,
+          name: prompt.name,
+          title: prompt.title,
+          description: prompt.description,
+          template: prompt.template,
+          argsSchema: prompt.argsSchema
+            ? zodToJsonSchema(prompt.argsSchema(z))
+            : undefined,
+        })),
+      });
+    });
+
+    router.get('/.backstage/actions/v1/resources', (_, res) => {
+      return res.json({
+        resources: Array.from(this.resources.entries()).map(([id, resource]) => ({
+          id,
+          name: resource.name,
+          uri: resource.uri,
+          title: resource.title,
+          description: resource.description,
+          mimeType: resource.mimeType,
+        })),
+      });
+    });
+
     return router;
   }
 
@@ -172,5 +205,27 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
     }
 
     this.actions.set(id, options);
+  }
+
+  registerPrompt<TArgsSchema extends AnyZodObject>(
+    options: ActionsRegistryPromptOptions<TArgsSchema>,
+  ): void {
+    const id = `${this.metadata.getId()}:${options.name}`;
+
+    if (this.prompts.has(id)) {
+      throw new Error(`Prompt with id "${id}" is already registered`);
+    }
+
+    this.prompts.set(id, options);
+  }
+
+  registerResource(options: ActionsRegistryResourceOptions): void {
+    const id = `${this.metadata.getId()}:${options.name}`;
+
+    if (this.resources.has(id)) {
+      throw new Error(`Resource with id "${id}" is already registered`);
+    }
+
+    this.resources.set(id, options);
   }
 }
