@@ -140,13 +140,10 @@ Entities are connected through relationships:
       );
 
       // Count by kind
-      const countsByKind = items.reduce(
-        (acc, entity) => {
-          acc[entity.kind] = (acc[entity.kind] || 0) + 1;
-          return acc;
-        },
-        {} as Record<string, number>,
-      );
+      const countsByKind = items.reduce((acc, entity) => {
+        acc[entity.kind] = (acc[entity.kind] || 0) + 1;
+        return acc;
+      }, {} as Record<string, number>);
 
       return {
         contents: [

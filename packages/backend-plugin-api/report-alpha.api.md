@@ -196,10 +196,5 @@ export const rootSystemMetadataServiceRef: ServiceRef<
   'singleton'
 >;
 
-// Warnings were encountered during analysis:
-//
-// src/alpha/ActionsRegistryService.d.ts:56:71 - (tsdoc-escape-right-brace) The "}" character should be escaped using a backslash to avoid confusion with a TSDoc inline tag
-// src/alpha/ActionsRegistryService.d.ts:56:66 - (tsdoc-malformed-inline-tag) Expecting a TSDoc tag starting with "{@"
-
 // (No @packageDocumentation comment for this package)
 ```

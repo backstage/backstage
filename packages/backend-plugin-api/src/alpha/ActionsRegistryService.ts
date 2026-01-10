@@ -82,7 +82,7 @@ export type ActionsRegistryPromptOptions<TArgsSchema extends AnyZodObject> = {
 export type ActionsRegistryResourceOptions = {
   /** Unique identifier for the resource */
   name: string;
-  /** URI template for the resource (e.g., "catalog://entities/{kind}") */
+  /** URI template pattern for the resource */
   uri: string;
   /** Human-readable title */
   title: string;
