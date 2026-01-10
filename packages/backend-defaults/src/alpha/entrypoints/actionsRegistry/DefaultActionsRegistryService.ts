@@ -180,16 +180,67 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
 
     router.get('/.backstage/actions/v1/resources', (_, res) => {
       return res.json({
-        resources: Array.from(this.resources.entries()).map(([id, resource]) => ({
-          id,
-          name: resource.name,
-          uri: resource.uri,
-          title: resource.title,
-          description: resource.description,
-          mimeType: resource.mimeType,
-        })),
+        resources: Array.from(this.resources.entries()).map(
+          ([id, resource]) => ({
+            id,
+            name: resource.name,
+            uri: resource.uri,
+            title: resource.title,
+            description: resource.description,
+            mimeType: resource.mimeType,
+          }),
+        ),
       });
     });
+
+    router.post(
+      '/.backstage/actions/v1/resources/read',
+      async (req, res, next) => {
+        try {
+          const { uri } = req.body as { uri: string };
+          const credentials = await this.httpAuth.credentials(req);
+
+          // Find the resource that matches the URI pattern
+          let matchedResource: ActionsRegistryResourceOptions | undefined;
+          let params: Record<string, string> = {};
+
+          for (const [, resource] of this.resources.entries()) {
+            const pattern = resource.uri.replace(/\{([^}]+)\}/g, '([^/]+)');
+            const regex = new RegExp(`^${pattern}$`);
+            const match = uri.match(regex);
+
+            if (match) {
+              matchedResource = resource;
+              // Extract params from URI
+              const paramNames = [...resource.uri.matchAll(/\{([^}]+)\}/g)].map(
+                m => m[1],
+              );
+              params = Object.fromEntries(
+                paramNames.map((name, i) => [name, match[i + 1]]),
+              );
+              break;
+            }
+          }
+
+          if (!matchedResource) {
+            throw new NotFoundError(`No resource found matching URI: ${uri}`);
+          }
+
+          const contents = await matchedResource.handler(
+            new URL(uri, 'resource://'),
+            params,
+            {
+              credentials,
+              logger: this.logger,
+            },
+          );
+
+          res.json(contents);
+        } catch (error) {
+          next(error);
+        }
+      },
+    );
 
     return router;
   }

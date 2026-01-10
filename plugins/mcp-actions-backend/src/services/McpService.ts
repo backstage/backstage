@@ -161,13 +161,13 @@ export class McpService {
     });
 
     server.setRequestHandler(ReadResourceRequestSchema, async ({ params }) => {
-      // Note: Resource reading would require invoking the resource handler
-      // which is stored in the registry but not exposed through the ActionsService.
-      // For now, we list resources but don't support reading them.
-      // This could be enhanced in the future if needed.
-      throw new NotFoundError(
-        `Resource reading not yet implemented. Resource URI: ${params.uri}`,
-      );
+      return handleErrors(async () => {
+        const result = await this.actions.readResource({
+          uri: params.uri,
+          credentials,
+        });
+        return result;
+      });
     });
 
     return server;

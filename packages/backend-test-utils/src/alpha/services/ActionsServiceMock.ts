@@ -32,5 +32,6 @@ export namespace actionsServiceMock {
     list: jest.fn(),
     listPrompts: jest.fn(),
     listResources: jest.fn(),
+    readResource: jest.fn(),
   }));
 }

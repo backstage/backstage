@@ -119,6 +119,16 @@ export interface ActionsService {
   listResources(opts: { credentials: BackstageCredentials }): Promise<{
     resources: ActionsServiceResource[];
   }>;
+  readResource(opts: {
+    uri: string;
+    credentials: BackstageCredentials;
+  }): Promise<{
+    contents: Array<{
+      uri: string;
+      text: string;
+      mimeType?: string;
+    }>;
+  }>;
 }
 
 // @alpha (undocumented)

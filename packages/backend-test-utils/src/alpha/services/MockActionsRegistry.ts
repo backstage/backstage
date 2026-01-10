@@ -227,4 +227,39 @@ export class MockActionsRegistry
       })),
     };
   }
+
+  async readResource(opts: {
+    uri: string;
+    credentials?: BackstageCredentials;
+  }): Promise<{
+    contents: Array<{
+      uri: string;
+      text: string;
+      mimeType?: string;
+    }>;
+  }> {
+    // Find the resource that matches the URI pattern
+    for (const [, resource] of this.resources.entries()) {
+      const pattern = resource.uri.replace(/\{([^}]+)\}/g, '([^/]+)');
+      const regex = new RegExp(`^${pattern}$`);
+      const match = opts.uri.match(regex);
+
+      if (match) {
+        // Extract params from URI
+        const paramNames = [...resource.uri.matchAll(/\{([^}]+)\}/g)].map(
+          m => m[1],
+        );
+        const params = Object.fromEntries(
+          paramNames.map((name, i) => [name, match[i + 1]]),
+        );
+
+        return resource.handler(new URL(opts.uri, 'resource://'), params, {
+          credentials: opts.credentials ?? mockCredentials.none(),
+          logger: this.logger,
+        });
+      }
+    }
+
+    throw new NotFoundError(`No resource found for URI: ${opts.uri}`);
+  }
 }

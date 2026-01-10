@@ -78,6 +78,17 @@ export class MockActionsRegistry
   // (undocumented)
   readonly prompts: Map<string, ActionsRegistryPromptOptions<any>>;
   // (undocumented)
+  readResource(opts: {
+    uri: string;
+    credentials?: BackstageCredentials;
+  }): Promise<{
+    contents: Array<{
+      uri: string;
+      text: string;
+      mimeType?: string;
+    }>;
+  }>;
+  // (undocumented)
   register<
     TInputSchema extends AnyZodObject,
     TOutputSchema extends AnyZodObject,

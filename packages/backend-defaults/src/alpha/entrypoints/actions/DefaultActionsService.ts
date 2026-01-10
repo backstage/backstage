@@ -20,7 +20,7 @@ import {
   LoggerService,
   RootConfigService,
 } from '@backstage/backend-plugin-api';
-import { ResponseError } from '@backstage/errors';
+import { NotFoundError, ResponseError } from '@backstage/errors';
 import { JsonObject } from '@backstage/types';
 import {
   ActionsService,
@@ -180,6 +180,49 @@ export class DefaultActionsService implements ActionsService {
     );
 
     return { resources: remoteResourcesList.flat() };
+  }
+
+  async readResource(opts: { uri: string; credentials: BackstageCredentials }) {
+    const pluginSources =
+      this.config.getOptionalStringArray('backend.actions.pluginSources') ?? [];
+
+    // Try each plugin source until we find one that handles this URI
+    for (const source of pluginSources) {
+      try {
+        const response = await this.makeRequest({
+          path: `/.backstage/actions/v1/resources/read`,
+          pluginId: source,
+          credentials: opts.credentials,
+          options: {
+            method: 'POST',
+            body: JSON.stringify({ uri: opts.uri }),
+            headers: {
+              'Content-Type': 'application/json',
+            },
+          },
+        });
+
+        if (response.ok) {
+          const contents = await response.json();
+          return contents;
+        }
+
+        // If 404, try the next plugin source
+        if (response.status === 404) {
+          continue;
+        }
+
+        // For other errors, throw
+        throw await ResponseError.fromResponse(response);
+      } catch (error) {
+        // Log but continue trying other sources
+        this.logger.debug(`Failed to read resource from ${source}: ${error}`);
+        continue;
+      }
+    }
+
+    // No plugin source could handle this URI
+    throw new NotFoundError(`No resource found for URI: ${opts.uri}`);
   }
 
   private async makeRequest(opts: {

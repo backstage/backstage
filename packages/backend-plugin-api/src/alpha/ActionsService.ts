@@ -88,4 +88,18 @@ export interface ActionsService {
   listResources(opts: {
     credentials: BackstageCredentials;
   }): Promise<{ resources: ActionsServiceResource[] }>;
+
+  /**
+   * Read a resource by its URI.
+   */
+  readResource(opts: {
+    uri: string;
+    credentials: BackstageCredentials;
+  }): Promise<{
+    contents: Array<{
+      uri: string;
+      text: string;
+      mimeType?: string;
+    }>;
+  }>;
 }
