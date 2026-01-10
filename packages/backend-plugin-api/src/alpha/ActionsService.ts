@@ -37,6 +37,32 @@ export type ActionsServiceAction = {
 };
 
 /**
+ * Represents a prompt discovered from the Actions Service.
+ * @alpha
+ */
+export type ActionsServicePrompt = {
+  id: string;
+  name: string;
+  title: string;
+  description: string;
+  template: string;
+  argsSchema?: JSONSchema7;
+};
+
+/**
+ * Represents a resource discovered from the Actions Service.
+ * @alpha
+ */
+export type ActionsServiceResource = {
+  id: string;
+  name: string;
+  uri: string;
+  title: string;
+  description: string;
+  mimeType?: string;
+};
+
+/**
  * @alpha
  */
 export interface ActionsService {
@@ -48,4 +74,18 @@ export interface ActionsService {
     input?: JsonObject;
     credentials: BackstageCredentials;
   }): Promise<{ output: JsonValue }>;
+
+  /**
+   * List all prompts available from configured plugin sources.
+   */
+  listPrompts(opts: {
+    credentials: BackstageCredentials;
+  }): Promise<{ prompts: ActionsServicePrompt[] }>;
+
+  /**
+   * List all resources available from configured plugin sources.
+   */
+  listResources(opts: {
+    credentials: BackstageCredentials;
+  }): Promise<{ resources: ActionsServiceResource[] }>;
 }
