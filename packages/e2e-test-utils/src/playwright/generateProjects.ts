@@ -25,7 +25,9 @@ import type { BackstagePackage } from '@backstage/cli-node';
  *
  * @public
  */
-export function generateProjects(): PlaywrightTestConfig['projects'] {
+export function generateProjects(options?: {
+  channel?: string;
+}): PlaywrightTestConfig['projects'] {
   // TODO(Rugvip): Switch this over to use @backstage/cli-node once released, and support SINCE=origin/main
   const { root, packages } = getPackagesSync(process.cwd());
   const e2eTestPackages = [...(root ? [root] : []), ...packages].filter(pkg => {
@@ -36,7 +38,7 @@ export function generateProjects(): PlaywrightTestConfig['projects'] {
     name: pkg.packageJson.name,
     testDir: resolvePath(pkg.dir, 'e2e-tests'),
     use: {
-      channel: 'chrome',
+      channel: options?.channel ?? 'chrome',
     },
   }));
 }
