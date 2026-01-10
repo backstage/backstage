@@ -18,6 +18,10 @@ import { Server as McpServer } from '@modelcontextprotocol/sdk/server/index.js';
 import {
   ListToolsRequestSchema,
   CallToolRequestSchema,
+  ListPromptsRequestSchema,
+  GetPromptRequestSchema,
+  ListResourcesRequestSchema,
+  ReadResourceRequestSchema,
 } from '@modelcontextprotocol/sdk/types.js';
 import { JsonObject } from '@backstage/types';
 import { ActionsService } from '@backstage/backend-plugin-api/alpha';
@@ -44,7 +48,7 @@ export class McpService {
         // TODO: this version will most likely change in the future.
         version,
       },
-      { capabilities: { tools: {} } },
+      { capabilities: { tools: {}, prompts: {}, resources: {} } },
     );
 
     server.setRequestHandler(ListToolsRequestSchema, async () => {
@@ -99,6 +103,71 @@ export class McpService {
           ],
         };
       });
+    });
+
+    server.setRequestHandler(ListPromptsRequestSchema, async () => {
+      const { prompts } = await this.actions.listPrompts({ credentials });
+
+      return {
+        prompts: prompts.map(prompt => ({
+          name: prompt.name,
+          description: prompt.description,
+          arguments: prompt.argsSchema
+            ? Object.entries(prompt.argsSchema.properties || {}).map(
+                ([name, schema]) => ({
+                  name,
+                  description: (schema as any).description || '',
+                  required: (prompt.argsSchema?.required || []).includes(name),
+                }),
+              )
+            : [],
+        })),
+      };
+    });
+
+    server.setRequestHandler(GetPromptRequestSchema, async ({ params }) => {
+      const { prompts } = await this.actions.listPrompts({ credentials });
+      const prompt = prompts.find(p => p.name === params.name);
+
+      if (!prompt) {
+        throw new NotFoundError(`Prompt "${params.name}" not found`);
+      }
+
+      return {
+        description: prompt.description,
+        messages: [
+          {
+            role: 'user' as const,
+            content: {
+              type: 'text' as const,
+              text: prompt.template,
+            },
+          },
+        ],
+      };
+    });
+
+    server.setRequestHandler(ListResourcesRequestSchema, async () => {
+      const { resources } = await this.actions.listResources({ credentials });
+
+      return {
+        resources: resources.map(resource => ({
+          uri: resource.uri,
+          name: resource.name,
+          description: resource.description,
+          mimeType: resource.mimeType,
+        })),
+      };
+    });
+
+    server.setRequestHandler(ReadResourceRequestSchema, async ({ params }) => {
+      // Note: Resource reading would require invoking the resource handler
+      // which is stored in the registry but not exposed through the ActionsService.
+      // For now, we list resources but don't support reading them.
+      // This could be enhanced in the future if needed.
+      throw new NotFoundError(
+        `Resource reading not yet implemented. Resource URI: ${params.uri}`,
+      );
     });
 
     return server;
