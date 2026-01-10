@@ -79,7 +79,7 @@ export const myPlugin = createBackendPlugin({
 
 ### Registering Prompts and Resources
 
-In addition to actions (tools), plugins can register **prompts** and **resources** to provide context and browsable data to AI clients:
+In addition to actions (tools), plugins can register **prompts** and **resources** to provide context and data to AI clients:
 
 #### Prompts
 
@@ -102,7 +102,7 @@ Use the actions to perform these operations...
 
 #### Resources
 
-Resources expose browsable, read-only data that AI clients can access for context:
+Resources expose read-only data that AI clients can access for context:
 
 ```ts
 actionsRegistry.registerResource({
