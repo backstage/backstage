@@ -25,6 +25,8 @@ import { JsonObject } from '@backstage/types';
 import {
   ActionsService,
   ActionsServiceAction,
+  ActionsServicePrompt,
+  ActionsServiceResource,
 } from '@backstage/backend-plugin-api/alpha';
 import { Minimatch } from 'minimatch';
 import { Config } from '@backstage/config';
@@ -118,6 +120,66 @@ export class DefaultActionsService implements ActionsService {
 
     const { output } = await response.json();
     return { output };
+  }
+
+  async listPrompts({ credentials }: { credentials: BackstageCredentials }) {
+    const pluginSources =
+      this.config.getOptionalStringArray('backend.actions.pluginSources') ?? [];
+
+    const remotePromptsList = await Promise.all(
+      pluginSources.map(async source => {
+        try {
+          const response = await this.makeRequest({
+            path: `/.backstage/actions/v1/prompts`,
+            pluginId: source,
+            credentials,
+          });
+          if (!response.ok) {
+            throw await ResponseError.fromResponse(response);
+          }
+          const { prompts } = (await response.json()) as {
+            prompts: ActionsServicePrompt[];
+          };
+
+          return prompts;
+        } catch (error) {
+          this.logger.warn(`Failed to fetch prompts from ${source}`, error);
+          return [];
+        }
+      }),
+    );
+
+    return { prompts: remotePromptsList.flat() };
+  }
+
+  async listResources({ credentials }: { credentials: BackstageCredentials }) {
+    const pluginSources =
+      this.config.getOptionalStringArray('backend.actions.pluginSources') ?? [];
+
+    const remoteResourcesList = await Promise.all(
+      pluginSources.map(async source => {
+        try {
+          const response = await this.makeRequest({
+            path: `/.backstage/actions/v1/resources`,
+            pluginId: source,
+            credentials,
+          });
+          if (!response.ok) {
+            throw await ResponseError.fromResponse(response);
+          }
+          const { resources } = (await response.json()) as {
+            resources: ActionsServiceResource[];
+          };
+
+          return resources;
+        } catch (error) {
+          this.logger.warn(`Failed to fetch resources from ${source}`, error);
+          return [];
+        }
+      }),
+    );
+
+    return { resources: remoteResourcesList.flat() };
   }
 
   private async makeRequest(opts: {
