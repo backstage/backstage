@@ -30,6 +30,7 @@ import {
   useSidebarOpenState,
   Link,
 } from '@backstage/core-components';
+import { NavContentBlueprint } from '@backstage/frontend-plugin-api';
 
 const useSidebarLogoStyles = makeStyles({
   root: {
@@ -79,3 +80,8 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
     {children}
   </SidebarPage>
 );
+export const SidebarContent = NavContentBlueprint.make({
+  params: {
+    component: ({}) => <Root />,
+  },
+});
