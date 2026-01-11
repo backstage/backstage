@@ -1,5 +1,16 @@
 # @backstage/plugin-auth-backend
 
+## 0.26.0-next.0
+
+### Minor Changes
+
+- 7ffc873: Fix `user_created_at` migration causing `SQLiteError` regarding use of non-constants for defaults
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.10
+
 ## 0.25.7
 
 ### Patch Changes

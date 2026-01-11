@@ -1,5 +1,12 @@
 # @backstage/plugin-api-docs
 
+## 0.13.3-next.2
+
+### Patch Changes
+
+- 0216090: Updated dependency `@types/swagger-ui-react` to `^5.0.0`.
+- abeba2b: Fix types with new bumped dependency
+
 ## 0.13.3-next.1
 
 ### Patch Changes
