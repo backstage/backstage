@@ -124,7 +124,10 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
       maxWarnings,
     }) => {
       const eslintModule = require('eslint') as typeof import('eslint');
-      const ESLint = await eslintModule.loadESLint({ useFlatConfig: false });
+      // @ts-expect-error - ESLint types have not been updated for ESLint v8.57, which introduced forward-compatible loadESLint
+      const ESLint = (await eslintModule.loadESLint({
+        useFlatConfig: false,
+      })) as typeof eslintModule.ESLint;
       const crypto = require('crypto') as typeof import('crypto');
       const globby = require('globby') as typeof import('globby');
       const { readFile } =

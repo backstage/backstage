@@ -15,7 +15,7 @@
  */
 
 import chalk from 'chalk';
-import { loadESLint } from 'eslint';
+import eslintModule, { ESLint as LegacyESLint } from 'eslint';
 import { OptionValues } from 'commander';
 import { relative as relativePath } from 'path';
 import { PackageGraph } from '@backstage/cli-node';
@@ -23,8 +23,12 @@ import { paths } from '../../../../lib/paths';
 
 export async function command(opts: OptionValues) {
   const packages = await PackageGraph.listTargetPackages();
-  const ESLint = await loadESLint({ useFlatConfig: false });
-  const eslint = new ESLint({
+
+  // @ts-expect-error - ESLint types have not been updated for ESLint v8.57, which introduced forward-compatible loadESLint
+  const LegacyESLintConstructor = (await eslintModule.loadESLint({
+    useFlatConfig: false,
+  })) as typeof LegacyESLint;
+  const eslint = new LegacyESLintConstructor({
     cwd: paths.targetDir,
     overrideConfig: {
       plugins: ['deprecation'],
