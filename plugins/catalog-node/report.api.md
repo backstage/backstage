@@ -248,6 +248,40 @@ export type EntityFilter =
   | EntitiesSearchFilter;
 
 // @public
+export type EntityPredicate =
+  | EntityPredicateExpression
+  | EntityPredicatePrimitive
+  | {
+      $all: EntityPredicate[];
+    }
+  | {
+      $any: EntityPredicate[];
+    }
+  | {
+      $not: EntityPredicate;
+    };
+
+// @public
+export type EntityPredicateExpression = {
+  [KPath in string]: EntityPredicateValue;
+} & {
+  [KPath in `$${string}`]: never;
+};
+
+// @public
+export type EntityPredicatePrimitive = string | number | boolean;
+
+// @public
+export type EntityPredicateValue =
+  | EntityPredicatePrimitive
+  | {
+      $exists: boolean;
+    }
+  | {
+      $in: EntityPredicatePrimitive[];
+    };
+
+// @public
 export interface EntityProvider {
   connect(connection: EntityProviderConnection): Promise<void>;
   getProviderName(): string;
