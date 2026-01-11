@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { TypeOf } from 'zod';
+import { TypeOf } from 'zod/v3';
 import { ProxiedSession, proxiedSessionSchema } from './types';
 
 describe('types', () => {

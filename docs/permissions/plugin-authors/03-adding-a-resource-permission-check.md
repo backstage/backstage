@@ -130,7 +130,7 @@ import {
   createPermissionRule,
 } from '@backstage/plugin-permission-node';
 import { TODO_LIST_RESOURCE_TYPE } from '@internal/plugin-todo-list-common';
-import { z } from 'zod';
+import { z } from 'zod/v3';
 import { Todo, TodoFilter } from './todos';
 
 export const todoListPermissionResourceRef = createPermissionResourceRef<
