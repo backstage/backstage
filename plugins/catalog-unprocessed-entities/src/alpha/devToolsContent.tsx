@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,5 +14,23 @@
  * limitations under the License.
  */
 
-export { default } from './plugin';
-export { unprocessedEntitiesDevToolsContent } from './devToolsContent';
+import { DevToolsContentBlueprint } from '@backstage/plugin-devtools-react';
+
+/**
+ * DevTools content for catalog unprocessed entities.
+ *
+ * @alpha
+ */
+export const unprocessedEntitiesDevToolsContent = DevToolsContentBlueprint.make(
+  {
+    disabled: true,
+    params: {
+      path: 'unprocessed-entities',
+      title: 'Unprocessed Entities',
+      loader: () =>
+        import('../components/UnprocessedEntities').then(m => (
+          <m.UnprocessedEntitiesContent />
+        )),
+    },
+  },
+);
