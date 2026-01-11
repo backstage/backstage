@@ -25,7 +25,10 @@ import {
 } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
-import { DefaultEventsService } from '@backstage/plugin-events-node';
+import {
+  DefaultEventsService,
+  EventParams,
+} from '@backstage/plugin-events-node';
 import { setupServer } from 'msw/node';
 import { handlers } from '../__testUtils__/handlers';
 import * as mock from '../__testUtils__/mocks';
@@ -688,6 +691,273 @@ describe('GitlabDiscoveryEntityProvider - events', () => {
     });
 
     expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
+  });
+
+  describe('catalogFilePattern RegExp matching', () => {
+    it('should match files using RegExp pattern for basename', async () => {
+      const config = new ConfigReader({
+        ...mock.config_single_integration,
+        catalog: {
+          providers: {
+            gitlab: {
+              'test-id': {
+                ...mock.config_single_integration.catalog.providers.gitlab[
+                  'test-id'
+                ],
+                entityFilePattern: '(catalog-info|backstage)\\.ya?ml$',
+              },
+            },
+          },
+        },
+      });
+
+      const schedule = new PersistingTaskRunner();
+      const events = DefaultEventsService.create({ logger });
+      const entityProviderConnection: EntityProviderConnection = {
+        applyMutation: jest.fn(),
+        refresh: jest.fn(),
+      };
+      const provider = GitlabDiscoveryEntityProvider.fromConfig(config, {
+        logger,
+        schedule,
+        events,
+      })[0];
+
+      await provider.connect(entityProviderConnection);
+
+      // Test event with RegExp pattern matching basename
+      const pushEventWithRegExpMatch = {
+        ...mock.push_add_event,
+        eventPayload: {
+          ...(mock.push_add_event.eventPayload as EventParams),
+          commits: [
+            {
+              id: 'test-commit',
+              added: ['backstage.yml', 'catalog-info.yaml'],
+              modified: [],
+              removed: [],
+            },
+          ],
+        },
+      };
+
+      await events.publish(pushEventWithRegExpMatch);
+
+      expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
+
+      const mutation = (entityProviderConnection.applyMutation as jest.Mock)
+        .mock.calls[0][0];
+      expect(mutation.type).toBe('delta');
+      expect(mutation.added).toHaveLength(2); // Both files should match
+      expect(mutation.removed).toHaveLength(0);
+
+      // Check that both files were matched based on their target URLs
+      const targets = mutation.added.map(
+        (entity: any) => entity.entity.spec.target,
+      );
+
+      expect(
+        targets.some((target: string) => target.includes('catalog-info.yaml')),
+      ).toBeTruthy();
+      expect(
+        targets.some((target: string) => target.includes('backstage.yml')),
+      ).toBeTruthy();
+    });
+
+    it('should not match files when pattern excludes them', async () => {
+      const config = new ConfigReader({
+        ...mock.config_single_integration,
+        catalog: {
+          providers: {
+            gitlab: {
+              'test-id': {
+                ...mock.config_single_integration.catalog.providers.gitlab[
+                  'test-id'
+                ],
+                entityFilePattern: 'backstage\\.yml$', // Only matches backstage.yml, not catalog-info.yaml
+              },
+            },
+          },
+        },
+      });
+
+      const schedule = new PersistingTaskRunner();
+      const events = DefaultEventsService.create({ logger });
+      const entityProviderConnection: EntityProviderConnection = {
+        applyMutation: jest.fn(),
+        refresh: jest.fn(),
+      };
+      const provider = GitlabDiscoveryEntityProvider.fromConfig(config, {
+        logger,
+        schedule,
+        events,
+      })[0];
+
+      await provider.connect(entityProviderConnection);
+
+      // Use the default mock event which has catalog-info.yaml
+      await events.publish(mock.push_add_event);
+
+      // Since catalog-info.yaml doesn't match backstage\.yml$, no mutation should occur
+      expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(0);
+    });
+
+    it('should match files using combined RegExp pattern (both basename and path)', async () => {
+      const config = new ConfigReader({
+        ...mock.config_single_integration,
+        catalog: {
+          providers: {
+            gitlab: {
+              'test-id': {
+                ...mock.config_single_integration.catalog.providers.gitlab[
+                  'test-id'
+                ],
+                entityFilePattern:
+                  '(.*/backend/.*\\.yaml$|catalog-info\\.yaml$)',
+              },
+            },
+          },
+        },
+      });
+
+      const schedule = new PersistingTaskRunner();
+      const events = DefaultEventsService.create({ logger });
+      const entityProviderConnection: EntityProviderConnection = {
+        applyMutation: jest.fn(),
+        refresh: jest.fn(),
+      };
+      const provider = GitlabDiscoveryEntityProvider.fromConfig(config, {
+        logger,
+        schedule,
+        events,
+      })[0];
+
+      await provider.connect(entityProviderConnection);
+
+      const pushEventWithCombinedMatch = {
+        ...mock.push_add_event,
+        eventPayload: {
+          ...(mock.push_add_event.eventPayload as EventParams),
+          commits: [
+            {
+              id: 'test-commit',
+              added: [
+                'catalog-info.yaml',
+                'src/backend/service.yaml',
+                'frontend/component.yaml',
+                'docs/backend/api.yaml',
+              ],
+              modified: [],
+              removed: [],
+            },
+          ],
+        },
+      };
+
+      await events.publish(pushEventWithCombinedMatch);
+
+      expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
+
+      const mutation = (entityProviderConnection.applyMutation as jest.Mock)
+        .mock.calls[0][0];
+      expect(mutation.type).toBe('delta');
+      expect(mutation.added).toHaveLength(3); // Should match 3 files: catalog-info.yaml + 2 backend files
+      expect(mutation.removed).toHaveLength(0);
+
+      const targets = mutation.added.map(
+        (entity: any) => entity.entity.spec.target,
+      );
+
+      // Should include catalog-info.yaml (basename match)
+      expect(
+        targets.some((target: string) => target.includes('catalog-info.yaml')),
+      ).toBeTruthy();
+
+      // Should include both backend files (path matches)
+      expect(
+        targets.some((target: string) =>
+          target.includes('src/backend/service.yaml'),
+        ),
+      ).toBeTruthy();
+      expect(
+        targets.some((target: string) =>
+          target.includes('docs/backend/api.yaml'),
+        ),
+      ).toBeTruthy();
+
+      // Should not include frontend component (doesn't match pattern)
+      expect(
+        targets.some((target: string) =>
+          target.includes('frontend/component.yaml'),
+        ),
+      ).toBeFalsy();
+    });
+
+    it('should fall back to string catalogFile when no RegExp pattern provided', async () => {
+      const config = new ConfigReader(mock.config_single_integration);
+
+      const schedule = new PersistingTaskRunner();
+      const events = DefaultEventsService.create({ logger });
+      const entityProviderConnection: EntityProviderConnection = {
+        applyMutation: jest.fn(),
+        refresh: jest.fn(),
+      };
+      const provider = GitlabDiscoveryEntityProvider.fromConfig(config, {
+        logger,
+        schedule,
+        events,
+      })[0];
+
+      await provider.connect(entityProviderConnection);
+
+      const pushEventWithStringMatch = {
+        ...mock.push_add_event,
+        eventPayload: {
+          ...(mock.push_add_event.eventPayload as EventParams),
+          commits: [
+            {
+              id: 'test-commit',
+              added: [
+                'catalog-info.yaml',
+                'src/catalog-info.yaml',
+                'backstage.yml',
+              ],
+              modified: [],
+              removed: [],
+            },
+          ],
+        },
+      };
+
+      await events.publish(pushEventWithStringMatch);
+
+      expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
+
+      const mutation = (entityProviderConnection.applyMutation as jest.Mock)
+        .mock.calls[0][0];
+      expect(mutation.type).toBe('delta');
+      expect(mutation.added).toHaveLength(2); // Should match 2 catalog-info.yaml files
+      expect(mutation.removed).toHaveLength(0);
+
+      const targets = mutation.added.map(
+        (entity: any) => entity.entity.spec.target,
+      );
+
+      // Should include both catalog-info.yaml files (basename matches)
+      expect(
+        targets.some((target: string) => target.includes('catalog-info.yaml')),
+      ).toBeTruthy();
+      expect(
+        targets.some((target: string) =>
+          target.includes('src/catalog-info.yaml'),
+        ),
+      ).toBeTruthy();
+
+      // Should not include backstage.yml (doesn't match exact string)
+      expect(
+        targets.some((target: string) => target.includes('backstage.yml')),
+      ).toBeFalsy();
+    });
   });
 });
 
