@@ -30,7 +30,7 @@ import { PermissionsServiceRequestOptions } from '@backstage/backend-plugin-api'
 import { PolicyDecision } from '@backstage/plugin-permission-common';
 import { QueryPermissionRequest } from '@backstage/plugin-permission-common';
 import { ResourcePermission } from '@backstage/plugin-permission-common';
-import { z } from 'zod';
+import { z } from 'zod/v3';
 
 // @public
 export type ApplyConditionsRequest = {

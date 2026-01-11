@@ -18,7 +18,7 @@ import {
   AuthorizeResult,
   createPermission,
 } from '@backstage/plugin-permission-common';
-import { z } from 'zod';
+import { z } from 'zod/v3';
 import { createConditionExports } from './createConditionExports';
 import { createPermissionRule } from './createPermissionRule';
 import { createPermissionResourceRef } from './createPermissionResourceRef';

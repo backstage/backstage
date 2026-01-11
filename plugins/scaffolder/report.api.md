@@ -49,7 +49,7 @@ import { TemplateGroupFilter } from '@backstage/plugin-scaffolder-react';
 import { TemplateListPageProps } from '@backstage/plugin-scaffolder/alpha';
 import { TemplateParameterSchema as TemplateParameterSchema_2 } from '@backstage/plugin-scaffolder-common';
 import { TemplateWizardPageProps } from '@backstage/plugin-scaffolder/alpha';
-import { z } from 'zod';
+import { z } from 'zod/v3';
 
 // @public @deprecated (undocumented)
 export const createScaffolderFieldExtension: typeof createScaffolderFieldExtension_2;

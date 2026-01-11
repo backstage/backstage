@@ -20,7 +20,7 @@ import os from 'node:os';
 import path from 'node:path';
 import lockfile from 'proper-lockfile';
 import YAML from 'yaml';
-import { z } from 'zod';
+import { z } from 'zod/v3';
 
 const METADATA_FILE = 'auth-instances.yaml';
 

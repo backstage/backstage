@@ -27,7 +27,7 @@ import { UserInfoDatabase } from '../database/UserInfoDatabase';
 import { OidcDatabase } from '../database/OidcDatabase';
 import { OfflineAccessService } from './OfflineAccessService';
 import { json } from 'express';
-import { z } from 'zod';
+import { z } from 'zod/v4';
 import { fromZodError } from 'zod-validation-error';
 import { OidcError } from './OidcError';
 

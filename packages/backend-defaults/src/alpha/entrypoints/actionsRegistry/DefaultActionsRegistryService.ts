@@ -22,7 +22,7 @@ import {
 } from '@backstage/backend-plugin-api';
 import PromiseRouter from 'express-promise-router';
 import { Router, json } from 'express';
-import { z, AnyZodObject } from 'zod';
+import { z, AnyZodObject } from 'zod/v3';
 import zodToJsonSchema from 'zod-to-json-schema';
 import {
   ActionsRegistryActionOptions,

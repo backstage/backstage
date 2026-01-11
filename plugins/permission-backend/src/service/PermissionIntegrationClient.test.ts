@@ -30,7 +30,7 @@ import {
   createPermissionRule,
 } from '@backstage/plugin-permission-node';
 import { PermissionIntegrationClient } from './PermissionIntegrationClient';
-import { z } from 'zod';
+import { z } from 'zod/v3';
 import { DiscoveryService } from '@backstage/backend-plugin-api';
 
 describe('PermissionIntegrationClient', () => {

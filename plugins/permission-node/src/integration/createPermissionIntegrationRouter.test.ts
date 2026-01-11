@@ -21,7 +21,7 @@ import {
 } from '@backstage/plugin-permission-common';
 import express from 'express';
 import request, { Response } from 'supertest';
-import { z } from 'zod';
+import { z } from 'zod/v3';
 import {
   createPermissionIntegrationRouter,
   CreatePermissionIntegrationRouterResourceOptions,

@@ -56,7 +56,7 @@ its generated unit test. We will replace the existing placeholder code with our 
 import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import fs from 'fs-extra';
-import { type z } from 'zod';
+import { type z } from 'zod/v3';
 
 export const createNewFileAction = () => {
   return createTemplateAction({
