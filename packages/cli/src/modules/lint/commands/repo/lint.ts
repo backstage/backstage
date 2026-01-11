@@ -123,7 +123,8 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
       rootDir,
       maxWarnings,
     }) => {
-      const { ESLint } = require('eslint') as typeof import('eslint');
+      const eslintModule = require('eslint') as typeof import('eslint');
+      const ESLint = await eslintModule.loadESLint({ useFlatConfig: false });
       const crypto = require('crypto') as typeof import('crypto');
       const globby = require('globby') as typeof import('globby');
       const { readFile } =

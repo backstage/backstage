@@ -3350,7 +3350,7 @@ __metadata:
     del: "npm:^8.0.0"
     esbuild: "npm:^0.27.0"
     esbuild-loader: "npm:^4.0.0"
-    eslint: "npm:^8.6.0"
+    eslint: "npm:^8.57.1"
     eslint-config-prettier: "npm:^9.0.0"
     eslint-formatter-friendly: "npm:^7.0.0"
     eslint-plugin-deprecation: "npm:^3.0.0"

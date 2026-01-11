@@ -17,9 +17,10 @@
 import fs from 'fs-extra';
 import { OptionValues } from 'commander';
 import { paths } from '../../../../lib/paths';
-import { ESLint } from 'eslint';
+import { loadESLint } from 'eslint';
 
 export default async (directories: string[], opts: OptionValues) => {
+  const ESLint = await loadESLint({ useFlatConfig: false });
   const eslint = new ESLint({
     cwd: paths.targetDir,
     fix: opts.fix,
