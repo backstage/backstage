@@ -65,7 +65,7 @@
     "@material-ui/lab": "^4.0.0-alpha.61",
     "@react-hookz/web": "^24.0.0",
     "react-use": "^17.2.4",
-    "zod": "^3.25.76"
+    "zod": "^3.25.76 || ^4.0.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",

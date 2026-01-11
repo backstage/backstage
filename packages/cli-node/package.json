@@ -38,7 +38,7 @@
     "@yarnpkg/parsers": "^3.0.0",
     "fs-extra": "^11.2.0",
     "semver": "^7.5.3",
-    "zod": "^3.25.76"
+    "zod": "^3.25.76 || ^4.0.0"
   },
   "devDependencies": {
     "@backstage/backend-test-utils": "workspace:^",
