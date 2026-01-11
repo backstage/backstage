@@ -55,7 +55,7 @@
     "octokit": "^3.0.0",
     "octokit-plugin-create-pull-request": "^5.0.0",
     "yaml": "^2.0.0",
-    "zod": "^3.25.76"
+    "zod": "^3.25.76 || ^4.0.0"
   },
   "devDependencies": {
     "@backstage/backend-test-utils": "workspace:^",
