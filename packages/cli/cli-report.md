@@ -149,6 +149,8 @@ Usage: <none>
 
 Options:
   --help
+  --include
+  --output-file
   --version
 ```
 
