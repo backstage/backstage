@@ -81,7 +81,8 @@ const _default: OverridableFrontendPlugin<
       params: {
         defaultPath?: [Error: `Use the 'path' param instead`];
         path: string;
-        loader: () => Promise<JSX.Element>;
+        loader: () => Promise<JSX./** @alpha */
+        Element>;
         routeRef?: RouteRef_2;
       };
     }>;

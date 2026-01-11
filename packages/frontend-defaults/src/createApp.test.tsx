@@ -225,7 +225,7 @@ describe('createApp', () => {
     });
 
     await expect(renderWithEffects(app.createRoot())).rejects.toThrow(
-      /Failed to read frontend features from loader created at '.*\/createApp\.test\.tsx:\d+:\d+': TypeError: boom/,
+      /Failed to read frontend features from loader created at '.*[\\/]createApp\.test\.tsx:\d+:\d+': TypeError: boom/,
     );
   });
 
@@ -354,6 +354,7 @@ describe('createApp', () => {
     expect(String(tree.root)).toMatchInlineSnapshot(`
       "<root out=[core.reactElement]>
         apis [
+          <api:app/router out=[core.api.factory] />
           <api:app/dialog out=[core.api.factory] />
           <api:app/discovery out=[core.api.factory] />
           <api:app/alert out=[core.api.factory] />
