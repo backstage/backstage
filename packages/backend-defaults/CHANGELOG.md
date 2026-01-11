@@ -1,5 +1,46 @@
 # @backstage/backend-defaults
 
+## 0.15.0-next.2
+
+### Minor Changes
+
+- 6fc00e6: Added action filtering support with glob patterns and attribute constraints.
+
+  The `ActionsService` now supports filtering actions based on configuration. This allows controlling which actions are exposed to consumers like the MCP backend.
+
+  Configuration example:
+
+  ```yaml
+  backend:
+    actions:
+      pluginSources:
+        - catalog
+        - scaffolder
+      filter:
+        include:
+          - id: 'catalog:*'
+            attributes:
+              destructive: false
+          - id: 'scaffolder:*'
+        exclude:
+          - id: '*:delete-*'
+          - attributes:
+              readOnly: false
+  ```
+
+  Filtering logic:
+
+  - `include`: Rules for actions to include. Each rule can specify an `id` glob pattern and/or `attributes` constraints. An action must match at least one rule to be included. If no include rules are specified, all actions are included by default.
+  - `exclude`: Rules for actions to exclude. Takes precedence over include rules.
+  - Each rule combines `id` and `attributes` with AND logic (both must match if specified).
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-app-api@1.4.0
+  - @backstage/plugin-auth-node@0.6.10
+  - @backstage/plugin-permission-node@0.10.7
+
 ## 0.14.1-next.1
 
 ### Patch Changes
