@@ -39,7 +39,7 @@ import { TemplatePresentationV1beta3 } from '@backstage/plugin-scaffolder-common
 import { TranslationRef } from '@backstage/frontend-plugin-api';
 import { UiSchema } from '@rjsf/utils';
 import { WidgetProps } from '@rjsf/utils';
-import { z } from 'zod';
+import { z } from 'zod/v3';
 
 // @alpha (undocumented)
 export type BackstageOverrides = Overrides & {

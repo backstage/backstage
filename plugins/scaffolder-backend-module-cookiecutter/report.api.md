@@ -4,12 +4,12 @@
 
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
-import { objectOutputType } from 'zod';
+import { objectOutputType } from 'zod/v3';
 import { ScmIntegrations } from '@backstage/integration';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
 import { Writable } from 'node:stream';
-import { ZodTypeAny } from 'zod';
+import { ZodTypeAny } from 'zod/v3';
 
 // @public
 export interface ContainerRunner {

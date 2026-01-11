@@ -8,7 +8,7 @@ spec:
   lifecycle: experimental
   owner: team-c
   definition: |
-    import { z } from 'zod';
+    import { z } from 'zod/v3';
     import { publicProcedure, router } from '../trpc';
 
     export const apiRouter = router({

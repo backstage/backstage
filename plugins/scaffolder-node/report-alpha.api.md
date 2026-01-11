@@ -8,7 +8,7 @@ import { JsonValue } from '@backstage/types';
 import { TaskBroker } from '@backstage/plugin-scaffolder-node';
 import { TemplateFilter as TemplateFilter_2 } from '@backstage/plugin-scaffolder-node';
 import { TemplateGlobal as TemplateGlobal_2 } from '@backstage/plugin-scaffolder-node';
-import { z } from 'zod';
+import { z } from 'zod/v3';
 
 // @alpha
 export type AutocompleteHandler = ({

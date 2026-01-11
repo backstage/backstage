@@ -16,7 +16,7 @@
 
 import fs from 'fs-extra';
 import yaml from 'yaml';
-import z from 'zod';
+import z from 'zod/v3';
 import { paths } from './paths';
 
 const yarnRcSchema = z.object({

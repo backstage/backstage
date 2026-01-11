@@ -59,7 +59,7 @@ import { TemplatesType } from '@rjsf/utils';
 import { UIOptionsType } from '@rjsf/utils';
 import { UiSchema } from '@rjsf/utils';
 import { ValidatorType } from '@rjsf/utils';
-import { z } from 'zod';
+import { z } from 'zod/v3';
 
 // @public @deprecated
 export type Action = Action_2;

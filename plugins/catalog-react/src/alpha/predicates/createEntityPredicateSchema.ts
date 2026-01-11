@@ -20,7 +20,7 @@ import {
   EntityPredicatePrimitive,
   EntityPredicateValue,
 } from './types';
-import type { z as zImpl, ZodType } from 'zod';
+import type { z as zImpl, ZodType } from 'zod/v3';
 
 /** @internal */
 export function createEntityPredicateSchema(z: typeof zImpl) {
