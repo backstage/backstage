@@ -44,6 +44,8 @@ export namespace actionsRegistryServiceMock {
     actionsRegistryServiceRef,
     () => ({
       register: jest.fn(),
+      registerPrompt: jest.fn(),
+      registerResource: jest.fn(),
     }),
   );
 }

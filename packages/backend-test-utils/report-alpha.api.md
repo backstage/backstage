@@ -4,9 +4,13 @@
 
 ```ts
 import { ActionsRegistryActionOptions } from '@backstage/backend-plugin-api/alpha';
+import { ActionsRegistryPromptOptions } from '@backstage/backend-plugin-api/alpha';
+import { ActionsRegistryResourceOptions } from '@backstage/backend-plugin-api/alpha';
 import { ActionsRegistryService } from '@backstage/backend-plugin-api/alpha';
 import { ActionsService } from '@backstage/backend-plugin-api/alpha';
 import { ActionsServiceAction } from '@backstage/backend-plugin-api/alpha';
+import { ActionsServicePrompt } from '@backstage/backend-plugin-api/alpha';
+import { ActionsServiceResource } from '@backstage/backend-plugin-api/alpha';
 import { AnyZodObject } from 'zod';
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { JsonObject } from '@backstage/types';
@@ -64,10 +68,39 @@ export class MockActionsRegistry
     actions: ActionsServiceAction[];
   }>;
   // (undocumented)
+  listPrompts(): Promise<{
+    prompts: ActionsServicePrompt[];
+  }>;
+  // (undocumented)
+  listResources(): Promise<{
+    resources: ActionsServiceResource[];
+  }>;
+  // (undocumented)
+  readonly prompts: Map<string, ActionsRegistryPromptOptions<any>>;
+  // (undocumented)
+  readResource(opts: {
+    uri: string;
+    credentials?: BackstageCredentials;
+  }): Promise<{
+    contents: Array<{
+      uri: string;
+      text: string;
+      mimeType?: string;
+    }>;
+  }>;
+  // (undocumented)
   register<
     TInputSchema extends AnyZodObject,
     TOutputSchema extends AnyZodObject,
   >(options: ActionsRegistryActionOptions<TInputSchema, TOutputSchema>): void;
+  // (undocumented)
+  registerPrompt<TArgsSchema extends AnyZodObject>(
+    options: ActionsRegistryPromptOptions<TArgsSchema>,
+  ): void;
+  // (undocumented)
+  registerResource(options: ActionsRegistryResourceOptions): void;
+  // (undocumented)
+  readonly resources: Map<string, ActionsRegistryResourceOptions>;
 }
 
 // @alpha (undocumented)

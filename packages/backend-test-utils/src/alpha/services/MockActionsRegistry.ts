@@ -24,9 +24,13 @@ import zodToJsonSchema from 'zod-to-json-schema';
 import { mockCredentials } from '../../services';
 import {
   ActionsRegistryActionOptions,
+  ActionsRegistryPromptOptions,
+  ActionsRegistryResourceOptions,
   ActionsRegistryService,
   ActionsService,
   ActionsServiceAction,
+  ActionsServicePrompt,
+  ActionsServiceResource,
 } from '@backstage/backend-plugin-api/alpha';
 
 /**
@@ -77,6 +81,8 @@ export class MockActionsRegistry
 
   readonly actions: Map<string, ActionsRegistryActionOptions<any, any>> =
     new Map();
+  readonly prompts: Map<string, ActionsRegistryPromptOptions<any>> = new Map();
+  readonly resources: Map<string, ActionsRegistryResourceOptions> = new Map();
 
   async list(): Promise<{ actions: ActionsServiceAction[] }> {
     return {
@@ -168,5 +174,92 @@ export class MockActionsRegistry
     }
 
     this.actions.set(id, options);
+  }
+
+  registerPrompt<TArgsSchema extends AnyZodObject>(
+    options: ActionsRegistryPromptOptions<TArgsSchema>,
+  ): void {
+    const id = `test:${options.name}`;
+
+    if (this.prompts.has(id)) {
+      throw new Error(`Prompt with id "${id}" is already registered`);
+    }
+
+    this.prompts.set(id, options);
+  }
+
+  registerResource(options: ActionsRegistryResourceOptions): void {
+    const id = `test:${options.name}`;
+
+    if (this.resources.has(id)) {
+      throw new Error(`Resource with id "${id}" is already registered`);
+    }
+
+    this.resources.set(id, options);
+  }
+
+  async listPrompts(): Promise<{ prompts: ActionsServicePrompt[] }> {
+    return {
+      prompts: Array.from(this.prompts.entries()).map(([id, prompt]) => ({
+        id,
+        name: prompt.name,
+        title: prompt.title,
+        description: prompt.description,
+        template: prompt.template,
+        argsSchema: prompt.argsSchema
+          ? (zodToJsonSchema(
+              prompt.argsSchema(z),
+            ) as ActionsServicePrompt['argsSchema'])
+          : undefined,
+      })),
+    };
+  }
+
+  async listResources(): Promise<{ resources: ActionsServiceResource[] }> {
+    return {
+      resources: Array.from(this.resources.entries()).map(([id, resource]) => ({
+        id,
+        name: resource.name,
+        uri: resource.uri,
+        title: resource.title,
+        description: resource.description,
+        mimeType: resource.mimeType,
+      })),
+    };
+  }
+
+  async readResource(opts: {
+    uri: string;
+    credentials?: BackstageCredentials;
+  }): Promise<{
+    contents: Array<{
+      uri: string;
+      text: string;
+      mimeType?: string;
+    }>;
+  }> {
+    // Find the resource that matches the URI pattern
+    for (const [, resource] of this.resources.entries()) {
+      const pattern = resource.uri.replace(/\{([^}]+)\}/g, '([^/]+)');
+      const regex = new RegExp(`^${pattern}$`);
+      const match = opts.uri.match(regex);
+
+      if (match) {
+        // Extract params from URI
+        const paramNames = [...resource.uri.matchAll(/\{([^}]+)\}/g)].map(
+          m => m[1],
+        );
+        const params = Object.fromEntries(
+          paramNames.map((name, i) => [name, match[i + 1]]),
+        );
+
+        return resource.handler(new URL(opts.uri, 'resource://'), params, {
+          credentials: opts.credentials ?? mockCredentials.none(),
+          logger: this.logger,
+        });
+      }
+    }
+
+    throw new NotFoundError(`No resource found for URI: ${opts.uri}`);
   }
 }

@@ -45,6 +45,38 @@ export type ActionsRegistryActionOptions<
   >;
 };
 
+// @alpha
+export type ActionsRegistryPromptOptions<TArgsSchema extends AnyZodObject> = {
+  name: string;
+  title: string;
+  description: string;
+  template: string;
+  argsSchema?: (zod: typeof z) => TArgsSchema;
+};
+
+// @alpha
+export type ActionsRegistryResourceOptions = {
+  name: string;
+  uri: string;
+  title: string;
+  description: string;
+  mimeType?: string;
+  handler: (
+    uri: URL,
+    params: Record<string, string>,
+    context: {
+      credentials: BackstageCredentials;
+      logger: LoggerService;
+    },
+  ) => Promise<{
+    contents: Array<{
+      uri: string;
+      text: string;
+      mimeType?: string;
+    }>;
+  }>;
+};
+
 // @alpha (undocumented)
 export interface ActionsRegistryService {
   // (undocumented)
@@ -54,6 +86,10 @@ export interface ActionsRegistryService {
   >(
     options: ActionsRegistryActionOptions<TInputSchema, TOutputSchema>,
   ): void;
+  registerPrompt<TArgsSchema extends AnyZodObject>(
+    options: ActionsRegistryPromptOptions<TArgsSchema>,
+  ): void;
+  registerResource(options: ActionsRegistryResourceOptions): void;
 }
 
 // @alpha
@@ -77,6 +113,22 @@ export interface ActionsService {
   list: (opts: { credentials: BackstageCredentials }) => Promise<{
     actions: ActionsServiceAction[];
   }>;
+  listPrompts(opts: { credentials: BackstageCredentials }): Promise<{
+    prompts: ActionsServicePrompt[];
+  }>;
+  listResources(opts: { credentials: BackstageCredentials }): Promise<{
+    resources: ActionsServiceResource[];
+  }>;
+  readResource(opts: {
+    uri: string;
+    credentials: BackstageCredentials;
+  }): Promise<{
+    contents: Array<{
+      uri: string;
+      text: string;
+      mimeType?: string;
+    }>;
+  }>;
 }
 
 // @alpha (undocumented)
@@ -97,11 +149,31 @@ export type ActionsServiceAction = {
 };
 
 // @alpha
+export type ActionsServicePrompt = {
+  id: string;
+  name: string;
+  title: string;
+  description: string;
+  template: string;
+  argsSchema?: JSONSchema7;
+};
+
+// @alpha
 export const actionsServiceRef: ServiceRef<
   ActionsService,
   'plugin',
   'singleton'
 >;
+
+// @alpha
+export type ActionsServiceResource = {
+  id: string;
+  name: string;
+  uri: string;
+  title: string;
+  description: string;
+  mimeType?: string;
+};
 
 // @public (undocumented)
 export interface RootSystemMetadataService {

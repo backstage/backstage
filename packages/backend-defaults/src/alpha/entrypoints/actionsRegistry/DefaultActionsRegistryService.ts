@@ -26,6 +26,8 @@ import { z, AnyZodObject } from 'zod';
 import zodToJsonSchema from 'zod-to-json-schema';
 import {
   ActionsRegistryActionOptions,
+  ActionsRegistryPromptOptions,
+  ActionsRegistryResourceOptions,
   ActionsRegistryService,
 } from '@backstage/backend-plugin-api/alpha';
 import {
@@ -38,6 +40,8 @@ import {
 export class DefaultActionsRegistryService implements ActionsRegistryService {
   private actions: Map<string, ActionsRegistryActionOptions<any, any>> =
     new Map();
+  private prompts: Map<string, ActionsRegistryPromptOptions<any>> = new Map();
+  private resources: Map<string, ActionsRegistryResourceOptions> = new Map();
 
   private readonly logger: LoggerService;
   private readonly httpAuth: HttpAuthService;
@@ -158,6 +162,86 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
         }
       },
     );
+
+    router.get('/.backstage/actions/v1/prompts', (_, res) => {
+      return res.json({
+        prompts: Array.from(this.prompts.entries()).map(([id, prompt]) => ({
+          id,
+          name: prompt.name,
+          title: prompt.title,
+          description: prompt.description,
+          template: prompt.template,
+          argsSchema: prompt.argsSchema
+            ? zodToJsonSchema(prompt.argsSchema(z))
+            : undefined,
+        })),
+      });
+    });
+
+    router.get('/.backstage/actions/v1/resources', (_, res) => {
+      return res.json({
+        resources: Array.from(this.resources.entries()).map(
+          ([id, resource]) => ({
+            id,
+            name: resource.name,
+            uri: resource.uri,
+            title: resource.title,
+            description: resource.description,
+            mimeType: resource.mimeType,
+          }),
+        ),
+      });
+    });
+
+    router.post(
+      '/.backstage/actions/v1/resources/read',
+      async (req, res, next) => {
+        try {
+          const { uri } = req.body as { uri: string };
+          const credentials = await this.httpAuth.credentials(req);
+
+          // Find the resource that matches the URI pattern
+          let matchedResource: ActionsRegistryResourceOptions | undefined;
+          let params: Record<string, string> = {};
+
+          for (const [, resource] of this.resources.entries()) {
+            const pattern = resource.uri.replace(/\{([^}]+)\}/g, '([^/]+)');
+            const regex = new RegExp(`^${pattern}$`);
+            const match = uri.match(regex);
+
+            if (match) {
+              matchedResource = resource;
+              // Extract params from URI
+              const paramNames = [...resource.uri.matchAll(/\{([^}]+)\}/g)].map(
+                m => m[1],
+              );
+              params = Object.fromEntries(
+                paramNames.map((name, i) => [name, match[i + 1]]),
+              );
+              break;
+            }
+          }
+
+          if (!matchedResource) {
+            throw new NotFoundError(`No resource found matching URI: ${uri}`);
+          }
+
+          const contents = await matchedResource.handler(
+            new URL(uri, 'resource://'),
+            params,
+            {
+              credentials,
+              logger: this.logger,
+            },
+          );
+
+          res.json(contents);
+        } catch (error) {
+          next(error);
+        }
+      },
+    );
+
     return router;
   }
 
@@ -172,5 +256,27 @@ export class DefaultActionsRegistryService implements ActionsRegistryService {
     }
 
     this.actions.set(id, options);
+  }
+
+  registerPrompt<TArgsSchema extends AnyZodObject>(
+    options: ActionsRegistryPromptOptions<TArgsSchema>,
+  ): void {
+    const id = `${this.metadata.getId()}:${options.name}`;
+
+    if (this.prompts.has(id)) {
+      throw new Error(`Prompt with id "${id}" is already registered`);
+    }
+
+    this.prompts.set(id, options);
+  }
+
+  registerResource(options: ActionsRegistryResourceOptions): void {
+    const id = `${this.metadata.getId()}:${options.name}`;
+
+    if (this.resources.has(id)) {
+      throw new Error(`Resource with id "${id}" is already registered`);
+    }
+
+    this.resources.set(id, options);
   }
 }

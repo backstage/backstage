@@ -23,9 +23,16 @@ export type {
   ActionsRegistryService,
   ActionsRegistryActionOptions,
   ActionsRegistryActionContext,
+  ActionsRegistryPromptOptions,
+  ActionsRegistryResourceOptions,
 } from './ActionsRegistryService';
 
-export type { ActionsService, ActionsServiceAction } from './ActionsService';
+export type {
+  ActionsService,
+  ActionsServiceAction,
+  ActionsServicePrompt,
+  ActionsServiceResource,
+} from './ActionsService';
 
 export {
   actionsRegistryServiceRef,
