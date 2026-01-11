@@ -17122,8 +17122,8 @@ __metadata:
   linkType: hard
 
 "@rspack/dev-server@npm:^1.1.4":
-  version: 1.1.4
-  resolution: "@rspack/dev-server@npm:1.1.4"
+  version: 1.1.5
+  resolution: "@rspack/dev-server@npm:1.1.5"
   dependencies:
     chokidar: "npm:^3.6.0"
     http-proxy-middleware: "npm:^2.0.9"
@@ -17132,7 +17132,7 @@ __metadata:
     ws: "npm:^8.18.0"
   peerDependencies:
     "@rspack/core": "*"
-  checksum: 10/9409af5b9cd6f3de70caea7f82595a5e99e39ec203ef93fc9973fefdcacf6b7d264d07e927a2331d73d7d606f211865d82386bdde410f6be506ff91a1af89d99
+  checksum: 10/67a747d998f9a2449cb1c6c5791ffc812c9d99a7219595359ce960063f344fde9f8f2000bbc9633dc490082f69b74a20b8f319697bd19beca65bd108f5dff5e5
   languageName: node
   linkType: hard
 
