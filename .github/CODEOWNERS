@@ -10,7 +10,7 @@ yarn.lock                                         @backstage/maintainers @backst
 /.changeset                                       @backstage/operations-maintainers
 /.changeset/*.md
 /.github                                          @backstage/operations-maintainers
-/.github/vale                                     @backstage/documentation-maintainers
+/.github/vale                                     @backstage/maintainers @backstage/documentation-maintainers
 /.patches                                         @backstage/operations-maintainers
 /beps/0001-notifications-system                   @backstage/maintainers @backstage/notifications-maintainers
 /docs                                             @backstage/maintainers @backstage/documentation-maintainers
@@ -25,7 +25,7 @@ yarn.lock                                         @backstage/maintainers @backst
 /docs/plugins/integrating-search-into-plugins.md  @backstage/search-maintainers
 /docs/releases                                    @backstage/operations-maintainers
 /docs/tooling                                     @backstage/tooling-maintainers
-/microsite                                        @backstage/documentation-maintainers
+/microsite                                        @backstage/maintainers @backstage/documentation-maintainers
 /microsite/data/plugins                           @backstage/maintainers
 /microsite/static                                 @backstage/maintainers @backstage/documentation-maintainers
 /packages                                         @backstage/framework-maintainers
