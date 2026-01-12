@@ -85,7 +85,7 @@ function extractClientCredentials(
   req: { headers: { authorization?: string } },
   bodyClientId?: string,
   bodyClientSecret?: string,
-): { clientId: string; clientSecret: string } {
+): { clientId: string; clientSecret: string } | undefined {
   let clientId: string | undefined;
   let clientSecret: string | undefined;
 
@@ -110,12 +110,10 @@ function extractClientCredentials(
     }
   }
 
+  // Return undefined if no credentials provided
+  // CIMD clients don't require credentials (token_endpoint_auth_method: none)
   if (!clientId || !clientSecret) {
-    throw new OidcError(
-      'invalid_client',
-      'Client authentication required',
-      401,
-    );
+    return undefined;
   }
 
   return { clientId, clientSecret };
