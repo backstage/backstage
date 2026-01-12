@@ -49,8 +49,22 @@ describe('CimdClient', () => {
       expect(isCimdUrl('https://example.com/')).toBe(false);
     });
 
-    it('should return false for non-HTTPS URLs', () => {
+    it('should return false for non-HTTPS URLs on public hosts', () => {
       expect(isCimdUrl('http://example.com/metadata')).toBe(false);
+    });
+
+    it('should return true for HTTP localhost URLs (development)', () => {
+      expect(
+        isCimdUrl(
+          'http://localhost:7007/api/auth/.well-known/oauth-client/cli',
+        ),
+      ).toBe(true);
+      expect(
+        isCimdUrl(
+          'http://127.0.0.1:7007/api/auth/.well-known/oauth-client/cli',
+        ),
+      ).toBe(true);
+      expect(isCimdUrl('http://localhost/path')).toBe(true);
     });
 
     it('should return false for non-URL strings', () => {
@@ -66,18 +80,34 @@ describe('CimdClient', () => {
       expect(url.href).toBe('https://example.com/metadata.json');
     });
 
-    it('should throw for non-HTTPS URLs', () => {
+    it('should throw for non-HTTPS URLs on public hosts', () => {
       expect(() => validateCimdUrl('http://example.com/metadata')).toThrow(
         'must be HTTPS',
       );
     });
 
+    it('should allow HTTP for localhost URLs (development)', () => {
+      const url1 = validateCimdUrl(
+        'http://localhost:7007/api/auth/.well-known/oauth-client/cli',
+      );
+      expect(url1.href).toBe(
+        'http://localhost:7007/api/auth/.well-known/oauth-client/cli',
+      );
+
+      const url2 = validateCimdUrl(
+        'http://127.0.0.1:7007/api/auth/.well-known/oauth-client/cli',
+      );
+      expect(url2.href).toBe(
+        'http://127.0.0.1:7007/api/auth/.well-known/oauth-client/cli',
+      );
+    });
+
     it('should throw for URLs without path', () => {
       expect(() => validateCimdUrl('https://example.com')).toThrow(
-        'must be HTTPS with path',
+        'must be HTTPS (or HTTP for localhost) with path',
       );
       expect(() => validateCimdUrl('https://example.com/')).toThrow(
-        'must be HTTPS with path',
+        'must be HTTPS (or HTTP for localhost) with path',
       );
     });
 

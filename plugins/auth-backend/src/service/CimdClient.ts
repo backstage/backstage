@@ -56,12 +56,18 @@ export interface CimdClientInfo {
 }
 
 /**
- * Checks if a client_id is a CIMD URL (HTTPS with a path component).
+ * Checks if a client_id is a CIMD URL.
+ * Requires HTTPS for production, but allows HTTP for localhost (development).
  */
 export function isCimdUrl(clientId: string): boolean {
   try {
     const url = new URL(clientId);
-    return url.protocol === 'https:' && !!url.pathname && url.pathname !== '/';
+    const isHttps = url.protocol === 'https:';
+    const isLocalHttp =
+      url.protocol === 'http:' &&
+      (url.hostname === 'localhost' || url.hostname === '127.0.0.1');
+    const hasPath = !!url.pathname && url.pathname !== '/';
+    return (isHttps || isLocalHttp) && hasPath;
   } catch {
     return false;
   }
@@ -69,6 +75,7 @@ export function isCimdUrl(clientId: string): boolean {
 
 /**
  * Validates and parses a CIMD URL.
+ * Requires HTTPS for production, but allows HTTP for localhost (development).
  * @throws InputError if the URL is invalid per the CIMD spec
  */
 export function validateCimdUrl(clientId: string): URL {
@@ -79,8 +86,13 @@ export function validateCimdUrl(clientId: string): URL {
     throw new InputError('Invalid client_id: not a valid URL');
   }
 
+  const isHttps = url.protocol === 'https:';
+  const isLocalHttp =
+    url.protocol === 'http:' &&
+    (url.hostname === 'localhost' || url.hostname === '127.0.0.1');
+
   const isValid =
-    url.protocol === 'https:' &&
+    (isHttps || isLocalHttp) &&
     url.pathname !== '' &&
     url.pathname !== '/' &&
     !url.hash &&
@@ -89,7 +101,7 @@ export function validateCimdUrl(clientId: string): URL {
 
   if (!isValid) {
     throw new InputError(
-      'Invalid client_id: must be HTTPS with path, no fragment or credentials',
+      'Invalid client_id: must be HTTPS (or HTTP for localhost) with path, no fragment or credentials',
     );
   }
 
@@ -175,7 +187,13 @@ export async function fetchCimdMetadata(
   clientId: string,
 ): Promise<CimdClientInfo> {
   const url = validateCimdUrl(clientId);
-  await validateHostNotPrivate(url.hostname);
+
+  // Skip SSRF validation for localhost (development only)
+  const isLocalhost =
+    url.hostname === 'localhost' || url.hostname === '127.0.0.1';
+  if (!isLocalhost) {
+    await validateHostNotPrivate(url.hostname);
+  }
 
   let response: Response;
   try {

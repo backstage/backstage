@@ -219,6 +219,18 @@ auth:
     allowedRedirectUriPatterns:
       - cursor://*
 
+  experimentalClientIdMetadataDocuments:
+    enabled: true
+    allowedRedirectUriPatterns:
+      - http://127.0.0.1:*
+      - http://localhost:*
+    clients:
+      - name: cli
+        redirectUris:
+          - http://127.0.0.1:*
+        clientName: Backstage CLI
+        scope: openid offline_access
+
   ### Add auth.keyStore.provider to more granularly control how to store JWK data when running
   # the auth-backend.
   #

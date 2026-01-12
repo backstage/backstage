@@ -173,11 +173,15 @@ export class OidcRouter {
       res.json(userInfo);
     });
 
-    if (
-      this.config.getOptionalBoolean(
-        'auth.experimentalDynamicClientRegistration.enabled',
-      )
-    ) {
+    const dcrEnabled = this.config.getOptionalBoolean(
+      'auth.experimentalDynamicClientRegistration.enabled',
+    );
+    const cimdEnabled = this.config.getOptionalBoolean(
+      'auth.experimentalClientIdMetadataDocuments.enabled',
+    );
+
+    // Authorization routes are available when either DCR or CIMD is enabled
+    if (dcrEnabled || cimdEnabled) {
       // Authorization endpoint
       // https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
       // Handles the initial authorization request from the client, validates parameters,
@@ -453,8 +457,10 @@ export class OidcRouter {
           });
         }
       });
+    }
 
-      // Dynamic Client Registration endpoint
+    // Dynamic Client Registration endpoint - only available when DCR is enabled
+    if (dcrEnabled) {
       // https://openid.net/specs/openid-connect-registration-1_0.html#ClientRegistration
       // Allows clients to register themselves dynamically with the provider
       router.post('/v1/register', async (req, res) => {

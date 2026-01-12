@@ -34,6 +34,24 @@ import { OidcDatabase } from '../database/OidcDatabase';
 import { AuthDatabase } from '../database/AuthDatabase';
 import { OidcService } from '../service/OidcService';
 import { TokenIssuer } from '../identity/types';
+import { CimdClientInfo, isCimdUrl } from './CimdClient';
+
+jest.mock('./CimdClient', () => {
+  const actual = jest.requireActual(
+    './CimdClient',
+  ) as typeof import('./CimdClient');
+  return {
+    ...actual,
+    fetchCimdMetadata: jest.fn(),
+  };
+});
+
+import * as CimdClient from './CimdClient';
+
+const mockFetchCimdMetadata =
+  CimdClient.fetchCimdMetadata as jest.MockedFunction<
+    typeof CimdClient.fetchCimdMetadata
+  >;
 
 jest.setTimeout(60_000);
 
@@ -41,6 +59,10 @@ describe('OidcRouter', () => {
   const MOCK_USER_TOKEN = 'mock-user-token';
   const MOCK_USER_ENTITY_REF = 'user:default/test-user';
   const databases = TestDatabases.create();
+
+  afterEach(() => {
+    mockFetchCimdMetadata.mockReset();
+  });
 
   async function createRouter(databaseId: TestDatabaseId) {
     const knex = await databases.init(databaseId);
@@ -986,6 +1008,131 @@ describe('OidcRouter', () => {
           error: 'not_found',
           error_description: "Client 'nonexistent' not found",
         });
+      });
+
+      it('should enable authorization routes when only CIMD is enabled (not DCR)', async () => {
+        const cimdClientId =
+          'http://localhost:7007/api/auth/.well-known/oauth-client/test-cli';
+        const cimdMetadata: CimdClientInfo = {
+          clientId: cimdClientId,
+          clientName: 'Test CLI Client',
+          redirectUris: ['http://localhost:8080/callback'],
+          responseTypes: ['code'],
+          grantTypes: ['authorization_code'],
+          scope: 'openid',
+        };
+        mockFetchCimdMetadata.mockResolvedValue(cimdMetadata);
+
+        // Verify isCimdUrl works correctly
+        expect(isCimdUrl(cimdClientId)).toBe(true);
+
+        const knex = await databases.init(databaseId);
+
+        await knex.migrate.latest({
+          directory: resolvePackagePath(
+            '@backstage/plugin-auth-backend',
+            'migrations',
+          ),
+        });
+
+        const authDatabase = AuthDatabase.create({
+          getClient: async () => knex,
+        });
+
+        const oidcDatabase = await OidcDatabase.create({
+          database: authDatabase,
+        });
+
+        const userInfoDatabase = await UserInfoDatabase.create({
+          database: authDatabase,
+        });
+
+        const mockTokenIssuer = {
+          issueToken: jest.fn(),
+          listPublicKeys: jest.fn(),
+        } as unknown as jest.Mocked<TokenIssuer>;
+
+        const mockAuth = mockServices.auth.mock();
+        const mockHttpAuth = mockServices.httpAuth.mock();
+        // Only CIMD enabled, NOT DCR
+        const mockConfig = mockServices.rootConfig({
+          data: {
+            auth: {
+              experimentalClientIdMetadataDocuments: {
+                enabled: true,
+                clients: [
+                  {
+                    name: 'test-cli',
+                    redirectUris: ['http://localhost:8080/callback'],
+                    clientName: 'Test CLI Client',
+                    scope: 'openid',
+                  },
+                ],
+              },
+              // DCR is NOT enabled
+            },
+          },
+        });
+
+        const oidcRouter = OidcRouter.create({
+          auth: mockAuth,
+          tokenIssuer: mockTokenIssuer,
+          baseUrl: 'http://localhost:7007/api/auth',
+          appUrl: 'http://localhost:3000',
+          logger: mockServices.logger.mock(),
+          userInfo: userInfoDatabase,
+          oidc: oidcDatabase,
+          httpAuth: mockHttpAuth,
+          config: mockConfig,
+        });
+
+        const { server } = await startTestBackend({
+          features: [
+            createBackendPlugin({
+              pluginId: 'auth',
+              register(reg) {
+                reg.registerInit({
+                  deps: { httpRouter: coreServices.httpRouter },
+                  async init({ httpRouter }) {
+                    httpRouter.use(oidcRouter.getRouter());
+                    httpRouter.addAuthPolicy({
+                      path: '/',
+                      allow: 'unauthenticated',
+                    });
+                  },
+                });
+              },
+            }),
+          ],
+        });
+
+        // /v1/authorize should work with CIMD-only config
+        const authorizeResponse = await request(server)
+          .get('/api/auth/v1/authorize')
+          .query({
+            client_id: cimdClientId,
+            redirect_uri: 'http://localhost:8080/callback',
+            response_type: 'code',
+            scope: 'openid',
+            state: 'test-state',
+          });
+
+        expect(authorizeResponse.status).toBe(302);
+
+        // Should redirect to consent screen
+        expect(mockFetchCimdMetadata).toHaveBeenCalledWith(cimdClientId);
+        const location = new URL(authorizeResponse.header.location);
+        expect(location.origin).toBe('http://localhost:3000');
+        expect(location.pathname).toMatch(/^\/oauth2\/authorize\/[a-f0-9-]+$/);
+
+        // /v1/register should NOT be available (DCR disabled)
+        await request(server)
+          .post('/api/auth/v1/register')
+          .send({
+            client_name: 'Test Client',
+            redirect_uris: ['https://example.com/callback'],
+          })
+          .expect(404);
       });
     });
   });
