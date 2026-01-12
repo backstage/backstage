@@ -29,6 +29,7 @@ import { MysqlConnector } from './connectors/mysql';
 import { PgConnector } from './connectors/postgres';
 import { Sqlite3Connector } from './connectors/sqlite3';
 import { Connector } from './types';
+import { wrapKnexMigrations } from './migrations';
 
 /**
  * Provides a config lookup path for a plugin's config block.
@@ -184,7 +185,10 @@ export class DatabaseManagerImpl {
       return this.databaseCache.get(pluginId)!;
     }
 
-    const clientPromise = connector.getClient(pluginId, deps);
+    const clientPromise = connector.getClient(pluginId, deps).then(client => {
+      // Wrap the knex instance to enable migration storage
+      return wrapKnexMigrations(client, pluginId);
+    });
     this.databaseCache.set(pluginId, clientPromise);
 
     if (process.env.NODE_ENV !== 'test') {

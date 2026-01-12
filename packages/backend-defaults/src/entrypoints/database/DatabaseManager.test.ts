@@ -31,10 +31,10 @@ describe('DatabaseManagerImpl', () => {
 
   it('calls the right connector, only once per plugin id', async () => {
     const connector1 = {
-      getClient: jest.fn(),
+      getClient: jest.fn().mockResolvedValue({}),
     } satisfies Connector;
     const connector2 = {
-      getClient: jest.fn(),
+      getClient: jest.fn().mockResolvedValue({}),
     } satisfies Connector;
 
     const impl = new DatabaseManagerImpl(
@@ -65,10 +65,10 @@ describe('DatabaseManagerImpl', () => {
 
   it('respects per-plugin overridden connectors', async () => {
     const connector1 = {
-      getClient: jest.fn(),
+      getClient: jest.fn().mockResolvedValue({}),
     } satisfies Connector;
     const connector2 = {
-      getClient: jest.fn(),
+      getClient: jest.fn().mockResolvedValue({}),
     } satisfies Connector;
 
     const impl = new DatabaseManagerImpl(
@@ -100,7 +100,7 @@ describe('DatabaseManagerImpl', () => {
 
   it('migration skip options take precedence over config', async () => {
     const connector = {
-      getClient: jest.fn(),
+      getClient: jest.fn().mockResolvedValue({}),
     } satisfies Connector;
 
     const impl = new DatabaseManagerImpl(
@@ -129,7 +129,7 @@ describe('DatabaseManagerImpl', () => {
 
   it('plugin can skip migrations using config', async () => {
     const connector = {
-      getClient: jest.fn(),
+      getClient: jest.fn().mockResolvedValue({}),
     } satisfies Connector;
 
     const impl = new DatabaseManagerImpl(
@@ -238,5 +238,36 @@ describe('DatabaseManagerImpl', () => {
     // Destroy should not have been called, but we should have read the config
     expect(destroy).not.toHaveBeenCalled();
     expect(getConfig).toHaveBeenCalled();
+  });
+
+  it('returns a wrapped knex instance with migration storage', async () => {
+    const mockKnex = {
+      migrate: {
+        latest: jest.fn(),
+        down: jest.fn(),
+      },
+      schema: {
+        hasTable: jest.fn().mockResolvedValue(false),
+        createTable: jest.fn().mockResolvedValue(undefined),
+      },
+      fn: {
+        now: jest.fn().mockReturnValue('now'),
+      },
+    };
+
+    const connector = {
+      getClient: jest.fn().mockResolvedValue(mockKnex),
+    } satisfies Connector;
+
+    const impl = new DatabaseManagerImpl(new ConfigReader({ client: 'pg' }), {
+      pg: connector,
+    });
+
+    const client = await impl.forPlugin('plugin1', deps).getClient();
+
+    // The wrapped client should have a modified migrate.latest
+    expect(client.migrate.latest).toBeDefined();
+    // It should NOT be the same function as the original
+    expect(client.migrate.latest).not.toBe(mockKnex.migrate.latest);
   });
 });
