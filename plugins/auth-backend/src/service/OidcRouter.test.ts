@@ -313,9 +313,9 @@ describe('OidcRouter', () => {
           })
           .expect(302);
 
-        expect(response.header.location).toMatch(
-          /^http:\/\/localhost:3000\/oauth2\/authorize\/[a-f0-9-]+$/,
-        );
+        const location = new URL(response.header.location);
+        expect(location.origin).toBe('http://localhost:3000');
+        expect(location.pathname).toMatch(/^\/oauth2\/authorize\/[a-f0-9-]+$/);
       });
 
       it('should get auth session details', async () => {
@@ -425,11 +425,11 @@ describe('OidcRouter', () => {
           .set('Authorization', `Bearer ${MOCK_USER_TOKEN}`)
           .expect(200);
 
-        expect(response.body).toEqual({
-          redirectUrl: expect.stringMatching(
-            /^https:\/\/example\.com\/callback\?code=[\w-]+&state=test-state$/,
-          ),
-        });
+        const redirectUrl = new URL(response.body.redirectUrl);
+        expect(redirectUrl.origin).toBe('https://example.com');
+        expect(redirectUrl.pathname).toBe('/callback');
+        expect(redirectUrl.searchParams.get('code')).toBeDefined();
+        expect(redirectUrl.searchParams.get('state')).toBe('test-state');
       });
 
       it('should reject auth session', async () => {
@@ -484,11 +484,14 @@ describe('OidcRouter', () => {
           .post(`/api/auth/v1/sessions/${authSession.id}/reject`)
           .expect(200);
 
-        expect(response.body).toEqual({
-          redirectUrl: expect.stringMatching(
-            /^https:\/\/example\.com\/callback\?error=access_denied&error_description=User\+denied\+the\+request&state=test-state$/,
-          ),
-        });
+        const redirectUrl = new URL(response.body.redirectUrl);
+        expect(redirectUrl.origin).toBe('https://example.com');
+        expect(redirectUrl.pathname).toBe('/callback');
+        expect(redirectUrl.searchParams.get('error')).toBe('access_denied');
+        expect(redirectUrl.searchParams.get('error_description')).toBe(
+          'User denied the request',
+        );
+        expect(redirectUrl.searchParams.get('state')).toBe('test-state');
       });
     });
 

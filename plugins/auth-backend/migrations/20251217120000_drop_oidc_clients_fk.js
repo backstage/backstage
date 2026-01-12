@@ -33,6 +33,11 @@ exports.up = async function up(knex) {
  * @param {import('knex').Knex} knex
  */
 exports.down = async function down(knex) {
+  // Delete sessions with CIMD client_ids (not in oidc_clients) before re-adding FK
+  await knex('oauth_authorization_sessions')
+    .whereNotIn('client_id', knex('oidc_clients').select('client_id'))
+    .delete();
+
   await knex.schema.alterTable('oauth_authorization_sessions', table => {
     table.foreign('client_id').references('client_id').inTable('oidc_clients');
   });

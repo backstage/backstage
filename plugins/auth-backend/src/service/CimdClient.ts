@@ -119,7 +119,7 @@ function isNonPublicIp(ip: string): boolean {
     // Only allow public unicast addresses
     return range !== 'unicast';
   } catch {
-    // If we can't parse the IP, treat it as non-public (block it)
+    // If we can't parse the IP, treat it as non-public and block it
     return true;
   }
 }

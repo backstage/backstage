@@ -231,6 +231,24 @@ export class OidcService {
     };
   }
 
+  /**
+   * Resolves the client name for a given client ID.
+   * For CIMD clients (URL-based), fetches metadata from the URL.
+   * For DCR clients, looks up the client in the database.
+   */
+  private async getClientName(clientId: string): Promise<string> {
+    if (isCimdUrl(clientId)) {
+      const cimdClient = await fetchCimdMetadata(clientId);
+      return cimdClient.clientName;
+    }
+
+    const client = await this.oidc.getClient({ clientId });
+    if (!client) {
+      throw new InputError('Invalid client_id');
+    }
+    return client.clientName;
+  }
+
   private async resolveClient(
     clientId: string,
     redirectUri: string,
@@ -353,18 +371,7 @@ export class OidcService {
       throw new NotFoundError('Authorization session not found or expired');
     }
 
-    // Resolve client name - for CIMD clients, re-fetch metadata; for DCR, lookup in DB
-    let clientName: string;
-    if (isCimdUrl(session.clientId)) {
-      const cimdClient = await fetchCimdMetadata(session.clientId);
-      clientName = cimdClient.clientName;
-    } else {
-      const client = await this.oidc.getClient({ clientId: session.clientId });
-      if (!client) {
-        throw new InputError('Invalid client_id');
-      }
-      clientName = client.clientName;
-    }
+    const clientName = await this.getClientName(session.clientId);
 
     return {
       id: session.id,
