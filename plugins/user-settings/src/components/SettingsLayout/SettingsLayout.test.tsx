@@ -114,6 +114,8 @@ describe('<SettingsLayout />', () => {
           <div>Invalid child element</div>
         </SettingsLayout>,
       ),
-    ).rejects.toThrow('Child of SettingsLayout must be an SettingsLayout.Route');
+    ).rejects.toThrow(
+      'Child of SettingsLayout must be an SettingsLayout.Route',
+    );
   });
 });
