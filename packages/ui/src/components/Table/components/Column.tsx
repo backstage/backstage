@@ -25,11 +25,11 @@ import { RiArrowUpLine, RiArrowDownLine } from '@remixicon/react';
 /** @public */
 export const Column = (props: ColumnProps) => {
   const { classNames, cleanedProps } = useStyles(TableDefinition, props);
-  const { children, ...rest } = cleanedProps;
+  const { className, children, ...rest } = cleanedProps;
 
   return (
     <ReactAriaColumn
-      className={clsx(classNames.head, styles[classNames.head])}
+      className={clsx(classNames.head, styles[classNames.head], className)}
       {...rest}
     >
       {({ allowsSorting, sortDirection }) => (

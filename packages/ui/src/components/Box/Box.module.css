@@ -22,4 +22,32 @@
     font-weight: var(--bui-font-weight-regular);
     color: var(--bui-fg-primary);
   }
+
+  .bui-Box[data-surface='0'] {
+    background-color: var(--bui-bg-surface-0);
+  }
+
+  .bui-Box[data-surface='1'] {
+    background-color: var(--bui-bg-surface-1);
+  }
+
+  .bui-Box[data-surface='2'] {
+    background-color: var(--bui-bg-surface-2);
+  }
+
+  .bui-Box[data-surface='3'] {
+    background-color: var(--bui-bg-surface-3);
+  }
+
+  .bui-Box[data-surface='danger'] {
+    background-color: var(--bui-bg-danger);
+  }
+
+  .bui-Box[data-surface='warning'] {
+    background-color: var(--bui-bg-warning);
+  }
+
+  .bui-Box[data-surface='success'] {
+    background-color: var(--bui-bg-success);
+  }
 }

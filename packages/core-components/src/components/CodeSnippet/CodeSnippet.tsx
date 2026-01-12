@@ -58,6 +58,14 @@ export interface CodeSnippetProps {
    */
   highlightedNumbers?: number[];
   /**
+   * Whether to style the `<code>` block with `white-space: pre-wrap` or `white-space: pre`
+   *
+   * @remarks
+   *
+   * Default: false (`white-space: pre`)
+   */
+  wrapLongLines?: boolean;
+  /**
    * Custom styles applied to code
    *
    * @remarks
@@ -79,6 +87,7 @@ export function CodeSnippet(props: CodeSnippetProps) {
     language,
     showLineNumbers = false,
     highlightedNumbers,
+    wrapLongLines,
     customStyle,
     showCopyCodeButton = false,
   } = props;
@@ -94,6 +103,7 @@ export function CodeSnippet(props: CodeSnippetProps) {
         style={mode}
         showLineNumbers={showLineNumbers}
         wrapLines
+        wrapLongLines={wrapLongLines}
         lineNumberStyle={{ color: theme.palette.textVerySubtle }}
         lineProps={(lineNumber: number) =>
           highlightedNumbers?.includes(lineNumber)

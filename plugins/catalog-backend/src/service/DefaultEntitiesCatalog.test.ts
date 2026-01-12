@@ -1577,10 +1577,11 @@ describe('DefaultEntitiesCatalog', () => {
           totalItems: 0,
           items: {
             type: 'raw',
-            entities: expect.objectContaining({ length: 10 }),
+            entities: expect.any(Array),
           },
           pageInfo: { nextCursor: expect.anything() },
         });
+        expect(response.items.entities).toHaveLength(10);
         response = await catalog.queryEntities({
           ...request,
           cursor: response.pageInfo.nextCursor!,
@@ -1589,10 +1590,11 @@ describe('DefaultEntitiesCatalog', () => {
           totalItems: 0,
           items: {
             type: 'raw',
-            entities: expect.objectContaining({ length: 5 }),
+            entities: expect.any(Array),
           },
           pageInfo: { prevCursor: expect.anything() },
         });
+        expect(response.items.entities).toHaveLength(5);
       },
     );
 

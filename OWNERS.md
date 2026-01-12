@@ -5,11 +5,13 @@
 
 Team: @backstage/maintainers
 
-| Maintainer      | Organization | GitHub                                          | Discord       |
-| --------------- | ------------ | ----------------------------------------------- | ------------- |
-| Patrik Oldsberg | Spotify      | [Rugvip](https://github.com/Rugvip)             | `Rugvip#0019` |
-| Fredrik Adelöw  | Spotify      | [freben](https://github.com/freben)             | `freben#3926` |
-| Ben Lambert     | Spotify      | [benjdlambert](https://github.com/benjdlambert) | `blam#2159`   |
+| Maintainer      | Organization | GitHub                                                | Discord       |
+| --------------- | ------------ | ----------------------------------------------------- | ------------- |
+| André Wanlin    | Spotify      | [awanlin](https://github.com/awanlin)                 | `ahhhndre`    |
+| Aramis Sennyey  | DoorDash     | [aramissennyeydd](https://github.com/aramissennyeydd) | `Aramis#7984` |
+| Ben Lambert     | Spotify      | [benjdlambert](https://github.com/benjdlambert)       | `blam#2159`   |
+| Fredrik Adelöw  | Spotify      | [freben](https://github.com/freben)                   | `freben#3926` |
+| Patrik Oldsberg | Spotify      | [Rugvip](https://github.com/Rugvip)                   | `Rugvip#0019` |
 
 ## Project Areas
 
@@ -78,7 +80,7 @@ Scope: The Backstage Documentation and Microsite, excluding the plugins listing
 
 | Name            | Organization  | GitHub                                                | Discord       |
 | --------------- | ------------- | ----------------------------------------------------- | ------------- |
-| Andre Wanlin    | Spotify       | [awanlin](https://github.com/awanlin)                 | `ahhhndre`    |
+| André Wanlin    | Spotify       | [awanlin](https://github.com/awanlin)                 | `ahhhndre`    |
 | Aramis Sennyey  | DoorDash      | [aramissennyeydd](https://github.com/aramissennyeydd) | `Aramis#7984` |
 | Peter Macdonald | VodafoneZiggo | [Parsifal-M](https://github.com/Parsifal-M)           | `parsifal`    |
 
@@ -267,6 +269,7 @@ Scope: The Scaffolder frontend and backend plugins, and related tooling.
 | Niklas Gustavsson | Spotify      | [protocol7](https://github.com/protocol7)   | <ngn@spotify.com>   |
 | Dave Zolotusky    | Spotify      | [dzolotusky](https://github.com/dzolotusky) | <dzolo@spotify.com> |
 | Pia Nilsson       | Spotify      | [pianilsson](https://github.com/pianilsson) | <pia@spotify.com>   |
+| Stefan Särne      | Spotify      | [ssarne](https://github.com/ssarne)         | <ssa@spotify.com>   |
 
 ## Organization Members
 
@@ -274,9 +277,7 @@ Scope: The Scaffolder frontend and backend plugins, and related tooling.
 | ------------------------------ | ------------------------- | ----------------------------------------------------- | ------------------------------ |
 | Adam Harvey                    | Okta                      | [adamdmharvey](https://github.com/adamdmharvey)       | `adamharvey_`                  |
 | Alex Crome                     |                           | [afscrome](https://github.com/afscrome)               | `afscrome`                     |
-| Andre Wanlin                   | Spotify                   | [awanlin](https://github.com/awanlin)                 | `ahhhndre`                     |
 | Andrew Thauer                  | Wealthsimple              | [andrewthauer](https://github.com/andrewthauer)       | `andrewthauer#3060`            |
-| Aramis Sennyey                 | DoorDash                  | [aramissennyeydd](https://github.com/aramissennyeydd) | `Aramis#7984`                  |
 | Brian Fletcher                 | Roadie.io                 | [punkle](https://github.com/punkle)                   | `Brian Fletcher#7051`          |
 | Carlos Esteban Lopez Jaramillo | VMWare                    | [luchillo17](https://github.com/luchillo17)           | `luchillo17#8777`              |
 | David Tuite                    | Roadie.io                 | [dtuite](https://github.com/dtuite)                   | `David Tuite (roadie.io)#1010` |

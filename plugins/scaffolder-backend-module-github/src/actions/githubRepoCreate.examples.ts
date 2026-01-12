@@ -1021,4 +1021,19 @@ export const examples: TemplateExample[] = [
       ],
     }),
   },
+  {
+    description: 'Allow workflow access for organization.',
+    example: yaml.stringify({
+      steps: [
+        {
+          action: 'github:repo:create',
+          name: 'Create a new GitHub repository that allows org-wide access to its workflows',
+          input: {
+            repoUrl: 'github.com?owner=owner&repo=repo',
+            workflowAccess: 'organization',
+          },
+        },
+      ],
+    }),
+  },
 ];

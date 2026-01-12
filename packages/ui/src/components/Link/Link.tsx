@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import { forwardRef } from 'react';
-import { Link as AriaLink, RouterProvider } from 'react-aria-components';
+import { forwardRef, useRef } from 'react';
+import { useLink } from 'react-aria';
+import { RouterProvider } from 'react-aria-components';
 import clsx from 'clsx';
 import { useStyles } from '../../hooks/useStyles';
 import { LinkDefinition } from './definition';
@@ -24,9 +25,7 @@ import { useNavigate, useHref } from 'react-router-dom';
 import { isExternalLink } from '../../utils/isExternalLink';
 import styles from './Link.module.css';
 
-/** @public */
-export const Link = forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
-  const navigate = useNavigate();
+const LinkInternal = forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
   const { classNames, dataAttributes, cleanedProps } = useStyles(
     LinkDefinition,
     {
@@ -37,29 +36,65 @@ export const Link = forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
     },
   );
 
-  const { className, href, ...restProps } = cleanedProps;
+  const {
+    className,
+    href,
+    title,
+    children,
+    onPress,
+    variant,
+    weight,
+    color,
+    truncate,
+    slot,
+    ...restProps
+  } = cleanedProps;
 
-  const isExternal = isExternalLink(href);
+  const internalRef = useRef<HTMLAnchorElement>(null);
+  const linkRef = (ref || internalRef) as React.RefObject<HTMLAnchorElement>;
 
-  const component = (
-    <AriaLink
-      ref={ref}
-      className={clsx(classNames.root, styles[classNames.root], className)}
-      href={href}
-      {...dataAttributes}
-      {...restProps}
-    />
+  // Use useLink hook to get link props
+  // For internal links, this will use the RouterProvider's navigate function
+  const { linkProps } = useLink(
+    {
+      href,
+      onPress,
+      ...restProps,
+    },
+    linkRef,
   );
 
-  // If it's an external link, render AriaLink without RouterProvider
+  return (
+    <a
+      {...linkProps}
+      {...dataAttributes}
+      {...(restProps as React.AnchorHTMLAttributes<HTMLAnchorElement>)}
+      ref={linkRef}
+      href={href}
+      title={title}
+      className={clsx(classNames.root, styles[classNames.root], className)}
+    >
+      {children}
+    </a>
+  );
+});
+
+LinkInternal.displayName = 'LinkInternal';
+
+/** @public */
+export const Link = forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
+  const navigate = useNavigate();
+  const isExternal = isExternalLink(props.href);
+
+  // If it's an external link, render without RouterProvider
   if (isExternal) {
-    return component;
+    return <LinkInternal {...props} ref={ref} />;
   }
 
-  // For internal links, use RouterProvider
+  // For internal links, wrap in RouterProvider so useLink can access the router
   return (
     <RouterProvider navigate={navigate} useHref={useHref}>
-      {component}
+      <LinkInternal {...props} ref={ref} />
     </RouterProvider>
   );
 });

@@ -19,6 +19,31 @@ const scaffolderSidebar = tryToLoadCustomSidebar(
   '../docs/features/software-templates/api/sidebar.ts',
 );
 
+function sidebarElementWithIndex(
+  element: {
+    description?: string;
+    differentiator?: string;
+    label: string;
+    docId?: string;
+  },
+  children: Array<string | object>,
+) {
+  const { label, description, differentiator = '' } = element;
+  return {
+    type: 'category',
+    label,
+    description,
+    link: {
+      type: 'generated-index',
+      title: label,
+      slug: `/${differentiator}${label
+        .toLowerCase()
+        .replace(/[^a-z0-9]/g, '-')}/generated-index`,
+    },
+    items: children,
+  };
+}
+
 export default {
   docs: [
     makeGeneratedIndexCategory('Overview', 'overview', [
@@ -92,17 +117,8 @@ export default {
       ]),
 
       {
-        type: 'category',
-        label: 'Kubernetes',
-        items: [
-          'features/kubernetes/overview',
-          'features/kubernetes/installation',
-          'features/kubernetes/configuration',
-          'features/kubernetes/authentication',
-          'features/kubernetes/authentication-strategies',
-          'features/kubernetes/troubleshooting',
-          'features/kubernetes/proxy',
-        ],
+        label: 'Integrations',
+        description: 'Connect and integrate with external services.',
       },
 
       {

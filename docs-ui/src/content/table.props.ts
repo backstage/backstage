@@ -267,7 +267,7 @@ export const tablePaginationPropDefs: Record<string, PropDef> = {
   ...stylePropDefs,
 };
 
-export const tableUsageSnippet = `import { Cell, ..., TableHeader, TablePagination } from '@backstage/ui';
+export const tableUsageSnippet = `import { Cell, CellText, ..., TableHeader, TablePagination } from '@backstage/ui';
 
 <Table>
   <TableHeader>
@@ -275,14 +275,14 @@ export const tableUsageSnippet = `import { Cell, ..., TableHeader, TablePaginati
   </TableHeader>
   <TableBody>
     <Row>
-      <Cell />
+      <CellText title="Example" />
       <CellProfile />
     </Row>
   </TableBody>
 </Table>
 <TablePagination />`;
 
-export const tableBasicSnippet = `import { Table, TableHeader, Column, TableBody, Row, Cell, CellProfile, TablePagination, useTable } from '@backstage/ui';
+export const tableBasicSnippet = `import { Table, TableHeader, Column, TableBody, Row, CellText, CellProfile, TablePagination, useTable } from '@backstage/ui';
 
 const data = [
   {
@@ -318,11 +318,60 @@ const { data: paginatedData, paginationProps } = useTable({
           src={item.image}
           href={item.website}
         />
-        <Cell title={item.genre} />
-        <Cell title={item.yearFormed.toString()} />
-        <Cell title={item.albums.toString()} />
+        <CellText title={item.genre} />
+        <CellText title={item.yearFormed.toString()} />
+        <CellText title={item.albums.toString()} />
       </Row>
     ))}
   </TableBody>
 </Table>
 <TablePagination {...paginationProps} />`;
+
+export const tableSelectionActionsSnippet = `import { Table, TableHeader, TableBody, Column, Row, CellText } from '@backstage/ui';
+
+function MyTable() {
+  const [selectedKeys, setSelectedKeys] = React.useState(new Set([]));
+
+  return (
+    <Table
+      selectionMode="multiple"
+      selectionBehavior="toggle"
+      selectedKeys={selectedKeys}
+      onSelectionChange={setSelectedKeys}
+      onRowAction={(key) => console.log('Opening', key)}
+    >
+      <TableHeader>
+        <Column isRowHeader>Name</Column>
+        <Column>Status</Column>
+      </TableHeader>
+      <TableBody>
+        <Row id="1">
+          <CellText title="Component A" />
+          <CellText title="Active" />
+        </Row>
+        <Row id="2">
+          <CellText title="Component B" />
+          <CellText title="Inactive" />
+        </Row>
+      </TableBody>
+    </Table>
+  );
+}`;
+
+export const tableSelectionModeSnippet = `<Table
+  selectionMode="multiple" // or "single"
+  selectionBehavior="toggle"
+  selectedKeys={selectedKeys}
+  onSelectionChange={setSelectedKeys}
+>
+  {/* ... */}
+</Table>`;
+
+export const tableSelectionBehaviorSnippet = `<Table
+  selectionMode="multiple"
+  selectionBehavior="toggle" // or "replace"
+  selectedKeys={selectedKeys}
+  onSelectionChange={setSelectedKeys}
+>
+  {/* ... */}
+</Table>`;

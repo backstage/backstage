@@ -17,6 +17,7 @@
 import { Breakpoint } from '../..';
 import { ReactElement, ReactNode } from 'react';
 import { ButtonProps as RAButtonProps } from 'react-aria-components';
+import { Responsive, Surface } from '../../types';
 
 /**
  * Properties for {@link Button}
@@ -34,4 +35,6 @@ export interface ButtonProps extends RAButtonProps {
   iconEnd?: ReactElement;
   children?: ReactNode;
   loading?: boolean;
+  /** Surface the button is placed on. Defaults to context surface if available */
+  onSurface?: Responsive<Surface>;
 }

@@ -23,7 +23,7 @@ jobs:
       comment-cache-key: ${{ steps.hash.outputs.COMMENT_FILE_HASH }}
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@95d9a5deda9de15063e7595e9719c11c38c90ae2 # v2.13.2
+        uses: step-security/harden-runner@df199fb7be9f65074067a9eb93f12bb4c5547cf2 # v2.13.3
         with:
           disable-sudo: true
           egress-policy: block
@@ -32,7 +32,7 @@ jobs:
 
       - name: 'Download artifacts'
         # Fetch output (zip archive) from the workflow run that triggered this workflow.
-        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7.1.0
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
         with:
           script: |
             let allArtifacts = await github.rest.actions.listWorkflowRunArtifacts({
@@ -99,7 +99,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
-        uses: actions/checkout@08eba0b27e820071cde6df949e0beb9ba4906955 # v4
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
 
       - name: Fetch cached Manifests File
         id: cache
@@ -115,13 +115,13 @@ jobs:
         with:
           issue-number: ${{ needs.setup.outputs.pr-number }}
           comment-author: 'github-actions[bot]'
-          body-includes: API changes
+          body-includes: api-breaking-changes-comment
           direction: last
 
       - name: Create or Update Comment with API Changes
         uses: peter-evans/create-or-update-comment@71345be0265236311c031f5c7866368bd1eff043 # v4
         with:
           comment-id: ${{ steps.find-comment.outputs.comment-id }}
-          issue-number: ${{ github.event.pull_request.number }}
+          issue-number: ${{ needs.setup.outputs.pr-number }}
           body-path: comment.md
           edit-mode: replace

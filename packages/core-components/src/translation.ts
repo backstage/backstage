@@ -127,5 +127,10 @@ export const coreComponentsTranslationRef = createTranslationRef({
       title:
         'You do not appear to be signed in. Please try reloading the browser page.',
     },
+    logViewer: {
+      searchField: {
+        placeholder: 'Search',
+      },
+    },
   },
 });
