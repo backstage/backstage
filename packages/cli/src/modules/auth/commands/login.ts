@@ -91,15 +91,15 @@ export async function login(argv: string[]) {
   const authBaseUrl = `${backendBaseUrl}/api/auth`;
 
   const callback = await startCallbackServer({ state: cryptoRandom() });
-  const { client_id, client_secret } = await registerClient(
-    authBaseUrl,
-    callback.url,
-  );
+
+  // Use CIMD (Client ID Metadata Document) URL as client_id
+  // The server hosts the metadata at this well-known URL
+  const clientId = `${authBaseUrl}/.well-known/oauth-client/cli`;
 
   const { verifier, challenge, state } = createPkceState();
   const authorizeUrl = buildAuthorizeUrl({
     authBaseUrl,
-    clientId: client_id,
+    clientId,
     redirectUri: callback.url,
     state,
     challenge,
@@ -119,8 +119,7 @@ export async function login(argv: string[]) {
   await persistInstance({
     instanceName,
     backendBaseUrl,
-    clientId: client_id,
-    clientSecret: client_secret,
+    clientId,
     token,
   });
 
@@ -223,23 +222,6 @@ function deriveInstanceName(url: string): string {
   return new URL(url).host;
 }
 
-async function registerClient(authBase: string, redirectUri: string) {
-  return await httpJson<{ client_id: string; client_secret: string }>(
-    `${authBase}/v1/register`,
-    {
-      method: 'POST',
-      body: {
-        client_name: 'Backstage CLI',
-        redirect_uris: [redirectUri],
-        response_types: ['code'],
-        grant_types: ['authorization_code'],
-        scope: 'openid offline_access',
-      },
-      signal: AbortSignal.timeout(30_000),
-    },
-  );
-}
-
 function createPkceState() {
   const verifier = generateVerifier();
   const challenge = challengeFromVerifier(verifier);
@@ -316,15 +298,12 @@ async function persistInstance(options: {
   instanceName: string;
   backendBaseUrl: string;
   clientId: string;
-  clientSecret: string;
   token: { access_token: string; refresh_token?: string; expires_in: number };
 }) {
-  const { instanceName, backendBaseUrl, clientId, clientSecret, token } =
-    options;
+  const { instanceName, backendBaseUrl, clientId, token } = options;
   const secretStore = await getSecretStore();
   await withMetadataLock(async () => {
     const service = `backstage-cli:instance:${instanceName}`;
-    await secretStore.set(service, 'clientSecret', clientSecret);
     if (token.refresh_token) {
       await secretStore.set(service, 'refreshToken', token.refresh_token);
     } else {

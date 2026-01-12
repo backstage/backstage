@@ -136,10 +136,6 @@ describe('auth', () => {
       expect(mockStorage.getInstanceByName).toHaveBeenCalledWith('test');
       expect(mockSecretStoreInstance.get).toHaveBeenCalledWith(
         'backstage-cli:instance:test',
-        'clientSecret',
-      );
-      expect(mockSecretStoreInstance.get).toHaveBeenCalledWith(
-        'backstage-cli:instance:test',
         'refreshToken',
       );
       expect(mockHttp.httpJson).toHaveBeenCalledWith(
@@ -183,53 +179,6 @@ describe('auth', () => {
       await expect(refreshAccessToken('test')).rejects.toThrow(
         'Access token is expired and no refresh token is available',
       );
-    });
-
-    it('should throw error if client ID or secret is missing', async () => {
-      const now = Date.now();
-
-      const testCases = [
-        {
-          instance: {
-            name: 'test',
-            baseUrl: 'http://localhost:7007',
-            clientId: '',
-            issuedAt: now - 3600_000,
-            accessToken: 'old-token',
-            accessTokenExpiresAt: now - 60_000,
-          },
-          getMock: async (_service: string, account: string) => {
-            if (account === 'refreshToken') return 'refresh-token';
-            return undefined;
-          },
-        },
-        {
-          instance: {
-            name: 'test',
-            baseUrl: 'http://localhost:7007',
-            clientId: 'test-client-id',
-            issuedAt: now - 3600_000,
-            accessToken: 'old-token',
-            accessTokenExpiresAt: now - 60_000,
-          },
-          getMock: async (_service: string, account: string) => {
-            if (account === 'refreshToken') return 'refresh-token';
-            return undefined;
-          },
-        },
-      ];
-
-      for (const { instance, getMock } of testCases) {
-        mockStorage.withMetadataLock.mockImplementation(
-          async (fn: () => Promise<any>) => fn(),
-        );
-        mockStorage.getInstanceByName.mockResolvedValue(instance);
-        mockSecretStoreInstance.get.mockImplementation(getMock);
-
-        await expect(refreshAccessToken('test')).rejects.toThrow(
-          'Missing stored credentials',
-        );
-      }
     });
 
     it('should use metadata lock during refresh', async () => {

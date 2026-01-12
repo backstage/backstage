@@ -452,7 +452,7 @@ export class OidcService {
     codeVerifier?: string;
     grantType: string;
     expiresIn: number;
-    clientCredentials: { clientId: string; clientSecret: string };
+    clientCredentials?: { clientId: string; clientSecret: string };
   }) {
     const {
       code,
@@ -465,13 +465,6 @@ export class OidcService {
 
     if (grantType !== 'authorization_code') {
       throw new InputError('Unsupported grant type');
-    }
-
-    const isValidClient = await this.#verifyClientCredentials(
-      clientCredentials,
-    );
-    if (!isValidClient) {
-      throw new AuthenticationError('Invalid client credentials');
     }
 
     const authCode = await this.oidc.getAuthorizationCode({ code });
@@ -505,6 +498,20 @@ export class OidcService {
 
     if (!session.userEntityRef) {
       throw new AuthenticationError('No user associated with authorization');
+    }
+
+    // Verify client credentials for DCR clients (non-CIMD)
+    // CIMD clients use token_endpoint_auth_method: none, so no credentials needed
+    if (!isCimdUrl(session.clientId)) {
+      if (!clientCredentials) {
+        throw new AuthenticationError('Client credentials required');
+      }
+      const isValidClient = await this.#verifyClientCredentials(
+        clientCredentials,
+      );
+      if (!isValidClient) {
+        throw new AuthenticationError('Invalid client credentials');
+      }
     }
 
     if (session.codeChallenge) {

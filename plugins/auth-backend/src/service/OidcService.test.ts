@@ -31,6 +31,7 @@ import { OidcDatabase } from '../database/OidcDatabase';
 import { UserInfoDatabase } from '../database/UserInfoDatabase';
 import { OfflineSessionDatabase } from '../database/OfflineSessionDatabase';
 import { OfflineAccessService } from './OfflineAccessService';
+import { getRefreshTokenId } from '../lib/refreshToken';
 import crypto from 'node:crypto';
 import { AnyJWK, TokenIssuer } from '../identity/types';
 import { CimdClientInfo } from './CimdClient';
@@ -1340,7 +1341,7 @@ describe('OidcService', () => {
 
     describe('refresh tokens', () => {
       it('should issue refresh token when offline_access scope is requested', async () => {
-        const { service, mocks } = await createOidcService(databaseId);
+        const { service, mocks } = await createOidcService({ databaseId });
         const mockToken = 'mock-jwt-token';
         mocks.tokenIssuer.issueToken.mockResolvedValue({ token: mockToken });
 
@@ -1380,7 +1381,7 @@ describe('OidcService', () => {
       });
 
       it('should not issue refresh token without offline_access scope', async () => {
-        const { service, mocks } = await createOidcService(databaseId);
+        const { service, mocks } = await createOidcService({ databaseId });
         const mockToken = 'mock-jwt-token';
         mocks.tokenIssuer.issueToken.mockResolvedValue({ token: mockToken });
 
@@ -1419,7 +1420,7 @@ describe('OidcService', () => {
       });
 
       it('should refresh access token with valid refresh token', async () => {
-        const { service, mocks } = await createOidcService(databaseId);
+        const { service, mocks } = await createOidcService({ databaseId });
         const mockToken = 'mock-jwt-token';
         const mockNewToken = 'mock-new-jwt-token';
 
@@ -1476,7 +1477,7 @@ describe('OidcService', () => {
       });
 
       it('should reject invalid refresh token', async () => {
-        const { service } = await createOidcService(databaseId);
+        const { service } = await createOidcService({ databaseId });
 
         const client = await service.registerClient({
           clientName: 'Test Client',
@@ -1495,7 +1496,9 @@ describe('OidcService', () => {
       });
 
       it('should reject expired refresh token', async () => {
-        const { service, mocks, knex } = await createOidcService(databaseId);
+        const { service, mocks, knex } = await createOidcService({
+          databaseId,
+        });
         const mockToken = 'mock-jwt-token';
         mocks.tokenIssuer.issueToken.mockResolvedValue({ token: mockToken });
 
@@ -1530,7 +1533,6 @@ describe('OidcService', () => {
         });
 
         // Get session ID from token and mark as expired by updating created_at
-        const { getRefreshTokenId } = await import('../lib/refreshToken');
         const sessionId = getRefreshTokenId(tokenResult.refreshToken!);
 
         await knex('offline_sessions')

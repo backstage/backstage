@@ -41,17 +41,12 @@ export async function refreshAccessToken(
   return withMetadataLock(async () => {
     const instance = await getInstanceByName(instanceName);
 
-    const clientId = instance.clientId;
     const service = `backstage-cli:instance:${instanceName}`;
-    const clientSecret = (await secretStore.get(service, 'clientSecret')) ?? '';
     const refreshToken = (await secretStore.get(service, 'refreshToken')) ?? '';
     if (!refreshToken) {
       throw new Error(
         'Access token is expired and no refresh token is available',
       );
-    }
-    if (!clientId || !clientSecret) {
-      throw new Error('Missing stored credentials');
     }
 
     const response = await httpJson<unknown>(
