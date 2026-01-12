@@ -18,6 +18,7 @@ import { renderInTestApp } from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { SettingsLayout } from './SettingsLayout';
+
 jest.mock('@backstage/core-components', () => {
   const actual = jest.requireActual('@backstage/core-components');
   return {
