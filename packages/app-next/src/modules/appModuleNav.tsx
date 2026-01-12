@@ -39,6 +39,7 @@ import {
   UserSettingsSignInAvatar,
 } from '@backstage/plugin-user-settings';
 import { makeStyles } from '@material-ui/core/styles';
+import { compatWrapper } from '@backstage/core-compat-api';
 
 const useSidebarLogoStyles = makeStyles({
   root: {
