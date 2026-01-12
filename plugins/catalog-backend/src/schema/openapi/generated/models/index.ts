@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 The Backstage Authors
+ * Copyright 2026 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,10 +31,21 @@ export * from '../models/EntityFacet.model';
 export * from '../models/EntityFacetsResponse.model';
 export * from '../models/EntityLink.model';
 export * from '../models/EntityMeta.model';
+export * from '../models/EntityPredicate.model';
+export * from '../models/EntityPredicateOneOf.model';
+export * from '../models/EntityPredicateOneOf1.model';
+export * from '../models/EntityPredicateOneOf2.model';
+export * from '../models/EntityPredicateValue.model';
+export * from '../models/EntityPredicateValueOneOf.model';
+export * from '../models/EntityPredicateValueOneOf1.model';
+export * from '../models/EntityPredicateValueOneOf1InInner.model';
 export * from '../models/EntityRelation.model';
 export * from '../models/ErrorError.model';
 export * from '../models/ErrorRequest.model';
 export * from '../models/ErrorResponse.model';
+export * from '../models/GetEntitiesByPredicates200Response.model';
+export * from '../models/GetEntitiesByPredicates200ResponsePageInfo.model';
+export * from '../models/GetEntitiesByPredicatesRequest.model';
 export * from '../models/GetEntitiesByRefsRequest.model';
 export * from '../models/GetLocations200ResponseInner.model';
 export * from '../models/Location.model';

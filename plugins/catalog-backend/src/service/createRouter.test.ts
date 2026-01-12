@@ -61,6 +61,7 @@ describe('createRouter readonly disabled', () => {
   beforeEach(async () => {
     entitiesCatalog = {
       entities: jest.fn(),
+      queryEntitiesByPredicate: jest.fn(),
       entitiesBatch: jest.fn(),
       removeEntityByUid: jest.fn(),
       entityAncestry: jest.fn(),
@@ -926,6 +927,7 @@ describe('createRouter readonly and raw json enabled', () => {
   beforeAll(async () => {
     entitiesCatalog = {
       entities: jest.fn(),
+      queryEntitiesByPredicate: jest.fn(),
       entitiesBatch: jest.fn(),
       removeEntityByUid: jest.fn(),
       entityAncestry: jest.fn(),
@@ -1141,6 +1143,7 @@ describe('NextRouter permissioning', () => {
   beforeAll(async () => {
     entitiesCatalog = {
       entities: jest.fn(),
+      queryEntitiesByPredicate: jest.fn(),
       entitiesBatch: jest.fn(),
       removeEntityByUid: jest.fn(),
       entityAncestry: jest.fn(),
