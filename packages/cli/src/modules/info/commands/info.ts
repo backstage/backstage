@@ -25,7 +25,7 @@ import fs from 'fs-extra';
 
 interface InfoOptions {
   include: string[];
-  outputFile?: string;
+  format: 'text' | 'json';
 }
 
 /**
@@ -65,7 +65,7 @@ export default async (options: InfoOptions) => {
         const backstageJson = await fs.readJSON(backstageFile);
         backstageVersion = backstageJson.version ?? 'N/A';
       } catch (error) {
-        if (!options.outputFile) {
+        if (options.format !== 'json') {
           console.warn(
             'The "backstage.json" file is not in the expected format',
           );
@@ -160,8 +160,8 @@ export default async (options: InfoOptions) => {
     const sortedInstalled = [...installedDeps].sort();
     const sortedLocal = [...localDeps].sort();
 
-    // If outputFile is specified, write JSON to file
-    if (options.outputFile) {
+    // If format is json, output JSON to stdout
+    if (options.format === 'json') {
       const output = {
         system: systemInfo,
         dependencies: Object.fromEntries(
@@ -175,9 +175,7 @@ export default async (options: InfoOptions) => {
         ),
       };
 
-      const outputPath = paths.resolveTargetRoot(options.outputFile);
-      await fs.writeFile(outputPath, JSON.stringify(output, null, 2));
-      console.log(`Info exported to ${outputPath}`);
+      process.stdout.write(`${JSON.stringify(output, null, 2)}\n`);
       return;
     }
 

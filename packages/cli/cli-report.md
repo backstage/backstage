@@ -148,9 +148,9 @@ Options:
 Usage: <none>
 
 Options:
+  --format
   --help
   --include
-  --output-file
   --version
 ```
 

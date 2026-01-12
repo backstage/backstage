@@ -444,7 +444,7 @@ Usage: backstage-cli info [options]
 Options:
   --include <patterns...>  Glob patterns for additional packages to include
                            (e.g., @mycompany/backstage-*)
-  --output-file <path>     Write the info output to a JSON file instead of stdout
+  --format <text|json>     Output format (default: text)
   -h, --help               display help for command
 ```
 
@@ -462,21 +462,33 @@ Include additional packages matching a glob pattern:
 yarn backstage-cli info --include "@mycompany/*"
 ```
 
-Export information to a JSON file for further processing:
+Output as JSON:
 
 ```bash
-yarn backstage-cli info --output-file backstage-info.json
+yarn backstage-cli info --format json
+```
+
+Export JSON to a file for further processing:
+
+```bash
+yarn backstage-cli info --format json > backstage-info.json
 ```
 
 Combine options to include custom packages and export to JSON:
 
 ```bash
-yarn backstage-cli info --include "@mycompany/backstage-*" --include "@internal/*" --output-file debug-info.json
+yarn backstage-cli info --include "@mycompany/backstage-*" --include "@internal/*" --format json > debug-info.json
+```
+
+Export text output to a file:
+
+```bash
+yarn backstage-cli info --format text > backstage-info.txt
 ```
 
 ### JSON Output Format
 
-When using `--output-file`, the output is structured as follows:
+When using `--format json`, the output is structured as follows:
 
 ```json
 {
