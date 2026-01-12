@@ -17,9 +17,10 @@
 import { createExtensionBlueprint, createExtensionDataRef } from '../wiring';
 import { NavItem } from './NavItemBlueprint';
 
-/** Nav Content items
- * *
- * @private
+/**
+ * Nav content item used by the nav content component.
+ *
+ * @public
  */
 export type NavContentItem = NavItem & {
   // Additional props to simplify item rendering

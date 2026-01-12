@@ -21,7 +21,7 @@ import { createExtensionBlueprint, createExtensionDataRef } from '../wiring';
 /**
  * Base fields for standard nav items.
  *
- * @private
+ * @internal
  */
 type NavItemBase = {
   icon: IconComponent;
@@ -36,12 +36,9 @@ type NavItemBase = {
  * Nav item variant when a custom component is provided.
  * Other mandatory fields become optional.
  *
- * @private
+ * @internal
  */
-export type NavItemCustom = Pick<
-  NavItemBase,
-  'hide' | 'position' | 'dividerBelow'
-> & {
+type NavItemCustom = Pick<NavItemBase, 'hide' | 'position' | 'dividerBelow'> & {
   CustomComponent: () => JSX.Element | null;
   hide?: boolean;
   position?: number;
@@ -55,18 +52,36 @@ export type NavItemCustom = Pick<
  * Nav item variant without a custom component.
  * Keeps required fields and disallows `CustomComponent`.
  *
- * @private
+ * @internal
  */
-export type NavItemStandard = NavItemBase & {
+type NavItemStandard = NavItemBase & {
   CustomComponent?: never;
 };
 
 /**
  * Union type for nav items.
  *
- * @private
+ * @public
  */
-export type NavItem = NavItemCustom | NavItemStandard;
+export type NavItem =
+  | {
+      CustomComponent: () => JSX.Element | null;
+      hide?: boolean;
+      position?: number;
+      dividerBelow?: boolean;
+      title?: never;
+      routeRef?: never;
+      icon?: never;
+    }
+  | {
+      icon: IconComponent;
+      title: string;
+      routeRef: RouteRef<undefined>;
+      hide?: boolean;
+      position?: number;
+      dividerBelow?: boolean;
+      CustomComponent?: never;
+    };
 
 // TODO(Rugvip): Should this be broken apart into separate refs? title/icon/routeRef
 const targetDataRef = createExtensionDataRef<NavItem>().with({
