@@ -14,15 +14,34 @@
  * limitations under the License.
  */
 
-import type { ComponentDefinition } from '../../types';
+import { defineComponent } from '../../hooks/useDefinition';
+import type { BoxOwnProps } from './types';
+import styles from './Box.module.css';
 
 /**
  * Component definition for Box
  * @public
  */
-export const BoxDefinition = {
+export const BoxDefinition = defineComponent<BoxOwnProps, typeof styles>()({
+  styles,
   classNames: {
     root: 'bui-Box',
+  },
+  surface: 'container',
+  propDefs: {
+    as: { default: 'div' },
+    surface: { dataAttribute: true },
+    display: {},
+    position: {},
+    width: {},
+    minWidth: {},
+    maxWidth: {},
+    height: {},
+    minHeight: {},
+    maxHeight: {},
+    children: {},
+    className: {},
+    style: {},
   },
   utilityProps: [
     'm',
@@ -39,16 +58,5 @@ export const BoxDefinition = {
     'pt',
     'px',
     'py',
-    'position',
-    'display',
-    'width',
-    'minWidth',
-    'maxWidth',
-    'height',
-    'minHeight',
-    'maxHeight',
   ],
-  dataAttributes: {
-    surface: ['0', '1', '2', '3', 'danger', 'warning', 'success'] as const,
-  },
-} as const satisfies ComponentDefinition;
+});
