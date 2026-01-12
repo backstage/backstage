@@ -806,5 +806,179 @@ describe('OidcRouter', () => {
         });
       });
     });
+
+    describe('CIMD internal clients', () => {
+      it('should serve metadata document for configured client', async () => {
+        const knex = await databases.init(databaseId);
+
+        await knex.migrate.latest({
+          directory: resolvePackagePath(
+            '@backstage/plugin-auth-backend',
+            'migrations',
+          ),
+        });
+
+        const authDatabase = AuthDatabase.create({
+          getClient: async () => knex,
+        });
+
+        const oidcDatabase = await OidcDatabase.create({
+          database: authDatabase,
+        });
+
+        const userInfoDatabase = await UserInfoDatabase.create({
+          database: authDatabase,
+        });
+
+        const mockTokenIssuer = {
+          issueToken: jest.fn(),
+          listPublicKeys: jest.fn(),
+        } as unknown as jest.Mocked<TokenIssuer>;
+
+        const mockAuth = mockServices.auth.mock();
+        const mockHttpAuth = mockServices.httpAuth.mock();
+        const mockConfig = mockServices.rootConfig({
+          data: {
+            auth: {
+              experimentalClientIdMetadataDocuments: {
+                enabled: true,
+                clients: [
+                  {
+                    name: 'test-cli',
+                    redirectUris: ['http://localhost:8080/callback'],
+                    clientName: 'Test CLI Client',
+                    scope: 'openid',
+                  },
+                ],
+              },
+            },
+          },
+        });
+
+        const oidcRouter = OidcRouter.create({
+          auth: mockAuth,
+          tokenIssuer: mockTokenIssuer,
+          baseUrl: 'http://localhost:7007/api/auth',
+          appUrl: 'http://localhost:3000',
+          logger: mockServices.logger.mock(),
+          userInfo: userInfoDatabase,
+          oidc: oidcDatabase,
+          httpAuth: mockHttpAuth,
+          config: mockConfig,
+        });
+
+        const { server } = await startTestBackend({
+          features: [
+            createBackendPlugin({
+              pluginId: 'auth',
+              register(reg) {
+                reg.registerInit({
+                  deps: { httpRouter: coreServices.httpRouter },
+                  async init({ httpRouter }) {
+                    httpRouter.use(oidcRouter.getRouter());
+                    httpRouter.addAuthPolicy({
+                      path: '/',
+                      allow: 'unauthenticated',
+                    });
+                  },
+                });
+              },
+            }),
+          ],
+        });
+
+        const response = await request(server)
+          .get('/api/auth/.well-known/oauth-client/test-cli')
+          .expect(200);
+
+        expect(response.body).toEqual({
+          client_id:
+            'http://localhost:7007/api/auth/.well-known/oauth-client/test-cli',
+          client_name: 'Test CLI Client',
+          redirect_uris: ['http://localhost:8080/callback'],
+          response_types: ['code'],
+          grant_types: ['authorization_code'],
+          token_endpoint_auth_method: 'none',
+          scope: 'openid',
+        });
+      });
+
+      it('should return 404 for unknown client', async () => {
+        const knex = await databases.init(databaseId);
+
+        await knex.migrate.latest({
+          directory: resolvePackagePath(
+            '@backstage/plugin-auth-backend',
+            'migrations',
+          ),
+        });
+
+        const authDatabase = AuthDatabase.create({
+          getClient: async () => knex,
+        });
+
+        const oidcDatabase = await OidcDatabase.create({
+          database: authDatabase,
+        });
+
+        const userInfoDatabase = await UserInfoDatabase.create({
+          database: authDatabase,
+        });
+
+        const mockTokenIssuer = {
+          issueToken: jest.fn(),
+          listPublicKeys: jest.fn(),
+        } as unknown as jest.Mocked<TokenIssuer>;
+
+        const mockAuth = mockServices.auth.mock();
+        const mockHttpAuth = mockServices.httpAuth.mock();
+        const mockConfig = mockServices.rootConfig({
+          data: {
+            auth: {
+              experimentalClientIdMetadataDocuments: {
+                enabled: true,
+                clients: [],
+              },
+            },
+          },
+        });
+
+        const oidcRouter = OidcRouter.create({
+          auth: mockAuth,
+          tokenIssuer: mockTokenIssuer,
+          baseUrl: 'http://localhost:7007/api/auth',
+          appUrl: 'http://localhost:3000',
+          logger: mockServices.logger.mock(),
+          userInfo: userInfoDatabase,
+          oidc: oidcDatabase,
+          httpAuth: mockHttpAuth,
+          config: mockConfig,
+        });
+
+        const { server } = await startTestBackend({
+          features: [
+            createBackendPlugin({
+              pluginId: 'auth',
+              register(reg) {
+                reg.registerInit({
+                  deps: { httpRouter: coreServices.httpRouter },
+                  async init({ httpRouter }) {
+                    httpRouter.use(oidcRouter.getRouter());
+                    httpRouter.addAuthPolicy({
+                      path: '/',
+                      allow: 'unauthenticated',
+                    });
+                  },
+                });
+              },
+            }),
+          ],
+        });
+
+        await request(server)
+          .get('/api/auth/.well-known/oauth-client/nonexistent')
+          .expect(404);
+      });
+    });
   });
 });
