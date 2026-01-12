@@ -80,8 +80,8 @@ describe('DefaultNavContent', () => {
     expect(screen.getByText('Search')).toBeInTheDocument();
     expect(screen.queryByText('Delta')).not.toBeInTheDocument();
 
-    screen.getByText('Charlie');
     screen.getByText('Alpha');
+    screen.getByText('Charlie');
     screen.getByText('Beta');
     screen.getByText('Custom item');
 
