@@ -55,6 +55,7 @@ describe('StoredMigrationSource', () => {
       );
 
       const source = new StoredMigrationSource(
+        knex,
         storage,
         'knex_migrations',
         tempDir,
@@ -73,6 +74,7 @@ describe('StoredMigrationSource', () => {
       );
 
       const source = new StoredMigrationSource(
+        knex,
         storage,
         'knex_migrations',
         tempDir,
@@ -80,6 +82,31 @@ describe('StoredMigrationSource', () => {
       const migrations = await source.getMigrations();
 
       expect(migrations).toEqual(['20250101_init', '20250102_orphan']);
+    });
+
+    it('includes applied migrations from knex_migrations table', async () => {
+      // Create knex_migrations table with an applied migration
+      await knex.schema.createTable('knex_migrations', t => {
+        t.increments('id');
+        t.string('name');
+        t.integer('batch');
+        t.timestamp('migration_time');
+      });
+      await knex('knex_migrations').insert({
+        name: '20250101_legacy.js',
+        batch: 1,
+        migration_time: new Date(),
+      });
+
+      const source = new StoredMigrationSource(
+        knex,
+        storage,
+        'knex_migrations',
+        tempDir,
+      );
+      const migrations = await source.getMigrations();
+
+      expect(migrations).toContain('20250101_legacy');
     });
   });
 
@@ -92,6 +119,7 @@ describe('StoredMigrationSource', () => {
       await fs.writeFile(path.join(tempDir, '20250101_init.js'), content);
 
       const source = new StoredMigrationSource(
+        knex,
         storage,
         'knex_migrations',
         tempDir,
@@ -115,6 +143,7 @@ describe('StoredMigrationSource', () => {
       );
 
       const source = new StoredMigrationSource(
+        knex,
         storage,
         'knex_migrations',
         tempDir,
@@ -127,6 +156,7 @@ describe('StoredMigrationSource', () => {
 
     it('throws if migration not found anywhere', async () => {
       const source = new StoredMigrationSource(
+        knex,
         storage,
         'knex_migrations',
         tempDir,
@@ -135,6 +165,37 @@ describe('StoredMigrationSource', () => {
       await expect(source.getMigration('nonexistent')).rejects.toThrow(
         /not found/,
       );
+    });
+
+    it('returns no-op migration for legacy applied migrations without source', async () => {
+      // Create knex_migrations table with an applied migration (no file or stored source)
+      await knex.schema.createTable('knex_migrations', t => {
+        t.increments('id');
+        t.string('name');
+        t.integer('batch');
+        t.timestamp('migration_time');
+      });
+      await knex('knex_migrations').insert({
+        name: '20250101_legacy.js',
+        batch: 1,
+        migration_time: new Date(),
+      });
+
+      const source = new StoredMigrationSource(
+        knex,
+        storage,
+        'knex_migrations',
+        tempDir,
+      );
+      const migration = await source.getMigration('20250101_legacy');
+
+      // up() should be a no-op
+      expect(migration.up).toBeDefined();
+      await expect(migration.up(knex)).resolves.toBeUndefined();
+
+      // down() should throw because we don't have the source
+      expect(migration.down).toBeDefined();
+      await expect(migration.down!(knex)).rejects.toThrow(/legacy migration/);
     });
   });
 });

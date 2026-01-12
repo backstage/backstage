@@ -46,6 +46,7 @@ export function wrapKnexMigrations(knex: Knex, pluginId: string): Knex {
 
       // 4. Create migration source
       const migrationSource = new StoredMigrationSource(
+        knex,
         storage,
         tableName,
         directory,
@@ -56,8 +57,37 @@ export function wrapKnexMigrations(knex: Knex, pluginId: string): Knex {
       const localLatest = await getLatestFilesystemMigration(directory);
 
       // Remove FS-related options that conflict with migrationSource
+      // IMPORTANT: Always include tableName to override any cached value in knex's Migrator
       const { directory: _, ...configWithoutDirectory } = config ?? {};
-      const configWithSource = { ...configWithoutDirectory, migrationSource };
+      const configWithSource = {
+        ...configWithoutDirectory,
+        tableName, // Explicitly pass tableName to ensure it's not inherited from previous calls
+        migrationSource,
+      };
+
+      // Debug: check what's actually in the migrations table right now
+      const hasTable = await knex.schema.hasTable(tableName);
+      if (hasTable) {
+        const currentApplied = await knex(tableName).select('name');
+        console.log('DEBUG right before calling knex migrate:', {
+          tableName,
+          directory,
+          currentApplied: currentApplied.map((r: { name: string }) => r.name),
+        });
+      } else {
+        console.log('DEBUG right before calling knex migrate:', {
+          tableName,
+          directory,
+          tableExists: false,
+        });
+      }
+
+      console.log('DEBUG configWithSource:', {
+        tableName: configWithSource.tableName,
+        hasTableName: 'tableName' in configWithSource,
+        hasMigrationSource: 'migrationSource' in configWithSource,
+        configKeys: Object.keys(configWithSource),
+      });
 
       // 6. Determine direction and execute
       if (remoteLatest && localLatest && remoteLatest > localLatest) {
@@ -122,11 +152,20 @@ async function syncMigrationsToStorage(
   directory: string,
 ): Promise<void> {
   if (!(await fs.pathExists(directory))) {
+    console.log('DEBUG syncMigrationsToStorage: directory does not exist', {
+      directory,
+    });
     return;
   }
 
   const files = await fs.readdir(directory);
   const migrationFiles = files.filter(f => f.endsWith('.js'));
+
+  console.log('DEBUG syncMigrationsToStorage:', {
+    tableName,
+    directory,
+    migrationFiles,
+  });
 
   for (const file of migrationFiles) {
     const migrationName = path.basename(file, '.js');

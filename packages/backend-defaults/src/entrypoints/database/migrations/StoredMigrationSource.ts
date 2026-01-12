@@ -20,6 +20,7 @@ import { MigrationStorage } from './MigrationStorage';
 
 export class StoredMigrationSource implements Knex.MigrationSource<string> {
   constructor(
+    private readonly knex: Knex,
     private readonly storage: MigrationStorage,
     private readonly tableName: string,
     private readonly directory: string,
@@ -31,12 +32,36 @@ export class StoredMigrationSource implements Knex.MigrationSource<string> {
       this.tableName,
     );
 
+    // Also include applied migrations from the database to satisfy knex validation
+    const appliedMigrations = await this.getAppliedMigrationNames();
+
+    console.log('DEBUG getMigrations:', {
+      tableName: this.tableName,
+      directory: this.directory,
+      filesystemMigrations,
+      storedMigrations: storedMigrations.map(m => m.migration_name),
+      appliedMigrations,
+    });
+
     const allNames = new Set([
       ...filesystemMigrations,
       ...storedMigrations.map(m => m.migration_name),
+      ...appliedMigrations,
     ]);
 
     return Array.from(allNames).sort();
+  }
+
+  private async getAppliedMigrationNames(): Promise<string[]> {
+    const hasTable = await this.knex.schema.hasTable(this.tableName);
+    if (!hasTable) {
+      return [];
+    }
+
+    const applied = await this.knex(this.tableName).select('name');
+    return applied.map((row: { name: string }) =>
+      row.name.replace(/\.js$/, ''),
+    );
   }
 
   getMigrationName(migration: string): string {
@@ -46,7 +71,14 @@ export class StoredMigrationSource implements Knex.MigrationSource<string> {
   async getMigration(name: string): Promise<Knex.Migration> {
     // Try filesystem first
     const fsPath = path.join(this.directory, `${name}.js`);
-    if (await fs.pathExists(fsPath)) {
+    const fsExists = await fs.pathExists(fsPath);
+    console.log('DEBUG getMigration:', {
+      name,
+      fsPath,
+      fsExists,
+      directory: this.directory,
+    });
+    if (fsExists) {
       // Clear require cache to ensure fresh load
       delete require.cache[require.resolve(fsPath)];
       return require(fsPath);
@@ -56,6 +88,26 @@ export class StoredMigrationSource implements Knex.MigrationSource<string> {
     const stored = await this.storage.getMigration(this.tableName, name);
     if (stored) {
       return this.evalMigration(stored.source_content);
+    }
+
+    // Check if this is a legacy applied migration without source
+    const appliedNames = await this.getAppliedMigrationNames();
+    if (appliedNames.includes(name)) {
+      // This is a legacy migration that was applied before migration storage existed.
+      // We can't rollback this migration, but we need to return something to satisfy knex.
+      // Return a no-op migration that throws if down() is called.
+      return {
+        up: async () => {
+          // No-op: already applied
+        },
+        down: async () => {
+          throw new Error(
+            `Cannot rollback migration ${name}: this is a legacy migration ` +
+              `that was applied before migration storage was enabled. ` +
+              `The source code is not available for rollback.`,
+          );
+        },
+      };
     }
 
     throw new Error(

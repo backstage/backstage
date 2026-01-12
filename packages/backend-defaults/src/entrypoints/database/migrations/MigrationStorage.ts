@@ -113,14 +113,43 @@ export class MigrationStorage {
     tableName: string,
     migrationName: string,
   ): Promise<StoredMigration | undefined> {
-    return this.knex(this.storageTableName)
+    const hasTable = await this.knex.schema.hasTable(this.storageTableName);
+    console.log('DEBUG getMigration storage:', {
+      storageTableName: this.storageTableName,
+      tableName,
+      migrationName,
+      hasTable,
+    });
+    if (!hasTable) {
+      return undefined;
+    }
+    const result = await this.knex(this.storageTableName)
       .where({ table_name: tableName, migration_name: migrationName })
       .first();
+    console.log(
+      'DEBUG getMigration storage result:',
+      result ? 'found' : 'not found',
+    );
+    return result;
   }
 
   async getAllMigrations(tableName: string): Promise<StoredMigration[]> {
-    return this.knex(this.storageTableName)
+    const hasTable = await this.knex.schema.hasTable(this.storageTableName);
+    console.log('DEBUG getAllMigrations:', {
+      storageTableName: this.storageTableName,
+      tableName,
+      hasTable,
+    });
+    if (!hasTable) {
+      return [];
+    }
+    const result = await this.knex(this.storageTableName)
       .where({ table_name: tableName })
       .orderBy('migration_name', 'asc');
+    console.log(
+      'DEBUG getAllMigrations result:',
+      result.map(r => r.migration_name),
+    );
+    return result;
   }
 }
