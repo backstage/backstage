@@ -975,9 +975,14 @@ describe('OidcRouter', () => {
           ],
         });
 
-        await request(server)
+        const response = await request(server)
           .get('/api/auth/.well-known/oauth-client/nonexistent')
           .expect(404);
+
+        expect(response.body).toEqual({
+          error: 'not_found',
+          error_description: "Client 'nonexistent' not found",
+        });
       });
     });
   });
