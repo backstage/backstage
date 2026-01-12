@@ -209,9 +209,6 @@ export const Responsive = meta.story({
   },
 });
 
-const variants = ['primary', 'secondary'] as const;
-const sizes = ['small', 'medium'] as const;
-
 export const Loading = meta.story({
   render: () => {
     const [isLoading, setIsLoading] = useState(false);
