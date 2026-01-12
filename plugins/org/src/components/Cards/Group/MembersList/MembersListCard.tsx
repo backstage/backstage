@@ -341,7 +341,7 @@ export const MembersListCard = (props: {
                 setSearchTerm(e.target.value)
               }
             />
-            {memberList}
+            <Box sx={{ mt: 2 }}>{memberList}</Box>
           </>
         )}
       </InfoCard>
