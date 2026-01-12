@@ -31,6 +31,7 @@ import {
   EntityFacetsResponse,
   EntityOrder,
   EntityPagination,
+  EntityPredicateRequest,
   QueryEntitiesRequest,
   QueryEntitiesResponse,
 } from '../catalog/types';
@@ -52,6 +53,7 @@ import {
 import { EntityFilter } from '@backstage/plugin-catalog-node';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { applyEntityFilterToQuery } from './request/applyEntityFilterToQuery';
+import { applyPredicateEntityFilterToQuery } from './request/applyPredicateEntityFilterToQuery';
 import { processRawEntitiesResult } from './response';
 
 const DEFAULT_LIMIT = 200;
@@ -208,6 +210,93 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
               return e;
             }
           : request?.fields,
+      ),
+      pageInfo,
+    };
+  }
+
+  async queryEntitiesByPredicate(
+    request?: EntityPredicateRequest,
+  ): Promise<EntitiesResponse> {
+    const db = this.database;
+    const { limit, offset } = parsePagination(request?.pagination);
+
+    let entitiesQuery =
+      db<DbFinalEntitiesRow>('final_entities').select('final_entities.*');
+
+    request?.order?.forEach(({ field }, index) => {
+      const alias = `order_${index}`;
+      entitiesQuery = entitiesQuery.leftOuterJoin(
+        { [alias]: 'search' },
+        function search(inner) {
+          inner
+            .on(`${alias}.entity_id`, 'final_entities.entity_id')
+            .andOn(`${alias}.key`, db.raw('?', [field]));
+        },
+      );
+    });
+
+    entitiesQuery = entitiesQuery.whereNotNull('final_entities.final_entity');
+
+    if (request?.filter) {
+      entitiesQuery = applyPredicateEntityFilterToQuery({
+        filter: request.filter,
+        targetQuery: entitiesQuery,
+        onEntityIdField: 'final_entities.entity_id',
+        knex: db,
+      });
+    }
+
+    request?.order?.forEach(({ order }, index) => {
+      if (db.client.config.client === 'pg') {
+        entitiesQuery = entitiesQuery.orderBy([
+          { column: `order_${index}.value`, order, nulls: 'last' },
+        ]);
+      } else {
+        entitiesQuery = entitiesQuery.orderBy([
+          { column: `order_${index}.value`, order: undefined, nulls: 'last' },
+          { column: `order_${index}.value`, order },
+        ]);
+      }
+    });
+
+    if (!request?.order) {
+      entitiesQuery = entitiesQuery.orderBy('final_entities.entity_ref', 'asc');
+    } else {
+      entitiesQuery.orderBy('final_entities.entity_id', 'asc');
+    }
+
+    if (limit !== undefined) {
+      entitiesQuery = entitiesQuery.limit(limit + 1);
+    }
+    if (offset !== undefined) {
+      entitiesQuery = entitiesQuery.offset(offset);
+    }
+
+    let rows = await entitiesQuery;
+    let pageInfo: DbPageInfo;
+    if (limit === undefined || rows.length <= limit) {
+      pageInfo = { hasNextPage: false };
+    } else {
+      rows = rows.slice(0, -1);
+      pageInfo = {
+        hasNextPage: true,
+        endCursor: stringifyPagination({
+          limit,
+          offset: (offset ?? 0) + limit,
+        }),
+      };
+    }
+
+    return {
+      entities: processRawEntitiesResult(
+        rows.map(r => r.final_entity!),
+        this.enableRelationsCompatibility
+          ? e => {
+              expandLegacyCompoundRelationsInEntity(e);
+              return e;
+            }
+          : undefined,
       ),
       pageInfo,
     };
