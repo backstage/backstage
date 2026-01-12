@@ -67,7 +67,7 @@
     "chokidar": "^3.5.3",
     "codeowners-utils": "^1.0.2",
     "command-exists": "^1.2.9",
-    "commander": "^12.0.0",
+    "commander": "^14.0.3",
     "fs-extra": "^11.2.0",
     "glob": "^8.0.3",
     "globby": "^11.0.0",

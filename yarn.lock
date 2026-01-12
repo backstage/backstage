@@ -3351,7 +3351,7 @@ __metadata:
     buffer: "npm:^6.0.3"
     chalk: "npm:^4.0.0"
     chokidar: "npm:^3.3.1"
-    commander: "npm:^12.0.0"
+    commander: "npm:^14.0.3"
     cross-fetch: "npm:^4.0.0"
     cross-spawn: "npm:^7.0.3"
     css-loader: "npm:^6.5.1"
@@ -3479,7 +3479,7 @@ __metadata:
     "@types/jscodeshift": "npm:^0.12.0"
     "@types/node": "npm:^22.13.14"
     chalk: "npm:^4.0.0"
-    commander: "npm:^12.0.0"
+    commander: "npm:^14.0.3"
     jscodeshift: "npm:^0.16.0"
     jscodeshift-add-imports: "npm:^1.0.10"
   bin:
@@ -3735,7 +3735,7 @@ __metadata:
     "@types/node": "npm:^22.13.14"
     "@types/recursive-readdir": "npm:^2.2.0"
     chalk: "npm:^4.0.0"
-    commander: "npm:^12.0.0"
+    commander: "npm:^14.0.3"
     fs-extra: "npm:^11.2.0"
     handlebars: "npm:^4.7.3"
     inquirer: "npm:^8.2.0"
@@ -7991,7 +7991,7 @@ __metadata:
     chokidar: "npm:^3.5.3"
     codeowners-utils: "npm:^1.0.2"
     command-exists: "npm:^1.2.9"
-    commander: "npm:^12.0.0"
+    commander: "npm:^14.0.3"
     fs-extra: "npm:^11.2.0"
     glob: "npm:^8.0.3"
     globby: "npm:^11.0.0"
@@ -20690,13 +20690,12 @@ __metadata:
     "@backstage/cli-common": "workspace:^"
     "@backstage/config": "workspace:^"
     "@backstage/plugin-techdocs-node": "workspace:^"
-    "@types/commander": "npm:^2.12.2"
     "@types/fs-extra": "npm:^11.0.0"
     "@types/http-proxy": "npm:^1.17.4"
     "@types/node": "npm:^22.13.14"
     "@types/serve-handler": "npm:^6.1.0"
     "@types/webpack-env": "npm:^1.15.3"
-    commander: "npm:^12.0.0"
+    commander: "npm:^14.0.3"
     find-process: "npm:^2.0.0"
     fs-extra: "npm:^11.0.0"
     global-agent: "npm:^3.0.0"
@@ -21205,15 +21204,6 @@ __metadata:
   version: 1.2.3
   resolution: "@types/command-exists@npm:1.2.3"
   checksum: 10/c90ed5f3c36d2ed5cb390d1a2e7263daabdeb18a2e20eb71bef83b0823980ee81ca773417b4d8a50fc61ede274b96d30f9b3ab836e1ecebfba5df27677cfc5fc
-  languageName: node
-  linkType: hard
-
-"@types/commander@npm:^2.12.2":
-  version: 2.12.5
-  resolution: "@types/commander@npm:2.12.5"
-  dependencies:
-    commander: "npm:*"
-  checksum: 10/5b70bf09366f778f54cd0b831417aa1f749cdd9e95e81016d0537b801ad14275973b04c34ff4dfaa344986aa93b4518c2df12647ecf8b499b636585335ae3edc
   languageName: node
   linkType: hard
 
@@ -27579,13 +27569,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"commander@npm:*, commander@npm:^13.1.0":
-  version: 13.1.0
-  resolution: "commander@npm:13.1.0"
-  checksum: 10/d3b4b79e6be8471ddadacbb8cd441fe82154d7da7393b50e76165a9e29ccdb74fa911a186437b9a211d0fc071db6051915c94fb8ef16d77511d898e9dbabc6af
-  languageName: node
-  linkType: hard
-
 "commander@npm:11.1.0, commander@npm:^11.0.0":
   version: 11.1.0
   resolution: "commander@npm:11.1.0"
@@ -27621,10 +27604,24 @@ __metadata:
   languageName: node
   linkType: hard
 
-"commander@npm:^12.0.0, commander@npm:^12.1.0":
+"commander@npm:^12.1.0":
   version: 12.1.0
   resolution: "commander@npm:12.1.0"
   checksum: 10/cdaeb672d979816853a4eed7f1310a9319e8b976172485c2a6b437ed0db0a389a44cfb222bfbde772781efa9f215bdd1b936f80d6b249485b465c6cb906e1f93
+  languageName: node
+  linkType: hard
+
+"commander@npm:^13.1.0":
+  version: 13.1.0
+  resolution: "commander@npm:13.1.0"
+  checksum: 10/d3b4b79e6be8471ddadacbb8cd441fe82154d7da7393b50e76165a9e29ccdb74fa911a186437b9a211d0fc071db6051915c94fb8ef16d77511d898e9dbabc6af
+  languageName: node
+  linkType: hard
+
+"commander@npm:^14.0.3":
+  version: 14.0.3
+  resolution: "commander@npm:14.0.3"
+  checksum: 10/dfa9ebe2a433d277de5cb0252d23b10a543d245d892db858d23b516336a835c50fd4f52bee4cd13c705cc8acb6f03dc632c73dd806f7d06d3353eb09953dd17a
   languageName: node
   linkType: hard
 
@@ -29776,7 +29773,7 @@ __metadata:
     "@types/fs-extra": "npm:^11.0.0"
     "@types/node": "npm:^22.13.14"
     chalk: "npm:^4.0.0"
-    commander: "npm:^12.0.0"
+    commander: "npm:^14.0.3"
     cross-fetch: "npm:^4.0.0"
     fs-extra: "npm:^11.2.0"
     handlebars: "npm:^4.7.3"

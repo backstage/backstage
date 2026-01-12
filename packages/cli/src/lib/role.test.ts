@@ -31,6 +31,7 @@ jest.mock('./paths', () => ({
 describe('findRoleFromCommand', () => {
   function mkCommand(args: string) {
     const parsed = new Command()
+      .allowExcessArguments(true)
       .option('--role <role>', 'test role')
       .parse(['node', 'entry.js', ...args.split(' ')]) as Command;
     return parsed.opts();
