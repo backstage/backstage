@@ -16,6 +16,7 @@
 
 import { InputError } from '@backstage/errors';
 import { lookup } from 'dns/promises';
+import ipaddr from 'ipaddr.js';
 
 /** Per the IETF draft, servers should limit metadata documents to 5KB */
 const MAX_DOCUMENT_SIZE = 5 * 1024;
@@ -95,39 +96,39 @@ export function validateCimdUrl(clientId: string): URL {
   return url;
 }
 
-function isPrivateIp(ip: string): boolean {
-  // IPv4 loopback and private ranges
-  if (
-    ip.startsWith('127.') ||
-    ip.startsWith('10.') ||
-    ip.startsWith('192.168.')
-  ) {
+/**
+ * SSRF (Server-Side Request Forgery) Protection
+ *
+ * When fetching CIMD metadata from client-provided URLs, we must prevent
+ * attackers from tricking Backstage into accessing internal resources.
+ * For example, an attacker could provide a URL that resolves to:
+ *   - 127.0.0.1 (localhost services)
+ *   - 10.x.x.x, 172.16-31.x.x, 192.168.x.x (internal network)
+ *   - Cloud metadata endpoints (169.254.169.254)
+ *
+ * We use ipaddr.js to check if resolved IPs are in non-public ranges.
+ * Only 'unicast' (public internet) addresses are allowed.
+ *
+ * @see https://datatracker.ietf.org/doc/draft-ietf-oauth-client-id-metadata-document/
+ *      Section 5.1 - Security Considerations
+ */
+function isNonPublicIp(ip: string): boolean {
+  try {
+    const addr = ipaddr.parse(ip);
+    const range = addr.range();
+    // Only allow public unicast addresses
+    return range !== 'unicast';
+  } catch {
+    // If we can't parse the IP, treat it as non-public (block it)
     return true;
   }
-  // 172.16.0.0 - 172.31.255.255
-  if (ip.startsWith('172.')) {
-    const octet = parseInt(ip.split('.')[1], 10);
-    if (octet >= 16 && octet <= 31) return true;
-  }
-  // IPv4 link-local
-  if (ip.startsWith('169.254.')) return true;
-  // IPv6 loopback, private (fc/fd), and link-local (fe80)
-  if (
-    ip === '::1' ||
-    ip.startsWith('fc') ||
-    ip.startsWith('fd') ||
-    ip.startsWith('fe80:')
-  ) {
-    return true;
-  }
-  return false;
 }
 
 async function validateHostNotPrivate(hostname: string): Promise<void> {
   try {
     const addresses = await lookup(hostname, { all: true });
-    const privateAddr = addresses.find(addr => isPrivateIp(addr.address));
-    if (privateAddr) {
+    const nonPublicAddr = addresses.find(addr => isNonPublicIp(addr.address));
+    if (nonPublicAddr) {
       throw new InputError('Invalid client_id URL');
     }
   } catch (error) {
