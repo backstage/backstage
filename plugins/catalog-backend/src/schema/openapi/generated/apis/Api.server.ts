@@ -25,6 +25,8 @@ import { EntitiesQueryResponse } from '../models/EntitiesQueryResponse.model';
 import { Entity } from '../models/Entity.model';
 import { EntityAncestryResponse } from '../models/EntityAncestryResponse.model';
 import { EntityFacetsResponse } from '../models/EntityFacetsResponse.model';
+import { GetEntitiesByPredicates200Response } from '../models/GetEntitiesByPredicates200Response.model';
+import { GetEntitiesByPredicatesRequest } from '../models/GetEntitiesByPredicatesRequest.model';
 import { GetEntitiesByRefsRequest } from '../models/GetEntitiesByRefsRequest.model';
 import { RefreshEntityRequest } from '../models/RefreshEntityRequest.model';
 import { ValidateEntity400Response } from '../models/ValidateEntity400Response.model';
@@ -52,6 +54,19 @@ export type GetEntities = {
     order?: Array<string>;
   };
   response: Array<Entity> | Error | Error;
+};
+/**
+ * @public
+ */
+export type GetEntitiesByPredicates = {
+  body: GetEntitiesByPredicatesRequest;
+  query: {
+    limit?: number;
+    offset?: number;
+    after?: string;
+    order?: Array<string>;
+  };
+  response: GetEntitiesByPredicates200Response | Error | Error;
 };
 /**
  * @public
@@ -207,6 +222,8 @@ export type EndpointMap = {
   '#_delete|/entities/by-uid/{uid}': DeleteEntityByUid;
 
   '#get|/entities': GetEntities;
+
+  '#post|/entities/by-predicates': GetEntitiesByPredicates;
 
   '#get|/entities/by-query': GetEntitiesByQuery;
 

@@ -29,6 +29,7 @@ describe('AuthorizedEntitiesCatalog', () => {
   const fakeCatalog = {
     entities: jest.fn(),
     entitiesBatch: jest.fn(),
+    queryEntitiesByPredicate: jest.fn(),
     removeEntityByUid: jest.fn(),
     entityAncestry: jest.fn(),
     facets: jest.fn(),

@@ -262,6 +262,110 @@ export const spec = {
         description: 'A type representing all allowed JSON object values.',
         additionalProperties: {},
       },
+      EntityPredicate: {
+        description:
+          'A predicate-based filter supporting logical operators.\n- $all: All conditions must match (AND)\n- $any: At least one condition must match (OR)\n- $not: Negates the condition\n- $exists: Check if field exists\n- $in: Match any value in array\n',
+        oneOf: [
+          {
+            type: 'string',
+          },
+          {
+            type: 'number',
+          },
+          {
+            type: 'boolean',
+          },
+          {
+            type: 'object',
+            additionalProperties: false,
+            properties: {
+              $all: {
+                type: 'array',
+                items: {
+                  $ref: '#/components/schemas/EntityPredicate',
+                },
+              },
+            },
+            required: ['$all'],
+          },
+          {
+            type: 'object',
+            additionalProperties: false,
+            properties: {
+              $any: {
+                type: 'array',
+                items: {
+                  $ref: '#/components/schemas/EntityPredicate',
+                },
+              },
+            },
+            required: ['$any'],
+          },
+          {
+            type: 'object',
+            additionalProperties: false,
+            properties: {
+              $not: {
+                $ref: '#/components/schemas/EntityPredicate',
+              },
+            },
+            required: ['$not'],
+          },
+          {
+            type: 'object',
+            additionalProperties: {
+              $ref: '#/components/schemas/EntityPredicateValue',
+            },
+          },
+        ],
+      },
+      EntityPredicateValue: {
+        description: 'Value for a field predicate',
+        oneOf: [
+          {
+            type: 'string',
+          },
+          {
+            type: 'number',
+          },
+          {
+            type: 'boolean',
+          },
+          {
+            type: 'object',
+            additionalProperties: false,
+            properties: {
+              $exists: {
+                type: 'boolean',
+              },
+            },
+            required: ['$exists'],
+          },
+          {
+            type: 'object',
+            additionalProperties: false,
+            properties: {
+              $in: {
+                type: 'array',
+                items: {
+                  oneOf: [
+                    {
+                      type: 'string',
+                    },
+                    {
+                      type: 'number',
+                    },
+                    {
+                      type: 'boolean',
+                    },
+                  ],
+                },
+              },
+            },
+            required: ['$in'],
+          },
+        ],
+      },
       MapStringString: {
         type: 'object',
         properties: {},
@@ -1227,6 +1331,149 @@ export const spec = {
             style: 'form',
           },
         ],
+      },
+    },
+    '/entities/by-predicates': {
+      post: {
+        operationId: 'GetEntitiesByPredicates',
+        tags: ['Entity'],
+        description:
+          'Query entities using predicate-based filters. This endpoint supports a more\nexpressive filter syntax with logical operators ($all, $any, $not) and\nvalue operators ($exists, $in).\n\nExample filter:\n```json\n{\n  "filter": {\n    "$all": [\n      {"kind": "component"},\n      {"$any": [\n        {"spec.type": "service"},\n        {"spec.type": "website"}\n      ]},\n      {"$not": {"spec.lifecycle": "experimental"}}\n    ]\n  }\n}\n```\n',
+        responses: {
+          '200': {
+            description: 'Ok',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    items: {
+                      type: 'array',
+                      items: {
+                        $ref: '#/components/schemas/Entity',
+                      },
+                      description:
+                        'The list of entities matching the predicate filter.',
+                    },
+                    pageInfo: {
+                      type: 'object',
+                      properties: {
+                        nextCursor: {
+                          type: 'string',
+                          description:
+                            'The cursor for the next batch of entities.',
+                        },
+                      },
+                    },
+                  },
+                  required: ['items', 'pageInfo'],
+                },
+              },
+            },
+          },
+          '400': {
+            $ref: '#/components/responses/ErrorResponse',
+          },
+          default: {
+            $ref: '#/components/responses/ErrorResponse',
+          },
+        },
+        security: [
+          {},
+          {
+            JWT: [],
+          },
+        ],
+        parameters: [
+          {
+            $ref: '#/components/parameters/limit',
+          },
+          {
+            $ref: '#/components/parameters/offset',
+          },
+          {
+            $ref: '#/components/parameters/after',
+          },
+          {
+            name: 'order',
+            in: 'query',
+            allowReserved: true,
+            required: false,
+            schema: {
+              type: 'array',
+              items: {
+                type: 'string',
+              },
+            },
+          },
+        ],
+        requestBody: {
+          required: true,
+          content: {
+            'application/json': {
+              schema: {
+                type: 'object',
+                additionalProperties: false,
+                properties: {
+                  filter: {
+                    $ref: '#/components/schemas/EntityPredicate',
+                  },
+                },
+              },
+              examples: {
+                'Get all service components': {
+                  value: {
+                    filter: {
+                      $all: [
+                        {
+                          kind: 'component',
+                        },
+                        {
+                          'spec.type': 'service',
+                        },
+                      ],
+                    },
+                  },
+                },
+                'Get components owned by specific teams': {
+                  value: {
+                    filter: {
+                      $all: [
+                        {
+                          kind: 'component',
+                        },
+                        {
+                          'spec.owner': {
+                            $in: ['backend-team', 'platform-team'],
+                          },
+                        },
+                      ],
+                    },
+                  },
+                },
+                'Get non-production services': {
+                  value: {
+                    filter: {
+                      $all: [
+                        {
+                          kind: 'component',
+                        },
+                        {
+                          'spec.type': 'service',
+                        },
+                        {
+                          $not: {
+                            'spec.lifecycle': 'production',
+                          },
+                        },
+                      ],
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
       },
     },
     '/entity-facets': {
