@@ -126,5 +126,60 @@ export interface Config {
        */
       tokenExpiration?: HumanDuration | string;
     };
+
+    /**
+     * Configuration for Client ID Metadata Documents (CIMD)
+     */
+    experimentalClientIdMetadataDocuments?: {
+      /**
+       * Whether to enable Client ID Metadata Documents support
+       * Defaults to false
+       */
+      enabled?: boolean;
+
+      /**
+       * A list of allowed URI patterns for redirect URIs.
+       * Defaults to ['*'] which allows any redirect URI.
+       */
+      allowedRedirectUriPatterns?: string[];
+
+      /**
+       * Internal clients to host metadata documents for.
+       * Each client will be served at /.well-known/oauth-client/{name}
+       */
+      clients?: Array<{
+        /**
+         * Unique name for this client. Becomes the URL path segment.
+         * Example: 'cli' -> /.well-known/oauth-client/cli
+         */
+        name: string;
+
+        /**
+         * Allowed redirect URIs for this client.
+         */
+        redirectUris: string[];
+
+        /**
+         * Human-readable name displayed during authorization.
+         * Defaults to the name field.
+         */
+        clientName?: string;
+
+        /**
+         * OAuth response types. Defaults to ['code'].
+         */
+        responseTypes?: string[];
+
+        /**
+         * OAuth grant types. Defaults to ['authorization_code'].
+         */
+        grantTypes?: string[];
+
+        /**
+         * OAuth scopes. Optional.
+         */
+        scope?: string;
+      }>;
+    };
   };
 }
