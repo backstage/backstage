@@ -37,15 +37,29 @@ export class MigrationStorage {
       return;
     }
 
-    await this.knex.schema.createTable(this.storageTableName, table => {
-      table.increments('id').primary();
-      table.string('table_name', 255).notNullable();
-      table.string('migration_name', 255).notNullable();
-      table.text('source_content').notNullable();
-      table.string('checksum', 64).notNullable();
-      table.timestamp('stored_at').notNullable().defaultTo(this.knex.fn.now());
-      table.unique(['table_name', 'migration_name']);
-    });
+    try {
+      await this.knex.schema.createTable(this.storageTableName, table => {
+        table.increments('id').primary();
+        table.string('table_name', 255).notNullable();
+        table.string('migration_name', 255).notNullable();
+        table.text('source_content').notNullable();
+        table.string('checksum', 64).notNullable();
+        table
+          .timestamp('stored_at')
+          .notNullable()
+          .defaultTo(this.knex.fn.now());
+        table.unique(['table_name', 'migration_name']);
+      });
+    } catch (error) {
+      // Check if table was created by another process
+      const tableNowExists = await this.knex.schema.hasTable(
+        this.storageTableName,
+      );
+      if (!tableNowExists) {
+        throw error;
+      }
+      // Table exists now, so another process created it - that's fine
+    }
   }
 
   async storeMigration(
@@ -59,7 +73,17 @@ export class MigrationStorage {
       .where({ table_name: tableName, migration_name: migrationName })
       .first();
 
-    if (!existing) {
+    if (existing) {
+      if (existing.checksum !== checksum) {
+        throw new Error(
+          `Migration ${migrationName} has changed since it was stored. ` +
+            `This could cause inconsistent rollbacks. Aborting.`,
+        );
+      }
+      return; // Already stored with same checksum
+    }
+
+    try {
       await this.knex(this.storageTableName).insert({
         table_name: tableName,
         migration_name: migrationName,
@@ -67,13 +91,22 @@ export class MigrationStorage {
         checksum,
         stored_at: this.knex.fn.now(),
       });
-    } else if (existing.checksum !== checksum) {
-      throw new Error(
-        `Migration ${migrationName} has changed since it was stored. ` +
-          `This could cause inconsistent rollbacks. Aborting.`,
-      );
+    } catch (error) {
+      // Handle unique constraint violation - re-check
+      const nowExisting = await this.knex(this.storageTableName)
+        .where({ table_name: tableName, migration_name: migrationName })
+        .first();
+      if (nowExisting) {
+        if (nowExisting.checksum !== checksum) {
+          throw new Error(
+            `Migration ${migrationName} has changed since it was stored. ` +
+              `This could cause inconsistent rollbacks. Aborting.`,
+          );
+        }
+        return; // Another process stored it with same checksum
+      }
+      throw error; // Some other error
     }
-    // else: already stored with matching checksum, nothing to do
   }
 
   async getMigration(
