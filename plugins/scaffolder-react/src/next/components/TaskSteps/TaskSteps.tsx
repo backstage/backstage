@@ -20,6 +20,7 @@ import MuiStepLabel from '@material-ui/core/StepLabel';
 import { StepIconProps } from '@material-ui/core/StepIcon';
 import Box from '@material-ui/core/Box';
 import Paper from '@material-ui/core/Paper';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import { TaskStep } from '@backstage/plugin-scaffolder-common';
 import { StepIcon } from './StepIcon';
 import { StepTime } from './StepTime';
@@ -36,6 +37,8 @@ export interface TaskStepsProps {
   activeStep?: number;
   isComplete?: boolean;
   isError?: boolean;
+  /** If true, only shows a loading icon instead of the full stepper */
+  showLoadingOnly?: boolean;
 }
 
 /**
@@ -44,6 +47,26 @@ export interface TaskStepsProps {
  * @alpha
  */
 export const TaskSteps = (props: TaskStepsProps) => {
+  if (props.showLoadingOnly) {
+    return (
+      <Paper style={{ position: 'relative', overflow: 'hidden' }}>
+        <TaskBorder
+          isComplete={props.isComplete ?? false}
+          isError={props.isError ?? false}
+        />
+        <Box
+          padding={2}
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          minHeight={120}
+        >
+          <CircularProgress />
+        </Box>
+      </Paper>
+    );
+  }
+
   return (
     <Paper style={{ position: 'relative', overflow: 'hidden' }}>
       <TaskBorder
