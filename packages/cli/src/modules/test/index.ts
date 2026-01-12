@@ -27,6 +27,7 @@ export default createCliPlugin({
       execute: async ({ args }) => {
         const command = new Command();
         command.allowUnknownOption(true);
+        command.allowExcessArguments(true);
         command.option(
           '--since <ref>',
           'Only test packages that changed since the specified ref',
@@ -53,7 +54,8 @@ export default createCliPlugin({
         const command = new Command();
 
         command.allowUnknownOption(true);
-        command.helpOption(', --backstage-cli-help');
+        command.allowExcessArguments(true);
+        command.helpOption('--backstage-cli-help');
         command.action(
           lazy(() => import('./commands/package/test'), 'default'),
         );
