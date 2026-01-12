@@ -30,7 +30,10 @@ import {
 } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import { InputError, serializeError } from '@backstage/errors';
-import { LocationAnalyzer } from '@backstage/plugin-catalog-node';
+import {
+  EntityPredicate,
+  LocationAnalyzer,
+} from '@backstage/plugin-catalog-node';
 import express from 'express';
 import yn from 'yn';
 import { z } from 'zod';
@@ -255,6 +258,53 @@ export async function createRouter(
           await auditorEvent?.fail({
             error: err,
           });
+          throw err;
+        }
+      })
+      .post('/entities/by-predicates', async (req, res) => {
+        const auditorEvent = await auditor.createEvent({
+          eventId: 'entity-fetch',
+          request: req,
+          meta: {
+            queryType: 'by-predicates',
+          },
+        });
+
+        try {
+          const filter = req.body.filter as EntityPredicate | undefined;
+          const order = parseEntityOrderParams(req.query);
+          const pagination = parseEntityPaginationParams(req.query);
+          const credentials = await httpAuth.credentials(req);
+
+          const { entities, pageInfo } =
+            await entitiesCatalog.queryEntitiesByPredicate({
+              filter,
+              order,
+              pagination,
+              credentials,
+            });
+
+          const meta = {
+            pageInfo: {
+              ...(pageInfo.hasNextPage && {
+                nextCursor: pageInfo.endCursor,
+              }),
+            },
+          };
+
+          await auditorEvent?.success({ meta });
+
+          await writeEntitiesResponse({
+            res,
+            items: entities,
+            alwaysUseObjectMode: enableRelationsCompatibility,
+            responseWrapper: items => ({
+              items,
+              ...meta,
+            }),
+          });
+        } catch (err) {
+          await auditorEvent?.fail({ error: err });
           throw err;
         }
       })

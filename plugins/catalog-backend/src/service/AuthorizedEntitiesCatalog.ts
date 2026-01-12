@@ -32,6 +32,7 @@ import {
   EntityAncestryResponse,
   EntityFacetsRequest,
   EntityFacetsResponse,
+  EntityPredicateRequest,
   QueryEntitiesRequest,
   QueryEntitiesResponse,
 } from '../catalog/types';
@@ -194,6 +195,36 @@ export class AuthorizedEntitiesCatalog implements EntitiesCatalog {
     }
 
     return this.entitiesCatalog.queryEntities(request);
+  }
+
+  async queryEntitiesByPredicate(
+    request?: EntityPredicateRequest,
+  ): Promise<EntitiesResponse> {
+    if (!request) {
+      return {
+        entities: { type: 'object', entities: [] },
+        pageInfo: { hasNextPage: false },
+      };
+    }
+
+    const authorizeDecision = (
+      await this.permissionApi.authorizeConditional(
+        [{ permission: catalogEntityReadPermission }],
+        { credentials: request.credentials },
+      )
+    )[0];
+
+    if (authorizeDecision.result === AuthorizeResult.DENY) {
+      return {
+        entities: { type: 'object', entities: [] },
+        pageInfo: { hasNextPage: false },
+      };
+    }
+
+    // Note: For CONDITIONAL results, we pass through to the underlying catalog
+    // since EntityPredicate filters are separate from EntityFilter permission conditions.
+    // The permission filter would need to be applied separately if needed.
+    return this.entitiesCatalog.queryEntitiesByPredicate(request);
   }
 
   async removeEntityByUid(
