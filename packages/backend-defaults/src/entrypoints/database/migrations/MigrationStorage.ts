@@ -27,7 +27,7 @@ export interface StoredMigration {
 export class MigrationStorage {
   private readonly storageTableName: string;
 
-  constructor(private readonly knex: Knex, private readonly pluginId: string) {
+  constructor(private readonly knex: Knex, pluginId: string) {
     this.storageTableName = `backstage_migration_sources_${pluginId}`;
   }
 

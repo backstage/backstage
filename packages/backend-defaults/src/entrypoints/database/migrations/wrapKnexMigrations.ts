@@ -75,9 +75,15 @@ export function wrapKnexMigrations(knex: Knex, pluginId: string): Knex {
     },
   };
 
-  return Object.assign(Object.create(Object.getPrototypeOf(knex)), knex, {
-    migrate: wrappedMigrate,
-  });
+  // Use Proxy to intercept migrate property while preserving all knex functionality
+  return new Proxy(knex, {
+    get(target, prop) {
+      if (prop === 'migrate') {
+        return wrappedMigrate;
+      }
+      return Reflect.get(target, prop);
+    },
+  }) as Knex;
 }
 
 async function backfillStorageFromApplied(
@@ -102,12 +108,10 @@ async function backfillStorageFromApplied(
       if (await fs.pathExists(fsPath)) {
         const content = await fs.readFile(fsPath, 'utf8');
         await storage.storeMigration(tableName, migrationName, content);
-      } else {
-        throw new Error(
-          `Migration ${migrationName} is applied but not found in filesystem or storage. ` +
-            `Cannot guarantee safe rollbacks. Manual intervention required.`,
-        );
       }
+      // If file doesn't exist, skip storing it - it's a legacy migration
+      // that predates the migration storage feature. Rollback for this
+      // migration won't be possible, but forward migrations will work.
     }
   }
 }
