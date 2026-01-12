@@ -72,6 +72,19 @@ describe('CimdClient', () => {
       expect(isCimdUrl('uuid-like-client-id')).toBe(false);
       expect(isCimdUrl('')).toBe(false);
     });
+
+    it('should return false for URLs with query strings', () => {
+      expect(isCimdUrl('https://example.com/metadata?foo=bar')).toBe(false);
+    });
+
+    it('should return false for URLs with dot path segments', () => {
+      expect(isCimdUrl('https://example.com/./metadata')).toBe(false);
+      expect(isCimdUrl('https://example.com/../metadata')).toBe(false);
+    });
+
+    it('should return false for URLs with fragments', () => {
+      expect(isCimdUrl('https://example.com/metadata#section')).toBe(false);
+    });
   });
 
   describe('validateCimdUrl', () => {
@@ -82,7 +95,7 @@ describe('CimdClient', () => {
 
     it('should throw for non-HTTPS URLs on public hosts', () => {
       expect(() => validateCimdUrl('http://example.com/metadata')).toThrow(
-        'must be HTTPS',
+        'must use HTTPS',
       );
     });
 
@@ -104,23 +117,41 @@ describe('CimdClient', () => {
 
     it('should throw for URLs without path', () => {
       expect(() => validateCimdUrl('https://example.com')).toThrow(
-        'must be HTTPS (or HTTP for localhost) with path',
+        'must have a path component',
       );
       expect(() => validateCimdUrl('https://example.com/')).toThrow(
-        'must be HTTPS (or HTTP for localhost) with path',
+        'must have a path component',
       );
     });
 
     it('should throw for URLs with fragments', () => {
       expect(() =>
         validateCimdUrl('https://example.com/metadata#fragment'),
-      ).toThrow('no fragment');
+      ).toThrow('must not contain a fragment');
     });
 
     it('should throw for URLs with credentials', () => {
       expect(() =>
         validateCimdUrl('https://user:pass@example.com/metadata'),
-      ).toThrow('no fragment or credentials');
+      ).toThrow('must not contain credentials');
+    });
+
+    it('should throw for URLs with query strings', () => {
+      expect(() =>
+        validateCimdUrl('https://example.com/metadata?foo=bar'),
+      ).toThrow('must not contain a query string');
+    });
+
+    it('should throw for URLs with dot path segments', () => {
+      expect(() => validateCimdUrl('https://example.com/./metadata')).toThrow(
+        'must not contain dot segments',
+      );
+      expect(() => validateCimdUrl('https://example.com/../metadata')).toThrow(
+        'must not contain dot segments',
+      );
+      expect(() =>
+        validateCimdUrl('https://example.com/path/../other'),
+      ).toThrow('must not contain dot segments');
     });
 
     it('should throw for invalid URLs', () => {

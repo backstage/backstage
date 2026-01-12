@@ -278,8 +278,12 @@ export class OidcService {
         throw new InputError('Invalid redirect_uri');
       }
 
-      // Validate redirect_uri is in the client's registered URIs
-      if (!cimdClient.redirectUris.includes(redirectUri)) {
+      // Validate redirect_uri matches one of the client's registered URI patterns
+      if (
+        !cimdClient.redirectUris.some(pattern =>
+          matcher.isMatch(redirectUri, pattern),
+        )
+      ) {
         throw new InputError('Redirect URI not registered');
       }
 

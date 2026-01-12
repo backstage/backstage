@@ -218,16 +218,17 @@ auth:
     enabled: true
     allowedRedirectUriPatterns:
       - cursor://*
-
+      - http://localhost:*
+      - http://127.0.0.1:*
   experimentalClientIdMetadataDocuments:
     enabled: true
     allowedRedirectUriPatterns:
-      - http://127.0.0.1:*
-      - http://localhost:*
+      - http://127.0.0.1:*/**
+      - http://localhost:*/**
     clients:
       - name: cli
         redirectUris:
-          - http://127.0.0.1:*
+          - http://127.0.0.1:*/callback
         clientName: Backstage CLI
         scope: openid offline_access
 

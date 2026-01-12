@@ -129,6 +129,8 @@ export interface Config {
 
     /**
      * Configuration for Client ID Metadata Documents (CIMD)
+     *
+     * @see https://datatracker.ietf.org/doc/draft-ietf-oauth-client-id-metadata-document/
      */
     experimentalClientIdMetadataDocuments?: {
       /**
@@ -139,7 +141,10 @@ export interface Config {
 
       /**
        * A list of allowed URI patterns for redirect URIs.
+       * Uses glob-style pattern matching (via the 'matcher' package).
        * Defaults to ['*'] which allows any redirect URI.
+       *
+       * @example ['http://localhost:*\/**', 'http://127.0.0.1:*\/**']
        */
       allowedRedirectUriPatterns?: string[];
 
@@ -155,7 +160,10 @@ export interface Config {
         name: string;
 
         /**
-         * Allowed redirect URIs for this client.
+         * Allowed redirect URI patterns for this client.
+         * Uses glob-style pattern matching (via the 'matcher' package).
+         *
+         * @example ['http://127.0.0.1:*\/callback', 'http://localhost:*\/callback']
          */
         redirectUris: string[];
 

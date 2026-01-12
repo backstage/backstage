@@ -56,29 +56,21 @@ export interface CimdClientInfo {
 }
 
 /**
- * Checks if a client_id is a CIMD URL.
+ * Validates and parses a CIMD URL per the IETF draft specification.
  * Requires HTTPS for production, but allows HTTP for localhost (development).
- */
-export function isCimdUrl(clientId: string): boolean {
-  try {
-    const url = new URL(clientId);
-    const isHttps = url.protocol === 'https:';
-    const isLocalHttp =
-      url.protocol === 'http:' &&
-      (url.hostname === 'localhost' || url.hostname === '127.0.0.1');
-    const hasPath = !!url.pathname && url.pathname !== '/';
-    return (isHttps || isLocalHttp) && hasPath;
-  } catch {
-    return false;
-  }
-}
-
-/**
- * Validates and parses a CIMD URL.
- * Requires HTTPS for production, but allows HTTP for localhost (development).
+ *
+ * @see https://datatracker.ietf.org/doc/draft-ietf-oauth-client-id-metadata-document/
  * @throws InputError if the URL is invalid per the CIMD spec
  */
 export function validateCimdUrl(clientId: string): URL {
+  // Per IETF draft: MUST NOT contain single-dot or double-dot path segments
+  // Check before URL parsing since the URL constructor normalizes these away
+  if (/\/\.\.?(\/|$)/.test(clientId)) {
+    throw new InputError(
+      'Invalid client_id: path must not contain dot segments',
+    );
+  }
+
   let url: URL;
   try {
     url = new URL(clientId);
@@ -91,21 +83,44 @@ export function validateCimdUrl(clientId: string): URL {
     url.protocol === 'http:' &&
     (url.hostname === 'localhost' || url.hostname === '127.0.0.1');
 
-  const isValid =
-    (isHttps || isLocalHttp) &&
-    url.pathname !== '' &&
-    url.pathname !== '/' &&
-    !url.hash &&
-    !url.username &&
-    !url.password;
-
-  if (!isValid) {
+  if (!isHttps && !isLocalHttp) {
     throw new InputError(
-      'Invalid client_id: must be HTTPS (or HTTP for localhost) with path, no fragment or credentials',
+      'Invalid client_id: must use HTTPS (or HTTP for localhost)',
     );
   }
 
+  if (url.pathname === '' || url.pathname === '/') {
+    throw new InputError('Invalid client_id: must have a path component');
+  }
+
+  if (url.hash) {
+    throw new InputError('Invalid client_id: must not contain a fragment');
+  }
+
+  if (url.username || url.password) {
+    throw new InputError('Invalid client_id: must not contain credentials');
+  }
+
+  // Per IETF draft: SHOULD NOT include a query string
+  // We reject this for stricter compliance and security
+  if (url.search) {
+    throw new InputError('Invalid client_id: must not contain a query string');
+  }
+
   return url;
+}
+
+/**
+ * Checks if a client_id is a valid CIMD URL.
+ * Requires HTTPS for production, but allows HTTP for localhost (development).
+ */
+export function isCimdUrl(clientId: string): boolean {
+  try {
+    validateCimdUrl(clientId);
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 /**
