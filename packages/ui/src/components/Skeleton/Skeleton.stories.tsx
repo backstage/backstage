@@ -17,6 +17,7 @@ import preview from '../../../../../.storybook/preview';
 import { Skeleton } from './Skeleton';
 import { Flex } from '../Flex';
 import { Text } from '../Text';
+import { Box } from '../Box';
 import { useState } from 'react';
 
 const meta = preview.meta({
@@ -308,6 +309,59 @@ export const OverrideChildrenDimensions = meta.story({
           <Text variant="title-large">Tall text</Text>
         </Skeleton>
       </div>
+    </Flex>
+  ),
+});
+
+export const OnSurface = meta.story({
+  render: () => (
+    <Flex direction="column" gap="4">
+      <div style={{ maxWidth: '600px' }}>
+        By default, skeletons automatically inherit their container's surface
+        level (equivalent to onSurface="auto"). This makes them reusable across
+        different surfaces without explicit configuration. To override, use
+        explicit surface values like onSurface="0" or onSurface="2".
+      </div>
+      <Box surface="0" p="4">
+        <Text>Surface 0 container</Text>
+        <Flex direction="column" gap="2" mt="2">
+          <Skeleton width={200} height={8} />
+          <Skeleton width={200} height={8} />
+          <Skeleton width={150} height={8} />
+        </Flex>
+      </Box>
+      <Box surface="1" p="4">
+        <Text>Surface 1 container</Text>
+        <Flex direction="column" gap="2" mt="2">
+          <Skeleton width={200} height={8} />
+          <Skeleton width={200} height={8} />
+          <Skeleton width={150} height={8} />
+        </Flex>
+      </Box>
+      <Box surface="2" p="4">
+        <Text>Surface 2 container</Text>
+        <Flex direction="column" gap="2" mt="2">
+          <Skeleton width={200} height={8} />
+          <Skeleton width={200} height={8} />
+          <Skeleton width={150} height={8} />
+        </Flex>
+      </Box>
+      <Box surface="3" p="4">
+        <Text>Surface 3 container</Text>
+        <Flex direction="column" gap="2" mt="2">
+          <Skeleton width={200} height={8} />
+          <Skeleton width={200} height={8} />
+          <Skeleton width={150} height={8} />
+        </Flex>
+      </Box>
+      <Box p="4">
+        <Text>Default container (no surface)</Text>
+        <Flex direction="column" gap="2" mt="2">
+          <Skeleton width={200} height={8} onSurface="auto" />
+          <Skeleton width={200} height={8} onSurface="1" />
+          <Skeleton width={200} height={8} onSurface="2" />
+        </Flex>
+      </Box>
     </Flex>
   ),
 });

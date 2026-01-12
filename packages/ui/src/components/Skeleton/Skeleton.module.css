@@ -19,8 +19,25 @@
 @layer components {
   .bui-Skeleton {
     animation: var(--bui-animate-pulse);
-    background-color: var(--bui-bg-surface-2);
+    background-color: var(--bui-bg-neutral-on-surface-0);
     border-radius: var(--bui-radius-2);
+  }
+
+  /* Surface-specific background colors */
+  .bui-Skeleton[data-on-surface='0'] {
+    background-color: var(--bui-bg-neutral-on-surface-0);
+  }
+
+  .bui-Skeleton[data-on-surface='1'] {
+    background-color: var(--bui-bg-neutral-on-surface-1);
+  }
+
+  .bui-Skeleton[data-on-surface='2'] {
+    background-color: var(--bui-bg-neutral-on-surface-2);
+  }
+
+  .bui-Skeleton[data-on-surface='3'] {
+    background-color: var(--bui-bg-neutral-on-surface-3);
   }
 
   .bui-Skeleton[data-rounded='true'] {

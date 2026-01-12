@@ -15,6 +15,7 @@
  */
 
 import { ComponentProps, ReactNode } from 'react';
+import { Responsive, Surface } from '../../types';
 
 /** @public */
 export interface SkeletonProps extends ComponentProps<'div'> {
@@ -37,4 +38,8 @@ export interface SkeletonProps extends ComponentProps<'div'> {
    * from the children, respecting their natural size and preventing layout shift.
    */
   children?: ReactNode;
+  /**
+   * Surface the skeleton is placed on. Defaults to context surface if available.
+   */
+  onSurface?: Responsive<Surface>;
 }

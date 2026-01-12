@@ -1413,6 +1413,7 @@ export const SkeletonDefinition: {
 export interface SkeletonProps extends ComponentProps<'div'> {
   children?: ReactNode;
   height?: number | string;
+  onSurface?: Responsive<Surface>;
   rounded?: boolean;
   width?: number | string;
 }

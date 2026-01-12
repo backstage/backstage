@@ -15,6 +15,7 @@
  */
 
 import { useStyles } from '../../hooks/useStyles';
+import { useSurface } from '../../hooks/useSurface';
 import { SkeletonDefinition } from './definition';
 import { SkeletonProps } from './types';
 import styles from './Skeleton.module.css';
@@ -26,8 +27,18 @@ export const Skeleton = (props: SkeletonProps) => {
     rounded: false,
     ...props,
   });
-  const { className, width, height, rounded, children, style, ...rest } =
-    cleanedProps;
+  const {
+    className,
+    width,
+    height,
+    rounded,
+    children,
+    onSurface,
+    style,
+    ...rest
+  } = cleanedProps;
+
+  const { surface } = useSurface({ onSurface });
 
   // Determine if we should use fit-content sizing (when children are present and no explicit dimensions)
   const hasFitContent =
@@ -57,6 +68,7 @@ export const Skeleton = (props: SkeletonProps) => {
       className={clsx(classNames.root, styles[classNames.root], className)}
       data-rounded={rounded}
       data-fit-content={hasFitContent}
+      {...(typeof surface === 'string' ? { 'data-on-surface': surface } : {})}
       style={inlineStyles}
       {...rest}
     >

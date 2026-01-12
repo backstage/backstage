@@ -27,6 +27,13 @@ export const skeletonPropDefs: Record<string, PropDef> = {
     description:
       'Children elements. When provided, the skeleton will infer its dimensions from the children, preventing layout shift.',
   },
+  onSurface: {
+    type: 'enum',
+    values: ['0', '1', '2', '3', 'danger', 'warning', 'success', 'auto'],
+    responsive: true,
+    description:
+      'Surface the skeleton is placed on. Defaults to "auto" (inherits from container context). Can be omitted for the same behavior.',
+  },
   ...classNamePropDefs,
   ...stylePropDefs,
 };
@@ -126,3 +133,17 @@ return (
     </Flex>
   </Card>
 );`;
+
+export const skeletonOnSurfaceSnippet = `import { Box, Skeleton, Flex, Text } from '@backstage/ui';
+
+// Skeleton automatically inherits surface from container (default behavior)
+// No need to specify onSurface - it's the same as onSurface="auto"
+<Box surface="1" p="4">
+  <Flex direction="column" gap="2">
+    <Skeleton width={200} height={8} />
+    <Skeleton width={200} height={8} />
+  </Flex>
+</Box>
+
+// Or explicitly override the surface when needed
+<Skeleton width={200} height={8} onSurface="2" />`;
