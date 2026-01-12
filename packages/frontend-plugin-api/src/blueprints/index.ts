@@ -31,7 +31,10 @@ export {
 export { NavItemBlueprint, type NavItem } from './NavItemBlueprint';
 export { PageBlueprint } from './PageBlueprint';
 export { RouterBlueprint } from './RouterBlueprint';
-export { SignInPageBlueprint } from './SignInPageBlueprint';
+export {
+  type SignInPageProps,
+  SignInPageBlueprint,
+} from './SignInPageBlueprint';
 export { ThemeBlueprint } from './ThemeBlueprint';
 export { TranslationBlueprint } from './TranslationBlueprint';
 export { SwappableComponentBlueprint } from './SwappableComponentBlueprint';

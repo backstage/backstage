@@ -1,6 +1,6 @@
 {
   "name": "@backstage/core-compat-api",
-  "version": "0.5.4-next.0",
+  "version": "0.5.6-next.0",
   "backstage": {
     "role": "web-library"
   },
@@ -34,8 +34,10 @@
     "@backstage/core-plugin-api": "workspace:^",
     "@backstage/frontend-plugin-api": "workspace:^",
     "@backstage/plugin-catalog-react": "workspace:^",
+    "@backstage/types": "workspace:^",
     "@backstage/version-bridge": "workspace:^",
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.21",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",

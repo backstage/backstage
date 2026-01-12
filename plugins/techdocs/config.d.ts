@@ -19,7 +19,7 @@ export interface Config {
    * Configuration options for the techdocs plugin
    * @see http://backstage.io/docs/features/techdocs/configuration
    */
-  techdocs: {
+  techdocs?: {
     /**
      * Documentation building process depends on the builder attr
      * @visibility frontend
@@ -67,7 +67,7 @@ export interface Config {
        *  @see: https://raw.githubusercontent.com/cure53/DOMPurify/master/src/regexp.ts
        * @visibility frontend
        */
-      additionalAllowedURIProtocols?: string;
+      additionalAllowedURIProtocols?: string[];
     };
   };
 }

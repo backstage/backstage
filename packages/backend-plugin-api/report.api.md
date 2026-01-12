@@ -234,7 +234,7 @@ export namespace coreServices {
   const urlReader: ServiceRef<UrlReaderService, 'plugin', 'singleton'>;
   const rootInstanceMetadata: ServiceRef<
     RootInstanceMetadataService,
-    'plugin',
+    'root',
     'singleton'
   >;
 }

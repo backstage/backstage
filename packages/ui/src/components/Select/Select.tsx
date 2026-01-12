@@ -19,6 +19,8 @@ import { Select as AriaSelect, Popover } from 'react-aria-components';
 import clsx from 'clsx';
 import { SelectProps } from './types';
 import { useStyles } from '../../hooks/useStyles';
+import { SelectDefinition } from './definition';
+import { PopoverDefinition } from '../Popover/definition';
 import { FieldLabel } from '../FieldLabel';
 import { FieldError } from '../FieldError';
 import styles from './Select.module.css';
@@ -31,12 +33,15 @@ export const Select = forwardRef<
   HTMLDivElement,
   SelectProps<'single' | 'multiple'>
 >((props, ref) => {
-  const { classNames: popoverClassNames } = useStyles('Popover');
-  const { classNames, dataAttributes, cleanedProps } = useStyles('Select', {
-    size: 'small',
-    placeholder: 'Select an option',
-    ...props,
-  });
+  const { classNames: popoverClassNames } = useStyles(PopoverDefinition);
+  const { classNames, dataAttributes, cleanedProps } = useStyles(
+    SelectDefinition,
+    {
+      size: 'small',
+      placeholder: 'Select an option',
+      ...props,
+    },
+  );
 
   const {
     className,

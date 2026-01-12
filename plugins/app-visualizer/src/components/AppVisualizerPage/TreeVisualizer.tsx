@@ -19,8 +19,7 @@ import {
   DependencyGraphTypes,
 } from '@backstage/core-components';
 import { AppNode, AppTree } from '@backstage/frontend-plugin-api';
-import Box from '@material-ui/core/Box';
-import { makeStyles } from '@material-ui/core/styles';
+import { Flex } from '@backstage/ui';
 import { useLayoutEffect, useMemo, useRef, useState } from 'react';
 
 type NodeType =
@@ -84,26 +83,9 @@ function resolveGraphData(tree: AppTree): {
   };
 }
 
-const useStyles = makeStyles(theme => ({
-  node: {
-    fill: (node: NodeType) =>
-      node.type === 'node'
-        ? theme.palette.primary.light
-        : theme.palette.grey[500],
-    stroke: (node: NodeType) =>
-      node.type === 'node'
-        ? theme.palette.primary.main
-        : theme.palette.grey[600],
-  },
-  text: {
-    fill: theme.palette.primary.contrastText,
-  },
-}));
-
 /** @public */
 export function Node(props: { node: NodeType }) {
   const { node } = props;
-  const classes = useStyles(node);
   const [width, setWidth] = useState(0);
   const [height, setHeight] = useState(0);
   const idRef = useRef<SVGTextElement | null>(null);
@@ -127,17 +109,23 @@ export function Node(props: { node: NodeType }) {
   const paddedWidth = width + padding * 2;
   const paddedHeight = height + padding * 2;
 
+  // Simple inline styles for SVG elements
+  const nodeFill = node.type === 'node' ? '#90caf9' : '#9e9e9e';
+  const nodeStroke = node.type === 'node' ? '#2196f3' : '#757575';
+  const textFill = '#000000';
+
   return (
     <g>
       <rect
-        className={classes.node}
+        fill={nodeFill}
+        stroke={nodeStroke}
         width={paddedWidth}
         height={paddedHeight}
         rx={node.type === 'node' ? 0 : 20}
       />
       <text
         ref={idRef}
-        className={classes.text}
+        fill={textFill}
         y={paddedHeight / 2}
         x={paddedWidth / 2}
         textAnchor="middle"
@@ -153,12 +141,13 @@ export function TreeVisualizer({ tree }: { tree: AppTree }) {
   const graphData = useMemo(() => resolveGraphData(tree), [tree]);
 
   return (
-    <Box
-      flex="1 1 0"
-      display="flex"
-      justifyContent="stretch"
-      alignItems="stretch"
-      overflow="hidden"
+    <Flex
+      style={{
+        flex: '1 1 0',
+        overflow: 'hidden',
+        justifyContent: 'stretch',
+        alignItems: 'stretch',
+      }}
     >
       <DependencyGraph
         fit="contain"
@@ -170,6 +159,6 @@ export function TreeVisualizer({ tree }: { tree: AppTree }) {
         ranker={DependencyGraphTypes.Ranker.TIGHT_TREE}
         direction={DependencyGraphTypes.Direction.LEFT_RIGHT}
       />
-    </Box>
+    </Flex>
   );
 }

@@ -1,5 +1,89 @@
 # @backstage/plugin-notifications-backend-module-email
 
+## 0.3.17
+
+### Patch Changes
+
+- a5d5b3a: SES config for the notification email processor now supports utilizing an ARN for the SES identity when sending an email after the SES SDK V2 update.
+
+  The `sesConfig.fromArn` will set the `fromEmailAddressIdentityArn` option for the SES `SendEmailCommand`. The `sesConfig.sourceArn` field is removed since no equivalent option is available in the send email command options. Setting `sesConfig.sourceArn` will have no effect and log a warning. Example changes:
+
+  ```diff
+  notifications:
+    processors:
+      email:
+        transportConfig:
+          transport: "ses"
+          region: "us-west-2"
+        sender: "sender@mycompany.com"
+        replyTo: "no-reply@mycompany.com"
+        sesConfig:
+  -       sourceArn: "arn:aws:ses:us-west-2:123456789012:identity/example.com"
+          fromArn: "arn:aws:ses:us-west-2:123456789012:identity/example.com"
+  ```
+
+- b267aea: Updated dependency `@types/nodemailer` to `^7.0.0`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.0
+  - @backstage/plugin-catalog-node@1.20.1
+  - @backstage/plugin-notifications-node@0.2.22
+
+## 0.3.17-next.1
+
+### Patch Changes
+
+- b267aea: Updated dependency `@types/nodemailer` to `^7.0.0`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.0-next.1
+  - @backstage/catalog-client@1.12.1
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config@1.3.6
+  - @backstage/integration-aws-node@0.1.19
+  - @backstage/types@1.2.2
+  - @backstage/plugin-catalog-node@1.20.1-next.1
+  - @backstage/plugin-notifications-common@0.2.0
+  - @backstage/plugin-notifications-node@0.2.22-next.1
+
+## 0.3.17-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.1-next.0
+  - @backstage/plugin-catalog-node@1.20.1-next.0
+  - @backstage/plugin-notifications-node@0.2.22-next.0
+  - @backstage/config@1.3.6
+  - @backstage/integration-aws-node@0.1.19
+  - @backstage/catalog-client@1.12.1
+  - @backstage/catalog-model@1.7.6
+  - @backstage/types@1.2.2
+  - @backstage/plugin-notifications-common@0.2.0
+
+## 0.3.16
+
+### Patch Changes
+
+- 22a5362: Updated `AWS SES` client to version 2 to support `nodemailer` version 7.
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.20.0
+  - @backstage/plugin-notifications-common@0.2.0
+  - @backstage/backend-plugin-api@1.5.0
+  - @backstage/plugin-notifications-node@0.2.21
+  - @backstage/config@1.3.6
+  - @backstage/catalog-model@1.7.6
+  - @backstage/integration-aws-node@0.1.19
+  - @backstage/catalog-client@1.12.1
+
+## 0.3.16-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-notifications-common@0.2.0-next.1
+  - @backstage/backend-plugin-api@1.5.0-next.2
+  - @backstage/plugin-notifications-node@0.2.21-next.2
+
 ## 0.3.16-next.1
 
 ### Patch Changes

@@ -23,9 +23,13 @@ import { createProxyMiddleware } from 'http-proxy-middleware';
 import { context } from '@opentelemetry/api';
 import { getRPCMetadata } from '@opentelemetry/core';
 
+const MAX_HOPS = 3;
+const HOPS_HEADER = 'backstage-gateway-hops';
+
 export async function createRouter({
   discovery,
   instanceMeta,
+  logger,
 }: {
   discovery: DiscoveryService;
   instanceMeta: RootInstanceMetadataService;
@@ -41,6 +45,12 @@ export async function createRouter({
       return discovery.getBaseUrl(pluginId);
     },
     on: {
+      proxyReq(proxyReq, req: Request<{ pluginId: string }>) {
+        const currentHops =
+          Math.max(parseInt(req.headers[HOPS_HEADER] as string, 10), 0) || 0;
+
+        proxyReq.setHeader(HOPS_HEADER, currentHops + 1);
+      },
       proxyRes(proxyRes, _req, res) {
         // https://github.com/chimurai/http-proxy-middleware/discussions/765
         proxyRes.on('close', () => {
@@ -59,6 +69,20 @@ export async function createRouter({
   ) {
     if (localPluginIds.has(req.params.pluginId)) {
       next();
+      return;
+    }
+
+    const currentHops = parseInt(req.headers[HOPS_HEADER] as string, 10) || 0;
+    if (currentHops >= MAX_HOPS) {
+      logger.warn(
+        `Proxy loop detected for plugin '${req.params.pluginId}': request exceeded maximum hop count (${currentHops})`,
+      );
+      res.status(508).json({
+        error: {
+          name: 'LoopDetectedError',
+          message: `Maximum proxy hop count exceeded (${currentHops})`,
+        },
+      });
       return;
     }
 

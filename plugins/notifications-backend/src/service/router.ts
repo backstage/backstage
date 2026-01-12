@@ -122,7 +122,7 @@ export async function createRouter(
     topic: any,
     existingOrigin: OriginSetting | undefined,
     defaultOriginSettings: OriginSetting | undefined,
-    defaultEnabled: boolean,
+    channelDefaultEnabled: boolean,
   ) => {
     const existingTopic = existingOrigin?.topics?.find(
       t => t.id.toLowerCase() === topic.topic.toLowerCase(),
@@ -131,11 +131,14 @@ export async function createRouter(
       t => t.id.toLowerCase() === topic.topic.toLowerCase(),
     );
 
+    // If topic has explicit setting, use it
+    // Otherwise check default topic settings from config
+    // Otherwise use channel default (not origin enabled state)
     return {
       id: topic.topic,
       enabled: existingTopic
         ? existingTopic.enabled
-        : defaultTopicSettings?.enabled ?? defaultEnabled,
+        : defaultTopicSettings?.enabled ?? channelDefaultEnabled,
     };
   };
 
@@ -144,6 +147,8 @@ export async function createRouter(
     existingChannel: ChannelSetting | undefined,
     defaultChannelSettings: ChannelSetting | undefined,
     topics: { origin: string; topic: string }[],
+    channelDefaultEnabled: boolean,
+    channelHasExplicitEnabled: boolean,
   ) => {
     const existingOrigin = existingChannel?.origins?.find(
       o => o.id.toLowerCase() === originId.toLowerCase(),
@@ -155,7 +160,7 @@ export async function createRouter(
 
     const defaultEnabled = existingOrigin
       ? existingOrigin.enabled
-      : defaultOriginSettings?.enabled ?? true;
+      : defaultOriginSettings?.enabled ?? channelDefaultEnabled;
 
     return {
       id: originId,
@@ -167,7 +172,7 @@ export async function createRouter(
             t,
             existingOrigin,
             defaultOriginSettings,
-            defaultEnabled,
+            channelHasExplicitEnabled ? channelDefaultEnabled : defaultEnabled,
           ),
         ),
     };
@@ -186,14 +191,29 @@ export async function createRouter(
       c => c.id.toLowerCase() === channelId.toLowerCase(),
     );
 
+    // Determine channel enabled state
+    const channelEnabled =
+      existingChannel?.enabled ?? defaultChannelSettings?.enabled;
+
+    // Use channel's enabled flag as the default for origins if not explicitly set
+    const defaultEnabledForOrigins = channelEnabled ?? true;
+
+    // Check if channel has explicit enabled flag (either from user settings or config)
+    const channelHasExplicitEnabled =
+      existingChannel?.enabled !== undefined ||
+      defaultChannelSettings?.enabled !== undefined;
+
     return {
       id: channelId,
+      enabled: channelEnabled,
       origins: origins.map(originId =>
         getOriginSettings(
           originId,
           existingChannel,
           defaultChannelSettings,
           topics,
+          defaultEnabledForOrigins,
+          channelHasExplicitEnabled,
         ),
       ),
     };
@@ -213,7 +233,7 @@ export async function createRouter(
         channels.push(channel.id);
       }
 
-      for (const origin of channel.origins) {
+      for (const origin of channel.origins ?? []) {
         if (!origins.includes(origin.id)) {
           origins.push(origin.id);
         }
@@ -241,7 +261,56 @@ export async function createRouter(
     origin: string;
     topic: string | null;
   }) => {
-    const settings = await getNotificationSettings(opts.user);
+    // Get user's explicit settings from database
+    const userSettings = await store.getNotificationSettings({
+      user: opts.user,
+    });
+
+    // Build a minimal settings object with user settings and config defaults
+    const settings: NotificationSettings = {
+      channels: [
+        {
+          id: opts.channel,
+          enabled: defaultNotificationSettings?.channels?.find(
+            c => c.id.toLowerCase() === opts.channel.toLowerCase(),
+          )?.enabled,
+          origins: [],
+        },
+      ],
+    };
+
+    // Add user's channel if it exists
+    const userChannel = userSettings.channels.find(
+      c => c.id.toLowerCase() === opts.channel.toLowerCase(),
+    );
+    if (userChannel) {
+      settings.channels[0] = {
+        ...settings.channels[0],
+        enabled: userChannel.enabled ?? settings.channels[0].enabled,
+        origins: userChannel.origins ?? [],
+      };
+    }
+
+    // Add config default origins if not in user settings
+    // Only add origins if the channel is enabled (not explicitly disabled)
+    const defaultChannelSettings = defaultNotificationSettings?.channels?.find(
+      c => c.id.toLowerCase() === opts.channel.toLowerCase(),
+    );
+    if (
+      defaultChannelSettings?.origins &&
+      settings.channels[0].enabled !== false
+    ) {
+      for (const defaultOrigin of defaultChannelSettings.origins) {
+        if (
+          !settings.channels[0].origins.some(
+            o => o.id.toLowerCase() === defaultOrigin.id.toLowerCase(),
+          )
+        ) {
+          settings.channels[0].origins.push(defaultOrigin);
+        }
+      }
+    }
+
     return isNotificationsEnabledFor(
       settings,
       opts.channel,

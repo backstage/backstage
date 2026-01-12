@@ -26,7 +26,7 @@ import * as SkeletonStories from '../../../packages/ui/src/components/Skeleton/S
 import * as CardStories from '../../../packages/ui/src/components/Card/Card.stories';
 import * as HeaderStories from '../../../packages/ui/src/components/Header/Header.stories';
 import * as HeaderPageStories from '../../../packages/ui/src/components/HeaderPage/HeaderPage.stories';
-import * as TableStories from '../../../packages/ui/src/components/Table/Table.stories';
+import * as TableStories from '../../../packages/ui/src/components/Table/stories/Table.docs.stories';
 import * as TagGroupStories from '../../../packages/ui/src/components/TagGroup/TagGroup.stories';
 import * as PasswordFieldStories from '../../../packages/ui/src/components/PasswordField/PasswordField.stories';
 import * as VisuallyHiddenStories from '../../../packages/ui/src/components/VisuallyHidden/VisuallyHidden.stories';

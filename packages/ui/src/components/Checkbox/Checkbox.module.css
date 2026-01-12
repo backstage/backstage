@@ -48,27 +48,28 @@
     background-color: var(--bui-bg-surface-1);
     padding: 0;
     flex-shrink: 0;
-    color: var(--bui-fg-solid);
+    color: transparent;
+
+    .bui-Checkbox[data-focus-visible] & {
+      transition: none;
+      outline: 2px solid var(--bui-ring);
+      outline-offset: 2px;
+    }
+
+    .bui-Checkbox[data-selected] & {
+      background-color: var(--bui-bg-solid);
+      box-shadow: none;
+      color: var(--bui-fg-solid);
+    }
+
+    .bui-Checkbox[data-hovered]:not([data-selected]) & {
+      box-shadow: inset 0 0 0 1px var(--bui-border-hover);
+    }
 
     @media (prefers-reduced-motion: reduce) {
       & {
         transition: none;
       }
     }
-  }
-
-  .bui-Checkbox[data-focus-visible] .bui-CheckboxIndicator {
-    transition: none;
-    outline: 2px solid var(--bui-ring);
-    outline-offset: 2px;
-  }
-
-  .bui-Checkbox[data-selected] .bui-CheckboxIndicator {
-    background-color: var(--bui-bg-solid);
-    box-shadow: none;
-  }
-
-  .bui-Checkbox[data-hovered]:not([data-selected]) .bui-CheckboxIndicator {
-    box-shadow: inset 0 0 0 1px var(--bui-border-hover);
   }
 }

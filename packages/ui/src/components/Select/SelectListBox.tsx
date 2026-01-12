@@ -18,6 +18,7 @@ import { ListBox, ListBoxItem, Text } from 'react-aria-components';
 import { RiCheckLine } from '@remixicon/react';
 import clsx from 'clsx';
 import { useStyles } from '../../hooks/useStyles';
+import { SelectDefinition } from './definition';
 import styles from './Select.module.css';
 import type { Option } from './types';
 
@@ -26,7 +27,7 @@ interface SelectListBoxProps {
 }
 
 const NoResults = () => {
-  const { classNames } = useStyles('Select');
+  const { classNames } = useStyles(SelectDefinition);
 
   return (
     <div className={clsx(classNames.noResults, styles[classNames.noResults])}>
@@ -36,7 +37,7 @@ const NoResults = () => {
 };
 
 export function SelectListBox({ options, ...props }: SelectListBoxProps) {
-  const { classNames } = useStyles('Select', props);
+  const { classNames } = useStyles(SelectDefinition, props);
   return (
     <ListBox
       className={clsx(classNames.list, styles[classNames.list])}

@@ -17,16 +17,46 @@
 import {
   coreServices,
   createServiceFactory,
+  createServiceRef,
 } from '@backstage/backend-plugin-api';
-import {
-  BackendFeatureMeta,
-  InstanceMetadataService,
-  instanceMetadataServiceRef,
-} from '@backstage/backend-plugin-api/alpha';
+
+/*
+ * NOTE(freben): We have moved over to coreServices.rootInstanceMetadata. This
+ * old alpha implementation is kept around for a little longer for backward
+ * compatibility reasons.
+ */
 
 /**
- * @alpha
- * @deprecated use {@link @backstage/backend-plugin-api#coreServices.rootInstanceMetadata} instead
+ * @internal
+ */
+export type BackendFeatureMeta =
+  | {
+      type: 'plugin';
+      pluginId: string;
+    }
+  | {
+      type: 'module';
+      pluginId: string;
+      moduleId: string;
+    };
+
+/**
+ * @internal
+ */
+export interface InstanceMetadataService {
+  getInstalledFeatures: () => BackendFeatureMeta[];
+}
+
+/**
+ * @internal
+ */
+export const instanceMetadataServiceRef =
+  createServiceRef<InstanceMetadataService>({
+    id: 'core.instanceMetadata',
+  });
+
+/**
+ * @internal
  */
 export const instanceMetadataServiceFactory = createServiceFactory({
   service: instanceMetadataServiceRef,

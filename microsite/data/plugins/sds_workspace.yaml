@@ -1,0 +1,10 @@
+---
+title: Citrix Secure Developer Spaces (SDS)
+author: Citrix
+authorUrl: https://github.com/strong-network
+category: Development
+description: Connect Backstage with Citrix Secure Developer Spaces (SDS) to view and create developer workspaces.
+documentation: https://www.npmjs.com/package/@citrixcloud/backstage-sds-workspaces
+iconUrl: /img/citrix_sds.png
+npmPackageName: '@citrixcloud/backstage-sds-workspaces'
+addedDate: '2025-10-07'

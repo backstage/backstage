@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { IconComponent, RouteRef } from '@backstage/frontend-plugin-api';
+import { IconComponent } from '../icons/types';
+import { RouteRef } from '../routing';
 import { createExtensionBlueprint, createExtensionDataRef } from '../wiring';
 
 /**

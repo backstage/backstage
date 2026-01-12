@@ -18,7 +18,7 @@
 | `redirect_uri`          | `text`                     | false    | -          | -                 |
 | `response_type`         | `character varying`        | false    | 255        | -                 |
 | `scope`                 | `text`                     | true     | -          | -                 |
-| `state`                 | `character varying`        | true     | 255        | -                 |
+| `state`                 | `text`                     | true     | -          | -                 |
 | `status`                | `text`                     | true     | -          | `'pending'::text` |
 | `user_entity_ref`       | `character varying`        | true     | 255        | -                 |
 

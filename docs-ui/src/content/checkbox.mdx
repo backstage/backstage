@@ -10,6 +10,7 @@ import {
 } from './checkbox.props';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
+import { CheckboxDefinition } from '../utils/definitions';
 import { ChangelogComponent } from '@/components/ChangelogComponent';
 
 <PageTitle
@@ -46,6 +47,6 @@ Here's a view when checkboxes have different variants.
   code={checkboxVariantsSnippet}
 />
 
-<Theming component="Checkbox" />
+<Theming definition={CheckboxDefinition} />
 
 <ChangelogComponent component="checkbox" />

@@ -1,5 +1,19 @@
 # @backstage/plugin-devtools-common
 
+## 0.1.20
+
+### Patch Changes
+
+- 291bf9d: Added scheduled tasks UI feature for the DevTools plugin
+
+## 0.1.19
+
+### Patch Changes
+
+- b2bef92: Convert all enums to erasable-syntax compliant patterns
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.3
+
 ## 0.1.19-next.1
 
 ### Patch Changes

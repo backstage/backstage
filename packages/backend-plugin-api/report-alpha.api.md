@@ -103,28 +103,24 @@ export const actionsServiceRef: ServiceRef<
   'singleton'
 >;
 
-// @alpha (undocumented)
-export type BackendFeatureMeta =
-  | {
-      type: 'plugin';
-      pluginId: string;
-    }
-  | {
-      type: 'module';
-      pluginId: string;
-      moduleId: string;
-    };
-
-// @alpha (undocumented)
-export interface InstanceMetadataService {
+// @public (undocumented)
+export interface RootSystemMetadataService {
   // (undocumented)
-  getInstalledFeatures: () => BackendFeatureMeta[];
+  getInstalledPlugins: () => Promise<
+    ReadonlyArray<RootSystemMetadataServicePluginInfo>
+  >;
 }
 
-// @alpha (undocumented)
-export const instanceMetadataServiceRef: ServiceRef<
-  InstanceMetadataService,
-  'plugin',
+// @public (undocumented)
+export interface RootSystemMetadataServicePluginInfo {
+  // (undocumented)
+  readonly pluginId: string;
+}
+
+// @alpha
+export const rootSystemMetadataServiceRef: ServiceRef<
+  RootSystemMetadataService,
+  'root',
   'singleton'
 >;
 

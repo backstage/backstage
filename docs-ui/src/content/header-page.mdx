@@ -14,6 +14,7 @@ import {
 } from './header-page.props';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
+import { HeaderPageDefinition } from '../utils/definitions';
 import { ChangelogComponent } from '@/components/ChangelogComponent';
 
 <PageTitle
@@ -82,6 +83,6 @@ prop is an array of objects with a `label`, `value` and `onClick` property.
   code={withMenuItems}
 />
 
-<Theming component="HeaderPage" />
+<Theming definition={HeaderPageDefinition} />
 
 <ChangelogComponent component="Header" />

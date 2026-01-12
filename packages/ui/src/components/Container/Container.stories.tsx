@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,12 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import type { Meta, StoryObj } from '@storybook/react-vite';
+import preview from '../../../../../.storybook/preview';
 import { Box } from '../Box/Box';
 import { Container } from './Container';
 
-const meta = {
+const meta = preview.meta({
   title: 'Backstage UI/Container',
   component: Container,
   parameters: {
@@ -32,10 +31,7 @@ const meta = {
       control: 'text',
     },
   },
-} satisfies Meta<typeof Container>;
-
-export default meta;
-type Story = StoryObj<typeof meta>;
+});
 
 const DecorativeBox = () => (
   <Box
@@ -50,58 +46,58 @@ const DecorativeBox = () => (
   />
 );
 
-export const Default: Story = {
+export const Default = meta.story({
   args: {
     children: <DecorativeBox />,
   },
-};
+});
 
-export const Preview: Story = {
+export const Preview = meta.story({
   render: () => (
     <div style={{ maxWidth: '600px', margin: '0 auto' }}>
       <DecorativeBox />
     </div>
   ),
-};
+});
 
-export const WithPaddingY: Story = {
+export const WithPaddingY = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
     py: '4',
   },
-};
+});
 
-export const WithPaddingTop: Story = {
+export const WithPaddingTop = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
     pt: '4',
   },
-};
+});
 
-export const WithPaddingBottom: Story = {
+export const WithPaddingBottom = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
     pb: '4',
   },
-};
+});
 
-export const WithMarginY: Story = {
+export const WithMarginY = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
     my: '4',
   },
-};
+});
 
-export const WithMarginTop: Story = {
+export const WithMarginTop = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
     mt: '4',
   },
-};
+});
 
-export const WithMarginBottom: Story = {
+export const WithMarginBottom = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
     mb: '4',
   },
-};
+});

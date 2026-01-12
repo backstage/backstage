@@ -15,42 +15,72 @@
  */
 
 import { Bitbucket } from 'bitbucket';
+import { getBitbucketCloudOAuthToken } from '@backstage/integration';
 
-export const getBitbucketClient = (config: {
+export const getBitbucketClient = async (config: {
   token?: string;
   username?: string;
   appPassword?: string;
+  clientId?: string;
+  clientSecret?: string;
 }) => {
-  if (config.username && config.appPassword) {
+  // If OAuth credentials provided, fetch token
+  if (config.clientId && config.clientSecret) {
+    const token = await getBitbucketCloudOAuthToken(
+      config.clientId,
+      config.clientSecret,
+    );
+    return new Bitbucket({
+      auth: {
+        token,
+      },
+    });
+  }
+
+  if (config.token) {
+    return new Bitbucket({
+      auth: {
+        token: config.token,
+      },
+    });
+  } else if (config.username && config.appPassword) {
+    // TODO: appPassword can be removed once fully
+    // deprecated by BitBucket on 9th June 2026.
     return new Bitbucket({
       auth: {
         username: config.username,
         password: config.appPassword,
       },
     });
-  } else if (config.token) {
-    return new Bitbucket({
-      auth: {
-        token: config.token,
-      },
-    });
   }
   throw new Error(
-    `Authorization has not been provided for Bitbucket Cloud. Please add either username + appPassword to the Integrations config or a user login auth token`,
+    `Authorization has not been provided for Bitbucket Cloud. Please provide either OAuth credentials (clientId/clientSecret), username and token, or username and appPassword in the Integrations config`,
   );
 };
 
-export const getAuthorizationHeader = (config: {
+export const getAuthorizationHeader = async (config: {
   username?: string;
   appPassword?: string;
   token?: string;
-}) => {
-  if (config.username && config.appPassword) {
+  clientId?: string;
+  clientSecret?: string;
+}): Promise<string> => {
+  // OAuth authentication
+  if (config.clientId && config.clientSecret) {
+    const token = await getBitbucketCloudOAuthToken(
+      config.clientId,
+      config.clientSecret,
+    );
+    return `Bearer ${token}`;
+  }
+
+  // TODO: appPassword can be removed once fully
+  // deprecated by BitBucket on 9th June 2026.
+  if (config.username && (config.token ?? config.appPassword)) {
     const buffer = Buffer.from(
-      `${config.username}:${config.appPassword}`,
+      `${config.username}:${config.token ?? config.appPassword}`,
       'utf8',
     );
-
     return `Basic ${buffer.toString('base64')}`;
   }
 
@@ -59,6 +89,6 @@ export const getAuthorizationHeader = (config: {
   }
 
   throw new Error(
-    `Authorization has not been provided for Bitbucket Cloud. Please add either username + appPassword to the Integrations config or a user login auth token`,
+    `Authorization has not been provided for Bitbucket Cloud. Please provide either OAuth credentials (clientId/clientSecret), username and token, or username and appPassword in the Integrations config`,
   );
 };

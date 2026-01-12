@@ -13,7 +13,9 @@ import {
   tableHybridSnippet,
   tableCellInteractionsSnippet,
   tablePaginationSnippet,
-  tableSelectionSnippet,
+  tableSelectionActionsSnippet,
+  tableSelectionModeSnippet,
+  tableSelectionBehaviorSnippet,
   tableSortingSnippet,
   columnPropDefs,
   rowPropDefs,
@@ -22,6 +24,7 @@ import {
 import { ChangelogComponent } from '@/components/ChangelogComponent';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
+import { TableDefinition } from '../utils/definitions';
 
 <PageTitle
   title="Table"
@@ -90,7 +93,36 @@ Coming soon.
 
 ### Row selection
 
-Coming soon.
+Tables support row selection with two configuration options: selection mode and selection behavior.
+
+#### Selection mode
+
+Use `selectionMode` to control how many rows can be selected. With `single`, only one row can be selected at a time. With `multiple`, any number of rows can be selected, and a header checkbox provides select-all functionality.
+
+<Snippet
+  preview={<TableSnippet story="SelectionModePlayground" />}
+  code={tableSelectionModeSnippet}
+/>
+
+#### Selection behavior
+
+Use `selectionBehavior` to control how selection is indicated and interacted with. With `toggle`, checkboxes appear for selection. With `replace`, selection is indicated by row background color—click to select, Cmd/Ctrl+click for multiple.
+
+<Snippet
+  preview={<TableSnippet story="SelectionBehaviorPlayground" />}
+  code={tableSelectionBehaviorSnippet}
+/>
+
+#### With row actions
+
+With toggle behavior, clicking a row triggers its action when nothing is selected. Once any row is selected, clicking toggles selection instead.
+
+With replace behavior, clicking selects the row and double-clicking triggers the action.
+
+<Snippet
+  preview={<TableSnippet story="SelectionToggleWithActions" />}
+  code={tableSelectionActionsSnippet}
+/>
 
 ### Row Clicks
 
@@ -128,6 +160,6 @@ This feature is not available yet — let us know if you'd like us to explore it
 
 This feature is not available yet — let us know if you'd like us to explore it!
 
-<Theming component="Table" />
+<Theming definition={TableDefinition} />
 
 <ChangelogComponent component="table" />

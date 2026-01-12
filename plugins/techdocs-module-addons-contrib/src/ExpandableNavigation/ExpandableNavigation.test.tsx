@@ -17,6 +17,7 @@
 import { TechDocsAddonTester } from '@backstage/plugin-techdocs-addons-test-utils';
 
 import { fireEvent, waitFor } from '@testing-library/react';
+import { screen } from 'shadow-dom-testing-library';
 
 import { ExpandableNavigation } from '../plugin';
 import { entityPresentationApiRef } from '@backstage/plugin-catalog-react';
@@ -94,24 +95,23 @@ describe('ExpandableNavigation', () => {
   });
 
   it('renders without exploding', async () => {
-    const { getByRole } = await TechDocsAddonTester.buildAddonsInTechDocs([
+    await TechDocsAddonTester.buildAddonsInTechDocs([<ExpandableNavigation />])
+      .withDom(mockNavWithSublevels)
+      .withApis([[entityPresentationApiRef, entityPresentationApiMock]])
+      .renderWithEffects();
+
+    expect(
+      screen.getByShadowRole('button', { name: 'expand-nav' }),
+    ).toBeInTheDocument();
+  });
+
+  it('expands and collapses navigation', async () => {
+    const { shadowRoot } = await TechDocsAddonTester.buildAddonsInTechDocs([
       <ExpandableNavigation />,
     ])
       .withDom(mockNavWithSublevels)
       .withApis([[entityPresentationApiRef, entityPresentationApiMock]])
       .renderWithEffects();
-
-    expect(getByRole('button', { name: 'expand-nav' })).toBeInTheDocument();
-  });
-
-  it('expands and collapses navigation', async () => {
-    const { getByRole, shadowRoot } =
-      await TechDocsAddonTester.buildAddonsInTechDocs([
-        <ExpandableNavigation />,
-      ])
-        .withDom(mockNavWithSublevels)
-        .withApis([[entityPresentationApiRef, entityPresentationApiMock]])
-        .renderWithEffects();
 
     const toggles =
       shadowRoot!.querySelectorAll<HTMLInputElement>('.md-toggle');
@@ -121,18 +121,24 @@ describe('ExpandableNavigation', () => {
       expect(item).not.toBeChecked();
     });
 
-    const expandButton = getByRole('button', { name: 'expand-nav' });
+    const expandButton = screen.getByShadowRole('button', {
+      name: 'expand-nav',
+    });
 
     fireEvent.click(expandButton);
 
     await waitFor(() => {
-      expect(getByRole('button', { name: 'collapse-nav' })).toBeInTheDocument();
+      expect(
+        screen.getByShadowRole('button', { name: 'collapse-nav' }),
+      ).toBeInTheDocument();
       toggles.forEach(item => {
         expect(item).toBeChecked();
       });
     });
 
-    const collapseButton = getByRole('button', { name: 'collapse-nav' });
+    const collapseButton = screen.getByShadowRole('button', {
+      name: 'collapse-nav',
+    });
 
     fireEvent.click(collapseButton);
 
@@ -144,15 +150,13 @@ describe('ExpandableNavigation', () => {
   });
 
   it('does not render when navigation has no sublevels', async () => {
-    const { queryByRole } = await TechDocsAddonTester.buildAddonsInTechDocs([
-      <ExpandableNavigation />,
-    ])
+    await TechDocsAddonTester.buildAddonsInTechDocs([<ExpandableNavigation />])
       .withDom(mockNavWithoutSublevels)
       .withApis([[entityPresentationApiRef, entityPresentationApiMock]])
       .renderWithEffects();
 
     expect(
-      queryByRole('button', { name: 'expand-nav' }),
+      screen.queryByShadowRole('button', { name: 'expand-nav' }),
     ).not.toBeInTheDocument();
   });
 });

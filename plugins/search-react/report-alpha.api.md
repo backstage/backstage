@@ -10,7 +10,7 @@ import { JSX as JSX_2 } from 'react';
 import { ListItemProps } from '@material-ui/core/ListItem';
 import { SearchDocument } from '@backstage/plugin-search-common';
 import { SearchResult } from '@backstage/plugin-search-common';
-import { TranslationRef } from '@backstage/core-plugin-api/alpha';
+import { TranslationRef } from '@backstage/frontend-plugin-api';
 
 // @alpha (undocumented)
 export type BaseSearchResultListItemProps<T = {}> = T & {

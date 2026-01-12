@@ -1,5 +1,69 @@
 # @backstage/plugin-techdocs-module-addons-contrib
 
+## 1.1.32-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.5-next.0
+  - @backstage/integration-react@1.2.14-next.0
+  - @backstage/plugin-techdocs-react@1.3.7-next.0
+
+## 1.1.32-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.19.2-next.0
+  - @backstage/integration-react@1.2.14-next.0
+  - @backstage/frontend-plugin-api@0.13.2
+
+## 1.1.31
+
+### Patch Changes
+
+- 8d6709e: Updated tests to match test-utils change
+- Updated dependencies
+  - @backstage/integration@1.19.0
+  - @backstage/frontend-plugin-api@0.13.2
+  - @backstage/core-components@0.18.4
+  - @backstage/core-plugin-api@1.12.1
+  - @backstage/integration-react@1.2.13
+  - @backstage/plugin-techdocs-react@1.3.6
+
+## 1.1.31-next.1
+
+### Patch Changes
+
+- 8d6709e: Updated tests to match test-utils change
+- Updated dependencies
+  - @backstage/core-components@0.18.4-next.1
+
+## 1.1.31-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.2-next.0
+  - @backstage/integration@1.18.3-next.0
+  - @backstage/core-plugin-api@1.12.1-next.0
+  - @backstage/plugin-techdocs-react@1.3.6-next.0
+  - @backstage/integration-react@1.2.13-next.0
+  - @backstage/core-components@0.18.4-next.0
+
+## 1.1.30
+
+### Patch Changes
+
+- 6929480: ExpandableCollapse Techdocs Addon was breaking native sidebar collapse on Firefox
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.0
+  - @backstage/integration@1.18.2
+  - @backstage/core-components@0.18.3
+  - @backstage/core-plugin-api@1.12.0
+  - @backstage/plugin-techdocs-react@1.3.5
+  - @backstage/integration-react@1.2.12
+
 ## 1.1.30-next.1
 
 ### Patch Changes

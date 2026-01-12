@@ -19,6 +19,7 @@ import { OverflowTooltip } from './OverflowTooltip';
 export default {
   title: 'Data Display/OverflowTooltip',
   component: OverflowTooltip,
+  tags: ['!manifest'],
 };
 
 const text =

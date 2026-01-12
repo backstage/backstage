@@ -59,6 +59,7 @@ Chanwit
 CI/CD
 classname
 cli
+CLIs
 cloudbuild
 Cloudflare
 Cloudformation
@@ -98,6 +99,7 @@ dataflow
 dataloader
 dayjs
 debounce
+debounced
 debounces
 debuggability
 declaratively
@@ -149,6 +151,7 @@ etag
 Expedia
 facto
 failover
+faq
 Fargate
 faqs
 featureful
@@ -266,6 +269,7 @@ maintainer's
 maintainership
 makefile
 Matomo
+matchers
 md
 memcache
 memoization
@@ -325,6 +329,7 @@ onboarded
 onboarding
 Onboarding
 onelogin
+openapi
 OpenSearch
 OpenShift
 openssl
@@ -506,6 +511,7 @@ thumbsup
 todo
 todos
 togglable
+tokenizer
 tolerations
 Tolerations
 toolchain
@@ -518,6 +524,7 @@ transpile
 transpiled
 transpiler
 transpilers
+trixie
 truthy
 tsconfig
 TSDoc
@@ -572,3 +579,4 @@ zoomable
 zsh
 resizable
 enums
+LLMs

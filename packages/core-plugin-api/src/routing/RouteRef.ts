@@ -45,7 +45,39 @@ export class RouteRefImpl<Params extends AnyParams>
   }
 
   toString() {
+    if (this.#nfsId) {
+      return `routeRef{id=${this.#nfsId},legacyId=${this.id}}`;
+    }
     return `routeRef{type=absolute,id=${this.id}}`;
+  }
+
+  // NFS implementation below
+  readonly $$type = '@backstage/RouteRef';
+  readonly version = 'v1';
+  readonly T = undefined as any;
+  readonly alias = undefined;
+
+  #nfsId: string | undefined = undefined;
+
+  getParams() {
+    return this.params;
+  }
+  getDescription() {
+    if (this.#nfsId) {
+      return this.#nfsId;
+    }
+    return this.id;
+  }
+  setId(newId: string) {
+    if (!newId) {
+      throw new Error(`RouteRef id must be a non-empty string`);
+    }
+    if (this.#nfsId && this.#nfsId !== newId) {
+      throw new Error(
+        `RouteRef was referenced twice as both '${this.#nfsId}' and '${newId}'`,
+      );
+    }
+    this.#nfsId = newId;
   }
 }
 
@@ -72,5 +104,5 @@ export function createRouteRef<
   return new RouteRefImpl(
     config.id,
     (config.params ?? []) as ParamKeys<OptionalParams<Params>>,
-  );
+  ) as RouteRef<OptionalParams<Params>>;
 }

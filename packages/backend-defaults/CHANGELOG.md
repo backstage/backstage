@@ -1,5 +1,183 @@
 # @backstage/backend-defaults
 
+## 0.14.1-next.1
+
+### Patch Changes
+
+- 3afeab4: Implementing `readTree` for `GoogleGcsReader`
+- Updated dependencies
+  - @backstage/integration@1.19.2-next.0
+
+## 0.14.1-next.0
+
+### Patch Changes
+
+- 7126bf2: Fixed a spelling mistake in root health service shutdown response.
+- Updated dependencies
+  - @backstage/backend-app-api@1.4.0
+  - @backstage/backend-dev-utils@0.1.6
+  - @backstage/backend-plugin-api@1.6.0
+  - @backstage/cli-node@0.2.16
+  - @backstage/config@1.3.6
+  - @backstage/config-loader@1.10.7
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.19.0
+  - @backstage/integration-aws-node@0.1.19
+  - @backstage/types@1.2.2
+  - @backstage/plugin-auth-node@0.6.10
+  - @backstage/plugin-events-node@0.4.18
+  - @backstage/plugin-permission-node@0.10.7
+
+## 0.14.0
+
+### Minor Changes
+
+- fa43826: Move `better-sqlite3` from dependencies to peer dependencies
+- 2bc4e02: **BREAKING** The correct configuration options for Valkey are now being used.
+
+  These changes are **required** to `app-config.yaml`:
+
+  ```diff
+  backend:
+    cache:
+      store: valkey
+      connection: ...
+      client:
+  -     namespace: 'my-app'
+  -     keyPrefixSeparator: ':'
+  +     keyPrefix: 'my-app:'
+  -     clearBatchSize: 1000
+  -     useUnlink: false
+  ```
+
+  In comparison to Redis, Valkey requires the full `keyPrefix` including the separator to be specified instead of separate `namespace` and `keyPrefixSeparator` options. Also, Valkey does not support the `clearBatchSize` and `useUnlink` options.
+
+### Patch Changes
+
+- 37fba1d: Added support for Bitbucket Cloud OAuth. This introduces an alternative authentication method using a workspace OAuth consumer, alongside App Passwords (deprecated) and API tokens. OAuth does not require a bot or service account and avoids token expiry issues.
+
+  **BREAKING CHANGES**
+
+  - **@backstage/integration** (`src/bitbucketCloud/core.ts`)
+
+    - `getBitbucketCloudRequestOptions` now returns a `Promise` and **must** be awaited.
+
+  - **@backstage/plugin-scaffolder-backend-module-bitbucket-cloud** (`src/actions/helpers.ts`)
+    - `getBitbucketClient` now returns a `Promise` and **must** be awaited.
+    - `getAuthorizationHeader` now returns a `Promise` and **must** be awaited.
+
+  **OAuth usage example**
+
+  ```yaml
+  integrations:
+    bitbucketCloud:
+      - clientId: client-id
+        clientSecret: client-secret
+  ```
+
+- de96a60: chore(deps): bump `express` from 4.21.2 to 4.22.0
+- aa79251: build(deps): bump `node-forge` from 1.3.1 to 1.3.2
+- f96edff: Allow configuration of the `referrerPolicy`
+- fb029b6: Updated luxon types
+- d9759a1: **BREAKING ALPHA**: The old `instanceMetadataService` has been removed from alpha. Please switch over to using the stable `coreServices.rootInstanceMetadata` and related types instead, available from `@backstage/backend-plugin-api`.
+- 847a330: Fix for `jose` types
+- 25b560e: Internal change to support new versions of the `logform` library
+- 2a0c4b0: Adds a new experimental `RootSystemMetadataService` for tracking the collection of Backstage instances that may be deployed at any one time. It currently offers a single API, `getInstalledPlugins` that returns a list of installed plugins based on config you have set up in `discovery.endpoints` as well as the plugins installed on the instance you're calling the API with. It does not handle wildcard values or fallback values. The intention is for this plugin to provide plugin authors with a simple interface to fetch a trustworthy list of all installed plugins.
+- 3016a79: Updated dependency `@types/archiver` to `^7.0.0`.
+- 42db6a6: Don't warn when parsing `storeOptions` for `memory` cache
+- Updated dependencies
+  - @backstage/cli-node@0.2.16
+  - @backstage/integration@1.19.0
+  - @backstage/plugin-auth-node@0.6.10
+  - @backstage/plugin-events-node@0.4.18
+  - @backstage/plugin-permission-node@0.10.7
+  - @backstage/backend-app-api@1.4.0
+  - @backstage/backend-plugin-api@1.6.0
+  - @backstage/config-loader@1.10.7
+  - @backstage/backend-dev-utils@0.1.6
+
+## 0.14.0-next.1
+
+### Patch Changes
+
+- de96a60: chore(deps): bump `express` from 4.21.2 to 4.22.0
+- aa79251: build(deps): bump `node-forge` from 1.3.1 to 1.3.2
+- f96edff: Allow configuration of the `referrerPolicy`
+- fb029b6: Updated luxon types
+- 847a330: Fix for `jose` types
+- 25b560e: Internal change to support new versions of the `logform` library
+- 2a0c4b0: Adds a new experimental `RootSystemMetadataService` for tracking the collection of Backstage instances that may be deployed at any one time. It currently offers a single API, `getInstalledPlugins` that returns a list of installed plugins based on config you have set up in `discovery.endpoints` as well as the plugins installed on the instance you're calling the API with. It does not handle wildcard values or fallback values. The intention is for this plugin to provide plugin authors with a simple interface to fetch a trustworthy list of all installed plugins.
+- 3016a79: Updated dependency `@types/archiver` to `^7.0.0`.
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.10-next.1
+  - @backstage/plugin-events-node@0.4.18-next.1
+  - @backstage/plugin-permission-node@0.10.7-next.1
+  - @backstage/integration@1.18.3-next.1
+  - @backstage/backend-plugin-api@1.6.0-next.1
+  - @backstage/config-loader@1.10.7-next.1
+  - @backstage/backend-dev-utils@0.1.6-next.0
+  - @backstage/backend-app-api@1.4.0-next.1
+  - @backstage/cli-node@0.2.16-next.1
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/integration-aws-node@0.1.19
+  - @backstage/types@1.2.2
+
+## 0.14.0-next.0
+
+### Minor Changes
+
+- fa43826: Move `better-sqlite3` from dependencies to peer dependencies
+
+### Patch Changes
+
+- d9759a1: **BREAKING ALPHA**: The old `instanceMetadataService` has been removed from alpha. Please switch over to using the stable `coreServices.rootInstanceMetadata` and related types instead, available from `@backstage/backend-plugin-api`.
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.10-next.0
+  - @backstage/backend-app-api@1.4.0-next.0
+  - @backstage/backend-plugin-api@1.5.1-next.0
+  - @backstage/integration@1.18.3-next.0
+  - @backstage/plugin-permission-node@0.10.7-next.0
+  - @backstage/plugin-events-node@0.4.18-next.0
+  - @backstage/cli-node@0.2.16-next.0
+  - @backstage/config@1.3.6
+  - @backstage/integration-aws-node@0.1.19
+  - @backstage/config-loader@1.10.7-next.0
+  - @backstage/backend-dev-utils@0.1.5
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
+## 0.13.1
+
+### Patch Changes
+
+- 9bcfa77: Adjusted the log line wording of task worker starting
+- 91ab2eb: Fix a bug in the Gitlab URL reader where `search` did not handle multiple globs
+- fa255f5: Support for Bitbucket Cloud's API token was added as `appPassword` is deprecated (no new creation from September 9, 2025) and will be removed on June 9, 2026.
+
+  API token usage example:
+
+  ```yaml
+  integrations:
+    bitbucketCloud:
+      - username: user@domain.com
+        token: my-token
+  ```
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- b2f6a5a: Fix #31348 issue where BitbucketUrlReader ignored provided token and instead always used integration credentials
+- Updated dependencies
+  - @backstage/integration@1.18.2
+  - @backstage/backend-plugin-api@1.5.0
+  - @backstage/backend-app-api@1.3.0
+  - @backstage/plugin-events-node@0.4.17
+  - @backstage/plugin-auth-node@0.6.9
+  - @backstage/config-loader@1.10.6
+  - @backstage/config@1.3.6
+  - @backstage/cli-node@0.2.15
+  - @backstage/integration-aws-node@0.1.19
+  - @backstage/plugin-permission-node@0.10.6
+
 ## 0.13.1-next.1
 
 ### Patch Changes

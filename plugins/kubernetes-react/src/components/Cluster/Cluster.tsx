@@ -42,6 +42,9 @@ import {
 
 import { StatusError, StatusOK } from '@backstage/core-components';
 import { PodMetricsContext } from '../../hooks/usePodMetrics';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { kubernetesReactTranslationRef } from '../../translation';
+import { SecretsAccordions } from '../SecretsAccordions';
 
 type ClusterSummaryProps = {
   clusterName: string;
@@ -55,6 +58,7 @@ const ClusterSummary = ({
   totalNumberOfPods,
   numberOfPodsWithErrors,
 }: ClusterSummaryProps) => {
+  const { t } = useTranslationRef(kubernetesReactTranslationRef);
   return (
     <Grid
       container
@@ -75,7 +79,7 @@ const ClusterSummary = ({
         <Grid item xs>
           <Typography variant="body1">{clusterName}</Typography>
           <Typography color="textSecondary" variant="subtitle1">
-            Cluster
+            {t('cluster.label')}
           </Typography>
         </Grid>
       </Grid>
@@ -89,13 +93,15 @@ const ClusterSummary = ({
         spacing={0}
       >
         <Grid item>
-          <StatusOK>{totalNumberOfPods} pods</StatusOK>
+          <StatusOK>{t('cluster.pods', { count: totalNumberOfPods })}</StatusOK>
         </Grid>
         <Grid item>
           {numberOfPodsWithErrors > 0 ? (
-            <StatusError>{numberOfPodsWithErrors} pods with errors</StatusError>
+            <StatusError>
+              {t('cluster.podsWithErrors', { count: numberOfPodsWithErrors })}
+            </StatusError>
           ) : (
-            <StatusOK>No pods with errors</StatusOK>
+            <StatusOK>{t('cluster.noPodsWithErrors')}</StatusOK>
           )}
         </Grid>
       </Grid>
@@ -174,6 +180,11 @@ export const Cluster = ({ clusterObjects, podsWithErrors }: ClusterProps) => {
                   {groupedResponses.configMaps.length > 0 ? (
                     <Grid item>
                       <ConfigmapsAccordions />
+                    </Grid>
+                  ) : undefined}
+                  {groupedResponses.secrets.length > 0 ? (
+                    <Grid item>
+                      <SecretsAccordions />
                     </Grid>
                   ) : undefined}
                   {groupedResponses.cronJobs.length > 0 ? (

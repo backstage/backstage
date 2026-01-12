@@ -109,8 +109,12 @@ integrations:
       token: ${GITLAB_TOKEN}
   ### Example for how to add a bitbucket cloud integration
   # bitbucketCloud:
+  #   # Using API token
   #   - username: ${BITBUCKET_USERNAME}
-  #     appPassword: ${BITBUCKET_APP_PASSWORD}
+  #     token: ${BITBUCKET_API_TOKEN}
+  #   # Using OAuth
+  #   - clientId: ${BITBUCKET_CLIENT_ID}
+  #     clientSecret: ${BITBUCKET_CLIENT_SECRET}
   ### Example for how to add your bitbucket server instance using the API:
   # - host: server.bitbucket.com
   #   apiBaseUrl: server.bitbucket.com
@@ -209,6 +213,11 @@ scaffolder:
     email: scaffolder@backstage.io
   # Use to customize the default commit message when new components are created
   defaultCommitMessage: 'Initial commit'
+  defaultEnvironment:
+    parameters:
+      region: eu-west-1
+    secrets:
+      environment: ${NODE_ENV}
 
 auth:
   experimentalDynamicClientRegistration:
@@ -306,3 +315,8 @@ auth:
 
 permission:
   enabled: true
+
+devTools:
+  scheduledTasks:
+    plugins:
+      - catalog

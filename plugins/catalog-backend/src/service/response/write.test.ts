@@ -327,9 +327,10 @@ describe('writeEntitiesResponse', () => {
       expect(res.header['content-length']).not.toBeDefined();
       expect(res.body).toEqual({
         page: 1,
-        items: expect.objectContaining({ length: 300 }),
+        items: expect.any(Array),
         totalItems: 1337,
       });
+      expect(res.body.items).toHaveLength(300);
     });
   });
 
@@ -438,9 +439,10 @@ describe('writeEntitiesResponse', () => {
       expect(res.header['content-length']).toBeDefined();
       expect(res.body).toEqual({
         page: 1,
-        items: expect.objectContaining({ length: 300 }),
+        items: expect.any(Array),
         totalItems: 1337,
       });
+      expect(res.body.items).toHaveLength(300);
     });
   });
 });
