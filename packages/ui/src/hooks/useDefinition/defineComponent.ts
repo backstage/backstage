@@ -19,7 +19,6 @@ import type { ComponentConfig } from './types';
 export function defineComponent<
   P extends Record<string, any>,
   S extends Record<string, string>,
-  const C extends ComponentConfig<P, S>,
->(config: C): C {
-  return config;
+>() {
+  return <const C extends ComponentConfig<P, S>>(config: C): C => config;
 }

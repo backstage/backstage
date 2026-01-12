@@ -15,13 +15,17 @@
  */
 
 import { defineComponent } from '../../hooks/useDefinition';
+import type { ButtonOwnProps } from './types';
 import styles from './Button.module.css';
 
 /**
  * Component definition for Button
  * @public
  */
-export const ButtonDefinition = defineComponent({
+export const ButtonDefinition = defineComponent<
+  ButtonOwnProps,
+  typeof styles
+>()({
   styles,
   classNames: {
     root: 'bui-Button',
