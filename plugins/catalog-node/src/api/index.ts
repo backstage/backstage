@@ -20,6 +20,10 @@ export type {
   LocationSpec,
   EntitiesSearchFilter,
   EntityFilter,
+  EntityPredicate,
+  EntityPredicateExpression,
+  EntityPredicateValue,
+  EntityPredicatePrimitive,
 } from './common';
 export type {
   CatalogProcessor,
