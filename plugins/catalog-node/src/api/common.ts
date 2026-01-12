@@ -85,3 +85,69 @@ export type EntitiesSearchFilter = {
    */
   values?: string[];
 };
+
+/**
+ * Defines a predicate used to filter entities using logical and comparison operators.
+ *
+ * This type supports:
+ * - Primitive equality matching
+ * - Field existence checks
+ * - Inclusion checks
+ * - Logical composition using $all, $any, and $not
+ *
+ * @public
+ */
+export type EntityPredicate =
+  | EntityPredicateExpression
+  | EntityPredicatePrimitive
+  | { $all: EntityPredicate[] }
+  | { $any: EntityPredicate[] }
+  | { $not: EntityPredicate };
+
+/**
+ * Represents a field-based predicate expression.
+ *
+ * Each key is treated as a JSON path into the entity object.
+ * Keys starting with `$` are reserved for operators and are not allowed.
+ *
+ * Example:
+ * ```ts
+ * {
+ *   "spec.type": "service",
+ *   "metadata.name": { $in: ["payments", "orders"] }
+ * }
+ * ```
+ *
+ * @public
+ */
+export type EntityPredicateExpression = {
+  /** JSON path of the entity field */
+  [KPath in string]: EntityPredicateValue;
+} & {
+  /** Operator keys are not allowed as field paths */
+  [KPath in `$${string}`]: never;
+};
+
+/**
+ * Represents a value condition for a predicate field.
+ *
+ * Supported forms:
+ * - Primitive equality match
+ * - Existence check using `$exists`
+ * - Inclusion check using `$in`
+ *
+ * @public
+ */
+export type EntityPredicateValue =
+  | EntityPredicatePrimitive
+  | { $exists: boolean }
+  | { $in: EntityPredicatePrimitive[] };
+
+/**
+ * Represents a primitive predicate value.
+ *
+ * Used for direct equality comparison.
+ *
+ * @public
+ */
+export type EntityPredicatePrimitive = string | number | boolean;

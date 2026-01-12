@@ -16,7 +16,7 @@
 
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { Entity } from '@backstage/catalog-model';
-import { EntityFilter } from '@backstage/plugin-catalog-node';
+import { EntityFilter, EntityPredicate } from '@backstage/plugin-catalog-node';
 
 /**
  * A pagination rule for entities.
@@ -47,6 +47,13 @@ export type PageInfo =
 export type EntitiesRequest = {
   filter?: EntityFilter;
   fields?: (entity: Entity) => Entity;
+  order?: EntityOrder[];
+  pagination?: EntityPagination;
+  credentials: BackstageCredentials;
+};
+
+export type EntityPredicateRequest = {
+  filter?: EntityPredicate;
   order?: EntityOrder[];
   pagination?: EntityPagination;
   credentials: BackstageCredentials;
@@ -164,6 +171,15 @@ export interface EntitiesCatalog {
    * @param request
    */
   queryEntities(request: QueryEntitiesRequest): Promise<QueryEntitiesResponse>;
+
+  /**
+   * Fetch entities using predicate-based filters.
+   *
+   * @param request - Request options with predicate filter
+   */
+  queryEntitiesByPredicate(
+    request?: EntityPredicateRequest,
+  ): Promise<EntitiesResponse>;
 
   /**
    * Removes a single entity.
