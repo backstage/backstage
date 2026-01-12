@@ -35,6 +35,7 @@ export class OidcRouter {
   private readonly appUrl: string;
   private readonly httpAuth: HttpAuthService;
   private readonly config: RootConfigService;
+  private readonly baseUrl: string;
 
   private constructor(
     oidc: OidcService,
@@ -43,6 +44,7 @@ export class OidcRouter {
     appUrl: string,
     httpAuth: HttpAuthService,
     config: RootConfigService,
+    baseUrl: string,
   ) {
     this.oidc = oidc;
     this.logger = logger;
@@ -50,6 +52,7 @@ export class OidcRouter {
     this.appUrl = appUrl;
     this.httpAuth = httpAuth;
     this.config = config;
+    this.baseUrl = baseUrl;
   }
 
   static create(options: {
@@ -70,6 +73,7 @@ export class OidcRouter {
       options.appUrl,
       options.httpAuth,
       options.config,
+      options.baseUrl,
     );
   }
 
@@ -91,6 +95,62 @@ export class OidcRouter {
     router.get('/.well-known/jwks.json', async (_req, res) => {
       const { keys } = await this.oidc.listPublicKeys();
       res.json({ keys });
+    });
+
+    // Client ID Metadata Document endpoint
+    // Serves metadata documents for internally configured CIMD clients
+    // https://datatracker.ietf.org/doc/draft-ietf-oauth-client-id-metadata-document/
+    router.get('/.well-known/oauth-client/:name', (req, res) => {
+      const cimdEnabled = this.config.getOptionalBoolean(
+        'auth.experimentalClientIdMetadataDocuments.enabled',
+      );
+
+      if (!cimdEnabled) {
+        res.status(404).json({
+          error: 'not_found',
+          error_description: 'Client ID metadata documents not enabled',
+        });
+        return;
+      }
+
+      const { name } = req.params;
+
+      const clients =
+        this.config.getOptionalConfigArray(
+          'auth.experimentalClientIdMetadataDocuments.clients',
+        ) ?? [];
+
+      const clientConfig = clients.find(c => c.getString('name') === name);
+
+      if (!clientConfig) {
+        res.status(404).json({
+          error: 'not_found',
+          error_description: `Client '${name}' not found`,
+        });
+        return;
+      }
+
+      const clientId = `${this.baseUrl}/.well-known/oauth-client/${name}`;
+
+      const metadata: Record<string, unknown> = {
+        client_id: clientId,
+        client_name: clientConfig.getOptionalString('clientName') ?? name,
+        redirect_uris: clientConfig.getStringArray('redirectUris'),
+        response_types: clientConfig.getOptionalStringArray(
+          'responseTypes',
+        ) ?? ['code'],
+        grant_types: clientConfig.getOptionalStringArray('grantTypes') ?? [
+          'authorization_code',
+        ],
+        token_endpoint_auth_method: 'none',
+      };
+
+      const scope = clientConfig.getOptionalString('scope');
+      if (scope) {
+        metadata.scope = scope;
+      }
+
+      res.json(metadata);
     });
 
     // UserInfo endpoint
