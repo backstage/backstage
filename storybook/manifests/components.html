@@ -509,7 +509,7 @@
 <header>
   <div class="wrap">
     <h1>Components Manifest</h1>
-    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><span class="filter-pill ok" aria-disabled="true">36 components ok</span><a class="filter-pill info" data-k="infos" href="#filter-infos">28/36 infos</a><span class="filter-pill ok" aria-disabled="true">317 stories ok</span></div>
+    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><span class="filter-pill ok" aria-disabled="true">38 components ok</span><a class="filter-pill info" data-k="infos" href="#filter-infos">30/38 infos</a><span class="filter-pill ok" aria-disabled="true">336 stories ok</span></div>
   </div>
 </header>
 <main>
@@ -1409,7 +1409,7 @@ width?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;</code></pre>
       <div class="badges">
         <label for="c-3-backstage-ui-button-props" class="badge ok as-toggle">7 prop types</label>
         
-        <label for="c-3-backstage-ui-button-stories" class="badge ok as-toggle">11 stories</label>
+        <label for="c-3-backstage-ui-button-stories" class="badge ok as-toggle">10 stories</label>
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Button/Button.stories.tsx">backstage-ui-button · ./packages/ui/src/components/Button/Button.stories.tsx</div>
@@ -1643,68 +1643,6 @@ import { RiArrowRightSLine, RiCloudLine } from "@remixicon/react";</code></pre>
       xs: &#39;small&#39;,
       sm: &#39;medium&#39;,
     }}&gt;Button&lt;/Button&gt;;</code></pre>
-            </div>
-            <div class="note ok">
-              <div class="row">
-                <span class="ex-name">Playground</span>
-                <span class="badge ok">story ok</span>
-              </div>
-              
-              
-              <pre><code>const Playground = () =&gt; (
-  &lt;Flex direction=&quot;column&quot;&gt;
-    {variants.map(variant =&gt; (
-      &lt;Flex direction=&quot;column&quot; key={variant}&gt;
-        &lt;Text&gt;{variant}&lt;/Text&gt;
-        {sizes.map(size =&gt; (
-          &lt;Flex align=&quot;center&quot; key={size}&gt;
-            &lt;Button variant={variant} size={size}&gt;
-              Button
-            &lt;/Button&gt;
-            &lt;Button iconStart={&lt;RiCloudLine /&gt;} variant={variant} size={size}&gt;
-              Button
-            &lt;/Button&gt;
-            &lt;Button
-              iconEnd={&lt;RiArrowRightSLine /&gt;}
-              variant={variant}
-              size={size}
-            &gt;
-              Button
-            &lt;/Button&gt;
-            &lt;Button
-              iconStart={&lt;RiCloudLine /&gt;}
-              iconEnd={&lt;RiArrowRightSLine /&gt;}
-              style={{ width: &#39;200px&#39; }}
-              variant={variant}
-              size={size}
-            &gt;
-              Button
-            &lt;/Button&gt;
-            &lt;Button variant={variant} size={size} isDisabled&gt;
-              Button
-            &lt;/Button&gt;
-            &lt;Button
-              iconStart={&lt;RiCloudLine /&gt;}
-              variant={variant}
-              size={size}
-              isDisabled
-            &gt;
-              Button
-            &lt;/Button&gt;
-            &lt;Button
-              iconEnd={&lt;RiArrowRightSLine /&gt;}
-              variant={variant}
-              size={size}
-              isDisabled
-            &gt;
-              Button
-            &lt;/Button&gt;
-          &lt;/Flex&gt;
-        ))}
-      &lt;/Flex&gt;
-    ))}
-  &lt;/Flex&gt;
-);</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
@@ -10001,14 +9939,675 @@ import { RiEyeLine, RiSparklingLine } from "@remixicon/react";</code></pre>
   has-info 
   no-story-error"
   role="listitem"
+  aria-label="ToggleButton">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> ToggleButton</h2>
+      <div class="badges">
+        <label for="c-33-backstage-ui-togglebutton-props" class="badge ok as-toggle">4 prop types</label>
+        <label for="c-33-backstage-ui-togglebutton-info" class="badge info as-toggle">1 info</label>
+        <label for="c-33-backstage-ui-togglebutton-stories" class="badge ok as-toggle">10 stories</label>
+      </div>
+    </div>
+    <div class="meta" title="./packages/ui/src/components/ToggleButton/ToggleButton.stories.tsx">backstage-ui-togglebutton · ./packages/ui/src/components/ToggleButton/ToggleButton.stories.tsx</div>
+    
+    
+    <div class="kv"><span class="chip">public:  </span></div>
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  
+  <input id="c-33-backstage-ui-togglebutton-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-33-backstage-ui-togglebutton-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-33-backstage-ui-togglebutton-props" class="tg tg-props" type="checkbox" hidden />
+
+  <div class="panels">
+    
+    
+        <div class="panel panel-info">
+          
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
+    </div>
+        </div>
+    
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types</span>
+              <span class="badge ok">4 prop types</span>
+            </div>
+            <pre><code>Component: packages/ui/src/components/ToggleButton/ToggleButton.tsx::ToggleButton</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>iconEnd?: ReactElement
+
+iconStart?: ReactElement
+
+/**
+ * Surface the toggle button is placed on. Defaults to context surface if available
+ */
+onSurface?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;
+
+size?: &#39;small&#39; | &#39;medium&#39; | Partial&lt;Record&lt;Breakpoint, &#39;small&#39; | &#39;medium&#39;&gt;&gt;</code></pre>
+          </div>
+        </div>
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { Flex, Text, ToggleButton } from "@backstage/ui";
+import { RiArrowRightSLine, RiCheckLine, RiCloudLine, RiStarFill, RiStarLine } from "@remixicon/react";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Default</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Default = () =&gt; &lt;ToggleButton&gt;Toggle&lt;/ToggleButton&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Surfaces</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Surfaces = () =&gt; (
+  &lt;Flex direction=&quot;column&quot; gap=&quot;4&quot;&gt;
+    &lt;Flex direction=&quot;column&quot; gap=&quot;4&quot;&gt;
+      &lt;Text&gt;Default&lt;/Text&gt;
+      &lt;Flex align=&quot;center&quot; p=&quot;4&quot;&gt;
+        &lt;ToggleButton&gt;Toggle&lt;/ToggleButton&gt;
+      &lt;/Flex&gt;
+    &lt;/Flex&gt;
+    &lt;Flex direction=&quot;column&quot; gap=&quot;4&quot;&gt;
+      &lt;Text&gt;On Surface 0&lt;/Text&gt;
+      &lt;Flex align=&quot;center&quot; surface=&quot;0&quot; p=&quot;4&quot;&gt;
+        &lt;ToggleButton&gt;Toggle&lt;/ToggleButton&gt;
+      &lt;/Flex&gt;
+    &lt;/Flex&gt;
+    &lt;Flex direction=&quot;column&quot; gap=&quot;4&quot;&gt;
+      &lt;Text&gt;On Surface 1&lt;/Text&gt;
+      &lt;Flex align=&quot;center&quot; surface=&quot;1&quot; p=&quot;4&quot;&gt;
+        &lt;ToggleButton&gt;Toggle&lt;/ToggleButton&gt;
+      &lt;/Flex&gt;
+    &lt;/Flex&gt;
+    &lt;Flex direction=&quot;column&quot; gap=&quot;4&quot;&gt;
+      &lt;Text&gt;On Surface 2&lt;/Text&gt;
+      &lt;Flex align=&quot;center&quot; surface=&quot;2&quot; p=&quot;4&quot;&gt;
+        &lt;ToggleButton&gt;Toggle&lt;/ToggleButton&gt;
+      &lt;/Flex&gt;
+    &lt;/Flex&gt;
+    &lt;Flex direction=&quot;column&quot; gap=&quot;4&quot;&gt;
+      &lt;Text&gt;On Surface 3&lt;/Text&gt;
+      &lt;Flex align=&quot;center&quot; surface=&quot;3&quot; p=&quot;4&quot;&gt;
+        &lt;ToggleButton&gt;Toggle&lt;/ToggleButton&gt;
+      &lt;/Flex&gt;
+    &lt;/Flex&gt;
+  &lt;/Flex&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Sizes</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Sizes = () =&gt; (
+  &lt;Flex align=&quot;center&quot;&gt;
+    &lt;ToggleButton size=&quot;small&quot;&gt;Small&lt;/ToggleButton&gt;
+    &lt;ToggleButton size=&quot;medium&quot;&gt;Medium&lt;/ToggleButton&gt;
+  &lt;/Flex&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">WithIcons</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithIcons = () =&gt; &lt;Flex align=&quot;center&quot;&gt;
+    &lt;ToggleButton iconStart={&lt;RiStarLine /&gt;}&gt;Favorite&lt;/ToggleButton&gt;
+    &lt;ToggleButton iconStart={&lt;RiStarFill /&gt;} defaultSelected&gt;Favorite&lt;/ToggleButton&gt;
+    &lt;ToggleButton iconEnd={&lt;RiCheckLine /&gt;}&gt;Favorite&lt;/ToggleButton&gt;
+    &lt;ToggleButton iconEnd={&lt;RiCheckLine /&gt;} /&gt;
+&lt;/Flex&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">IconsOnly</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const IconsOnly = () =&gt; (
+  &lt;Flex align=&quot;center&quot;&gt;
+    &lt;ToggleButton aria-label=&quot;Cloud&quot; iconStart={&lt;RiCloudLine /&gt;} /&gt;
+    &lt;ToggleButton
+      aria-label=&quot;Starred&quot;
+      defaultSelected
+      iconStart={&lt;RiStarFill /&gt;}
+    /&gt;
+    &lt;ToggleButton aria-label=&quot;Next&quot; iconStart={&lt;RiArrowRightSLine /&gt;} /&gt;
+  &lt;/Flex&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">IconsAndText</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const IconsAndText = () =&gt; (
+  &lt;Flex align=&quot;center&quot;&gt;
+    &lt;ToggleButton iconStart={&lt;RiCloudLine /&gt;}&gt;Cloud&lt;/ToggleButton&gt;
+    &lt;ToggleButton iconStart={&lt;RiStarLine /&gt;}&gt;Star&lt;/ToggleButton&gt;
+    &lt;ToggleButton iconEnd={&lt;RiArrowRightSLine /&gt;}&gt;Next&lt;/ToggleButton&gt;
+  &lt;/Flex&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Disabled</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Disabled = () =&gt; (
+  &lt;Flex align=&quot;center&quot;&gt;
+    &lt;ToggleButton isDisabled&gt;Disabled&lt;/ToggleButton&gt;
+    &lt;ToggleButton defaultSelected isDisabled&gt;
+      Selected
+    &lt;/ToggleButton&gt;
+  &lt;/Flex&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Controlled</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Controlled = () =&gt; {
+  const [selected, setSelected] = useState(false);
+  return (
+    &lt;Flex direction=&quot;column&quot; gap=&quot;3&quot;&gt;
+      &lt;ToggleButton
+        aria-label=&quot;Star&quot;
+        isSelected={selected}
+        onChange={setSelected}
+        iconStart={selected ? &lt;RiStarFill /&gt; : &lt;RiStarLine /&gt;}
+      &gt;
+        {selected ? &#39;Starred&#39; : &#39;Not starred&#39;}
+      &lt;/ToggleButton&gt;
+      &lt;Text&gt;State: {selected ? &#39;selected&#39; : &#39;unselected&#39;}&lt;/Text&gt;
+    &lt;/Flex&gt;
+  );
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">FunctionChildren</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const FunctionChildren = () =&gt; {
+  const [disabled, setDisabled] = useState(false);
+  return (
+    &lt;Flex direction=&quot;column&quot; gap=&quot;3&quot;&gt;
+      &lt;Flex align=&quot;center&quot; gap=&quot;2&quot;&gt;
+        &lt;ToggleButton isDisabled={disabled}&gt;
+          {({ isDisabled, isSelected }) =&gt;
+            isDisabled
+              ? `Disabled ${isSelected ? &#39;(Selected)&#39; : &#39;(Unselected)&#39;}`
+              : `Enabled ${isSelected ? &#39;(Selected)&#39; : &#39;(Unselected)&#39;}`
+          }
+        &lt;/ToggleButton&gt;
+        &lt;ToggleButton
+          aria-label=&quot;Toggle disabled state&quot;
+          onChange={() =&gt; setDisabled(!disabled)}
+        &gt;
+          {disabled ? &#39;Enable&#39; : &#39;Disable&#39;}
+        &lt;/ToggleButton&gt;
+      &lt;/Flex&gt;
+      &lt;Text&gt;
+        Toggle the button to change the disabled state and see text update
+      &lt;/Text&gt;
+    &lt;/Flex&gt;
+  );
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">DynamicContent</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const DynamicContent = () =&gt; {
+  return (
+    &lt;Flex direction=&quot;column&quot; gap=&quot;4&quot;&gt;
+      &lt;Flex direction=&quot;column&quot; gap=&quot;2&quot;&gt;
+        &lt;Text weight=&quot;bold&quot;&gt;Example 1: Selection State&lt;/Text&gt;
+        &lt;Flex align=&quot;center&quot; gap=&quot;2&quot;&gt;
+          &lt;ToggleButton defaultSelected&gt;
+            {({ isSelected }) =&gt; (isSelected ? &#39;✓ Selected&#39; : &#39;Not Selected&#39;)}
+          &lt;/ToggleButton&gt;
+          &lt;ToggleButton&gt;
+            {({ isSelected }) =&gt; (isSelected ? &#39;✓ Selected&#39; : &#39;Not Selected&#39;)}
+          &lt;/ToggleButton&gt;
+        &lt;/Flex&gt;
+      &lt;/Flex&gt;
+
+      &lt;Flex direction=&quot;column&quot; gap=&quot;2&quot;&gt;
+        &lt;Text weight=&quot;bold&quot;&gt;Example 2: Multiple States&lt;/Text&gt;
+        &lt;Flex align=&quot;center&quot; gap=&quot;2&quot;&gt;
+          &lt;ToggleButton defaultSelected&gt;
+            {({ isSelected, isHovered }) =&gt; {
+              const states = [];
+              if (isSelected) states.push(&#39;on&#39;);
+              else states.push(&#39;off&#39;);
+              if (isHovered) states.push(&#39;hovered&#39;);
+              return `Email (${states.join(&#39;, &#39;)})`;
+            }}
+          &lt;/ToggleButton&gt;
+          &lt;ToggleButton&gt;
+            {({ isSelected, isHovered }) =&gt; {
+              const states = [];
+              if (isSelected) states.push(&#39;on&#39;);
+              else states.push(&#39;off&#39;);
+              if (isHovered) states.push(&#39;hovered&#39;);
+              return `Push (${states.join(&#39;, &#39;)})`;
+            }}
+          &lt;/ToggleButton&gt;
+        &lt;/Flex&gt;
+      &lt;/Flex&gt;
+
+      &lt;Flex direction=&quot;column&quot; gap=&quot;2&quot;&gt;
+        &lt;Text weight=&quot;bold&quot;&gt;Example 3: Conditional Icons&lt;/Text&gt;
+        &lt;Flex align=&quot;center&quot; gap=&quot;2&quot;&gt;
+          &lt;ToggleButton&gt;
+            {({ isSelected }) =&gt; (
+              &lt;&gt;
+                {isSelected ? &lt;RiStarFill /&gt; : &lt;RiStarLine /&gt;}
+                &lt;span&gt;{isSelected ? &#39;Starred&#39; : &#39;Star&#39;}&lt;/span&gt;
+              &lt;/&gt;
+            )}
+          &lt;/ToggleButton&gt;
+        &lt;/Flex&gt;
+      &lt;/Flex&gt;
+
+      &lt;Flex direction=&quot;column&quot; gap=&quot;2&quot;&gt;
+        &lt;Text weight=&quot;bold&quot;&gt;Example 4: Status Indicators&lt;/Text&gt;
+        &lt;Flex align=&quot;center&quot; gap=&quot;2&quot;&gt;
+          &lt;ToggleButton defaultSelected&gt;
+            {({ isSelected }) =&gt; (
+              &lt;Flex align=&quot;center&quot; gap=&quot;2&quot;&gt;
+                &lt;span
+                  style={{
+                    width: 8,
+                    height: 8,
+                    borderRadius: &#39;50%&#39;,
+                    backgroundColor: isSelected
+                      ? &#39;var(--bui-fg-success)&#39;
+                      : &#39;var(--bui-fg-secondary)&#39;,
+                  }}
+                /&gt;
+                &lt;span&gt;Active&lt;/span&gt;
+              &lt;/Flex&gt;
+            )}
+          &lt;/ToggleButton&gt;
+          &lt;ToggleButton&gt;
+            {({ isSelected }) =&gt; (
+              &lt;Flex align=&quot;center&quot; gap=&quot;2&quot;&gt;
+                &lt;span
+                  style={{
+                    width: 8,
+                    height: 8,
+                    borderRadius: &#39;50%&#39;,
+                    backgroundColor: isSelected
+                      ? &#39;var(--bui-fg-danger)&#39;
+                      : &#39;var(--bui-fg-secondary)&#39;,
+                  }}
+                /&gt;
+                &lt;span&gt;Inactive&lt;/span&gt;
+              &lt;/Flex&gt;
+            )}
+          &lt;/ToggleButton&gt;
+        &lt;/Flex&gt;
+      &lt;/Flex&gt;
+    &lt;/Flex&gt;
+  );
+};</code></pre>
+            </div>
+        </div>
+  </div>
+</article>
+<article
+  class="card 
+  no-error 
+  has-info 
+  no-story-error"
+  role="listitem"
+  aria-label="ToggleButtonGroup">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> ToggleButtonGroup</h2>
+      <div class="badges">
+        <label for="c-34-backstage-ui-togglebuttongroup-props" class="badge ok as-toggle">1 prop type</label>
+        <label for="c-34-backstage-ui-togglebuttongroup-info" class="badge info as-toggle">1 info</label>
+        <label for="c-34-backstage-ui-togglebuttongroup-stories" class="badge ok as-toggle">10 stories</label>
+      </div>
+    </div>
+    <div class="meta" title="./packages/ui/src/components/ToggleButtonGroup/ToggleButtonGroup.stories.tsx">backstage-ui-togglebuttongroup · ./packages/ui/src/components/ToggleButtonGroup/ToggleButtonGroup.stories.tsx</div>
+    
+    
+    <div class="kv"><span class="chip">public:  </span></div>
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  
+  <input id="c-34-backstage-ui-togglebuttongroup-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-34-backstage-ui-togglebuttongroup-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-34-backstage-ui-togglebuttongroup-props" class="tg tg-props" type="checkbox" hidden />
+
+  <div class="panels">
+    
+    
+        <div class="panel panel-info">
+          
+    <div class="note info">
+      <div class="note-title">Info</div>
+      <div class="note-body">No description found. Write a jsdoc comment such as /** Component description */.</div>
+    </div>
+        </div>
+    
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types</span>
+              <span class="badge ok">1 prop type</span>
+            </div>
+            <pre><code>Component: packages/ui/src/components/ToggleButtonGroup/ToggleButtonGroup.tsx::ToggleButtonGroup</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>orientation?: NonNullable&lt;AriaToggleButtonGroupProps[&#39;orientation&#39;]&gt;</code></pre>
+          </div>
+        </div>
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { Flex, Text, ToggleButton, ToggleButtonGroup } from "@backstage/ui";
+import { RiArrowRightSLine, RiCloudLine, RiStarFill, RiStarLine } from "@remixicon/react";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">SingleSelection</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const SingleSelection = () =&gt; &lt;ToggleButtonGroup selectionMode=&quot;single&quot; defaultSelectedKeys={[&#39;dogs&#39;]}&gt;
+    &lt;ToggleButton id=&quot;dogs&quot;&gt;Dogs&lt;/ToggleButton&gt;
+    &lt;ToggleButton id=&quot;cats&quot;&gt;Cats&lt;/ToggleButton&gt;
+    &lt;ToggleButton id=&quot;birds&quot;&gt;Birds&lt;/ToggleButton&gt;
+&lt;/ToggleButtonGroup&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">MultipleSelection</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const MultipleSelection = () =&gt; &lt;ToggleButtonGroup selectionMode=&quot;multiple&quot; defaultSelectedKeys={[&#39;frontend&#39;]}&gt;
+    &lt;ToggleButton id=&quot;frontend&quot;&gt;Frontend&lt;/ToggleButton&gt;
+    &lt;ToggleButton id=&quot;backend&quot;&gt;Backend&lt;/ToggleButton&gt;
+    &lt;ToggleButton id=&quot;platform&quot;&gt;Platform&lt;/ToggleButton&gt;
+&lt;/ToggleButtonGroup&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Surfaces</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Surfaces = () =&gt; (
+  &lt;Flex direction=&quot;column&quot; gap=&quot;4&quot;&gt;
+    &lt;Flex direction=&quot;column&quot; gap=&quot;4&quot;&gt;
+      &lt;Text&gt;Default&lt;/Text&gt;
+      &lt;Flex align=&quot;center&quot; p=&quot;4&quot; gap=&quot;4&quot;&gt;
+        &lt;ToggleButtonGroup
+          selectionMode=&quot;single&quot;
+          defaultSelectedKeys={[&#39;option1&#39;]}
+        &gt;
+          &lt;ToggleButton id=&quot;option1&quot;&gt;Option 1&lt;/ToggleButton&gt;
+          &lt;ToggleButton id=&quot;option2&quot;&gt;Option 2&lt;/ToggleButton&gt;
+          &lt;ToggleButton id=&quot;option3&quot;&gt;Option 3&lt;/ToggleButton&gt;
+        &lt;/ToggleButtonGroup&gt;
+      &lt;/Flex&gt;
+    &lt;/Flex&gt;
+    &lt;Flex direction=&quot;column&quot; gap=&quot;4&quot;&gt;
+      &lt;Text&gt;On Surface 0&lt;/Text&gt;
+      &lt;Flex align=&quot;center&quot; surface=&quot;0&quot; p=&quot;4&quot; gap=&quot;4&quot;&gt;
+        &lt;ToggleButtonGroup
+          selectionMode=&quot;single&quot;
+          defaultSelectedKeys={[&#39;option1&#39;]}
+        &gt;
+          &lt;ToggleButton id=&quot;option1&quot;&gt;Option 1&lt;/ToggleButton&gt;
+          &lt;ToggleButton id=&quot;option2&quot;&gt;Option 2&lt;/ToggleButton&gt;
+          &lt;ToggleButton id=&quot;option3&quot;&gt;Option 3&lt;/ToggleButton&gt;
+        &lt;/ToggleButtonGroup&gt;
+      &lt;/Flex&gt;
+    &lt;/Flex&gt;
+    &lt;Flex direction=&quot;column&quot; gap=&quot;4&quot;&gt;
+      &lt;Text&gt;On Surface 1&lt;/Text&gt;
+      &lt;Flex align=&quot;center&quot; surface=&quot;1&quot; p=&quot;4&quot; gap=&quot;4&quot;&gt;
+        &lt;ToggleButtonGroup
+          selectionMode=&quot;single&quot;
+          defaultSelectedKeys={[&#39;option1&#39;]}
+        &gt;
+          &lt;ToggleButton id=&quot;option1&quot;&gt;Option 1&lt;/ToggleButton&gt;
+          &lt;ToggleButton id=&quot;option2&quot;&gt;Option 2&lt;/ToggleButton&gt;
+          &lt;ToggleButton id=&quot;option3&quot;&gt;Option 3&lt;/ToggleButton&gt;
+        &lt;/ToggleButtonGroup&gt;
+      &lt;/Flex&gt;
+    &lt;/Flex&gt;
+    &lt;Flex direction=&quot;column&quot; gap=&quot;4&quot;&gt;
+      &lt;Text&gt;On Surface 2&lt;/Text&gt;
+      &lt;Flex align=&quot;center&quot; surface=&quot;2&quot; p=&quot;4&quot; gap=&quot;4&quot;&gt;
+        &lt;ToggleButtonGroup
+          selectionMode=&quot;single&quot;
+          defaultSelectedKeys={[&#39;option1&#39;]}
+        &gt;
+          &lt;ToggleButton id=&quot;option1&quot;&gt;Option 1&lt;/ToggleButton&gt;
+          &lt;ToggleButton id=&quot;option2&quot;&gt;Option 2&lt;/ToggleButton&gt;
+          &lt;ToggleButton id=&quot;option3&quot;&gt;Option 3&lt;/ToggleButton&gt;
+        &lt;/ToggleButtonGroup&gt;
+      &lt;/Flex&gt;
+    &lt;/Flex&gt;
+    &lt;Flex direction=&quot;column&quot; gap=&quot;4&quot;&gt;
+      &lt;Text&gt;On Surface 3&lt;/Text&gt;
+      &lt;Flex align=&quot;center&quot; surface=&quot;3&quot; p=&quot;4&quot; gap=&quot;4&quot;&gt;
+        &lt;ToggleButtonGroup
+          selectionMode=&quot;single&quot;
+          defaultSelectedKeys={[&#39;option1&#39;]}
+        &gt;
+          &lt;ToggleButton id=&quot;option1&quot;&gt;Option 1&lt;/ToggleButton&gt;
+          &lt;ToggleButton id=&quot;option2&quot;&gt;Option 2&lt;/ToggleButton&gt;
+          &lt;ToggleButton id=&quot;option3&quot;&gt;Option 3&lt;/ToggleButton&gt;
+        &lt;/ToggleButtonGroup&gt;
+      &lt;/Flex&gt;
+    &lt;/Flex&gt;
+  &lt;/Flex&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">DisabledGroup</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const DisabledGroup = () =&gt; &lt;ToggleButtonGroup selectionMode=&quot;single&quot; isDisabled&gt;
+    &lt;ToggleButton id=&quot;cat&quot;&gt;Cat&lt;/ToggleButton&gt;
+    &lt;ToggleButton id=&quot;dog&quot;&gt;Dog&lt;/ToggleButton&gt;
+    &lt;ToggleButton id=&quot;bird&quot;&gt;Bird&lt;/ToggleButton&gt;
+&lt;/ToggleButtonGroup&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">DisallowEmptySelection</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const DisallowEmptySelection = () =&gt; &lt;ToggleButtonGroup
+    selectionMode=&quot;single&quot;
+    disallowEmptySelection
+    defaultSelectedKeys={[&#39;one&#39;]}&gt;
+    &lt;ToggleButton id=&quot;one&quot;&gt;One&lt;/ToggleButton&gt;
+    &lt;ToggleButton id=&quot;two&quot;&gt;Two&lt;/ToggleButton&gt;
+    &lt;ToggleButton id=&quot;three&quot;&gt;Three&lt;/ToggleButton&gt;
+&lt;/ToggleButtonGroup&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">MixedDisabled</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const MixedDisabled = () =&gt; (
+  &lt;ToggleButtonGroup selectionMode=&quot;single&quot;&gt;
+    &lt;ToggleButton id=&quot;one&quot;&gt;One&lt;/ToggleButton&gt;
+    &lt;ToggleButton id=&quot;two&quot; isDisabled&gt;
+      Two
+    &lt;/ToggleButton&gt;
+    &lt;ToggleButton id=&quot;three&quot;&gt;Three&lt;/ToggleButton&gt;
+  &lt;/ToggleButtonGroup&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Orientation</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Orientation = () =&gt; &lt;ToggleButtonGroup orientation=&quot;vertical&quot; selectionMode=&quot;single&quot;&gt;
+    &lt;ToggleButton id=&quot;morning&quot;&gt;Morning&lt;/ToggleButton&gt;
+    &lt;ToggleButton id=&quot;afternoon&quot;&gt;Afternoon&lt;/ToggleButton&gt;
+    &lt;ToggleButton id=&quot;evening&quot;&gt;Evening&lt;/ToggleButton&gt;
+&lt;/ToggleButtonGroup&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">ControlledGroup</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const ControlledGroup = () =&gt; {
+  const [selectedKeys, setSelectedKeys] = useState&lt;Selection&gt;(
+    new Set([&#39;beta&#39;]),
+  );
+
+  return (
+    &lt;Flex direction=&quot;column&quot; gap=&quot;3&quot;&gt;
+      &lt;ToggleButtonGroup
+        selectionMode=&quot;single&quot;
+        selectedKeys={selectedKeys}
+        onSelectionChange={setSelectedKeys}
+      &gt;
+        &lt;ToggleButton id=&quot;alpha&quot;&gt;Alpha&lt;/ToggleButton&gt;
+        &lt;ToggleButton id=&quot;beta&quot;&gt;Beta&lt;/ToggleButton&gt;
+        &lt;ToggleButton id=&quot;gamma&quot;&gt;Gamma&lt;/ToggleButton&gt;
+      &lt;/ToggleButtonGroup&gt;
+      &lt;Text&gt;Selected: {[...selectedKeys].join(&#39;, &#39;) || &#39;none&#39;}&lt;/Text&gt;
+    &lt;/Flex&gt;
+  );
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">WithIcons</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithIcons = () =&gt; (
+  &lt;ToggleButtonGroup selectionMode=&quot;multiple&quot; defaultSelectedKeys={[&#39;cloud&#39;]}&gt;
+    &lt;ToggleButton id=&quot;cloud&quot; aria-label=&quot;Cloud&quot; iconStart={&lt;RiCloudLine /&gt;} /&gt;
+    &lt;ToggleButton
+      id=&quot;starred&quot;
+      aria-label=&quot;Starred&quot;
+      iconStart={&lt;RiStarFill /&gt;}
+    /&gt;
+    &lt;ToggleButton id=&quot;star&quot; iconStart={&lt;RiStarLine /&gt;}&gt;
+      Star
+    &lt;/ToggleButton&gt;
+    &lt;ToggleButton id=&quot;next&quot; iconEnd={&lt;RiArrowRightSLine /&gt;}&gt;
+      Next
+    &lt;/ToggleButton&gt;
+  &lt;/ToggleButtonGroup&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">IconsOnly</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const IconsOnly = () =&gt; (
+  &lt;ToggleButtonGroup selectionMode=&quot;multiple&quot; defaultSelectedKeys={[&#39;cloud&#39;]}&gt;
+    &lt;ToggleButton id=&quot;cloud&quot; iconStart={&lt;RiCloudLine /&gt;} /&gt;
+    &lt;ToggleButton id=&quot;star&quot; iconStart={&lt;RiStarLine /&gt;} /&gt;
+    &lt;ToggleButton id=&quot;next&quot; iconEnd={&lt;RiArrowRightSLine /&gt;} /&gt;
+  &lt;/ToggleButtonGroup&gt;
+);</code></pre>
+            </div>
+        </div>
+  </div>
+</article>
+<article
+  class="card 
+  no-error 
+  has-info 
+  no-story-error"
+  role="listitem"
   aria-label="TooltipTrigger">
   <div class="head">
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> TooltipTrigger</h2>
       <div class="badges">
         
-        <label for="c-33-backstage-ui-tooltip-info" class="badge info as-toggle">1 info</label>
-        <label for="c-33-backstage-ui-tooltip-stories" class="badge ok as-toggle">6 stories</label>
+        <label for="c-35-backstage-ui-tooltip-info" class="badge info as-toggle">1 info</label>
+        <label for="c-35-backstage-ui-tooltip-stories" class="badge ok as-toggle">6 stories</label>
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Tooltip/Tooltip.stories.tsx">backstage-ui-tooltip · ./packages/ui/src/components/Tooltip/Tooltip.stories.tsx</div>
@@ -10019,8 +10618,8 @@ import { RiEyeLine, RiSparklingLine } from "@remixicon/react";</code></pre>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
-  <input id="c-33-backstage-ui-tooltip-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-33-backstage-ui-tooltip-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-35-backstage-ui-tooltip-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-35-backstage-ui-tooltip-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -10175,9 +10774,9 @@ import { RiEyeLine, RiSparklingLine } from "@remixicon/react";</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> visual</h2>
       <div class="badges">
-        <label for="c-34-backstage-ui-table-visual-props" class="badge ok as-toggle">10 prop types</label>
-        <label for="c-34-backstage-ui-table-visual-info" class="badge info as-toggle">1 info</label>
-        <label for="c-34-backstage-ui-table-visual-stories" class="badge ok as-toggle">8 stories</label>
+        <label for="c-36-backstage-ui-table-visual-props" class="badge ok as-toggle">10 prop types</label>
+        <label for="c-36-backstage-ui-table-visual-info" class="badge info as-toggle">1 info</label>
+        <label for="c-36-backstage-ui-table-visual-stories" class="badge ok as-toggle">8 stories</label>
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Table/stories/Table.visual.stories.tsx">backstage-ui-table-visual · ./packages/ui/src/components/Table/stories/Table.visual.stories.tsx</div>
@@ -10188,9 +10787,9 @@ import { RiEyeLine, RiSparklingLine } from "@remixicon/react";</code></pre>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
-  <input id="c-34-backstage-ui-table-visual-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-34-backstage-ui-table-visual-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-34-backstage-ui-table-visual-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-36-backstage-ui-table-visual-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-36-backstage-ui-table-visual-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-36-backstage-ui-table-visual-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -10578,9 +11177,9 @@ sort?: SortState</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> VisuallyHidden</h2>
       <div class="badges">
-        <label for="c-35-backstage-ui-visuallyhidden-props" class="badge ok as-toggle">1 prop type</label>
+        <label for="c-37-backstage-ui-visuallyhidden-props" class="badge ok as-toggle">1 prop type</label>
         
-        <label for="c-35-backstage-ui-visuallyhidden-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-37-backstage-ui-visuallyhidden-stories" class="badge ok as-toggle">2 stories</label>
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/VisuallyHidden/VisuallyHidden.stories.tsx">backstage-ui-visuallyhidden · ./packages/ui/src/components/VisuallyHidden/VisuallyHidden.stories.tsx</div>
@@ -10592,8 +11191,8 @@ sort?: SortState</code></pre>
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-35-backstage-ui-visuallyhidden-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-35-backstage-ui-visuallyhidden-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-37-backstage-ui-visuallyhidden-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-37-backstage-ui-visuallyhidden-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
