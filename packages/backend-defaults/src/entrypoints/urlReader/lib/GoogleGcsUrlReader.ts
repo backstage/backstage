@@ -36,6 +36,7 @@ import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
 import packageinfo from '../../../../package.json';
 import { assertError } from '@backstage/errors';
 import { relative } from 'path/posix';
+import { ConfigReader } from '@backstage/config';
 
 const GOOGLE_GCS_HOST = 'storage.cloud.google.com';
 
@@ -63,13 +64,12 @@ const parseURL = (
  */
 export class GoogleGcsUrlReader implements UrlReaderService {
   static factory: ReaderFactory = ({ config, logger, treeResponseFactory }) => {
-    if (!config.has('integrations.googleGcs')) {
-      return [];
-    }
     const gcsConfig = readGoogleGcsIntegrationConfig(
-      config.getConfig('integrations.googleGcs'),
+      config.getOptionalConfig('integrations.googleGcs') ??
+        new ConfigReader({}),
     );
     let storage: GoogleCloud.Storage;
+
     if (!gcsConfig.clientEmail || !gcsConfig.privateKey) {
       logger.info(
         'googleGcs credentials not found in config. Using default credentials provider.',

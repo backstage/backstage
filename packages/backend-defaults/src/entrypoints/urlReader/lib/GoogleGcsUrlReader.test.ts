@@ -54,11 +54,11 @@ describe('GcsUrlReader', () => {
     });
   };
 
-  it('does not create a reader without the googleGcs field', () => {
+  it('creates a reader without the googleGcs field', () => {
     const entries = createReader({
       integrations: {},
     });
-    expect(entries).toHaveLength(0);
+    expect(entries).toHaveLength(1);
   });
 
   it('creates a reader with credentials correctly configured', () => {
