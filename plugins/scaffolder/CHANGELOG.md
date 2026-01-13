@@ -1,5 +1,11 @@
 # @backstage/plugin-scaffolder
 
+## 1.35.1-next.2
+
+### Patch Changes
+
+- 9d75495: Fixed bug in RepoUrlPickerComponent component where repository names were not being autocompleted.
+
 ## 1.35.1-next.1
 
 ### Patch Changes
