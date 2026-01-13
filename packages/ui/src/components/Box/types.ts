@@ -21,6 +21,12 @@ import type { Responsive, Surface, SpaceProps } from '../../types';
 export type BoxOwnProps = {
   as?: keyof JSX.IntrinsicElements;
   surface?: Responsive<Surface>;
+  children?: ReactNode;
+  className?: string;
+  style?: CSSProperties;
+};
+
+type BoxUtilityProps = {
   display?: Responsive<'none' | 'flex' | 'block' | 'inline'>;
   position?: Responsive<
     'static' | 'relative' | 'absolute' | 'fixed' | 'sticky'
@@ -31,10 +37,7 @@ export type BoxOwnProps = {
   height?: Responsive<string>;
   minHeight?: Responsive<string>;
   maxHeight?: Responsive<string>;
-  children?: ReactNode;
-  className?: string;
-  style?: CSSProperties;
 };
 
 /** @public */
-export interface BoxProps extends SpaceProps, BoxOwnProps {}
+export interface BoxProps extends SpaceProps, BoxOwnProps, BoxUtilityProps {}

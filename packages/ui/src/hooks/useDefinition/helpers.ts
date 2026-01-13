@@ -14,57 +14,52 @@
  * limitations under the License.
  */
 
-import type { CSSProperties } from 'react';
 import { breakpoints } from '../useBreakpoint';
 import { utilityClassMap } from '../../utils/utilityClassMap';
+import type { UtilityStyle } from './types';
 
-/**
- * Resolve a responsive value based on the current breakpoint
- * @param value - The responsive value (string or object with breakpoint keys)
- * @param breakpoint - The current breakpoint
- * @returns The resolved value for the current breakpoint
- */
-export function resolveResponsiveValue(
-  value: string | Record<string, string>,
-  breakpoint: string,
-): string | undefined {
-  if (typeof value === 'string') {
+const namedBreakpoints = breakpoints.filter(b => b.id !== 'initial');
+
+function isResponsiveObject(value: unknown): value is Record<string, unknown> {
+  return (
+    typeof value === 'object' &&
+    value !== null &&
+    namedBreakpoints.some(b => b.id in value)
+  );
+}
+
+export function resolveResponsiveValue<T>(value: T, breakpoint: string): T {
+  if (!isResponsiveObject(value)) {
     return value;
   }
 
-  if (typeof value === 'object' && value !== null) {
-    const index = breakpoints.findIndex(b => b.id === breakpoint);
+  const index = breakpoints.findIndex(b => b.id === breakpoint);
 
-    // Look for value at current breakpoint or smaller
-    for (let i = index; i >= 0; i--) {
-      if (value[breakpoints[i].id]) {
-        return value[breakpoints[i].id];
-      }
-    }
-
-    // If no value found, check from smallest breakpoint up
-    for (let i = 0; i < breakpoints.length; i++) {
-      if (value[breakpoints[i].id]) {
-        return value[breakpoints[i].id];
-      }
+  // Look for value at current breakpoint or smaller
+  for (let i = index; i >= 0; i--) {
+    const key = breakpoints[i].id;
+    if (key in value && value[key] !== undefined) {
+      return value[key] as T;
     }
   }
 
-  return undefined;
+  // If no value found, check from smallest breakpoint up
+  for (let i = 0; i < breakpoints.length; i++) {
+    const key = breakpoints[i].id;
+    if (key in value && value[key] !== undefined) {
+      return value[key] as T;
+    }
+  }
+
+  return value;
 }
 
-/**
- * Process utility props and generate utility classes and styles
- * @param props - All component props
- * @param utilityPropKeys - Array of utility prop names to process
- * @returns Object with utilityClasses string and utilityStyle CSSProperties
- */
-export function processUtilityProps(
+export function processUtilityProps<Keys extends string>(
   props: Record<string, any>,
-  utilityPropKeys: readonly string[],
-): { utilityClasses: string; utilityStyle: CSSProperties } {
+  utilityPropKeys: readonly Keys[],
+): { utilityClasses: string; utilityStyle: UtilityStyle<Keys> } {
   const utilityClassList: string[] = [];
-  const generatedStyle: CSSProperties = {};
+  const generatedStyle: Record<string, unknown> = {};
 
   const handleUtilityValue = (
     key: string,
@@ -80,23 +75,20 @@ export function processUtilityProps(
     }
 
     // Check if value is in the list of valid values for this utility
-    if (
-      utilityConfig.values.length > 0 &&
-      utilityConfig.values.includes(val as string | number)
-    ) {
+    const values = utilityConfig.values as readonly (string | number)[];
+    if (values.length > 0 && values.includes(val as string | number)) {
       // Generate utility class with value suffix and optional breakpoint prefix
       const className = prefix
         ? `${prefix}${utilityConfig.class}-${val}`
         : `${utilityConfig.class}-${val}`;
       utilityClassList.push(className);
-    } else if (utilityConfig.cssVar) {
+    } else if ('cssVar' in utilityConfig && utilityConfig.cssVar) {
       // Custom value - add CSS custom property AND utility class name
       // Only if cssVar is defined (properties with fixed values don't have cssVar)
-      const cssVarKey = prefix
-        ? `${utilityConfig.cssVar}-${prefix.slice(0, -1)}`
-        : utilityConfig.cssVar;
-      // CSS custom properties need to be set on the style object as strings
-      (generatedStyle as Record<string, unknown>)[cssVarKey] = val;
+      const cssVar = utilityConfig.cssVar;
+      const cssVarKey = prefix ? `${cssVar}-${prefix.slice(0, -1)}` : cssVar;
+      // CSS custom properties need to be set on the style object
+      generatedStyle[cssVarKey] = val;
 
       // Add utility class name (without value suffix) with optional breakpoint prefix
       const className = prefix
@@ -129,6 +121,6 @@ export function processUtilityProps(
 
   return {
     utilityClasses: utilityClassList.join(' '),
-    utilityStyle: generatedStyle,
+    utilityStyle: generatedStyle as UtilityStyle<Keys>,
   };
 }

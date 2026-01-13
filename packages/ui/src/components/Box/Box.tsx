@@ -21,11 +21,11 @@ import { BoxDefinition } from './definition';
 
 /** @public */
 export const Box = forwardRef<HTMLDivElement, BoxProps>((props, ref) => {
-  const { ownProps, restProps, dataAttributes, utilityStyle } = useDefinition(
+  const { ownProps, dataAttributes, utilityStyle } = useDefinition(
     BoxDefinition,
     props,
   );
-  const { classes, as = 'div', surfaceChildren } = ownProps;
+  const { classes, as, surfaceChildren } = ownProps;
 
   return createElement(
     as,
@@ -34,7 +34,6 @@ export const Box = forwardRef<HTMLDivElement, BoxProps>((props, ref) => {
       className: classes.root,
       style: { ...ownProps.style, ...utilityStyle },
       ...dataAttributes,
-      ...restProps,
     },
     surfaceChildren,
   );
