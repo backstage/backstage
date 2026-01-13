@@ -11,6 +11,7 @@ import type { ColumnSize } from '@react-types/table';
 import type { ColumnStaticSize } from '@react-types/table';
 import { ComponentProps } from 'react';
 import type { ComponentPropsWithRef } from 'react';
+import type { CSSProperties } from 'react';
 import { DetailedHTMLProps } from 'react';
 import type { DialogTriggerProps as DialogTriggerProps_2 } from 'react-aria-components';
 import type { DisclosureGroupProps } from 'react-aria-components';
@@ -172,10 +173,25 @@ export const Box: ForwardRefExoticComponent<
 
 // @public
 export const BoxDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
   readonly classNames: {
     readonly root: 'bui-Box';
   };
-  readonly utilityProps: [
+  readonly surface: 'container';
+  readonly propDefs: {
+    readonly as: {
+      readonly default: 'div';
+    };
+    readonly surface: {
+      readonly dataAttribute: true;
+    };
+    readonly children: {};
+    readonly className: {};
+    readonly style: {};
+  };
+  readonly utilityProps: readonly [
     'm',
     'mb',
     'ml',
@@ -199,50 +215,33 @@ export const BoxDefinition: {
     'minHeight',
     'maxHeight',
   ];
-  readonly dataAttributes: {
-    readonly surface: readonly [
-      '0',
-      '1',
-      '2',
-      '3',
-      'danger',
-      'warning',
-      'success',
-    ];
-  };
 };
 
 // @public (undocumented)
-export interface BoxProps extends SpaceProps {
-  // (undocumented)
+export type BoxOwnProps = {
   as?: keyof JSX.IntrinsicElements;
-  // (undocumented)
-  children?: React.ReactNode;
-  // (undocumented)
+  surface?: Responsive<Surface>;
+  children?: ReactNode;
   className?: string;
-  // (undocumented)
+  style?: CSSProperties;
+};
+
+// @public (undocumented)
+export interface BoxProps extends SpaceProps, BoxOwnProps, BoxUtilityProps {}
+
+// @public (undocumented)
+export type BoxUtilityProps = {
   display?: Responsive<'none' | 'flex' | 'block' | 'inline'>;
-  // (undocumented)
-  height?: Responsive<string>;
-  // (undocumented)
-  maxHeight?: Responsive<string>;
-  // (undocumented)
-  maxWidth?: Responsive<string>;
-  // (undocumented)
-  minHeight?: Responsive<string>;
-  // (undocumented)
-  minWidth?: Responsive<string>;
-  // (undocumented)
   position?: Responsive<
     'static' | 'relative' | 'absolute' | 'fixed' | 'sticky'
   >;
-  // (undocumented)
-  style?: React.CSSProperties;
-  // (undocumented)
-  surface?: Responsive<Surface>;
-  // (undocumented)
   width?: Responsive<string>;
-}
+  minWidth?: Responsive<string>;
+  maxWidth?: Responsive<string>;
+  height?: Responsive<string>;
+  minHeight?: Responsive<string>;
+  maxHeight?: Responsive<string>;
+};
 
 // @public (undocumented)
 export type Breakpoint = 'initial' | 'xs' | 'sm' | 'md' | 'lg' | 'xl';
@@ -254,15 +253,33 @@ export const Button: ForwardRefExoticComponent<
 
 // @public
 export const ButtonDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
   readonly classNames: {
     readonly root: 'bui-Button';
     readonly content: 'bui-ButtonContent';
     readonly spinner: 'bui-ButtonSpinner';
   };
-  readonly dataAttributes: {
-    readonly size: readonly ['small', 'medium', 'large'];
-    readonly variant: readonly ['primary', 'secondary', 'tertiary'];
-    readonly loading: readonly [true, false];
+  readonly surface: 'leaf';
+  readonly propDefs: {
+    readonly size: {
+      readonly dataAttribute: true;
+      readonly default: 'small';
+    };
+    readonly variant: {
+      readonly dataAttribute: true;
+      readonly default: 'primary';
+    };
+    readonly loading: {
+      readonly dataAttribute: true;
+    };
+    readonly iconStart: {};
+    readonly iconEnd: {};
+    readonly onSurface: {};
+    readonly children: {};
+    readonly className: {};
+    readonly style: {};
   };
 };
 
@@ -327,25 +344,22 @@ export interface ButtonLinkProps extends LinkProps_2 {
 }
 
 // @public
-export interface ButtonProps extends ButtonProps_2 {
-  // (undocumented)
-  children?: ReactNode;
-  // (undocumented)
-  iconEnd?: ReactElement;
-  // (undocumented)
+export type ButtonOwnProps = {
+  size?: Responsive<'small' | 'medium' | 'large'>;
+  variant?: Responsive<'primary' | 'secondary' | 'tertiary'>;
   iconStart?: ReactElement;
-  // (undocumented)
+  iconEnd?: ReactElement;
   loading?: boolean;
   onSurface?: Responsive<Surface>;
-  // (undocumented)
-  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
-  // (undocumented)
-  variant?:
-    | 'primary'
-    | 'secondary'
-    | 'tertiary'
-    | Partial<Record<Breakpoint, 'primary' | 'secondary' | 'tertiary'>>;
-}
+  children?: ReactNode;
+  className?: string;
+  style?: CSSProperties;
+};
+
+// @public
+export interface ButtonProps
+  extends Omit<ButtonProps_2, 'children' | 'className' | 'style'>,
+    ButtonOwnProps {}
 
 // @public
 export const Card: ForwardRefExoticComponent<
