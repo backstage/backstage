@@ -72,7 +72,6 @@ description: Documentation landing page.
         <li><a href='https://backstage.io/docs/features/search/'>Search</a></li>
         <li><a href='https://backstage.io/docs/features/software-catalog/'>Software Catalog</a></li>
         <li><a href='https://backstage.io/docs/features/software-templates/'>Software Templates (aka Scaffolder)</a></li>
-        <li><a href='https://backstage.io/docs/features/techdocs/'>TechDocs</a></li>
       </ul>
     </td>
   </tr>
