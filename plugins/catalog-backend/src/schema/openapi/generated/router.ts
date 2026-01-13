@@ -799,9 +799,7 @@ export const spec = {
           severityLevel: 'medium',
           meta: {
             variant: 'update',
-          },
-          captureMetaFromRequest: {
-            body: ['entityRef'],
+            entityRef: '{{ request.body.entityRef }}',
           },
         },
         responses: {
@@ -921,8 +919,8 @@ export const spec = {
         description: 'Get a single entity by the UID.',
         'x-backstage-auditor': {
           eventId: 'entity-fetch',
-          captureMetaFromRequest: {
-            params: ['uid'],
+          meta: {
+            uid: '{{ request.params.uid }}',
           },
         },
         responses: {
@@ -962,8 +960,8 @@ export const spec = {
         'x-backstage-auditor': {
           eventId: 'entity-mutate',
           severityLevel: 'medium',
-          captureMetaFromRequest: {
-            params: ['uid'],
+          meta: {
+            uid: '{{ request.params.uid }}',
           },
         },
         responses: {
@@ -997,8 +995,9 @@ export const spec = {
         description: 'Get an entity by an entity ref.',
         'x-backstage-auditor': {
           eventId: 'entity-fetch',
-          captureMetaFromRequest: {
-            params: ['kind', 'namespace', 'name'],
+          meta: {
+            entityRef:
+              '{{ request.params.kind }}/{{ request.params.namespace }}:{{ request.params.name }}',
           },
         },
         responses: {
@@ -1045,8 +1044,9 @@ export const spec = {
         description: "Get an entity's ancestry by entity ref.",
         'x-backstage-auditor': {
           eventId: 'entity-fetch',
-          captureMetaFromRequest: {
-            params: ['kind', 'namespace', 'name'],
+          meta: {
+            entityRef:
+              '{{ request.params.kind }}/{{ request.params.namespace }}:{{ request.params.name }}',
           },
         },
         responses: {
@@ -1317,9 +1317,10 @@ export const spec = {
         'x-backstage-auditor': {
           eventId: 'location-mutate',
           severityLevel: 'medium',
-          captureMetaFromRequest: {
-            body: ['type', 'target'],
-            query: ['dryRun'],
+          meta: {
+            type: '{{ request.body.type }}',
+            target: '{{ request.body.target }}',
+            dryRun: '{{ request.query.dryRun }}',
           },
         },
         responses: {
@@ -1442,8 +1443,8 @@ export const spec = {
         description: 'Get a location by id.',
         'x-backstage-auditor': {
           eventId: 'location-fetch',
-          captureMetaFromRequest: {
-            params: ['id'],
+          meta: {
+            locationId: '{{ request.params.id }}',
           },
         },
         responses: {
@@ -1486,8 +1487,8 @@ export const spec = {
         'x-backstage-auditor': {
           eventId: 'location-mutate',
           severityLevel: 'medium',
-          captureMetaFromRequest: {
-            params: ['id'],
+          meta: {
+            locationId: '{{ request.params.id }}',
           },
         },
         responses: {
@@ -1527,8 +1528,9 @@ export const spec = {
         description: 'Get a location for entity.',
         'x-backstage-auditor': {
           eventId: 'location-fetch',
-          captureMetaFromRequest: {
-            params: ['kind', 'namespace', 'name'],
+          meta: {
+            entityRef:
+              '{{ request.params.kind }}/{{ request.params.namespace }}:{{ request.params.name }}',
           },
         },
         responses: {

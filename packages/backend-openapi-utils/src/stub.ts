@@ -33,6 +33,7 @@ import { isErrorResult, merge } from 'openapi-merge';
 
 function validatorErrorTransformer(): ErrorRequestHandler {
   return (error: Error, _: Request, _2: Response, next: NextFunction) => {
+    console.error(error);
     next(new InputError(error.message));
   };
 }
