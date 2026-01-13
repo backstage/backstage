@@ -19,12 +19,22 @@ import fs from 'fs-extra';
 import { MigrationStorage } from './MigrationStorage';
 
 export class StoredMigrationSource implements Knex.MigrationSource<string> {
-  constructor(
-    private readonly knex: Knex,
-    private readonly storage: MigrationStorage,
-    private readonly tableName: string,
-    private readonly directory: string,
-  ) {}
+  private readonly knex: Knex;
+  private readonly storage: MigrationStorage;
+  private readonly tableName: string;
+  private readonly directory: string;
+
+  constructor(options: {
+    knex: Knex;
+    storage: MigrationStorage;
+    tableName: string;
+    directory: string;
+  }) {
+    this.knex = options.knex;
+    this.storage = options.storage;
+    this.tableName = options.tableName;
+    this.directory = options.directory;
+  }
 
   async getMigrations(): Promise<string[]> {
     const filesystemMigrations = await this.readFilesystemMigrations();
@@ -64,9 +74,7 @@ export class StoredMigrationSource implements Knex.MigrationSource<string> {
     // Try filesystem first
     const fsPath = path.join(this.directory, `${name}.js`);
     if (await fs.pathExists(fsPath)) {
-      // Clear require cache to ensure fresh load
-      delete require.cache[require.resolve(fsPath)];
-      return require(fsPath);
+      return import(fsPath);
     }
 
     // Fall back to stored content

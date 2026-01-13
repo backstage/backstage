@@ -60,12 +60,12 @@ describe('StoredMigrationSource', () => {
         'exports.up = async () => {}; exports.down = async () => {};',
       );
 
-      const source = new StoredMigrationSource(
+      const source = new StoredMigrationSource({
         knex,
         storage,
-        'knex_migrations',
-        tempDir,
-      );
+        tableName: 'knex_migrations',
+        directory: tempDir,
+      });
       const migrations = await source.getMigrations();
 
       expect(migrations).toEqual(['20250101_init', '20250102_add_column']);
@@ -79,12 +79,12 @@ describe('StoredMigrationSource', () => {
         'orphan content',
       );
 
-      const source = new StoredMigrationSource(
+      const source = new StoredMigrationSource({
         knex,
         storage,
-        'knex_migrations',
-        tempDir,
-      );
+        tableName: 'knex_migrations',
+        directory: tempDir,
+      });
       const migrations = await source.getMigrations();
 
       expect(migrations).toEqual(['20250101_init', '20250102_orphan']);
@@ -104,12 +104,12 @@ describe('StoredMigrationSource', () => {
         migration_time: new Date(),
       });
 
-      const source = new StoredMigrationSource(
+      const source = new StoredMigrationSource({
         knex,
         storage,
-        'knex_migrations',
-        tempDir,
-      );
+        tableName: 'knex_migrations',
+        directory: tempDir,
+      });
       const migrations = await source.getMigrations();
 
       expect(migrations).toContain('20250101_legacy');
@@ -124,12 +124,12 @@ describe('StoredMigrationSource', () => {
       `;
       await fs.writeFile(path.join(tempDir, '20250101_init.js'), content);
 
-      const source = new StoredMigrationSource(
+      const source = new StoredMigrationSource({
         knex,
         storage,
-        'knex_migrations',
-        tempDir,
-      );
+        tableName: 'knex_migrations',
+        directory: tempDir,
+      });
       const migration = await source.getMigration('20250101_init');
 
       expect(migration.up).toBeDefined();
@@ -148,12 +148,12 @@ describe('StoredMigrationSource', () => {
         content,
       );
 
-      const source = new StoredMigrationSource(
+      const source = new StoredMigrationSource({
         knex,
         storage,
-        'knex_migrations',
-        tempDir,
-      );
+        tableName: 'knex_migrations',
+        directory: tempDir,
+      });
       const migration = await source.getMigration('20250101_orphan');
 
       expect(migration.up).toBeDefined();
@@ -161,12 +161,12 @@ describe('StoredMigrationSource', () => {
     });
 
     it('throws if migration not found anywhere', async () => {
-      const source = new StoredMigrationSource(
+      const source = new StoredMigrationSource({
         knex,
         storage,
-        'knex_migrations',
-        tempDir,
-      );
+        tableName: 'knex_migrations',
+        directory: tempDir,
+      });
 
       await expect(source.getMigration('nonexistent')).rejects.toThrow(
         /not found/,
@@ -187,12 +187,12 @@ describe('StoredMigrationSource', () => {
         migration_time: new Date(),
       });
 
-      const source = new StoredMigrationSource(
+      const source = new StoredMigrationSource({
         knex,
         storage,
-        'knex_migrations',
-        tempDir,
-      );
+        tableName: 'knex_migrations',
+        directory: tempDir,
+      });
       const migration = await source.getMigration('20250101_legacy');
 
       // up() should be a no-op

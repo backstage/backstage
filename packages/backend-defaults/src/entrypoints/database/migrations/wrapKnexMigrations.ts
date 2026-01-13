@@ -21,13 +21,11 @@ import path from 'path';
 import { MigrationStorage } from './MigrationStorage';
 import { StoredMigrationSource } from './StoredMigrationSource';
 
-export interface WrapKnexMigrationsOptions {
+export function wrapKnexMigrations(options: {
   knex: Knex;
   pluginId: string;
   logger: LoggerService;
-}
-
-export function wrapKnexMigrations(options: WrapKnexMigrationsOptions): Knex {
+}): Knex {
   const { knex, pluginId, logger } = options;
   const storage = new MigrationStorage({ knex, pluginId, logger });
   const originalMigrate = knex.migrate;
@@ -43,53 +41,41 @@ export function wrapKnexMigrations(options: WrapKnexMigrationsOptions): Knex {
         throw new Error('Migration directory is required');
       }
 
-      // 1. Ensure storage table exists
       await storage.ensureStorageTable();
+      await syncMigrationsToStorage({ storage, tableName, directory });
 
-      // 2. Backfill any applied migrations not yet stored
-      await backfillStorageFromApplied(knex, storage, tableName, directory);
-
-      // 3. Sync filesystem migrations to storage
-      await syncMigrationsToStorage(storage, tableName, directory);
-
-      // 4. Create migration source
-      const migrationSource = new StoredMigrationSource(
+      const migrationSource = new StoredMigrationSource({
         knex,
         storage,
         tableName,
         directory,
-      );
+      });
 
-      // 5. Get current state
-      const remoteLatest = await getLatestAppliedMigration(knex, tableName);
+      const remoteLatest = await getLatestAppliedMigration({ knex, tableName });
       const localLatest = await getLatestFilesystemMigration(directory);
 
-      // Remove FS-related options that conflict with migrationSource
-      // IMPORTANT: Always include tableName to override any cached value in knex's Migrator
+      // Always include tableName to override any cached value in knex's Migrator
       const { directory: _, ...configWithoutDirectory } = config ?? {};
       const configWithSource = {
         ...configWithoutDirectory,
-        tableName, // Explicitly pass tableName to ensure it's not inherited from previous calls
+        tableName,
         migrationSource,
       };
 
-      // 6. Determine direction and execute
+      // Rollback if remote is ahead of local
       if (remoteLatest && localLatest && remoteLatest > localLatest) {
-        // Need to rollback - remote is ahead of local
-        let current = await getLatestAppliedMigration(knex, tableName);
+        let current = await getLatestAppliedMigration({ knex, tableName });
         while (current && current > localLatest) {
           await originalMigrate.down.call(originalMigrate, configWithSource);
-          current = await getLatestAppliedMigration(knex, tableName);
+          current = await getLatestAppliedMigration({ knex, tableName });
         }
         return [0, []];
       }
 
-      // Go forward
       return originalMigrate.latest.call(originalMigrate, configWithSource);
     },
   };
 
-  // Use Proxy to intercept migrate property while preserving all knex functionality
   return new Proxy(knex, {
     get(target, prop) {
       if (prop === 'migrate') {
@@ -100,41 +86,13 @@ export function wrapKnexMigrations(options: WrapKnexMigrationsOptions): Knex {
   }) as Knex;
 }
 
-async function backfillStorageFromApplied(
-  knex: Knex,
-  storage: MigrationStorage,
-  tableName: string,
-  directory: string,
-): Promise<void> {
-  const hasTable = await knex.schema.hasTable(tableName);
-  if (!hasTable) {
-    return;
-  }
+async function syncMigrationsToStorage(options: {
+  storage: MigrationStorage;
+  tableName: string;
+  directory: string;
+}): Promise<void> {
+  const { storage, tableName, directory } = options;
 
-  const applied = await knex(tableName).select('name');
-
-  for (const { name } of applied) {
-    const migrationName = name.replace(/\.js$/, '');
-    const existing = await storage.getMigration(tableName, migrationName);
-
-    if (!existing) {
-      const fsPath = path.join(directory, `${migrationName}.js`);
-      if (await fs.pathExists(fsPath)) {
-        const content = await fs.readFile(fsPath, 'utf8');
-        await storage.storeMigration(tableName, migrationName, content);
-      }
-      // If file doesn't exist, skip storing it - it's a legacy migration
-      // that predates the migration storage feature. Rollback for this
-      // migration won't be possible, but forward migrations will work.
-    }
-  }
-}
-
-async function syncMigrationsToStorage(
-  storage: MigrationStorage,
-  tableName: string,
-  directory: string,
-): Promise<void> {
   if (!(await fs.pathExists(directory))) {
     return;
   }
@@ -149,10 +107,12 @@ async function syncMigrationsToStorage(
   }
 }
 
-async function getLatestAppliedMigration(
-  knex: Knex,
-  tableName: string,
-): Promise<string | undefined> {
+async function getLatestAppliedMigration(options: {
+  knex: Knex;
+  tableName: string;
+}): Promise<string | undefined> {
+  const { knex, tableName } = options;
+
   const hasTable = await knex.schema.hasTable(tableName);
   if (!hasTable) {
     return undefined;
