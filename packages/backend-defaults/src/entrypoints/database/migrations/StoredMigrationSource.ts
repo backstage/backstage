@@ -35,14 +35,6 @@ export class StoredMigrationSource implements Knex.MigrationSource<string> {
     // Also include applied migrations from the database to satisfy knex validation
     const appliedMigrations = await this.getAppliedMigrationNames();
 
-    console.log('DEBUG getMigrations:', {
-      tableName: this.tableName,
-      directory: this.directory,
-      filesystemMigrations,
-      storedMigrations: storedMigrations.map(m => m.migration_name),
-      appliedMigrations,
-    });
-
     const allNames = new Set([
       ...filesystemMigrations,
       ...storedMigrations.map(m => m.migration_name),
@@ -71,14 +63,7 @@ export class StoredMigrationSource implements Knex.MigrationSource<string> {
   async getMigration(name: string): Promise<Knex.Migration> {
     // Try filesystem first
     const fsPath = path.join(this.directory, `${name}.js`);
-    const fsExists = await fs.pathExists(fsPath);
-    console.log('DEBUG getMigration:', {
-      name,
-      fsPath,
-      fsExists,
-      directory: this.directory,
-    });
-    if (fsExists) {
+    if (await fs.pathExists(fsPath)) {
       // Clear require cache to ensure fresh load
       delete require.cache[require.resolve(fsPath)];
       return require(fsPath);

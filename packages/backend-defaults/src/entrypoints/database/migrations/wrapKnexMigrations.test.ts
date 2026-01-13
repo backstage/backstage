@@ -20,10 +20,12 @@ import path from 'path';
 import fs from 'fs-extra';
 import os from 'os';
 import { wrapKnexMigrations } from './wrapKnexMigrations';
+import { mockServices } from '@backstage/backend-test-utils';
 
 describe('wrapKnexMigrations', () => {
   let knex: Knex;
   let tempDir: string;
+  const mockLogger = mockServices.logger.mock();
 
   beforeEach(async () => {
     knex = knexFactory({
@@ -56,7 +58,11 @@ describe('wrapKnexMigrations', () => {
       `,
     );
 
-    const wrapped = wrapKnexMigrations(knex, 'test-plugin');
+    const wrapped = wrapKnexMigrations({
+      knex,
+      pluginId: 'test-plugin',
+      logger: mockLogger,
+    });
     await wrapped.migrate.latest({ directory: tempDir });
 
     const hasTable = await knex.schema.hasTable('users');
@@ -91,7 +97,11 @@ describe('wrapKnexMigrations', () => {
       `,
     );
 
-    const wrapped = wrapKnexMigrations(knex, 'test-plugin');
+    const wrapped = wrapKnexMigrations({
+      knex,
+      pluginId: 'test-plugin',
+      logger: mockLogger,
+    });
 
     // Run both migrations
     await wrapped.migrate.latest({ directory: tempDir });
@@ -144,7 +154,11 @@ describe('wrapKnexMigrations', () => {
     expect(await knex.schema.hasTable('existing')).toBe(true);
 
     // Now use wrapped version - should backfill storage
-    const wrapped = wrapKnexMigrations(knex, 'test-plugin');
+    const wrapped = wrapKnexMigrations({
+      knex,
+      pluginId: 'test-plugin',
+      logger: mockLogger,
+    });
     await wrapped.migrate.latest({ directory: tempDir });
 
     const stored = await knex('backstage_migration_sources_test-plugin').select(

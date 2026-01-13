@@ -20,10 +20,12 @@ import path from 'path';
 import fs from 'fs-extra';
 import os from 'os';
 import { wrapKnexMigrations } from './wrapKnexMigrations';
+import { mockServices } from '@backstage/backend-test-utils';
 
 describe('Migration Storage Integration', () => {
   let knex: Knex;
   let tempDir: string;
+  const mockLogger = mockServices.logger.mock();
 
   beforeEach(async () => {
     knex = knexFactory({
@@ -43,7 +45,11 @@ describe('Migration Storage Integration', () => {
   });
 
   it('handles full deployment lifecycle: deploy v1, deploy v2, rollback to v1', async () => {
-    const wrapped = wrapKnexMigrations(knex, 'catalog');
+    const wrapped = wrapKnexMigrations({
+      knex,
+      pluginId: 'catalog',
+      logger: mockLogger,
+    });
 
     // --- Deploy v1: one migration ---
     await fs.writeFile(
@@ -134,7 +140,11 @@ describe('Migration Storage Integration', () => {
   });
 
   it('handles custom tableName for migrations', async () => {
-    const wrapped = wrapKnexMigrations(knex, 'scheduler');
+    const wrapped = wrapKnexMigrations({
+      knex,
+      pluginId: 'scheduler',
+      logger: mockLogger,
+    });
 
     await fs.writeFile(
       path.join(tempDir, '20250101_create_tasks.js'),

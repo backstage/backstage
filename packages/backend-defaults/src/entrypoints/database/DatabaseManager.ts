@@ -167,6 +167,20 @@ export class DatabaseManagerImpl {
   }
 
   /**
+   * Checks if migration storage is enabled for a given plugin.
+   * Can be configured at the base level or per-plugin level.
+   */
+  private isMigrationStorageEnabled(pluginId: string): boolean {
+    return (
+      this.config.getOptionalBoolean(
+        `${pluginPath(pluginId)}.enableMigrationStorage`,
+      ) ??
+      this.config.getOptionalBoolean('enableMigrationStorage') ??
+      false
+    );
+  }
+
+  /**
    * Provides a scoped Knex client for a plugin as per application config.
    *
    * @param pluginId - Plugin to get a Knex client for
@@ -185,9 +199,18 @@ export class DatabaseManagerImpl {
       return this.databaseCache.get(pluginId)!;
     }
 
+    const enableMigrationStorage = this.isMigrationStorageEnabled(pluginId);
+
     const clientPromise = connector.getClient(pluginId, deps).then(client => {
-      // Wrap the knex instance to enable migration storage
-      return wrapKnexMigrations(client, pluginId);
+      // Optionally wrap the knex instance to enable migration storage
+      if (enableMigrationStorage) {
+        return wrapKnexMigrations({
+          knex: client,
+          pluginId,
+          logger: deps.logger,
+        });
+      }
+      return client;
     });
     this.databaseCache.set(pluginId, clientPromise);
 

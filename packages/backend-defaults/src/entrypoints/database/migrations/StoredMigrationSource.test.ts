@@ -20,11 +20,13 @@ import fs from 'fs-extra';
 import os from 'os';
 import { StoredMigrationSource } from './StoredMigrationSource';
 import { MigrationStorage } from './MigrationStorage';
+import { mockServices } from '@backstage/backend-test-utils';
 
 describe('StoredMigrationSource', () => {
   let knex: Knex;
   let storage: MigrationStorage;
   let tempDir: string;
+  const mockLogger = mockServices.logger.mock();
 
   beforeEach(async () => {
     knex = knexFactory({
@@ -32,7 +34,11 @@ describe('StoredMigrationSource', () => {
       connection: ':memory:',
       useNullAsDefault: true,
     });
-    storage = new MigrationStorage(knex, 'test-plugin');
+    storage = new MigrationStorage({
+      knex,
+      pluginId: 'test-plugin',
+      logger: mockLogger,
+    });
     await storage.ensureStorageTable();
 
     tempDir = await fs.mkdtemp(path.join(os.tmpdir(), 'migration-test-'));

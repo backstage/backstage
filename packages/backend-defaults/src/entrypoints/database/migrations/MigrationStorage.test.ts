@@ -17,10 +17,12 @@
 import { Knex } from 'knex';
 import knexFactory from 'knex';
 import { MigrationStorage } from './MigrationStorage';
+import { mockServices } from '@backstage/backend-test-utils';
 
 describe('MigrationStorage', () => {
   let knex: Knex;
   let storage: MigrationStorage;
+  const mockLogger = mockServices.logger.mock();
 
   beforeEach(async () => {
     knex = knexFactory({
@@ -28,7 +30,11 @@ describe('MigrationStorage', () => {
       connection: ':memory:',
       useNullAsDefault: true,
     });
-    storage = new MigrationStorage(knex, 'test-plugin');
+    storage = new MigrationStorage({
+      knex,
+      pluginId: 'test-plugin',
+      logger: mockLogger,
+    });
   });
 
   afterEach(async () => {
@@ -95,16 +101,23 @@ describe('MigrationStorage', () => {
       expect(count?.cnt).toBe(1);
     });
 
-    it('throws if migration content changed', async () => {
+    it('warns if migration content changed but does not throw', async () => {
       await storage.storeMigration(
         'knex_migrations',
         '20250101_init',
         'original',
       );
 
-      await expect(
-        storage.storeMigration('knex_migrations', '20250101_init', 'modified'),
-      ).rejects.toThrow(/has changed/);
+      // Should not throw, but should log a warning
+      await storage.storeMigration(
+        'knex_migrations',
+        '20250101_init',
+        'modified',
+      );
+
+      expect(mockLogger.warn).toHaveBeenCalledWith(
+        expect.stringContaining('has changed'),
+      );
     });
   });
 

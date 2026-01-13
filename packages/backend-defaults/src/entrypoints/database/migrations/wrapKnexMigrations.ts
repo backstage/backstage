@@ -14,14 +14,22 @@
  * limitations under the License.
  */
 
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { Knex } from 'knex';
 import fs from 'fs-extra';
 import path from 'path';
 import { MigrationStorage } from './MigrationStorage';
 import { StoredMigrationSource } from './StoredMigrationSource';
 
-export function wrapKnexMigrations(knex: Knex, pluginId: string): Knex {
-  const storage = new MigrationStorage(knex, pluginId);
+export interface WrapKnexMigrationsOptions {
+  knex: Knex;
+  pluginId: string;
+  logger: LoggerService;
+}
+
+export function wrapKnexMigrations(options: WrapKnexMigrationsOptions): Knex {
+  const { knex, pluginId, logger } = options;
+  const storage = new MigrationStorage({ knex, pluginId, logger });
   const originalMigrate = knex.migrate;
 
   const wrappedMigrate = {
@@ -64,30 +72,6 @@ export function wrapKnexMigrations(knex: Knex, pluginId: string): Knex {
         tableName, // Explicitly pass tableName to ensure it's not inherited from previous calls
         migrationSource,
       };
-
-      // Debug: check what's actually in the migrations table right now
-      const hasTable = await knex.schema.hasTable(tableName);
-      if (hasTable) {
-        const currentApplied = await knex(tableName).select('name');
-        console.log('DEBUG right before calling knex migrate:', {
-          tableName,
-          directory,
-          currentApplied: currentApplied.map((r: { name: string }) => r.name),
-        });
-      } else {
-        console.log('DEBUG right before calling knex migrate:', {
-          tableName,
-          directory,
-          tableExists: false,
-        });
-      }
-
-      console.log('DEBUG configWithSource:', {
-        tableName: configWithSource.tableName,
-        hasTableName: 'tableName' in configWithSource,
-        hasMigrationSource: 'migrationSource' in configWithSource,
-        configKeys: Object.keys(configWithSource),
-      });
 
       // 6. Determine direction and execute
       if (remoteLatest && localLatest && remoteLatest > localLatest) {
@@ -152,20 +136,11 @@ async function syncMigrationsToStorage(
   directory: string,
 ): Promise<void> {
   if (!(await fs.pathExists(directory))) {
-    console.log('DEBUG syncMigrationsToStorage: directory does not exist', {
-      directory,
-    });
     return;
   }
 
   const files = await fs.readdir(directory);
   const migrationFiles = files.filter(f => f.endsWith('.js'));
-
-  console.log('DEBUG syncMigrationsToStorage:', {
-    tableName,
-    directory,
-    migrationFiles,
-  });
 
   for (const file of migrationFiles) {
     const migrationName = path.basename(file, '.js');

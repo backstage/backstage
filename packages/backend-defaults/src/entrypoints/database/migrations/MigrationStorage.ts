@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { Knex } from 'knex';
 import { createHash } from 'crypto';
 
@@ -24,11 +25,21 @@ export interface StoredMigration {
   checksum: string;
 }
 
+export interface MigrationStorageOptions {
+  knex: Knex;
+  pluginId: string;
+  logger: LoggerService;
+}
+
 export class MigrationStorage {
   private readonly storageTableName: string;
+  private readonly knex: Knex;
+  private readonly logger: LoggerService;
 
-  constructor(private readonly knex: Knex, pluginId: string) {
-    this.storageTableName = `backstage_migration_sources_${pluginId}`;
+  constructor(options: MigrationStorageOptions) {
+    this.knex = options.knex;
+    this.logger = options.logger;
+    this.storageTableName = `backstage_migration_sources_${options.pluginId}`;
   }
 
   async ensureStorageTable(): Promise<void> {
@@ -75,12 +86,12 @@ export class MigrationStorage {
 
     if (existing) {
       if (existing.checksum !== checksum) {
-        throw new Error(
+        this.logger.warn(
           `Migration ${migrationName} has changed since it was stored. ` +
-            `This could cause inconsistent rollbacks. Aborting.`,
+            `This could cause inconsistent rollbacks if a rollback is triggered.`,
         );
       }
-      return; // Already stored with same checksum
+      return; // Already stored, don't update
     }
 
     try {
@@ -98,12 +109,12 @@ export class MigrationStorage {
         .first();
       if (nowExisting) {
         if (nowExisting.checksum !== checksum) {
-          throw new Error(
+          this.logger.warn(
             `Migration ${migrationName} has changed since it was stored. ` +
-              `This could cause inconsistent rollbacks. Aborting.`,
+              `This could cause inconsistent rollbacks if a rollback is triggered.`,
           );
         }
-        return; // Another process stored it with same checksum
+        return; // Another process stored it
       }
       throw error; // Some other error
     }
@@ -114,42 +125,21 @@ export class MigrationStorage {
     migrationName: string,
   ): Promise<StoredMigration | undefined> {
     const hasTable = await this.knex.schema.hasTable(this.storageTableName);
-    console.log('DEBUG getMigration storage:', {
-      storageTableName: this.storageTableName,
-      tableName,
-      migrationName,
-      hasTable,
-    });
     if (!hasTable) {
       return undefined;
     }
-    const result = await this.knex(this.storageTableName)
+    return this.knex(this.storageTableName)
       .where({ table_name: tableName, migration_name: migrationName })
       .first();
-    console.log(
-      'DEBUG getMigration storage result:',
-      result ? 'found' : 'not found',
-    );
-    return result;
   }
 
   async getAllMigrations(tableName: string): Promise<StoredMigration[]> {
     const hasTable = await this.knex.schema.hasTable(this.storageTableName);
-    console.log('DEBUG getAllMigrations:', {
-      storageTableName: this.storageTableName,
-      tableName,
-      hasTable,
-    });
     if (!hasTable) {
       return [];
     }
-    const result = await this.knex(this.storageTableName)
+    return this.knex(this.storageTableName)
       .where({ table_name: tableName })
       .orderBy('migration_name', 'asc');
-    console.log(
-      'DEBUG getAllMigrations result:',
-      result.map(r => r.migration_name),
-    );
-    return result;
   }
 }
