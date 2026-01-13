@@ -68,6 +68,8 @@ import {
 } from '../../../frontend-plugin-api/src/wiring/createFrontendModule';
 import { getBasePath } from '../routing/getBasePath';
 import { Root } from '../extensions/Root';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { PluginWrapperApi } from '../../../../plugins/app/src/extensions/PluginWrapperApi';
 import { resolveAppTree } from '../tree/resolveAppTree';
 import { resolveAppNodeSpecs } from '../tree/resolveAppNodeSpecs';
 import { readAppExtensionsConfig } from '../tree/readAppExtensionsConfig';
@@ -309,6 +311,7 @@ export function createSpecializedApp(options?: CreateSpecializedAppOptions): {
       features,
       builtinExtensions: [
         resolveExtensionDefinition(Root, { namespace: 'root' }),
+        resolveExtensionDefinition(PluginWrapperApi, { namespace: 'root' }),
       ],
       parameters: readAppExtensionsConfig(config),
       forbidden: new Set(['root']),

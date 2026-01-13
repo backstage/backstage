@@ -24,6 +24,7 @@ import {
 import { ApiProvider } from '../../../../packages/core-app-api/src';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { AppThemeProvider } from '../../../../packages/core-app-api/src/app/AppThemeProvider';
+import { pluginWrapperApiRef } from '@backstage/frontend-plugin-api';
 
 export const App = createExtension({
   attachTo: { id: 'root', input: 'app' },
@@ -34,13 +35,20 @@ export const App = createExtension({
   },
   output: [coreExtensionData.reactElement],
   factory: ({ node, apis, inputs }) => {
+    const pluginWrapperApi = apis.get(pluginWrapperApiRef);
+    const RootWrapper = pluginWrapperApi?.getRootWrapper();
+
+    let content = inputs.root.get(coreExtensionData.reactElement);
+
+    if (RootWrapper) {
+      content = <RootWrapper>{content}</RootWrapper>;
+    }
+
     return [
       coreExtensionData.reactElement(
         <ApiProvider apis={apis}>
           <AppThemeProvider>
-            <ExtensionBoundary node={node}>
-              {inputs.root.get(coreExtensionData.reactElement)}
-            </ExtensionBoundary>
+            <ExtensionBoundary node={node}>{content}</ExtensionBoundary>
           </AppThemeProvider>
         </ApiProvider>,
       ),
