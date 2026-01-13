@@ -13,6 +13,7 @@ plugins:
 nav:
   - Overview:
       - What is Backstage?: 'overview/what-is-backstage.md'
+      - Technical overview: 'overview/technical-overview.md'
       - Architecture overview: 'overview/architecture-overview.md'
       - Project Roadmap: 'overview/roadmap.md'
       - Vision: 'overview/vision.md'
