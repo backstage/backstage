@@ -724,8 +724,9 @@ components:
             field empty; which would currently make it owned by X" where X is taken from the
             codeowners file.
         value:
-          type: string
-          nullable: true
+          oneOf:
+            - type: string
+            - type: 'null'
         state:
           type: string
           enum:

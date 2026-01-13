@@ -679,8 +679,14 @@ export const spec = {
               'A text to show to the user to inform about the choices made. Like, it could say\n"Found a CODEOWNERS file that covers this target, so we suggest leaving this\nfield empty; which would currently make it owned by X" where X is taken from the\ncodeowners file.',
           },
           value: {
-            type: 'string',
-            nullable: true,
+            oneOf: [
+              {
+                type: 'string',
+              },
+              {
+                type: 'null',
+              },
+            ],
           },
           state: {
             type: 'string',
