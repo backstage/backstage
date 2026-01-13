@@ -954,6 +954,55 @@ describe('OidcService', () => {
           ).rejects.toThrow('Client ID metadata documents not enabled');
         });
 
+        it('should throw error when client_id does not match allowedClientIdPatterns', async () => {
+          const { service } = await createOidcService({
+            databaseId,
+            config: {
+              auth: {
+                experimentalClientIdMetadataDocuments: {
+                  enabled: true,
+                  allowedClientIdPatterns: ['https://trusted.com/*'],
+                },
+              },
+            },
+          });
+
+          await expect(
+            service.createAuthorizationSession({
+              clientId: cimdClientId, // https://example.com/oauth-metadata.json
+              redirectUri: 'http://localhost:8080/callback',
+              responseType: 'code',
+            }),
+          ).rejects.toThrow('Invalid client_id');
+        });
+
+        it('should accept client_id matching allowedClientIdPatterns', async () => {
+          const { service } = await createOidcService({
+            databaseId,
+            config: {
+              auth: {
+                experimentalClientIdMetadataDocuments: {
+                  enabled: true,
+                  allowedClientIdPatterns: ['https://example.com/*'],
+                },
+              },
+            },
+          });
+
+          const authSession = await service.createAuthorizationSession({
+            clientId: cimdClientId,
+            redirectUri: 'http://localhost:8080/callback',
+            responseType: 'code',
+          });
+
+          expect(authSession).toEqual(
+            expect.objectContaining({
+              id: expect.any(String),
+              clientName: 'CIMD Test Client',
+            }),
+          );
+        });
+
         it('should throw error for redirect_uri not in CIMD metadata', async () => {
           const { service } = await createOidcService({
             databaseId,
@@ -993,6 +1042,69 @@ describe('OidcService', () => {
               responseType: 'code',
             }),
           ).rejects.toThrow('Invalid redirect_uri');
+        });
+
+        it('should accept redirect_uri matching CIMD metadata pattern with wildcard port', async () => {
+          // Override the mock to use a pattern-based redirect URI
+          mockFetchCimdMetadata.mockResolvedValue({
+            ...cimdMetadata,
+            redirectUris: ['http://localhost:*/callback'],
+          });
+
+          const { service } = await createOidcService({
+            databaseId,
+            config: {
+              auth: {
+                experimentalClientIdMetadataDocuments: {
+                  enabled: true,
+                  allowedRedirectUriPatterns: ['http://localhost:*'],
+                },
+              },
+            },
+          });
+
+          const authSession = await service.createAuthorizationSession({
+            clientId: cimdClientId,
+            redirectUri: 'http://localhost:8080/callback',
+            responseType: 'code',
+          });
+
+          expect(authSession).toEqual(
+            expect.objectContaining({
+              id: expect.any(String),
+              clientName: 'CIMD Test Client',
+              redirectUri: 'http://localhost:8080/callback',
+            }),
+          );
+        });
+
+        it('should reject redirect_uri not matching CIMD metadata pattern path', async () => {
+          // Override the mock to use a pattern-based redirect URI that only matches /callback
+          mockFetchCimdMetadata.mockResolvedValue({
+            ...cimdMetadata,
+            redirectUris: ['http://localhost:*/callback'],
+          });
+
+          const { service } = await createOidcService({
+            databaseId,
+            config: {
+              auth: {
+                experimentalClientIdMetadataDocuments: {
+                  enabled: true,
+                  allowedRedirectUriPatterns: ['http://localhost:*'],
+                },
+              },
+            },
+          });
+
+          // /blob should not match the pattern http://localhost:*/callback
+          await expect(
+            service.createAuthorizationSession({
+              clientId: cimdClientId,
+              redirectUri: 'http://localhost:8080/blob',
+              responseType: 'code',
+            }),
+          ).rejects.toThrow('Redirect URI not registered');
         });
       });
 

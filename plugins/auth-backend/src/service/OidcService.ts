@@ -263,6 +263,19 @@ export class OidcService {
         throw new InputError('Client ID metadata documents not enabled');
       }
 
+      // Validate client_id against allowedClientIdPatterns
+      const allowedClientIdPatterns = this.config.getOptionalStringArray(
+        'auth.experimentalClientIdMetadataDocuments.allowedClientIdPatterns',
+      ) ?? ['*'];
+
+      if (
+        !allowedClientIdPatterns.some(pattern =>
+          matcher.isMatch(clientId, pattern),
+        )
+      ) {
+        throw new InputError('Invalid client_id');
+      }
+
       const cimdClient = await fetchCimdMetadata(clientId);
 
       // Validate redirect_uri against CIMD allowedRedirectUriPatterns

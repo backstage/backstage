@@ -140,54 +140,22 @@ export interface Config {
       enabled?: boolean;
 
       /**
-       * A list of allowed URI patterns for redirect URIs.
-       * Uses glob-style pattern matching (via the 'matcher' package).
-       * Defaults to ['*'] which allows any redirect URI.
+       * A list of allowed URI patterns for client_id URLs.
+       * Uses glob-style pattern matching where `*` matches any characters.
+       * Defaults to ['*'] which allows any client_id URL.
        *
-       * @example ['http://localhost:*\/**', 'http://127.0.0.1:*\/**']
+       * @example ['https://example.com/*', 'https://*.trusted-domain.com/*']
        */
-      allowedRedirectUriPatterns?: string[];
+      allowedClientIdPatterns?: string[];
 
       /**
-       * Internal clients to host metadata documents for.
-       * Each client will be served at /.well-known/oauth-client/{name}
+       * A list of allowed URI patterns for redirect URIs.
+       * Uses glob-style pattern matching where `*` matches any characters.
+       * Defaults to ['*'] which allows any redirect URI.
+       *
+       * @example ['http://localhost:*', 'http://127.0.0.1:*\/callback']
        */
-      clients?: Array<{
-        /**
-         * Unique name for this client. Becomes the URL path segment.
-         * Example: 'cli' -> /.well-known/oauth-client/cli
-         */
-        name: string;
-
-        /**
-         * Allowed redirect URI patterns for this client.
-         * Uses glob-style pattern matching (via the 'matcher' package).
-         *
-         * @example ['http://127.0.0.1:*\/callback', 'http://localhost:*\/callback']
-         */
-        redirectUris: string[];
-
-        /**
-         * Human-readable name displayed during authorization.
-         * Defaults to the name field.
-         */
-        clientName?: string;
-
-        /**
-         * OAuth response types. Defaults to ['code'].
-         */
-        responseTypes?: string[];
-
-        /**
-         * OAuth grant types. Defaults to ['authorization_code'].
-         */
-        grantTypes?: string[];
-
-        /**
-         * OAuth scopes. Optional.
-         */
-        scope?: string;
-      }>;
+      allowedRedirectUriPatterns?: string[];
     };
   };
 }
