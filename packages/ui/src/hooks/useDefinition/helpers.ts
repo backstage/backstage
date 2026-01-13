@@ -16,7 +16,7 @@
 
 import { breakpoints } from '../useBreakpoint';
 import { utilityClassMap } from '../../utils/utilityClassMap';
-import type { UtilityStyle } from './types';
+import type { UnwrapResponsive, UtilityStyle } from './types';
 
 const namedBreakpoints = breakpoints.filter(b => b.id !== 'initial');
 
@@ -28,9 +28,12 @@ function isResponsiveObject(value: unknown): value is Record<string, unknown> {
   );
 }
 
-export function resolveResponsiveValue<T>(value: T, breakpoint: string): T {
+export function resolveResponsiveValue<T>(
+  value: T,
+  breakpoint: string,
+): UnwrapResponsive<T> {
   if (!isResponsiveObject(value)) {
-    return value;
+    return value as UnwrapResponsive<T>;
   }
 
   const index = breakpoints.findIndex(b => b.id === breakpoint);
@@ -39,7 +42,7 @@ export function resolveResponsiveValue<T>(value: T, breakpoint: string): T {
   for (let i = index; i >= 0; i--) {
     const key = breakpoints[i].id;
     if (key in value && value[key] !== undefined) {
-      return value[key] as T;
+      return value[key] as UnwrapResponsive<T>;
     }
   }
 
@@ -47,11 +50,11 @@ export function resolveResponsiveValue<T>(value: T, breakpoint: string): T {
   for (let i = 0; i < breakpoints.length; i++) {
     const key = breakpoints[i].id;
     if (key in value && value[key] !== undefined) {
-      return value[key] as T;
+      return value[key] as UnwrapResponsive<T>;
     }
   }
 
-  return value;
+  return value as UnwrapResponsive<T>;
 }
 
 export function processUtilityProps<Keys extends string>(

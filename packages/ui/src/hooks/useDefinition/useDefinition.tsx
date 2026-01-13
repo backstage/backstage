@@ -71,7 +71,8 @@ export function useDefinition<
       ownPropsResolved[key] = finalValue;
 
       if ((config as any).dataAttribute) {
-        dataAttributes[`data-${key}`] = String(finalValue);
+        // eslint-disable-next-line no-restricted-syntax
+        dataAttributes[`data-${key.toLowerCase()}`] = String(finalValue);
       }
     }
   }
