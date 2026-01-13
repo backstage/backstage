@@ -27,12 +27,20 @@ const server = setupServer();
 registerMswTestHooks(server);
 
 describe('CimdClient', () => {
+  const originalNodeEnv = process.env.NODE_ENV;
+
   beforeEach(() => {
     jest.resetAllMocks();
     // Default to public IP for DNS lookups
     mockDnsLookup.mockResolvedValue([
       { address: '93.184.216.34', family: 4 },
     ] as any);
+    // Set development mode for tests that need localhost HTTP
+    process.env.NODE_ENV = 'development';
+  });
+
+  afterEach(() => {
+    process.env.NODE_ENV = originalNodeEnv;
   });
 
   describe('isCimdUrl', () => {
@@ -65,6 +73,12 @@ describe('CimdClient', () => {
         ),
       ).toBe(true);
       expect(isCimdUrl('http://localhost/path')).toBe(true);
+    });
+
+    it('should return false for HTTP localhost URLs in production', () => {
+      process.env.NODE_ENV = 'production';
+      expect(isCimdUrl('http://localhost:7007/path')).toBe(false);
+      expect(isCimdUrl('http://127.0.0.1:7007/path')).toBe(false);
     });
 
     it('should return false for non-URL strings', () => {
@@ -112,6 +126,16 @@ describe('CimdClient', () => {
       );
       expect(url2.href).toBe(
         'http://127.0.0.1:7007/api/auth/.well-known/oauth-client/cli',
+      );
+    });
+
+    it('should throw for HTTP localhost URLs in production', () => {
+      process.env.NODE_ENV = 'production';
+      expect(() => validateCimdUrl('http://localhost:7007/path')).toThrow(
+        'must use HTTPS',
+      );
+      expect(() => validateCimdUrl('http://127.0.0.1:7007/path')).toThrow(
+        'must use HTTPS',
       );
     });
 
@@ -288,41 +312,6 @@ describe('CimdClient', () => {
         await expect(
           fetchCimdMetadata('https://example.com/oauth-metadata.json'),
         ).rejects.toThrow('Failed to fetch client metadata');
-      });
-    });
-
-    describe('document size limits', () => {
-      it('should throw for document exceeding size limit via content-length header', async () => {
-        server.use(
-          rest.get(
-            'https://example.com/oauth-metadata.json',
-            (_req, res, ctx) => {
-              return res(
-                ctx.set('content-length', '10000'),
-                ctx.body('x'.repeat(10000)),
-              );
-            },
-          ),
-        );
-
-        await expect(
-          fetchCimdMetadata('https://example.com/oauth-metadata.json'),
-        ).rejects.toThrow('Client metadata document exceeds size limit');
-      });
-
-      it('should throw for document exceeding size limit without content-length header', async () => {
-        server.use(
-          rest.get(
-            'https://example.com/oauth-metadata.json',
-            (_req, res, ctx) => {
-              return res(ctx.body('x'.repeat(6000)));
-            },
-          ),
-        );
-
-        await expect(
-          fetchCimdMetadata('https://example.com/oauth-metadata.json'),
-        ).rejects.toThrow('Client metadata document exceeds size limit');
       });
     });
 

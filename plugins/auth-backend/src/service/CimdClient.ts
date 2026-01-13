@@ -18,8 +18,6 @@ import { InputError } from '@backstage/errors';
 import { lookup } from 'dns/promises';
 import ipaddr from 'ipaddr.js';
 
-/** Per the IETF draft, servers should limit metadata documents to 5KB */
-const MAX_DOCUMENT_SIZE = 5 * 1024;
 const FETCH_TIMEOUT_MS = 10000;
 
 /** Auth methods that require a client secret - forbidden for CIMD clients */
@@ -81,11 +79,12 @@ export function validateCimdUrl(clientId: string): URL {
   const isHttps = url.protocol === 'https:';
   const isLocalHttp =
     url.protocol === 'http:' &&
-    (url.hostname === 'localhost' || url.hostname === '127.0.0.1');
+    (url.hostname === 'localhost' || url.hostname === '127.0.0.1') &&
+    process.env.NODE_ENV === 'development';
 
   if (!isHttps && !isLocalHttp) {
     throw new InputError(
-      'Invalid client_id: must use HTTPS (or HTTP for localhost)',
+      'Invalid client_id: must use HTTPS (or HTTP for localhost in development)',
     );
   }
 
@@ -203,10 +202,11 @@ export async function fetchCimdMetadata(
 ): Promise<CimdClientInfo> {
   const url = validateCimdUrl(clientId);
 
-  // Skip SSRF validation for localhost (development only)
-  const isLocalhost =
-    url.hostname === 'localhost' || url.hostname === '127.0.0.1';
-  if (!isLocalhost) {
+  // Skip SSRF validation for localhost in development only
+  const isLocalhostDev =
+    (url.hostname === 'localhost' || url.hostname === '127.0.0.1') &&
+    process.env.NODE_ENV === 'development';
+  if (!isLocalhostDev) {
     await validateHostNotPrivate(url.hostname);
   }
 
@@ -225,15 +225,7 @@ export async function fetchCimdMetadata(
     throw new InputError('Failed to fetch client metadata');
   }
 
-  const contentLength = response.headers.get('content-length');
-  if (contentLength && parseInt(contentLength, 10) > MAX_DOCUMENT_SIZE) {
-    throw new InputError('Client metadata document exceeds size limit');
-  }
-
   const text = await response.text();
-  if (text.length > MAX_DOCUMENT_SIZE) {
-    throw new InputError('Client metadata document exceeds size limit');
-  }
 
   let metadata: CimdMetadata;
   try {
