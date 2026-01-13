@@ -26,28 +26,24 @@ import {
  *
  * @public
  */
-export type PluginWrapperDefinition<TValue = unknown> =
-  | {
-      component: (props: { children: ReactNode }) => JSX.Element | null;
-    }
-  | {
-      component: (props: {
-        children: ReactNode;
-        value: TValue;
-      }) => JSX.Element | null;
-      /**
-       * Creates a shared value that is forwarded as the `value` prop to the
-       * component.
-       *
-       * @remarks
-       *
-       * This function obeys the rules of React hooks and is only
-       * invoked in a single location in the app. Note that the hook will not be
-       * called until a component from the plugin is rendered.
-       * @returns
-       */
-      useWrapperValue: () => TValue;
-    };
+export type PluginWrapperDefinition<TValue = unknown | never> = {
+  /**
+   * Creates a shared value that is forwarded as the `value` prop to the
+   * component.
+   *
+   * @remarks
+   *
+   * This function obeys the rules of React hooks and is only
+   * invoked in a single location in the app. Note that the hook will not be
+   * called until a component from the plugin is rendered.
+   * @returns
+   */
+  useWrapperValue?: () => TValue;
+  component: (props: {
+    children: ReactNode;
+    value: NoInfer<TValue>;
+  }) => JSX.Element | null;
+};
 
 const wrapperDataRef = createExtensionDataRef<
   () => Promise<PluginWrapperDefinition>
@@ -65,9 +61,13 @@ export const PluginWrapperBlueprint = createExtensionBlueprint({
   dataRefs: {
     wrapper: wrapperDataRef,
   },
-  defineParams: <TValue,>(params: {
+  defineParams<TValue = never>(params: {
     loader: () => Promise<PluginWrapperDefinition<TValue>>;
-  }) => createExtensionBlueprintParams(params),
+  }) {
+    return createExtensionBlueprintParams(
+      params as { loader: () => Promise<PluginWrapperDefinition> },
+    );
+  },
   *factory(params) {
     yield wrapperDataRef(params.loader);
   },
