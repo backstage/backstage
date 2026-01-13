@@ -22,36 +22,13 @@ import type {
 } from '@backstage/backend-plugin-api';
 import type { JsonObject, JsonValue } from '@backstage/types';
 import { ForwardedError } from '@backstage/errors';
+import { createPatternResolver } from '../util/createPatternResolver';
 
 type AuditorExtension = {
   eventId: string;
   severityLevel?: 'low' | 'medium' | 'high' | 'critical';
-  meta?: JsonObject;
-  captureMetaFromRequest?: {
-    body?: string[];
-    params?: string[];
-    query?: string[];
-  };
-  captureMetaFromResponse?: {
-    body?: string[];
-  };
+  meta?: Record<string, string>;
 };
-
-function extractValueFromObject(
-  obj: JsonValue,
-  path: string,
-): JsonValue | undefined {
-  const parts = path.split('.');
-  let current: JsonValue | undefined = obj;
-  for (const part of parts) {
-    if (current && typeof current === 'object' && part in current) {
-      current = (current as JsonObject)[part];
-    } else {
-      return undefined;
-    }
-  }
-  return current;
-}
 
 function waitForResponseToFinish(res: Response): Promise<void> {
   return new Promise(resolve => {
@@ -132,12 +109,28 @@ export function auditorMiddlewareFactory(dependencies: {
       return undefined;
     }
 
-    // Store the capture config for use in finish event
-    const {
-      captureMetaFromRequest,
-      captureMetaFromResponse,
-      meta: staticMeta = {},
-    } = auditorConfig;
+    const { meta: metaPatterns = {} } = auditorConfig;
+
+    // Create pattern resolvers for each meta field
+    // We need to distinguish between static strings and patterns
+    const patternResolvers = new Map<
+      string,
+      | { type: 'static'; value: string }
+      | { type: 'pattern'; resolver: (context: any) => string }
+    >();
+
+    for (const [key, pattern] of Object.entries(metaPatterns)) {
+      // Check if pattern contains placeholders
+      if (pattern.includes('{{')) {
+        patternResolvers.set(key, {
+          type: 'pattern',
+          resolver: createPatternResolver(pattern),
+        });
+      } else {
+        // Static value - no pattern to resolve
+        patternResolvers.set(key, { type: 'static', value: pattern });
+      }
+    }
 
     // Capture metadata from request
     const captureRequestMetadata = (): JsonObject => {
@@ -145,38 +138,31 @@ export function auditorMiddlewareFactory(dependencies: {
       const meta: JsonObject = {
         route: req.openapi?.expressRoute,
         ...(variant ? { variant } : {}),
-        ...staticMeta,
       };
 
-      if (captureMetaFromRequest) {
-        const { body, params, query } = captureMetaFromRequest;
+      // Resolve patterns with request context
+      const context = {
+        request: {
+          body: req.body,
+          params: req.openapi?.pathParams ?? req.params,
+          query: req.query,
+        },
+      };
 
-        if (body) {
-          for (const field of body) {
-            const value = extractValueFromObject(req.body, field);
+      for (const [key, resolver] of patternResolvers) {
+        try {
+          if (resolver.type === 'static') {
+            meta[key] = resolver.value;
+          } else {
+            const value = resolver.resolver(context as any);
             if (value !== undefined) {
-              meta[field] = value;
+              meta[key] = value;
             }
           }
-        }
-
-        if (params) {
-          for (const field of params) {
-            // Use pathParams from openapi, fallback to req.params
-            const value = req.openapi?.pathParams[field] ?? req.params[field];
-            if (value !== undefined) {
-              meta[field] = value;
-            }
-          }
-        }
-
-        if (query) {
-          for (const field of query) {
-            const value = req.query[field];
-            if (value !== undefined) {
-              meta[field] = value;
-            }
-          }
+        } catch (err) {
+          // Pattern could not be resolved (e.g., references response which is not available yet)
+          // or the value is not available in the request. Skip it for now.
+          logger.debug(`Could not resolve pattern for key '${key}': ${err}`);
         }
       }
 
@@ -185,24 +171,42 @@ export function auditorMiddlewareFactory(dependencies: {
 
     const captureResponseMetadata = (): JsonObject => {
       const meta: JsonObject = {};
-      if (captureMetaFromResponse) {
-        const { body } = captureMetaFromResponse;
 
-        if (body) {
-          // Access captured response body from res.locals
-          const locals = res.locals as Response['locals'] &
-            WithCapturedResponseBody;
-          const responseBody = locals[CAPTURED_RESPONSE_BODY_SYMBOL];
-          if (responseBody) {
-            for (const field of body) {
-              const value = extractValueFromObject(responseBody, field);
-              if (value !== undefined) {
-                meta[field] = value;
-              }
+      // Access captured response body from res.locals
+      const locals = res.locals as Response['locals'] &
+        WithCapturedResponseBody;
+      const responseBody = locals[CAPTURED_RESPONSE_BODY_SYMBOL];
+
+      const context = {
+        request: {
+          body: req.body,
+          params: req.openapi?.pathParams ?? req.params,
+          query: req.query,
+        },
+        response: {
+          body: responseBody,
+        },
+      };
+
+      // Resolve patterns with response context
+      for (const [key, resolver] of patternResolvers) {
+        try {
+          if (resolver.type === 'static') {
+            meta[key] = resolver.value;
+          } else {
+            const value = resolver.resolver(context as any);
+            if (value !== undefined) {
+              meta[key] = value;
             }
           }
+        } catch (err) {
+          // Pattern could not be resolved, skip it
+          logger.debug(
+            `Could not resolve pattern for key '${key}' with response: ${err}`,
+          );
         }
       }
+
       return meta;
     };
 
@@ -220,9 +224,11 @@ export function auditorMiddlewareFactory(dependencies: {
     const { captureRequestMetadata, captureResponseMetadata, auditorConfig } =
       result;
 
-    // Intercept response body if we need to capture from it
-    const captureMetaFromResponse = auditorConfig.captureMetaFromResponse;
-    if (captureMetaFromResponse?.body) {
+    // Intercept response body if any pattern references response.body
+    const needsResponseBody = Object.values(auditorConfig.meta ?? {}).some(
+      pattern => pattern.includes('response.body'),
+    );
+    if (needsResponseBody) {
       const originalJson = res.json.bind(res);
       const originalSend = res.send.bind(res);
 

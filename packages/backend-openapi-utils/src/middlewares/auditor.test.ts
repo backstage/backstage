@@ -59,9 +59,7 @@ describe('auditorMiddleware', () => {
             severityLevel: 'medium',
             meta: {
               queryType: 'refresh',
-            },
-            captureMetaFromRequest: {
-              body: ['entityRef'],
+              entityRef: '{{ request.body.entityRef }}',
             },
           },
           requestBody: {
@@ -91,9 +89,9 @@ describe('auditorMiddleware', () => {
           'x-backstage-auditor': {
             eventId: 'user-fetch',
             severityLevel: 'low',
-            captureMetaFromRequest: {
-              params: ['userId'],
-              query: ['includeDetails'],
+            meta: {
+              userId: '{{ request.params.userId }}',
+              includeDetails: '{{ request.query.includeDetails }}',
             },
           },
           parameters: [
@@ -136,8 +134,9 @@ describe('auditorMiddleware', () => {
           operationId: 'test',
           'x-backstage-auditor': {
             eventId: 'test-event',
-            captureMetaFromRequest: {
-              body: ['user.id', 'user.email'],
+            meta: {
+              'user.id': '{{ request.body.user.id }}',
+              'user.email': '{{ request.body.user.email }}',
             },
           },
           responses: { '200': { description: 'OK' } },
@@ -150,8 +149,9 @@ describe('auditorMiddleware', () => {
           'x-backstage-auditor': {
             eventId: 'data-process',
             severityLevel: 'medium',
-            captureMetaFromResponse: {
-              body: ['resultId', 'processedCount'],
+            meta: {
+              resultId: '{{ response.body.resultId }}',
+              processedCount: '{{ response.body.processedCount }}',
             },
           },
           responses: { '200': { description: 'OK' } },
@@ -219,7 +219,7 @@ describe('auditorMiddleware', () => {
         eventId: 'user-fetch',
         severityLevel: 'low',
         meta: expect.objectContaining({
-          includeDetails: true, // Parsed as boolean by OpenAPI validator
+          includeDetails: 'true', // Stringified by pattern resolver
           userId: 'user123',
         }),
       }),
@@ -256,7 +256,10 @@ describe('auditorMiddleware', () => {
     );
     expect(mockFail).toHaveBeenCalledWith({
       error: expect.any(Error),
-      meta: {},
+      meta: expect.objectContaining({
+        entityRef: 'component:default/test',
+        queryType: 'refresh',
+      }),
     });
   });
 
@@ -331,7 +334,7 @@ describe('auditorMiddleware', () => {
       expect.objectContaining({
         meta: expect.objectContaining({
           resultId: 'result-456',
-          processedCount: 42,
+          processedCount: '42', // Stringified by pattern resolver
         }),
       }),
     );

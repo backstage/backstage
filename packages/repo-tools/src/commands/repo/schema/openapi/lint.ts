@@ -30,6 +30,52 @@ import { truthy } from '@stoplight/spectral-functions';
 import { DiagnosticSeverity } from '@stoplight/types';
 import { pretty } from '@stoplight/spectral-formatters';
 import { getPathToOpenApiSpec } from '../../../../lib/openapi/helpers';
+import type { IFunctionResult } from '@stoplight/spectral-core';
+
+/**
+ * Custom Spectral function to check for reserved 'id' keys in x-backstage extensions
+ * when using OpenAPI 3.0.x (which uses JSON Schema draft-04 where 'id' is a schema identifier).
+ */
+function noReservedIdInExtensions(
+  targetVal: any,
+  _options: null,
+  context: { document: { data: any } },
+): IFunctionResult[] {
+  const results: IFunctionResult[] = [];
+
+  // Check if this is OpenAPI 3.0.x
+  const openApiVersion = context.document?.data?.openapi;
+  if (!openApiVersion || !openApiVersion.startsWith('3.0')) {
+    return results;
+  }
+
+  // targetVal is the operation object (get, post, etc.)
+  if (!targetVal || typeof targetVal !== 'object') {
+    return results;
+  }
+
+  // Check all x-backstage-* extensions
+  for (const [extKey, extValue] of Object.entries(targetVal)) {
+    if (
+      extKey.startsWith('x-backstage-') &&
+      extValue &&
+      typeof extValue === 'object'
+    ) {
+      // Check if there's a 'meta' object
+      const meta = (extValue as any).meta;
+      if (meta && typeof meta === 'object') {
+        // Check if 'id' is used as a key
+        if ('id' in meta) {
+          results.push({
+            message: `Reserved key 'id' found in '${extKey}.meta'. In OpenAPI 3.0.x, 'id' is treated as a JSON Schema draft-04 identifier and causes AJV validation conflicts. Use a different key name like 'entityId', 'locationId', etc.`,
+          });
+        }
+      }
+    }
+  }
+
+  return results;
+}
 
 async function lint(directoryPath: string, config?: { strict: boolean }) {
   const { strict } = config ?? {};
@@ -54,6 +100,16 @@ async function lint(directoryPath: string, config?: { strict: boolean }) {
           then: {
             field: 'allowReserved',
             function: truthy,
+          },
+          severity: 'error',
+        },
+        'no-id-in-backstage-extensions': {
+          description:
+            'Prohibit using "id" as a key in x-backstage-* extensions for OpenAPI 3.0.x',
+          message: 'Reserved key "id" found in x-backstage extension',
+          given: '$.paths.*[get,post,put,patch,delete,options,head,trace]',
+          then: {
+            function: noReservedIdInExtensions,
           },
           severity: 'error',
         },
