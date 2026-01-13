@@ -35,7 +35,6 @@ components:
       name: kind
       in: path
       required: true
-      allowReserved: true
       schema:
         type: string
     limit:
@@ -51,14 +50,12 @@ components:
       name: namespace
       in: path
       required: true
-      allowReserved: true
       schema:
         type: string
     name:
       name: name
       in: path
       required: true
-      allowReserved: true
       schema:
         type: string
     offset:
@@ -94,7 +91,6 @@ components:
       name: taskId
       in: path
       required: true
-      allowReserved: true
       schema:
         type: string
   requestBodies: {}
@@ -860,13 +856,11 @@ paths:
         - in: path
           name: provider
           required: true
-          allowReserved: true
           schema:
             type: string
         - in: path
           name: resource
           required: true
-          allowReserved: true
           schema:
             type: string
 
