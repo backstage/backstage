@@ -1,4 +1,4 @@
-openapi: 3.0.3
+openapi: 3.1.0
 info:
   title: catalog
   version: '1'
@@ -6,7 +6,7 @@ info:
     The API surface consists of a few distinct groups of functionality. Each has a
     dedicated section below.
 
-    :::note Note 
+    :::note Note
       This page only describes some of the most commonly used parts of the API, and is a work in progress.
     :::
 
@@ -35,28 +35,24 @@ components:
       name: kind
       in: path
       required: true
-      allowReserved: true
       schema:
         type: string
     namespace:
       name: namespace
       in: path
       required: true
-      allowReserved: true
       schema:
         type: string
     name:
       name: name
       in: path
       required: true
-      allowReserved: true
       schema:
         type: string
     uid:
       name: uid
       in: path
       required: true
-      allowReserved: true
       schema:
         type: string
     cursor:
@@ -478,31 +474,32 @@ components:
         - apiVersion
       description: The parts of the format that's common to all versions/kinds of entity.
     NullableEntity:
-      type: object
-      properties:
-        relations:
-          type: array
-          items:
-            $ref: '#/components/schemas/EntityRelation'
-          description: The relations that this entity has with other entities.
-        spec:
-          $ref: '#/components/schemas/JsonObject'
-        metadata:
-          $ref: '#/components/schemas/EntityMeta'
-        kind:
-          type: string
-          description: The high level entity type being described.
-        apiVersion:
-          type: string
-          description: |-
-            The version of specification format for this particular entity that
-            this is written against.
-      required:
-        - metadata
-        - kind
-        - apiVersion
-      description: The parts of the format that's common to all versions/kinds of entity.
-      nullable: true
+      anyOf:
+        - type: object
+          properties:
+            relations:
+              type: array
+              items:
+                $ref: '#/components/schemas/EntityRelation'
+              description: The relations that this entity has with other entities.
+            spec:
+              $ref: '#/components/schemas/JsonObject'
+            metadata:
+              $ref: '#/components/schemas/EntityMeta'
+            kind:
+              type: string
+              description: The high level entity type being described.
+            apiVersion:
+              type: string
+              description: |-
+                The version of specification format for this particular entity that
+                this is written against.
+          required:
+            - metadata
+            - kind
+            - apiVersion
+          description: The parts of the format that's common to all versions/kinds of entity.
+        - type: 'null'
     EntityAncestryResponse:
       type: object
       properties:
@@ -1211,7 +1208,6 @@ paths:
         - in: path
           name: id
           required: true
-          allowReserved: true
           schema:
             type: string
     delete:
@@ -1233,7 +1229,6 @@ paths:
         - in: path
           name: id
           required: true
-          allowReserved: true
           schema:
             type: string
   /locations/by-entity/{kind}/{namespace}/{name}:
@@ -1258,19 +1253,16 @@ paths:
         - in: path
           name: kind
           required: true
-          allowReserved: true
           schema:
             type: string
         - in: path
           name: namespace
           required: true
-          allowReserved: true
           schema:
             type: string
         - in: path
           name: name
           required: true
-          allowReserved: true
           schema:
             type: string
   /analyze-location:

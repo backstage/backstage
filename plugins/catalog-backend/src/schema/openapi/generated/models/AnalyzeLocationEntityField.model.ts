@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 The Backstage Authors
+ * Copyright 2026 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ export interface AnalyzeLocationEntityField {
    * A text to show to the user to inform about the choices made. Like, it could say \"Found a CODEOWNERS file that covers this target, so we suggest leaving this field empty; which would currently make it owned by X\" where X is taken from the codeowners file.
    */
   description: string;
-  value: string | null;
+  value: string;
   /**
    * The outcome of the analysis for this particular field
    */

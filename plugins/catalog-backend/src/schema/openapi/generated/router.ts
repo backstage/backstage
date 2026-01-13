@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 The Backstage Authors
+ * Copyright 2026 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,12 +21,12 @@ import { createValidatedOpenApiRouterFromGeneratedEndpointMap } from '@backstage
 import { EndpointMap } from './apis';
 
 export const spec = {
-  openapi: '3.0.3',
+  openapi: '3.1.0',
   info: {
     title: 'catalog',
     version: '1',
     description:
-      'The API surface consists of a few distinct groups of functionality. Each has a\ndedicated section below.\n\n:::note Note \n  This page only describes some of the most commonly used parts of the API, and is a work in progress.\n:::\n\nAll of the URL paths in this article are assumed to be on top of some base URL\npointing at your catalog installation. For example, if the path given in a\nsection below is `/entities`, and the catalog is located at\n`http://localhost:7007/api/catalog` during local development, the full URL would\nbe `http://localhost:7007/api/catalog/entities`. The actual URL may vary from\none organization to the other, especially in production, but is commonly your\n`backend.baseUrl` in your app config, plus `/api/catalog` at the end.\n\nSome or all of the endpoints may accept or require an `Authorization` header\nwith a `Bearer` token, which should then be the Backstage token returned by the\n[`identity API`](https://backstage.io/docs/reference/core-plugin-api.identityapiref).\n',
+      'The API surface consists of a few distinct groups of functionality. Each has a\ndedicated section below.\n\n:::note Note\n  This page only describes some of the most commonly used parts of the API, and is a work in progress.\n:::\n\nAll of the URL paths in this article are assumed to be on top of some base URL\npointing at your catalog installation. For example, if the path given in a\nsection below is `/entities`, and the catalog is located at\n`http://localhost:7007/api/catalog` during local development, the full URL would\nbe `http://localhost:7007/api/catalog/entities`. The actual URL may vary from\none organization to the other, especially in production, but is commonly your\n`backend.baseUrl` in your app config, plus `/api/catalog` at the end.\n\nSome or all of the endpoints may accept or require an `Authorization` header\nwith a `Bearer` token, which should then be the Backstage token returned by the\n[`identity API`](https://backstage.io/docs/reference/core-plugin-api.identityapiref).\n',
     license: {
       name: 'Apache-2.0',
       url: 'http://www.apache.org/licenses/LICENSE-2.0.html',
@@ -46,7 +46,6 @@ export const spec = {
         name: 'kind',
         in: 'path',
         required: true,
-        allowReserved: true,
         schema: {
           type: 'string',
         },
@@ -55,7 +54,6 @@ export const spec = {
         name: 'namespace',
         in: 'path',
         required: true,
-        allowReserved: true,
         schema: {
           type: 'string',
         },
@@ -64,7 +62,6 @@ export const spec = {
         name: 'name',
         in: 'path',
         required: true,
-        allowReserved: true,
         schema: {
           type: 'string',
         },
@@ -73,7 +70,6 @@ export const spec = {
         name: 'uid',
         in: 'path',
         required: true,
-        allowReserved: true,
         schema: {
           type: 'string',
         },
@@ -404,36 +400,42 @@ export const spec = {
           "The parts of the format that's common to all versions/kinds of entity.",
       },
       NullableEntity: {
-        type: 'object',
-        properties: {
-          relations: {
-            type: 'array',
-            items: {
-              $ref: '#/components/schemas/EntityRelation',
+        anyOf: [
+          {
+            type: 'object',
+            properties: {
+              relations: {
+                type: 'array',
+                items: {
+                  $ref: '#/components/schemas/EntityRelation',
+                },
+                description:
+                  'The relations that this entity has with other entities.',
+              },
+              spec: {
+                $ref: '#/components/schemas/JsonObject',
+              },
+              metadata: {
+                $ref: '#/components/schemas/EntityMeta',
+              },
+              kind: {
+                type: 'string',
+                description: 'The high level entity type being described.',
+              },
+              apiVersion: {
+                type: 'string',
+                description:
+                  'The version of specification format for this particular entity that\nthis is written against.',
+              },
             },
+            required: ['metadata', 'kind', 'apiVersion'],
             description:
-              'The relations that this entity has with other entities.',
+              "The parts of the format that's common to all versions/kinds of entity.",
           },
-          spec: {
-            $ref: '#/components/schemas/JsonObject',
+          {
+            type: 'null',
           },
-          metadata: {
-            $ref: '#/components/schemas/EntityMeta',
-          },
-          kind: {
-            type: 'string',
-            description: 'The high level entity type being described.',
-          },
-          apiVersion: {
-            type: 'string',
-            description:
-              'The version of specification format for this particular entity that\nthis is written against.',
-          },
-        },
-        required: ['metadata', 'kind', 'apiVersion'],
-        description:
-          "The parts of the format that's common to all versions/kinds of entity.",
-        nullable: true,
+        ],
       },
       EntityAncestryResponse: {
         type: 'object',
@@ -1402,7 +1404,6 @@ export const spec = {
             in: 'path',
             name: 'id',
             required: true,
-            allowReserved: true,
             schema: {
               type: 'string',
             },
@@ -1435,7 +1436,6 @@ export const spec = {
             in: 'path',
             name: 'id',
             required: true,
-            allowReserved: true,
             schema: {
               type: 'string',
             },
@@ -1474,7 +1474,6 @@ export const spec = {
             in: 'path',
             name: 'kind',
             required: true,
-            allowReserved: true,
             schema: {
               type: 'string',
             },
@@ -1483,7 +1482,6 @@ export const spec = {
             in: 'path',
             name: 'namespace',
             required: true,
-            allowReserved: true,
             schema: {
               type: 'string',
             },
@@ -1492,7 +1490,6 @@ export const spec = {
             in: 'path',
             name: 'name',
             required: true,
-            allowReserved: true,
             schema: {
               type: 'string',
             },

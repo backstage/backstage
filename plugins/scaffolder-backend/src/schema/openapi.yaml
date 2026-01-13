@@ -1,4 +1,4 @@
-openapi: 3.0.3
+openapi: 3.1.0
 info:
   title: scaffolder
   version: '1'
@@ -224,8 +224,7 @@ components:
         - type: boolean
         - type: number
         - type: string
-        - type: object
-          nullable: true
+        - type: 'null'
       description: A type representing all allowed JSON primitive values.
     JsonValue:
       oneOf:
@@ -428,8 +427,9 @@ components:
         description:
           type: string
         value:
-          type: object
-          nullable: true
+          anyOf:
+            - type: object
+            - type: 'null'
       required:
         - value
       description: The response shape for a single global value in the `listTemplatingExtensions` call to the `scaffolder-backend`
