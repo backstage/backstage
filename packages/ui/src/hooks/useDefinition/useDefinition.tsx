@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useMemo, ReactNode } from 'react';
+import { ReactNode } from 'react';
 import clsx from 'clsx';
 import { useBreakpoint } from '../useBreakpoint';
 import { useSurface, SurfaceProvider, UseSurfaceOptions } from '../useSurface';
@@ -45,96 +45,95 @@ export function useDefinition<
 
   const { surface: resolvedSurface } = useSurface(surfaceOptions);
 
-  return useMemo(() => {
-    const ownPropKeys = new Set(Object.keys(definition.propDefs));
-    const utilityPropKeys = new Set(definition.utilityProps ?? []);
+  const ownPropKeys = new Set(Object.keys(definition.propDefs));
+  const utilityPropKeys = new Set(definition.utilityProps ?? []);
 
-    const ownPropsRaw: Record<string, any> = {};
-    const restProps: Record<string, any> = {};
+  const ownPropsRaw: Record<string, any> = {};
+  const restProps: Record<string, any> = {};
 
-    for (const [key, value] of Object.entries(props)) {
-      if (ownPropKeys.has(key)) {
-        ownPropsRaw[key] = value;
-      } else if (!(utilityPropKeys as Set<string>).has(key)) {
-        restProps[key] = value;
+  for (const [key, value] of Object.entries(props)) {
+    if (ownPropKeys.has(key)) {
+      ownPropsRaw[key] = value;
+    } else if (!(utilityPropKeys as Set<string>).has(key)) {
+      restProps[key] = value;
+    }
+  }
+
+  const ownPropsResolved: Record<string, any> = {};
+  const dataAttributes: Record<string, string | undefined> = {};
+
+  for (const [key, config] of Object.entries(definition.propDefs)) {
+    const rawValue = ownPropsRaw[key];
+    const resolvedValue = resolveResponsiveValue(rawValue, breakpoint);
+    const finalValue = resolvedValue ?? (config as any).default;
+
+    if (finalValue !== undefined) {
+      ownPropsResolved[key] = finalValue;
+
+      if ((config as any).dataAttribute) {
+        dataAttributes[`data-${key}`] = String(finalValue);
       }
     }
+  }
 
-    const ownPropsResolved: Record<string, any> = {};
-    const dataAttributes: Record<string, string | undefined> = {};
-
-    for (const [key, config] of Object.entries(definition.propDefs)) {
-      const rawValue = ownPropsRaw[key];
-      const resolvedValue = resolveResponsiveValue(rawValue, breakpoint);
-      const finalValue = resolvedValue ?? (config as any).default;
-
-      if (finalValue !== undefined) {
-        ownPropsResolved[key] = finalValue;
-
-        if ((config as any).dataAttribute) {
-          dataAttributes[`data-${key}`] = String(finalValue);
-        }
-      }
+  // Add data-on-surface for leaf components
+  if (definition.surface === 'leaf' && resolvedSurface !== undefined) {
+    // Handle responsive surface values - for data attributes, use the resolved string
+    const surfaceValue =
+      typeof resolvedSurface === 'object'
+        ? resolveResponsiveValue(resolvedSurface as any, breakpoint)
+        : resolvedSurface;
+    if (surfaceValue !== undefined) {
+      dataAttributes['data-on-surface'] = String(surfaceValue);
     }
+  }
 
-    // Add data-on-surface for leaf components
-    if (definition.surface === 'leaf' && resolvedSurface !== undefined) {
-      // Handle responsive surface values - for data attributes, use the resolved string
-      const surfaceValue =
-        typeof resolvedSurface === 'object'
-          ? resolveResponsiveValue(resolvedSurface as any, breakpoint)
-          : resolvedSurface;
-      if (surfaceValue !== undefined) {
-        dataAttributes['data-on-surface'] = String(surfaceValue);
-      }
-    }
+  const { utilityClasses, utilityStyle } = processUtilityProps<UtilityKeys<D>>(
+    props,
+    (definition.utilityProps ?? []) as readonly UtilityKeys<D>[],
+  );
 
-    const { utilityClasses, utilityStyle } = processUtilityProps<
-      UtilityKeys<D>
-    >(props, (definition.utilityProps ?? []) as readonly UtilityKeys<D>[]);
+  const utilityTarget = options?.utilityTarget ?? 'root';
+  const classNameTarget = options?.classNameTarget ?? 'root';
 
-    const utilityTarget = options?.utilityTarget ?? 'root';
-    const classNameTarget = options?.classNameTarget ?? 'root';
+  const classes: Record<string, string> = {};
 
-    const classes: Record<string, string> = {};
-
-    for (const [name, cssKey] of Object.entries(definition.classNames)) {
-      classes[name] = clsx(
-        cssKey as string,
-        definition.styles[cssKey as keyof typeof definition.styles],
-        {
-          [utilityClasses]: utilityTarget === name,
-          [ownPropsResolved.className]: classNameTarget === name,
-        },
-      );
-    }
-
-    let children: ReactNode | undefined;
-    let surfaceChildren: ReactNode | undefined;
-
-    if (definition.surface === 'container') {
-      surfaceChildren = resolvedSurface ? (
-        <SurfaceProvider surface={resolvedSurface}>
-          {props.children}
-        </SurfaceProvider>
-      ) : (
-        props.children
-      );
-    } else {
-      children = props.children;
-    }
-
-    return {
-      ownProps: {
-        classes,
-        ...ownPropsResolved,
-        ...(definition.surface === 'container'
-          ? { surfaceChildren }
-          : { children }),
+  for (const [name, cssKey] of Object.entries(definition.classNames)) {
+    classes[name] = clsx(
+      cssKey as string,
+      definition.styles[cssKey as keyof typeof definition.styles],
+      {
+        [utilityClasses]: utilityTarget === name,
+        [ownPropsResolved.className]: classNameTarget === name,
       },
-      restProps,
-      dataAttributes,
-      utilityStyle,
-    } as unknown as UseDefinitionResult<D, P>;
-  }, [definition, props, breakpoint, resolvedSurface, options]);
+    );
+  }
+
+  let children: ReactNode | undefined;
+  let surfaceChildren: ReactNode | undefined;
+
+  if (definition.surface === 'container') {
+    surfaceChildren = resolvedSurface ? (
+      <SurfaceProvider surface={resolvedSurface}>
+        {props.children}
+      </SurfaceProvider>
+    ) : (
+      props.children
+    );
+  } else {
+    children = props.children;
+  }
+
+  return {
+    ownProps: {
+      classes,
+      ...ownPropsResolved,
+      ...(definition.surface === 'container'
+        ? { surfaceChildren }
+        : { children }),
+    },
+    restProps,
+    dataAttributes,
+    utilityStyle,
+  } as unknown as UseDefinitionResult<D, P>;
 }
