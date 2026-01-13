@@ -45,7 +45,6 @@ export const spec = {
         name: 'subscriptionId',
         in: 'path',
         required: true,
-        allowReserved: true,
         schema: {
           type: 'string',
         },

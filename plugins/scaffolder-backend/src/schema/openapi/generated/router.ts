@@ -69,7 +69,6 @@ export const spec = {
         name: 'kind',
         in: 'path',
         required: true,
-        allowReserved: true,
         schema: {
           type: 'string',
         },
@@ -89,7 +88,6 @@ export const spec = {
         name: 'namespace',
         in: 'path',
         required: true,
-        allowReserved: true,
         schema: {
           type: 'string',
         },
@@ -98,7 +96,6 @@ export const spec = {
         name: 'name',
         in: 'path',
         required: true,
-        allowReserved: true,
         schema: {
           type: 'string',
         },
@@ -144,7 +141,6 @@ export const spec = {
         name: 'taskId',
         in: 'path',
         required: true,
-        allowReserved: true,
         schema: {
           type: 'string',
         },
@@ -1277,7 +1273,6 @@ export const spec = {
             in: 'path',
             name: 'provider',
             required: true,
-            allowReserved: true,
             schema: {
               type: 'string',
             },
@@ -1286,7 +1281,6 @@ export const spec = {
             in: 'path',
             name: 'resource',
             required: true,
-            allowReserved: true,
             schema: {
               type: 'string',
             },

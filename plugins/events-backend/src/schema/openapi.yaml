@@ -17,7 +17,6 @@ components:
       name: subscriptionId
       in: path
       required: true
-      allowReserved: true
       schema:
         type: string
   requestBodies: {}
