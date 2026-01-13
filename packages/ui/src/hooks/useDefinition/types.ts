@@ -18,7 +18,7 @@ import type { ReactNode } from 'react';
 import type { Responsive } from '../../types';
 import type { utilityClassMap } from '../../utils/utilityClassMap';
 
-type UnwrapResponsive<T> = T extends Responsive<infer U> ? U : T;
+export type UnwrapResponsive<T> = T extends Responsive<infer U> ? U : T;
 
 export interface PropDefConfig<T> {
   dataAttribute?: boolean;
@@ -76,7 +76,9 @@ type DataAttributeKeys<PropDefs> = {
 }[keyof PropDefs];
 
 type DataAttributes<PropDefs> = {
-  [K in DataAttributeKeys<PropDefs> as `data-${string & K}`]?: string;
+  [K in DataAttributeKeys<PropDefs> as `data-${Lowercase<
+    string & K
+  >}`]?: string;
 } & { 'data-on-surface'?: string };
 
 export type UtilityKeys<D extends ComponentConfig<any, any>> =

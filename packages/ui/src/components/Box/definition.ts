@@ -22,7 +22,7 @@ import styles from './Box.module.css';
  * Component definition for Box
  * @public
  */
-export const BoxDefinition = defineComponent<BoxOwnProps, typeof styles>()({
+export const BoxDefinition = defineComponent<BoxOwnProps>()({
   styles,
   classNames: {
     root: 'bui-Box',
