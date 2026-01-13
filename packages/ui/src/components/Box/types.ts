@@ -26,7 +26,8 @@ export type BoxOwnProps = {
   style?: CSSProperties;
 };
 
-type BoxUtilityProps = {
+/** @public */
+export type BoxUtilityProps = {
   display?: Responsive<'none' | 'flex' | 'block' | 'inline'>;
   position?: Responsive<
     'static' | 'relative' | 'absolute' | 'fixed' | 'sticky'
