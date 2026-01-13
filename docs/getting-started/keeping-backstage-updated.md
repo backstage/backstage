@@ -45,6 +45,10 @@ yarn backstage-cli versions:bump --release next
 
 You can also use the `--release` option to target a specific version. This is useful if you need to pin your app to a specific release or if you need to downgrade to a previous version (e.g. moving from `1.45.0` back to `1.43.0`).
 
+:::warning
+Note that downgrading across significant version gaps (e.g. 2-3 releases) may result in package mismatches or errors due to the way Backstage manages dependencies. This method is best suited for small adjustments.
+:::
+
 ```bash
 yarn backstage-cli versions:bump --release 1.43.0
 ```
