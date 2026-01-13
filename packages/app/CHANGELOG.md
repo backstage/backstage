@@ -1,5 +1,17 @@
 # example-app
 
+## 0.2.117-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.11.0-next.1
+  - @backstage/plugin-catalog@1.32.2-next.2
+  - @backstage/plugin-home@0.9.0-next.2
+  - @backstage/plugin-api-docs@0.13.3-next.2
+  - @backstage/plugin-scaffolder@1.35.1-next.2
+  - @backstage/cli@0.35.2-next.1
+
 ## 0.2.117-next.2
 
 ### Patch Changes

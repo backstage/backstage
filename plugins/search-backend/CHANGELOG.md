@@ -1,5 +1,14 @@
 # @backstage/plugin-search-backend
 
+## 2.0.10-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.15.0-next.2
+  - @backstage/plugin-permission-node@0.10.7
+  - @backstage/plugin-search-backend-node@1.4.0
+
 ## 2.0.10-next.0
 
 ### Patch Changes
