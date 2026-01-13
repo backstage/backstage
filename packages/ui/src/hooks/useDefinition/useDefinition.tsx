@@ -23,6 +23,7 @@ import type {
   ComponentConfig,
   UseDefinitionOptions,
   UseDefinitionResult,
+  UtilityKeys,
 } from './types';
 
 export function useDefinition<
@@ -45,7 +46,6 @@ export function useDefinition<
   const { surface: resolvedSurface } = useSurface(surfaceOptions);
 
   return useMemo(() => {
-    // Step 4a: Separate props
     const ownPropKeys = new Set(Object.keys(definition.propDefs));
     const utilityPropKeys = new Set(definition.utilityProps ?? []);
 
@@ -55,12 +55,11 @@ export function useDefinition<
     for (const [key, value] of Object.entries(props)) {
       if (ownPropKeys.has(key)) {
         ownPropsRaw[key] = value;
-      } else if (!utilityPropKeys.has(key)) {
+      } else if (!(utilityPropKeys as Set<string>).has(key)) {
         restProps[key] = value;
       }
     }
 
-    // Step 4b: Resolve props, apply defaults, generate data attributes
     const ownPropsResolved: Record<string, any> = {};
     const dataAttributes: Record<string, string | undefined> = {};
 
@@ -90,13 +89,10 @@ export function useDefinition<
       }
     }
 
-    // Step 4c: Process utility props
-    const { utilityClasses, utilityStyle } = processUtilityProps(
-      props,
-      definition.utilityProps ?? [],
-    );
+    const { utilityClasses, utilityStyle } = processUtilityProps<
+      UtilityKeys<D>
+    >(props, (definition.utilityProps ?? []) as readonly UtilityKeys<D>[]);
 
-    // Step 4d: Assemble classes
     const utilityTarget = options?.utilityTarget ?? 'root';
     const classNameTarget = options?.classNameTarget ?? 'root';
 
@@ -113,7 +109,6 @@ export function useDefinition<
       );
     }
 
-    // Step 4e: Handle children / surfaceChildren
     let children: ReactNode | undefined;
     let surfaceChildren: ReactNode | undefined;
 
@@ -129,7 +124,6 @@ export function useDefinition<
       children = props.children;
     }
 
-    // Step 4f: Return result
     return {
       ownProps: {
         classes,
