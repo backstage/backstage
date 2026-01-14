@@ -18,8 +18,7 @@
 
 @layer components {
   .bui-Tooltip {
-    box-shadow: 0 10px 15px -3px rgba(0 0 0 / 0.1),
-      0 4px 6px -4px rgba(0 0 0 / 0.1);
+    box-shadow: var(--bui-shadow);
     border-radius: 4px;
     background: var(--bui-bg-surface-1);
     border: 1px solid var(--bui-gray-3);

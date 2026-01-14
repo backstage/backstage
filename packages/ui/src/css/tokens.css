@@ -146,6 +146,10 @@
     --bui-scrollbar: #a0a0a03b;
     --bui-scrollbar-thumb: #a0a0a0;
 
+    /* Shadows */
+    --bui-shadow: 0 10px 15px -3px rgba(0 0 0 / 0.1),
+      0 4px 6px -4px rgba(0 0 0 / 0.1);
+
     --bui-animate-pulse: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
   }
 
@@ -226,5 +230,8 @@
     --bui-ring: #1f5493;
     --bui-scrollbar: #3636363a;
     --bui-scrollbar-thumb: #575757;
+
+    /* Shadows */
+    --bui-shadow: none;
   }
 }
