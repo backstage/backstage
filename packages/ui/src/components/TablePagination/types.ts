@@ -15,8 +15,15 @@
  */
 
 /** @public */
+export interface PageSizeOption {
+  label: string;
+  value: number;
+}
+
+/** @public */
 export interface TablePaginationProps {
   pageSize: number;
+  pageSizeOptions?: number[] | PageSizeOption[];
   offset?: number;
   totalCount?: number;
   hasNextPage: boolean;

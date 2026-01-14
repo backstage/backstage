@@ -196,6 +196,7 @@ export function Table<T extends TableItem>({
       {pagination.type === 'page' && (
         <TablePagination
           pageSize={pagination.pageSize}
+          pageSizeOptions={pagination.pageSizeOptions}
           offset={pagination.offset}
           totalCount={pagination.totalCount}
           hasNextPage={pagination.hasNextPage}

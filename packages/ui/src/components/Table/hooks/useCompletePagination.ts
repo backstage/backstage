@@ -22,6 +22,7 @@ import type {
   UseTableCompleteOptions,
 } from './types';
 import { useStableCallback } from './useStableCallback';
+import { getEffectivePageSize } from './getEffectivePageSize';
 
 /** @internal */
 export function useCompletePagination<T extends TableItem, TFilter>(
@@ -35,8 +36,8 @@ export function useCompletePagination<T extends TableItem, TFilter>(
     filterFn,
     searchFn,
   } = options;
-  const { pageSize: defaultPageSize = 20, initialOffset = 0 } =
-    paginationOptions;
+  const { initialOffset = 0 } = paginationOptions;
+  const defaultPageSize = getEffectivePageSize(paginationOptions);
 
   const getData = useStableCallback(getDataProp);
   const { sort, filter, search } = query;

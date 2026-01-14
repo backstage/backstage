@@ -34,7 +34,14 @@ function useTableProps<T extends TableItem>(
   TableProps<T>,
   'columnConfig' | 'rowConfig' | 'selection' | 'emptyState'
 > {
-  const { showPageSizeOptions = true, getLabel } = paginationOptions;
+  const {
+    showPageSizeOptions = true,
+    pageSizeOptions,
+    onPageSizeChange: onPageSizeChangeCallback,
+    onNextPage: onNextPageCallback,
+    onPreviousPage: onPreviousPageCallback,
+    getLabel,
+  } = paginationOptions;
 
   const previousDataRef = useRef(paginationResult.data);
   if (paginationResult.data) {
@@ -48,18 +55,29 @@ function useTableProps<T extends TableItem>(
     () => ({
       type: 'page' as const,
       pageSize: paginationResult.pageSize,
+      pageSizeOptions,
       offset: paginationResult.offset,
       totalCount: paginationResult.totalCount,
       hasNextPage: paginationResult.hasNextPage,
       hasPreviousPage: paginationResult.hasPreviousPage,
-      onNextPage: paginationResult.onNextPage,
-      onPreviousPage: paginationResult.onPreviousPage,
-      onPageSizeChange: paginationResult.onPageSizeChange,
+      onNextPage: () => {
+        paginationResult.onNextPage();
+        onNextPageCallback?.();
+      },
+      onPreviousPage: () => {
+        paginationResult.onPreviousPage();
+        onPreviousPageCallback?.();
+      },
+      onPageSizeChange: (size: number) => {
+        paginationResult.onPageSizeChange(size);
+        onPageSizeChangeCallback?.(size);
+      },
       showPageSizeOptions,
       getLabel,
     }),
     [
       paginationResult.pageSize,
+      pageSizeOptions,
       paginationResult.offset,
       paginationResult.totalCount,
       paginationResult.hasNextPage,
@@ -67,6 +85,9 @@ function useTableProps<T extends TableItem>(
       paginationResult.onNextPage,
       paginationResult.onPreviousPage,
       paginationResult.onPageSizeChange,
+      onNextPageCallback,
+      onPreviousPageCallback,
+      onPageSizeChangeCallback,
     ],
   );
 
