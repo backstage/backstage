@@ -391,6 +391,39 @@ describe('DatabaseTaskStore', () => {
     ).toEqual([]);
   });
 
+  it('should be able to retry cancelled task with resume recovery strategy', async () => {
+    const { store, manager } = await createStore();
+    const client = await manager.getClient();
+
+    const { taskId } = await store.createTask({
+      spec: {
+        EXPERIMENTAL_recovery: { EXPERIMENTAL_strategy: 'resume' },
+      } as TaskSpec,
+      createdBy: 'me#too',
+    });
+    await store.completeTask({ taskId, status: 'cancelled', eventBody: {} });
+
+    await store.retryTask?.({ taskId });
+
+    const taskAfterRetry = await store.getTask(taskId);
+    expect(taskAfterRetry.status).toBe('open');
+
+    expect(
+      await client<RawDbTaskEventRow>('task_events')
+        .where({
+          task_id: taskId,
+          event_type: 'recovered',
+        })
+        .select(['body', 'event_type', 'task_id']),
+    ).toEqual([
+      {
+        body: JSON.stringify({ recoverStrategy: 'resume' }),
+        event_type: 'recovered',
+        task_id: taskId,
+      },
+    ]);
+  });
+
   it('should complete the task', async () => {
     const { store } = await createStore(eventsService);
     const { taskId } = await store.createTask({

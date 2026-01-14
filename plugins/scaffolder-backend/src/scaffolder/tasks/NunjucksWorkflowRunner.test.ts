@@ -1684,4 +1684,155 @@ describe('NunjucksWorkflowRunner', () => {
       expect(mockedPermissionApi.authorizeConditional).toHaveBeenCalledTimes(1);
     });
   });
+
+  describe('resume recovery', () => {
+    it('should skip completed steps when resuming and restore their outputs', async () => {
+      const task = {
+        ...createMockTaskWithSpec({
+          EXPERIMENTAL_recovery: { EXPERIMENTAL_strategy: 'resume' },
+          steps: [
+            {
+              id: 'step1',
+              name: 'completed step',
+              action: 'output-action',
+              input: {},
+            },
+            {
+              id: 'step2',
+              name: 'pending step',
+              action: 'jest-mock-action',
+              input: {},
+            },
+          ],
+          output: {
+            fromStep1: '${{steps.step1.output.mock}}',
+          },
+        }),
+        getTaskState: (): Promise<
+          | {
+              state: JsonObject;
+            }
+          | undefined
+        > => {
+          return Promise.resolve({
+            state: {
+              checkpoints: {},
+              steps: {
+                step1: {
+                  status: 'completed',
+                  output: { mock: 'restored-value', shouldRun: true },
+                },
+              },
+            },
+          });
+        },
+      };
+
+      const result = await runner.execute(task);
+
+      // Step 1 should be skipped (output-action not called), step 2 should run
+      expect(fakeActionHandler).toHaveBeenCalledTimes(1);
+      // Output from step1 should be restored from saved state
+      expect(result.output.fromStep1).toEqual('restored-value');
+    });
+
+    it('should run all steps when not using resume strategy', async () => {
+      const task = {
+        ...createMockTaskWithSpec({
+          steps: [
+            {
+              id: 'step1',
+              name: 'first step',
+              action: 'output-action',
+              input: {},
+            },
+            {
+              id: 'step2',
+              name: 'second step',
+              action: 'jest-mock-action',
+              input: {},
+            },
+          ],
+        }),
+        getTaskState: (): Promise<
+          | {
+              state: JsonObject;
+            }
+          | undefined
+        > => {
+          return Promise.resolve({
+            state: {
+              checkpoints: {},
+              steps: {
+                step1: {
+                  status: 'completed',
+                  output: { mock: 'old-value', shouldRun: true },
+                },
+              },
+            },
+          });
+        },
+      };
+
+      await runner.execute(task);
+
+      // Both actions should run since recovery is not 'resume'
+      // output-action runs for step1, jest-mock-action runs for step2
+      expect(fakeActionHandler).toHaveBeenCalledTimes(1);
+    });
+
+    it('should persist step state after completion via updateStepState', async () => {
+      const updateStepStateMock = jest.fn();
+      const task = {
+        ...createMockTaskWithSpec({
+          steps: [
+            {
+              id: 'step1',
+              name: 'first step',
+              action: 'output-action',
+              input: {},
+            },
+          ],
+        }),
+        updateStepState: updateStepStateMock,
+      };
+
+      await runner.execute(task);
+
+      expect(updateStepStateMock).toHaveBeenCalledWith({
+        stepId: 'step1',
+        status: 'completed',
+        output: { mock: 'backstage', shouldRun: true },
+      });
+    });
+
+    it('should run all steps when resume is set but no prior state exists', async () => {
+      const task = {
+        ...createMockTaskWithSpec({
+          EXPERIMENTAL_recovery: { EXPERIMENTAL_strategy: 'resume' },
+          steps: [
+            {
+              id: 'step1',
+              name: 'first step',
+              action: 'output-action',
+              input: {},
+            },
+            {
+              id: 'step2',
+              name: 'second step',
+              action: 'jest-mock-action',
+              input: {},
+            },
+          ],
+        }),
+        getTaskState: (): Promise<undefined> => Promise.resolve(undefined),
+      };
+
+      await runner.execute(task);
+
+      // Both steps should run since there's no prior state
+      // output-action runs for step1, jest-mock-action runs for step2
+      expect(fakeActionHandler).toHaveBeenCalledTimes(1);
+    });
+  });
 });

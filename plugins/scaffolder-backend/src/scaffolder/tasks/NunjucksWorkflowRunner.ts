@@ -64,6 +64,7 @@ import { convertFiltersToRecord } from '../../util/templating';
 import {
   CheckpointContext,
   CheckpointState,
+  StepsState,
 } from '@backstage/plugin-scaffolder-node/alpha';
 import { Config } from '@backstage/config';
 import { resolveDefaultEnvironment } from '../../lib/defaultEnvironment';
@@ -515,6 +516,13 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
 
       context.steps[step.id] = { output: stepOutput };
 
+      // Persist step state for resume recovery
+      await task.updateStepState?.({
+        stepId: step.id,
+        status: 'completed',
+        output: stepOutput,
+      });
+
       if (task.cancelSignal.aborted) {
         throw new Error(
           `Step ${step.id} (${step.name}) of task ${task.taskId} has been cancelled.`,
@@ -583,7 +591,25 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
             )
           : [{ result: AuthorizeResult.ALLOW }];
 
+      // Check if we should resume from previous state
+      const prevTaskState = await task.getTaskState?.();
+      const isResume =
+        task.spec.EXPERIMENTAL_recovery?.EXPERIMENTAL_strategy === 'resume';
+
       for (const step of task.spec.steps) {
+        // Skip completed steps when resuming
+        if (isResume && prevTaskState?.state) {
+          const stepsState = prevTaskState.state.steps as
+            | StepsState
+            | undefined;
+          const stepState = stepsState?.[step.id];
+          if (stepState?.status === 'completed') {
+            // Restore outputs to context and skip
+            context.steps[step.id] = { output: stepState.output };
+            continue;
+          }
+        }
+
         await this.executeStep(
           task,
           step,

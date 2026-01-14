@@ -1,4 +1,4 @@
-import { CheckpointStateValue } from '../alpha';
+import { CheckpointStateValue, StepState } from '../alpha';
 
 /*
  * Copyright 2024 The Backstage Authors
@@ -25,3 +25,12 @@ export * from './serializer';
 export type UpdateTaskCheckpointOptions = {
   key: string;
 } & CheckpointStateValue;
+
+/**
+ * Options for updating step state in a task.
+ *
+ * @alpha
+ */
+export type UpdateStepStateOptions = {
+  stepId: string;
+} & StepState;
