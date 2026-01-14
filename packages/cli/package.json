@@ -136,7 +136,7 @@
     "tar": "^6.1.12",
     "ts-checker-rspack-plugin": "^1.1.5",
     "ts-morph": "^24.0.0",
-    "undici": "^7.2.3",
+    "undici": "^7.18.2",
     "util": "^0.12.3",
     "yaml": "^2.0.0",
     "yargs": "^16.2.0",
