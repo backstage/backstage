@@ -70,7 +70,7 @@ export function createPatternResolver<TContext extends object = object>(
 function createGetter<TContext extends object = object>(
   path: string,
 ): (context: TContext) => unknown | undefined {
-  // The resulti of the split contains quads:
+  // The result of the split contains quads:
   //
   // - any "regular" part
   // - pure digits that were within brackets, if applicable
