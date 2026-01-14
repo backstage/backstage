@@ -36,11 +36,13 @@ describe('CimdClient', () => {
       { address: '93.184.216.34', family: 4 },
     ] as any);
     // Set development mode for tests that need localhost HTTP
-    process.env.NODE_ENV = 'development';
+    (process.env as Record<string, string | undefined>).NODE_ENV =
+      'development';
   });
 
   afterEach(() => {
-    process.env.NODE_ENV = originalNodeEnv;
+    (process.env as Record<string, string | undefined>).NODE_ENV =
+      originalNodeEnv;
   });
 
   describe('isCimdUrl', () => {
@@ -76,7 +78,8 @@ describe('CimdClient', () => {
     });
 
     it('should return false for HTTP localhost URLs in production', () => {
-      process.env.NODE_ENV = 'production';
+      (process.env as Record<string, string | undefined>).NODE_ENV =
+        'production';
       expect(isCimdUrl('http://localhost:7007/path')).toBe(false);
       expect(isCimdUrl('http://127.0.0.1:7007/path')).toBe(false);
     });
@@ -130,7 +133,8 @@ describe('CimdClient', () => {
     });
 
     it('should throw for HTTP localhost URLs in production', () => {
-      process.env.NODE_ENV = 'production';
+      (process.env as Record<string, string | undefined>).NODE_ENV =
+        'production';
       expect(() => validateCimdUrl('http://localhost:7007/path')).toThrow(
         'must use HTTPS',
       );
