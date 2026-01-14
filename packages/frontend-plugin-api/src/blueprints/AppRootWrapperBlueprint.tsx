@@ -22,11 +22,16 @@ const componentDataRef = createExtensionDataRef<
 >().with({ id: 'app.root.wrapper' });
 
 /**
+ * DEPRECATED: This blueprint will be removed.
+ *
  * Creates a extensions that render a React wrapper at the app root, enclosing
  * the app layout. This is useful for example for adding global React contexts
  * and similar.
  *
  * @public
+ * @deprecated Use {@link PluginWrapperBlueprint} instead if you want to provide
+ * a global context for your plugin. If you want to wrap the entire app,
+ * override the `app/layout` extension instead.
  */
 export const AppRootWrapperBlueprint = createExtensionBlueprint({
   kind: 'app-root-wrapper',
