@@ -20,6 +20,31 @@ import { PluginWrapperDefinition } from '@backstage/frontend-plugin-api';
 import { ReactNode, useState } from 'react';
 import userEvent from '@testing-library/user-event';
 
+type TestInc = { count: number; increment: () => void };
+
+function useTestInc(): TestInc {
+  const [value, setValue] = useState(0);
+  return {
+    count: value,
+    increment: () => setValue(val => val + 1),
+  };
+}
+
+function makeTestIncWrapper(
+  label: string = '',
+  renderSpy?: () => void,
+): (props: { children: ReactNode; value: TestInc }) => JSX.Element {
+  return ({ children, value }: { children: ReactNode; value: TestInc }) => {
+    renderSpy?.();
+    return (
+      <div>
+        Wrapper{label}#{value.count} {children}
+        <button onClick={value.increment}>Increment{label}</button>
+      </div>
+    );
+  };
+}
+
 describe('DefaultPluginWrapperApi', () => {
   it('should wrap multiple components with a single wrapper', async () => {
     const api = DefaultPluginWrapperApi.fromWrappers([
@@ -147,36 +172,11 @@ describe('DefaultPluginWrapperApi', () => {
   });
 
   it('should share a single stateful value across multiple wrappers', async () => {
-    type WrapperValue = { count: number; increment: () => void };
-
-    function useWrapperValue(): WrapperValue {
-      const [value, setValue] = useState(0);
-      return {
-        count: value,
-        increment: () => setValue(val => val + 1),
-      };
-    }
-
-    function Wrapper({
-      children,
-      value,
-    }: {
-      children: ReactNode;
-      value: WrapperValue;
-    }) {
-      return (
-        <div>
-          Wrapper({children}:{value.count})
-          <button onClick={value.increment}>Increment({children})</button>
-        </div>
-      );
-    }
-
     const api = DefaultPluginWrapperApi.fromWrappers([
       {
         loader: async () => ({
-          component: Wrapper,
-          useWrapperValue,
+          component: makeTestIncWrapper(),
+          useWrapperValue: useTestInc,
         }),
         pluginId: 'plugin-1',
       },
@@ -192,34 +192,151 @@ describe('DefaultPluginWrapperApi', () => {
 
     render(
       <RootWrapper>
-        <Wrapper1>1</Wrapper1>
-        <Wrapper2>2</Wrapper2>
+        <Wrapper1>X</Wrapper1>
+        <Wrapper2>Y</Wrapper2>
+      </RootWrapper>,
+    );
+
+    await expect(screen.findByText('Wrapper#0 X')).resolves.toBeInTheDocument();
+    await expect(screen.findByText('Wrapper#0 Y')).resolves.toBeInTheDocument();
+
+    await userEvent.click(screen.getAllByText('Increment')[0]);
+
+    await expect(screen.findByText('Wrapper#1 X')).resolves.toBeInTheDocument();
+    await expect(screen.findByText('Wrapper#1 Y')).resolves.toBeInTheDocument();
+
+    await userEvent.click(screen.getAllByText('Increment')[1]);
+
+    await expect(screen.findByText('Wrapper#2 X')).resolves.toBeInTheDocument();
+    await expect(screen.findByText('Wrapper#2 Y')).resolves.toBeInTheDocument();
+  });
+
+  it('should not rerender adjacent hooks on update', async () => {
+    let renderCountA = 0;
+    let renderCountB = 0;
+
+    const api = DefaultPluginWrapperApi.fromWrappers([
+      {
+        loader: async () => ({
+          component: makeTestIncWrapper('A', () => {
+            renderCountA += 1;
+          }),
+          useWrapperValue: useTestInc,
+        }),
+        pluginId: 'plugin-a',
+      },
+      {
+        loader: async () => ({
+          component: makeTestIncWrapper('B', () => {
+            renderCountB += 1;
+          }),
+          useWrapperValue: useTestInc,
+        }),
+        pluginId: 'plugin-b',
+      },
+    ]);
+
+    const WrapperA = api.getPluginWrapper('plugin-a')!;
+    const WrapperB = api.getPluginWrapper('plugin-b')!;
+
+    expect(WrapperA).toBeDefined();
+    expect(WrapperB).toBeDefined();
+
+    const RootWrapper = api.getRootWrapper();
+
+    render(
+      <RootWrapper>
+        <WrapperA>X</WrapperA>
+        <WrapperB>Y</WrapperB>
       </RootWrapper>,
     );
 
     await expect(
-      screen.findByText('Wrapper(1:0)'),
+      screen.findByText('WrapperA#0 X'),
     ).resolves.toBeInTheDocument();
     await expect(
-      screen.findByText('Wrapper(2:0)'),
+      screen.findByText('WrapperB#0 Y'),
     ).resolves.toBeInTheDocument();
 
-    await userEvent.click(screen.getByText('Increment(1)'));
+    expect(renderCountA).toBe(1);
+    expect(renderCountB).toBe(1);
 
-    await expect(
-      screen.findByText('Wrapper(1:1)'),
-    ).resolves.toBeInTheDocument();
-    await expect(
-      screen.findByText('Wrapper(2:1)'),
-    ).resolves.toBeInTheDocument();
+    await userEvent.click(screen.getByText('IncrementA'));
 
-    await userEvent.click(screen.getByText('Increment(2)'));
+    expect(screen.getByText('WrapperA#1 X')).toBeInTheDocument();
+    expect(screen.getByText('WrapperB#0 Y')).toBeInTheDocument();
 
-    await expect(
-      screen.findByText('Wrapper(1:2)'),
-    ).resolves.toBeInTheDocument();
-    await expect(
-      screen.findByText('Wrapper(2:2)'),
-    ).resolves.toBeInTheDocument();
+    expect(renderCountA).toBe(2);
+    expect(renderCountB).toBe(1);
+
+    await userEvent.click(screen.getByText('IncrementB'));
+
+    expect(screen.getByText('WrapperA#1 X')).toBeInTheDocument();
+    expect(screen.getByText('WrapperB#1 Y')).toBeInTheDocument();
+
+    expect(renderCountA).toBe(2);
+    expect(renderCountB).toBe(2);
+  });
+
+  it('should not rerender parent or child hooks on update', async () => {
+    let renderCountA = 0;
+    let renderCountB = 0;
+
+    const api = DefaultPluginWrapperApi.fromWrappers([
+      // Inner
+      {
+        loader: async () => ({
+          component: makeTestIncWrapper('B', () => {
+            renderCountB += 1;
+          }),
+          useWrapperValue: useTestInc,
+        }),
+        pluginId: 'test',
+      },
+      // Outer
+      {
+        loader: async () => ({
+          component: makeTestIncWrapper('A', () => {
+            renderCountA += 1;
+          }),
+          useWrapperValue: useTestInc,
+        }),
+        pluginId: 'test',
+      },
+    ]);
+
+    const Wrapper = api.getPluginWrapper('test')!;
+
+    expect(Wrapper).toBeDefined();
+
+    const RootWrapper = api.getRootWrapper();
+
+    render(
+      <RootWrapper>
+        <Wrapper>X</Wrapper>
+      </RootWrapper>,
+    );
+
+    await expect(screen.findByText('WrapperA#0')).resolves.toBeInTheDocument();
+    expect(screen.getByText('WrapperB#0 X')).toBeInTheDocument();
+
+    expect(renderCountA).toBe(2);
+    expect(renderCountB).toBe(1);
+
+    await userEvent.click(screen.getByText('IncrementA'));
+
+    expect(screen.getByText('WrapperA#1')).toBeInTheDocument();
+    expect(screen.getByText('WrapperB#0 X')).toBeInTheDocument();
+
+    expect(renderCountA).toBe(3);
+    expect(renderCountB).toBe(1);
+
+    await userEvent.click(screen.getByText('IncrementB'));
+
+    expect(screen.getByText('WrapperA#1')).toBeInTheDocument();
+    expect(screen.getByText('WrapperB#1 X')).toBeInTheDocument();
+
+    expect(renderCountA).toBe(3);
+    expect(renderCountB).toBe(2);
   });
 });

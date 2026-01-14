@@ -186,6 +186,17 @@ export class DefaultPluginWrapperApi implements PluginWrapperApi {
       composedWrappers.set(pluginId, ComposedWrapper);
     }
 
+    return new DefaultPluginWrapperApi(
+      DefaultPluginWrapperApi.createRootWrapper(),
+      composedWrappers,
+    );
+  }
+
+  /**
+   * Creates the root wrapper component that is responsible for rendering and
+   * forwarding the values of the common `useWrapperValue` hooks.
+   */
+  static createRootWrapper() {
     const renderers = new Map<any, HookStore>();
     const renderUpdateListeners = new Set<() => void>();
 
@@ -260,6 +271,6 @@ export class DefaultPluginWrapperApi implements PluginWrapperApi {
       );
     };
 
-    return new DefaultPluginWrapperApi(RootWrapper, composedWrappers);
+    return RootWrapper;
   }
 }
