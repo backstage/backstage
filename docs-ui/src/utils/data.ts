@@ -138,3 +138,26 @@ export const components: Page[] = [
     slug: 'visually-hidden',
   },
 ];
+
+export const hooks: Page[] = [
+  {
+    title: 'useBreakpoint',
+    slug: 'use-breakpoint',
+  },
+  {
+    title: 'useIsomorphicLayoutEffect',
+    slug: 'use-isomorphic-layout-effect',
+  },
+  {
+    title: 'useMediaQuery',
+    slug: 'use-media-query',
+  },
+  {
+    title: 'useStyles',
+    slug: 'use-styles',
+  },
+  {
+    title: 'useSurface',
+    slug: 'use-surface',
+  },
+];
