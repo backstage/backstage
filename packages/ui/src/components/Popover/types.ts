@@ -14,6 +14,25 @@
  * limitations under the License.
  */
 
-export { Popover } from './Popover';
-export type { PopoverProps } from './types';
-export { PopoverDefinition } from './definition';
+import { PopoverProps as AriaPopoverProps } from 'react-aria-components';
+
+/**
+ * Properties for {@link Popover}
+ *
+ * @public
+ */
+export interface PopoverProps extends Omit<AriaPopoverProps, 'children'> {
+  /**
+   * The content to display inside the popover.
+   * Content is automatically wrapped with padding and scroll behavior.
+   */
+  children: React.ReactNode;
+
+  /**
+   * Whether to hide the arrow pointing to the trigger element.
+   * Arrow is also automatically hidden for MenuTrigger and SubmenuTrigger contexts.
+   *
+   * @defaultValue false
+   */
+  hideArrow?: boolean;
+}
