@@ -38,4 +38,3 @@ export {
   createValidatedOpenApiRouterFromGeneratedEndpointMap,
 } from './stub';
 export { auditorMiddlewareFactory } from './middlewares/auditor';
-export { createPatternResolver } from './util/createPatternResolver';

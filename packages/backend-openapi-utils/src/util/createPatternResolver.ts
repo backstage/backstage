@@ -21,6 +21,8 @@ import { InputError } from '@backstage/errors';
  * and returns a function that accepts a context object and returns strings that
  * have had its placeholders filled in by following the dot separated path of
  * properties accordingly on the context.
+ *
+ * @public
  */
 export function createPatternResolver<TContext extends object = object>(
   pattern: string,
@@ -49,17 +51,13 @@ export function createPatternResolver<TContext extends object = object>(
       const getter = createGetter<TContext>(placeholderPart);
       resolvers.push(context => {
         const value = getter(context);
-        if (
-          typeof value === 'string' ||
-          typeof value === 'boolean' ||
-          Number.isFinite(value)
-        ) {
+        if (typeof value === 'string' || Number.isFinite(value)) {
           return String(value);
         } else if (!value) {
           throw new InputError(`No value for selector '${placeholderPart}'`);
         } else {
           throw new InputError(
-            `Expected string, number, or boolean value for selector '${placeholderPart}', got ${typeof value}`,
+            `Expected string or number value for selector '${placeholderPart}', got ${typeof value}`,
           );
         }
       });
