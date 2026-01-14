@@ -998,7 +998,7 @@ paths:
       x-backstage-auditor:
         eventId: entity-fetch
         meta:
-          entityRef: '{{ request.params.kind }}/{{ request.params.namespace }}:{{ request.params.name }}'
+          entityRef: '{{ request.params.kind }}:{{ request.params.namespace }}/{{ request.params.name }}'
       responses:
         '200':
           description: Ok
@@ -1026,7 +1026,7 @@ paths:
       x-backstage-auditor:
         eventId: entity-fetch
         meta:
-          entityRef: '{{ request.params.kind }}/{{ request.params.namespace }}:{{ request.params.name }}'
+          entityRef: '{{ request.params.kind }}:{{ request.params.namespace }}/{{ request.params.name }}'
       responses:
         '200':
           description: Ok
@@ -1519,7 +1519,7 @@ paths:
       x-backstage-auditor:
         eventId: location-fetch
         meta:
-          entityRef: '{{ request.params.kind }}/{{ request.params.namespace }}:{{ request.params.name }}'
+          entityRef: '{{ request.params.kind }}:{{ request.params.namespace }}/{{ request.params.name }}'
       responses:
         '200':
           description: Ok
