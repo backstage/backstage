@@ -104,7 +104,12 @@ describe('NunjucksWorkflowRunner', () => {
     cancelSignal: new AbortController().signal,
     getWorkspaceName: () => Promise.resolve('test-workspace'),
     getInitiatorCredentials: () => Promise.resolve(credentials),
+    getTaskState: async () => undefined,
+    updateCheckpoint: async () => {},
     updateStepState: async () => {},
+    serializeWorkspace: async () => {},
+    cleanWorkspace: async () => {},
+    rehydrateWorkspace: async () => {},
   });
 
   function expectTaskLog(message: string) {

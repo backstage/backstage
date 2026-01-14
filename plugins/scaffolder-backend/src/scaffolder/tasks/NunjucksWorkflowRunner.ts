@@ -421,7 +421,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
       }
       const tmpDirs = new Array<string>();
       const stepOutput: { [outputName: string]: JsonValue } = {};
-      const prevTaskState = await task.getTaskState?.();
+      const prevTaskState = await task.getTaskState();
 
       for (const iteration of iterations) {
         if (iteration.each) {
@@ -464,7 +464,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
               const value = prevValue ? prevValue : await fn();
 
               if (!prevValue) {
-                task.updateCheckpoint?.({
+                task.updateCheckpoint({
                   key,
                   status: 'success',
                   value: value ?? {},
@@ -472,14 +472,14 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
               }
               return value;
             } catch (err) {
-              task.updateCheckpoint?.({
+              task.updateCheckpoint({
                 key,
                 status: 'failed',
                 reason: stringifyError(err),
               });
               throw err;
             } finally {
-              await task.serializeWorkspace?.({ path: workspacePath });
+              await task.serializeWorkspace({ path: workspacePath });
             }
           },
           createTemporaryDirectory: async () => {
@@ -535,7 +535,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
       await stepTrack.markFailed();
       throw err;
     } finally {
-      await task.serializeWorkspace?.({ path: workspacePath });
+      await task.serializeWorkspace({ path: workspacePath });
     }
   }
 
@@ -563,7 +563,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
     });
 
     try {
-      await task.rehydrateWorkspace?.({ taskId, targetPath: workspacePath });
+      await task.rehydrateWorkspace({ taskId, targetPath: workspacePath });
 
       const taskTrack = await this.tracker.taskStart(task);
       await fs.ensureDir(workspacePath);
@@ -592,7 +592,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
           : [{ result: AuthorizeResult.ALLOW }];
 
       // Check if we should resume from previous state
-      const prevTaskState = await task.getTaskState?.();
+      const prevTaskState = await task.getTaskState();
       const isResume =
         task.spec.EXPERIMENTAL_recovery?.EXPERIMENTAL_strategy === 'resume';
 
@@ -623,7 +623,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
 
       const output = this.render(task.spec.output, context, renderTemplate);
       await taskTrack.markSuccessful();
-      await task.cleanWorkspace?.();
+      await task.cleanWorkspace();
 
       return { output };
     } finally {

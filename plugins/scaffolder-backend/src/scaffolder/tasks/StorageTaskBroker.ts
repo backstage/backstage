@@ -135,7 +135,7 @@ export class TaskManager implements TaskContext {
     return this.task.taskId;
   }
 
-  async rehydrateWorkspace?(options: {
+  async rehydrateWorkspace(options: {
     taskId: string;
     targetPath: string;
   }): Promise<void> {
@@ -153,7 +153,7 @@ export class TaskManager implements TaskContext {
     });
   }
 
-  async getTaskState?(): Promise<
+  async getTaskState(): Promise<
     | {
         state?: JsonObject;
       }
@@ -162,14 +162,14 @@ export class TaskManager implements TaskContext {
     return this.storage.getTaskState?.({ taskId: this.task.taskId });
   }
 
-  async updateCheckpoint?(options: UpdateTaskCheckpointOptions): Promise<void> {
+  async updateCheckpoint(options: UpdateTaskCheckpointOptions): Promise<void> {
     const { key, ...value } = options;
 
-    if (this.task.state) {
-      (this.task.state as TaskState).checkpoints[key] = value;
-    } else {
-      this.task.state = { checkpoints: { [key]: value }, steps: {} };
+    if (!this.task.state) {
+      this.task.state = { checkpoints: {}, steps: {} };
     }
+    this.task.state.checkpoints[key] = value;
+
     await this.storage.saveTaskState?.({
       taskId: this.task.taskId,
       state: this.task.state,
@@ -182,12 +182,10 @@ export class TaskManager implements TaskContext {
     if (!this.task.state) {
       this.task.state = { checkpoints: {}, steps: {} };
     }
-
-    const state = this.task.state as TaskState;
-    if (!state.steps) {
-      state.steps = {};
+    if (!this.task.state.steps) {
+      this.task.state.steps = {};
     }
-    state.steps[stepId] = { status, output };
+    this.task.state.steps[stepId] = { status, output };
 
     await this.storage.saveTaskState?.({
       taskId: this.task.taskId,
@@ -195,11 +193,11 @@ export class TaskManager implements TaskContext {
     });
   }
 
-  async serializeWorkspace?(options: { path: string }): Promise<void> {
+  async serializeWorkspace(options: { path: string }): Promise<void> {
     await this.workspaceService.serializeWorkspace(options);
   }
 
-  async cleanWorkspace?(): Promise<void> {
+  async cleanWorkspace(): Promise<void> {
     await this.workspaceService.cleanWorkspace();
   }
 
@@ -271,9 +269,9 @@ export interface CurrentClaimedTask {
    */
   secrets?: TaskSecrets;
   /**
-   * The state of checkpoints of the task.
+   * The state of checkpoints and steps of the task.
    */
-  state?: JsonObject;
+  state?: TaskState;
   /**
    * The creator of the task.
    */
