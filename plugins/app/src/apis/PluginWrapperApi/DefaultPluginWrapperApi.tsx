@@ -20,8 +20,8 @@ import {
   useContext,
   useEffect,
   useState,
-  useCallback,
-  useRef,
+  useSyncExternalStore,
+  useMemo,
 } from 'react';
 import {
   PluginWrapperApi,
@@ -32,14 +32,13 @@ type ComponentWithChild = (props: {
   children: ReactNode;
 }) => JSX.Element | null;
 
-type HookRegistration = {
-  key: any;
-  hook: () => unknown;
-  setter: (value: unknown) => void;
+type HookStore = {
+  subscribe: (listener: () => void) => () => void;
+  getSnapshot: () => { value: unknown } | undefined;
 };
 
 type HookRegistryContextValue = {
-  registerHook: (registration: HookRegistration) => void;
+  registerHook: (key: any, hook: () => unknown) => HookStore;
 };
 
 const HookRegistryContext = createContext<HookRegistryContextValue | undefined>(
@@ -112,16 +111,12 @@ export class DefaultPluginWrapperApi implements PluginWrapperApi {
             'Attempted to render a wrapped plugin component without a root wrapper context',
           );
         }
-        const [container, setValue] = useState<[value: unknown] | undefined>();
-
-        useEffect(
-          () =>
-            hookContext.registerHook({
-              key: loader,
-              setter: (value: unknown) => setValue([value]),
-              hook: useWrapperValue,
-            }),
-          [hookContext, loader, useWrapperValue],
+        const store = useMemo(() => {
+          return hookContext.registerHook(loader, useWrapperValue);
+        }, [hookContext, loader, useWrapperValue]);
+        const container = useSyncExternalStore(
+          store.subscribe,
+          store.getSnapshot,
         );
 
         if (!container) {
@@ -129,7 +124,9 @@ export class DefaultPluginWrapperApi implements PluginWrapperApi {
         }
 
         return (
-          <WrapperComponent value={container[0]}>{children}</WrapperComponent>
+          <WrapperComponent value={container.value}>
+            {children}
+          </WrapperComponent>
         );
       };
 
@@ -189,60 +186,65 @@ export class DefaultPluginWrapperApi implements PluginWrapperApi {
       composedWrappers.set(pluginId, ComposedWrapper);
     }
 
-    type HookRenderer = {
-      key: any;
-      element: JSX.Element;
-      subscribe: (setter: (value: unknown) => void) => void;
-      unsubscribe: (setter: (value: unknown) => void) => void;
-    };
+    const renderers = new Map<any, HookStore>();
+    const renderUpdateListeners = new Set<() => void>();
 
-    let rendererCounter = 1;
+    let renderElements = new Array<JSX.Element>();
 
-    const createHookRenderer = (reg: HookRegistration) => {
-      const setters = new Set([reg.setter]);
-      let latestValue: unknown = undefined;
-      let ranOnce = false;
+    const createHookRenderer = (hook: () => unknown): HookStore => {
+      const listeners = new Set<() => void>();
+      let container: { value: unknown } | undefined = undefined;
 
       const HookRenderer = () => {
-        latestValue = reg.hook();
-        for (const setter of setters) {
-          setter(latestValue);
-        }
-        ranOnce = true;
+        container = { value: hook() };
+        useEffect(() => {
+          for (const listener of listeners) {
+            listener();
+          }
+        });
         return null;
       };
+
+      renderElements = [
+        ...renderElements,
+        <HookRenderer key={`hook-renderer-${renderElements.length + 1}`} />,
+      ];
+
       return {
-        key: reg.key,
-        element: <HookRenderer key={`hook-renderer-${rendererCounter++}`} />,
-        subscribe(setter: (value: unknown) => void) {
-          setters.add(setter);
-          if (ranOnce) {
-            setter(latestValue);
-          }
-        },
-        unsubscribe(setter: (value: unknown) => void) {
-          setters.delete(setter);
+        getSnapshot: () => container,
+        subscribe(listener: () => void) {
+          listeners.add(listener);
+          return () => listeners.delete(listener);
         },
       };
     };
 
-    const RootWrapper = (props: { children: ReactNode }) => {
-      const renderers = useRef<Array<HookRenderer>>([]); // Array for stable ordering
-      const [elements, setElements] = useState<Array<JSX.Element>>([]);
+    const registerHook = (key: any, hook: () => unknown) => {
+      let renderer = renderers.get(key);
+      if (!renderer) {
+        renderer = createHookRenderer(hook);
+        renderers.set(key, renderer);
 
-      const registerHook = useCallback((reg: HookRegistration) => {
-        let renderer = renderers.current.find(r => r.key === reg.key);
-        if (renderer) {
-          renderer.subscribe(reg.setter);
-        } else {
-          renderer = createHookRenderer(reg);
-          renderers.current.push(renderer);
-          setElements(renderers.current.map(r => r.element));
-        }
-        return () => {
-          renderer.unsubscribe(reg.setter);
-        };
-      }, []);
+        queueMicrotask(() => {
+          for (const listener of renderUpdateListeners) {
+            listener();
+          }
+        });
+      }
+      return renderer;
+    };
+
+    const subscribeToRenderUpdates = (listener: () => void) => {
+      renderUpdateListeners.add(listener);
+      return () => renderUpdateListeners.delete(listener);
+    };
+    const getRenderElements = () => renderElements;
+
+    const RootWrapper = (props: { children: ReactNode }) => {
+      const elements = useSyncExternalStore(
+        subscribeToRenderUpdates,
+        getRenderElements,
+      );
 
       return (
         <>
