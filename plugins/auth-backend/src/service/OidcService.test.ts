@@ -1492,7 +1492,7 @@ describe('OidcService', () => {
               clientSecret: client.clientSecret,
             },
           }),
-        ).rejects.toThrow('Invalid refresh token format');
+        ).rejects.toThrow('Invalid refresh token');
       });
 
       it('should reject expired refresh token', async () => {

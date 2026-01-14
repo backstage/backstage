@@ -122,6 +122,7 @@ describe('OidcRouter', () => {
 
     return {
       router: oidcRouter,
+      baseUrl: 'http://localhost:7000',
       mocks: {
         httpAuth: mockHttpAuth,
         auth: mockAuth,
@@ -240,6 +241,46 @@ describe('OidcRouter', () => {
             ent: ['k/ns:a', 'k/ns:b'],
             exp: expect.any(Number),
           },
+        });
+      });
+    });
+
+    describe('CLI client endpoint', () => {
+      it('should return CIMD metadata for the CLI client', async () => {
+        const { router, baseUrl } = await createRouter(databaseId);
+
+        const { server } = await startTestBackend({
+          features: [
+            createBackendPlugin({
+              pluginId: 'auth',
+              register(reg) {
+                reg.registerInit({
+                  deps: { httpRouter: coreServices.httpRouter },
+                  async init({ httpRouter }) {
+                    httpRouter.use(router.getRouter());
+                    httpRouter.addAuthPolicy({
+                      path: '/',
+                      allow: 'unauthenticated',
+                    });
+                  },
+                });
+              },
+            }),
+          ],
+        });
+
+        const response = await request(server)
+          .get('/api/auth/.well-known/oauth-client/cli')
+          .expect(200);
+
+        expect(response.body).toEqual({
+          client_id: `${baseUrl}/.well-known/oauth-client/cli`,
+          client_name: 'Backstage CLI',
+          redirect_uris: ['http://127.0.0.1:*/callback'],
+          response_types: ['code'],
+          grant_types: ['authorization_code', 'refresh_token'],
+          scope: 'openid offline_access',
+          token_endpoint_auth_method: 'none',
         });
       });
     });

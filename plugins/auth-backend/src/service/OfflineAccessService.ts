@@ -170,6 +170,31 @@ export class OfflineAccessService {
   }
 
   /**
+   * Get metadata for a refresh token without validating it
+   * Used to determine client type before credential verification
+   */
+  async getRefreshTokenMetadata(
+    refreshToken: string,
+  ): Promise<{ clientId: string; userEntityRef: string } | undefined> {
+    try {
+      const sessionId = getRefreshTokenId(refreshToken);
+      const session = await this.#offlineSessionDb.getSessionById(sessionId);
+
+      if (!session || !session.oidcClientId) {
+        return undefined;
+      }
+
+      // Don't validate the token here - just return metadata
+      return {
+        clientId: session.oidcClientId,
+        userEntityRef: session.userEntityRef,
+      };
+    } catch {
+      return undefined;
+    }
+  }
+
+  /**
    * Revoke a refresh token
    */
   async revokeRefreshToken(

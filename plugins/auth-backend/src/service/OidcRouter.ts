@@ -123,6 +123,7 @@ export class OidcRouter {
   private readonly oidc: OidcService;
   private readonly logger: LoggerService;
   private readonly auth: AuthService;
+  private readonly baseUrl: string;
   private readonly appUrl: string;
   private readonly httpAuth: HttpAuthService;
   private readonly config: RootConfigService;
@@ -131,6 +132,7 @@ export class OidcRouter {
     oidc: OidcService,
     logger: LoggerService,
     auth: AuthService,
+    baseUrl: string,
     appUrl: string,
     httpAuth: HttpAuthService,
     config: RootConfigService,
@@ -138,6 +140,7 @@ export class OidcRouter {
     this.oidc = oidc;
     this.logger = logger;
     this.auth = auth;
+    this.baseUrl = baseUrl;
     this.appUrl = appUrl;
     this.httpAuth = httpAuth;
     this.config = config;
@@ -159,6 +162,7 @@ export class OidcRouter {
       OidcService.create(options),
       options.logger,
       options.auth,
+      options.baseUrl,
       options.appUrl,
       options.httpAuth,
       options.config,
@@ -183,6 +187,22 @@ export class OidcRouter {
     router.get('/.well-known/jwks.json', async (_req, res) => {
       const { keys } = await this.oidc.listPublicKeys();
       res.json({ keys });
+    });
+
+    // Client ID Metadata Document endpoint for CLI
+    // https://datatracker.ietf.org/doc/draft-ietf-oauth-client-id-metadata-document/
+    // Returns the CIMD metadata for the Backstage CLI client
+    router.get('/.well-known/oauth-client/cli', (_req, res) => {
+      const clientId = `${this.baseUrl}/.well-known/oauth-client/cli`;
+      res.json({
+        client_id: clientId,
+        client_name: 'Backstage CLI',
+        redirect_uris: ['http://127.0.0.1:*/callback'],
+        response_types: ['code'],
+        grant_types: ['authorization_code', 'refresh_token'],
+        scope: 'openid offline_access',
+        token_endpoint_auth_method: 'none',
+      });
     });
 
     // UserInfo endpoint

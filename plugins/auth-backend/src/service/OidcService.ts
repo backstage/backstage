@@ -566,7 +566,7 @@ export class OidcService {
 
   async refreshAccessToken(params: {
     refreshToken: string;
-    clientCredentials: { clientId: string; clientSecret: string };
+    clientCredentials?: { clientId: string; clientSecret: string };
   }): Promise<{
     accessToken: string;
     tokenType: string;
@@ -577,17 +577,36 @@ export class OidcService {
       throw new InputError('Refresh tokens are not enabled');
     }
 
-    const isValidClient = await this.#verifyClientCredentials(
-      params.clientCredentials,
+    // Get the client_id from the refresh token metadata
+    const tokenMetadata = await this.offlineAccess.getRefreshTokenMetadata(
+      params.refreshToken,
     );
-    if (!isValidClient) {
-      throw new AuthenticationError('Invalid client credentials');
+    if (!tokenMetadata) {
+      throw new AuthenticationError('Invalid refresh token');
+    }
+
+    // For CIMD clients (URL-based client_id), no credentials are required
+    // For DCR clients, verify credentials
+    if (!isCimdUrl(tokenMetadata.clientId)) {
+      if (!params.clientCredentials) {
+        throw new AuthenticationError('Client credentials required');
+      }
+      const isValidClient = await this.#verifyClientCredentials(
+        params.clientCredentials,
+      );
+      if (!isValidClient) {
+        throw new AuthenticationError('Invalid client credentials');
+      }
+      // Verify the credentials match the token's client
+      if (params.clientCredentials.clientId !== tokenMetadata.clientId) {
+        throw new AuthenticationError('Client ID mismatch');
+      }
     }
 
     const { accessToken, refreshToken } =
       await this.offlineAccess.refreshAccessToken({
         refreshToken: params.refreshToken,
-        clientId: params.clientCredentials.clientId,
+        clientId: tokenMetadata.clientId,
         tokenIssuer: this.tokenIssuer,
       });
 
@@ -606,7 +625,7 @@ export class OidcService {
    */
   async revokeRefreshToken(options: {
     token: string;
-    clientCredentials: { clientId: string; clientSecret: string };
+    clientCredentials?: { clientId: string; clientSecret: string };
   }): Promise<void> {
     if (!this.offlineAccess) {
       return;
@@ -614,15 +633,35 @@ export class OidcService {
 
     const { token, clientCredentials } = options;
 
-    const isValidClient = await this.#verifyClientCredentials(
-      clientCredentials,
+    // Get the client_id from the refresh token metadata
+    const tokenMetadata = await this.offlineAccess.getRefreshTokenMetadata(
+      token,
     );
-    if (!isValidClient) {
-      throw new AuthenticationError('Invalid client credentials');
+    if (!tokenMetadata) {
+      // Token doesn't exist or already revoked - per RFC 7009, return success
+      return;
+    }
+
+    // For CIMD clients (URL-based client_id), no credentials are required
+    // For DCR clients, verify credentials
+    if (!isCimdUrl(tokenMetadata.clientId)) {
+      if (!clientCredentials) {
+        throw new AuthenticationError('Client credentials required');
+      }
+      const isValidClient = await this.#verifyClientCredentials(
+        clientCredentials,
+      );
+      if (!isValidClient) {
+        throw new AuthenticationError('Invalid client credentials');
+      }
+      // Verify the credentials match the token's client
+      if (clientCredentials.clientId !== tokenMetadata.clientId) {
+        throw new AuthenticationError('Client ID mismatch');
+      }
     }
 
     await this.offlineAccess.revokeRefreshToken(token, {
-      clientId: clientCredentials?.clientId,
+      clientId: tokenMetadata.clientId,
     });
   }
 
