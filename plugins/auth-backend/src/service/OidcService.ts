@@ -585,9 +585,10 @@ export class OidcService {
       throw new AuthenticationError('Invalid refresh token');
     }
 
-    // For CIMD clients (URL-based client_id), no credentials are required
+    // For CIMD clients (URL-based client_id), validate against allowedClientIdPatterns
     // For DCR clients, verify credentials
-    if (!isCimdUrl(tokenMetadata.clientId)) {
+    const isCimdClient = this.#validateCimdClientId(tokenMetadata.clientId);
+    if (!isCimdClient) {
       if (!params.clientCredentials) {
         throw new AuthenticationError('Client credentials required');
       }
@@ -642,9 +643,10 @@ export class OidcService {
       return;
     }
 
-    // For CIMD clients (URL-based client_id), no credentials are required
+    // For CIMD clients (URL-based client_id), validate against allowedClientIdPatterns
     // For DCR clients, verify credentials
-    if (!isCimdUrl(tokenMetadata.clientId)) {
+    const isCimdClient = this.#validateCimdClientId(tokenMetadata.clientId);
+    if (!isCimdClient) {
       if (!clientCredentials) {
         throw new AuthenticationError('Client credentials required');
       }
@@ -663,6 +665,39 @@ export class OidcService {
     await this.offlineAccess.revokeRefreshToken(token, {
       clientId: tokenMetadata.clientId,
     });
+  }
+
+  /**
+   * Checks if client_id is a CIMD URL and validates it against configuration.
+   * Returns true if it's a valid CIMD client, false if it's not a CIMD URL.
+   * Throws AuthenticationError if it's a CIMD URL but invalid or not allowed.
+   */
+  #validateCimdClientId(clientId: string): boolean {
+    if (!isCimdUrl(clientId)) {
+      return false;
+    }
+
+    const cimdEnabled = this.config.getOptionalBoolean(
+      'auth.experimentalClientIdMetadataDocuments.enabled',
+    );
+
+    if (!cimdEnabled) {
+      throw new AuthenticationError('Client ID metadata documents not enabled');
+    }
+
+    const allowedClientIdPatterns = this.config.getOptionalStringArray(
+      'auth.experimentalClientIdMetadataDocuments.allowedClientIdPatterns',
+    ) ?? ['*'];
+
+    if (
+      !allowedClientIdPatterns.some(pattern =>
+        matcher.isMatch(clientId, pattern),
+      )
+    ) {
+      throw new AuthenticationError('Invalid client_id');
+    }
+
+    return true;
   }
 
   /**
