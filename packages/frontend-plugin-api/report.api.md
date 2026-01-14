@@ -271,7 +271,7 @@ export const AppRootElementBlueprint: ExtensionBlueprint_2<{
   dataRefs: never;
 }>;
 
-// @public
+// @public @deprecated
 export const AppRootWrapperBlueprint: ExtensionBlueprint_2<{
   kind: 'app-root-wrapper';
   params: {
@@ -1867,6 +1867,55 @@ export interface PluginOptions<
   // (undocumented)
   routes?: TRoutes;
 }
+
+// @public
+export type PluginWrapperApi = {
+  getRootWrapper(): ComponentType<{
+    children: ReactNode;
+  }>;
+  getPluginWrapper(pluginId: string):
+    | ComponentType<{
+        children: ReactNode;
+      }>
+    | undefined;
+};
+
+// @public
+export const pluginWrapperApiRef: ApiRef<PluginWrapperApi>;
+
+// @public
+export const PluginWrapperBlueprint: ExtensionBlueprint_2<{
+  kind: 'plugin-wrapper';
+  params: <TValue = never>(params: {
+    loader: () => Promise<PluginWrapperDefinition<TValue>>;
+  }) => ExtensionBlueprintParams_2<{
+    loader: () => Promise<PluginWrapperDefinition>;
+  }>;
+  output: ExtensionDataRef_2<
+    () => Promise<PluginWrapperDefinition>,
+    'core.plugin-wrapper.loader',
+    {}
+  >;
+  inputs: {};
+  config: {};
+  configInput: {};
+  dataRefs: {
+    wrapper: ConfigurableExtensionDataRef_2<
+      () => Promise<PluginWrapperDefinition>,
+      'core.plugin-wrapper.loader',
+      {}
+    >;
+  };
+}>;
+
+// @public
+export type PluginWrapperDefinition<TValue = unknown | never> = {
+  useWrapperValue?: () => TValue;
+  component: ComponentType<{
+    children: ReactNode;
+    value: TValue;
+  }>;
+};
 
 // @public (undocumented)
 export type PortableSchema<TOutput, TInput = TOutput> = {

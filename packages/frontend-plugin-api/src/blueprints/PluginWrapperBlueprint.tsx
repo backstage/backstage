@@ -39,7 +39,7 @@ export type PluginWrapperDefinition<TValue = unknown | never> = {
    * @returns
    */
   useWrapperValue?: () => TValue;
-  component: ComponentType<{ children: ReactNode; value: NoInfer<TValue> }>;
+  component: ComponentType<{ children: ReactNode; value: TValue }>;
 };
 
 const wrapperDataRef = createExtensionDataRef<
