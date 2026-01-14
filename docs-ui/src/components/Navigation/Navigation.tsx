@@ -11,8 +11,9 @@ import {
   RiPaletteLine,
   RiServiceLine,
   RiStackLine,
+  RiStackshareLine,
 } from '@remixicon/react';
-import { components, layoutComponents } from '@/utils/data';
+import { components, hooks, layoutComponents } from '@/utils/data';
 import styles from './Navigation.module.css';
 
 interface NavigationProps {
@@ -29,6 +30,11 @@ const data = [
     title: 'Components',
     content: components,
     url: '/components',
+  },
+  {
+    title: 'Hooks',
+    content: hooks,
+    url: '/hooks',
   },
 ];
 
@@ -63,6 +69,16 @@ export const Navigation = ({ onLinkClick }: NavigationProps) => {
             >
               <RiCollageLine size={20} />
               Components
+            </Link>
+          </li>
+          <li>
+            <Link
+              href="/hooks"
+              data-active={pathname.startsWith('/hooks')}
+              onClick={onLinkClick}
+            >
+              <RiStackshareLine size={20} />
+              Hooks
             </Link>
           </li>
           <li>
