@@ -1,6 +1,5 @@
 'use client';
 
-import { composeStories } from '@storybook/react';
 import * as BoxStories from '../../../packages/ui/src/components/Box/Box.stories';
 import * as ButtonStories from '../../../packages/ui/src/components/Button/Button.stories';
 import * as ButtonIconStories from '../../../packages/ui/src/components/ButtonIcon/ButtonIcon.stories';
@@ -29,6 +28,7 @@ import * as HeaderPageStories from '../../../packages/ui/src/components/HeaderPa
 import * as TableStories from '../../../packages/ui/src/components/Table/stories/Table.docs.stories';
 import * as TagGroupStories from '../../../packages/ui/src/components/TagGroup/TagGroup.stories';
 import * as PasswordFieldStories from '../../../packages/ui/src/components/PasswordField/PasswordField.stories';
+import * as PopoverStories from '../../../packages/ui/src/components/Popover/Popover.stories';
 import * as VisuallyHiddenStories from '../../../packages/ui/src/components/VisuallyHidden/VisuallyHidden.stories';
 import * as ToggleButtonStories from '../../../packages/ui/src/components/ToggleButton/ToggleButton.stories';
 import * as ToggleButtonGroupStories from '../../../packages/ui/src/components/ToggleButtonGroup/ToggleButtonGroup.stories';
@@ -37,11 +37,9 @@ import * as ToggleButtonGroupStories from '../../../packages/ui/src/components/T
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const createSnippetComponent = (stories: any) => {
   return function SnippetComponent({ story }: { story: string }) {
-    const composedStories = composeStories(stories);
-    const StoryComponent = composedStories[
-      story as keyof typeof composedStories
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    ] as any;
+    // In CSF3, stories are already React components that can be rendered directly
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    const StoryComponent = stories[story as keyof typeof stories] as any;
 
     return StoryComponent ? <StoryComponent /> : null;
   };
@@ -58,6 +56,7 @@ export const GridSnippet = createSnippetComponent(GridStories);
 export const TextFieldSnippet = createSnippetComponent(TextFieldStories);
 export const PasswordFieldSnippet =
   createSnippetComponent(PasswordFieldStories);
+export const PopoverSnippet = createSnippetComponent(PopoverStories);
 export const TextSnippet = createSnippetComponent(TextStories);
 export const FlexSnippet = createSnippetComponent(FlexStories);
 export const SelectSnippet = createSnippetComponent(SelectStories);
