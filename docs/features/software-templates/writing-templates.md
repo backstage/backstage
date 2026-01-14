@@ -325,6 +325,56 @@ spec:
         token: ${{ each.value.token }}
 ```
 
+### Defining a Secrets Schema
+
+You can define a JSON Schema for secrets that will be validated when a task is created. This is useful when secrets are passed programmatically (e.g., via CI/CD pipelines or API calls) rather than through the UI form. The schema ensures that required secrets are provided before task execution begins.
+
+```yaml
+apiVersion: scaffolder.backstage.io/v1beta3
+kind: Template
+metadata:
+  name: publish-to-npm
+  title: Publish to NPM
+spec:
+  owner: backstage/techdocs-core
+  type: service
+
+  # Define required secrets with a JSON Schema
+  secrets:
+    required:
+      - NPM_TOKEN
+    properties:
+      NPM_TOKEN:
+        type: string
+        description: NPM authentication token for publishing
+
+  parameters:
+    - title: Package Details
+      properties:
+        packageName:
+          type: string
+          title: Package Name
+
+  steps:
+    - id: publish
+      action: npm:publish
+      input:
+        packageName: ${{ parameters.packageName }}
+        token: ${{ secrets.NPM_TOKEN }}
+```
+
+When a task is created without the required secrets, the API returns a `400` error with a descriptive message:
+
+```json
+{
+  "errors": [
+    {
+      "message": "secrets.NPM_TOKEN is required"
+    }
+  ]
+}
+```
+
 ### Custom step layouts
 
 If you find that the default layout of the form used in a particular step does not meet your needs then you can supply your own [custom step layout](./writing-custom-step-layouts.md).
