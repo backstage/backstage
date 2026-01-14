@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ReactNode } from 'react';
+import { ComponentType, ReactNode } from 'react';
 import { ApiRef, createApiRef } from '../system';
 import type { ExtensionBoundary } from '../../components';
 
@@ -27,14 +27,14 @@ export type PluginWrapperApi = {
   /**
    * Returnes the root wrapper that manages the global plugin state across plugin wrapper instances.
    */
-  getRootWrapper(): (props: { children: ReactNode }) => JSX.Element | null;
+  getRootWrapper(): ComponentType<{ children: ReactNode }>;
 
   /**
    * Returns a wrapper component for a specific plugin, or undefined if no wrappers exist. Do not use this API directly, instead use {@link ExtensionBoundary} to wrap your plugin components if needed.
    */
   getPluginWrapper(
     pluginId: string,
-  ): ((props: { children: ReactNode }) => JSX.Element | null) | undefined;
+  ): ComponentType<{ children: ReactNode }> | undefined;
 };
 
 /**

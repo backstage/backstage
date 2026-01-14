@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ReactNode } from 'react';
+import { ComponentType, ReactNode } from 'react';
 import {
   createExtensionBlueprint,
   createExtensionBlueprintParams,
@@ -39,10 +39,7 @@ export type PluginWrapperDefinition<TValue = unknown | never> = {
    * @returns
    */
   useWrapperValue?: () => TValue;
-  component: (props: {
-    children: ReactNode;
-    value: NoInfer<TValue>;
-  }) => JSX.Element | null;
+  component: ComponentType<{ children: ReactNode; value: NoInfer<TValue> }>;
 };
 
 const wrapperDataRef = createExtensionDataRef<

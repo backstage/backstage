@@ -22,15 +22,12 @@ import {
   useState,
   useSyncExternalStore,
   useMemo,
+  ComponentType,
 } from 'react';
 import {
   PluginWrapperApi,
   PluginWrapperDefinition,
 } from '@backstage/frontend-plugin-api';
-
-type ComponentWithChild = (props: {
-  children: ReactNode;
-}) => JSX.Element | null;
 
 type HookStore = {
   subscribe: (listener: () => void) => () => void;
@@ -57,15 +54,20 @@ type WrapperInput = {
  */
 export class DefaultPluginWrapperApi implements PluginWrapperApi {
   constructor(
-    private readonly rootWrapper: ComponentWithChild,
-    private readonly pluginWrappers: Map<string, ComponentWithChild>,
+    private readonly rootWrapper: ComponentType<{ children: ReactNode }>,
+    private readonly pluginWrappers: Map<
+      string,
+      ComponentType<{ children: ReactNode }>
+    >,
   ) {}
 
-  getRootWrapper(): ComponentWithChild {
+  getRootWrapper(): ComponentType<{ children: ReactNode }> {
     return this.rootWrapper;
   }
 
-  getPluginWrapper(pluginId: string): ComponentWithChild | undefined {
+  getPluginWrapper(
+    pluginId: string,
+  ): ComponentType<{ children: ReactNode }> | undefined {
     return this.pluginWrappers.get(pluginId);
   }
 
@@ -84,7 +86,10 @@ export class DefaultPluginWrapperApi implements PluginWrapperApi {
       loaders.push(wrapper.loader);
     }
 
-    const composedWrappers = new Map<string, ComponentWithChild>();
+    const composedWrappers = new Map<
+      string,
+      ComponentType<{ children: ReactNode }>
+    >();
 
     for (const [pluginId, loaders] of loadersByPlugin) {
       if (loaders.length === 0) {
@@ -98,10 +103,10 @@ export class DefaultPluginWrapperApi implements PluginWrapperApi {
         children,
       }: {
         loader: () => Promise<PluginWrapperDefinition<any>>;
-        component: (props: {
+        component: ComponentType<{
           children: ReactNode;
           value: unknown;
-        }) => JSX.Element | null;
+        }>;
         useWrapperValue: () => unknown;
         children: ReactNode;
       }) => {
@@ -132,7 +137,7 @@ export class DefaultPluginWrapperApi implements PluginWrapperApi {
 
       const ComposedWrapper = (props: { children: ReactNode }) => {
         const [loadedWrappers, setLoadedWrappers] = useState<
-          Array<ComponentWithChild> | undefined
+          Array<ComponentType<{ children: ReactNode }>> | undefined
         >(undefined);
         const [error, setError] = useState<Error | undefined>(undefined);
 
@@ -144,9 +149,7 @@ export class DefaultPluginWrapperApi implements PluginWrapperApi {
                   const loader = loaders[index];
 
                   if (!useWrapperValue) {
-                    return component as (props: {
-                      children: ReactNode;
-                    }) => JSX.Element | null;
+                    return component as ComponentType<{ children: ReactNode }>;
                   }
 
                   return ({ children }: { children: ReactNode }) => (
