@@ -113,22 +113,42 @@ export function auditorMiddlewareFactory(dependencies: {
 
     // Create pattern resolvers for each meta field
     // We need to distinguish between static strings and patterns
-    const patternResolvers = new Map<
+    const requestPatternResolvers = new Map<
       string,
       | { type: 'static'; value: string }
-      | { type: 'pattern'; resolver: (context: any) => string }
+      | { type: 'pattern'; resolver: <T extends object>(context: T) => string }
+    >();
+
+    const responsePatternResolvers = new Map<
+      string,
+      | { type: 'static'; value: string }
+      | { type: 'pattern'; resolver: <T extends object>(context: T) => string }
     >();
 
     for (const [key, pattern] of Object.entries(metaPatterns)) {
       // Check if pattern contains placeholders
       if (pattern.includes('{{')) {
-        patternResolvers.set(key, {
+        const usesRequest = pattern.includes('{{ request.');
+        const usesResponse = pattern.includes('{{ response.');
+        if (usesRequest && usesResponse) {
+          throw new Error(
+            'Pattern cannot contain both request and response placeholders',
+          );
+        }
+        const patternResolver = {
           type: 'pattern',
           resolver: createPatternResolver(pattern),
-        });
+        } as const;
+        if (usesRequest) {
+          requestPatternResolvers.set(key, patternResolver);
+        } else if (usesResponse) {
+          responsePatternResolvers.set(key, patternResolver);
+        }
       } else {
         // Static value - no pattern to resolve
-        patternResolvers.set(key, { type: 'static', value: pattern });
+        // Only attach this to the request pattern resolvers so it's rendered in the initial
+        //  audit event.
+        requestPatternResolvers.set(key, { type: 'static', value: pattern });
       }
     }
 
@@ -149,12 +169,12 @@ export function auditorMiddlewareFactory(dependencies: {
         },
       };
 
-      for (const [key, resolver] of patternResolvers) {
+      for (const [key, resolver] of requestPatternResolvers) {
         try {
           if (resolver.type === 'static') {
             meta[key] = resolver.value;
           } else {
-            const value = resolver.resolver(context as any);
+            const value = resolver.resolver(context);
             if (value !== undefined) {
               meta[key] = value;
             }
@@ -178,23 +198,18 @@ export function auditorMiddlewareFactory(dependencies: {
       const responseBody = locals[CAPTURED_RESPONSE_BODY_SYMBOL];
 
       const context = {
-        request: {
-          body: req.body,
-          params: req.openapi?.pathParams ?? req.params,
-          query: req.query,
-        },
         response: {
           body: responseBody,
         },
       };
 
       // Resolve patterns with response context
-      for (const [key, resolver] of patternResolvers) {
+      for (const [key, resolver] of responsePatternResolvers) {
         try {
           if (resolver.type === 'static') {
             meta[key] = resolver.value;
           } else {
-            const value = resolver.resolver(context as any);
+            const value = resolver.resolver(context);
             if (value !== undefined) {
               meta[key] = value;
             }
@@ -226,7 +241,7 @@ export function auditorMiddlewareFactory(dependencies: {
 
     // Intercept response body if any pattern references response.body
     const needsResponseBody = Object.values(auditorConfig.meta ?? {}).some(
-      pattern => pattern.includes('response.body'),
+      pattern => pattern.includes('{{ response.body'),
     );
     if (needsResponseBody) {
       const originalJson = res.json.bind(res);
