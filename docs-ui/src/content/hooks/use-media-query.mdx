@@ -1,0 +1,87 @@
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+import { CodeBlock } from '@/components/CodeBlock';
+import { PageTitle } from '@/components/PageTitle';
+import { PropsTable } from '@/components/PropsTable';
+import {
+  useMediaQueryOrientationSnippet,
+  useMediaQueryParamDefs,
+  useMediaQueryPreferencesSnippet,
+  useMediaQueryResponsiveSnippet,
+  useMediaQueryReturnDefs,
+  useMediaQueryUsageSnippet,
+} from './use-media-query.props';
+import { Snippet } from '@/components/Snippet';
+import {
+  UseMediaQueryThemeExample,
+  UseMediaQueryPreferencesExample,
+  UseMediaQueryResponsiveExample,
+  UseMediaQueryOrientationExample,
+} from './use-media-query.example';
+
+<PageTitle
+  title="useMediaQuery"
+  description="Hook to evaluate and react to CSS media queries programmatically."
+/>
+
+## Usage
+
+The `useMediaQuery` hook allows you to evaluate CSS media queries in your components, enabling responsive design and behavior.
+
+<Snippet
+  align="center"
+  py={4}
+  height={150}
+  open={true}
+  preview={<UseMediaQueryThemeExample />}
+  code={useMediaQueryUsageSnippet}
+/>
+
+## Parameters
+
+<PropsTable data={useMediaQueryParamDefs} isHook />
+
+## Return Value
+
+<PropsTable data={useMediaQueryReturnDefs} isHook />
+## Examples
+
+### Responsive Layouts
+
+Adapt layout based on different screen sizes.
+
+<Snippet
+  align="center"
+  py={4}
+  height={200}
+  open={true}
+  preview={<UseMediaQueryResponsiveExample />}
+  code={useMediaQueryResponsiveSnippet}
+/>
+
+### User Preferences
+
+Respect user system preferences.
+
+<Snippet
+  align="center"
+  py={4}
+  height={150}
+  open={true}
+  preview={<UseMediaQueryPreferencesExample />}
+  code={useMediaQueryPreferencesSnippet}
+/>
+
+### Device Orientation
+
+Detect screen orientation.
+
+<Snippet
+  align="center"
+  py={4}
+  height={150}
+  open={true}
+  preview={<UseMediaQueryOrientationExample />}
+  code={useMediaQueryOrientationSnippet}
+/>
+
+<ChangelogComponent component="use-media-query" />

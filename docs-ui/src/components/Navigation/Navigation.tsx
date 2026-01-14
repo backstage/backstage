@@ -11,12 +11,25 @@ import {
   RiServiceLine,
   RiStackLine,
 } from '@remixicon/react';
-import { components } from '@/utils/data';
+import { components, hooks } from '@/utils/data';
 import styles from './Navigation.module.css';
 
 interface NavigationProps {
   onLinkClick?: () => void;
 }
+
+const data = [
+  {
+    title: 'Components',
+    content: components,
+    url: '/components',
+  },
+  {
+    title: 'Hooks',
+    content: hooks,
+    url: '/hooks',
+  },
+];
 
 export const Navigation = ({ onLinkClick }: NavigationProps) => {
   const pathname = usePathname();
