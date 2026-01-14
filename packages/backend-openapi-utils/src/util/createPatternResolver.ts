@@ -15,6 +15,7 @@
  */
 
 import { InputError } from '@backstage/errors';
+import { JsonPrimitive } from '@backstage/types';
 
 /**
  * Takes a pattern string that may contain `{{ path.to.value }}` placeholders,
@@ -26,7 +27,7 @@ import { InputError } from '@backstage/errors';
  */
 export function createPatternResolver<TContext extends object = object>(
   pattern: string,
-): (context: TContext) => string {
+): (context: TContext) => JsonPrimitive {
   // This split results in an array where even elements are static strings
   // between placeholders, and odd elements are the contents inside
   // placeholders.
@@ -37,7 +38,7 @@ export function createPatternResolver<TContext extends object = object>(
   //   ['', 'foo', '-', 'bar', '', 'baz', '.']
   const patternParts = pattern.split(/{{\s*([\w\[\]'"_.-]*)\s*}}/g);
 
-  const resolvers = new Array<(context: TContext) => string>();
+  const resolvers = new Array<(context: TContext) => JsonPrimitive>();
 
   for (let i = 0; i < patternParts.length; i += 2) {
     const staticPart = patternParts[i];
@@ -51,20 +52,31 @@ export function createPatternResolver<TContext extends object = object>(
       const getter = createGetter<TContext>(placeholderPart);
       resolvers.push(context => {
         const value = getter(context);
-        if (typeof value === 'string' || Number.isFinite(value)) {
-          return String(value);
+        if (
+          typeof value === 'string' ||
+          typeof value === 'boolean' ||
+          Number.isFinite(value)
+        ) {
+          return value as JsonPrimitive;
         } else if (!value) {
           throw new InputError(`No value for selector '${placeholderPart}'`);
         } else {
           throw new InputError(
-            `Expected string or number value for selector '${placeholderPart}', got ${typeof value}`,
+            `Expected primitive value for selector '${placeholderPart}', got ${typeof value}`,
           );
         }
       });
     }
   }
 
-  return context => resolvers.map(resolver => resolver(context)).join('');
+  return context => {
+    if (resolvers.length === 1) {
+      // Return simple values without the string cast.
+      return resolvers[0](context) as JsonPrimitive;
+    }
+    // Otherwise, cast to string and join.
+    return resolvers.map(resolver => String(resolver(context))).join('');
+  };
 }
 
 function createGetter<TContext extends object = object>(

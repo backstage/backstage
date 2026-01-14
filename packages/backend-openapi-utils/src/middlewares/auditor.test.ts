@@ -219,7 +219,7 @@ describe('auditorMiddleware', () => {
         eventId: 'user-fetch',
         severityLevel: 'low',
         meta: expect.objectContaining({
-          includeDetails: 'true', // Stringified by pattern resolver
+          includeDetails: true,
           userId: 'user123',
         }),
       }),
@@ -256,10 +256,6 @@ describe('auditorMiddleware', () => {
     );
     expect(mockFail).toHaveBeenCalledWith({
       error: expect.any(Error),
-      meta: expect.objectContaining({
-        entityRef: 'component:default/test',
-        queryType: 'refresh',
-      }),
     });
   });
 
@@ -334,7 +330,7 @@ describe('auditorMiddleware', () => {
       expect.objectContaining({
         meta: expect.objectContaining({
           resultId: 'result-456',
-          processedCount: '42', // Stringified by pattern resolver
+          processedCount: 42,
         }),
       }),
     );

@@ -51,7 +51,7 @@ describe('createPatternResolver', () => {
     expect(() =>
       createPatternResolver('{{a.b}}')({ a: { b: [7] } }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Expected string or number value for selector 'a.b', got object"`,
+      `"Expected primitive value for selector 'a.b', got object"`,
     );
     expect(() =>
       createPatternResolver('{{a.b}}')({ a: {} }),
