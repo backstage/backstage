@@ -172,22 +172,22 @@ export interface TaskContext {
 
   emitLog(message: string, logMetadata?: JsonObject): Promise<void>;
 
-  getTaskState?(): Promise<
+  getTaskState(): Promise<
     | {
         state?: JsonObject;
       }
     | undefined
   >;
 
-  updateCheckpoint?(options: UpdateTaskCheckpointOptions): Promise<void>;
+  updateCheckpoint(options: UpdateTaskCheckpointOptions): Promise<void>;
 
   updateStepState(options: UpdateStepStateOptions): Promise<void>;
 
-  serializeWorkspace?(options: { path: string }): Promise<void>;
+  serializeWorkspace(options: { path: string }): Promise<void>;
 
-  cleanWorkspace?(): Promise<void>;
+  cleanWorkspace(): Promise<void>;
 
-  rehydrateWorkspace?(options: {
+  rehydrateWorkspace(options: {
     taskId: string;
     targetPath: string;
   }): Promise<void>;
