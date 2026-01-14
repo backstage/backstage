@@ -64,7 +64,6 @@ import { convertFiltersToRecord } from '../../util/templating';
 import {
   CheckpointContext,
   CheckpointState,
-  StepsState,
 } from '@backstage/plugin-scaffolder-node/alpha';
 import { Config } from '@backstage/config';
 import { resolveDefaultEnvironment } from '../../lib/defaultEnvironment';
@@ -599,10 +598,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
       for (const step of task.spec.steps) {
         // Skip completed steps when resuming
         if (isResume && prevTaskState?.state) {
-          const stepsState = prevTaskState.state.steps as
-            | StepsState
-            | undefined;
-          const stepState = stepsState?.[step.id];
+          const stepState = prevTaskState.state.steps?.[step.id];
           if (stepState?.status === 'completed') {
             // Restore outputs to context and skip
             context.steps[step.id] = { output: stepState.output };

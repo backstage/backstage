@@ -35,12 +35,14 @@ import {
 } from '@backstage/plugin-scaffolder-node';
 import {
   CheckpointState,
-  StepsState,
   WorkspaceProvider,
-  UpdateTaskCheckpointOptions,
-  UpdateStepStateOptions,
 } from '@backstage/plugin-scaffolder-node/alpha';
-import { JsonObject, Observable, createDeferred } from '@backstage/types';
+import {
+  JsonObject,
+  JsonValue,
+  Observable,
+  createDeferred,
+} from '@backstage/types';
 import ObservableImpl from 'zen-observable';
 import { DefaultWorkspaceService, WorkspaceService } from './WorkspaceService';
 import { readDuration } from './helper';
@@ -49,7 +51,12 @@ import { PermissionCriteria } from '@backstage/plugin-permission-common';
 
 type TaskState = {
   checkpoints: CheckpointState;
-  steps: StepsState;
+  steps: {
+    [stepId: string]: {
+      status: 'completed' | 'failed';
+      output: { [name: string]: JsonValue };
+    };
+  };
 };
 /**
  * TaskManager
@@ -153,16 +160,13 @@ export class TaskManager implements TaskContext {
     });
   }
 
-  async getTaskState(): Promise<
-    | {
-        state?: JsonObject;
-      }
-    | undefined
-  > {
-    return this.storage.getTaskState?.({ taskId: this.task.taskId });
+  async getTaskState() {
+    return this.storage.getTaskState({ taskId: this.task.taskId });
   }
 
-  async updateCheckpoint(options: UpdateTaskCheckpointOptions): Promise<void> {
+  async updateCheckpoint(
+    options: Parameters<TaskContext['updateCheckpoint']>[0],
+  ): Promise<void> {
     const { key, ...value } = options;
 
     if (!this.task.state) {
@@ -170,13 +174,15 @@ export class TaskManager implements TaskContext {
     }
     this.task.state.checkpoints[key] = value;
 
-    await this.storage.saveTaskState?.({
+    await this.storage.saveTaskState({
       taskId: this.task.taskId,
       state: this.task.state,
     });
   }
 
-  async updateStepState(options: UpdateStepStateOptions): Promise<void> {
+  async updateStepState(
+    options: Parameters<TaskContext['updateStepState']>[0],
+  ): Promise<void> {
     const { stepId, status, output } = options;
 
     if (!this.task.state) {
@@ -187,7 +193,7 @@ export class TaskManager implements TaskContext {
     }
     this.task.state.steps[stepId] = { status, output };
 
-    await this.storage.saveTaskState?.({
+    await this.storage.saveTaskState({
       taskId: this.task.taskId,
       state: this.task.state,
     });
@@ -372,9 +378,9 @@ export class StorageTaskBroker implements TaskBroker {
         'scaffolder.EXPERIMENTAL_recoverTasksTimeout',
         defaultTimeout,
       );
-      const { ids: recoveredTaskIds } = (await this.storage.recoverTasks?.({
+      const { ids: recoveredTaskIds } = await this.storage.recoverTasks({
         timeout,
-      })) ?? { ids: [] };
+      });
       if (recoveredTaskIds.length > 0) {
         this.signalDispatch();
       }
@@ -524,7 +530,7 @@ export class StorageTaskBroker implements TaskBroker {
             .stepId
         : 0;
 
-    await this.storage.cancelTask?.({
+    await this.storage.cancelTask({
       taskId,
       body: {
         message: `Step ${currentStepId} has been cancelled.`,
@@ -538,7 +544,7 @@ export class StorageTaskBroker implements TaskBroker {
     secrets?: TaskSecrets;
     taskId: string;
   }): Promise<void> {
-    await this.storage.retryTask?.(options);
+    await this.storage.retryTask(options);
     this.signalDispatch();
   }
 }

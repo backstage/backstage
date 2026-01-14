@@ -17,11 +17,25 @@
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { PermissionCriteria } from '@backstage/plugin-permission-common';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
-import { JsonObject, Observable } from '@backstage/types';
-import {
-  UpdateTaskCheckpointOptions,
-  UpdateStepStateOptions,
-} from '@backstage/plugin-scaffolder-node/alpha';
+import { JsonObject, JsonValue, Observable } from '@backstage/types';
+
+type CheckpointStateValue =
+  | { status: 'failed'; reason: string }
+  | { status: 'success'; value: JsonValue };
+
+type StepStateValue = {
+  status: 'completed' | 'failed';
+  output: { [name: string]: JsonValue };
+};
+
+type TaskState = {
+  checkpoints?: { [key: string]: CheckpointStateValue };
+  steps?: { [stepId: string]: StepStateValue };
+};
+
+type UpdateTaskCheckpointOptions = { key: string } & CheckpointStateValue;
+
+type UpdateStepStateOptions = { stepId: string } & StepStateValue;
 
 /**
  * TaskSecrets
@@ -172,12 +186,7 @@ export interface TaskContext {
 
   emitLog(message: string, logMetadata?: JsonObject): Promise<void>;
 
-  getTaskState(): Promise<
-    | {
-        state?: JsonObject;
-      }
-    | undefined
-  >;
+  getTaskState(): Promise<{ state?: TaskState } | undefined>;
 
   updateCheckpoint(options: UpdateTaskCheckpointOptions): Promise<void>;
 

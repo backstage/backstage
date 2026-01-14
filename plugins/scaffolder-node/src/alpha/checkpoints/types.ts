@@ -55,22 +55,3 @@ export type CheckpointContext<T extends JsonValue | void = JsonValue> = {
    */
   fn: () => Promise<T> | T;
 };
-
-/**
- * Represents the state of a completed step.
- *
- * @alpha
- */
-export type StepState = {
-  status: 'completed' | 'failed';
-  output: { [name: string]: JsonValue };
-};
-
-/**
- * A map of step IDs to their states.
- *
- * @alpha
- */
-export type StepsState = {
-  [stepId: string]: StepState;
-};
