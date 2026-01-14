@@ -1,5 +1,3 @@
-import { CheckpointStateValue, StepState } from '../alpha/checkpoints/types';
-
 /*
  * Copyright 2024 The Backstage Authors
  *
@@ -16,21 +14,3 @@ import { CheckpointStateValue, StepState } from '../alpha/checkpoints/types';
  * limitations under the License.
  */
 export * from './serializer';
-
-/**
- * Options for updating a checkpoint in a task.
- *
- * @alpha
- */
-export type UpdateTaskCheckpointOptions = {
-  key: string;
-} & CheckpointStateValue;
-
-/**
- * Options for updating step state in a task.
- *
- * @alpha
- */
-export type UpdateStepStateOptions = {
-  stepId: string;
-} & StepState;
