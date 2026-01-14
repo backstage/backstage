@@ -26,7 +26,7 @@ import {
   resolveSafeChildPath,
   SchedulerService,
 } from '@backstage/backend-plugin-api';
-import { validate } from 'jsonschema';
+import { validate, ValidatorResult } from 'jsonschema';
 import {
   CompoundEntityRef,
   Entity,
@@ -180,6 +180,18 @@ const readDuration = (
   }
   return defaultValue;
 };
+
+function formatSecretsValidationErrors(result: ValidatorResult) {
+  return result.errors.map(err => {
+    const property = err.property.replace(/^instance/, 'secrets');
+    const secretName = err.argument;
+    const message =
+      err.name === 'required'
+        ? `secrets.${secretName} is required`
+        : `${property} ${err.message}`;
+    return { ...err, property, message };
+  });
+}
 
 /**
  * A method to create a router for the scaffolder backend plugin.
@@ -527,6 +539,29 @@ export async function createRouter(
           }
         }
 
+        if (template.spec.secrets) {
+          const providedSecrets = req.body.secrets ?? {};
+          const secretsResult = validate(
+            providedSecrets,
+            template.spec.secrets,
+          );
+
+          if (!secretsResult.valid) {
+            res.status(400).json({
+              errors: secretsResult.errors.map(err => {
+                const property = err.property.replace(/^instance/, 'secrets');
+                const secretName = err.argument;
+                const message =
+                  err.name === 'required'
+                    ? `secrets.${secretName} is required`
+                    : `${property} ${err.message}`;
+                return { ...err, property, message };
+              }),
+            });
+            return;
+          }
+        }
+
         const baseUrl = getEntityBaseUrl(template);
 
         const taskSpec: TaskSpec = {
@@ -746,6 +781,33 @@ export async function createRouter(
           task: task,
           isTaskAuthorized,
         });
+
+        // Validate secrets against template schema if defined
+        if (task.spec.templateInfo?.entityRef) {
+          const templateEntityRef = parseEntityRef(
+            task.spec.templateInfo.entityRef,
+            { defaultKind: 'template' },
+          );
+          const template = await authorizeTemplate(
+            templateEntityRef,
+            credentials,
+          );
+
+          if (template.spec.secrets) {
+            const providedSecrets = req.body.secrets ?? {};
+            const secretsResult = validate(
+              providedSecrets,
+              template.spec.secrets,
+            );
+
+            if (!secretsResult.valid) {
+              res.status(400).json({
+                errors: formatSecretsValidationErrors(secretsResult),
+              });
+              return;
+            }
+          }
+        }
 
         await auditorEvent?.success();
 
@@ -971,6 +1033,21 @@ export async function createRouter(
             });
 
             res.status(400).json({ errors: result.errors });
+            return;
+          }
+        }
+
+        if (template.spec.secrets) {
+          const providedSecrets = body.secrets ?? {};
+          const secretsResult = validate(
+            providedSecrets,
+            template.spec.secrets,
+          );
+
+          if (!secretsResult.valid) {
+            res.status(400).json({
+              errors: formatSecretsValidationErrors(secretsResult),
+            });
             return;
           }
         }

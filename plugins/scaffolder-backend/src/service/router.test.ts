@@ -181,6 +181,7 @@ const createTestRouter = async (
       | CreatedTemplateGlobal[];
     autocompleteHandlers?: Record<string, AutocompleteHandler>;
     actionsRegistry?: ActionsService;
+    entities?: any[];
   } = {},
 ) => {
   const logger = mockServices.logger.mock({
@@ -202,25 +203,29 @@ const createTestRouter = async (
   jest.spyOn(taskBroker, 'vacuumTasks');
   jest.spyOn(taskBroker, 'event$');
 
-  const catalog = catalogServiceMock.mock();
+  const defaultEntities = [generateMockTemplate(), mockUser];
+  let catalog;
+  if (overrides.entities) {
+    // Use in-memory catalog when entities are explicitly provided
+    catalog = catalogServiceMock({ entities: overrides.entities });
+  } else {
+    // Use mock catalog for backwards compatibility with existing tests
+    catalog = catalogServiceMock.mock();
+    catalog.getEntityByRef.mockImplementation(async ref => {
+      const { kind } = parseEntityRef(ref);
+      if (kind.toLocaleLowerCase() === 'template') {
+        return generateMockTemplate();
+      }
+      if (kind.toLocaleLowerCase() === 'user') {
+        return mockUser;
+      }
+      throw new Error(`no mock found for kind: ${kind}`);
+    });
+  }
   const permissions = mockServices.permissions();
   const auth = mockServices.auth();
   const httpAuth = mockServices.httpAuth();
   const events = mockServices.events();
-
-  catalog.getEntityByRef.mockImplementation(async ref => {
-    const { kind } = parseEntityRef(ref);
-
-    if (kind.toLocaleLowerCase() === 'template') {
-      return generateMockTemplate();
-    }
-
-    if (kind.toLocaleLowerCase() === 'user') {
-      return mockUser;
-    }
-
-    throw new Error(`no mock found for kind: ${kind}`);
-  });
 
   const router = await createRouter({
     logger,
@@ -655,6 +660,138 @@ describe('scaffolder router', () => {
         });
 
       expect(response.status).toEqual(400);
+    });
+
+    it('rejects when required secrets are missing', async () => {
+      const templateWithSecrets = {
+        ...generateMockTemplate(),
+        spec: {
+          ...generateMockTemplate().spec,
+          secrets: {
+            type: 'object',
+            required: ['NPM_TOKEN'],
+            properties: {
+              NPM_TOKEN: { type: 'string' },
+            },
+          },
+        },
+      };
+
+      const { router } = await createTestRouter({
+        entities: [templateWithSecrets, mockUser],
+      });
+
+      const response = await request(router)
+        .post('/v2/tasks')
+        .send({
+          templateRef: stringifyEntityRef({
+            kind: 'template',
+            name: 'create-react-app-template',
+          }),
+          values: {
+            requiredParameter1: 'required-value-1',
+            requiredParameter2: 'required-value-2',
+          },
+          // No secrets provided
+        });
+
+      expect(response.status).toEqual(400);
+      expect(response.body.errors).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            property: 'secrets',
+            message: 'secrets.NPM_TOKEN is required',
+          }),
+        ]),
+      );
+    });
+
+    it('rejects when required secrets are missing without explicit type', async () => {
+      const templateWithSecrets = {
+        ...generateMockTemplate(),
+        spec: {
+          ...generateMockTemplate().spec,
+          secrets: {
+            // No explicit type: 'object' - should still work
+            required: ['NPM_TOKEN'],
+            properties: {
+              NPM_TOKEN: { type: 'string' },
+            },
+          },
+        },
+      };
+
+      const { router } = await createTestRouter({
+        entities: [templateWithSecrets, mockUser],
+      });
+
+      const response = await request(router)
+        .post('/v2/tasks')
+        .send({
+          templateRef: stringifyEntityRef({
+            kind: 'template',
+            name: 'create-react-app-template',
+          }),
+          values: {
+            requiredParameter1: 'required-value-1',
+            requiredParameter2: 'required-value-2',
+          },
+          // No secrets provided
+        });
+
+      expect(response.status).toEqual(400);
+      expect(response.body.errors).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            property: 'secrets',
+            message: 'secrets.NPM_TOKEN is required',
+          }),
+        ]),
+      );
+    });
+
+    it('accepts valid secrets matching the schema', async () => {
+      const templateWithSecrets = {
+        ...generateMockTemplate(),
+        spec: {
+          ...generateMockTemplate().spec,
+          secrets: {
+            type: 'object',
+            required: ['NPM_TOKEN'],
+            properties: {
+              NPM_TOKEN: { type: 'string' },
+            },
+          },
+        },
+      };
+
+      const { router, taskBroker } = await createTestRouter({
+        entities: [templateWithSecrets, mockUser],
+      });
+      const broker = taskBroker.dispatch as jest.Mocked<TaskBroker>['dispatch'];
+
+      broker.mockResolvedValue({
+        taskId: 'a-random-id',
+      });
+
+      const response = await request(router)
+        .post('/v2/tasks')
+        .send({
+          templateRef: stringifyEntityRef({
+            kind: 'template',
+            name: 'create-react-app-template',
+          }),
+          values: {
+            requiredParameter1: 'required-value-1',
+            requiredParameter2: 'required-value-2',
+          },
+          secrets: {
+            NPM_TOKEN: 'my-secret-token',
+          },
+        });
+
+      expect(response.status).toEqual(201);
+      expect(response.body.id).toBe('a-random-id');
     });
 
     it('return the template id', async () => {
@@ -1432,6 +1569,49 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
         expect.anything(),
       );
     });
+
+    it('rejects when required secrets are missing', async () => {
+      const { router } = await createTestRouter();
+      const mockToken = mockCredentials.user.token();
+
+      const templateWithSecrets = {
+        ...generateMockTemplate(),
+        spec: {
+          ...generateMockTemplate().spec,
+          secrets: {
+            type: 'object',
+            required: ['NPM_TOKEN'],
+            properties: {
+              NPM_TOKEN: { type: 'string' },
+            },
+          },
+        },
+      };
+
+      const response = await request(router)
+        .post('/v2/dry-run')
+        .set('Authorization', `Bearer ${mockToken}`)
+        .send({
+          template: templateWithSecrets,
+          values: {
+            requiredParameter1: 'required-value-1',
+            requiredParameter2: 'required-value-2',
+          },
+          directoryContents: [],
+          // No secrets provided
+        });
+
+      expect(response.status).toEqual(400);
+      expect(response.body.errors).toEqual(
+        expect.arrayContaining([
+          expect.objectContaining({
+            property: 'secrets',
+            message: 'secrets.NPM_TOKEN is required',
+          }),
+        ]),
+      );
+    });
+
     it('allows payloads up to 10MB', async () => {
       const { unwrappedRouter } = await createTestRouter();
       const mockToken = mockCredentials.user.token();

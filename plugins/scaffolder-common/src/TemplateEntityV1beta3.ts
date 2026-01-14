@@ -68,6 +68,11 @@ export interface TemplateEntityV1beta3 extends Entity {
      */
     parameters?: TemplateParametersV1beta3 | TemplateParametersV1beta3[];
     /**
+     * A JSONSchema which is used to validate secrets passed during task creation.
+     * Secrets matching this schema are required when creating a task from this template.
+     */
+    secrets?: JsonObject;
+    /**
      * A list of steps to be executed in sequence which are defined by the template. These steps are a list of the underlying
      * javascript action and some optional input parameters that may or may not have been collected from the end user.
      */
