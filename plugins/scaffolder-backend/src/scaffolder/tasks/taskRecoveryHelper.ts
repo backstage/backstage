@@ -30,11 +30,13 @@ export const trimEventsTillLastRecovery = (
     const { recoverStrategy } = events[ind].body as {
       recoverStrategy?: TaskRecoverStrategy;
     };
+    // For 'startOver', trim events to show only from recovery point onwards
     if (recoverStrategy === 'startOver') {
       return {
         events: recoveredEventInd === 0 ? [] : events.slice(ind),
       };
     }
+    // For 'resume', keep all events (completed step events remain in history)
   }
 
   return { events };

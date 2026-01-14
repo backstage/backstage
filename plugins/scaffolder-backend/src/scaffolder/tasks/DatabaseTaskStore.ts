@@ -133,7 +133,7 @@ export class DatabaseTaskStore implements TaskStore {
   }
 
   private isRecoverableTask(spec: TaskSpec): boolean {
-    return ['startOver'].includes(
+    return ['startOver', 'resume'].includes(
       spec.EXPERIMENTAL_recovery?.EXPERIMENTAL_strategy ?? 'none',
     );
   }

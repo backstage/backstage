@@ -18,7 +18,10 @@ import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { PermissionCriteria } from '@backstage/plugin-permission-common';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { JsonObject, Observable } from '@backstage/types';
-import { UpdateTaskCheckpointOptions } from '@backstage/plugin-scaffolder-node/alpha';
+import {
+  UpdateTaskCheckpointOptions,
+  UpdateStepStateOptions,
+} from '@backstage/plugin-scaffolder-node/alpha';
 
 /**
  * TaskSecrets
@@ -177,6 +180,8 @@ export interface TaskContext {
   >;
 
   updateCheckpoint?(options: UpdateTaskCheckpointOptions): Promise<void>;
+
+  updateStepState?(options: UpdateStepStateOptions): Promise<void>;
 
   serializeWorkspace?(options: { path: string }): Promise<void>;
 

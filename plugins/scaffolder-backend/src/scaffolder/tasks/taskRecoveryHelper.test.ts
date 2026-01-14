@@ -43,5 +43,19 @@ describe('taskRecoveryHelper', () => {
 
       expect(trimEventsTillLastRecovery(events)).toEqual({ events: [] });
     });
+
+    it('should return all events when recover strategy is "resume"', () => {
+      const logEvents = [
+        'fetch',
+        'mock-step-1',
+        'mock-step-2',
+        'mock-step-3',
+      ].map(toLogEvent);
+
+      const events = [...logEvents, toRecoveredEvent('resume')];
+
+      // Resume keeps all events including completed step events
+      expect(trimEventsTillLastRecovery(events)).toEqual({ events });
+    });
   });
 });

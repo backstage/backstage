@@ -35,8 +35,10 @@ import {
 } from '@backstage/plugin-scaffolder-node';
 import {
   CheckpointState,
+  StepsState,
   WorkspaceProvider,
   UpdateTaskCheckpointOptions,
+  UpdateStepStateOptions,
 } from '@backstage/plugin-scaffolder-node/alpha';
 import { JsonObject, Observable, createDeferred } from '@backstage/types';
 import ObservableImpl from 'zen-observable';
@@ -47,6 +49,7 @@ import { PermissionCriteria } from '@backstage/plugin-permission-common';
 
 type TaskState = {
   checkpoints: CheckpointState;
+  steps: StepsState;
 };
 /**
  * TaskManager
@@ -165,7 +168,27 @@ export class TaskManager implements TaskContext {
     if (this.task.state) {
       (this.task.state as TaskState).checkpoints[key] = value;
     } else {
-      this.task.state = { checkpoints: { [key]: value } };
+      this.task.state = { checkpoints: { [key]: value }, steps: {} };
+    }
+    await this.storage.saveTaskState?.({
+      taskId: this.task.taskId,
+      state: this.task.state,
+    });
+  }
+
+  async updateStepState?(options: UpdateStepStateOptions): Promise<void> {
+    const { stepId, status, output } = options;
+
+    if (this.task.state) {
+      if (!(this.task.state as TaskState).steps) {
+        (this.task.state as TaskState).steps = {};
+      }
+      (this.task.state as TaskState).steps[stepId] = { status, output };
+    } else {
+      this.task.state = {
+        checkpoints: {},
+        steps: { [stepId]: { status, output } },
+      };
     }
     await this.storage.saveTaskState?.({
       taskId: this.task.taskId,
