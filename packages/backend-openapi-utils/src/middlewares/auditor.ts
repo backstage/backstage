@@ -20,7 +20,7 @@ import type {
   AuditorService,
   LoggerService,
 } from '@backstage/backend-plugin-api';
-import type { JsonObject, JsonValue } from '@backstage/types';
+import type { JsonObject, JsonPrimitive, JsonValue } from '@backstage/types';
 import { ForwardedError } from '@backstage/errors';
 import { createPatternResolver } from '../util/createPatternResolver';
 
@@ -85,8 +85,8 @@ export function auditorMiddlewareFactory(dependencies: {
     res: Response,
   ):
     | {
-        captureRequestMetadata: () => JsonObject;
-        captureResponseMetadata: () => JsonObject;
+        captureRequestMetadata: () => JsonObject | undefined;
+        captureResponseMetadata: () => JsonObject | undefined;
         auditorConfig: AuditorExtension;
       }
     | undefined {
@@ -116,13 +116,19 @@ export function auditorMiddlewareFactory(dependencies: {
     const requestPatternResolvers = new Map<
       string,
       | { type: 'static'; value: string }
-      | { type: 'pattern'; resolver: <T extends object>(context: T) => string }
+      | {
+          type: 'pattern';
+          resolver: <T extends object>(context: T) => JsonPrimitive;
+        }
     >();
 
     const responsePatternResolvers = new Map<
       string,
       | { type: 'static'; value: string }
-      | { type: 'pattern'; resolver: <T extends object>(context: T) => string }
+      | {
+          type: 'pattern';
+          resolver: <T extends object>(context: T) => JsonPrimitive;
+        }
     >();
 
     for (const [key, pattern] of Object.entries(metaPatterns)) {
@@ -153,7 +159,7 @@ export function auditorMiddlewareFactory(dependencies: {
     }
 
     // Capture metadata from request
-    const captureRequestMetadata = (): JsonObject => {
+    const captureRequestMetadata = (): JsonObject | undefined => {
       const variant = VARIANT_LOOKUP[req.method];
       const meta: JsonObject = {
         route: req.openapi?.expressRoute,
@@ -186,10 +192,10 @@ export function auditorMiddlewareFactory(dependencies: {
         }
       }
 
-      return meta;
+      return Object.keys(meta).length > 0 ? meta : undefined;
     };
 
-    const captureResponseMetadata = (): JsonObject => {
+    const captureResponseMetadata = (): JsonObject | undefined => {
       const meta: JsonObject = {};
 
       // Access captured response body from res.locals
@@ -222,7 +228,7 @@ export function auditorMiddlewareFactory(dependencies: {
         }
       }
 
-      return meta;
+      return Object.keys(meta).length > 0 ? meta : undefined;
     };
 
     return { captureRequestMetadata, captureResponseMetadata, auditorConfig };
