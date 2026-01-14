@@ -997,7 +997,7 @@ export const spec = {
           eventId: 'entity-fetch',
           meta: {
             entityRef:
-              '{{ request.params.kind }}/{{ request.params.namespace }}:{{ request.params.name }}',
+              '{{ request.params.kind }}:{{ request.params.namespace }}/{{ request.params.name }}',
           },
         },
         responses: {
@@ -1046,7 +1046,7 @@ export const spec = {
           eventId: 'entity-fetch',
           meta: {
             entityRef:
-              '{{ request.params.kind }}/{{ request.params.namespace }}:{{ request.params.name }}',
+              '{{ request.params.kind }}:{{ request.params.namespace }}/{{ request.params.name }}',
           },
         },
         responses: {
@@ -1530,7 +1530,7 @@ export const spec = {
           eventId: 'location-fetch',
           meta: {
             entityRef:
-              '{{ request.params.kind }}/{{ request.params.namespace }}:{{ request.params.name }}',
+              '{{ request.params.kind }}:{{ request.params.namespace }}/{{ request.params.name }}',
           },
         },
         responses: {
