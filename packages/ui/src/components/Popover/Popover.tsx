@@ -64,11 +64,7 @@ export const Popover = forwardRef<HTMLDivElement, PopoverProps>(
 
     return (
       <AriaPopover
-        className={clsx(
-          classNames.popover,
-          styles[classNames.popover],
-          className,
-        )}
+        className={clsx(classNames.root, styles[classNames.root], className)}
         {...rest}
         ref={ref}
       >

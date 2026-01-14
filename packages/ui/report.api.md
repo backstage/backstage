@@ -27,7 +27,7 @@ import type { MenuProps as MenuProps_2 } from 'react-aria-components';
 import type { MenuSectionProps as MenuSectionProps_2 } from 'react-aria-components';
 import type { MenuTriggerProps as MenuTriggerProps_2 } from 'react-aria-components';
 import type { ModalOverlayProps } from 'react-aria-components';
-import type { PopoverProps } from 'react-aria-components';
+import { PopoverProps as PopoverProps_2 } from 'react-aria-components';
 import type { RadioGroupProps as RadioGroupProps_2 } from 'react-aria-components';
 import type { RadioProps as RadioProps_2 } from 'react-aria-components';
 import { ReactElement } from 'react';
@@ -1025,7 +1025,7 @@ export interface MenuAutocompleteListBoxProps<T>
   // (undocumented)
   placeholder?: string;
   // (undocumented)
-  placement?: PopoverProps['placement'];
+  placement?: PopoverProps_2['placement'];
   // (undocumented)
   virtualized?: boolean;
 }
@@ -1041,7 +1041,7 @@ export interface MenuAutocompleteProps<T>
   // (undocumented)
   placeholder?: string;
   // (undocumented)
-  placement?: PopoverProps['placement'];
+  placement?: PopoverProps_2['placement'];
   // (undocumented)
   virtualized?: boolean;
 }
@@ -1106,7 +1106,7 @@ export interface MenuListBoxProps<T>
   // (undocumented)
   maxWidth?: string;
   // (undocumented)
-  placement?: PopoverProps['placement'];
+  placement?: PopoverProps_2['placement'];
   // (undocumented)
   virtualized?: boolean;
 }
@@ -1120,7 +1120,7 @@ export interface MenuProps<T>
   // (undocumented)
   maxWidth?: string;
   // (undocumented)
-  placement?: PopoverProps['placement'];
+  placement?: PopoverProps_2['placement'];
   // (undocumented)
   virtualized?: boolean;
 }
@@ -1204,6 +1204,26 @@ export interface PaginationOptions {
   pageSize?: number;
   // (undocumented)
   showPageSizeOptions?: boolean;
+}
+
+// @public
+export const Popover: ForwardRefExoticComponent<
+  PopoverProps & RefAttributes<HTMLDivElement>
+>;
+
+// @public
+export const PopoverDefinition: {
+  readonly classNames: {
+    readonly root: 'bui-Popover';
+    readonly arrow: 'bui-PopoverArrow';
+    readonly content: 'bui-PopoverContent';
+  };
+};
+
+// @public
+export interface PopoverProps extends Omit<PopoverProps_2, 'children'> {
+  children: React.ReactNode;
+  hideArrow?: boolean;
 }
 
 // @public (undocumented)

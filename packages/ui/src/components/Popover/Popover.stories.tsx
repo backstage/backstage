@@ -68,51 +68,53 @@ const meta = preview.meta({
 });
 
 export const Default = meta.story({
-  args: {},
+  args: {
+    children: <Text>This is a popover</Text>,
+  },
 });
 
-export const IsOpen = meta.story({
+export const IsOpen = Default.extend({
   args: {
     isOpen: true,
   },
 });
 
-export const HideArrow = meta.story({
+export const HideArrow = Default.extend({
   args: {
     isOpen: true,
     hideArrow: true,
   },
 });
 
-export const TopPlacement = meta.story({
+export const TopPlacement = Default.extend({
   args: {
     isOpen: true,
     placement: 'top',
   },
 });
 
-export const RightPlacement = meta.story({
+export const RightPlacement = Default.extend({
   args: {
     isOpen: true,
     placement: 'right',
   },
 });
 
-export const BottomPlacement = meta.story({
+export const BottomPlacement = Default.extend({
   args: {
     isOpen: true,
     placement: 'bottom',
   },
 });
 
-export const LeftPlacement = meta.story({
+export const LeftPlacement = Default.extend({
   args: {
     isOpen: true,
     placement: 'left',
   },
 });
 
-export const AllPlacements = meta.story({
+export const AllPlacements = Default.extend({
   parameters: {
     controls: {
       exclude: ['placement'],
@@ -142,7 +144,7 @@ export const AllPlacements = meta.story({
   },
 });
 
-export const AllPlacementsNoArrow = meta.story({
+export const AllPlacementsNoArrow = Default.extend({
   parameters: {
     controls: {
       exclude: ['placement', 'hideArrow'],
@@ -173,7 +175,7 @@ export const AllPlacementsNoArrow = meta.story({
   },
 });
 
-export const WithRichContent = meta.story({
+export const WithRichContent = Default.extend({
   args: {
     isOpen: true,
   },
@@ -201,7 +203,7 @@ export const WithRichContent = meta.story({
   ),
 });
 
-export const CustomOffset = meta.story({
+export const CustomOffset = Default.extend({
   args: {
     isOpen: true,
     offset: 20,
@@ -209,7 +211,7 @@ export const CustomOffset = meta.story({
   },
 });
 
-export const NonModal = meta.story({
+export const NonModal = Default.extend({
   args: {
     isOpen: true,
   },
@@ -231,7 +233,7 @@ export const NonModal = meta.story({
   ),
 });
 
-export const WithLongContent = meta.story({
+export const WithLongContent = Default.extend({
   args: {
     isOpen: true,
   },

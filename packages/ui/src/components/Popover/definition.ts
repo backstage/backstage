@@ -22,7 +22,7 @@ import type { ComponentDefinition } from '../../types';
  */
 export const PopoverDefinition = {
   classNames: {
-    popover: 'bui-Popover',
+    root: 'bui-Popover',
     arrow: 'bui-PopoverArrow',
     content: 'bui-PopoverContent',
   },
