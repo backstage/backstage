@@ -44,6 +44,8 @@ import { StaticKeyStore } from '../identity/StaticKeyStore';
 import { bindProviderRouters, ProviderFactories } from '../providers/router';
 import { OidcRouter } from './OidcRouter';
 import { OidcDatabase } from '../database/OidcDatabase';
+import { offlineSessionDatabaseRef } from '../database/OfflineSessionDatabase';
+import { offlineAccessServiceRef } from './OfflineAccessService';
 
 interface RouterOptions {
   logger: LoggerService;
@@ -56,6 +58,8 @@ interface RouterOptions {
   catalog: CatalogService;
   ownershipResolver?: AuthOwnershipResolver;
   httpAuth: HttpAuthService;
+  offlineSessionDb: typeof offlineSessionDatabaseRef.T;
+  offlineAccess: typeof offlineAccessServiceRef.T;
 }
 
 export async function createRouter(
@@ -180,6 +184,7 @@ export async function createRouter(
     logger,
     httpAuth,
     config,
+    offlineAccess: options.offlineAccess,
   });
 
   router.use(oidcRouter.getRouter());

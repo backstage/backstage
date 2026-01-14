@@ -53,8 +53,6 @@ const mockFetchCimdMetadata =
     typeof CimdClient.fetchCimdMetadata
   >;
 
-jest.setTimeout(60_000);
-
 describe('OidcRouter', () => {
   const MOCK_USER_TOKEN = 'mock-user-token';
   const MOCK_USER_ENTITY_REF = 'user:default/test-user';
@@ -126,6 +124,7 @@ describe('OidcRouter', () => {
 
     return {
       router: oidcRouter,
+      baseUrl: 'http://localhost:7000',
       mocks: {
         httpAuth: mockHttpAuth,
         auth: mockAuth,
@@ -244,6 +243,46 @@ describe('OidcRouter', () => {
             ent: ['k/ns:a', 'k/ns:b'],
             exp: expect.any(Number),
           },
+        });
+      });
+    });
+
+    describe('CLI client endpoint', () => {
+      it('should return CIMD metadata for the CLI client', async () => {
+        const { router, baseUrl } = await createRouter(databaseId);
+
+        const { server } = await startTestBackend({
+          features: [
+            createBackendPlugin({
+              pluginId: 'auth',
+              register(reg) {
+                reg.registerInit({
+                  deps: { httpRouter: coreServices.httpRouter },
+                  async init({ httpRouter }) {
+                    httpRouter.use(router.getRouter());
+                    httpRouter.addAuthPolicy({
+                      path: '/',
+                      allow: 'unauthenticated',
+                    });
+                  },
+                });
+              },
+            }),
+          ],
+        });
+
+        const response = await request(server)
+          .get('/api/auth/.well-known/oauth-client/cli')
+          .expect(200);
+
+        expect(response.body).toEqual({
+          client_id: `${baseUrl}/.well-known/oauth-client/cli`,
+          client_name: 'Backstage CLI',
+          redirect_uris: ['http://127.0.0.1:*/callback'],
+          response_types: ['code'],
+          grant_types: ['authorization_code', 'refresh_token'],
+          scope: 'openid offline_access',
+          token_endpoint_auth_method: 'none',
         });
       });
     });
@@ -586,6 +625,8 @@ describe('OidcRouter', () => {
             grant_type: 'authorization_code',
             code: authorizationCode,
             redirect_uri: 'https://example.com/callback',
+            client_id: client.clientId,
+            client_secret: client.clientSecret,
           })
           .expect(200);
 
@@ -679,6 +720,8 @@ describe('OidcRouter', () => {
             code: authorizationCode,
             redirect_uri: 'https://example.com/callback',
             code_verifier: codeVerifier,
+            client_id: client.clientId,
+            client_secret: client.clientSecret,
           })
           .expect(200);
 
@@ -698,7 +741,18 @@ describe('OidcRouter', () => {
       });
 
       it('should reject token exchange with invalid authorization code', async () => {
-        const { router } = await createRouter(databaseId);
+        const {
+          mocks: { service },
+          router,
+        } = await createRouter(databaseId);
+
+        const client = await service.registerClient({
+          clientName: 'Test Client',
+          redirectUris: ['https://example.com/callback'],
+          responseTypes: ['code'],
+          grantTypes: ['authorization_code'],
+          scope: 'openid',
+        });
 
         const { server } = await startTestBackend({
           features: [
@@ -726,6 +780,8 @@ describe('OidcRouter', () => {
             grant_type: 'authorization_code',
             code: 'invalid-code',
             redirect_uri: 'https://example.com/callback',
+            client_id: client.clientId,
+            client_secret: client.clientSecret,
           })
           .expect(401);
 
@@ -813,6 +869,8 @@ describe('OidcRouter', () => {
             code: authorizationCode,
             redirect_uri: 'https://example.com/callback',
             code_verifier: codeVerifier,
+            client_id: client.clientId,
+            client_secret: client.clientSecret,
           })
           .expect(200);
 

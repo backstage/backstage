@@ -17,9 +17,9 @@
 // @ts-check
 
 /**
- * Drop the foreign key constraint on oauth_authorization_sessions.client_id
- * to allow CIMD (Client ID Metadata Document) clients which are not stored
- * in the oidc_clients table.
+ * Drop the foreign key constraints on oauth_authorization_sessions.client_id
+ * and offline_sessions.oidc_client_id to allow CIMD (Client ID Metadata Document)
+ * clients which are not stored in the oidc_clients table.
  *
  * @param {import('knex').Knex} knex
  */
@@ -27,6 +27,14 @@ exports.up = async function up(knex) {
   await knex.schema.alterTable('oauth_authorization_sessions', table => {
     table.dropForeign(['client_id']);
   });
+
+  // Check if offline_sessions table exists before trying to alter it
+  const hasOfflineSessions = await knex.schema.hasTable('offline_sessions');
+  if (hasOfflineSessions) {
+    await knex.schema.alterTable('offline_sessions', table => {
+      table.dropForeign(['oidc_client_id']);
+    });
+  }
 };
 
 /**
@@ -41,4 +49,20 @@ exports.down = async function down(knex) {
   await knex.schema.alterTable('oauth_authorization_sessions', table => {
     table.foreign('client_id').references('client_id').inTable('oidc_clients');
   });
+
+  // Check if offline_sessions table exists before trying to alter it
+  const hasOfflineSessions = await knex.schema.hasTable('offline_sessions');
+  if (hasOfflineSessions) {
+    // Delete offline sessions with CIMD client_ids before re-adding FK
+    await knex('offline_sessions')
+      .whereNotIn('oidc_client_id', knex('oidc_clients').select('client_id'))
+      .delete();
+
+    await knex.schema.alterTable('offline_sessions', table => {
+      table
+        .foreign('oidc_client_id')
+        .references('client_id')
+        .inTable('oidc_clients');
+    });
+  }
 };
