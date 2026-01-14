@@ -1195,15 +1195,29 @@ export interface PagePagination extends TablePaginationProps {
 }
 
 // @public (undocumented)
-export interface PaginationOptions {
+export interface PageSizeOption {
   // (undocumented)
-  getLabel?: TablePaginationProps['getLabel'];
+  label: string;
+  // (undocumented)
+  value: number;
+}
+
+// @public (undocumented)
+export interface PaginationOptions
+  extends Partial<
+    Pick<
+      TablePaginationProps,
+      | 'pageSize'
+      | 'pageSizeOptions'
+      | 'onPageSizeChange'
+      | 'onNextPage'
+      | 'onPreviousPage'
+      | 'showPageSizeOptions'
+      | 'getLabel'
+    >
+  > {
   // (undocumented)
   initialOffset?: number;
-  // (undocumented)
-  pageSize?: number;
-  // (undocumented)
-  showPageSizeOptions?: boolean;
 }
 
 // @public (undocumented)
@@ -1539,6 +1553,7 @@ export interface TableItem {
 // @public
 export function TablePagination({
   pageSize,
+  pageSizeOptions,
   offset,
   totalCount,
   hasNextPage,
@@ -1582,6 +1597,8 @@ export interface TablePaginationProps {
   onPreviousPage: () => void;
   // (undocumented)
   pageSize: number;
+  // (undocumented)
+  pageSizeOptions?: number[] | PageSizeOption[];
   // (undocumented)
   showPageSizeOptions?: boolean;
   // (undocumented)

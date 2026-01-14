@@ -338,3 +338,51 @@ export const StaleState: Story = {
     );
   },
 };
+
+export const CustomPageSizeOptions: Story = {
+  render: () => {
+    const columns: ColumnConfig<Data1Item>[] = [
+      {
+        id: 'name',
+        label: 'Name',
+        isRowHeader: true,
+        cell: item => <CellText title={item.name} />,
+      },
+      {
+        id: 'owner',
+        label: 'Owner',
+        cell: item => <CellText title={item.owner.name} />,
+      },
+      {
+        id: 'type',
+        label: 'Type',
+        cell: item => <CellText title={item.type} />,
+      },
+    ];
+
+    const { tableProps } = useTable({
+      mode: 'complete',
+      getData: () => data1,
+      paginationOptions: {
+        pageSize: 3,
+        pageSizeOptions: [
+          { label: '2 per page', value: 2 },
+          { label: '3 per page', value: 3 },
+          { label: '5 per page', value: 5 },
+          { label: '7 per page', value: 7 },
+        ],
+        onPageSizeChange: size => {
+          console.log('Page size changed to:', size);
+        },
+        onNextPage: () => {
+          console.log('Navigated to next page');
+        },
+        onPreviousPage: () => {
+          console.log('Navigated to previous page');
+        },
+      },
+    });
+
+    return <Table columnConfig={columns} {...tableProps} />;
+  },
+};
