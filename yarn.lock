@@ -3053,7 +3053,7 @@ __metadata:
     yauzl: "npm:^3.0.0"
     yn: "npm:^4.0.0"
     zod: "npm:^3.22.4"
-    zod-to-json-schema: "npm:^3.20.4"
+    zod-to-json-schema: "npm:^3.25.1"
   peerDependencies:
     "@google-cloud/cloud-sql-connector": ^1.4.0
     better-sqlite3: ^12.0.0
@@ -3205,7 +3205,7 @@ __metadata:
     uuid: "npm:^11.0.0"
     yn: "npm:^4.0.0"
     zod: "npm:^3.22.4"
-    zod-to-json-schema: "npm:^3.20.4"
+    zod-to-json-schema: "npm:^3.25.1"
   languageName: unknown
   linkType: soft
 
@@ -3931,7 +3931,7 @@ __metadata:
     react-dom: "npm:^18.0.2"
     react-router-dom: "npm:^6.3.0"
     zod: "npm:^3.22.4"
-    zod-to-json-schema: "npm:^3.21.4"
+    zod-to-json-schema: "npm:^3.25.1"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
@@ -4696,7 +4696,7 @@ __metadata:
     supertest: "npm:^7.0.0"
     uuid: "npm:^11.0.0"
     zod: "npm:^3.22.4"
-    zod-to-json-schema: "npm:^3.21.4"
+    zod-to-json-schema: "npm:^3.25.1"
     zod-validation-error: "npm:^3.4.0"
   languageName: unknown
   linkType: soft
@@ -6433,7 +6433,7 @@ __metadata:
     msw: "npm:^1.0.0"
     uuid: "npm:^11.0.0"
     zod: "npm:^3.22.4"
-    zod-to-json-schema: "npm:^3.20.4"
+    zod-to-json-schema: "npm:^3.25.1"
   languageName: unknown
   linkType: soft
 
@@ -6456,7 +6456,7 @@ __metadata:
     msw: "npm:^1.0.0"
     supertest: "npm:^7.0.0"
     zod: "npm:^3.22.4"
-    zod-to-json-schema: "npm:^3.20.4"
+    zod-to-json-schema: "npm:^3.25.1"
   languageName: unknown
   linkType: soft
 
@@ -6875,7 +6875,7 @@ __metadata:
     yaml: "npm:^2.0.0"
     zen-observable: "npm:^0.10.0"
     zod: "npm:^3.22.4"
-    zod-to-json-schema: "npm:^3.20.4"
+    zod-to-json-schema: "npm:^3.25.1"
   languageName: unknown
   linkType: soft
 
@@ -6953,7 +6953,7 @@ __metadata:
     winston: "npm:^3.2.1"
     winston-transport: "npm:^4.7.0"
     zod: "npm:^3.22.4"
-    zod-to-json-schema: "npm:^3.20.4"
+    zod-to-json-schema: "npm:^3.25.1"
   languageName: unknown
   linkType: soft
 
@@ -7012,7 +7012,7 @@ __metadata:
     use-immer: "npm:^0.11.0"
     zen-observable: "npm:^0.10.0"
     zod: "npm:^3.22.4"
-    zod-to-json-schema: "npm:^3.20.4"
+    zod-to-json-schema: "npm:^3.25.1"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
@@ -7092,7 +7092,7 @@ __metadata:
     swr: "npm:^2.0.0"
     yaml: "npm:^2.0.0"
     zod: "npm:^3.22.4"
-    zod-to-json-schema: "npm:^3.20.4"
+    zod-to-json-schema: "npm:^3.25.1"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
@@ -51118,12 +51118,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zod-to-json-schema@npm:^3.20.4, zod-to-json-schema@npm:^3.21.4, zod-to-json-schema@npm:^3.25.0":
-  version: 3.25.0
-  resolution: "zod-to-json-schema@npm:3.25.0"
+"zod-to-json-schema@npm:^3.25.0, zod-to-json-schema@npm:^3.25.1":
+  version: 3.25.1
+  resolution: "zod-to-json-schema@npm:3.25.1"
   peerDependencies:
     zod: ^3.25 || ^4
-  checksum: 10/cb932e20b5b5e64c75b2c34a7e6dae74b727292eab9e014b93c2607378b8cb1b227f80b429053ceb77c8e0dddc338837f9e534b2a658540ff60c9e4ffdc7cc19
+  checksum: 10/744dd370f4452c8db120de1475ea4d484a11df884c4636111d630e5e1351b8a7590d99cf14a2b9f21e7906f8b78721d958663a7973a40994e7d28770876674cc
   languageName: node
   linkType: hard
 
