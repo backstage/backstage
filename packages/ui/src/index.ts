@@ -48,6 +48,7 @@ export * from './components/TextField';
 export * from './components/Tooltip';
 export * from './components/Menu';
 export * from './components/Popover';
+export * from './components/PasswordField';
 export * from './components/SearchField';
 export * from './components/Link';
 export * from './components/Select';
