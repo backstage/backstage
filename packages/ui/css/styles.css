@@ -100,6 +100,7 @@
     --bui-ring: #1f5493;
     --bui-scrollbar: #a0a0a03b;
     --bui-scrollbar-thumb: #a0a0a0;
+    --bui-shadow-overlay: 0 10px 15px -3px #0000001a, 0 4px 6px -4px #0000001a;
     --bui-animate-pulse: pulse 2s cubic-bezier(.4, 0, .6, 1) infinite;
   }
 
@@ -161,6 +162,7 @@
     --bui-ring: #1f5493;
     --bui-scrollbar: #3636363a;
     --bui-scrollbar-thumb: #575757;
+    --bui-shadow-overlay: none;
   }
 }
 

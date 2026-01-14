@@ -22,6 +22,8 @@ import type { ComponentDefinition } from '../../types';
  */
 export const PopoverDefinition = {
   classNames: {
-    root: 'bui-Popover',
+    popover: 'bui-Popover',
+    arrow: 'bui-PopoverArrow',
+    content: 'bui-PopoverContent',
   },
 } as const satisfies ComponentDefinition;
