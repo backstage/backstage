@@ -1,0 +1,102 @@
+import { PropsTable } from '@/components/PropsTable';
+import { Default } from './stories';
+import { Snippet } from '@/components/Snippet';
+import { CodeBlock } from '@/components/CodeBlock';
+import {
+  popoverPropDefs,
+  popoverUsageSnippet,
+  popoverDefaultSnippet,
+  popoverPlacementsSnippet,
+  popoverNoArrowSnippet,
+  popoverRichContentSnippet,
+  popoverNonModalSnippet,
+} from './popover.props';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { PopoverDefinition } from '../../../utils/definitions';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+
+<PageTitle
+  title="Popover"
+  description="A popover displays floating content anchored to a trigger element with automatic positioning and collision detection."
+/>
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<Default />}
+  code={popoverDefaultSnippet}
+/>
+
+## Usage
+
+<CodeBlock code={popoverUsageSnippet} />
+
+## API reference
+
+### Popover
+
+The main popover component that displays floating content with automatic positioning.
+
+<PropsTable data={popoverPropDefs} />
+
+## Examples
+
+### Placements
+
+Popover supports multiple placement options to position the content relative to the trigger.
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<Default />}
+  code={popoverPlacementsSnippet}
+/>
+
+### Without Arrow
+
+You can hide the arrow by setting the `hideArrow` prop.
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<Default />}
+  code={popoverNoArrowSnippet}
+/>
+
+### Rich Content
+
+Popovers can contain complex content including buttons, forms, and other interactive elements.
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<Default />}
+  code={popoverRichContentSnippet}
+/>
+
+### Non-Modal
+
+Non-modal popovers allow interaction with other elements on the page while the popover is open.
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<Default />}
+  code={popoverNonModalSnippet}
+/>
+
+### Long Content
+
+Popovers automatically handle scrolling when content exceeds the available viewport space.
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<Default />}
+  code={popoverDefaultSnippet}
+/>
+
+<Theming definition={PopoverDefinition} />
+
+<ChangelogComponent component="popover" />
