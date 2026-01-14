@@ -85,14 +85,11 @@ export function createWaitAction(options?: {
       }
 
       await new Promise(resolve => {
-        const controller = new AbortController();
         const timeoutHandle = setTimeout(abort, delayTime.toMillis());
-        ctx.signal?.addEventListener('abort', abort);
+        ctx.signal?.addEventListener('abort', abort, { once: true });
 
         function abort() {
-          ctx.signal?.removeEventListener('abort', abort);
-          clearTimeout(timeoutHandle!);
-          controller.abort();
+          clearTimeout(timeoutHandle);
           resolve('finished');
         }
       });
