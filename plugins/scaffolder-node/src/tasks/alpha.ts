@@ -1,4 +1,4 @@
-import { CheckpointStateValue, StepState } from '../alpha';
+import { CheckpointStateValue, StepState } from '../alpha/checkpoints/types';
 
 /*
  * Copyright 2024 The Backstage Authors

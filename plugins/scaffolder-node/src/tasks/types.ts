@@ -181,7 +181,7 @@ export interface TaskContext {
 
   updateCheckpoint?(options: UpdateTaskCheckpointOptions): Promise<void>;
 
-  updateStepState?(options: UpdateStepStateOptions): Promise<void>;
+  updateStepState(options: UpdateStepStateOptions): Promise<void>;
 
   serializeWorkspace?(options: { path: string }): Promise<void>;
 

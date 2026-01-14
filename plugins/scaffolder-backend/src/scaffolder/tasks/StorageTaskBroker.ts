@@ -176,20 +176,19 @@ export class TaskManager implements TaskContext {
     });
   }
 
-  async updateStepState?(options: UpdateStepStateOptions): Promise<void> {
+  async updateStepState(options: UpdateStepStateOptions): Promise<void> {
     const { stepId, status, output } = options;
 
-    if (this.task.state) {
-      if (!(this.task.state as TaskState).steps) {
-        (this.task.state as TaskState).steps = {};
-      }
-      (this.task.state as TaskState).steps[stepId] = { status, output };
-    } else {
-      this.task.state = {
-        checkpoints: {},
-        steps: { [stepId]: { status, output } },
-      };
+    if (!this.task.state) {
+      this.task.state = { checkpoints: {}, steps: {} };
     }
+
+    const state = this.task.state as TaskState;
+    if (!state.steps) {
+      state.steps = {};
+    }
+    state.steps[stepId] = { status, output };
+
     await this.storage.saveTaskState?.({
       taskId: this.task.taskId,
       state: this.task.state,

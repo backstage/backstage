@@ -517,7 +517,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
       context.steps[step.id] = { output: stepOutput };
 
       // Persist step state for resume recovery
-      await task.updateStepState?.({
+      await task.updateStepState({
         stepId: step.id,
         status: 'completed',
         output: stepOutput,
