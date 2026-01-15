@@ -33,14 +33,14 @@ description: Documentation landing page.
       <ul>
         <li><a href='https://backstage.io/docs/getting-started/'>Create your Backstage App</a></li>
         <li><a href='https://backstage.io/docs/getting-started/logging-in'>Logging into Backstage</a></li>
-        <li>Use the Catalog</li>
+        <li>Using the Catalog</li>
           <ul>
             <li><a href='https://backstage.io/docs/getting-started/viewing-catalog'>Viewing the Catalog</a></li>
             <li><a href='https://backstage.io/docs/getting-started/view-what-you-own'>Viewing what you own</a></li>
             <li><a href='https://backstage.io/docs/getting-started/viewing-entity-relationships'>Viewing entity relationships</a></li>
             <li><a href='https://backstage.io/docs/getting-started/search-catalog'>Searching the Catalog</a></li>
           </ul>
-        <li>Manage Components
+        <li>Managing Components
           <ul>
             <li><a href='https://backstage.io/docs/getting-started/register-a-component'>Register</a></li>
             <li><a href='https://backstage.io/docs/getting-started/create-a-component'>Create</a></li>
