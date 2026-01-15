@@ -35,6 +35,7 @@ export const createStreamableRouter = ({
     try {
       const server = mcpService.getServer({
         credentials: await httpAuth.credentials(req),
+        client: 'streamable',
       });
 
       const transport = new StreamableHTTPServerTransport({

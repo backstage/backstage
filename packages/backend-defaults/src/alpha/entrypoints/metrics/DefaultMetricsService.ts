@@ -56,48 +56,48 @@ export class DefaultMetricsService implements MetricsService {
     name: string,
     opts?: MetricOptions,
   ): Counter<TAttributes> {
-    return this.meter.createCounter(name, opts);
+    return this.meter.createCounter<TAttributes>(name, opts);
   }
 
   createUpDownCounter<TAttributes extends Attributes = Attributes>(
     name: string,
     opts?: MetricOptions,
   ): UpDownCounter<TAttributes> {
-    return this.meter.createUpDownCounter(name, opts);
+    return this.meter.createUpDownCounter<TAttributes>(name, opts);
   }
 
   createHistogram<TAttributes extends Attributes = Attributes>(
     name: string,
     opts?: MetricOptions,
   ): Histogram<TAttributes> {
-    return this.meter.createHistogram(name, opts);
+    return this.meter.createHistogram<TAttributes>(name, opts);
   }
 
   createGauge<TAttributes extends Attributes = Attributes>(
     name: string,
     opts?: MetricOptions,
   ): Gauge<TAttributes> {
-    return this.meter.createGauge(name, opts);
+    return this.meter.createGauge<TAttributes>(name, opts);
   }
 
   createObservableCounter<TAttributes extends Attributes = Attributes>(
     name: string,
     opts?: MetricOptions,
   ): ObservableCounter<TAttributes> {
-    return this.meter.createObservableCounter(name, opts);
+    return this.meter.createObservableCounter<TAttributes>(name, opts);
   }
 
   createObservableUpDownCounter<TAttributes extends Attributes = Attributes>(
     name: string,
     opts?: MetricOptions,
   ): ObservableUpDownCounter<TAttributes> {
-    return this.meter.createObservableUpDownCounter(name, opts);
+    return this.meter.createObservableUpDownCounter<TAttributes>(name, opts);
   }
 
   createObservableGauge<TAttributes extends Attributes = Attributes>(
     name: string,
     opts?: MetricOptions,
   ): ObservableGauge<TAttributes> {
-    return this.meter.createObservableGauge(name, opts);
+    return this.meter.createObservableGauge<TAttributes>(name, opts);
   }
 }

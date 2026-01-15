@@ -23,6 +23,30 @@ import {
   CallToolResultSchema,
   ListToolsResultSchema,
 } from '@modelcontextprotocol/sdk/types.js';
+import { MetricsService } from '@backstage/backend-plugin-api/alpha';
+
+// Simple mock MetricsService for testing
+function createMockMetricsService(): MetricsService {
+  const createMockCounter = () =>
+    ({
+      add: jest.fn(),
+    } as unknown as MetricsService['createCounter']);
+
+  const createMockHistogram = () =>
+    ({
+      record: jest.fn(),
+    } as unknown as MetricsService['createHistogram']);
+
+  return {
+    createCounter: jest.fn().mockReturnValue(createMockCounter()),
+    createUpDownCounter: jest.fn().mockReturnValue(createMockCounter()),
+    createHistogram: jest.fn().mockReturnValue(createMockHistogram()),
+    createGauge: jest.fn().mockReturnValue(createMockCounter()),
+    createObservableCounter: jest.fn(),
+    createObservableUpDownCounter: jest.fn(),
+    createObservableGauge: jest.fn(),
+  };
+}
 
 describe('McpService', () => {
   it('should list the available actions as tools in the mcp backend', async () => {
@@ -40,10 +64,12 @@ describe('McpService', () => {
 
     const mcpService = await McpService.create({
       actions: mockActionsRegistry,
+      metrics: createMockMetricsService(),
     });
 
     const server = mcpService.getServer({
       credentials: mockCredentials.user(),
+      client: 'streamable',
     });
 
     const client = new Client({
@@ -109,10 +135,12 @@ describe('McpService', () => {
 
     const mcpService = await McpService.create({
       actions: mockActionsRegistry,
+      metrics: createMockMetricsService(),
     });
 
     const server = mcpService.getServer({
       credentials: mockCredentials.user(),
+      client: 'streamable',
     });
 
     const client = new Client({
@@ -159,10 +187,12 @@ describe('McpService', () => {
   it('should return an error when the action is not found', async () => {
     const mcpService = await McpService.create({
       actions: actionsRegistryServiceMock(),
+      metrics: createMockMetricsService(),
     });
 
     const server = mcpService.getServer({
       credentials: mockCredentials.user(),
+      client: 'streamable',
     });
 
     const client = new Client({
