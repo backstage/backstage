@@ -509,7 +509,7 @@
 <header>
   <div class="wrap">
     <h1>Components Manifest</h1>
-    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><span class="filter-pill ok" aria-disabled="true">38 components ok</span><a class="filter-pill info" data-k="infos" href="#filter-infos">30/38 infos</a><span class="filter-pill ok" aria-disabled="true">336 stories ok</span></div>
+    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><span class="filter-pill ok" aria-disabled="true">39 components ok</span><a class="filter-pill info" data-k="infos" href="#filter-infos">30/39 infos</a><span class="filter-pill ok" aria-disabled="true">349 stories ok</span></div>
   </div>
 </header>
 <main>
@@ -7356,6 +7356,399 @@ import { RiSparklingLine } from "@remixicon/react";</code></pre>
 <article
   class="card 
   no-error 
+  no-info 
+  no-story-error"
+  role="listitem"
+  aria-label="Popover">
+  <div class="head">
+    <div class="title">
+      <h2><span class="status-dot dot-ok"></span> Popover</h2>
+      <div class="badges">
+        <label for="c-23-backstage-ui-popover-props" class="badge ok as-toggle">2 prop types</label>
+        
+        <label for="c-23-backstage-ui-popover-stories" class="badge ok as-toggle">13 stories</label>
+      </div>
+    </div>
+    <div class="meta" title="./packages/ui/src/components/Popover/Popover.stories.tsx">backstage-ui-popover · ./packages/ui/src/components/Popover/Popover.stories.tsx</div>
+    
+    <div class="hint">A popover component built on React Aria Components that displays floating content anchored to a trigger element.</div>
+    <div class="kv"><span class="chip">remarks:  The Popover component supports multiple placements (top, right, bottom, left), automatic viewport-constrained scrolling, and conditional arrow rendering. It automatically handles positioning, collision detection, and ARIA attributes for accessibility. Content is automatically padded and scrollable when it exceeds available space.</span><span class="chip">example:  Basic usage with DialogTrigger: ```tsx &lt;DialogTrigger&gt; &lt;Button&gt;Open Popover&lt;/Button&gt; &lt;Popover&gt; &lt;Text&gt;Popover content&lt;/Text&gt; &lt;/Popover&gt; &lt;/DialogTrigger&gt; ```</span><span class="chip">example:  With custom placement and no arrow: ```tsx &lt;DialogTrigger&gt; &lt;Button&gt;Open&lt;/Button&gt; &lt;Popover placement=&quot;right&quot; hideArrow&gt; &lt;Text&gt;Content without arrow&lt;/Text&gt; &lt;/Popover&gt; &lt;/DialogTrigger&gt; ```</span><span class="chip">public:  </span></div>
+  </div>
+
+  <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
+  
+  
+  <input id="c-23-backstage-ui-popover-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-23-backstage-ui-popover-props" class="tg tg-props" type="checkbox" hidden />
+
+  <div class="panels">
+    
+    
+    
+        <div class="panel panel-props">
+          <div class="note ok">
+            <div class="row">
+              <span class="ex-name">Prop types</span>
+              <span class="badge ok">2 prop types</span>
+            </div>
+            <pre><code>Component: packages/ui/src/components/Popover/Popover.tsx::Popover</code></pre>
+            <pre><code>Props:</code></pre>
+            <pre><code>/**
+ * The content to display inside the popover.
+ * Content is automatically wrapped with padding and scroll behavior.
+ */
+children: React.ReactNode
+
+/**
+ * Whether to hide the arrow pointing to the trigger element.
+ * Arrow is also automatically hidden for MenuTrigger and SubmenuTrigger contexts.
+ * 
+ * @defaultValue false
+ */
+hideArrow?: boolean</code></pre>
+          </div>
+        </div>
+    
+        <div class="panel panel-stories">
+          
+          
+          
+          <div class="note ok">
+                <div class="row">
+                  <span class="ex-name">Imports</span>
+                </div>
+                <pre><code>import { Button, DialogTrigger, Flex, Popover, Text } from "@backstage/ui";</code></pre>
+              </div>
+          
+          
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Default</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Default = ({ children, isOpen, hideArrow, placement, offset }) =&gt; (
+  &lt;DialogTrigger&gt;
+    &lt;Button&gt;Open Popover&lt;/Button&gt;
+    &lt;Popover
+      isOpen={isOpen}
+      hideArrow={hideArrow}
+      placement={placement}
+      offset={offset}
+    &gt;
+      {children ?? &lt;Text&gt;This is a popover&lt;/Text&gt;}
+    &lt;/Popover&gt;
+  &lt;/DialogTrigger&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">IsOpen</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const IsOpen = ({ children, isOpen, hideArrow, placement, offset }) =&gt; (
+  &lt;DialogTrigger&gt;
+    &lt;Button&gt;Open Popover&lt;/Button&gt;
+    &lt;Popover
+      isOpen={isOpen}
+      hideArrow={hideArrow}
+      placement={placement}
+      offset={offset}
+    &gt;
+      {children ?? &lt;Text&gt;This is a popover&lt;/Text&gt;}
+    &lt;/Popover&gt;
+  &lt;/DialogTrigger&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">HideArrow</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const HideArrow = ({ children, isOpen, hideArrow, placement, offset }) =&gt; (
+  &lt;DialogTrigger&gt;
+    &lt;Button&gt;Open Popover&lt;/Button&gt;
+    &lt;Popover
+      isOpen={isOpen}
+      hideArrow={hideArrow}
+      placement={placement}
+      offset={offset}
+    &gt;
+      {children ?? &lt;Text&gt;This is a popover&lt;/Text&gt;}
+    &lt;/Popover&gt;
+  &lt;/DialogTrigger&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">TopPlacement</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const TopPlacement = ({ children, isOpen, hideArrow, placement, offset }) =&gt; (
+  &lt;DialogTrigger&gt;
+    &lt;Button&gt;Open Popover&lt;/Button&gt;
+    &lt;Popover
+      isOpen={isOpen}
+      hideArrow={hideArrow}
+      placement={placement}
+      offset={offset}
+    &gt;
+      {children ?? &lt;Text&gt;This is a popover&lt;/Text&gt;}
+    &lt;/Popover&gt;
+  &lt;/DialogTrigger&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">RightPlacement</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const RightPlacement = ({ children, isOpen, hideArrow, placement, offset }) =&gt; (
+  &lt;DialogTrigger&gt;
+    &lt;Button&gt;Open Popover&lt;/Button&gt;
+    &lt;Popover
+      isOpen={isOpen}
+      hideArrow={hideArrow}
+      placement={placement}
+      offset={offset}
+    &gt;
+      {children ?? &lt;Text&gt;This is a popover&lt;/Text&gt;}
+    &lt;/Popover&gt;
+  &lt;/DialogTrigger&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">BottomPlacement</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const BottomPlacement = ({ children, isOpen, hideArrow, placement, offset }) =&gt; (
+  &lt;DialogTrigger&gt;
+    &lt;Button&gt;Open Popover&lt;/Button&gt;
+    &lt;Popover
+      isOpen={isOpen}
+      hideArrow={hideArrow}
+      placement={placement}
+      offset={offset}
+    &gt;
+      {children ?? &lt;Text&gt;This is a popover&lt;/Text&gt;}
+    &lt;/Popover&gt;
+  &lt;/DialogTrigger&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">LeftPlacement</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const LeftPlacement = ({ children, isOpen, hideArrow, placement, offset }) =&gt; (
+  &lt;DialogTrigger&gt;
+    &lt;Button&gt;Open Popover&lt;/Button&gt;
+    &lt;Popover
+      isOpen={isOpen}
+      hideArrow={hideArrow}
+      placement={placement}
+      offset={offset}
+    &gt;
+      {children ?? &lt;Text&gt;This is a popover&lt;/Text&gt;}
+    &lt;/Popover&gt;
+  &lt;/DialogTrigger&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">AllPlacements</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const AllPlacements = ({ isOpen, hideArrow }) =&gt; {
+  return (
+    &lt;DialogTrigger&gt;
+      &lt;Button&gt;Open Popovers&lt;/Button&gt;
+      &lt;Popover isOpen={isOpen} placement=&quot;top&quot; hideArrow={hideArrow}&gt;
+        &lt;Text&gt;Top placement&lt;/Text&gt;
+      &lt;/Popover&gt;
+      &lt;Popover isOpen={isOpen} placement=&quot;right&quot; hideArrow={hideArrow}&gt;
+        &lt;Text&gt;Right placement&lt;/Text&gt;
+      &lt;/Popover&gt;
+      &lt;Popover isOpen={isOpen} placement=&quot;bottom&quot; hideArrow={hideArrow}&gt;
+        &lt;Text&gt;Bottom placement&lt;/Text&gt;
+      &lt;/Popover&gt;
+      &lt;Popover isOpen={isOpen} placement=&quot;left&quot; hideArrow={hideArrow}&gt;
+        &lt;Text&gt;Left placement&lt;/Text&gt;
+      &lt;/Popover&gt;
+    &lt;/DialogTrigger&gt;
+  );
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">AllPlacementsNoArrow</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const AllPlacementsNoArrow = ({ isOpen }) =&gt; {
+  return (
+    &lt;DialogTrigger&gt;
+      &lt;Button&gt;Open Popovers&lt;/Button&gt;
+      &lt;Popover isOpen={isOpen} placement=&quot;top&quot; hideArrow&gt;
+        &lt;Text&gt;Top placement&lt;/Text&gt;
+      &lt;/Popover&gt;
+      &lt;Popover isOpen={isOpen} placement=&quot;right&quot; hideArrow&gt;
+        &lt;Text&gt;Right placement&lt;/Text&gt;
+      &lt;/Popover&gt;
+      &lt;Popover isOpen={isOpen} placement=&quot;bottom&quot; hideArrow&gt;
+        &lt;Text&gt;Bottom placement&lt;/Text&gt;
+      &lt;/Popover&gt;
+      &lt;Popover isOpen={isOpen} placement=&quot;left&quot; hideArrow&gt;
+        &lt;Text&gt;Left placement&lt;/Text&gt;
+      &lt;/Popover&gt;
+    &lt;/DialogTrigger&gt;
+  );
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">WithRichContent</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithRichContent = ({ isOpen, hideArrow, placement }) =&gt; (
+  &lt;DialogTrigger&gt;
+    &lt;Button&gt;Open Popover&lt;/Button&gt;
+    &lt;Popover isOpen={isOpen} hideArrow={hideArrow} placement={placement}&gt;
+      &lt;Flex direction=&quot;column&quot; gap=&quot;3&quot; style={{ width: &#39;280px&#39; }}&gt;
+        &lt;Text style={{ fontWeight: &#39;bold&#39; }}&gt;Popover Title&lt;/Text&gt;
+        &lt;Text&gt;
+          This is a popover with rich content. It can contain multiple
+          elements and formatted text.
+        &lt;/Text&gt;
+        &lt;Flex gap=&quot;2&quot; justify=&quot;end&quot;&gt;
+          &lt;Button variant=&quot;tertiary&quot; size=&quot;small&quot;&gt;
+            Cancel
+          &lt;/Button&gt;
+          &lt;Button variant=&quot;primary&quot; size=&quot;small&quot;&gt;
+            Confirm
+          &lt;/Button&gt;
+        &lt;/Flex&gt;
+      &lt;/Flex&gt;
+    &lt;/Popover&gt;
+  &lt;/DialogTrigger&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">CustomOffset</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const CustomOffset = ({ children, isOpen, hideArrow, placement, offset }) =&gt; (
+  &lt;DialogTrigger&gt;
+    &lt;Button&gt;Open Popover&lt;/Button&gt;
+    &lt;Popover
+      isOpen={isOpen}
+      hideArrow={hideArrow}
+      placement={placement}
+      offset={offset}
+    &gt;
+      {children ?? &lt;Text&gt;This is a popover&lt;/Text&gt;}
+    &lt;/Popover&gt;
+  &lt;/DialogTrigger&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">NonModal</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const NonModal = ({ isOpen, hideArrow, placement }) =&gt; (
+  &lt;DialogTrigger&gt;
+    &lt;Button&gt;Open Non-Modal Popover&lt;/Button&gt;
+    &lt;Popover
+      isOpen={isOpen}
+      hideArrow={hideArrow}
+      placement={placement}
+      isNonModal
+    &gt;
+      &lt;Text&gt;
+        This is a non-modal popover. You can interact with other elements on
+        the page while it&#39;s open.
+      &lt;/Text&gt;
+    &lt;/Popover&gt;
+  &lt;/DialogTrigger&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">WithLongContent</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const WithLongContent = ({ isOpen, hideArrow, placement }) =&gt; (
+  &lt;DialogTrigger&gt;
+    &lt;Button&gt;Open Popover&lt;/Button&gt;
+    &lt;Popover isOpen={isOpen} hideArrow={hideArrow} placement={placement}&gt;
+      &lt;Flex direction=&quot;column&quot; gap=&quot;3&quot; style={{ width: &#39;320px&#39; }}&gt;
+        &lt;Text style={{ fontWeight: &#39;bold&#39; }}&gt;Long Content Example&lt;/Text&gt;
+        &lt;Text&gt;
+          Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do
+          eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim
+          ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut
+          aliquip ex ea commodo consequat.
+        &lt;/Text&gt;
+        &lt;Text&gt;
+          Duis aute irure dolor in reprehenderit in voluptate velit esse
+          cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat
+          cupidatat non proident, sunt in culpa qui officia deserunt mollit
+          anim id est laborum.
+        &lt;/Text&gt;
+        &lt;Text&gt;
+          Sed ut perspiciatis unde omnis iste natus error sit voluptatem
+          accusantium doloremque laudantium, totam rem aperiam, eaque ipsa
+          quae ab illo inventore veritatis et quasi architecto beatae vitae
+          dicta sunt explicabo.
+        &lt;/Text&gt;
+        &lt;Text&gt;
+          Nemo enim ipsam voluptatem quia voluptas sit aspernatur aut odit aut
+          fugit, sed quia consequuntur magni dolores eos qui ratione
+          voluptatem sequi nesciunt.
+        &lt;/Text&gt;
+        &lt;Text&gt;
+          Neque porro quisquam est, qui dolorem ipsum quia dolor sit amet,
+          consectetur, adipisci velit, sed quia non numquam eius modi tempora
+          incidunt ut labore et dolore magnam aliquam quaerat voluptatem.
+        &lt;/Text&gt;
+      &lt;/Flex&gt;
+    &lt;/Popover&gt;
+  &lt;/DialogTrigger&gt;
+);</code></pre>
+            </div>
+        </div>
+  </div>
+</article>
+<article
+  class="card 
+  no-error 
   has-info 
   no-story-error"
   role="listitem"
@@ -7364,9 +7757,9 @@ import { RiSparklingLine } from "@remixicon/react";</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> RadioGroup</h2>
       <div class="badges">
-        <label for="c-23-backstage-ui-radiogroup-props" class="badge ok as-toggle">1 prop type</label>
-        <label for="c-23-backstage-ui-radiogroup-info" class="badge info as-toggle">1 info</label>
-        <label for="c-23-backstage-ui-radiogroup-stories" class="badge ok as-toggle">8 stories</label>
+        <label for="c-24-backstage-ui-radiogroup-props" class="badge ok as-toggle">1 prop type</label>
+        <label for="c-24-backstage-ui-radiogroup-info" class="badge info as-toggle">1 info</label>
+        <label for="c-24-backstage-ui-radiogroup-stories" class="badge ok as-toggle">8 stories</label>
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/RadioGroup/RadioGroup.stories.tsx">backstage-ui-radiogroup · ./packages/ui/src/components/RadioGroup/RadioGroup.stories.tsx</div>
@@ -7377,9 +7770,9 @@ import { RiSparklingLine } from "@remixicon/react";</code></pre>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
-  <input id="c-23-backstage-ui-radiogroup-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-23-backstage-ui-radiogroup-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-23-backstage-ui-radiogroup-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-24-backstage-ui-radiogroup-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-24-backstage-ui-radiogroup-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-24-backstage-ui-radiogroup-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -7541,9 +7934,9 @@ import { RiSparklingLine } from "@remixicon/react";</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> SearchField</h2>
       <div class="badges">
-        <label for="c-24-backstage-ui-searchfield-props" class="badge ok as-toggle">4 prop types</label>
-        <label for="c-24-backstage-ui-searchfield-info" class="badge info as-toggle">1 info</label>
-        <label for="c-24-backstage-ui-searchfield-stories" class="badge ok as-toggle">20 stories</label>
+        <label for="c-25-backstage-ui-searchfield-props" class="badge ok as-toggle">4 prop types</label>
+        <label for="c-25-backstage-ui-searchfield-info" class="badge info as-toggle">1 info</label>
+        <label for="c-25-backstage-ui-searchfield-stories" class="badge ok as-toggle">20 stories</label>
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/SearchField/SearchField.stories.tsx">backstage-ui-searchfield · ./packages/ui/src/components/SearchField/SearchField.stories.tsx</div>
@@ -7554,9 +7947,9 @@ import { RiSparklingLine } from "@remixicon/react";</code></pre>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
-  <input id="c-24-backstage-ui-searchfield-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-24-backstage-ui-searchfield-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-24-backstage-ui-searchfield-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-25-backstage-ui-searchfield-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-25-backstage-ui-searchfield-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-25-backstage-ui-searchfield-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -7928,9 +8321,9 @@ import { RiCactusLine, RiEBike2Line } from "@remixicon/react";</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Select</h2>
       <div class="badges">
-        <label for="c-25-backstage-ui-select-props" class="badge ok as-toggle">6 prop types</label>
-        <label for="c-25-backstage-ui-select-info" class="badge info as-toggle">1 info</label>
-        <label for="c-25-backstage-ui-select-stories" class="badge ok as-toggle">21 stories</label>
+        <label for="c-26-backstage-ui-select-props" class="badge ok as-toggle">6 prop types</label>
+        <label for="c-26-backstage-ui-select-info" class="badge info as-toggle">1 info</label>
+        <label for="c-26-backstage-ui-select-stories" class="badge ok as-toggle">21 stories</label>
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Select/Select.stories.tsx">backstage-ui-select · ./packages/ui/src/components/Select/Select.stories.tsx</div>
@@ -7941,9 +8334,9 @@ import { RiCactusLine, RiEBike2Line } from "@remixicon/react";</code></pre>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
-  <input id="c-25-backstage-ui-select-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-25-backstage-ui-select-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-25-backstage-ui-select-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-26-backstage-ui-select-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-26-backstage-ui-select-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-26-backstage-ui-select-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -8309,9 +8702,9 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Skeleton</h2>
       <div class="badges">
-        <label for="c-26-backstage-ui-skeleton-props" class="badge ok as-toggle">3 prop types</label>
-        <label for="c-26-backstage-ui-skeleton-info" class="badge info as-toggle">1 info</label>
-        <label for="c-26-backstage-ui-skeleton-stories" class="badge ok as-toggle">4 stories</label>
+        <label for="c-27-backstage-ui-skeleton-props" class="badge ok as-toggle">3 prop types</label>
+        <label for="c-27-backstage-ui-skeleton-info" class="badge info as-toggle">1 info</label>
+        <label for="c-27-backstage-ui-skeleton-stories" class="badge ok as-toggle">4 stories</label>
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Skeleton/Skeleton.stories.tsx">backstage-ui-skeleton · ./packages/ui/src/components/Skeleton/Skeleton.stories.tsx</div>
@@ -8322,9 +8715,9 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
-  <input id="c-26-backstage-ui-skeleton-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-26-backstage-ui-skeleton-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-26-backstage-ui-skeleton-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-27-backstage-ui-skeleton-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-27-backstage-ui-skeleton-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-27-backstage-ui-skeleton-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -8434,9 +8827,9 @@ width?: number | string</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Switch</h2>
       <div class="badges">
-        <label for="c-27-backstage-ui-switch-props" class="badge ok as-toggle">1 prop type</label>
-        <label for="c-27-backstage-ui-switch-info" class="badge info as-toggle">1 info</label>
-        <label for="c-27-backstage-ui-switch-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-28-backstage-ui-switch-props" class="badge ok as-toggle">1 prop type</label>
+        <label for="c-28-backstage-ui-switch-info" class="badge info as-toggle">1 info</label>
+        <label for="c-28-backstage-ui-switch-stories" class="badge ok as-toggle">2 stories</label>
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Switch/Switch.stories.tsx">backstage-ui-switch · ./packages/ui/src/components/Switch/Switch.stories.tsx</div>
@@ -8447,9 +8840,9 @@ width?: number | string</code></pre>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
-  <input id="c-27-backstage-ui-switch-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-27-backstage-ui-switch-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-27-backstage-ui-switch-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-28-backstage-ui-switch-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-28-backstage-ui-switch-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-28-backstage-ui-switch-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -8521,9 +8914,9 @@ label?: string</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> TablePagination</h2>
       <div class="badges">
-        <label for="c-28-backstage-ui-tablepagination-props" class="badge ok as-toggle">10 prop types</label>
+        <label for="c-29-backstage-ui-tablepagination-props" class="badge ok as-toggle">10 prop types</label>
         
-        <label for="c-28-backstage-ui-tablepagination-stories" class="badge ok as-toggle">8 stories</label>
+        <label for="c-29-backstage-ui-tablepagination-stories" class="badge ok as-toggle">8 stories</label>
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/TablePagination/TablePagination.stories.tsx">backstage-ui-tablepagination · ./packages/ui/src/components/TablePagination/TablePagination.stories.tsx</div>
@@ -8535,8 +8928,8 @@ label?: string</code></pre>
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-28-backstage-ui-tablepagination-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-28-backstage-ui-tablepagination-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-29-backstage-ui-tablepagination-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-29-backstage-ui-tablepagination-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -8692,7 +9085,7 @@ totalCount?: number</code></pre>
       <div class="badges">
         
         
-        <label for="c-29-backstage-ui-tabs-stories" class="badge ok as-toggle">13 stories</label>
+        <label for="c-30-backstage-ui-tabs-stories" class="badge ok as-toggle">13 stories</label>
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Tabs/Tabs.stories.tsx">backstage-ui-tabs · ./packages/ui/src/components/Tabs/Tabs.stories.tsx</div>
@@ -8704,7 +9097,7 @@ totalCount?: number</code></pre>
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-29-backstage-ui-tabs-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-30-backstage-ui-tabs-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -9242,7 +9635,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
       <div class="badges">
         
         
-        <label for="c-30-backstage-ui-taggroup-stories" class="badge ok as-toggle">9 stories</label>
+        <label for="c-31-backstage-ui-taggroup-stories" class="badge ok as-toggle">9 stories</label>
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/TagGroup/TagGroup.stories.tsx">backstage-ui-taggroup · ./packages/ui/src/components/TagGroup/TagGroup.stories.tsx</div>
@@ -9254,7 +9647,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-30-backstage-ui-taggroup-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-31-backstage-ui-taggroup-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -9470,9 +9863,9 @@ import { RiAccountCircleLine, RiBugLine, RiEyeLine, RiHeartLine } from "@remixic
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Text</h2>
       <div class="badges">
-        <label for="c-31-backstage-ui-text-props" class="badge ok as-toggle">5 prop types</label>
-        <label for="c-31-backstage-ui-text-info" class="badge info as-toggle">1 info</label>
-        <label for="c-31-backstage-ui-text-stories" class="badge ok as-toggle">9 stories</label>
+        <label for="c-32-backstage-ui-text-props" class="badge ok as-toggle">5 prop types</label>
+        <label for="c-32-backstage-ui-text-info" class="badge info as-toggle">1 info</label>
+        <label for="c-32-backstage-ui-text-stories" class="badge ok as-toggle">9 stories</label>
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Text/Text.stories.tsx">backstage-ui-text · ./packages/ui/src/components/Text/Text.stories.tsx</div>
@@ -9483,9 +9876,9 @@ import { RiAccountCircleLine, RiBugLine, RiEyeLine, RiHeartLine } from "@remixic
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
-  <input id="c-31-backstage-ui-text-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-31-backstage-ui-text-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-31-backstage-ui-text-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-32-backstage-ui-text-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-32-backstage-ui-text-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-32-backstage-ui-text-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -9721,9 +10114,9 @@ weight?: TextWeights | Partial&lt;Record&lt;Breakpoint, TextWeights&gt;&gt;</cod
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> TextField</h2>
       <div class="badges">
-        <label for="c-32-backstage-ui-textfield-props" class="badge ok as-toggle">4 prop types</label>
-        <label for="c-32-backstage-ui-textfield-info" class="badge info as-toggle">1 info</label>
-        <label for="c-32-backstage-ui-textfield-stories" class="badge ok as-toggle">12 stories</label>
+        <label for="c-33-backstage-ui-textfield-props" class="badge ok as-toggle">4 prop types</label>
+        <label for="c-33-backstage-ui-textfield-info" class="badge info as-toggle">1 info</label>
+        <label for="c-33-backstage-ui-textfield-stories" class="badge ok as-toggle">12 stories</label>
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/TextField/TextField.stories.tsx">backstage-ui-textfield · ./packages/ui/src/components/TextField/TextField.stories.tsx</div>
@@ -9734,9 +10127,9 @@ weight?: TextWeights | Partial&lt;Record&lt;Breakpoint, TextWeights&gt;&gt;</cod
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
-  <input id="c-32-backstage-ui-textfield-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-32-backstage-ui-textfield-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-32-backstage-ui-textfield-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-33-backstage-ui-textfield-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-33-backstage-ui-textfield-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-33-backstage-ui-textfield-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -9944,9 +10337,9 @@ import { RiEyeLine, RiSparklingLine } from "@remixicon/react";</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> ToggleButton</h2>
       <div class="badges">
-        <label for="c-33-backstage-ui-togglebutton-props" class="badge ok as-toggle">4 prop types</label>
-        <label for="c-33-backstage-ui-togglebutton-info" class="badge info as-toggle">1 info</label>
-        <label for="c-33-backstage-ui-togglebutton-stories" class="badge ok as-toggle">10 stories</label>
+        <label for="c-34-backstage-ui-togglebutton-props" class="badge ok as-toggle">4 prop types</label>
+        <label for="c-34-backstage-ui-togglebutton-info" class="badge info as-toggle">1 info</label>
+        <label for="c-34-backstage-ui-togglebutton-stories" class="badge ok as-toggle">10 stories</label>
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/ToggleButton/ToggleButton.stories.tsx">backstage-ui-togglebutton · ./packages/ui/src/components/ToggleButton/ToggleButton.stories.tsx</div>
@@ -9957,9 +10350,9 @@ import { RiEyeLine, RiSparklingLine } from "@remixicon/react";</code></pre>
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
-  <input id="c-33-backstage-ui-togglebutton-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-33-backstage-ui-togglebutton-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-33-backstage-ui-togglebutton-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-34-backstage-ui-togglebutton-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-34-backstage-ui-togglebutton-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-34-backstage-ui-togglebutton-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -10309,9 +10702,9 @@ import { RiArrowRightSLine, RiCheckLine, RiCloudLine, RiStarFill, RiStarLine } f
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> ToggleButtonGroup</h2>
       <div class="badges">
-        <label for="c-34-backstage-ui-togglebuttongroup-props" class="badge ok as-toggle">1 prop type</label>
-        <label for="c-34-backstage-ui-togglebuttongroup-info" class="badge info as-toggle">1 info</label>
-        <label for="c-34-backstage-ui-togglebuttongroup-stories" class="badge ok as-toggle">10 stories</label>
+        <label for="c-35-backstage-ui-togglebuttongroup-props" class="badge ok as-toggle">1 prop type</label>
+        <label for="c-35-backstage-ui-togglebuttongroup-info" class="badge info as-toggle">1 info</label>
+        <label for="c-35-backstage-ui-togglebuttongroup-stories" class="badge ok as-toggle">10 stories</label>
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/ToggleButtonGroup/ToggleButtonGroup.stories.tsx">backstage-ui-togglebuttongroup · ./packages/ui/src/components/ToggleButtonGroup/ToggleButtonGroup.stories.tsx</div>
@@ -10322,9 +10715,9 @@ import { RiArrowRightSLine, RiCheckLine, RiCloudLine, RiStarFill, RiStarLine } f
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
-  <input id="c-34-backstage-ui-togglebuttongroup-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-34-backstage-ui-togglebuttongroup-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-34-backstage-ui-togglebuttongroup-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-35-backstage-ui-togglebuttongroup-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-35-backstage-ui-togglebuttongroup-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-35-backstage-ui-togglebuttongroup-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -10606,8 +10999,8 @@ import { RiArrowRightSLine, RiCloudLine, RiStarFill, RiStarLine } from "@remixic
       <h2><span class="status-dot dot-ok"></span> TooltipTrigger</h2>
       <div class="badges">
         
-        <label for="c-35-backstage-ui-tooltip-info" class="badge info as-toggle">1 info</label>
-        <label for="c-35-backstage-ui-tooltip-stories" class="badge ok as-toggle">6 stories</label>
+        <label for="c-36-backstage-ui-tooltip-info" class="badge info as-toggle">1 info</label>
+        <label for="c-36-backstage-ui-tooltip-stories" class="badge ok as-toggle">6 stories</label>
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Tooltip/Tooltip.stories.tsx">backstage-ui-tooltip · ./packages/ui/src/components/Tooltip/Tooltip.stories.tsx</div>
@@ -10618,8 +11011,8 @@ import { RiArrowRightSLine, RiCloudLine, RiStarFill, RiStarLine } from "@remixic
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
-  <input id="c-35-backstage-ui-tooltip-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-35-backstage-ui-tooltip-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-36-backstage-ui-tooltip-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-36-backstage-ui-tooltip-stories" class="tg tg-stories" type="checkbox" hidden />
   
 
   <div class="panels">
@@ -10774,9 +11167,9 @@ import { RiArrowRightSLine, RiCloudLine, RiStarFill, RiStarLine } from "@remixic
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> visual</h2>
       <div class="badges">
-        <label for="c-36-backstage-ui-table-visual-props" class="badge ok as-toggle">10 prop types</label>
-        <label for="c-36-backstage-ui-table-visual-info" class="badge info as-toggle">1 info</label>
-        <label for="c-36-backstage-ui-table-visual-stories" class="badge ok as-toggle">8 stories</label>
+        <label for="c-37-backstage-ui-table-visual-props" class="badge ok as-toggle">10 prop types</label>
+        <label for="c-37-backstage-ui-table-visual-info" class="badge info as-toggle">1 info</label>
+        <label for="c-37-backstage-ui-table-visual-stories" class="badge ok as-toggle">8 stories</label>
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Table/stories/Table.visual.stories.tsx">backstage-ui-table-visual · ./packages/ui/src/components/Table/stories/Table.visual.stories.tsx</div>
@@ -10787,9 +11180,9 @@ import { RiArrowRightSLine, RiCloudLine, RiStarFill, RiStarLine } from "@remixic
 
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
-  <input id="c-36-backstage-ui-table-visual-info" class="tg tg-info" type="checkbox" hidden />
-  <input id="c-36-backstage-ui-table-visual-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-36-backstage-ui-table-visual-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-37-backstage-ui-table-visual-info" class="tg tg-info" type="checkbox" hidden />
+  <input id="c-37-backstage-ui-table-visual-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-37-backstage-ui-table-visual-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
@@ -11177,9 +11570,9 @@ sort?: SortState</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> VisuallyHidden</h2>
       <div class="badges">
-        <label for="c-37-backstage-ui-visuallyhidden-props" class="badge ok as-toggle">1 prop type</label>
+        <label for="c-38-backstage-ui-visuallyhidden-props" class="badge ok as-toggle">1 prop type</label>
         
-        <label for="c-37-backstage-ui-visuallyhidden-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-38-backstage-ui-visuallyhidden-stories" class="badge ok as-toggle">2 stories</label>
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/VisuallyHidden/VisuallyHidden.stories.tsx">backstage-ui-visuallyhidden · ./packages/ui/src/components/VisuallyHidden/VisuallyHidden.stories.tsx</div>
@@ -11191,8 +11584,8 @@ sort?: SortState</code></pre>
   <!-- ⬇️ Hidden toggles must be siblings BEFORE .panels -->
   
   
-  <input id="c-37-backstage-ui-visuallyhidden-stories" class="tg tg-stories" type="checkbox" hidden />
-  <input id="c-37-backstage-ui-visuallyhidden-props" class="tg tg-props" type="checkbox" hidden />
+  <input id="c-38-backstage-ui-visuallyhidden-stories" class="tg tg-stories" type="checkbox" hidden />
+  <input id="c-38-backstage-ui-visuallyhidden-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
     
