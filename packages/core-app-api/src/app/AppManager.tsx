@@ -171,6 +171,7 @@ export class AppManager implements BackstageApp {
   private readonly defaultApis: Iterable<AnyApiFactory>;
   private readonly bindRoutes: AppOptions['bindRoutes'];
   private readonly appLanguageApi: AppLanguageApi;
+  private readonly appThemeApi: AppThemeApi;
   private readonly translationResources: Array<
     TranslationResource | TranslationMessages
   >;
@@ -194,6 +195,9 @@ export class AppManager implements BackstageApp {
       availableLanguages:
         options.__experimentalTranslations?.availableLanguages,
     });
+    // Create a single AppThemeSelector instance to be shared between
+    // the loading phase and the main app, avoiding duplicate event listeners
+    this.appThemeApi = AppThemeSelector.createWithStorage(this.themes);
     this.translationResources =
       options.__experimentalTranslations?.resources ?? [];
   }
@@ -240,10 +244,9 @@ export class AppManager implements BackstageApp {
 
     const Provider = ({ children }: PropsWithChildren<{}>) => {
       const needsFeatureFlagRegistrationRef = useRef(true);
-      const appThemeApi = useMemo(
-        () => AppThemeSelector.createWithStorage(this.themes),
-        [],
-      );
+      // Use the shared AppThemeSelector instance created in the constructor
+      // to avoid creating duplicate event listeners and subscriptions
+      const appThemeApi = this.appThemeApi;
 
       const { routing, featureFlags } = useMemo(() => {
         const usesReactRouterBeta = isReactRouterBeta();
@@ -436,7 +439,8 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
     this.apiFactoryRegistry.register('static', {
       api: appThemeApiRef,
       deps: {},
-      factory: () => AppThemeSelector.createWithStorage(this.themes),
+      // Use the shared AppThemeSelector instance to avoid duplicate event listeners
+      factory: () => this.appThemeApi,
     });
     this.apiFactoryRegistry.register('static', {
       api: configApiRef,
