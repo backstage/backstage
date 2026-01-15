@@ -84,13 +84,14 @@ export function createWaitAction(options?: {
         );
       }
 
-      await new Promise(resolve => {
+      await new Promise<void>(resolve => {
         const timeoutHandle = setTimeout(abort, delayTime.toMillis());
-        ctx.signal?.addEventListener('abort', abort, { once: true });
+        ctx.signal?.addEventListener('abort', abort);
 
         function abort() {
+          ctx.signal?.removeEventListener('abort', abort);
           clearTimeout(timeoutHandle);
-          resolve('finished');
+          resolve();
         }
       });
     },

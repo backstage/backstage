@@ -2,4 +2,4 @@
 '@backstage/plugin-scaffolder-backend': patch
 ---
 
-Simplify abort handling in debug:wait action
+Remove unused abort controller in debug:wait action
