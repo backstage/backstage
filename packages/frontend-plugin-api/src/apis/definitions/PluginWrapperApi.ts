@@ -18,13 +18,22 @@ import { ComponentType, ReactNode } from 'react';
 import { ApiRef, createApiRef } from '../system';
 
 /**
- * The Plugin Wrapper API allows plugins to wrap their extensions with providers. This API is only intended for internal use by the Backstage frontend system. To provide contexts to plugin components, use `ExtensionBoundary` instead.
+ * The Plugin Wrapper API is used to wrap plugin extensions with providers,
+ * plugins should generally use `ExtensionBoundary` instead.
+ *
+ * @remarks
+ *
+ * This API is primarily intended for internal use by the Backstage frontend
+ * system, but can be used for advanced use-cases. If you do override it, be
+ * sure to include the default implementation as well.
  *
  * @public
  */
 export type PluginWrapperApi = {
   /**
-   * Returns a wrapper component for a specific plugin, or undefined if no wrappers exist. Do not use this API directly, instead use `ExtensionBoundary` to wrap your plugin components if needed.
+   * Returns a wrapper component for a specific plugin, or undefined if no
+   * wrappers exist. Do not use this API directly, instead use
+   * `ExtensionBoundary` to wrap your plugin components if needed.
    */
   getPluginWrapper(
     pluginId: string,
