@@ -91,8 +91,10 @@ describe('SearchFilterBlueprint', () => {
     });
 
     await expect(
-      renderInTestApp(
-        createExtensionTester(searchPage).add(extension).reactElement(),
+      (
+        await renderInTestApp(
+          createExtensionTester(searchPage).add(extension).reactElement(),
+        )
       ).findByText('Test Filter'),
     ).resolves.toBeInTheDocument();
   });

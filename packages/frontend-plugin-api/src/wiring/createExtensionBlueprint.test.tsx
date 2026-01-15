@@ -47,7 +47,7 @@ function factoryOutput(ext: ExtensionDefinition, inputs: unknown = undefined) {
 }
 
 describe('createExtensionBlueprint', () => {
-  it('should allow creation of extension blueprints', () => {
+  it('should allow creation of extension blueprints', async () => {
     const TestExtensionBlueprint = createExtensionBlueprint({
       kind: 'test-extension',
       attachTo: { id: 'test', input: 'default' },
@@ -83,13 +83,13 @@ describe('createExtensionBlueprint', () => {
       version: 'v2',
     });
 
-    const { container } = renderInTestApp(
+    const { container } = await renderInTestApp(
       createExtensionTester(extension).reactElement(),
     );
     expect(container.querySelector('h1')).toHaveTextContent('Hello, world!');
   });
 
-  it('should allow creation of extension blueprints with a generator', () => {
+  it('should allow creation of extension blueprints with a generator', async () => {
     const TestExtensionBlueprint = createExtensionBlueprint({
       kind: 'test-extension',
       // Try multiple attachment points for this one
@@ -129,13 +129,13 @@ describe('createExtensionBlueprint', () => {
       version: 'v2',
     });
 
-    const { container } = renderInTestApp(
+    const { container } = await renderInTestApp(
       createExtensionTester(extension).reactElement(),
     );
     expect(container.querySelector('h1')).toHaveTextContent('Hello, world!');
   });
 
-  it('should allow overriding of the default factory', () => {
+  it('should allow overriding of the default factory', async () => {
     const TestExtensionBlueprint = createExtensionBlueprint({
       kind: 'test-extension',
       attachTo: { id: 'test', input: 'default' },
@@ -156,7 +156,7 @@ describe('createExtensionBlueprint', () => {
 
     expect(extension).toBeDefined();
 
-    const { container } = renderInTestApp(
+    const { container } = await renderInTestApp(
       createExtensionTester(extension).reactElement(),
     );
     expect(container.querySelector('h1')).toHaveTextContent('Hello, world!');
@@ -1592,7 +1592,7 @@ describe('createExtensionBlueprint', () => {
       },
     });
 
-    it('should allow creation of extension blueprints', () => {
+    it('should allow creation of extension blueprints', async () => {
       TestExtensionBlueprint.make({
         // @ts-expect-error not using define func
         params: {
@@ -1688,7 +1688,7 @@ describe('createExtensionBlueprint', () => {
       expect(createExtensionTester(override).get(testDataRef)).toBe('z z');
     });
 
-    it('should allow overriding of the default factory', () => {
+    it('should allow overriding of the default factory', async () => {
       TestExtensionBlueprint.makeWithOverrides({
         factory(originalFactory) {
           // @ts-expect-error not using define func

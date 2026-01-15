@@ -71,7 +71,10 @@ import { Root } from '../extensions/Root';
 import { resolveAppTree } from '../tree/resolveAppTree';
 import { resolveAppNodeSpecs } from '../tree/resolveAppNodeSpecs';
 import { readAppExtensionsConfig } from '../tree/readAppExtensionsConfig';
-import { instantiateAppNodeTree } from '../tree/instantiateAppNodeTree';
+import {
+  instantiateAppNodeTree,
+  evaluateEnabledConditions,
+} from '../tree/instantiateAppNodeTree';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { ApiRegistry } from '../../../core-app-api/src/apis/system/ApiRegistry';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
@@ -291,11 +294,13 @@ export type CreateSpecializedAppOptions = {
  *
  * @public
  */
-export function createSpecializedApp(options?: CreateSpecializedAppOptions): {
+export async function createSpecializedApp(
+  options?: CreateSpecializedAppOptions,
+): Promise<{
   apis: ApiHolder;
   tree: AppTree;
   errors?: AppError[];
-} {
+}> {
   const config = options?.config ?? new ConfigReader({}, 'empty-config');
   const features = deduplicateFeatures(options?.features ?? []).map(
     createPluginInfoAttacher(config, options?.advanced?.pluginInfoResolver),
@@ -317,6 +322,9 @@ export function createSpecializedApp(options?: CreateSpecializedAppOptions): {
     collector,
   );
 
+  // === PHASE 1: Collect APIs (without enabled checks) ===
+  // We need to collect all API factories first before we can check enabled conditions,
+  // since those conditions may depend on APIs like featureFlagsApiRef, configApiRef, etc.
   const factories = createApiFactories({ tree, collector });
   const appBasePath = getBasePath(config);
   const appTreeApi = new AppTreeApiProxy(tree, appBasePath);
@@ -362,7 +370,15 @@ export function createSpecializedApp(options?: CreateSpecializedAppOptions): {
     }
   }
 
-  // Now instantiate the entire tree, which will skip anything that's already been instantiated
+  // === PHASE 2: Instantiate tree with enabled checks ===
+  // Now that all APIs are available, we can evaluate enabled conditions in parallel
+  // and instantiate the rest of the extension tree
+
+  // First, evaluate all enabled conditions in parallel
+  const disabledNodes = new Set<AppNode>();
+  await evaluateEnabledConditions(tree.root, apis, collector, disabledNodes);
+
+  // Then instantiate the tree with the disabled nodes
   instantiateAppNodeTree(
     tree.root,
     apis,
@@ -370,6 +386,7 @@ export function createSpecializedApp(options?: CreateSpecializedAppOptions): {
     mergeExtensionFactoryMiddleware(
       options?.advanced?.extensionFactoryMiddleware,
     ),
+    disabledNodes,
   );
 
   const routeInfo = extractRouteInfoFromAppNode(
@@ -394,7 +411,16 @@ function createApiFactories(options: {
   >();
 
   for (const apiNode of options.tree.root.edges.attachments.get('apis') ?? []) {
-    if (!instantiateAppNodeTree(apiNode, emptyApiHolder, options.collector)) {
+    // Pass empty disabledNodes set - we'll check enabled conditions later once APIs are available
+    if (
+      !instantiateAppNodeTree(
+        apiNode,
+        emptyApiHolder,
+        options.collector,
+        undefined,
+        new Set(),
+      )
+    ) {
       continue;
     }
     const apiFactory = apiNode.instance?.getData(ApiBlueprint.dataRefs.factory);

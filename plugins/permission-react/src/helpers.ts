@@ -31,7 +31,7 @@ import { permissionApiRef } from './apis';
  *
  * PageBlueprint.make({
  *   params: {
- *     if: createPermissionCondition(catalogReadPermission),
+ *     enabled: createPermissionCondition(catalogReadPermission),
  *   },
  * });
  * ```

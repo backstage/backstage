@@ -25,7 +25,7 @@ import { ExtensionConditionFunc } from './types';
  * ```typescript
  * PageBlueprint.make({
  *   params: {
- *     if: allOf(
+ *     enabled: allOf(
  *       createPermissionCondition(catalogReadPermission),
  *       createFeatureFlagCondition('advanced-ui')
  *     ),
@@ -52,7 +52,7 @@ export function allOf(
  * ```typescript
  * PageBlueprint.make({
  *   params: {
- *     if: anyOf(
+ *     enabled: anyOf(
  *       createPermissionCondition(catalogReadPermission),
  *       createFeatureFlagCondition('catalog-preview')
  *     ),
@@ -79,7 +79,7 @@ export function anyOf(
  * ```typescript
  * PageBlueprint.make({
  *   params: {
- *     if: not(createFeatureFlagCondition('legacy-ui')),
+ *     enabled: not(createFeatureFlagCondition('legacy-ui')),
  *   },
  * });
  * ```
@@ -99,7 +99,7 @@ export function not(condition: ExtensionConditionFunc): ExtensionConditionFunc {
  * ```typescript
  * PageBlueprint.make({
  *   params: {
- *     if: createFeatureFlagCondition('experimental-features'),
+ *     enabled: createFeatureFlagCondition('experimental-features'),
  *   },
  * });
  * ```

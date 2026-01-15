@@ -17,11 +17,9 @@
 import { RouteRef } from '../routing';
 import { coreExtensionData, createExtensionBlueprint } from '../wiring';
 import { ExtensionBoundary } from '../components';
-import { ConditionalRender } from './ConditionalRender';
-import { ExtensionConditionFunc } from './types';
 
 /**
- * Createx extensions that are routable React page components.
+ * Creates extensions that are routable React page components.
  *
  * @public
  */
@@ -47,39 +45,12 @@ export const PageBlueprint = createExtensionBlueprint({
       path: string;
       loader: () => Promise<JSX.Element>;
       routeRef?: RouteRef;
-      /**
-       * Optional condition function that determines whether this page should be rendered.
-       * The function receives access to the apiHolder for checking permissions, feature flags, config, etc.
-       *
-       * @example
-       * ```typescript
-       * if: async (originalDecision, { apiHolder }) => {
-       *   const permissionApi = apiHolder.get(permissionApiRef);
-       *   const result = await permissionApi?.authorize({ permission: catalogReadPermission });
-       *   return result?.result === 'ALLOW';
-       * }
-       * ```
-       */
-      if?: ExtensionConditionFunc;
     },
     { config, node },
   ) {
     yield coreExtensionData.routePath(config.path ?? params.path);
-
-    // Wrap loader with conditional rendering if condition provided
-    const wrappedLoader = params.if
-      ? async () => {
-          const Component = await params.loader();
-          return (
-            <ConditionalRender condition={params.if!}>
-              {Component}
-            </ConditionalRender>
-          );
-        }
-      : params.loader;
-
     yield coreExtensionData.reactElement(
-      ExtensionBoundary.lazy(node, wrappedLoader),
+      ExtensionBoundary.lazy(node, params.loader),
     );
     if (params.routeRef) {
       yield coreExtensionData.routeRef(params.routeRef);

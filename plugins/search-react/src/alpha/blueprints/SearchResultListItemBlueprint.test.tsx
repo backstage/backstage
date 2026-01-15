@@ -109,16 +109,20 @@ describe('SearchResultListItemBlueprint', () => {
     });
 
     await expect(
-      renderInTestApp(
-        createExtensionTester(mockSearchPage).add(extension).reactElement(),
+      (
+        await renderInTestApp(
+          createExtensionTester(mockSearchPage).add(extension).reactElement(),
+        )
       ).findByText('noTrack: false'),
     ).resolves.toBeInTheDocument();
 
     await expect(
-      renderInTestApp(
-        createExtensionTester(mockSearchPage)
-          .add(extension, { config: { noTrack: true } })
-          .reactElement(),
+      (
+        await renderInTestApp(
+          createExtensionTester(mockSearchPage)
+            .add(extension, { config: { noTrack: true } })
+            .reactElement(),
+        )
       ).findByText('noTrack: true'),
     ).resolves.toBeInTheDocument();
   });

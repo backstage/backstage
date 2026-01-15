@@ -17,27 +17,23 @@
 import { ApiHolder } from '@backstage/core-plugin-api';
 
 /**
- * A function that determines whether an extension should be rendered.
+ * A function that determines whether an extension should be enabled and attached to the extension tree.
+ * This function is evaluated during extension tree construction.
  *
  * @public
- * @param originalDecision - A function that evaluates any config-based conditions. Currently always returns true, reserved for future use.
+ * @param originalDecision - A function that checks the `disabled` field. Returns false if disabled: true, otherwise true.
  * @param context - Context object containing the apiHolder for accessing Backstage APIs
- * @returns A promise that resolves to true if the extension should be rendered, false otherwise
+ * @returns A promise that resolves to true if the extension should be enabled, false otherwise
  *
- * @example
- * ```typescript
- * // Permission check
- * if: async (originalDecision, { apiHolder }) => {
- *   const permissionApi = apiHolder.get(permissionApiRef);
- *   const result = await permissionApi?.authorize({ permission: catalogReadPermission });
- *   return result?.result === 'ALLOW';
- * }
- * ```
+ * @remarks
+ * Since this function is evaluated during extension tree construction, only APIs that are available
+ * early in the app lifecycle can be safely used. Feature flags and config are typically available,
+ * but permission APIs may not be fully initialized yet.
  *
  * @example
  * ```typescript
  * // Feature flag check
- * if: async (originalDecision, { apiHolder }) => {
+ * enabled: async (originalDecision, { apiHolder }) => {
  *   const featureFlags = apiHolder.get(featureFlagsApiRef);
  *   return featureFlags?.isActive('my-feature') === true;
  * }
@@ -45,11 +41,23 @@ import { ApiHolder } from '@backstage/core-plugin-api';
  *
  * @example
  * ```typescript
- * // Respecting config-based decisions (future)
- * if: async (originalDecision, { apiHolder }) => {
- *   const configDecision = await originalDecision();
- *   const myCustomCheck = ...; // your logic here
- *   return configDecision && myCustomCheck;
+ * // Config check
+ * enabled: async (originalDecision, { apiHolder }) => {
+ *   const config = apiHolder.get(configApiRef);
+ *   return config?.getOptionalBoolean('app.features.newCatalog') === true;
+ * }
+ * ```
+ *
+ * @example
+ * ```typescript
+ * // Respecting disabled field
+ * enabled: async (originalDecision, { apiHolder }) => {
+ *   // First check if disabled field blocks this extension
+ *   if (!(await originalDecision())) return false;
+ *
+ *   // Then add additional check
+ *   const featureFlags = apiHolder.get(featureFlagsApiRef);
+ *   return featureFlags?.isActive('beta-feature') === true;
  * }
  * ```
  */

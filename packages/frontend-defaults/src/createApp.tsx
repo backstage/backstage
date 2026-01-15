@@ -130,7 +130,7 @@ export function createApp(options?: CreateAppOptions): {
       features: [...discoveredFeaturesAndLoaders, ...(options?.features ?? [])],
     });
 
-    const app = createSpecializedApp({
+    const app = await createSpecializedApp({
       features: [appPlugin, ...loadedFeatures],
       config,
       bindRoutes: options?.bindRoutes,
