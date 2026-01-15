@@ -96,6 +96,8 @@ export function Table<T extends TableItem>({
   rowConfig,
   selection,
   emptyState,
+  className,
+  style,
 }: TableProps<T>) {
   const liveRegionId = useId();
 
@@ -113,11 +115,19 @@ export function Table<T extends TableItem>({
   } = selection || {};
 
   if (loading && !data) {
-    return <div>Loading...</div>;
+    return (
+      <div className={className} style={style}>
+        Loading...
+      </div>
+    );
   }
 
   if (error) {
-    return <div>Error: {error.message}</div>;
+    return (
+      <div className={className} style={style}>
+        Error: {error.message}
+      </div>
+    );
   }
 
   const liveRegionLabel = useLiveRegionLabel(
@@ -127,7 +137,7 @@ export function Table<T extends TableItem>({
   );
 
   return (
-    <div>
+    <div className={className} style={style}>
       <VisuallyHidden aria-live="polite" id={liveRegionId}>
         {liveRegionLabel}
       </VisuallyHidden>
