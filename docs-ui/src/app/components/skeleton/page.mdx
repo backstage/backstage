@@ -1,14 +1,13 @@
 import { PropsTable } from '@/components/PropsTable';
 import { Snippet } from '@/components/Snippet';
 import { CodeBlock } from '@/components/CodeBlock';
-import { Demo1, Demo2 } from './stories';
+import { skeletonPropDefs } from './props-definition';
 import {
-  skeletonPropDefs,
   skeletonUsageSnippet,
-  skeletonDefaultSnippet,
-  skeletonDemo1Snippet,
-  skeletonDemo2Snippet,
-} from './skeleton.props';
+  demo1Snippet,
+  demo2Snippet,
+} from './snippets';
+import { Demo1, Demo2 } from './components';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
 import { ChangelogComponent } from '@/components/ChangelogComponent';
@@ -19,12 +18,7 @@ import { SkeletonDefinition } from '../../../utils/definitions';
   description="Use to show a placeholder while content is loading."
 />
 
-<Snippet
-  align="center"
-  py={4}
-  preview={<Demo2 />}
-  code={skeletonDefaultSnippet}
-/>
+<Snippet align="center" py={4} preview={<Demo2 />} code={demo2Snippet} />
 
 ## Usage
 
@@ -44,7 +38,7 @@ You can use a mix of different sizes to create a more complex skeleton.
   align="center"
   py={4}
   preview={<Demo1 />}
-  code={skeletonDemo1Snippet}
+  code={demo1Snippet}
   open
 />
 
@@ -56,7 +50,7 @@ You can use a mix of different sizes to create a more complex skeleton.
   align="center"
   py={4}
   preview={<Demo2 />}
-  code={skeletonDemo2Snippet}
+  code={demo2Snippet}
   open
 />
 

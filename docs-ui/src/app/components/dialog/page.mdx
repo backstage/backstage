@@ -1,7 +1,7 @@
 import { PropsTable } from '@/components/PropsTable';
 import { Snippet } from '@/components/Snippet';
 import { CodeBlock } from '@/components/CodeBlock';
-import { Default, PreviewFixedWidthAndHeight, PreviewWithForm } from './stories';
+import { Default, PreviewFixedWidthAndHeight, PreviewWithForm } from './components';
 import {
   dialogPropDefs,
   dialogTriggerPropDefs,
@@ -9,13 +9,15 @@ import {
   dialogBodyPropDefs,
   dialogFooterPropDefs,
   dialogClosePropDefs,
+} from './props-definition';
+import {
   dialogUsageSnippet,
   dialogDefaultSnippet,
   dialogFixedWidthAndHeightSnippet,
   dialogWithFormSnippet,
   dialogWithNoTriggerSnippet,
   dialogCloseSnippet,
-} from './dialog.props';
+} from './snippets';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
 import { DialogDefinition } from '../../../utils/definitions';

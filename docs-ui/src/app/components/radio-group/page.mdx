@@ -1,17 +1,16 @@
 import { PropsTable } from '@/components/PropsTable';
 import { Snippet } from '@/components/Snippet';
-import { Default, Horizontal, Disabled, DisabledSingle, Validation, ReadOnly } from './stories';
+import { radioGroupPropDefs } from './props-definition';
 import {
-  radioGroupPropDefs,
   radioGroupUsageSnippet,
-  radioGroupDefaultSnippet,
-  radioGroupDescriptionSnippet,
-  radioGroupHorizontalSnippet,
-  radioGroupDisabledSnippet,
-  radioGroupDisabledSingleSnippet,
-  radioGroupValidationSnippet,
-  radioGroupReadOnlySnippet,
-} from './radio-group.props';
+  defaultSnippet,
+  horizontalSnippet,
+  disabledSnippet,
+  disabledSingleSnippet,
+  validationSnippet,
+  readOnlySnippet,
+} from './snippets';
+import { Default, Horizontal, Disabled, DisabledSingle, Validation, ReadOnly } from './components';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
 import { ChangelogComponent } from '@/components/ChangelogComponent';
@@ -23,12 +22,7 @@ import { RadioGroupDefinition } from '../../../utils/definitions';
   description="A radio group allows a user to select a single item from a list of mutually exclusive options."
 />
 
-<Snippet
-  align="center"
-  py={4}
-  preview={<Default />}
-  code={radioGroupDefaultSnippet}
-/>
+<Snippet align="center" py={4} preview={<Default />} code={defaultSnippet} />
 
 ## Usage
 
@@ -49,7 +43,7 @@ Here's a simple TextField with a description.
   py={4}
   open
   preview={<Horizontal />}
-  code={radioGroupHorizontalSnippet}
+  code={horizontalSnippet}
 />
 
 ### Disabled
@@ -61,7 +55,7 @@ You can disable the entire radio group by adding the `isDisabled` prop to the `R
   py={4}
   open
   preview={<Disabled />}
-  code={radioGroupDisabledSnippet}
+  code={disabledSnippet}
 />
 
 ### Disabled Single radio
@@ -73,7 +67,7 @@ You can disable a single radio by adding the `isDisabled` prop to the `Radio` co
   py={4}
   open
   preview={<DisabledSingle />}
-  code={radioGroupDisabledSingleSnippet}
+  code={disabledSingleSnippet}
 />
 
 ### Validation
@@ -85,7 +79,7 @@ Here's an example of a radio group with errors.
   py={4}
   open
   preview={<Validation />}
-  code={radioGroupValidationSnippet}
+  code={validationSnippet}
 />
 
 ### Read only
@@ -97,7 +91,7 @@ You can make the radio group read only by adding the `isReadOnly` prop to the `R
   py={4}
   open
   preview={<ReadOnly />}
-  code={radioGroupReadOnlySnippet}
+  code={readOnlySnippet}
 />
 
 <Theming definition={RadioGroupDefinition} />

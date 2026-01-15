@@ -1,14 +1,14 @@
 import { CodeBlock } from '@/components/CodeBlock';
 import { PropsTable } from '@/components/PropsTable';
 import { Snippet } from '@/components/Snippet';
-import { Preview } from './stories';
+import { containerPropDefs } from './props-definition';
 import {
-  containerPropDefs,
   containerUsageSnippet,
-  containerDefaultSnippet,
+  previewSnippet,
   containerSimpleSnippet,
   containerResponsiveSnippet,
-} from './container.props';
+} from './snippets';
+import { Preview } from './components';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
 import { ContainerDefinition } from '../../../utils/definitions';
@@ -20,11 +20,7 @@ import { ChangelogComponent } from '@/components/ChangelogComponent';
   description="The container component let you use our default max-width and center the content on the page."
 />
 
-<Snippet
-  py={4}
-  preview={<Preview />}
-  code={containerDefaultSnippet}
-/>
+<Snippet py={4} preview={<Preview />} code={previewSnippet} />
 
 ## Usage
 

@@ -2,25 +2,28 @@ import { PropsTable } from '@/components/PropsTable';
 import { Snippet } from '@/components/Snippet';
 import { CodeBlock } from '@/components/CodeBlock';
 import {
+  accordionPropDefs,
+  accordionTriggerPropDefs,
+  accordionPanelPropDefs,
+  accordionGroupPropDefs,
+} from './props-definition';
+import {
+  accordionUsageSnippet,
+  defaultSnippet,
+  withSubtitleSnippet,
+  customTriggerSnippet,
+  defaultExpandedSnippet,
+  groupSingleOpenSnippet,
+  groupMultipleOpenSnippet,
+} from './snippets';
+import {
   Default,
   WithSubtitle,
   CustomTrigger,
   DefaultExpanded,
   GroupSingleOpen,
   GroupMultipleOpen,
-} from './stories';
-import {
-  accordionPropDefs,
-  accordionTriggerPropDefs,
-  accordionPanelPropDefs,
-  accordionGroupPropDefs,
-  accordionUsageSnippet,
-  accordionWithSubtitleSnippet,
-  accordionCustomTriggerSnippet,
-  accordionDefaultExpandedSnippet,
-  accordionGroupSingleOpenSnippet,
-  accordionGroupMultipleOpenSnippet,
-} from './accordion.props';
+} from './components';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
 import { AccordionDefinition } from '../../../utils/definitions';
@@ -36,7 +39,7 @@ import { ChangelogComponent } from '@/components/ChangelogComponent';
   py={4}
   height={240}
   preview={<Default />}
-  code={accordionUsageSnippet}
+  code={defaultSnippet}
 />
 
 ## Usage
@@ -80,7 +83,7 @@ Here's a view when using both title and subtitle props.
   py={4}
   height={240}
   preview={<WithSubtitle />}
-  code={accordionWithSubtitleSnippet}
+  code={withSubtitleSnippet}
 />
 
 ### Custom Trigger
@@ -92,7 +95,7 @@ Here's a view when providing custom multi-line content as children.
   py={4}
   height={280}
   preview={<CustomTrigger />}
-  code={accordionCustomTriggerSnippet}
+  code={customTriggerSnippet}
 />
 
 ### Default Expanded
@@ -104,7 +107,7 @@ Here's a view when the panel is expanded by default.
   py={4}
   height={280}
   preview={<DefaultExpanded />}
-  code={accordionDefaultExpandedSnippet}
+  code={defaultExpandedSnippet}
 />
 
 ### Group Single Open
@@ -116,7 +119,7 @@ Here's a view when only one accordion can be open at a time.
   py={4}
   height={280}
   preview={<GroupSingleOpen />}
-  code={accordionGroupSingleOpenSnippet}
+  code={groupSingleOpenSnippet}
 />
 
 ### Group Multiple Open
@@ -128,7 +131,7 @@ Here's a view when multiple accordions can be open simultaneously.
   py={4}
   height={280}
   preview={<GroupMultipleOpen />}
-  code={accordionGroupMultipleOpenSnippet}
+  code={groupMultipleOpenSnippet}
 />
 
 <Theming definition={AccordionDefinition} />

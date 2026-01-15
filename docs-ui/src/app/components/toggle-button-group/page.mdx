@@ -1,19 +1,15 @@
 import { PropsTable } from '@/components/PropsTable';
 import { Snippet } from '@/components/Snippet';
 import { CodeBlock } from '@/components/CodeBlock';
+import { toggleButtonGroupPropDefs } from './props-definition';
 import {
-  toggleButtonGroupPropDefs,
   toggleButtonGroupUsageSnippet,
-  toggleButtonGroupSingleSnippet,
-  toggleButtonGroupMultipleSnippet,
-  toggleButtonGroupVerticalSnippet,
-  toggleButtonGroupDisabledSnippet,
-  toggleButtonGroupDisallowEmptySnippet,
-  toggleButtonGroupIconsSnippet,
-  toggleButtonGroupIconsOnlySnippet,
-  toggleButtonGroupSurfacesSnippet,
-} from './toggle-button-group.props';
-import { SingleSelection, Surfaces, MultipleSelection, WithIcons, IconsOnly, DisallowEmptySelection, Orientation, DisabledGroup } from './stories';
+  defaultSnippet,
+  singleSelectionSnippet,
+  sizesSnippet,
+  disabledSnippet,
+} from './snippets';
+import { Default, SingleSelection, Sizes, Disabled } from './components';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
 import { ChangelogComponent } from '@/components/ChangelogComponent';
@@ -24,12 +20,7 @@ import { ToggleButtonGroupDefinition } from '../../../utils/definitions';
   description="A grouping container for related [ToggleButtons](./toggle-button) supporting single or multiple selection."
 />
 
-<Snippet
-  align="center"
-  py={4}
-  preview={<SingleSelection />}
-  code={toggleButtonGroupSingleSnippet}
-/>
+<Snippet align="center" py={4} preview={<Default />} code={defaultSnippet} />
 
 ## Usage
 
@@ -41,16 +32,6 @@ import { ToggleButtonGroupDefinition } from '../../../utils/definitions';
 
 ## Examples
 
-### Surfaces
-
-<Snippet
-  align="center"
-  py={4}
-  open
-  preview={<Surfaces />}
-  code={toggleButtonGroupSurfacesSnippet}
-/>
-
 ### Single Selection
 
 <Snippet
@@ -58,57 +39,17 @@ import { ToggleButtonGroupDefinition } from '../../../utils/definitions';
   py={4}
   open
   preview={<SingleSelection />}
-  code={toggleButtonGroupSingleSnippet}
+  code={singleSelectionSnippet}
 />
 
-### Multiple Selection
+### Sizes
 
 <Snippet
   align="center"
   py={4}
   open
-  preview={<MultipleSelection />}
-  code={toggleButtonGroupMultipleSnippet}
-/>
-
-### Icons and Text
-
-<Snippet
-  align="center"
-  py={4}
-  open
-  preview={<WithIcons />}
-  code={toggleButtonGroupIconsSnippet}
-/>
-
-### Icons Only
-
-<Snippet
-  align="center"
-  py={4}
-  open
-  preview={<IconsOnly />}
-  code={toggleButtonGroupIconsOnlySnippet}
-/>
-
-### Disallow Empty Selection
-
-<Snippet
-  align="center"
-  py={4}
-  open
-  preview={<DisallowEmptySelection />}
-  code={toggleButtonGroupDisallowEmptySnippet}
-/>
-
-### Vertical Orientation
-
-<Snippet
-  align="center"
-  py={4}
-  open
-  preview={<Orientation />}
-  code={toggleButtonGroupVerticalSnippet}
+  preview={<Sizes />}
+  code={sizesSnippet}
 />
 
 ### Disabled
@@ -117,8 +58,8 @@ import { ToggleButtonGroupDefinition } from '../../../utils/definitions';
   align="center"
   py={4}
   open
-  preview={<DisabledGroup />}
-  code={toggleButtonGroupDisabledSnippet}
+  preview={<Disabled />}
+  code={disabledSnippet}
 />
 
 <Theming definition={ToggleButtonGroupDefinition} />

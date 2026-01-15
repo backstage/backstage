@@ -1,7 +1,19 @@
 import { PropsTable } from '@/components/PropsTable';
 import { Snippet } from '@/components/Snippet';
 import { CodeBlock } from '@/components/CodeBlock';
-import { Preview, PreviewSubmenu, PreviewIcons, PreviewLinks, PreviewSections, PreviewSeparators, PreviewAutocompleteMenu, PreviewAutocompleteListbox, PreviewAutocompleteListboxMultiple } from './stories';
+import { Preview, PreviewSubmenu, PreviewIcons, PreviewLinks, PreviewSections, PreviewSeparators, PreviewAutocompleteMenu, PreviewAutocompleteListbox, PreviewAutocompleteListboxMultiple } from './components';
+import {
+  menuTriggerPropDefs,
+  submenuTriggerPropDefs,
+  menuPropDefs,
+  menuListBoxPropDefs,
+  menuAutocompletePropDefs,
+  menuAutocompleteListboxPropDefs,
+  menuItemPropDefs,
+  menuListBoxItemPropDefs,
+  menuSectionPropDefs,
+  menuSeparatorPropDefs,
+} from './props-definition';
 import {
   usage,
   preview,
@@ -13,17 +25,7 @@ import {
   autocomplete,
   autocompleteListbox,
   autocompleteListboxMultiple,
-  menuTriggerPropDefs,
-  submenuTriggerPropDefs,
-  menuPropDefs,
-  menuListBoxPropDefs,
-  menuAutocompletePropDefs,
-  menuAutocompleteListboxPropDefs,
-  menuItemPropDefs,
-  menuListBoxItemPropDefs,
-  menuSectionPropDefs,
-  menuSeparatorPropDefs,
-} from './menu.props';
+} from './snippets';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
 import { ChangelogComponent } from '@/components/ChangelogComponent';

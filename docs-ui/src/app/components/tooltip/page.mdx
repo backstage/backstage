@@ -1,13 +1,9 @@
 import { PropsTable } from '@/components/PropsTable';
-import { Default } from './stories';
 import { Snippet } from '@/components/Snippet';
 import { CodeBlock } from '@/components/CodeBlock';
-import {
-  tooltipDefaultSnippet,
-  tooltipUsageSnippet,
-  tooltipTriggerPropDefs,
-  tooltipPropDefs,
-} from './tooltip.props';
+import { tooltipTriggerPropDefs, tooltipPropDefs } from './props-definition';
+import { tooltipUsageSnippet, defaultSnippet } from './snippets';
+import { Default } from './components';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
 import { TooltipDefinition } from '../../../utils/definitions';
@@ -18,12 +14,7 @@ import { ChangelogComponent } from '@/components/ChangelogComponent';
   description="A tooltip displays a description of an element on hover or focus."
 />
 
-<Snippet
-  py={4}
-  preview={<Default />}
-  code={tooltipDefaultSnippet}
-  align="center"
-/>
+<Snippet py={4} preview={<Default />} code={defaultSnippet} align="center" />
 
 ## Usage
 

@@ -1,17 +1,16 @@
 import { PropsTable } from '@/components/PropsTable';
 import { Snippet } from '@/components/Snippet';
 import { CodeBlock } from '@/components/CodeBlock';
-import { Default, AllVariants, AllWeights, AllColors, Truncate } from './stories';
+import { linkPropDefs } from './props-definition';
 import {
-  linkPropDefs,
   linkUsageSnippet,
-  linkDefaultSnippet,
-  linkVariantsSnippet,
-  linkWeightsSnippet,
-  linkColorsSnippet,
-  linkRouterSnippet,
-  linkTruncateSnippet,
-} from './link.props';
+  defaultSnippet,
+  externalLinkSnippet,
+  allVariantsSnippet,
+  allColorsSnippet,
+  underlineSnippet,
+} from './snippets';
+import { Default, ExternalLink, AllVariants, AllColors, Underline } from './components';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
 import { ChangelogComponent } from '@/components/ChangelogComponent';
@@ -22,12 +21,7 @@ import { LinkDefinition } from '../../../utils/definitions';
   description="A link component that renders a `<a>` element."
 />
 
-<Snippet
-  align="center"
-  py={4}
-  preview={<Default />}
-  code={linkDefaultSnippet}
-/>
+<Snippet align="center" py={4} preview={<Default />} code={defaultSnippet} />
 
 ## Usage
 
@@ -37,16 +31,19 @@ import { LinkDefinition } from '../../../utils/definitions';
 
 <PropsTable data={linkPropDefs} />
 
-## Router Integration
-
-The `Link` component handles both internal and external navigation. It automatically detects whether the provided URL is internal (relative path) or external (absolute URL with protocol) and renders the appropriate element:
-
-- **Internal routes**: Uses `react-router-dom`'s `Link` component for client-side navigation
-- **External URLs**: Renders a standard `<a>` element for traditional navigation
-
-<CodeBlock language="tsx" code={linkRouterSnippet} />
-
 ## Examples
+
+### External Link
+
+Here's how to create an external link that opens in a new tab.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<ExternalLink />}
+  code={externalLinkSnippet}
+/>
 
 ### Variants
 
@@ -57,19 +54,7 @@ Here's a view when links have different variants.
   py={4}
   open
   preview={<AllVariants />}
-  code={linkVariantsSnippet}
-/>
-
-### Weights
-
-Here's a view when links have different weights.
-
-<Snippet
-  align="center"
-  py={4}
-  open
-  preview={<AllWeights />}
-  code={linkWeightsSnippet}
+  code={allVariantsSnippet}
 />
 
 ### Colors
@@ -81,17 +66,19 @@ Here's a view when links have different colors.
   py={4}
   open
   preview={<AllColors />}
-  code={linkColorsSnippet}
+  code={allColorsSnippet}
 />
 
-### Truncate
+### Underline
 
-The `Link` component has a `truncate` prop that can be used to truncate the text.
+Here's a view when links have different underline styles.
 
 <Snippet
+  align="center"
+  py={4}
   open
-  preview={<Truncate />}
-  code={linkTruncateSnippet}
+  preview={<Underline />}
+  code={underlineSnippet}
 />
 
 <Theming definition={LinkDefinition} />

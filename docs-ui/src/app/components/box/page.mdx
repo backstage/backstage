@@ -1,14 +1,14 @@
 import { CodeBlock } from '@/components/CodeBlock';
 import { PropsTable } from '@/components/PropsTable';
 import { Snippet } from '@/components/Snippet';
-import { Default } from './stories';
+import { boxPropDefs } from './props-definition';
 import {
-  boxPropDefs,
   snippetUsage,
-  boxPreviewSnippet,
+  defaultSnippet,
   boxSimpleSnippet,
   boxResponsiveSnippet,
-} from './box.props';
+} from './snippets';
+import { Default } from './components';
 import { spacingPropDefs } from '@/utils/propDefs';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
@@ -21,12 +21,7 @@ import { ChangelogComponent } from '@/components/ChangelogComponent';
   description="Box is the lowest-level component in Backstage UI. It provides a consistent API for styling and layout."
 />
 
-<Snippet
-  py={4}
-  preview={<Default />}
-  code={boxPreviewSnippet}
-  align="center"
-/>
+<Snippet py={4} preview={<Default />} code={defaultSnippet} align="center" />
 
 ## Usage
 

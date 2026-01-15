@@ -1,17 +1,15 @@
 import { PropsTable } from '@/components/PropsTable';
 import { Snippet } from '@/components/Snippet';
 import { CodeBlock } from '@/components/CodeBlock';
-import { Default, Surfaces, Sizes, WithIcons, Disabled, Controlled, DynamicContent } from './stories';
+import { toggleButtonPropDefs } from './props-definition';
 import {
-  toggleButtonPropDefs,
   toggleButtonUsageSnippet,
-  toggleButtonSurfacesSnippet,
-  toggleButtonSizesSnippet,
-  toggleButtonIconsSnippet,
-  toggleButtonDisabledSnippet,
-  toggleButtonControlledSnippet,
-  toggleButtonFunctionChildrenSnippet,
-} from './toggle-button.props';
+  defaultSnippet,
+  withIconSnippet,
+  sizesSnippet,
+  disabledSnippet,
+} from './snippets';
+import { Default, WithIcon, Sizes, Disabled } from './components';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
 import { ChangelogComponent } from '@/components/ChangelogComponent';
@@ -39,14 +37,14 @@ import { ToggleButtonDefinition } from '../../../utils/definitions';
 
 ## Examples
 
-### Surfaces
+### With Icon
 
 <Snippet
   align="center"
   py={4}
   open
-  preview={<Surfaces />}
-  code={toggleButtonSurfacesSnippet}
+  preview={<WithIcon />}
+  code={withIconSnippet}
 />
 
 ### Sizes
@@ -56,17 +54,7 @@ import { ToggleButtonDefinition } from '../../../utils/definitions';
   py={4}
   open
   preview={<Sizes />}
-  code={toggleButtonSizesSnippet}
-/>
-
-### With Icons
-
-<Snippet
-  align="center"
-  py={4}
-  open
-  preview={<WithIcons />}
-  code={toggleButtonIconsSnippet}
+  code={sizesSnippet}
 />
 
 ### Disabled
@@ -76,29 +64,7 @@ import { ToggleButtonDefinition } from '../../../utils/definitions';
   py={4}
   open
   preview={<Disabled />}
-  code={toggleButtonDisabledSnippet}
-/>
-
-### Controlled
-
-<Snippet
-  align="center"
-  py={4}
-  open
-  preview={<Controlled />}
-  code={toggleButtonControlledSnippet}
-/>
-
-### Dynamic Content with Function Children
-
-The `children` prop can be a function that receives render props, allowing you to dynamically customize the button content based on component state (such as `isSelected`, `isDisabled`, `isHovered`, etc.).
-
-<Snippet
-  align="center"
-  py={4}
-  open
-  preview={<DynamicContent />}
-  code={toggleButtonFunctionChildrenSnippet}
+  code={disabledSnippet}
 />
 
 <Theming definition={ToggleButtonDefinition} />

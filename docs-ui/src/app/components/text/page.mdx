@@ -1,17 +1,16 @@
 import { PropsTable } from '@/components/PropsTable';
-import { Default, AllVariants, AllWeights, AllColors, Truncate } from './stories';
 import { Snippet } from '@/components/Snippet';
 import { CodeBlock } from '@/components/CodeBlock';
+import { textPropDefs } from './props-definition';
 import {
-  textPropDefs,
   textUsageSnippet,
-  textDefaultSnippet,
-  textVariantsSnippet,
-  textWeightsSnippet,
-  textTruncateSnippet,
-  textResponsiveSnippet,
-  textColorsSnippet,
-} from './text.props';
+  defaultSnippet,
+  variantsSnippet,
+  weightsSnippet,
+  colorsSnippet,
+  truncateSnippet,
+} from './snippets';
+import { Default, Variants, Weights, Colors, Truncate } from './components';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
 import { TextDefinition } from '../../../utils/definitions';
@@ -25,7 +24,7 @@ import { ChangelogComponent } from '@/components/ChangelogComponent';
 <Snippet
   py={4}
   preview={<Default />}
-  code={textDefaultSnippet}
+  code={defaultSnippet}
 />
 
 ## Usage
@@ -45,8 +44,8 @@ appearance of the text.
 
 <Snippet
   open
-  preview={<AllVariants />}
-  code={textVariantsSnippet}
+  preview={<Variants />}
+  code={variantsSnippet}
 />
 
 ### All weights
@@ -56,8 +55,8 @@ appearance of the text.
 
 <Snippet
   open
-  preview={<AllWeights />}
-  code={textWeightsSnippet}
+  preview={<Weights />}
+  code={weightsSnippet}
 />
 
 ### All colors
@@ -67,8 +66,8 @@ appearance of the text.
 
 <Snippet
   open
-  preview={<AllColors />}
-  code={textColorsSnippet}
+  preview={<Colors />}
+  code={colorsSnippet}
 />
 
 ### Truncate
@@ -78,15 +77,8 @@ The `Text` component has a `truncate` prop that can be used to truncate the text
 <Snippet
   open
   preview={<Truncate />}
-  code={textTruncateSnippet}
+  code={truncateSnippet}
 />
-
-### Responsive
-
-You can also use the `variant` prop to change the appearance of the text based
-on the screen size.
-
-<CodeBlock code={textResponsiveSnippet} />
 
 <Theming definition={TextDefinition} />
 

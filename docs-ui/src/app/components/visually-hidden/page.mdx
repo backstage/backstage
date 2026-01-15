@@ -1,13 +1,13 @@
 import { PropsTable } from '@/components/PropsTable';
 import { Snippet } from '@/components/Snippet';
 import { CodeBlock } from '@/components/CodeBlock';
-import { Default, ExampleUsage } from './stories';
+import { visuallyHiddenPropDefs } from './props-definition';
 import {
-  visuallyHiddenPropDefs,
   visuallyHiddenUsageSnippet,
-  visuallyHiddenDefaultSnippet,
-  visuallyHiddenExampleUsageSnippet,
-} from './visually-hidden.props';
+  defaultSnippet,
+  exampleUsageSnippet,
+} from './snippets';
+import { Default, ExampleUsage } from './components';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
 import { VisuallyHiddenDefinition } from '../../../utils/definitions';
@@ -18,12 +18,7 @@ import { ChangelogComponent } from '@/components/ChangelogComponent';
   description="Visually hides content while keeping it accessible to screen readers."
 />
 
-<Snippet
-  align="start"
-  py={4}
-  preview={<Default />}
-  code={visuallyHiddenDefaultSnippet}
-/>
+<Snippet align="start" py={4} preview={<Default />} code={defaultSnippet} />
 
 ## Usage
 
@@ -43,7 +38,7 @@ Here's an example of providing screen reader context for a list of links in a fo
   align="start"
   py={4}
   preview={<ExampleUsage />}
-  code={visuallyHiddenExampleUsageSnippet}
+  code={exampleUsageSnippet}
   open
 />
 

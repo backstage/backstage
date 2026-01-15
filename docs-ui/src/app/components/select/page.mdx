@@ -1,9 +1,9 @@
 import { PropsTable } from '@/components/PropsTable';
 import { Snippet } from '@/components/Snippet';
 import { CodeBlock } from '@/components/CodeBlock';
-import { Preview, WithLabelAndDescription, Sizes, WithIcon, Disabled, DisabledOption, Searchable, MultipleSelection, SearchableMultiple } from './stories';
+import { Preview, WithLabelAndDescription, Sizes, WithIcon, Disabled, DisabledOption, Searchable, MultipleSelection, SearchableMultiple } from './components';
+import { selectPropDefs } from './props-definition';
 import {
-  selectPropDefs,
   selectUsageSnippet,
   selectDefaultSnippet,
   selectDescriptionSnippet,
@@ -15,7 +15,7 @@ import {
   selectMultipleSnippet,
   selectSearchableMultipleSnippet,
   selectDisabledOptionsSnippet,
-} from './select.props';
+} from './snippets';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
 import { ChangelogComponent } from '@/components/ChangelogComponent';

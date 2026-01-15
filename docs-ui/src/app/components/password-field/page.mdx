@@ -1,30 +1,25 @@
 import { PropsTable } from '@/components/PropsTable';
 import { Snippet } from '@/components/Snippet';
+import { inputPropDefs } from './props-definition';
 import {
-  inputPropDefs,
   passwordFieldUsageSnippet,
-  passwordFieldDefaultSnippet,
-  passwordFieldSizesSnippet,
-  passwordFieldDescriptionSnippet,
-} from './password-field.props';
+  withLabelSnippet,
+  sizesSnippet,
+  withDescriptionSnippet,
+} from './snippets';
+import { WithLabel, Sizes, WithDescription } from './components';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
 import { ChangelogComponent } from '@/components/ChangelogComponent';
 import { CodeBlock } from '@/components/CodeBlock';
 import { PasswordFieldDefinition } from '../../../utils/definitions';
-import { WithLabel, Sizes, WithDescription } from './stories';
 
 <PageTitle
   title="PasswordField"
   description="A password field component for your forms."
 />
 
-<Snippet
-  align="center"
-  py={4}
-  preview={<WithLabel />}
-  code={passwordFieldDefaultSnippet}
-/>
+<Snippet align="center" py={4} preview={<WithLabel />} code={withLabelSnippet} />
 
 ## Usage
 
@@ -45,7 +40,7 @@ We support two different sizes: `small`, `medium`.
   py={4}
   open
   preview={<Sizes />}
-  code={passwordFieldSizesSnippet}
+  code={sizesSnippet}
 />
 
 ### With description
@@ -57,7 +52,7 @@ Here's a simple PasswordField with a description.
   py={4}
   open
   preview={<WithDescription />}
-  code={passwordFieldDescriptionSnippet}
+  code={withDescriptionSnippet}
 />
 
 <Theming definition={PasswordFieldDefinition} />

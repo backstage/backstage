@@ -1,10 +1,12 @@
 import { PropsTable } from '@/components/PropsTable';
 import { Snippet } from '@/components/Snippet';
 import { CodeBlock } from '@/components/CodeBlock';
-import { Default, WithLink, WithIcon, Sizes, RemovingTags, Disabled } from './stories';
+import { Default, WithLink, WithIcon, Sizes, RemovingTags, Disabled } from './components';
 import {
   tagGroupPropDefs,
   tagPropDefs,
+} from './props-definition';
+import {
   usage,
   preview,
   withLink,
@@ -12,7 +14,7 @@ import {
   withIcons,
   sizes,
   removingTags,
-} from './tag-group.props';
+} from './snippets';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
 import { TagGroupDefinition } from '../../../utils/definitions';

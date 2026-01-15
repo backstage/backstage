@@ -1,16 +1,15 @@
 import { PropsTable } from '@/components/PropsTable';
 import { CodeBlock } from '@/components/CodeBlock';
 import { Snippet } from '@/components/Snippet';
-import { Default } from './stories';
+import { flexPropDefs } from './props-definition';
 import {
-  flexPropDefs,
   flexUsageSnippet,
-  flexDefaultSnippet,
-  flexFAQ1Snippet,
+  defaultSnippet,
   flexSimpleSnippet,
   flexResponsiveSnippet,
   flexAlignSnippet,
-} from './flex.props';
+} from './snippets';
+import { Default } from './components';
 import { spacingPropDefs } from '@/utils/propDefs';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
@@ -23,12 +22,7 @@ import { ChangelogComponent } from '@/components/ChangelogComponent';
   description="A responsive flex container component for vertical stacking with customizable gaps."
 />
 
-<Snippet
-  py={4}
-  align="center"
-  preview={<Default />}
-  code={flexDefaultSnippet}
-/>
+<Snippet py={4} align="center" preview={<Default />} code={defaultSnippet} />
 
 ## Usage
 

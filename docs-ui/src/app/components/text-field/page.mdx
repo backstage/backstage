@@ -1,13 +1,13 @@
 import { PropsTable } from '@/components/PropsTable';
 import { Snippet } from '@/components/Snippet';
-import { WithLabel, Sizes, WithDescription } from './stories';
+import { inputPropDefs } from './props-definition';
 import {
-  inputPropDefs,
   textFieldUsageSnippet,
-  textFieldDefaultSnippet,
-  textFieldSizesSnippet,
-  textFieldDescriptionSnippet,
-} from './text-field.props';
+  withLabelSnippet,
+  sizesSnippet,
+  withDescriptionSnippet,
+} from './snippets';
+import { WithLabel, Sizes, WithDescription } from './components';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
 import { TextFieldDefinition } from '../../../utils/definitions';
@@ -19,12 +19,7 @@ import { CodeBlock } from '@/components/CodeBlock';
   description="A text field component for your forms."
 />
 
-<Snippet
-  align="center"
-  py={4}
-  preview={<WithLabel />}
-  code={textFieldDefaultSnippet}
-/>
+<Snippet align="center" py={4} preview={<WithLabel />} code={withLabelSnippet} />
 
 ## Usage
 
@@ -45,7 +40,7 @@ We support two different sizes: `small`, `medium`.
   py={4}
   open
   preview={<Sizes />}
-  code={textFieldSizesSnippet}
+  code={sizesSnippet}
 />
 
 ### With description
@@ -57,7 +52,7 @@ Here's a simple TextField with a description.
   py={4}
   open
   preview={<WithDescription />}
-  code={textFieldDescriptionSnippet}
+  code={withDescriptionSnippet}
 />
 
 <Theming definition={TextFieldDefinition} />

@@ -1,14 +1,14 @@
 import { PropsTable } from '@/components/PropsTable';
 import { Snippet } from '@/components/Snippet';
-import { WithLabel, Sizes, WithDescription, StartCollapsed } from './stories';
+import { searchFieldPropDefs } from './props-definition';
 import {
-  searchFieldPropDefs,
   searchFieldUsageSnippet,
-  searchFieldDefaultSnippet,
-  searchFieldSizesSnippet,
-  searchFieldDescriptionSnippet,
-  searchFieldCollapsibleSnippet,
-} from './search-field.props';
+  withLabelSnippet,
+  sizesSnippet,
+  withDescriptionSnippet,
+  startCollapsedSnippet,
+} from './snippets';
+import { WithLabel, Sizes, WithDescription, StartCollapsed } from './components';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
 import { ChangelogComponent } from '@/components/ChangelogComponent';
@@ -20,12 +20,7 @@ import { SearchFieldDefinition } from '../../../utils/definitions';
   description="A SearchField is a text field designed for searches."
 />
 
-<Snippet
-  align="center"
-  py={4}
-  preview={<WithLabel />}
-  code={searchFieldDefaultSnippet}
-/>
+<Snippet align="center" py={4} preview={<WithLabel />} code={withLabelSnippet} />
 
 ## Usage
 
@@ -46,7 +41,7 @@ We support two different sizes: `small`, `medium`.
   py={4}
   open
   preview={<Sizes />}
-  code={searchFieldSizesSnippet}
+  code={sizesSnippet}
 />
 
 ### With description
@@ -58,7 +53,7 @@ Here's a simple SearchField with a description.
   py={4}
   open
   preview={<WithDescription />}
-  code={searchFieldDescriptionSnippet}
+  code={withDescriptionSnippet}
 />
 
 ### Collapsible
@@ -70,7 +65,7 @@ You can make the SearchField collapsible by setting the `startCollapsed` prop to
   py={4}
   open
   preview={<StartCollapsed />}
-  code={searchFieldCollapsibleSnippet}
+  code={startCollapsedSnippet}
 />
 
 <Theming definition={SearchFieldDefinition} />

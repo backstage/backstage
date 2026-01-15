@@ -1,17 +1,19 @@
 import { PropsTable } from '@/components/PropsTable';
-import { CustomSize, WithLongBody, WithListRow } from './stories';
 import { Snippet } from '@/components/Snippet';
 import { CodeBlock } from '@/components/CodeBlock';
 import {
   cardPropDefs,
-  cardUsageSnippet,
-  cardDefaultSnippet,
   cardHeaderPropDefs,
   cardBodyPropDefs,
   cardFooterPropDefs,
-  cardLongBodySnippet,
-  cardListRowSnippet,
-} from './card.props';
+} from './props-definition';
+import {
+  cardUsageSnippet,
+  defaultSnippet,
+  customSizeSnippet,
+  withLongBodySnippet,
+} from './snippets';
+import { Default, CustomSize, WithLongBody } from './components';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
 import { CardDefinition } from '../../../utils/definitions';
@@ -25,8 +27,8 @@ import { ChangelogComponent } from '@/components/ChangelogComponent';
 <Snippet
   align="center"
   py={4}
-  preview={<CustomSize />}
-  code={cardDefaultSnippet}
+  preview={<Default />}
+  code={defaultSnippet}
 />
 
 ## Usage
@@ -61,6 +63,18 @@ To display a footer in a card, use the `CardFooter` component. This will be fixe
 
 ## Examples
 
+### Custom size
+
+Here's a view when card has a custom size.
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<CustomSize />}
+  code={customSizeSnippet}
+  open
+/>
+
 ### With long body
 
 Here's a view when card has a long body.
@@ -69,19 +83,7 @@ Here's a view when card has a long body.
   align="center"
   py={4}
   preview={<WithLongBody />}
-  code={cardLongBodySnippet}
-  open
-/>
-
-### With list
-
-Here's a view when card has a list.
-
-<Snippet
-  align="center"
-  py={4}
-  preview={<WithListRow />}
-  code={cardListRowSnippet}
+  code={withLongBodySnippet}
   open
 />
 

@@ -1,18 +1,15 @@
 import { PropsTable } from '@/components/PropsTable';
 import { Snippet } from '@/components/Snippet';
 import { CodeBlock } from '@/components/CodeBlock';
-import { Variants, Sizes, Disabled, Loading } from './stories';
+import { buttonIconPropDefs } from './props-definition';
 import {
-  buttonIconPropDefs,
   buttonIconUsageSnippet,
-  buttonIconDefaultSnippet,
-  buttonIconVariantsSnippet,
-  buttonIconSizesSnippet,
-  buttonIconDisabledSnippet,
-  buttonIconLoadingSnippet,
-  buttonIconResponsiveSnippet,
-  buttonIconAsLinkSnippet,
-} from './button-icon.props';
+  variantsSnippet,
+  sizesSnippet,
+  disabledSnippet,
+  loadingSnippet,
+} from './snippets';
+import { Variants, Sizes, Disabled, Loading } from './components';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
 import { ButtonIconDefinition } from '../../../utils/definitions';
@@ -23,12 +20,7 @@ import { ChangelogComponent } from '@/components/ChangelogComponent';
   description="A button component with a single icon that can be used to trigger actions."
 />
 
-<Snippet
-  align="center"
-  py={4}
-  preview={<Variants />}
-  code={buttonIconDefaultSnippet}
-/>
+<Snippet align="center" py={4} preview={<Variants />} code={variantsSnippet} />
 
 ## Usage
 
@@ -49,7 +41,7 @@ Here's a view when buttons have different variants.
   py={4}
   open
   preview={<Variants />}
-  code={buttonIconVariantsSnippet}
+  code={variantsSnippet}
 />
 
 ### Sizes
@@ -61,7 +53,7 @@ Here's a view when buttons have different sizes.
   py={4}
   open
   preview={<Sizes />}
-  code={buttonIconSizesSnippet}
+  code={sizesSnippet}
 />
 
 ### Disabled
@@ -73,7 +65,7 @@ Here's a view when buttons are disabled.
   py={4}
   open
   preview={<Disabled />}
-  code={buttonIconDisabledSnippet}
+  code={disabledSnippet}
 />
 
 ### Loading
@@ -85,14 +77,8 @@ Here's a view when buttons are in a loading state.
   py={4}
   open
   preview={<Loading />}
-  code={buttonIconLoadingSnippet}
+  code={loadingSnippet}
 />
-
-### Responsive
-
-Here's a view when buttons are responsive.
-
-<CodeBlock code={buttonIconResponsiveSnippet} />
 
 <Theming definition={ButtonIconDefinition} />
 

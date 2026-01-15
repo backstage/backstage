@@ -1,35 +1,36 @@
 import { PropsTable } from '@/components/PropsTable';
 import { Snippet } from '@/components/Snippet';
 import { CodeBlock } from '@/components/CodeBlock';
-import { Variants, Sizes, WithIcons, Disabled, Loading } from './stories';
-import { Variants as ButtonLinkVariants } from '../button-link/stories';
+import { buttonPropDefs } from './props-definition';
 import {
-  buttonPropDefs,
+  variantsSnippet,
+  sizesSnippet,
+  withIconsSnippet,
+  disabledSnippet,
+  loadingSnippet,
+  asLinkSnippet,
   buttonSnippetUsage,
-  buttonVariantsSnippet,
-  buttonSizesSnippet,
-  buttonIconsSnippet,
-  buttonDisabledSnippet,
-  buttonLoadingSnippet,
   buttonResponsiveSnippet,
-  buttonAsLinkSnippet,
-} from './button.props';
+} from './snippets';
 import { ChangelogComponent } from '@/components/ChangelogComponent';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
 import { ButtonDefinition } from '../../../utils/definitions';
+import {
+  Variants,
+  Sizes,
+  WithIcons,
+  Disabled,
+  Loading,
+  AsLink,
+} from './components';
 
 <PageTitle
   title="Button"
   description="A button component that can be used to trigger actions."
 />
 
-<Snippet
-  align="center"
-  py={4}
-  preview={<Variants />}
-  code={buttonVariantsSnippet}
-/>
+<Snippet align="center" py={4} preview={<Variants />} code={variantsSnippet} />
 
 ## Usage
 
@@ -50,20 +51,14 @@ Here's a view when buttons have different variants.
   py={4}
   open
   preview={<Variants />}
-  code={buttonVariantsSnippet}
+  code={variantsSnippet}
 />
 
 ### Sizes
 
 Here's a view when buttons have different sizes.
 
-<Snippet
-  align="center"
-  py={4}
-  open
-  preview={<Sizes />}
-  code={buttonSizesSnippet}
-/>
+<Snippet align="center" py={4} open preview={<Sizes />} code={sizesSnippet} />
 
 ### With Icons
 
@@ -74,7 +69,7 @@ Here's a view when buttons have icons.
   py={4}
   open
   preview={<WithIcons />}
-  code={buttonIconsSnippet}
+  code={withIconsSnippet}
 />
 
 ### Disabled
@@ -86,7 +81,7 @@ Here's a view when buttons are disabled.
   py={4}
   open
   preview={<Disabled />}
-  code={buttonDisabledSnippet}
+  code={disabledSnippet}
 />
 
 ### Loading
@@ -98,7 +93,7 @@ Here's a view when buttons are in a loading state.
   py={4}
   open
   preview={<Loading />}
-  code={buttonLoadingSnippet}
+  code={loadingSnippet}
 />
 
 ### Responsive
@@ -111,13 +106,7 @@ Here's a view when buttons are responsive.
 
 If you want to use a button as a link, please use the `ButtonLink` component.
 
-<Snippet
-  align="center"
-  py={4}
-  open
-  preview={<ButtonLinkVariants />}
-  code={buttonAsLinkSnippet}
-/>
+<Snippet align="center" py={4} open preview={<AsLink />} code={asLinkSnippet} />
 
 <Theming definition={ButtonDefinition} />
 

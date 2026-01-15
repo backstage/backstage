@@ -1,13 +1,13 @@
 import { PropsTable } from '@/components/PropsTable';
-import { Default, AllVariants } from './stories';
 import { Snippet } from '@/components/Snippet';
 import { CodeBlock } from '@/components/CodeBlock';
+import { checkboxPropDefs } from './props-definition';
 import {
-  checkboxPropDefs,
   checkboxUsageSnippet,
-  checkboxDefaultSnippet,
-  checkboxVariantsSnippet,
-} from './checkbox.props';
+  defaultSnippet,
+  allVariantsSnippet,
+} from './snippets';
+import { Default, AllVariants } from './components';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
 import { CheckboxDefinition } from '../../../utils/definitions';
@@ -18,12 +18,7 @@ import { ChangelogComponent } from '@/components/ChangelogComponent';
   description="A checkbox component that can be used to trigger actions."
 />
 
-<Snippet
-  align="center"
-  py={4}
-  preview={<Default />}
-  code={checkboxDefaultSnippet}
-/>
+<Snippet align="center" py={4} preview={<Default />} code={defaultSnippet} />
 
 ## Usage
 
@@ -44,7 +39,7 @@ Here's a view when checkboxes have different variants.
   py={4}
   open
   preview={<AllVariants />}
-  code={checkboxVariantsSnippet}
+  code={allVariantsSnippet}
 />
 
 <Theming definition={CheckboxDefinition} />
