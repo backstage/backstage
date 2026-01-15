@@ -7,6 +7,8 @@ import { ButtonProps as ButtonProps_2 } from 'react-aria-components';
 import { CellProps as CellProps_2 } from 'react-aria-components';
 import { CheckboxProps as CheckboxProps_2 } from 'react-aria-components';
 import { ColumnProps as ColumnProps_2 } from 'react-aria-components';
+import type { ColumnSize } from '@react-types/table';
+import type { ColumnStaticSize } from '@react-types/table';
 import { ComponentProps } from 'react';
 import type { ComponentPropsWithRef } from 'react';
 import { DetailedHTMLProps } from 'react';
@@ -478,6 +480,8 @@ export interface ColumnConfig<T extends TableItem> {
   // (undocumented)
   cell: (item: T) => ReactNode;
   // (undocumented)
+  defaultWidth?: ColumnSize | null;
+  // (undocumented)
   header?: () => ReactNode;
   // (undocumented)
   id: string;
@@ -490,7 +494,11 @@ export interface ColumnConfig<T extends TableItem> {
   // (undocumented)
   label: string;
   // (undocumented)
-  width?: number | string;
+  maxWidth?: ColumnStaticSize | null;
+  // (undocumented)
+  minWidth?: ColumnStaticSize | null;
+  // (undocumented)
+  width?: ColumnSize | null;
 }
 
 // @public (undocumented)
