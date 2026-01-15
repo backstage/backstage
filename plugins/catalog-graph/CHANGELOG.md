@@ -1,5 +1,11 @@
 # @backstage/plugin-catalog-graph
 
+## 0.5.5
+
+### Patch Changes
+
+- 73b82a1: Update for the `qs` library bump: the old array limit setting has changed to be more strict; you can no longer just give a zero to mean unlimited. So we choose an arbitrary high value, to at least go higher than the default 20.
+
 ## 0.5.4
 
 ### Patch Changes
