@@ -142,7 +142,7 @@ export class TaskManager implements TaskContext {
     return this.task.taskId;
   }
 
-  async rehydrateWorkspace(options: {
+  async rehydrateWorkspace?(options: {
     taskId: string;
     targetPath: string;
   }): Promise<void> {
@@ -160,44 +160,50 @@ export class TaskManager implements TaskContext {
     });
   }
 
-  async getTaskState() {
-    return this.storage.getTaskState({ taskId: this.task.taskId });
+  async getTaskState?() {
+    return this.storage.getTaskState?.({ taskId: this.task.taskId });
   }
 
-  async updateCheckpoint(
-    options: Parameters<TaskContext['updateCheckpoint']>[0],
+  async updateCheckpoint?(
+    options: Parameters<NonNullable<TaskContext['updateCheckpoint']>>[0],
   ): Promise<void> {
     const { key, ...value } = options;
 
-    this.task.state ??= { checkpoints: {}, steps: {} };
-    this.task.state.checkpoints[key] = value;
+    const state = this.task.state as TaskState | undefined;
+    const newState: TaskState = state ?? { checkpoints: {}, steps: {} };
+    newState.checkpoints[key] = value;
+    this.task.state = newState;
 
-    await this.storage.saveTaskState({
+    await this.storage.saveTaskState?.({
       taskId: this.task.taskId,
       state: this.task.state,
     });
   }
 
-  async updateStepState(
-    options: Parameters<TaskContext['updateStepState']>[0],
-  ): Promise<void> {
+  async updateStepState?(options: {
+    stepId: string;
+    status: 'completed' | 'failed';
+    output: { [name: string]: JsonValue };
+  }): Promise<void> {
     const { stepId, status, output } = options;
 
-    this.task.state ??= { checkpoints: {}, steps: {} };
-    this.task.state.steps ??= {};
-    this.task.state.steps[stepId] = { status, output };
+    const state = this.task.state as TaskState | undefined;
+    const newState: TaskState = state ?? { checkpoints: {}, steps: {} };
+    newState.steps ??= {};
+    newState.steps[stepId] = { status, output };
+    this.task.state = newState;
 
-    await this.storage.saveTaskState({
+    await this.storage.saveTaskState?.({
       taskId: this.task.taskId,
       state: this.task.state,
     });
   }
 
-  async serializeWorkspace(options: { path: string }): Promise<void> {
+  async serializeWorkspace?(options: { path: string }): Promise<void> {
     await this.workspaceService.serializeWorkspace(options);
   }
 
-  async cleanWorkspace(): Promise<void> {
+  async cleanWorkspace?(): Promise<void> {
     await this.workspaceService.cleanWorkspace();
   }
 
@@ -269,9 +275,9 @@ export interface CurrentClaimedTask {
    */
   secrets?: TaskSecrets;
   /**
-   * The state of checkpoints and steps of the task.
+   * The state of checkpoints of the task.
    */
-  state?: TaskState;
+  state?: JsonObject;
   /**
    * The creator of the task.
    */
@@ -372,9 +378,9 @@ export class StorageTaskBroker implements TaskBroker {
         'scaffolder.EXPERIMENTAL_recoverTasksTimeout',
         defaultTimeout,
       );
-      const { ids: recoveredTaskIds } = await this.storage.recoverTasks({
+      const { ids: recoveredTaskIds } = (await this.storage.recoverTasks?.({
         timeout,
-      });
+      })) ?? { ids: [] };
       if (recoveredTaskIds.length > 0) {
         this.signalDispatch();
       }
@@ -396,7 +402,7 @@ export class StorageTaskBroker implements TaskBroker {
             spec: pendingTask.spec,
             secrets: pendingTask.secrets,
             createdBy: pendingTask.createdBy,
-            state: pendingTask.state as TaskState,
+            state: pendingTask.state,
           },
           this.storage,
           abortController.signal,
@@ -524,7 +530,7 @@ export class StorageTaskBroker implements TaskBroker {
             .stepId
         : 0;
 
-    await this.storage.cancelTask({
+    await this.storage.cancelTask?.({
       taskId,
       body: {
         message: `Step ${currentStepId} has been cancelled.`,
@@ -538,7 +544,7 @@ export class StorageTaskBroker implements TaskBroker {
     secrets?: TaskSecrets;
     taskId: string;
   }): Promise<void> {
-    await this.storage.retryTask(options);
+    await this.storage.retryTask?.(options);
     this.signalDispatch();
   }
 }

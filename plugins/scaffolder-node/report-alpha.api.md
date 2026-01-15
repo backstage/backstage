@@ -226,11 +226,6 @@ export type TemplateGlobalFunctionExample = {
 };
 
 // @alpha
-export type UpdateTaskCheckpointOptions = {
-  key: string;
-} & CheckpointStateValue;
-
-// @alpha
 export interface WorkspaceProvider {
   // (undocumented)
   cleanWorkspace(options: { taskId: string }): Promise<void>;

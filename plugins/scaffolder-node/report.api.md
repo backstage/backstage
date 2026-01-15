@@ -86,6 +86,17 @@ export function addFiles(options: {
   logger?: LoggerService | undefined;
 }): Promise<void>;
 
+// @public
+export type CheckpointStateValue =
+  | {
+      status: 'failed';
+      reason: string;
+    }
+  | {
+      status: 'success';
+      value: JsonValue;
+    };
+
 // @public (undocumented)
 export function cloneRepo(options: {
   url: string;
@@ -477,7 +488,7 @@ export type SerializedTask = {
   lastHeartbeatAt?: string;
   createdBy?: string;
   secrets?: TaskSecrets;
-  state?: JsonObject;
+  state?: TaskState;
 };
 
 // @public @deprecated
@@ -492,6 +503,14 @@ export type SerializedTaskEvent = {
   } & JsonObject;
   type: TaskEventType;
   createdAt: string;
+};
+
+// @public
+export type StepStateValue = {
+  status: 'completed' | 'failed';
+  output: {
+    [name: string]: JsonValue;
+  };
 };
 
 // @public @deprecated
@@ -571,7 +590,7 @@ export interface TaskContext {
   // (undocumented)
   getTaskState?(): Promise<
     | {
-        state?: JsonObject;
+        state?: TaskState;
       }
     | undefined
   >;
@@ -594,6 +613,8 @@ export interface TaskContext {
   taskId?: string;
   // (undocumented)
   updateCheckpoint?(options: UpdateTaskCheckpointOptions): Promise<void>;
+  // (undocumented)
+  updateStepState?(options: UpdateStepStateOptions): Promise<void>;
 }
 
 // @public @deprecated
@@ -621,6 +642,16 @@ export type TaskFilters =
 // @public
 export type TaskSecrets = Record<string, string> & {
   backstageToken?: string;
+};
+
+// @public
+export type TaskState = {
+  checkpoints?: {
+    [key: string]: CheckpointStateValue;
+  };
+  steps?: {
+    [stepId: string]: StepStateValue;
+  };
 };
 
 // @public @deprecated
@@ -703,4 +734,14 @@ export type TemplateFilter = (
 export type TemplateGlobal =
   | ((...args: JsonValue[]) => JsonValue | undefined)
   | JsonValue;
+
+// @public
+export type UpdateStepStateOptions = {
+  stepId: string;
+} & StepStateValue;
+
+// @public
+export type UpdateTaskCheckpointOptions = {
+  key: string;
+} & CheckpointStateValue;
 ```
