@@ -21,6 +21,7 @@ export {
 export { ApiBlueprint } from './ApiBlueprint';
 export { AppRootElementBlueprint } from './AppRootElementBlueprint';
 export { AppRootWrapperBlueprint } from './AppRootWrapperBlueprint';
+export { PluginWrapperBlueprint } from './PluginWrapperBlueprint';
 export { IconBundleBlueprint } from './IconBundleBlueprint';
 export {
   NavContentBlueprint,
