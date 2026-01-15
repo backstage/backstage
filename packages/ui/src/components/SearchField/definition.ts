@@ -29,7 +29,7 @@ export const SearchFieldDefinition = {
     inputIcon: 'bui-SearchFieldInputIcon',
   },
   dataAttributes: {
-    startCollapsed: [true, false] as const,
+    startcollapsed: [true, false] as const,
     size: ['small', 'medium'] as const,
   },
 } as const satisfies ComponentDefinition;

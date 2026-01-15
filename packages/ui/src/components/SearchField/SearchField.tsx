@@ -47,13 +47,15 @@ export const SearchField = forwardRef<HTMLDivElement, SearchFieldProps>(
       }
     }, [label, ariaLabel, ariaLabelledBy]);
 
+    // ignore startCollapsed from props to avoid duplication with the cleanedProps startcollapsed
+    const { startCollapsed, ...restProps } = props;
     const { classNames, dataAttributes, style, cleanedProps } = useStyles(
       SearchFieldDefinition,
       {
         size: 'small',
         placeholder: 'Search',
-        startCollapsed: false,
-        ...props,
+        ...restProps,
+        startcollapsed: startCollapsed ?? false,
       },
     );
 
@@ -64,7 +66,7 @@ export const SearchField = forwardRef<HTMLDivElement, SearchFieldProps>(
       isRequired,
       secondaryLabel,
       placeholder,
-      startCollapsed,
+      startcollapsed: startCollapsed,
       ...rest
     } = cleanedProps;
 
