@@ -310,6 +310,7 @@ describe('StorageTaskBroker', () => {
             value: 'https://github.com/backstage/backstage.git',
           },
         },
+        steps: {},
       },
     });
   });
