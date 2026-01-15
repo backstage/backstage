@@ -355,7 +355,7 @@ export type ScaffolderUsageExample = {
 export type TaskEventType = 'cancelled' | 'completion' | 'log' | 'recovered';
 
 // @public
-export type TaskRecoverStrategy = 'none' | 'startOver';
+export type TaskRecoverStrategy = 'none' | 'startOver' | 'resume';
 
 // @public
 export interface TaskRecovery {
@@ -507,6 +507,6 @@ export interface TemplatePresentationV1beta3 extends JsonObject {
 
 // @public
 export interface TemplateRecoveryV1beta3 extends JsonObject {
-  EXPERIMENTAL_strategy?: 'none' | 'startOver';
+  EXPERIMENTAL_strategy?: 'none' | 'startOver' | 'resume';
 }
 ```

@@ -19,23 +19,50 @@ import { PermissionCriteria } from '@backstage/plugin-permission-common';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { JsonObject, JsonValue, Observable } from '@backstage/types';
 
-type CheckpointStateValue =
+/**
+ * CheckpointStateValue
+ *
+ * @public
+ */
+export type CheckpointStateValue =
   | { status: 'failed'; reason: string }
   | { status: 'success'; value: JsonValue };
 
-type StepStateValue = {
+/**
+ * StepStateValue
+ *
+ * @public
+ */
+export type StepStateValue = {
   status: 'completed' | 'failed';
   output: { [name: string]: JsonValue };
 };
 
-type TaskState = {
+/**
+ * TaskState
+ *
+ * @public
+ */
+export type TaskState = {
   checkpoints?: { [key: string]: CheckpointStateValue };
   steps?: { [stepId: string]: StepStateValue };
 };
 
-type UpdateTaskCheckpointOptions = { key: string } & CheckpointStateValue;
+/**
+ * UpdateTaskCheckpointOptions
+ *
+ * @public
+ */
+export type UpdateTaskCheckpointOptions = {
+  key: string;
+} & CheckpointStateValue;
 
-type UpdateStepStateOptions = { stepId: string } & StepStateValue;
+/**
+ * UpdateStepStateOptions
+ *
+ * @public
+ */
+export type UpdateStepStateOptions = { stepId: string } & StepStateValue;
 
 /**
  * TaskSecrets
@@ -186,17 +213,17 @@ export interface TaskContext {
 
   emitLog(message: string, logMetadata?: JsonObject): Promise<void>;
 
-  getTaskState(): Promise<{ state?: TaskState } | undefined>;
+  getTaskState?(): Promise<{ state?: TaskState } | undefined>;
 
-  updateCheckpoint(options: UpdateTaskCheckpointOptions): Promise<void>;
+  updateCheckpoint?(options: UpdateTaskCheckpointOptions): Promise<void>;
 
-  updateStepState(options: UpdateStepStateOptions): Promise<void>;
+  updateStepState?(options: UpdateStepStateOptions): Promise<void>;
 
-  serializeWorkspace(options: { path: string }): Promise<void>;
+  serializeWorkspace?(options: { path: string }): Promise<void>;
 
-  cleanWorkspace(): Promise<void>;
+  cleanWorkspace?(): Promise<void>;
 
-  rehydrateWorkspace(options: {
+  rehydrateWorkspace?(options: {
     taskId: string;
     targetPath: string;
   }): Promise<void>;

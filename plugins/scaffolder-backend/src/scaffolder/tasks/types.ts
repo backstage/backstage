@@ -82,15 +82,15 @@ export type TaskStoreCreateTaskResult = {
  *
  */
 export interface TaskStore {
-  cancelTask(options: TaskStoreEmitOptions): Promise<void>;
+  cancelTask?(options: TaskStoreEmitOptions): Promise<void>;
 
   createTask(
     options: TaskStoreCreateTaskOptions,
   ): Promise<TaskStoreCreateTaskResult>;
 
-  retryTask(options: { secrets?: TaskSecrets; taskId: string }): Promise<void>;
+  retryTask?(options: { secrets?: TaskSecrets; taskId: string }): Promise<void>;
 
-  recoverTasks(
+  recoverTasks?(
     options: TaskStoreRecoverTaskOptions,
   ): Promise<{ ids: string[] }>;
 
@@ -125,14 +125,17 @@ export interface TaskStore {
 
   emitLogEvent(options: TaskStoreEmitOptions): Promise<void>;
 
-  getTaskState({ taskId }: { taskId: string }): Promise<
+  getTaskState?({ taskId }: { taskId: string }): Promise<
     | {
         state: JsonObject;
       }
     | undefined
   >;
 
-  saveTaskState(options: { taskId: string; state?: JsonObject }): Promise<void>;
+  saveTaskState?(options: {
+    taskId: string;
+    state?: JsonObject;
+  }): Promise<void>;
 
   listEvents(
     options: TaskStoreListEventsOptions,
@@ -145,9 +148,9 @@ export interface TaskStore {
     targetPath: string;
   }): Promise<void>;
 
-  cleanWorkspace({ taskId }: { taskId: string }): Promise<void>;
+  cleanWorkspace?({ taskId }: { taskId: string }): Promise<void>;
 
-  serializeWorkspace({
+  serializeWorkspace?({
     path,
     taskId,
   }: {
