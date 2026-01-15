@@ -37,3 +37,4 @@ export {
 export { ThemeBlueprint } from './ThemeBlueprint';
 export { TranslationBlueprint } from './TranslationBlueprint';
 export { SwappableComponentBlueprint } from './SwappableComponentBlueprint';
+export { type ExtensionConditionFunc } from './types';
