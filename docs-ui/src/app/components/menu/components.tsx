@@ -12,17 +12,35 @@ import {
 } from '../../../../../packages/ui/src/components/Menu/Menu';
 import { Button } from '../../../../../packages/ui/src/components/Button/Button';
 import { MemoryRouter } from 'react-router-dom';
-import { RiFileLine, RiFolderLine, RiImageLine } from '@remixicon/react';
+import {
+  RiChat1Line,
+  RiFileLine,
+  RiFolderLine,
+  RiImageLine,
+  RiSettingsLine,
+  RiShareBoxLine,
+} from '@remixicon/react';
 
 export const Preview = () => (
   <MemoryRouter>
     <MenuTrigger>
-      <Button variant="secondary">Menu</Button>
+      <Button aria-label="Menu">Menu</Button>
       <Menu>
-        <MenuItem>New File</MenuItem>
-        <MenuItem>Open File</MenuItem>
-        <MenuItem>Save</MenuItem>
-        <MenuItem>Save As...</MenuItem>
+        <MenuItem>Edit</MenuItem>
+        <MenuItem>Duplicate</MenuItem>
+        <MenuItem>Rename</MenuItem>
+        <MenuSeparator />
+        <MenuItem iconStart={<RiShareBoxLine />}>Share</MenuItem>
+        <MenuItem iconStart={<RiChat1Line />}>Feedback</MenuItem>
+        <MenuSeparator />
+        <SubmenuTrigger>
+          <MenuItem iconStart={<RiSettingsLine />}>Settings</MenuItem>
+          <Menu placement="right top">
+            <MenuItem>Edit</MenuItem>
+            <MenuItem>Duplicate</MenuItem>
+            <MenuItem>Rename</MenuItem>
+          </Menu>
+        </SubmenuTrigger>
       </Menu>
     </MenuTrigger>
   </MemoryRouter>
@@ -53,9 +71,9 @@ export const PreviewIcons = () => (
     <MenuTrigger>
       <Button variant="secondary">Menu</Button>
       <Menu>
-        <MenuItem icon={<RiFileLine />}>New File</MenuItem>
-        <MenuItem icon={<RiFolderLine />}>New Folder</MenuItem>
-        <MenuItem icon={<RiImageLine />}>New Image</MenuItem>
+        <MenuItem iconStart={<RiFileLine />}>New File</MenuItem>
+        <MenuItem iconStart={<RiFolderLine />}>New Folder</MenuItem>
+        <MenuItem iconStart={<RiImageLine />}>New Image</MenuItem>
       </Menu>
     </MenuTrigger>
   </MemoryRouter>
@@ -110,7 +128,7 @@ export const PreviewSeparators = () => (
 
 export const PreviewAutocompleteMenu = () => (
   <MemoryRouter>
-    <MenuAutocomplete label="Search" placeholder="Type to search...">
+    <MenuAutocomplete placeholder="Type to search...">
       <MenuItem>Option 1</MenuItem>
       <MenuItem>Option 2</MenuItem>
       <MenuItem>Option 3</MenuItem>
@@ -120,7 +138,7 @@ export const PreviewAutocompleteMenu = () => (
 
 export const PreviewAutocompleteListbox = () => (
   <MemoryRouter>
-    <MenuAutocomplete label="Select an option" placeholder="Type to filter...">
+    <MenuAutocomplete placeholder="Type to filter...">
       <MenuListBoxItem>Option 1</MenuListBoxItem>
       <MenuListBoxItem>Option 2</MenuListBoxItem>
       <MenuListBoxItem>Option 3</MenuListBoxItem>
@@ -130,11 +148,7 @@ export const PreviewAutocompleteListbox = () => (
 
 export const PreviewAutocompleteListboxMultiple = () => (
   <MemoryRouter>
-    <MenuAutocomplete
-      label="Select multiple options"
-      placeholder="Type to filter..."
-      selectionMode="multiple"
-    >
+    <MenuAutocomplete placeholder="Type to filter..." selectionMode="multiple">
       <MenuListBoxItem>Option 1</MenuListBoxItem>
       <MenuListBoxItem>Option 2</MenuListBoxItem>
       <MenuListBoxItem>Option 3</MenuListBoxItem>

@@ -1,163 +1,188 @@
 'use client';
 
-import dynamic from 'next/dynamic';
-
-// Import Table components dynamically with ssr: false to avoid SSR issues
-const TableComponents = dynamic(
-  () =>
-    import('../../../../../packages/ui/src/components/Table').then(mod => ({
-      default: () => null, // Placeholder
-      Table: mod.Table,
-      TableHeader: mod.TableHeader,
-      Column: mod.Column,
-      TableBody: mod.TableBody,
-      Row: mod.Row,
-      Cell: mod.Cell,
-    })),
-  { ssr: false },
-);
-
 import {
   Table,
-  TableHeader,
-  Column,
-  TableBody,
-  Row,
-  Cell,
+  CellProfile,
+  CellText,
+  type ColumnConfig,
+  useTable,
 } from '../../../../../packages/ui/src/components/Table';
+import { Flex } from '../../../../../packages/ui/src/components/Flex/Flex';
+import { Text } from '../../../../../packages/ui/src/components/Text/Text';
+import { RadioGroup } from '../../../../../packages/ui/src/components/RadioGroup/RadioGroup';
+import { Radio } from '../../../../../packages/ui/src/components/RadioGroup';
+import { data as data4 } from '../../../../../packages/ui/src/components/Table/stories/mocked-data4';
 import { useState } from 'react';
-import type { Selection } from 'react-aria-components';
+import {
+  selectionData,
+  selectionColumns,
+} from '../../../../../packages/ui/src/components/Table/stories/utils';
+import { MemoryRouter } from 'react-router-dom';
 
-const rockBands = [
-  { id: 1, name: 'The Beatles', genre: 'Rock', year: 1960 },
-  { id: 2, name: 'Led Zeppelin', genre: 'Hard Rock', year: 1968 },
-  { id: 3, name: 'Pink Floyd', genre: 'Progressive Rock', year: 1965 },
-  { id: 4, name: 'The Rolling Stones', genre: 'Rock', year: 1962 },
-  { id: 5, name: 'Queen', genre: 'Rock', year: 1970 },
+type Data4Item = (typeof data4)[0];
+
+const columns: ColumnConfig<Data4Item>[] = [
+  {
+    id: 'name',
+    label: 'Band name',
+    isRowHeader: true,
+    cell: item => (
+      <CellProfile name={item.name} src={item.image} href={item.website} />
+    ),
+  },
+  {
+    id: 'genre',
+    label: 'Genre',
+    cell: item => <CellText title={item.genre} />,
+  },
+  {
+    id: 'yearFormed',
+    label: 'Year formed',
+    cell: item => <CellText title={item.yearFormed.toString()} />,
+  },
+  {
+    id: 'albums',
+    label: 'Albums',
+    cell: item => <CellText title={item.albums.toString()} />,
+  },
 ];
 
-// Simple wrapper to ensure client-side only rendering
-const ClientOnly = ({ children }: { children: React.ReactNode }) => {
-  const [mounted, setMounted] = useState(false);
-
-  useState(() => {
-    if (typeof window !== 'undefined') {
-      setMounted(true);
-    }
+export const TableRockBand = () => {
+  const { tableProps } = useTable({
+    mode: 'complete',
+    getData: () => data4,
+    paginationOptions: { pageSize: 5 },
   });
 
-  if (!mounted) return <div>Loading...</div>;
-  return <>{children}</>;
-};
-
-export const TableRockBand = () => (
-  <ClientOnly>
-    <Table aria-label="Rock Bands">
-      <TableHeader>
-        <Column>Name</Column>
-        <Column>Genre</Column>
-        <Column>Year</Column>
-      </TableHeader>
-      <TableBody>
-        {rockBands.map(band => (
-          <Row key={band.id}>
-            <Cell>{band.name}</Cell>
-            <Cell>{band.genre}</Cell>
-            <Cell>{band.year}</Cell>
-          </Row>
-        ))}
-      </TableBody>
-    </Table>
-  </ClientOnly>
-);
-
-export const SelectionModePlayground = () => {
-  const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set());
-
   return (
-    <ClientOnly>
-      <Table
-        aria-label="Rock Bands"
-        selectionMode="multiple"
-        selectedKeys={selectedKeys}
-        onSelectionChange={setSelectedKeys}
-      >
-        <TableHeader>
-          <Column>Name</Column>
-          <Column>Genre</Column>
-          <Column>Year</Column>
-        </TableHeader>
-        <TableBody>
-          {rockBands.map(band => (
-            <Row key={band.id}>
-              <Cell>{band.name}</Cell>
-              <Cell>{band.genre}</Cell>
-              <Cell>{band.year}</Cell>
-            </Row>
-          ))}
-        </TableBody>
-      </Table>
-    </ClientOnly>
-  );
-};
-
-export const SelectionBehaviorPlayground = () => {
-  const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set());
-
-  return (
-    <ClientOnly>
-      <Table
-        aria-label="Rock Bands"
-        selectionMode="multiple"
-        selectionBehavior="replace"
-        selectedKeys={selectedKeys}
-        onSelectionChange={setSelectedKeys}
-      >
-        <TableHeader>
-          <Column>Name</Column>
-          <Column>Genre</Column>
-          <Column>Year</Column>
-        </TableHeader>
-        <TableBody>
-          {rockBands.map(band => (
-            <Row key={band.id}>
-              <Cell>{band.name}</Cell>
-              <Cell>{band.genre}</Cell>
-              <Cell>{band.year}</Cell>
-            </Row>
-          ))}
-        </TableBody>
-      </Table>
-    </ClientOnly>
+    <MemoryRouter>
+      <Table columnConfig={columns} {...tableProps} />
+    </MemoryRouter>
   );
 };
 
 export const SelectionToggleWithActions = () => {
-  const [selectedKeys, setSelectedKeys] = useState<Selection>(new Set());
+  const [selected, setSelected] = useState<Set<string | number> | 'all'>(
+    new Set(),
+  );
+
+  const { tableProps } = useTable({
+    mode: 'complete',
+    getData: () => selectionData,
+    paginationOptions: { pageSize: 10 },
+  });
 
   return (
-    <ClientOnly>
+    <MemoryRouter>
       <Table
-        aria-label="Rock Bands"
-        selectionMode="multiple"
-        selectedKeys={selectedKeys}
-        onSelectionChange={setSelectedKeys}
-      >
-        <TableHeader>
-          <Column>Name</Column>
-          <Column>Genre</Column>
-          <Column>Year</Column>
-        </TableHeader>
-        <TableBody>
-          {rockBands.map(band => (
-            <Row key={band.id}>
-              <Cell>{band.name}</Cell>
-              <Cell>{band.genre}</Cell>
-              <Cell>{band.year}</Cell>
-            </Row>
-          ))}
-        </TableBody>
-      </Table>
-    </ClientOnly>
+        {...tableProps}
+        columnConfig={selectionColumns}
+        selection={{
+          mode: 'multiple',
+          behavior: 'toggle',
+          selected,
+          onSelectionChange: setSelected,
+        }}
+        rowConfig={{ onClick: item => alert(`Clicked: ${item.name}`) }}
+      />
+    </MemoryRouter>
+  );
+};
+
+export const SelectionModePlayground = () => {
+  const [selectionMode, setSelectionMode] = useState<'single' | 'multiple'>(
+    'multiple',
+  );
+  const [selected, setSelected] = useState<Set<string | number> | 'all'>(
+    new Set(),
+  );
+
+  const { tableProps } = useTable({
+    mode: 'complete',
+    getData: () => selectionData,
+    paginationOptions: { pageSize: 10 },
+  });
+
+  return (
+    <MemoryRouter>
+      <Flex direction="column" gap="8">
+        <Table
+          {...tableProps}
+          columnConfig={selectionColumns}
+          selection={{
+            mode: selectionMode,
+            behavior: 'toggle',
+            selected,
+            onSelectionChange: setSelected,
+          }}
+        />
+        <div>
+          <Text as="h4" style={{ marginBottom: 'var(--bui-space-2)' }}>
+            Selection mode:
+          </Text>
+          <RadioGroup
+            aria-label="Selection mode"
+            orientation="horizontal"
+            value={selectionMode}
+            onChange={value => {
+              setSelectionMode(value as 'single' | 'multiple');
+              setSelected(new Set());
+            }}
+          >
+            <Radio value="single">single</Radio>
+            <Radio value="multiple">multiple</Radio>
+          </RadioGroup>
+        </div>
+      </Flex>
+    </MemoryRouter>
+  );
+};
+
+export const SelectionBehaviorPlayground = () => {
+  const [selectionBehavior, setSelectionBehavior] = useState<
+    'toggle' | 'replace'
+  >('toggle');
+  const [selected, setSelected] = useState<Set<string | number> | 'all'>(
+    new Set(),
+  );
+
+  const { tableProps } = useTable({
+    mode: 'complete',
+    getData: () => selectionData,
+    paginationOptions: { pageSize: 10 },
+  });
+
+  return (
+    <MemoryRouter>
+      <Flex direction="column" gap="8">
+        <Table
+          {...tableProps}
+          columnConfig={selectionColumns}
+          selection={{
+            mode: 'multiple',
+            behavior: selectionBehavior,
+            selected,
+            onSelectionChange: setSelected,
+          }}
+        />
+        <div>
+          <Text as="h4" style={{ marginBottom: 'var(--bui-space-2)' }}>
+            Selection behavior:
+          </Text>
+          <RadioGroup
+            aria-label="Selection behavior"
+            orientation="horizontal"
+            value={selectionBehavior}
+            onChange={value => {
+              setSelectionBehavior(value as 'toggle' | 'replace');
+              setSelected(new Set());
+            }}
+          >
+            <Radio value="toggle">toggle</Radio>
+            <Radio value="replace">replace</Radio>
+          </RadioGroup>
+        </div>
+      </Flex>
+    </MemoryRouter>
   );
 };

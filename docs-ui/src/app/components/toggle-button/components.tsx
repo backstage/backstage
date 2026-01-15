@@ -20,7 +20,7 @@ export const WithIcon = () => {
     <ToggleButton
       isSelected={isSelected}
       onChange={setIsSelected}
-      icon={<RiCheckLine />}
+      iconStart={<RiCheckLine />}
     >
       With Icon
     </ToggleButton>

@@ -10,7 +10,7 @@ import { Text } from '../../../../../packages/ui/src/components/Text/Text';
 
 export const Default = () => {
   return (
-    <Card>
+    <Card style={{ width: '300px', height: '200px' }}>
       <CardHeader>Header</CardHeader>
       <CardBody>Body</CardBody>
       <CardFooter>Footer</CardFooter>

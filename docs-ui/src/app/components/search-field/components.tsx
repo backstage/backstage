@@ -2,10 +2,16 @@
 
 import { SearchField } from '../../../../../packages/ui/src/components/SearchField/SearchField';
 import { Flex } from '../../../../../packages/ui/src/components/Flex/Flex';
-import { RiEBike2Line } from '@remixicon/react';
 
 export const WithLabel = () => {
-  return <SearchField name="url" label="Label" aria-label="Search" />;
+  return (
+    <SearchField
+      name="url"
+      label="Label"
+      aria-label="Search"
+      style={{ width: '100%', maxWidth: '300px' }}
+    />
+  );
 };
 
 export const Sizes = () => {
@@ -24,6 +30,7 @@ export const WithDescription = () => {
       label="Label"
       description="Description"
       aria-label="Search"
+      style={{ width: '100%', maxWidth: '300px' }}
     />
   );
 };
@@ -45,7 +52,6 @@ export const StartCollapsed = () => {
           startCollapsed
         />
       </Flex>
-      <SearchField name="url" aria-label="Search" size="small" startCollapsed />
     </Flex>
   );
 };
