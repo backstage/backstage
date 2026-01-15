@@ -509,7 +509,7 @@
 <header>
   <div class="wrap">
     <h1>Components Manifest</h1>
-    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><span class="filter-pill ok" aria-disabled="true">39 components ok</span><a class="filter-pill info" data-k="infos" href="#filter-infos">30/39 infos</a><span class="filter-pill ok" aria-disabled="true">349 stories ok</span></div>
+    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><span class="filter-pill ok" aria-disabled="true">39 components ok</span><a class="filter-pill info" data-k="infos" href="#filter-infos">30/39 infos</a><span class="filter-pill ok" aria-disabled="true">350 stories ok</span></div>
   </div>
 </header>
 <main>
@@ -8914,7 +8914,7 @@ label?: string</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> TablePagination</h2>
       <div class="badges">
-        <label for="c-29-backstage-ui-tablepagination-props" class="badge ok as-toggle">10 prop types</label>
+        <label for="c-29-backstage-ui-tablepagination-props" class="badge ok as-toggle">11 prop types</label>
         
         <label for="c-29-backstage-ui-tablepagination-stories" class="badge ok as-toggle">8 stories</label>
       </div>
@@ -8939,7 +8939,7 @@ label?: string</code></pre>
           <div class="note ok">
             <div class="row">
               <span class="ex-name">Prop types</span>
-              <span class="badge ok">10 prop types</span>
+              <span class="badge ok">11 prop types</span>
             </div>
             <pre><code>Component: packages/ui/src/components/TablePagination/TablePagination.tsx::TablePagination</code></pre>
             <pre><code>Props:</code></pre>
@@ -8962,6 +8962,15 @@ onPageSizeChange?: (size: number) =&gt; void
 onPreviousPage: () =&gt; void
 
 pageSize: number
+
+pageSizeOptions?: number[] | PageSizeOption[] = [
+  { label: &#39;Show 5 results&#39;, value: 5 },
+  { label: &#39;Show 10 results&#39;, value: 10 },
+  { label: &#39;Show 20 results&#39;, value: 20 },
+  { label: &#39;Show 30 results&#39;, value: 30 },
+  { label: &#39;Show 40 results&#39;, value: 40 },
+  { label: &#39;Show 50 results&#39;, value: 50 },
+]
 
 showPageSizeOptions?: boolean = true
 
@@ -11169,7 +11178,7 @@ import { RiArrowRightSLine, RiCloudLine, RiStarFill, RiStarLine } from "@remixic
       <div class="badges">
         <label for="c-37-backstage-ui-table-visual-props" class="badge ok as-toggle">10 prop types</label>
         <label for="c-37-backstage-ui-table-visual-info" class="badge info as-toggle">1 info</label>
-        <label for="c-37-backstage-ui-table-visual-stories" class="badge ok as-toggle">8 stories</label>
+        <label for="c-37-backstage-ui-table-visual-stories" class="badge ok as-toggle">9 stories</label>
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Table/stories/Table.visual.stories.tsx">backstage-ui-table-visual · ./packages/ui/src/components/Table/stories/Table.visual.stories.tsx</div>
@@ -11554,6 +11563,59 @@ sort?: SortState</code></pre>
       pagination={{ type: &#39;none&#39; }}
     /&gt;
   );
+};</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">CustomPageSizeOptions</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const CustomPageSizeOptions = () =&gt; {
+  const columns: ColumnConfig&lt;Data1Item&gt;[] = [
+    {
+      id: &#39;name&#39;,
+      label: &#39;Name&#39;,
+      isRowHeader: true,
+      cell: item =&gt; &lt;CellText title={item.name} /&gt;,
+    },
+    {
+      id: &#39;owner&#39;,
+      label: &#39;Owner&#39;,
+      cell: item =&gt; &lt;CellText title={item.owner.name} /&gt;,
+    },
+    {
+      id: &#39;type&#39;,
+      label: &#39;Type&#39;,
+      cell: item =&gt; &lt;CellText title={item.type} /&gt;,
+    },
+  ];
+
+  const { tableProps } = useTable({
+    mode: &#39;complete&#39;,
+    getData: () =&gt; data1,
+    paginationOptions: {
+      pageSize: 3,
+      pageSizeOptions: [
+        { label: &#39;2 per page&#39;, value: 2 },
+        { label: &#39;3 per page&#39;, value: 3 },
+        { label: &#39;5 per page&#39;, value: 5 },
+        { label: &#39;7 per page&#39;, value: 7 },
+      ],
+      onPageSizeChange: size =&gt; {
+        console.log(&#39;Page size changed to:&#39;, size);
+      },
+      onNextPage: () =&gt; {
+        console.log(&#39;Navigated to next page&#39;);
+      },
+      onPreviousPage: () =&gt; {
+        console.log(&#39;Navigated to previous page&#39;);
+      },
+    },
+  });
+
+  return &lt;Table columnConfig={columns} {...tableProps} /&gt;;
 };</code></pre>
             </div>
         </div>
