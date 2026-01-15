@@ -487,23 +487,32 @@ export async function evaluateEnabledConditions(
   disabledNodes: Set<AppNode>,
 ): Promise<void> {
   if (node.spec.disabled) {
-    markNodeAndDescendantsDisabled(node, disabledNodes);
     return;
   }
 
   // Collect all nodes and their enabled checks
   const nodesToCheck: Array<{
     node: AppNode;
-    check: Promise<boolean>;
+    check: () => Promise<boolean>;
   }> = [];
 
   function collectNodes(n: AppNode) {
-    if (n.spec.enabled && !n.spec.disabled) {
-      const originalDecision = async () => !n.spec.disabled;
-      nodesToCheck.push({
-        node: n,
-        check: n.spec.enabled(originalDecision, { apiHolder: apis }),
-      });
+    if (!n.spec.disabled) {
+      const defaultDecision = async () => !n.spec.disabled;
+      if (n.spec.enabled) {
+        nodesToCheck.push({
+          node: n,
+          check: () =>
+            n.spec.enabled!(defaultDecision, {
+              apiHolder: apis,
+            }),
+        });
+      } else {
+        nodesToCheck.push({
+          node: n,
+          check: defaultDecision,
+        });
+      }
     }
 
     for (const children of n.edges.attachments.values()) {
@@ -517,9 +526,16 @@ export async function evaluateEnabledConditions(
 
   collectNodes(node);
 
+  const openPromises = new Set<string>();
   // Execute all enabled checks in parallel
   const results = await Promise.allSettled(
-    nodesToCheck.map(({ check }) => check),
+    nodesToCheck.map(async ({ check, node: n }) => {
+      openPromises.add(n.spec.id);
+      const response = await check();
+      openPromises.delete(n.spec.id);
+      console.log('remaining', openPromises);
+      return response;
+    }),
   );
 
   // Mark nodes as disabled based on results, and cascade to descendants
