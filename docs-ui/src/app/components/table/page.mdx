@@ -1,7 +1,12 @@
 import { PropsTable } from '@/components/PropsTable';
 import { Snippet } from '@/components/Snippet';
 import { CodeBlock } from '@/components/CodeBlock';
-import { TableRockBand, SelectionModePlayground, SelectionBehaviorPlayground, SelectionToggleWithActions } from './components';
+import {
+  TableRockBand,
+  SelectionModePlayground,
+  SelectionBehaviorPlayground,
+  SelectionToggleWithActions,
+} from './components';
 import {
   tablePropDefs,
   tableHeaderPropDefs,
@@ -28,11 +33,7 @@ import { TableDefinition } from '../../../utils/definitions';
   description="A flexible table component built on top of TanStack Table with built-in styling, interactions, and pagination support."
 />
 
-<Snippet
-  py={4}
-  preview={<TableRockBand />}
-  code={tableBasicSnippet}
-/>
+<Snippet py={4} preview={<TableRockBand />} code={tableBasicSnippet} />
 
 ## Usage
 

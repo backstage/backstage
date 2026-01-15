@@ -1,7 +1,12 @@
 import { PropsTable } from '@/components/PropsTable';
 import { CodeBlock } from '@/components/CodeBlock';
 import { Snippet } from '@/components/Snippet';
-import { WithAllOptionsAndTabs, WithAllOptions, WithBreadcrumbs, WithHeaderPage } from './components';
+import {
+  WithAllOptionsAndTabs,
+  WithAllOptions,
+  WithBreadcrumbs,
+  WithHeaderPage,
+} from './components';
 import { propDefs } from './props-definition';
 import {
   usage,
@@ -22,11 +27,7 @@ import { ChangelogComponent } from '@/components/ChangelogComponent';
   description="A header component for the plugin."
 />
 
-<Snippet
-  py={4}
-  preview={<WithAllOptionsAndTabs />}
-  code={defaultSnippet}
-/>
+<Snippet py={4} preview={<WithAllOptionsAndTabs />} code={defaultSnippet} />
 
 ## Usage
 
@@ -42,12 +43,7 @@ import { ChangelogComponent } from '@/components/ChangelogComponent';
 
 A simple example of how to use the Header component.
 
-<Snippet
-  py={4}
-  preview={<WithAllOptions />}
-  code={simple}
-  open
-/>
+<Snippet py={4} preview={<WithAllOptions />} code={simple} open />
 
 ### Header with tabs
 
@@ -65,21 +61,13 @@ open
 
 Breacrumbs should appear when you scroll down (and not directly visible as it is in the demo below).
 
-<Snippet
-  preview={<WithBreadcrumbs />}
-  code={withBreadcrumbs}
-  open
-/>
+<Snippet preview={<WithBreadcrumbs />} code={withBreadcrumbs} open />
 
 ### Header with HeaderPage
 
 You can use the `Header` component inside the [HeaderPage](/components/header-page) component to compose your multi-level navigation.
 
-<Snippet
-  preview={<WithHeaderPage />}
-  code={withHeaderPage}
-  open
-/>
+<Snippet preview={<WithHeaderPage />} code={withHeaderPage} open />
 
 <Theming definition={HeaderDefinition} />
 

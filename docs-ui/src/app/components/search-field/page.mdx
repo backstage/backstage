@@ -8,7 +8,12 @@ import {
   withDescriptionSnippet,
   startCollapsedSnippet,
 } from './snippets';
-import { WithLabel, Sizes, WithDescription, StartCollapsed } from './components';
+import {
+  WithLabel,
+  Sizes,
+  WithDescription,
+  StartCollapsed,
+} from './components';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
 import { ChangelogComponent } from '@/components/ChangelogComponent';
@@ -20,7 +25,12 @@ import { SearchFieldDefinition } from '../../../utils/definitions';
   description="A SearchField is a text field designed for searches."
 />
 
-<Snippet align="center" py={4} preview={<WithLabel />} code={withLabelSnippet} />
+<Snippet
+  align="center"
+  py={4}
+  preview={<WithLabel />}
+  code={withLabelSnippet}
+/>
 
 ## Usage
 
@@ -36,13 +46,7 @@ import { SearchFieldDefinition } from '../../../utils/definitions';
 
 We support two different sizes: `small`, `medium`.
 
-<Snippet
-  align="center"
-  py={4}
-  open
-  preview={<Sizes />}
-  code={sizesSnippet}
-/>
+<Snippet align="center" py={4} open preview={<Sizes />} code={sizesSnippet} />
 
 ### With description
 

@@ -14,7 +14,12 @@ import {
   disabledTabsSnippet,
   orientationSnippet,
 } from './snippets';
-import { Default, DefaultSelectedKey, DisabledTabs, Orientation } from './components';
+import {
+  Default,
+  DefaultSelectedKey,
+  DisabledTabs,
+  Orientation,
+} from './components';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
 import { TabsDefinition } from '../../../utils/definitions';
@@ -25,11 +30,7 @@ import { ChangelogComponent } from '@/components/ChangelogComponent';
   description="A component for toggling between related panels on the same page."
 />
 
-<Snippet
-  py={4}
-  preview={<Default />}
-  code={defaultSnippet}
-/>
+<Snippet py={4} preview={<Default />} code={defaultSnippet} />
 
 ## Usage
 
@@ -66,23 +67,13 @@ Here's how to set which tab is selected by default.
 
 Here's how to disable specific tabs.
 
-<Snippet
-  py={4}
-  preview={<DisabledTabs />}
-  code={disabledTabsSnippet}
-  open
-/>
+<Snippet py={4} preview={<DisabledTabs />} code={disabledTabsSnippet} open />
 
 ### Orientation
 
 Here's how to display tabs vertically.
 
-<Snippet
-  py={4}
-  preview={<Orientation />}
-  code={orientationSnippet}
-  open
-/>
+<Snippet py={4} preview={<Orientation />} code={orientationSnippet} open />
 
 <Theming definition={TabsDefinition} />
 

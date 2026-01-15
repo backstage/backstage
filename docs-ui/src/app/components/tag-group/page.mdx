@@ -1,11 +1,15 @@
 import { PropsTable } from '@/components/PropsTable';
 import { Snippet } from '@/components/Snippet';
 import { CodeBlock } from '@/components/CodeBlock';
-import { Default, WithLink, WithIcon, Sizes, RemovingTags, Disabled } from './components';
 import {
-  tagGroupPropDefs,
-  tagPropDefs,
-} from './props-definition';
+  Default,
+  WithLink,
+  WithIcon,
+  Sizes,
+  RemovingTags,
+  Disabled,
+} from './components';
+import { tagGroupPropDefs, tagPropDefs } from './props-definition';
 import {
   usage,
   preview,
@@ -25,12 +29,7 @@ import { ChangelogComponent } from '@/components/ChangelogComponent';
   description="A tag group is a list of labels, categories, keywords, filters, or other items, that can be used to group and filter content."
 />
 
-<Snippet
-  align="center"
-  py={4}
-  preview={<Default />}
-  code={preview}
-/>
+<Snippet align="center" py={4} preview={<Default />} code={preview} />
 
 ## Usage
 
@@ -56,37 +55,19 @@ A tag is a single item in a tag group.
 
 A tag can be a link by passing a `href` prop.
 
-<Snippet
-  align="center"
-  py={4}
-  open
-  preview={<WithLink />}
-  code={withLink}
-/>
+<Snippet align="center" py={4} open preview={<WithLink />} code={withLink} />
 
 ### With Icons
 
 A tag can have an icon by passing a `icon` prop.
 
-<Snippet
-  align="center"
-  py={4}
-  open
-  preview={<WithIcon />}
-  code={withIcons}
-/>
+<Snippet align="center" py={4} open preview={<WithIcon />} code={withIcons} />
 
 ### Sizes
 
 A tag can have a size by passing a `size` prop. It could be `small` or `medium`.
 
-<Snippet
-  align="center"
-  py={4}
-  open
-  preview={<Sizes />}
-  code={sizes}
-/>
+<Snippet align="center" py={4} open preview={<Sizes />} code={sizes} />
 
 ### Removing tags
 
@@ -104,13 +85,7 @@ A tag can be removed by passing a `onRemove` prop.
 
 A switch can be disabled using the `isDisabled` prop.
 
-<Snippet
-  align="center"
-  py={4}
-  open
-  preview={<Disabled />}
-  code={disabled}
-/>
+<Snippet align="center" py={4} open preview={<Disabled />} code={disabled} />
 
 <Theming definition={TagGroupDefinition} />
 

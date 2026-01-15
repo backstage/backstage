@@ -1,7 +1,13 @@
 import { PropsTable } from '@/components/PropsTable';
 import { CodeBlock } from '@/components/CodeBlock';
 import { Snippet } from '@/components/Snippet';
-import { WithEverything, WithLongBreadcrumbs, WithTabs, WithCustomActions, WithMenuItems } from './components';
+import {
+  WithEverything,
+  WithLongBreadcrumbs,
+  WithTabs,
+  WithCustomActions,
+  WithMenuItems,
+} from './components';
 import { propDefs } from './props-definition';
 import {
   usage,
@@ -22,11 +28,7 @@ import { ChangelogComponent } from '@/components/ChangelogComponent';
   description="A header page component for the plugin that should sit under the Header component."
 />
 
-<Snippet
-  py={4}
-  preview={<WithEverything />}
-  code={defaultSnippet}
-/>
+<Snippet py={4} preview={<WithEverything />} code={defaultSnippet} />
 
 ## Usage
 
@@ -43,44 +45,28 @@ import { ChangelogComponent } from '@/components/ChangelogComponent';
 You can add breadcrumbs to the header page to help users navigate to the previous page. The `breadcrumbs`
 prop is an array of objects with a `label` and `href` property. By default we truncate the breadcrumb label to 240px.
 
-<Snippet
-  open
-  preview={<WithLongBreadcrumbs />}
-  code={withBreadcrumbs}
-/>
+<Snippet open preview={<WithLongBreadcrumbs />} code={withBreadcrumbs} />
 
 ### With Tabs
 
 You can add tabs to the header page to help users navigate to the different sections of the page. The `tabs`
 prop is an array of objects with a `label` and `href` property.
 
-<Snippet
-  open
-  preview={<WithTabs />}
-  code={withTabs}
-/>
+<Snippet open preview={<WithTabs />} code={withTabs} />
 
 ### With Custom Actions
 
 You can add custom actions to the header page to help users navigate to the different sections of the page. The `customActions`
 prop is a React node.
 
-<Snippet
-  open
-  preview={<WithCustomActions />}
-  code={withCustomActions}
-/>
+<Snippet open preview={<WithCustomActions />} code={withCustomActions} />
 
 ### With Menu Items
 
 You can add menu items to the header page to help users navigate to the different sections of the page. The `menuItems`
 prop is an array of objects with a `label`, `value` and `onClick` property.
 
-<Snippet
-  open
-  preview={<WithMenuItems />}
-  code={withMenuItems}
-/>
+<Snippet open preview={<WithMenuItems />} code={withMenuItems} />
 
 <Theming definition={HeaderPageDefinition} />
 
