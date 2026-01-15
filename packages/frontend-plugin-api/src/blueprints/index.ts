@@ -38,3 +38,10 @@ export { ThemeBlueprint } from './ThemeBlueprint';
 export { TranslationBlueprint } from './TranslationBlueprint';
 export { SwappableComponentBlueprint } from './SwappableComponentBlueprint';
 export { type ExtensionConditionFunc } from './types';
+export {
+  allOf,
+  anyOf,
+  not,
+  createFeatureFlagCondition,
+  createConfigCondition,
+} from './helpers';
