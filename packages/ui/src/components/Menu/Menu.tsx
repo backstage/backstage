@@ -255,13 +255,13 @@ export const MenuAutocomplete = (props: MenuAutocompleteProps<object>) => {
               classNames.searchField,
               styles[classNames.searchField],
             )}
+            aria-label={props.placeholder || 'Search'}
           >
             <RAInput
               className={clsx(
                 classNames.searchFieldInput,
                 styles[classNames.searchFieldInput],
               )}
-              aria-label="Search"
               placeholder={props.placeholder || 'Search...'}
             />
             <RAButton
@@ -334,13 +334,13 @@ export const MenuAutocompleteListbox = (
             classNames.searchField,
             styles[classNames.searchField],
           )}
+          aria-label={props.placeholder || 'Search'}
         >
           <RAInput
             className={clsx(
               classNames.searchFieldInput,
               styles[classNames.searchFieldInput],
             )}
-            aria-label="Search"
             placeholder={props.placeholder || 'Search...'}
           />
           <RAButton
