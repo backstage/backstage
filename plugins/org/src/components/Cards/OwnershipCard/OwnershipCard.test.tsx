@@ -36,11 +36,6 @@ const items = [
       {
         type: 'ownedBy',
         targetRef: 'group:default/my-team',
-        target: {
-          name: 'my-team',
-          namespace: 'default',
-          kind: 'group',
-        },
       },
     ],
   },
@@ -56,11 +51,6 @@ const items = [
       {
         type: 'ownedBy',
         targetRef: 'group:default/my-team',
-        target: {
-          name: 'my-team',
-          namespace: 'default',
-          kind: 'group',
-        },
       },
     ],
   },
@@ -76,11 +66,6 @@ const items = [
       {
         type: 'ownedBy',
         targetRef: 'group:default/my-team',
-        target: {
-          name: 'my-team',
-          namespace: 'default',
-          kind: 'group',
-        },
       },
     ],
   },
@@ -97,11 +82,6 @@ const items = [
       {
         type: 'ownedBy',
         targetRef: 'group:default/my-team',
-        target: {
-          name: 'my-team',
-          namespace: 'default',
-          kind: 'group',
-        },
       },
     ],
   },

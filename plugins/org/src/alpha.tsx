@@ -65,7 +65,7 @@ const EntityOwnershipCard = EntityCardBlueprint.makeWithOverrides({
       initialRelationAggregation: z =>
         z.enum(['direct', 'aggregated']).optional(),
       showAggregateMembersToggle: z => z.boolean().optional(),
-      entityFilterKind: z => z.array(z.string()).optional(),
+      ownedKinds: z => z.array(z.string()).optional(),
     },
   },
   factory(originalFactory, { config }) {
@@ -81,12 +81,7 @@ const EntityOwnershipCard = EntityCardBlueprint.makeWithOverrides({
                 : !config.showAggregateMembersToggle
             }
             entityFilterKind={
-              config.entityFilterKind ?? [
-                'Component',
-                'API',
-                'System',
-                'Resource',
-              ]
+              config.ownedKinds ?? ['Component', 'API', 'System', 'Resource']
             }
           />
         )),
