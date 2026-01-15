@@ -26,6 +26,11 @@ import {
   actionsRegistryServiceRef,
   actionsServiceRef,
 } from '@backstage/backend-plugin-api/alpha';
+import {
+  mcpExtensionPoint,
+  McpPromptOptions,
+  McpResourceOptions,
+} from './extensions';
 
 /**
  * mcpPlugin backend plugin
@@ -35,6 +40,18 @@ import {
 export const mcpPlugin = createBackendPlugin({
   pluginId: 'mcp-actions',
   register(env) {
+    const prompts: McpPromptOptions[] = [];
+    const resources: McpResourceOptions[] = [];
+
+    env.registerExtensionPoint(mcpExtensionPoint, {
+      addPrompts(...newPrompts: McpPromptOptions[]) {
+        prompts.push(...newPrompts);
+      },
+      addResources(...newResources: McpResourceOptions[]) {
+        resources.push(...newResources);
+      },
+    });
+
     env.registerInit({
       deps: {
         logger: coreServices.logger,
@@ -58,6 +75,9 @@ export const mcpPlugin = createBackendPlugin({
       }) {
         const mcpService = await McpService.create({
           actions,
+          prompts,
+          resources,
+          logger,
         });
 
         const sseRouter = createSseRouter({

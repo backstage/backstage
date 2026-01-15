@@ -1,6 +1,12 @@
 # MCP Actions Backend
 
-This plugin exposes Backstage actions as MCP (Model Context Protocol) tools, allowing AI clients to discover and invoke registered actions in your Backstage backend.
+This plugin exposes Backstage actions as MCP (Model Context Protocol) tools, prompts, and resources. It allows AI clients to:
+
+- Discover and invoke registered actions (**tools** in MCP terminology)
+- Access contextual prompts that guide how to use actions effectively
+- Browse available resources for additional context
+
+This enables rich AI integration with your Backstage backend.
 
 ## Installation
 
@@ -70,6 +76,108 @@ export const myPlugin = createBackendPlugin({
   },
 });
 ```
+
+### Registering Prompts and Resources
+
+In addition to actions (tools), plugins can register **prompts** and **resources** to provide context and data to AI clients. These are registered via the MCP extension point:
+
+#### Prompts
+
+Prompts provide contextual guidance that helps AI clients understand how to use your plugin's actions effectively. Create a backend module that uses the MCP extension point:
+
+```ts
+import { createBackendModule } from '@backstage/backend-plugin-api';
+import { mcpExtensionPoint } from '@backstage/plugin-mcp-actions-backend';
+
+export const myPluginMcpModule = createBackendModule({
+  pluginId: 'my-plugin',
+  moduleId: 'mcp',
+  register(env) {
+    env.registerInit({
+      deps: {
+        mcp: mcpExtensionPoint,
+      },
+      async init({ mcp }) {
+        mcp.addPrompts({
+          name: 'explore-features',
+          title: 'Explore Plugin Features',
+          description: 'Learn about available features and how to use them',
+          template: `
+This plugin provides the following capabilities:
+- Feature A: Does X
+- Feature B: Does Y
+
+Use the actions to perform these operations...
+          `.trim(),
+        });
+      },
+    });
+  },
+});
+```
+
+Then install the module in your backend:
+
+```ts
+backend.add(myPluginMcpModule());
+```
+
+#### Resources
+
+Resources expose read-only data that AI clients can access for context:
+
+```ts
+import { createBackendModule } from '@backstage/backend-plugin-api';
+import { mcpExtensionPoint } from '@backstage/plugin-mcp-actions-backend';
+
+export const myPluginMcpModule = createBackendModule({
+  pluginId: 'my-plugin',
+  moduleId: 'mcp',
+  register(env) {
+    env.registerInit({
+      deps: {
+        mcp: mcpExtensionPoint,
+        // Add other dependencies as needed
+      },
+      async init({ mcp }) {
+        mcp.addResources({
+          name: 'list-items',
+          uri: 'plugin://items/{category}',
+          title: 'Browse Items by Category',
+          description: 'List all items in a specific category',
+          mimeType: 'application/json',
+          handler: async (uri, params, { credentials }) => {
+            const items = await fetchItems(params.category, credentials);
+            return {
+              contents: [
+                {
+                  uri: uri.href,
+                  text: JSON.stringify(items, null, 2),
+                  mimeType: 'application/json',
+                },
+              ],
+            };
+          },
+        });
+      },
+    });
+  },
+});
+```
+
+MCP clients can both list available resources and read their contents. When a resource is requested by URI (e.g., `plugin://items/electronics`), the handler is invoked with the extracted parameters (`category: "electronics"`), and the resource data is returned to the AI client.
+
+#### Example: Catalog MCP Module
+
+The catalog backend includes an example MCP module that can be installed separately:
+
+```ts
+import { catalogMcpModule } from '@backstage/plugin-catalog-backend';
+
+backend.add(catalogMcpModule());
+```
+
+This module provides catalog-specific prompts and resources for AI clients.
 
 ### Error Handling
 

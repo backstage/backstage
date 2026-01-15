@@ -14,3 +14,9 @@
  * limitations under the License.
  */
 export { mcpPlugin as default } from './plugin';
+export {
+  mcpExtensionPoint,
+  type McpExtensionPoint,
+  type McpPromptOptions,
+  type McpResourceOptions,
+} from './extensions';

@@ -73,6 +73,9 @@ export const CATALOG_CONFLICTS_TOPIC = 'experimental.catalog.conflict';
 export const CATALOG_ERRORS_TOPIC = 'experimental.catalog.errors';
 
 // @public
+export const catalogMcpModule: BackendFeature;
+
+// @public
 const catalogPlugin: BackendFeature;
 export default catalogPlugin;
 

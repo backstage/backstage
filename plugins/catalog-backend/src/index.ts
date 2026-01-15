@@ -21,5 +21,6 @@
  */
 
 export { catalogPlugin as default } from './service/CatalogPlugin';
+export { catalogMcpModule } from './modules/catalogMcpModule';
 export * from './processors';
 export * from './constants';

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { mockCredentials } from '@backstage/backend-test-utils';
+import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
 import { McpService } from './McpService';
 import { actionsRegistryServiceMock } from '@backstage/backend-test-utils/alpha';
 import { InMemoryTransport } from '@modelcontextprotocol/sdk/inMemory.js';
@@ -40,6 +40,9 @@ describe('McpService', () => {
 
     const mcpService = await McpService.create({
       actions: mockActionsRegistry,
+      prompts: [],
+      resources: [],
+      logger: mockServices.logger.mock(),
     });
 
     const server = mcpService.getServer({
@@ -109,6 +112,9 @@ describe('McpService', () => {
 
     const mcpService = await McpService.create({
       actions: mockActionsRegistry,
+      prompts: [],
+      resources: [],
+      logger: mockServices.logger.mock(),
     });
 
     const server = mcpService.getServer({
@@ -159,6 +165,9 @@ describe('McpService', () => {
   it('should return an error when the action is not found', async () => {
     const mcpService = await McpService.create({
       actions: actionsRegistryServiceMock(),
+      prompts: [],
+      resources: [],
+      logger: mockServices.logger.mock(),
     });
 
     const server = mcpService.getServer({
