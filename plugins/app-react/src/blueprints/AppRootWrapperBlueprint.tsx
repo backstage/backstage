@@ -14,23 +14,27 @@
  * limitations under the License.
  */
 
-import { ReactNode } from 'react';
-import { createExtensionBlueprint, createExtensionDataRef } from '../wiring';
+import { ComponentType, ReactNode } from 'react';
+import {
+  createExtensionBlueprint,
+  createExtensionDataRef,
+} from '@backstage/frontend-plugin-api';
 
 const componentDataRef = createExtensionDataRef<
-  (props: { children: ReactNode }) => JSX.Element | null
->().with({ id: 'app.root.wrapper' });
+  ComponentType<{ children: ReactNode }>
+>().with({ id: 'app.root-wrapper-component' });
 
 /**
- * Creates a extensions that render a React wrapper at the app root, enclosing
- * the app layout. This is useful for example for adding global React contexts
- * and similar.
+ * Creates an extension that renders a React wrapper at the app root, enclosing
+ * the app layout.
+ *
+ * @remarks
+ *
+ * This is useful for example for adding global React contexts and similar. This
+ * extension is only available for use by app modules, plugins should use the
+ * {@link @backstage/frontend-plugin-api#PluginWrapperBlueprint} instead.
  *
  * @public
- * @deprecated Use {@link PluginWrapperBlueprint} instead if you want to wrap
- * all plugin components in the same wrapper. If you want to wrap the entire
- * app, use the `AppRootWrapperBlueprint` from `@backstage/plugin-app-react`
- * instead, although note that only app modules are able to use that blueprint.
  */
 export const AppRootWrapperBlueprint = createExtensionBlueprint({
   kind: 'app-root-wrapper',
@@ -40,8 +44,6 @@ export const AppRootWrapperBlueprint = createExtensionBlueprint({
     component: componentDataRef,
   },
   *factory(params: {
-    /** @deprecated use the `component` parameter instead */
-    Component?: [error: 'Use the `component` parameter instead'];
     component: (props: { children: ReactNode }) => JSX.Element | null;
   }) {
     yield componentDataRef(params.component);

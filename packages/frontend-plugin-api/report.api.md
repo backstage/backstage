@@ -271,7 +271,7 @@ export const AppRootElementBlueprint: ExtensionBlueprint_2<{
   dataRefs: never;
 }>;
 
-// @public
+// @public @deprecated
 export const AppRootWrapperBlueprint: ExtensionBlueprint_2<{
   kind: 'app-root-wrapper';
   params: {

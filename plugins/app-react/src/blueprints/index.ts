@@ -27,6 +27,8 @@ import {
   TranslationBlueprint as _TranslationBlueprint,
 } from '@backstage/frontend-plugin-api';
 
+export { AppRootWrapperBlueprint } from './AppRootWrapperBlueprint';
+
 /**
  * Creates an extension that adds/replaces an app theme. This blueprint is limited to use by the app plugin.
  *

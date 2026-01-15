@@ -22,7 +22,7 @@ import {
   JSX,
 } from 'react';
 import {
-  AppRootWrapperBlueprint,
+  AppRootWrapperBlueprint as OldAppRootWrapperBlueprint,
   RouterBlueprint,
   SignInPageBlueprint,
   coreExtensionData,
@@ -44,6 +44,7 @@ import {
   identityApiRef,
   useApi,
 } from '@backstage/core-plugin-api';
+import { AppRootWrapperBlueprint } from '@backstage/plugin-app-react';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { isProtectedApp } from '../../../../packages/core-app-api/src/app/isProtectedApp';
 import { BrowserRouter } from 'react-router-dom';
@@ -69,7 +70,8 @@ export const AppRoot = createExtension({
     }),
     elements: createExtensionInput([coreExtensionData.reactElement]),
     wrappers: createExtensionInput([
-      AppRootWrapperBlueprint.dataRefs.component,
+      OldAppRootWrapperBlueprint.dataRefs.component.optional(),
+      AppRootWrapperBlueprint.dataRefs.component.optional(),
     ]),
   },
   output: [coreExtensionData.reactElement],
@@ -117,7 +119,28 @@ export const AppRoot = createExtension({
 
     for (const wrapper of inputs.wrappers) {
       const Component = wrapper.get(AppRootWrapperBlueprint.dataRefs.component);
-      content = <Component>{content}</Component>;
+      const pluginId = wrapper.node.spec.plugin.id;
+      if (Component) {
+        if (pluginId === 'app') {
+          content = <Component>{content}</Component>;
+        } else {
+          // eslint-disable-next-line no-console
+          console.warn(
+            `Warning: The app root wrapper extension from the '${pluginId}' plugin was ignored, only the 'app' plugin is allowed to provide app root wrappers.`,
+          );
+        }
+      } else {
+        const OldComponent = wrapper.get(
+          OldAppRootWrapperBlueprint.dataRefs.component,
+        );
+        if (OldComponent) {
+          // eslint-disable-next-line no-console
+          console.warn(
+            `DEPRECATION WARNING: The ${pluginId} plugin provided a deprecated app root wrapper extension using the AppRootWrapperBlueprint from @backstage/frontend-plugin-api. This will break in a future release.`,
+          );
+          content = <OldComponent>{content}</OldComponent>;
+        }
+      }
     }
 
     return [

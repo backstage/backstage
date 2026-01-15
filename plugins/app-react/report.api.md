@@ -19,6 +19,33 @@ import { TranslationMessages } from '@backstage/frontend-plugin-api';
 import { TranslationResource } from '@backstage/frontend-plugin-api';
 
 // @public
+export const AppRootWrapperBlueprint: ExtensionBlueprint<{
+  kind: 'app-root-wrapper';
+  params: {
+    component: (props: { children: ReactNode }) => JSX.Element | null;
+  };
+  output: ExtensionDataRef<
+    ComponentType<{
+      children: ReactNode;
+    }>,
+    'app.root-wrapper-component',
+    {}
+  >;
+  inputs: {};
+  config: {};
+  configInput: {};
+  dataRefs: {
+    component: ConfigurableExtensionDataRef<
+      ComponentType<{
+        children: ReactNode;
+      }>,
+      'app.root-wrapper-component',
+      {}
+    >;
+  };
+}>;
+
+// @public
 export const IconBundleBlueprint: ExtensionBlueprint<{
   kind: 'icon-bundle';
   params: {
