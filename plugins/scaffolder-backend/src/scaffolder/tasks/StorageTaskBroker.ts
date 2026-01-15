@@ -169,9 +169,7 @@ export class TaskManager implements TaskContext {
   ): Promise<void> {
     const { key, ...value } = options;
 
-    if (!this.task.state) {
-      this.task.state = { checkpoints: {}, steps: {} };
-    }
+    this.task.state ??= { checkpoints: {}, steps: {} };
     this.task.state.checkpoints[key] = value;
 
     await this.storage.saveTaskState({
@@ -185,12 +183,8 @@ export class TaskManager implements TaskContext {
   ): Promise<void> {
     const { stepId, status, output } = options;
 
-    if (!this.task.state) {
-      this.task.state = { checkpoints: {}, steps: {} };
-    }
-    if (!this.task.state.steps) {
-      this.task.state.steps = {};
-    }
+    this.task.state ??= { checkpoints: {}, steps: {} };
+    this.task.state.steps ??= {};
     this.task.state.steps[stepId] = { status, output };
 
     await this.storage.saveTaskState({
