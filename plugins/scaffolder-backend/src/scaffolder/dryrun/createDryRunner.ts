@@ -163,6 +163,14 @@ export function createDryRunner(options: TemplateTesterCreateOptions) {
             },
           });
         },
+        async getTaskState() {
+          return undefined;
+        },
+        async updateCheckpoint() {},
+        async updateStepState() {},
+        async serializeWorkspace() {},
+        async cleanWorkspace() {},
+        async rehydrateWorkspace() {},
         complete: async () => {
           throw new Error('Not implemented');
         },
