@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import { ReactNode, useState, useEffect } from 'react';
+import { ReactNode } from 'react';
 import { useApiHolder } from '@backstage/core-plugin-api';
+import useAsync from 'react-use/esm/useAsync';
 import { ExtensionConditionFunc } from './types';
 
 /**
@@ -51,35 +52,23 @@ export function ConditionalRender({
   fallback?: ReactNode;
 }): JSX.Element | null {
   const apiHolder = useApiHolder();
-  const [conditionMet, setConditionMet] = useState<boolean | undefined>(
-    undefined,
-  );
 
-  useEffect(() => {
-    let cancelled = false;
-
+  const {
+    loading,
+    error,
+    value: conditionMet,
+  } = useAsync(async () => {
     const originalDecision = async () => true; // Always true for now, reserved for future config-based conditions
-
-    condition(originalDecision, { apiHolder })
-      .then(result => {
-        if (!cancelled) {
-          setConditionMet(result);
-        }
-      })
-      .catch(error => {
-        // eslint-disable-next-line no-console
-        console.error('Error evaluating extension condition:', error);
-        if (!cancelled) {
-          setConditionMet(false); // Default to hidden on error
-        }
-      });
-
-    return () => {
-      cancelled = true;
-    };
+    return condition(originalDecision, { apiHolder });
   }, [condition, apiHolder]);
 
-  if (conditionMet === undefined) {
+  if (error) {
+    // eslint-disable-next-line no-console
+    console.error('Error evaluating extension condition:', error);
+    return <>{fallback}</>;
+  }
+
+  if (loading || conditionMet === undefined) {
     return null; // Loading
   }
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { featureFlagsApiRef, configApiRef } from '@backstage/core-plugin-api';
+import { featureFlagsApiRef } from '../apis/definitions/FeatureFlagsApi';
 import { ExtensionConditionFunc } from './types';
 
 /**
@@ -40,7 +40,7 @@ export function allOf(
     const results = await Promise.all(
       conditions.map(condition => condition(originalDecision, context)),
     );
-    return results.every(result => result === true);
+    return results.every(result => !!result);
   };
 }
 
@@ -67,7 +67,7 @@ export function anyOf(
     const results = await Promise.all(
       conditions.map(condition => condition(originalDecision, context)),
     );
-    return results.some(result => result === true);
+    return results.some(result => !!result);
   };
 }
 
@@ -109,31 +109,6 @@ export function createFeatureFlagCondition(
 ): ExtensionConditionFunc {
   return async (_, { apiHolder }) => {
     const featureFlags = apiHolder.get(featureFlagsApiRef);
-    return featureFlags?.isActive(flagName) === true;
-  };
-}
-
-/**
- * Creates a condition function that checks a configuration value.
- *
- * @public
- * @example
- * ```typescript
- * PageBlueprint.make({
- *   params: {
- *     if: createConfigCondition('app.features.myFeature'),
- *   },
- * });
- * ```
- */
-export function createConfigCondition(
-  configPath: string,
-): ExtensionConditionFunc {
-  return async (_, { apiHolder }) => {
-    const config = apiHolder.get(configApiRef);
-    if (!config) {
-      return false;
-    }
-    return config.getOptionalBoolean(configPath) === true;
+    return !!featureFlags?.isActive(flagName);
   };
 }
