@@ -133,4 +133,6 @@ export interface TableProps<T extends TableItem> {
   rowConfig?: RowConfig<T> | RowRenderFn<T>;
   selection?: TableSelection;
   emptyState?: ReactNode;
+  className?: string;
+  style?: React.CSSProperties;
 }

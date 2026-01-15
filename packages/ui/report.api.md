@@ -1532,6 +1532,8 @@ export function Table<T extends TableItem>({
   rowConfig,
   selection,
   emptyState,
+  className,
+  style,
 }: TableProps<T>): JSX_2.Element;
 
 // @public (undocumented)
@@ -1639,6 +1641,8 @@ export type TablePaginationType = NoPagination | PagePagination;
 // @public (undocumented)
 export interface TableProps<T extends TableItem> {
   // (undocumented)
+  className?: string;
+  // (undocumented)
   columnConfig: readonly ColumnConfig<T>[];
   // (undocumented)
   data: T[] | undefined;
@@ -1658,6 +1662,8 @@ export interface TableProps<T extends TableItem> {
   selection?: TableSelection;
   // (undocumented)
   sort?: SortState;
+  // (undocumented)
+  style?: React.CSSProperties;
 }
 
 // @public (undocumented)
