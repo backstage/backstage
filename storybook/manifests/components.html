@@ -2756,6 +2756,7 @@ import { Fragment } from "react";</code></pre>
       id: &#39;name&#39;,
       label: &#39;Name&#39;,
       isRowHeader: true,
+      defaultWidth: &#39;4fr&#39;,
       cell: item =&gt; (
         &lt;CellText title={item.name} description={item.description} /&gt;
       ),
@@ -2763,16 +2764,19 @@ import { Fragment } from "react";</code></pre>
     {
       id: &#39;owner&#39;,
       label: &#39;Owner&#39;,
+      defaultWidth: &#39;1fr&#39;,
       cell: item =&gt; &lt;CellText title={item.owner.name} /&gt;,
     },
     {
       id: &#39;type&#39;,
       label: &#39;Type&#39;,
+      defaultWidth: &#39;1fr&#39;,
       cell: item =&gt; &lt;CellText title={item.type} /&gt;,
     },
     {
       id: &#39;lifecycle&#39;,
       label: &#39;Lifecycle&#39;,
+      defaultWidth: &#39;1fr&#39;,
       cell: item =&gt; &lt;CellText title={item.lifecycle} /&gt;,
     },
   ];
@@ -4137,6 +4141,7 @@ sort?: SortState</code></pre>
       id: &#39;name&#39;,
       label: &#39;Band name&#39;,
       isRowHeader: true,
+      defaultWidth: &#39;4fr&#39;,
       cell: item =&gt; (
         &lt;CellProfile name={item.name} src={item.image} href={item.website} /&gt;
       ),
@@ -4144,16 +4149,19 @@ sort?: SortState</code></pre>
     {
       id: &#39;genre&#39;,
       label: &#39;Genre&#39;,
+      defaultWidth: &#39;4fr&#39;,
       cell: item =&gt; &lt;CellText title={item.genre} /&gt;,
     },
     {
       id: &#39;yearFormed&#39;,
       label: &#39;Year formed&#39;,
+      defaultWidth: &#39;1fr&#39;,
       cell: item =&gt; &lt;CellText title={item.yearFormed.toString()} /&gt;,
     },
     {
       id: &#39;albums&#39;,
       label: &#39;Albums&#39;,
+      defaultWidth: &#39;1fr&#39;,
       cell: item =&gt; &lt;CellText title={item.albums.toString()} /&gt;,
     },
   ];
