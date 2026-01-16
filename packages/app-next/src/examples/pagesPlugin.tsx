@@ -396,7 +396,7 @@ const PermissionBasedPage = PageBlueprint.make({
 const SecondPermissionBasedPage = PageBlueprint.make({
   name: 'permissionExample2',
   params: {
-    path: '/permission-example2',
+    path: '/permission-example-2',
     loader: async () => {
       const Component = () => {
         const indexLink = useRouteRef(indexRouteRef);
