@@ -21,8 +21,8 @@ export const skeletonPropDefs: Record<string, PropDef> = {
     responsive: false,
   },
   children: {
-    type: 'string',
-    default: 'undefined',
+    type: 'enum',
+    values: ['ReactNode'],
     responsive: false,
     description:
       'Children elements. When provided, the skeleton will infer its dimensions from the children, preventing layout shift.',
@@ -42,8 +42,7 @@ export const skeletonUsageSnippet = `import { Flex, Skeleton, Text } from '@back
 
 // Skeleton inside Text - automatically inherits typography
 <Text variant="title-large">
-  {/* {loading ? <Skeleton style={{ width: '60%' }} /> : 'Title'} */}
-  <Skeleton style={{ width: '60%' }} />
+  <Skeleton width="60%" />
 </Text>
 
 // Or wrap children to infer dimensions
@@ -88,19 +87,46 @@ export const skeletonInheritingSnippet = `<Flex direction="column" gap="4">
   </Text>
 </Flex>`;
 
-export const skeletonInferringSnippet = `<Flex direction="column" gap="4">
-  <Skeleton>
-    <Text variant="title-large">Loading title...</Text>
-  </Skeleton>
-  <Skeleton>
-    <Text variant="body-medium">Loading paragraph text</Text>
-  </Skeleton>
-  <Skeleton rounded>
-    <div style={{ width: 48, height: 48 }} />
-  </Skeleton>
+export const skeletonInferringSnippet = `import { Box, Flex, Skeleton, Text } from '@backstage/ui';
+
+<Flex direction="column" gap="4">
+  <div>
+    <Text variant="body-small" color="secondary">
+      Skeleton wrapping Text component
+    </Text>
+    <Skeleton>
+      <Text variant="title-large">Loading title text...</Text>
+    </Skeleton>
+  </div>
+  <div>
+    <Text variant="body-small" color="secondary">
+      Skeleton wrapping a box with multiple lines of content
+    </Text>
+    <Skeleton>
+      <Box>
+        <Flex direction="column" gap="2">
+          <Text variant="body-medium">This is a loading paragraph</Text>
+          <Text variant="body-medium">
+            With multiple lines of content that will load
+          </Text>
+        </Flex>
+      </Box>
+    </Skeleton>
+  </div>
+  <div>
+    <Text variant="body-small" color="secondary">
+      Skeleton wrapping an avatar (rounded)
+    </Text>
+    <Skeleton rounded>
+      <Avatar
+        name="Jean Durand"
+        src="https://avatars.githubusercontent.com/u/1116720?v=4"
+      ></Avatar>
+    </Skeleton>
+  </div>
 </Flex>`;
 
-export const skeletonRealWorldSnippet = `import { Card, Switch, Text, Skeleton, Flex } from '@backstage/ui';
+export const skeletonRealWorldSnippet = `import { Card, ToggleButton, Text, Skeleton, Flex } from '@backstage/ui';
 import { useState } from 'react';
 
 const [loading, setLoading] = useState(true);
@@ -110,17 +136,16 @@ return (
     <Flex direction="column" gap="4">
       <Flex justify="between" align="center">
         <Text variant="title-medium">Article Preview</Text>
-        <Switch
-          checked={loading}
-          onCheckedChange={setLoading}
-          label="Loading"
-        />
+        <ToggleButton isSelected={loading} onChange={setLoading}>
+          {({ isSelected }) => (isSelected ? 'Loading' : 'Loaded')}
+        </ToggleButton>
       </Flex>
 
       <Text variant="title-large">
-        {loading ? <Skeleton style={{ width: '60%' }} /> : 'Async Title'}
+        {loading ? <Skeleton width="60%" /> : 'Async Title'}
       </Text>
 
+      {/* Multi-line paragraphs using multiple single-line skeletons */}
       <Text variant="body-medium">
         {loading ? <Skeleton /> : 'Expected one line.'}
       </Text>
@@ -128,7 +153,11 @@ return (
         {loading ? <Skeleton /> : 'Expected another line.'}
       </Text>
       <Text variant="body-medium">
-        {loading ? <Skeleton style={{ width: '80%' }} /> : 'Duis aute irure dolor in reprehenderit in voluptate velit.'}
+        {loading ? (
+          <Skeleton width="80%" />
+        ) : (
+          'Duis aute irure dolor in reprehenderit in voluptate velit.'
+        )}
       </Text>
     </Flex>
   </Card>

@@ -42,10 +42,7 @@ export const Skeleton = (props: SkeletonProps) => {
 
   // Determine if we should use fit-content sizing (when children are present and no explicit dimensions)
   const hasFitContent =
-    children !== undefined &&
-    children !== null &&
-    width === undefined &&
-    height === undefined;
+    !!children && width === undefined && height === undefined;
 
   // Build inline styles
   const inlineStyles: React.CSSProperties = { ...style };

@@ -50,7 +50,7 @@ The Skeleton component automatically inherits typography from its parent context
 
 Place Skeleton inside a [Text](./text) component and it automatically inherits the typography. No explicit sizing needed as the skeleton respects the theme's font-size and line-height!
 
-> **Best for single-line text**: This pattern works best when you expect the content to be a single line. The skeleton will match the exact height of one line of text.
+This pattern works best when you expect the content to be a **single line of text**. The skeleton will match the exact height of one line of text.
 
 <Snippet
   align="center"
@@ -64,14 +64,13 @@ Place Skeleton inside a [Text](./text) component and it automatically inherits t
 
 When you wrap children in a Skeleton, it automatically infers the correct dimensions, preventing layout shift. The children are hidden but maintain their layout space.
 
-> **Best for multi-line text**: This pattern is ideal for multi-line content where you want the skeleton to match the exact dimensions of the loaded content, including line breaks and wrapping.
+This pattern is ideal for **multi-line content** where you want the skeleton to match the exact dimensions of the loaded content, including line breaks and wrapping.
 
 <Snippet
   align="center"
   py={4}
   preview={<SkeletonSnippet story="InferringDimensions" />}
   code={skeletonInferringSnippet}
-  open
 />
 
 ### Real-world example

@@ -19,6 +19,8 @@ import { Flex } from '../Flex';
 import { Text } from '../Text';
 import { Box } from '../Box';
 import { useState } from 'react';
+import { Avatar } from '../Avatar';
+import { ToggleButton } from '../ToggleButton';
 
 const meta = preview.meta({
   title: 'Backstage UI/Skeleton',
@@ -178,25 +180,28 @@ export const InferringDimensions = meta.story({
       </div>
       <div>
         <Text variant="body-small" color="secondary">
-          Multiple lines
+          Skeleton wrapping a box with multiple lines of content
         </Text>
-        <Flex direction="column" gap="2">
-          <Skeleton>
-            <Text variant="body-medium">This is a loading paragraph</Text>
-          </Skeleton>
-          <Skeleton>
-            <Text variant="body-medium">
-              With multiple lines of content that will load
-            </Text>
-          </Skeleton>
-        </Flex>
+        <Skeleton>
+          <Box>
+            <Flex direction="column" gap="2">
+              <Text variant="body-medium">This is a loading paragraph</Text>
+              <Text variant="body-medium">
+                With multiple lines of content that will load
+              </Text>
+            </Flex>
+          </Box>
+        </Skeleton>
       </div>
       <div>
         <Text variant="body-small" color="secondary">
           Skeleton wrapping an avatar (rounded)
         </Text>
         <Skeleton rounded>
-          <div style={{ width: 48, height: 48 }} />
+          <Avatar
+            name="Jean Durand"
+            src="https://avatars.githubusercontent.com/u/1116720?v=4"
+          ></Avatar>
         </Skeleton>
       </div>
     </Flex>
@@ -226,30 +231,14 @@ export const RealWorldExample = meta.story({
         <Flex direction="column" gap="4">
           <Flex justify="between" align="center">
             <Text variant="title-medium">Article Preview</Text>
-            <button
-              onClick={() => setLoading(!loading)}
-              type="button"
-              style={{
-                padding: '8px 16px',
-                border: '1px solid var(--bui-border-1)',
-                borderRadius: 'var(--bui-radius-2)',
-                background: loading
-                  ? 'var(--bui-bg-surface-2)'
-                  : 'var(--bui-bg-primary)',
-                color: loading
-                  ? 'var(--bui-fg-primary)'
-                  : 'var(--bui-fg-on-primary)',
-                cursor: 'pointer',
-                fontSize: '14px',
-              }}
-            >
-              {loading ? 'Loading' : 'Loaded'}
-            </button>
+            <ToggleButton isSelected={loading} onChange={setLoading}>
+              {({ isSelected }) => (isSelected ? 'Loading' : 'Loaded')}
+            </ToggleButton>
           </Flex>
 
           {/* Single-line title - perfect for inheriting typography */}
           <Text variant="title-large">
-            {loading ? <Skeleton style={{ width: '60%' }} /> : 'Async Title'}
+            {loading ? <Skeleton width="60%" /> : 'Async Title'}
           </Text>
 
           {/* Multi-line paragraphs - using multiple single-line skeletons */}
@@ -261,7 +250,7 @@ export const RealWorldExample = meta.story({
           </Text>
           <Text variant="body-medium">
             {loading ? (
-              <Skeleton style={{ width: '80%' }} />
+              <Skeleton width="80%" />
             ) : (
               'Duis aute irure dolor in reprehenderit in voluptate velit.'
             )}
