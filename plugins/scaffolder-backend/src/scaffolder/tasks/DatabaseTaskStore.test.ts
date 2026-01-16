@@ -587,4 +587,134 @@ describe('DatabaseTaskStore', () => {
     await store.rehydrateWorkspace({ targetPath: workspaceDir.path, taskId });
     expect(fs.existsSync(`${workspaceDir.path}/app-config.yaml`)).toBeTruthy();
   });
+
+  describe('BUG REPRODUCTION: current recovery issues', () => {
+    it('BUG: secrets are deleted on claim when template lacks EXPERIMENTAL_recovery', async () => {
+      const { store } = await createStore();
+      const secrets = { token: 'super-secret' };
+
+      // Create task WITHOUT EXPERIMENTAL_recovery
+      const { taskId } = await store.createTask({
+        spec: {} as TaskSpec,
+        createdBy: 'me',
+        secrets,
+      });
+
+      // Claim task - secrets ARE returned to worker
+      const claimedTask = await store.claimTask();
+      expect(claimedTask).toBeDefined();
+      expect(claimedTask?.secrets).toEqual(secrets);
+
+      // But check DB - secrets should be undefined (deleted)
+      const taskFromDb = await store.getTask(taskId);
+      expect(taskFromDb.secrets).toBeUndefined();
+    });
+
+    it('BUG: secrets survive claim ONLY when template has EXPERIMENTAL_recovery startOver', async () => {
+      const { store } = await createStore();
+      const secrets = { token: 'super-secret' };
+
+      // Create task WITH EXPERIMENTAL_recovery
+      const { taskId } = await store.createTask({
+        spec: {
+          EXPERIMENTAL_recovery: { EXPERIMENTAL_strategy: 'startOver' },
+        } as TaskSpec,
+        createdBy: 'me',
+        secrets,
+      });
+
+      // Claim task
+      const claimedTask = await store.claimTask();
+      expect(claimedTask).toBeDefined();
+      expect(claimedTask?.secrets).toEqual(secrets);
+
+      // Check DB - secrets should still be there
+      const taskFromDb = await store.getTask(taskId);
+      expect(taskFromDb.secrets).toEqual(secrets);
+    });
+
+    it('BUG: recovered task has no secrets if template lacked opt-in', async () => {
+      const { store } = await createStore();
+      const secrets = { token: 'super-secret' };
+
+      // Create task without opt-in
+      const { taskId } = await store.createTask({
+        spec: {} as TaskSpec,
+        createdBy: 'me',
+        secrets,
+      });
+
+      // Claim task
+      await store.claimTask();
+
+      // Recover task (timeout 0 = immediate recovery)
+      await store.recoverTasks({ timeout: { milliseconds: 0 } });
+
+      // Re-claim - secrets should be undefined
+      const reclaimedTask = await store.claimTask();
+      expect(reclaimedTask).toBeDefined();
+      expect(reclaimedTask?.id).toBe(taskId);
+      expect(reclaimedTask?.secrets).toBeUndefined();
+    });
+
+    it('BUG: retry from UI fails because secrets were deleted on completeTask', async () => {
+      const { store } = await createStore();
+      const secrets = { token: 'super-secret' };
+
+      // Create task with opt-in
+      const { taskId } = await store.createTask({
+        spec: {
+          EXPERIMENTAL_recovery: { EXPERIMENTAL_strategy: 'startOver' },
+        } as TaskSpec,
+        createdBy: 'me',
+        secrets,
+      });
+
+      // Claim task
+      await store.claimTask();
+
+      // Complete with status 'failed'
+      await store.completeTask({
+        taskId,
+        status: 'failed',
+        eventBody: { message: 'Task failed' },
+      });
+
+      // Call retryTask without secrets (simulating UI retry)
+      await store.retryTask({ taskId });
+
+      // Re-claim - secrets should be undefined (even though we had opt-in)
+      const reclaimedTask = await store.claimTask();
+      expect(reclaimedTask).toBeDefined();
+      expect(reclaimedTask?.id).toBe(taskId);
+      expect(reclaimedTask?.secrets).toBeUndefined();
+    });
+
+    it('BUG: recovery config is checked but templates still need opt-in for secrets', async () => {
+      const { store } = await createStore();
+      const secrets = { token: 'super-secret' };
+
+      // Create task without opt-in
+      const { taskId } = await store.createTask({
+        spec: {} as TaskSpec,
+        createdBy: 'me',
+        secrets,
+      });
+
+      // Claim task
+      await store.claimTask();
+
+      // Recover task
+      await store.recoverTasks({ timeout: { milliseconds: 0 } });
+
+      // Check status is 'open' (recovery "worked")
+      const recoveredTask = await store.getTask(taskId);
+      expect(recoveredTask.status).toBe('open');
+
+      // Re-claim - secrets undefined (useless recovery)
+      const reclaimedTask = await store.claimTask();
+      expect(reclaimedTask).toBeDefined();
+      expect(reclaimedTask?.secrets).toBeUndefined();
+    });
+  });
 });
