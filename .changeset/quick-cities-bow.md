@@ -3,4 +3,4 @@
 '@backstage/backend-defaults': patch
 ---
 
-Adds interface and service factory for alpha MetricsService. Note, this release does not include documentation or example usage within the framework.
+Adds a new alpha `MetricsService` used to help plugins instrument metrics.
