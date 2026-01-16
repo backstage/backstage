@@ -1337,7 +1337,7 @@ export const SearchFieldDefinition: {
     readonly inputIcon: 'bui-SearchFieldInputIcon';
   };
   readonly dataAttributes: {
-    readonly startCollapsed: readonly [true, false];
+    readonly startcollapsed: readonly [true, false];
     readonly size: readonly ['small', 'medium'];
   };
 };
