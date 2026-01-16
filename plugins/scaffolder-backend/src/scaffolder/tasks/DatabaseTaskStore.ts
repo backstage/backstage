@@ -132,12 +132,6 @@ export class DatabaseTaskStore implements TaskStore {
     return new DatabaseTaskStore(client, options.events);
   }
 
-  private isRecoverableTask(spec: TaskSpec): boolean {
-    return ['startOver'].includes(
-      spec.EXPERIMENTAL_recovery?.EXPERIMENTAL_strategy ?? 'none',
-    );
-  }
-
   private parseSpec({ spec, id }: { spec: string; id: string }): TaskSpec {
     try {
       return JSON.parse(spec);
@@ -401,8 +395,6 @@ export class DatabaseTaskStore implements TaskStore {
         .update({
           status: 'processing',
           last_heartbeat_at: this.db.fn.now(),
-          // remove the secrets for non-recoverable tasks when moving to processing state.
-          secrets: this.isRecoverableTask(spec) ? task.secrets : null,
         });
 
       if (updateCount < 1) {

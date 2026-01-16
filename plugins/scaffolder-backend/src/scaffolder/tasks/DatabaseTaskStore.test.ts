@@ -605,9 +605,9 @@ describe('DatabaseTaskStore', () => {
       expect(claimedTask).toBeDefined();
       expect(claimedTask?.secrets).toEqual(secrets);
 
-      // But check DB - secrets should be undefined (deleted)
+      // FIXED: Secrets now stay in DB for recovery
       const taskFromDb = await store.getTask(taskId);
-      expect(taskFromDb.secrets).toBeUndefined();
+      expect(taskFromDb.secrets).toEqual(secrets);
     });
 
     it('BUG: secrets survive claim ONLY when template has EXPERIMENTAL_recovery startOver', async () => {
@@ -650,11 +650,11 @@ describe('DatabaseTaskStore', () => {
       // Recover task (timeout 0 = immediate recovery)
       await store.recoverTasks({ timeout: { milliseconds: 0 } });
 
-      // Re-claim - secrets should be undefined
+      // FIXED: Re-claim now has secrets available for recovery
       const reclaimedTask = await store.claimTask();
       expect(reclaimedTask).toBeDefined();
       expect(reclaimedTask?.id).toBe(taskId);
-      expect(reclaimedTask?.secrets).toBeUndefined();
+      expect(reclaimedTask?.secrets).toEqual(secrets);
     });
 
     it('BUG: retry from UI fails because secrets were deleted on completeTask', async () => {
@@ -711,10 +711,92 @@ describe('DatabaseTaskStore', () => {
       const recoveredTask = await store.getTask(taskId);
       expect(recoveredTask.status).toBe('open');
 
-      // Re-claim - secrets undefined (useless recovery)
+      // FIXED: Re-claim now has secrets - recovery actually works!
       const reclaimedTask = await store.claimTask();
       expect(reclaimedTask).toBeDefined();
-      expect(reclaimedTask?.secrets).toBeUndefined();
+      expect(reclaimedTask?.secrets).toEqual(secrets);
+    });
+  });
+
+  describe('FIXED: secrets preservation for recovery', () => {
+    it('should preserve secrets in DB when claiming a task (for recovery)', async () => {
+      const { store } = await createStore();
+      const secrets = { gheAccessToken: 'secret-token' };
+      const { taskId } = await store.createTask({
+        spec: {} as TaskSpec,
+        createdBy: 'me',
+        secrets,
+      });
+
+      // Claim returns secrets to worker
+      const claimedTask = await store.claimTask();
+      expect(claimedTask?.secrets).toEqual(secrets);
+
+      // Secrets should STILL be in DB for recovery
+      const taskFromDb = await store.getTask(taskId);
+      expect(taskFromDb.secrets).toEqual(secrets);
+    });
+
+    it('should delete secrets only when task reaches terminal state (completed)', async () => {
+      const { store } = await createStore();
+      const secrets = { token: 'secret' };
+      const { taskId } = await store.createTask({
+        spec: {} as TaskSpec,
+        createdBy: 'me',
+        secrets,
+      });
+
+      await store.claimTask();
+      await store.completeTask({
+        taskId,
+        status: 'completed',
+        eventBody: { message: 'done' },
+      });
+
+      const task = await store.getTask(taskId);
+      expect(task.secrets).toBeUndefined();
+    });
+
+    it('should delete secrets when task fails', async () => {
+      const { store } = await createStore();
+      const secrets = { token: 'secret' };
+      const { taskId } = await store.createTask({
+        spec: {} as TaskSpec,
+        createdBy: 'me',
+        secrets,
+      });
+
+      await store.claimTask();
+      await store.completeTask({
+        taskId,
+        status: 'failed',
+        eventBody: { message: 'error' },
+      });
+
+      const task = await store.getTask(taskId);
+      expect(task.secrets).toBeUndefined();
+    });
+
+    it('should preserve secrets through multiple recovery cycles', async () => {
+      const { store } = await createStore();
+      const secrets = { token: 'secret' };
+      const { taskId } = await store.createTask({
+        spec: {} as TaskSpec,
+        createdBy: 'me',
+        secrets,
+      });
+
+      // First crash and recovery
+      await store.claimTask();
+      await store.recoverTasks({ timeout: { milliseconds: 0 } });
+
+      // Second crash and recovery
+      await store.claimTask();
+      await store.recoverTasks({ timeout: { milliseconds: 0 } });
+
+      // Third claim should still have secrets
+      const task = await store.claimTask();
+      expect(task?.secrets).toEqual(secrets);
     });
   });
 });
