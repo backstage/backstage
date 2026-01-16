@@ -20,7 +20,7 @@ import { createApp } from '@backstage/frontend-defaults';
 import { ConfigReader } from '@backstage/core-app-api';
 import catalogPlugin from '@backstage/plugin-catalog/alpha';
 
-import { apis } from './apis';
+import { appApis, techdocsPluginApis } from './apis';
 import { configLoader } from './config';
 
 import { createFrontendModule } from '@backstage/frontend-plugin-api';
@@ -32,13 +32,15 @@ import {
 
 const appPlugin = createFrontendModule({
   pluginId: 'app',
-  extensions: [...apis, SidebarContent],
+  extensions: [...appApis, SidebarContent],
 });
 
 const app = createApp({
   features: [
     appPlugin,
-    techdocsPlugin,
+    techdocsPlugin.withOverrides({
+      extensions: [...techdocsPluginApis],
+    }),
     catalogPlugin,
     techDocsThemeToggleAddonModule,
     techdocsLiveReloadAddonModule,

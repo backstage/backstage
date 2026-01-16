@@ -157,7 +157,7 @@ class TechDocsDevApi implements TechDocsApi {
   }
 }
 
-export const apis = [
+export const techdocsPluginApis = [
   ApiBlueprint.make({
     name: 'techdocs-dev-storage',
     params: defineParams =>
@@ -194,6 +194,9 @@ export const apis = [
           }),
       }),
   }),
+];
+
+export const appApis = [
   ApiBlueprint.make({
     name: 'scm-integrations',
     params: defineParams =>
