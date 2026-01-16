@@ -37,6 +37,31 @@ export type TaskStoreEmitOptions<TBody = JsonObject> = {
 };
 
 /**
+ * Represents the completion state of a single step
+ */
+export type StepState = {
+  status: 'completed' | 'failed';
+  output: { [name: string]: JsonValue };
+};
+
+/**
+ * Represents the full state of a task including checkpoints and step states
+ */
+export type TaskState = {
+  checkpoints?: { [key: string]: JsonObject };
+  steps?: { [stepId: string]: StepState };
+};
+
+/**
+ * Options for updating step state
+ */
+export type UpdateStepStateOptions = {
+  stepId: string;
+  status: 'completed' | 'failed';
+  output: { [name: string]: JsonValue };
+};
+
+/**
  * TaskStoreListEventsOptions
  *
  */

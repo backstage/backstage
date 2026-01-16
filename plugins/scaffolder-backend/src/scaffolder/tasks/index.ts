@@ -28,4 +28,7 @@ export type {
   TaskStoreCreateTaskOptions,
   TaskStoreRecoverTaskOptions,
   TaskStoreCreateTaskResult,
+  StepState,
+  TaskState,
+  UpdateStepStateOptions,
 } from './types';
