@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 The Backstage Authors
+ * Copyright 2026 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -1018,6 +1018,25 @@ export const spec = {
                     },
                   },
                   required: ['id'],
+                },
+              },
+            },
+          },
+          '400': {
+            description: 'Validation errors.',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    errors: {
+                      type: 'array',
+                      items: {
+                        $ref: '#/components/schemas/ValidationError',
+                      },
+                    },
+                  },
+                  required: ['errors'],
                 },
               },
             },
