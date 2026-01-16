@@ -2,21 +2,23 @@ import { ChangelogComponent } from '@/components/ChangelogComponent';
 import { CodeBlock } from '@/components/CodeBlock';
 import { PageTitle } from '@/components/PageTitle';
 import { PropsTable } from '@/components/PropsTable';
-import {
-  useMediaQueryOrientationSnippet,
-  useMediaQueryParamDefs,
-  useMediaQueryPreferencesSnippet,
-  useMediaQueryResponsiveSnippet,
-  useMediaQueryReturnDefs,
-  useMediaQueryUsageSnippet,
-} from './use-media-query.props';
 import { Snippet } from '@/components/Snippet';
 import {
-  UseMediaQueryThemeExample,
+  UseMediaQueryOrientationExample,
   UseMediaQueryPreferencesExample,
   UseMediaQueryResponsiveExample,
-  UseMediaQueryOrientationExample,
-} from './use-media-query.example';
+  UseMediaQueryThemeExample,
+} from './components';
+import {
+  useMediaQueryParamDefs,
+  useMediaQueryReturnDefs,
+} from './props-definition';
+import {
+  useMediaQueryOrientationSnippet,
+  useMediaQueryPreferencesSnippet,
+  useMediaQueryResponsiveSnippet,
+  useMediaQueryUsageSnippet,
+} from './snippets';
 
 <PageTitle
   title="useMediaQuery"
