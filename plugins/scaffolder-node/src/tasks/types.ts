@@ -18,6 +18,11 @@ import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { PermissionCriteria } from '@backstage/plugin-permission-common';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { JsonObject, Observable } from '@backstage/types';
+import type {
+  TaskState,
+  UpdateStepStateOptions,
+  UpdateTaskCheckpointOptions,
+} from '@backstage/plugin-scaffolder-node/alpha';
 
 /**
  * TaskSecrets
@@ -67,7 +72,7 @@ export type SerializedTask = {
   lastHeartbeatAt?: string;
   createdBy?: string;
   secrets?: TaskSecrets;
-  state?: JsonObject;
+  state?: TaskState;
 };
 
 /**
@@ -168,11 +173,11 @@ export interface TaskContext {
 
   emitLog(message: string, logMetadata?: JsonObject): Promise<void>;
 
-  getTaskState?(): Promise<{ state?: JsonObject } | undefined>;
+  getTaskState?(): Promise<{ state?: TaskState } | undefined>;
 
-  updateCheckpoint?(options: JsonObject): Promise<void>;
+  updateCheckpoint?(options: UpdateTaskCheckpointOptions): Promise<void>;
 
-  updateStepState?(options: JsonObject): Promise<void>;
+  updateStepState?(options: UpdateStepStateOptions): Promise<void>;
 
   serializeWorkspace?(options: { path: string }): Promise<void>;
 

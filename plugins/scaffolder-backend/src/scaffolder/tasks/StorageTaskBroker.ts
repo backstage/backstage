@@ -148,7 +148,7 @@ export class TaskManager implements TaskContext {
   }
 
   async getTaskState?() {
-    return this.storage.getTaskState?.({ taskId: this.task.taskId });
+    return this.storage.getTaskState({ taskId: this.task.taskId });
   }
 
   async updateCheckpoint?(options: UpdateTaskCheckpointOptions): Promise<void> {
@@ -158,7 +158,7 @@ export class TaskManager implements TaskContext {
     this.task.state.checkpoints ??= {};
     this.task.state.checkpoints[key] = value;
 
-    await this.storage.saveTaskState?.({
+    await this.storage.saveTaskState({
       taskId: this.task.taskId,
       state: this.task.state,
     });
@@ -171,7 +171,7 @@ export class TaskManager implements TaskContext {
     this.task.state.steps ??= {};
     this.task.state.steps[stepId] = { status, output };
 
-    await this.storage.saveTaskState?.({
+    await this.storage.saveTaskState({
       taskId: this.task.taskId,
       state: this.task.state,
     });
@@ -356,9 +356,9 @@ export class StorageTaskBroker implements TaskBroker {
         'scaffolder.EXPERIMENTAL_recoverTasksTimeout',
         defaultTimeout,
       );
-      const { ids: recoveredTaskIds } = (await this.storage.recoverTasks?.({
+      const { ids: recoveredTaskIds } = await this.storage.recoverTasks({
         timeout,
-      })) ?? { ids: [] };
+      });
       if (recoveredTaskIds.length > 0) {
         this.signalDispatch();
       }
@@ -508,7 +508,7 @@ export class StorageTaskBroker implements TaskBroker {
             .stepId
         : 0;
 
-    await this.storage.cancelTask?.({
+    await this.storage.cancelTask({
       taskId,
       body: {
         message: `Step ${currentStepId} has been cancelled.`,
@@ -522,7 +522,7 @@ export class StorageTaskBroker implements TaskBroker {
     secrets?: TaskSecrets;
     taskId: string;
   }): Promise<void> {
-    await this.storage.retryTask?.(options);
+    await this.storage.retryTask(options);
     this.signalDispatch();
   }
 }

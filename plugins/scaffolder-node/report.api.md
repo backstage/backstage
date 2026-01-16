@@ -27,9 +27,11 @@ import { ScmIntegrations } from '@backstage/integration';
 import { ServiceRef } from '@backstage/backend-plugin-api';
 import { SpawnOptionsWithoutStdio } from 'node:child_process';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
+import type { TaskState } from '@backstage/plugin-scaffolder-node/alpha';
 import { TemplateInfo } from '@backstage/plugin-scaffolder-common';
 import type { TemplateParameterSchema } from '@backstage/plugin-scaffolder-common';
-import { UpdateTaskCheckpointOptions } from '@backstage/plugin-scaffolder-node/alpha';
+import type { UpdateStepStateOptions } from '@backstage/plugin-scaffolder-node/alpha';
+import type { UpdateTaskCheckpointOptions } from '@backstage/plugin-scaffolder-node/alpha';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
 import { UserEntity } from '@backstage/catalog-model';
 import { Writable } from 'node:stream';
@@ -477,7 +479,7 @@ export type SerializedTask = {
   lastHeartbeatAt?: string;
   createdBy?: string;
   secrets?: TaskSecrets;
-  state?: JsonObject;
+  state?: TaskState;
 };
 
 // @public @deprecated
@@ -571,7 +573,7 @@ export interface TaskContext {
   // (undocumented)
   getTaskState?(): Promise<
     | {
-        state?: JsonObject;
+        state?: TaskState;
       }
     | undefined
   >;
@@ -593,9 +595,9 @@ export interface TaskContext {
   // (undocumented)
   taskId?: string;
   // (undocumented)
-  updateCheckpoint?(options: JsonObject): Promise<void>;
+  updateCheckpoint?(options: UpdateTaskCheckpointOptions): Promise<void>;
   // (undocumented)
-  updateStepState?(options: JsonObject): Promise<void>;
+  updateStepState?(options: UpdateStepStateOptions): Promise<void>;
 }
 
 // @public @deprecated
