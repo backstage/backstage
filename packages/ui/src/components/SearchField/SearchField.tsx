@@ -48,14 +48,14 @@ export const SearchField = forwardRef<HTMLDivElement, SearchFieldProps>(
     }, [label, ariaLabel, ariaLabelledBy]);
 
     // ignore startCollapsed from props to avoid duplication with cleanedProps startcollapsed
-    const { startCollapsed, ...restProps } = props;
+    const { startCollapsed: startcollapsed = false, ...restProps } = props;
     const { classNames, dataAttributes, style, cleanedProps } = useStyles(
       SearchFieldDefinition,
       {
         size: 'small',
         placeholder: 'Search',
+        startcollapsed,
         ...restProps,
-        startcollapsed: startCollapsed ?? false,
       },
     );
 
@@ -66,7 +66,7 @@ export const SearchField = forwardRef<HTMLDivElement, SearchFieldProps>(
       isRequired,
       secondaryLabel,
       placeholder,
-      startcollapsed: startCollapsed,
+      startcollapsed: isStartCollapsed,
       ...rest
     } = cleanedProps;
 
@@ -90,8 +90,8 @@ export const SearchField = forwardRef<HTMLDivElement, SearchFieldProps>(
     const hasValue = !!inputRef.current?.value;
 
     const isCollapsed = hasInputRef
-      ? startCollapsed && !hasValue && !isFocused
-      : startCollapsed && !rest.value && !rest.defaultValue && !isFocused;
+      ? isStartCollapsed && !hasValue && !isFocused
+      : isStartCollapsed && !rest.value && !rest.defaultValue && !isFocused;
 
     return (
       <AriaSearchField
