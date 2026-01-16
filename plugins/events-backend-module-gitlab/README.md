@@ -5,7 +5,7 @@ Welcome to the `events-backend-module-gitlab` backend module!
 This package is a module for the `events-backend` backend plugin
 and extends the event system with an `GitlabEventRouter`.
 
-The event router will subscribe to the topic `gitlab`
+The event module will subscribe to the topic `gitlab`
 and route the events to more concrete topics based on the value
 of the provided `$.event_name` payload field.
 
@@ -26,13 +26,13 @@ Please find all possible webhook event types at the
 yarn --cwd packages/backend add @backstage/plugin-events-backend-module-gitlab
 ```
 
-### Event Router
+### Usage
 
 ```ts
 // packages/backend/src/index.ts
-import { eventsModuleGitlabEventRouter } from '@backstage/plugin-events-backend-module-gitlab/alpha';
+import eventsModuleGitlab from '@backstage/plugin-events-backend-module-gitlab';
 // ...
-backend.add(eventsModuleGitlabEventRouter);
+backend.add(eventsModuleGitlab);
 ```
 
 #### Legacy Backend System
@@ -41,15 +41,6 @@ backend.add(eventsModuleGitlabEventRouter);
 // packages/backend/src/plugins/events.ts
 const eventRouter = new GitlabEventRouter({ events: env.events });
 await eventRouter.subscribe();
-```
-
-### Token Validator
-
-```ts
-// packages/backend/src/index.ts
-import { eventsModuleGitlabWebhook } from '@backstage/plugin-events-backend-module-gitlab/alpha';
-// ...
-backend.add(eventsModuleGitlabWebhook);
 ```
 
 #### Legacy Backend System
