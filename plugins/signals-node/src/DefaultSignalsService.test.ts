@@ -32,7 +32,7 @@ describe('DefaultSignalsService', () => {
     };
     service.publish(signal);
     expect(mockEvents.publish).toHaveBeenCalledWith({
-      topic: 'signals',
+      topic: 'signals:test-channel',
       eventPayload: signal,
     });
   });
