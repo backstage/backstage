@@ -82,6 +82,6 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
 );
 export const SidebarContent = NavContentBlueprint.make({
   params: {
-    component: ({}) => <Root />,
+    component: () => <Root />,
   },
 });
