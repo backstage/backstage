@@ -40,6 +40,7 @@
     "@backstage/frontend-defaults": "workspace:^",
     "@backstage/frontend-plugin-api": "workspace:^",
     "@backstage/integration-react": "workspace:^",
+    "@backstage/plugin-app-react": "workspace:^",
     "@backstage/plugin-catalog": "workspace:^",
     "@backstage/plugin-techdocs": "workspace:^",
     "@backstage/plugin-techdocs-react": "workspace:^",

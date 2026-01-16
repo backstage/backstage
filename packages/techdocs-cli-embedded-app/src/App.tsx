@@ -24,7 +24,7 @@ import { apis } from './apis';
 import { configLoader } from './config';
 
 import { createFrontendModule } from '@backstage/frontend-plugin-api';
-import { SidebarContent } from './components/Root/Root';
+import { SidebarContent } from './components/Sidebar';
 import {
   techDocsThemeToggleAddonModule,
   techdocsLiveReloadAddonModule,
