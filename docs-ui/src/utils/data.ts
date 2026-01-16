@@ -77,6 +77,11 @@ export const components: Page[] = [
     slug: 'password-field',
   },
   {
+    title: 'Popover',
+    slug: 'popover',
+    status: 'new',
+  },
+  {
     title: 'RadioGroup',
     slug: 'radio-group',
   },

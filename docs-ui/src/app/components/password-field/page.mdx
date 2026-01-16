@@ -1,0 +1,59 @@
+import { PropsTable } from '@/components/PropsTable';
+import { Snippet } from '@/components/Snippet';
+import { inputPropDefs } from './props-definition';
+import {
+  passwordFieldUsageSnippet,
+  withLabelSnippet,
+  sizesSnippet,
+  withDescriptionSnippet,
+} from './snippets';
+import { WithLabel, Sizes, WithDescription } from './components';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+import { CodeBlock } from '@/components/CodeBlock';
+import { PasswordFieldDefinition } from '../../../utils/definitions';
+
+<PageTitle
+  title="PasswordField"
+  description="A password field component for your forms."
+/>
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<WithLabel />}
+  code={withLabelSnippet}
+/>
+
+## Usage
+
+<CodeBlock code={passwordFieldUsageSnippet} />
+
+## API reference
+
+<PropsTable data={inputPropDefs} />
+
+## Examples
+
+### Sizes
+
+We support two different sizes: `small`, `medium`.
+
+<Snippet align="center" py={4} open preview={<Sizes />} code={sizesSnippet} />
+
+### With description
+
+Here's a simple PasswordField with a description.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<WithDescription />}
+  code={withDescriptionSnippet}
+/>
+
+<Theming definition={PasswordFieldDefinition} />
+
+<ChangelogComponent component="password-field" />
