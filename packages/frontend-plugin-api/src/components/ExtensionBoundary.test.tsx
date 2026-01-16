@@ -163,6 +163,47 @@ describe('ExtensionBoundary', () => {
     expect(pluginWrapperApi.getPluginWrapper).toHaveBeenCalledWith('app');
   });
 
+  it('should handle errors thrown by PluginWrapper with ErrorDisplayBoundary', async () => {
+    const errorMsg = 'PluginWrapper error';
+    const TextComponent = () => {
+      return <p>Content</p>;
+    };
+
+    const ThrowingWrapper = () => {
+      throw new Error(errorMsg);
+    };
+
+    const pluginWrapperApi: PluginWrapperApi = {
+      getPluginWrapper: jest.fn((pluginId: string) => {
+        if (pluginId === 'app') {
+          return ThrowingWrapper;
+        }
+        return undefined;
+      }),
+    };
+
+    const { error } = await withLogCollector(['error'], async () => {
+      renderInTestApp(
+        <TestApiProvider apis={[[pluginWrapperApiRef, pluginWrapperApi]]}>
+          {createExtensionTester(
+            wrapInBoundaryExtension(<TextComponent />),
+          ).reactElement()}
+        </TestApiProvider>,
+      );
+      await waitFor(() =>
+        expect(screen.getByText(errorMsg)).toBeInTheDocument(),
+      );
+    });
+
+    expect(error).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          message: expect.stringContaining(errorMsg),
+        }),
+      ]),
+    );
+  });
+
   // TODO(Rugvip): Need a way to be able to override APIs in the app to be able to test this properly
   // eslint-disable-next-line jest/no-disabled-tests
   it.skip('should emit analytics events if routable', async () => {
