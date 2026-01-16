@@ -254,8 +254,8 @@ either, it becomes _orphaned_. The end result is as follows:
   the child entity.
 - The child entity is _not_ removed from the catalog, but stays around until
   explicitly deleted via the catalog API, implicitly if `orphanStrategy: delete`
-  configuration is set, or until it is "reclaimed" by the original parent
-  or another parent starting to reference it.
+  configuration is set (the default), or until it is "reclaimed" by the original
+  parent or another parent starting to reference it.
 - The catalog page in Backstage for the child entity detects the new annotation
   and informs users about the orphan status.
 
@@ -282,21 +282,13 @@ Orphaning can occur in several different scenarios.
 > to inform the owner that something is wrong. But processing and other
 > behaviors continue as usual.
 
-The reason that the orphaning mechanism exists instead of having an eager
-deletion triggered, is safety. Scenarios like these can happen purely by
-accident, due to the asynchronous nature of the system and the fallible nature
-of humans. In particular when external systems start consuming and relying on
-the catalog, there could be substantial consequences to suddenly dropping
-entities without explicit owner consent. The catalog therefore takes the stance
-that entities that often were added by direct user action should also be deleted
-only by direct user action.
-
-However, if you want to delete orphaned entities automatically anyway, you can
-enable the automated clean up with the following app-config option.
+The default behavior of the catalog is to automatically remove orphaned
+entities. However, if you want to keep them instead, you can disable the
+automated cleanup with the following app-config option.
 
 ```
 catalog:
-  orphanStrategy: delete
+  orphanStrategy: keep
 ```
 
 ## Implicit Deletion
