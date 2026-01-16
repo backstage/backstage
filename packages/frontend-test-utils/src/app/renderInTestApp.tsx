@@ -26,11 +26,11 @@ import {
   coreExtensionData,
   RouteRef,
   useRouteRef,
-  IconComponent,
   RouterBlueprint,
   NavItemBlueprint,
   createFrontendPlugin,
   FrontendFeature,
+  NavItem,
 } from '@backstage/frontend-plugin-api';
 import appPlugin from '@backstage/plugin-app';
 
@@ -78,23 +78,28 @@ export type TestAppOptions = {
   initialRouteEntries?: string[];
 };
 
-const NavItem = (props: {
-  routeRef: RouteRef<undefined>;
-  title: string;
-  icon: IconComponent;
-}) => {
+const NativeNavItem = (props: NavItem) => {
   const { routeRef, title, icon: Icon } = props;
-  const link = useRouteRef(routeRef);
+  const link = useRouteRef(routeRef!);
   if (!link) {
     return null;
   }
   return (
     <li>
       <Link to={link()}>
-        <Icon /> {title}
+        {Icon && <Icon />} {title}
       </Link>
     </li>
   );
+};
+
+const NavItemRenderer = (props: NavItem) => {
+  if (!props.routeRef) {
+    return props.CustomComponent ? <props.CustomComponent /> : null;
+  } else if (props.routeRef) {
+    return <NativeNavItem {...props} />;
+  }
+  return null;
 };
 
 const appPluginOverride = appPlugin.withOverrides({
@@ -116,18 +121,9 @@ const appPluginOverride = appPlugin.withOverrides({
             <nav>
               <ul>
                 {inputs.items.map((item, index) => {
-                  const { icon, title, routeRef } = item.get(
-                    NavItemBlueprint.dataRefs.target,
-                  );
+                  const params = item.get(NavItemBlueprint.dataRefs.target);
 
-                  return (
-                    <NavItem
-                      key={index}
-                      icon={icon}
-                      title={title}
-                      routeRef={routeRef}
-                    />
-                  );
+                  return <NavItemRenderer key={index} {...params} />;
                 })}
               </ul>
             </nav>,

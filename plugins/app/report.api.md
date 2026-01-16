@@ -16,6 +16,7 @@ import { ExtensionInput } from '@backstage/frontend-plugin-api';
 import { IconComponent } from '@backstage/frontend-plugin-api';
 import { JSX as JSX_2 } from 'react';
 import { NavContentComponent } from '@backstage/frontend-plugin-api';
+import { NavItem } from '@backstage/frontend-plugin-api';
 import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
 import { ReactNode } from 'react';
@@ -77,15 +78,7 @@ const appPlugin: OverridableFrontendPlugin<
       output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
       inputs: {
         items: ExtensionInput<
-          ConfigurableExtensionDataRef<
-            {
-              title: string;
-              icon: IconComponent;
-              routeRef: RouteRef<undefined>;
-            },
-            'core.nav-item.target',
-            {}
-          >,
+          ConfigurableExtensionDataRef<NavItem, 'core.nav-item.target', {}>,
           {
             singleton: false;
             optional: false;

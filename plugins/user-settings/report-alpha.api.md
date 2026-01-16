@@ -7,18 +7,18 @@ import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
-import { IconComponent } from '@backstage/frontend-plugin-api';
 import { JSX as JSX_2 } from 'react';
+import { NavItem } from '@backstage/frontend-plugin-api';
 import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
-import { RouteRef } from '@backstage/frontend-plugin-api';
-import { RouteRef as RouteRef_2 } from '@backstage/core-plugin-api';
+import { RouteRef } from '@backstage/core-plugin-api';
+import { RouteRef as RouteRef_2 } from '@backstage/frontend-plugin-api';
 import { TranslationRef } from '@backstage/frontend-plugin-api';
 
 // @alpha (undocumented)
 const _default: OverridableFrontendPlugin<
   {
-    root: RouteRef_2<undefined>;
+    root: RouteRef<undefined>;
   },
   {},
   {
@@ -27,21 +27,9 @@ const _default: OverridableFrontendPlugin<
       name: undefined;
       config: {};
       configInput: {};
-      output: ExtensionDataRef<
-        {
-          title: string;
-          icon: IconComponent;
-          routeRef: RouteRef<undefined>;
-        },
-        'core.nav-item.target',
-        {}
-      >;
+      output: ExtensionDataRef<NavItem, 'core.nav-item.target', {}>;
       inputs: {};
-      params: {
-        title: string;
-        icon: IconComponent;
-        routeRef: RouteRef<undefined>;
-      };
+      params: NavItem;
     }>;
     'page:user-settings': OverridableExtensionDefinition<{
       config: {
@@ -54,7 +42,7 @@ const _default: OverridableFrontendPlugin<
         | ExtensionDataRef<string, 'core.routing.path', {}>
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
         | ExtensionDataRef<
-            RouteRef<AnyRouteRefParams>,
+            RouteRef_2<AnyRouteRefParams>,
             'core.routing.ref',
             {
               optional: true;
@@ -75,7 +63,7 @@ const _default: OverridableFrontendPlugin<
         defaultPath?: [Error: `Use the 'path' param instead`];
         path: string;
         loader: () => Promise<JSX.Element>;
-        routeRef?: RouteRef;
+        routeRef?: RouteRef_2;
       };
     }>;
   }
@@ -88,21 +76,9 @@ export const settingsNavItem: OverridableExtensionDefinition<{
   name: undefined;
   config: {};
   configInput: {};
-  output: ExtensionDataRef<
-    {
-      title: string;
-      icon: IconComponent;
-      routeRef: RouteRef<undefined>;
-    },
-    'core.nav-item.target',
-    {}
-  >;
+  output: ExtensionDataRef<NavItem, 'core.nav-item.target', {}>;
   inputs: {};
-  params: {
-    title: string;
-    icon: IconComponent;
-    routeRef: RouteRef<undefined>;
-  };
+  params: NavItem;
 }>;
 
 // @alpha (undocumented)

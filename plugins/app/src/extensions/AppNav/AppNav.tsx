@@ -20,62 +20,54 @@ import {
   createExtensionInput,
   NavItemBlueprint,
   NavContentBlueprint,
-  NavContentComponentProps,
   routeResolutionApiRef,
-  IconComponent,
-  RouteRef,
   useApi,
+  NavItem,
   NavContentComponent,
+  NavContentItem,
 } from '@backstage/frontend-plugin-api';
-import { Sidebar, SidebarItem } from '@backstage/core-components';
-import { useMemo } from 'react';
 
-function DefaultNavContent(props: NavContentComponentProps) {
-  return (
-    <Sidebar>
-      {props.items.map((item, index) => (
-        <SidebarItem
-          to={item.to}
-          icon={item.icon}
-          text={item.text}
-          key={index}
-        />
-      ))}
-    </Sidebar>
-  );
-}
+import { useMemo } from 'react';
+import { DefaultNavContent } from './DefaultNavContent';
 
 // This helps defer rendering until the app is being rendered, which is needed
 // because the RouteResolutionApi can't be called until the app has been fully initialized.
 function NavContentRenderer(props: {
   Content: NavContentComponent;
-  items: Array<{
-    title: string;
-    icon: IconComponent;
-    routeRef: RouteRef<undefined>;
-  }>;
+  items: Array<NavItem>;
 }) {
   const routeResolutionApi = useApi(routeResolutionApiRef);
 
   const items = useMemo(() => {
-    return props.items.flatMap(item => {
+    const validItems = props.items.filter(item => {
+      if ('CustomComponent' in item && item.CustomComponent) {
+        return true;
+      }
       const link = routeResolutionApi.resolve(item.routeRef);
       if (!link) {
         // eslint-disable-next-line no-console
         console.warn(
           `NavItemBlueprint: unable to resolve route ref ${item.routeRef}`,
         );
-        return [];
+        return false;
       }
-      return [
-        {
-          to: link(),
-          text: item.title,
-          icon: item.icon,
-          title: item.title,
-          routeRef: item.routeRef,
-        },
-      ];
+      return true;
+    });
+
+    return validItems.map(item => {
+      if ('CustomComponent' in item && item.CustomComponent) {
+        return {
+          ...item,
+          to: undefined,
+          text: undefined,
+        } satisfies NavContentItem;
+      }
+      const link = routeResolutionApi.resolve(item.routeRef)!;
+      return {
+        ...item,
+        to: link(),
+        text: item.title,
+      } satisfies NavContentItem;
     });
   }, [props.items, routeResolutionApi]);
 

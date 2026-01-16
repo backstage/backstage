@@ -25,9 +25,10 @@ export { IconBundleBlueprint } from './IconBundleBlueprint';
 export {
   NavContentBlueprint,
   type NavContentComponent,
+  type NavContentItem,
   type NavContentComponentProps,
 } from './NavContentBlueprint';
-export { NavItemBlueprint } from './NavItemBlueprint';
+export { NavItemBlueprint, type NavItem } from './NavItemBlueprint';
 export { PageBlueprint } from './PageBlueprint';
 export { RouterBlueprint } from './RouterBlueprint';
 export {

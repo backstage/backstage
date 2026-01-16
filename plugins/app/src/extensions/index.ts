@@ -16,7 +16,7 @@
 export { App } from './App';
 export { AppLanguageApi } from './AppLanguageApi';
 export { AppLayout } from './AppLayout';
-export { AppNav } from './AppNav';
+export { AppNav } from './AppNav/AppNav';
 export { AppRoot } from './AppRoot';
 export { AppRoutes } from './AppRoutes';
 export { AppThemeApi, DarkTheme, LightTheme } from './AppThemeApi';

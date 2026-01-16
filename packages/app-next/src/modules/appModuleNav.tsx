@@ -39,6 +39,7 @@ import {
   UserSettingsSignInAvatar,
 } from '@backstage/plugin-user-settings';
 import { makeStyles } from '@material-ui/core/styles';
+import { compatWrapper } from '@backstage/core-compat-api';
 
 const useSidebarLogoStyles = makeStyles({
   root: {
@@ -105,34 +106,92 @@ export const appModuleNav = createFrontendModule({
   extensions: [
     NavContentBlueprint.make({
       params: {
-        component: ({ items }) => (
-          <Sidebar>
-            <SidebarLogo />
-            <SidebarGroup label="Search" icon={<SearchIcon />} to="/search">
-              <SidebarSearchModal />
-            </SidebarGroup>
-            <SidebarDivider />
-            <SidebarGroup label="Menu" icon={<MenuIcon />}>
-              <SidebarScrollWrapper>
-                {items.map((item, index) => (
-                  <SidebarItem {...item} key={index} />
-                ))}
-              </SidebarScrollWrapper>
-            </SidebarGroup>
-            <SidebarDivider />
-            <SidebarSpace />
-            <SidebarDivider />
-            <SidebarGroup
-              label="Settings"
-              icon={<UserSettingsSignInAvatar />}
-              to="/settings"
-            >
-              <NotificationsSidebarItem />
-              <SidebarItem icon={BuildIcon} to="devtools" text="DevTools" />
-              <Settings />
-            </SidebarGroup>
-          </Sidebar>
-        ),
+        component: ({ items, Logo, Search }) => {
+          return compatWrapper(
+            <Sidebar>
+              {Logo ? <Logo /> : <SidebarLogo />}
+              {Search ? (
+                <Search />
+              ) : (
+                <SidebarGroup label="Search" icon={<SearchIcon />} to="/search">
+                  <SidebarSearchModal />
+                </SidebarGroup>
+              )}
+              <SidebarGroup label="Search" icon={<SearchIcon />} to="/search">
+                <SidebarSearchModal />
+              </SidebarGroup>
+              <SidebarDivider />
+              <SidebarGroup label="Menu" icon={<MenuIcon />}>
+                <SidebarScrollWrapper>
+                  {(() => {
+                    // Separate items with and without positions
+
+                    const length = items.length;
+                    const itemsWithPosition = [
+                      ...items.filter(i => typeof i.position === 'number'),
+                    ];
+                    const itemsWithoutPosition = [
+                      ...items.filter(i => typeof i.position !== 'number'),
+                    ];
+                    const sortedItems = [];
+
+                    for (let i = 0; i < length; i++) {
+                      const itemAtPosition = itemsWithPosition.filter(
+                        item => item.position === i,
+                      );
+                      if (itemAtPosition.length) {
+                        // If there are multiple items at the same position, maintain their original order
+                        sortedItems.push(...itemAtPosition);
+                      } else if (itemsWithoutPosition.length) {
+                        // Fill gaps with unpositioned items in their original order
+                        sortedItems.push(itemsWithoutPosition.shift()!);
+                      }
+                    }
+
+                    return sortedItems.map((item, displayIndex) => {
+                      const CustomComponent = item.CustomComponent;
+                      if (item.hide) {
+                        return null;
+                      }
+
+                      if ('CustomComponent' in item && CustomComponent) {
+                        return (
+                          <>
+                            <CustomComponent key={displayIndex} />
+                            {item.dividerBelow && <SidebarDivider />}
+                          </>
+                        );
+                      }
+
+                      return (
+                        <>
+                          <SidebarItem
+                            {...item}
+                            to={item.to!}
+                            key={displayIndex}
+                          />{' '}
+                          {item.dividerBelow && <SidebarDivider />}
+                        </>
+                      );
+                    });
+                  })()}
+                </SidebarScrollWrapper>
+              </SidebarGroup>
+              <SidebarDivider />
+              <SidebarSpace />
+              <SidebarDivider />
+              <SidebarGroup
+                label="Settings"
+                icon={<UserSettingsSignInAvatar />}
+                to="/settings"
+              >
+                <NotificationsSidebarItem />
+                <SidebarItem icon={BuildIcon} to="devtools" text="DevTools" />
+                <Settings />
+              </SidebarGroup>
+            </Sidebar>,
+          );
+        },
       },
     }),
   ],

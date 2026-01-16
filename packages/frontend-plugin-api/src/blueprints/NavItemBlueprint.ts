@@ -18,12 +18,75 @@ import { IconComponent } from '../icons/types';
 import { RouteRef } from '../routing';
 import { createExtensionBlueprint, createExtensionDataRef } from '../wiring';
 
-// TODO(Rugvip): Should this be broken apart into separate refs? title/icon/routeRef
-const targetDataRef = createExtensionDataRef<{
-  title: string;
+/**
+ * Base fields for standard nav items.
+ *
+ * @internal
+ */
+type NavItemBase = {
   icon: IconComponent;
+  title: string;
   routeRef: RouteRef<undefined>;
-}>().with({ id: 'core.nav-item.target' });
+  hide?: boolean;
+  position?: number;
+  dividerBelow?: boolean;
+};
+
+/**
+ * Nav item variant when a custom component is provided.
+ * Other mandatory fields become optional.
+ *
+ * @internal
+ */
+type NavItemCustom = Pick<NavItemBase, 'hide' | 'position' | 'dividerBelow'> & {
+  CustomComponent: () => JSX.Element | null;
+  hide?: boolean;
+  position?: number;
+  dividerBelow?: boolean;
+  title?: never;
+  routeRef?: never;
+  icon?: never;
+};
+
+/**
+ * Nav item variant without a custom component.
+ * Keeps required fields and disallows `CustomComponent`.
+ *
+ * @internal
+ */
+type NavItemStandard = NavItemBase & {
+  CustomComponent?: never;
+};
+
+/**
+ * Union type for nav items.
+ *
+ * @public
+ */
+export type NavItem =
+  | {
+      CustomComponent: () => JSX.Element | null;
+      hide?: boolean;
+      position?: number;
+      dividerBelow?: boolean;
+      title?: never;
+      routeRef?: never;
+      icon?: never;
+    }
+  | {
+      icon: IconComponent;
+      title: string;
+      routeRef: RouteRef<undefined>;
+      hide?: boolean;
+      position?: number;
+      dividerBelow?: boolean;
+      CustomComponent?: never;
+    };
+
+// TODO(Rugvip): Should this be broken apart into separate refs? title/icon/routeRef
+const targetDataRef = createExtensionDataRef<NavItem>().with({
+  id: 'core.nav-item.target',
+});
 
 /**
  * Creates extensions that make up the items of the nav bar.
@@ -37,24 +100,28 @@ export const NavItemBlueprint = createExtensionBlueprint({
   dataRefs: {
     target: targetDataRef,
   },
-  factory: (
-    {
-      icon,
-      routeRef,
-      title,
-    }: {
-      title: string;
-      icon: IconComponent;
-      routeRef: RouteRef<undefined>;
-    },
-    { config },
-  ) => [
-    targetDataRef({
-      title: config.title ?? title,
-      icon,
-      routeRef,
-    }),
-  ],
+  factory: (params: NavItem, { config }) => {
+    if ('CustomComponent' in params && params.CustomComponent) {
+      const out: NavItemCustom = {
+        CustomComponent: params.CustomComponent,
+        hide: params.hide,
+        position: params.position,
+        dividerBelow: params.dividerBelow,
+      };
+      return [targetDataRef(out)];
+    }
+
+    const out: NavItemStandard = {
+      title: config.title ?? params.title,
+      icon: params.icon,
+      routeRef: params.routeRef,
+      hide: params.hide,
+      position: params.position,
+      dividerBelow: params.dividerBelow,
+      CustomComponent: undefined,
+    };
+    return [targetDataRef(out)];
+  },
   config: {
     schema: {
       title: z => z.string().optional(),

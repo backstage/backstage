@@ -13,7 +13,6 @@ import { ExpandRecursive } from '@backstage/types';
 import { ExtensionBlueprint as ExtensionBlueprint_2 } from '@backstage/frontend-plugin-api';
 import { ExtensionBlueprintParams as ExtensionBlueprintParams_2 } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef as ExtensionDataRef_2 } from '@backstage/frontend-plugin-api';
-import { IconComponent as IconComponent_2 } from '@backstage/frontend-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { JSX as JSX_2 } from 'react/jsx-runtime';
@@ -21,7 +20,6 @@ import { JSX as JSX_3 } from 'react';
 import { Observable } from '@backstage/types';
 import { PropsWithChildren } from 'react';
 import { ReactNode } from 'react';
-import { RouteRef as RouteRef_2 } from '@backstage/frontend-plugin-api';
 import { SwappableComponentRef as SwappableComponentRef_2 } from '@backstage/frontend-plugin-api';
 import type { z } from 'zod';
 
@@ -1552,45 +1550,51 @@ export type NavContentComponent = (
 
 // @public
 export interface NavContentComponentProps {
-  items: Array<{
-    icon: IconComponent_2;
-    title: string;
-    routeRef: RouteRef_2<undefined>;
-    to: string;
-    text: string;
-  }>;
+  // (undocumented)
+  items: Array<NavContentItem>;
+  // (undocumented)
+  Logo?: () => JSX.Element | null;
+  // (undocumented)
+  Search?: () => JSX.Element | null;
 }
+
+// @public
+export type NavContentItem = NavItem & {
+  to: string | undefined;
+  text: string | undefined;
+};
+
+// @public
+export type NavItem =
+  | {
+      CustomComponent: () => JSX.Element | null;
+      hide?: boolean;
+      position?: number;
+      dividerBelow?: boolean;
+      title?: never;
+      routeRef?: never;
+      icon?: never;
+    }
+  | {
+      icon: IconComponent;
+      title: string;
+      routeRef: RouteRef<undefined>;
+      hide?: boolean;
+      position?: number;
+      dividerBelow?: boolean;
+      CustomComponent?: never;
+    };
 
 // @public
 export const NavItemBlueprint: ExtensionBlueprint_2<{
   kind: 'nav-item';
-  params: {
-    title: string;
-    icon: IconComponent;
-    routeRef: RouteRef<undefined>;
-  };
-  output: ExtensionDataRef_2<
-    {
-      title: string;
-      icon: IconComponent;
-      routeRef: RouteRef<undefined>;
-    },
-    'core.nav-item.target',
-    {}
-  >;
+  params: NavItem;
+  output: ExtensionDataRef_2<NavItem, 'core.nav-item.target', {}>;
   inputs: {};
   config: {};
   configInput: {};
   dataRefs: {
-    target: ConfigurableExtensionDataRef_2<
-      {
-        title: string;
-        icon: IconComponent;
-        routeRef: RouteRef<undefined>;
-      },
-      'core.nav-item.target',
-      {}
-    >;
+    target: ConfigurableExtensionDataRef_2<NavItem, 'core.nav-item.target', {}>;
   };
 }>;
 
