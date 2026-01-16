@@ -20,11 +20,7 @@ import express from 'express';
 import request from 'supertest';
 import ObservableImpl from 'zen-observable';
 
-import {
-  parseEntityRef,
-  stringifyEntityRef,
-  UserEntity,
-} from '@backstage/catalog-model';
+import { stringifyEntityRef, UserEntity } from '@backstage/catalog-model';
 import {
   createTemplateAction,
   TaskBroker,
@@ -83,9 +79,9 @@ function createDatabase(): DatabaseService {
 
 const config = new ConfigReader({});
 
-// todo: this needs to return a new object every time as there seems to
-// be some mutation in the tests.
-const generateMockTemplate = () => ({
+// Returns a new mock template object each time to avoid mutation issues.
+// Accepts optional spec overrides that are merged with the base spec.
+const generateMockTemplate = (specOverrides?: Record<string, unknown>) => ({
   apiVersion: 'scaffolder.backstage.io/v1beta3',
   kind: 'Template',
   metadata: {
@@ -146,6 +142,7 @@ const generateMockTemplate = () => ({
         },
       },
     ],
+    ...specOverrides,
   },
 });
 
@@ -153,7 +150,7 @@ const mockUser: UserEntity = {
   apiVersion: 'backstage.io/v1alpha1',
   kind: 'User',
   metadata: {
-    name: 'guest',
+    name: 'mock',
     annotations: {
       'google.com/email': 'bobby@tables.com',
     },
@@ -197,25 +194,8 @@ const createTestRouter = async (
   jest.spyOn(taskBroker, 'vacuumTasks');
   jest.spyOn(taskBroker, 'event$');
 
-  const defaultEntities = [generateMockTemplate(), mockUser];
-  let catalog;
-  if (overrides.entities) {
-    // Use in-memory catalog when entities are explicitly provided
-    catalog = catalogServiceMock({ entities: overrides.entities });
-  } else {
-    // Use mock catalog for backwards compatibility with existing tests
-    catalog = catalogServiceMock.mock();
-    catalog.getEntityByRef.mockImplementation(async ref => {
-      const { kind } = parseEntityRef(ref);
-      if (kind.toLocaleLowerCase() === 'template') {
-        return generateMockTemplate();
-      }
-      if (kind.toLocaleLowerCase() === 'user') {
-        return mockUser;
-      }
-      throw new Error(`no mock found for kind: ${kind}`);
-    });
-  }
+  const entities = overrides.entities ?? [generateMockTemplate(), mockUser];
+  const catalog = catalogServiceMock({ entities });
   const permissions = mockServices.permissions();
   const auth = mockServices.auth();
   const httpAuth = mockServices.httpAuth();
@@ -657,19 +637,15 @@ describe('scaffolder router', () => {
     });
 
     it('rejects when required secrets are missing', async () => {
-      const templateWithSecrets = {
-        ...generateMockTemplate(),
-        spec: {
-          ...generateMockTemplate().spec,
-          secrets: {
-            type: 'object',
-            required: ['NPM_TOKEN'],
-            properties: {
-              NPM_TOKEN: { type: 'string' },
-            },
+      const templateWithSecrets = generateMockTemplate({
+        secrets: {
+          type: 'object',
+          required: ['NPM_TOKEN'],
+          properties: {
+            NPM_TOKEN: { type: 'string' },
           },
         },
-      };
+      });
 
       const { router } = await createTestRouter({
         entities: [templateWithSecrets, mockUser],
@@ -701,19 +677,15 @@ describe('scaffolder router', () => {
     });
 
     it('rejects when required secrets are missing without explicit type', async () => {
-      const templateWithSecrets = {
-        ...generateMockTemplate(),
-        spec: {
-          ...generateMockTemplate().spec,
-          secrets: {
-            // No explicit type: 'object' - should still work
-            required: ['NPM_TOKEN'],
-            properties: {
-              NPM_TOKEN: { type: 'string' },
-            },
+      const templateWithSecrets = generateMockTemplate({
+        secrets: {
+          // No explicit type: 'object' - should still work
+          required: ['NPM_TOKEN'],
+          properties: {
+            NPM_TOKEN: { type: 'string' },
           },
         },
-      };
+      });
 
       const { router } = await createTestRouter({
         entities: [templateWithSecrets, mockUser],
@@ -745,19 +717,15 @@ describe('scaffolder router', () => {
     });
 
     it('accepts valid secrets matching the schema', async () => {
-      const templateWithSecrets = {
-        ...generateMockTemplate(),
-        spec: {
-          ...generateMockTemplate().spec,
-          secrets: {
-            type: 'object',
-            required: ['NPM_TOKEN'],
-            properties: {
-              NPM_TOKEN: { type: 'string' },
-            },
+      const templateWithSecrets = generateMockTemplate({
+        secrets: {
+          type: 'object',
+          required: ['NPM_TOKEN'],
+          properties: {
+            NPM_TOKEN: { type: 'string' },
           },
         },
-      };
+      });
 
       const { router, taskBroker } = await createTestRouter({
         entities: [templateWithSecrets, mockUser],
@@ -1544,6 +1512,9 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
       const mockToken = mockCredentials.user.token();
       const mockTemplate = generateMockTemplate();
 
+      // Spy on the catalog method to verify it's called correctly
+      const getEntityByRefSpy = jest.spyOn(catalog, 'getEntityByRef');
+
       await request(router)
         .post('/v2/dry-run')
         .set('Authorization', `Bearer ${mockToken}`)
@@ -1556,9 +1527,9 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
           directoryContents: [],
         });
 
-      expect(catalog.getEntityByRef).toHaveBeenCalledTimes(1);
+      expect(getEntityByRefSpy).toHaveBeenCalledTimes(1);
 
-      expect(catalog.getEntityByRef).toHaveBeenCalledWith(
+      expect(getEntityByRefSpy).toHaveBeenCalledWith(
         'user:default/mock',
         expect.anything(),
       );
@@ -1568,19 +1539,15 @@ data: {"id":1,"taskId":"a-random-id","type":"completion","createdAt":"","body":{
       const { router } = await createTestRouter();
       const mockToken = mockCredentials.user.token();
 
-      const templateWithSecrets = {
-        ...generateMockTemplate(),
-        spec: {
-          ...generateMockTemplate().spec,
-          secrets: {
-            type: 'object',
-            required: ['NPM_TOKEN'],
-            properties: {
-              NPM_TOKEN: { type: 'string' },
-            },
+      const templateWithSecrets = generateMockTemplate({
+        secrets: {
+          type: 'object',
+          required: ['NPM_TOKEN'],
+          properties: {
+            NPM_TOKEN: { type: 'string' },
           },
         },
-      };
+      });
 
       const response = await request(router)
         .post('/v2/dry-run')
