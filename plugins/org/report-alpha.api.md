@@ -110,12 +110,14 @@ const _default: OverridableFrontendPlugin<
       config: {
         initialRelationAggregation: 'direct' | 'aggregated' | undefined;
         showAggregateMembersToggle: boolean | undefined;
+        ownedKinds: string[] | undefined;
         filter: EntityPredicate | undefined;
         type: 'content' | 'summary' | 'info' | undefined;
       };
       configInput: {
         showAggregateMembersToggle?: boolean | undefined;
         initialRelationAggregation?: 'direct' | 'aggregated' | undefined;
+        ownedKinds?: string[] | undefined;
         filter?: EntityPredicate | undefined;
         type?: 'content' | 'summary' | 'info' | undefined;
       };

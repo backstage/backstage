@@ -1,0 +1,63 @@
+import { PropsTable } from '@/components/PropsTable';
+import { CodeBlock } from '@/components/CodeBlock';
+import { Snippet } from '@/components/Snippet';
+import { flexPropDefs } from './props-definition';
+import {
+  flexUsageSnippet,
+  defaultSnippet,
+  flexSimpleSnippet,
+  flexResponsiveSnippet,
+  flexAlignSnippet,
+} from './snippets';
+import { Default } from './components';
+import { spacingPropDefs } from '@/utils/propDefs';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { FlexDefinition } from '../../../utils/definitions';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+
+<PageTitle
+  type="Layout"
+  title="Flex"
+  description="A responsive flex container component for vertical stacking with customizable gaps."
+/>
+
+<Snippet py={4} align="center" preview={<Default />} code={defaultSnippet} />
+
+## Usage
+
+<CodeBlock code={flexUsageSnippet} />
+
+## API reference
+
+<PropsTable data={flexPropDefs} />
+
+The grid component also accepts all the spacing props from the Box component.
+
+<PropsTable data={spacingPropDefs} />
+
+## Examples
+
+### Simple
+
+A simple example of how to use the Flex component.
+
+<CodeBlock code={flexSimpleSnippet} />
+
+### Responsive
+
+The Flex component also supports responsive values, making it easy to create
+responsive designs.
+
+<CodeBlock code={flexResponsiveSnippet} />
+
+### Align
+
+The Flex component also supports responsive alignment, making it easy to
+create responsive designs.
+
+<CodeBlock code={flexAlignSnippet} />
+
+<Theming definition={FlexDefinition} />
+
+<ChangelogComponent component="flex" />

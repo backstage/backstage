@@ -1,5 +1,13 @@
 # @backstage/plugin-devtools-backend
 
+## 0.5.13-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.15.0-next.2
+  - @backstage/plugin-permission-node@0.10.7
+
 ## 0.5.13-next.0
 
 ### Patch Changes

@@ -8,7 +8,8 @@
     "pluginPackages": [
       "@backstage/plugin-app",
       "@backstage/plugin-app-backend",
-      "@backstage/plugin-app-node"
+      "@backstage/plugin-app-node",
+      "@backstage/plugin-app-react"
     ]
   },
   "publishConfig": {

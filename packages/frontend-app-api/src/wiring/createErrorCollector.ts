@@ -66,6 +66,14 @@ export type AppErrorTypes = {
   API_EXTENSION_INVALID: {
     context: { node: AppNode };
   };
+  API_FACTORY_CONFLICT: {
+    context: {
+      node: AppNode;
+      apiRefId: string;
+      pluginId: string;
+      existingPluginId: string;
+    };
+  };
   // routing
   ROUTE_DUPLICATE: {
     context: { routeId: string };

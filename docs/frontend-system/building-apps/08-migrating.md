@@ -444,7 +444,7 @@ const app = createApp({
 Can be converted to the following extension:
 
 ```tsx
-import { SignInPageBlueprint } from '@backstage/frontend-plugin-api';
+import { SignInPageBlueprint } from '@backstage/plugin-app-react';
 
 const signInPage = SignInPageBlueprint.make({
   params: {
@@ -492,7 +492,7 @@ const app = createApp({
 Can be converted to the following extension:
 
 ```tsx
-import { ThemeBlueprint } from '@backstage/frontend-plugin-api';
+import { ThemeBlueprint } from '@backstage/plugin-app-react';
 
 const customLightThemeExtension = ThemeBlueprint.make({
   name: 'custom-light',
@@ -535,7 +535,7 @@ const app = createApp({
 Icons are now installed as extensions, using the `IconBundleBlueprint` to make new instances which can be added to the app.
 
 ```ts
-import { IconBundleBlueprint } from '@backstage/frontend-plugin-api';
+import { IconBundleBlueprint } from '@backstage/plugin-app-react';
 
 const exampleIconBundle = IconBundleBlueprint.make({
   name: 'example-bundle',
@@ -586,10 +586,8 @@ Can be converted to the following extension:
 
 ```tsx
 import { catalogTranslationRef } from '@backstage/plugin-catalog/alpha';
-import {
-  createTranslationMessages,
-  TranslationBlueprint,
-} from '@backstage/frontend-plugin-api';
+import { createTranslationMessages } from '@backstage/frontend-plugin-api';
+import { TranslationBlueprint } from '@backstage/plugin-app-react';
 
 const catalogTranslations = TranslationBlueprint.make({
   name: 'catalog-overrides',
@@ -705,7 +703,7 @@ export const navModule = createFrontendModule({
 Then in the actual implementation for the `SidebarContent` extension, you can provide something like the following, where you implement the entire `Sidebar` component.
 
 ```tsx title="in packages/app/src/modules/nav/Sidebar.tsx"
-import { NavContentBlueprint } from '@backstage/frontend-plugin-api';
+import { NavContentBlueprint } from '@backstage/plugin-app-react';
 
 export const SidebarContent = NavContentBlueprint.make({
   params: {

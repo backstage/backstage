@@ -1,5 +1,12 @@
 # @backstage/plugin-catalog
 
+## 1.32.2-next.2
+
+### Patch Changes
+
+- 7ca91e8: Header in EntityLayout should always be shown.
+  Monitoring the loading status caused flickering when the refresh() method of the Async Entity was invoked.
+
 ## 1.32.2-next.1
 
 ### Patch Changes

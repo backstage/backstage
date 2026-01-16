@@ -21,6 +21,7 @@ import {
 } from 'react-aria-components';
 import type { ReactNode } from 'react';
 import type { SortDescriptor as ReactStatelySortDescriptor } from 'react-stately';
+import type { ColumnSize, ColumnStaticSize } from '@react-types/table';
 import type { TextColors } from '../../types';
 import { TablePaginationProps } from '../TablePagination';
 
@@ -92,7 +93,10 @@ export interface ColumnConfig<T extends TableItem> {
   header?: () => ReactNode;
   isSortable?: boolean;
   isHidden?: boolean;
-  width?: number | string;
+  width?: ColumnSize | null;
+  defaultWidth?: ColumnSize | null;
+  minWidth?: ColumnStaticSize | null;
+  maxWidth?: ColumnStaticSize | null;
   isRowHeader?: boolean;
 }
 
@@ -129,4 +133,6 @@ export interface TableProps<T extends TableItem> {
   rowConfig?: RowConfig<T> | RowRenderFn<T>;
   selection?: TableSelection;
   emptyState?: ReactNode;
+  className?: string;
+  style?: React.CSSProperties;
 }

@@ -3053,7 +3053,7 @@ __metadata:
     yauzl: "npm:^3.0.0"
     yn: "npm:^4.0.0"
     zod: "npm:^3.22.4"
-    zod-to-json-schema: "npm:^3.20.4"
+    zod-to-json-schema: "npm:^3.25.1"
   peerDependencies:
     "@google-cloud/cloud-sql-connector": ^1.4.0
     better-sqlite3: ^12.0.0
@@ -3205,7 +3205,7 @@ __metadata:
     uuid: "npm:^11.0.0"
     yn: "npm:^4.0.0"
     zod: "npm:^3.22.4"
-    zod-to-json-schema: "npm:^3.20.4"
+    zod-to-json-schema: "npm:^3.25.1"
   languageName: unknown
   linkType: soft
 
@@ -3415,7 +3415,7 @@ __metadata:
     yml-loader: "npm:^2.1.0"
     yn: "npm:^4.0.0"
     zod: "npm:^3.22.4"
-    zod-validation-error: "npm:^3.4.0"
+    zod-validation-error: "npm:^4.0.2"
   peerDependencies:
     "@jest/environment-jsdom-abstract": ^30.0.0
     "@module-federation/enhanced": ^0.9.0
@@ -3931,7 +3931,7 @@ __metadata:
     react-dom: "npm:^18.0.2"
     react-router-dom: "npm:^6.3.0"
     zod: "npm:^3.22.4"
-    zod-to-json-schema: "npm:^3.21.4"
+    zod-to-json-schema: "npm:^3.25.1"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
@@ -4155,6 +4155,33 @@ __metadata:
   languageName: unknown
   linkType: soft
 
+"@backstage/plugin-app-react@workspace:^, @backstage/plugin-app-react@workspace:plugins/app-react":
+  version: 0.0.0-use.local
+  resolution: "@backstage/plugin-app-react@workspace:plugins/app-react"
+  dependencies:
+    "@backstage/cli": "workspace:^"
+    "@backstage/core-plugin-api": "workspace:^"
+    "@backstage/frontend-plugin-api": "workspace:^"
+    "@backstage/frontend-test-utils": "workspace:^"
+    "@backstage/test-utils": "workspace:^"
+    "@material-ui/core": "npm:^4.9.13"
+    "@testing-library/jest-dom": "npm:^6.0.0"
+    "@testing-library/react": "npm:^16.0.0"
+    "@types/react": "npm:^18.0.0"
+    react: "npm:^18.0.2"
+    react-dom: "npm:^18.0.2"
+    react-router-dom: "npm:^6.3.0"
+  peerDependencies:
+    "@types/react": ^17.0.0 || ^18.0.0
+    react: ^17.0.0 || ^18.0.0
+    react-dom: ^17.0.0 || ^18.0.0
+    react-router-dom: ^6.3.0
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+  languageName: unknown
+  linkType: soft
+
 "@backstage/plugin-app-visualizer@workspace:^, @backstage/plugin-app-visualizer@workspace:plugins/app-visualizer":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-app-visualizer@workspace:plugins/app-visualizer"
@@ -4194,6 +4221,7 @@ __metadata:
     "@backstage/frontend-plugin-api": "workspace:^"
     "@backstage/frontend-test-utils": "workspace:^"
     "@backstage/integration-react": "workspace:^"
+    "@backstage/plugin-app-react": "workspace:^"
     "@backstage/plugin-permission-react": "workspace:^"
     "@backstage/test-utils": "workspace:^"
     "@backstage/theme": "workspace:^"
@@ -4696,8 +4724,8 @@ __metadata:
     supertest: "npm:^7.0.0"
     uuid: "npm:^11.0.0"
     zod: "npm:^3.22.4"
-    zod-to-json-schema: "npm:^3.21.4"
-    zod-validation-error: "npm:^3.4.0"
+    zod-to-json-schema: "npm:^3.25.1"
+    zod-validation-error: "npm:^4.0.2"
   languageName: unknown
   linkType: soft
 
@@ -6433,7 +6461,7 @@ __metadata:
     msw: "npm:^1.0.0"
     uuid: "npm:^11.0.0"
     zod: "npm:^3.22.4"
-    zod-to-json-schema: "npm:^3.20.4"
+    zod-to-json-schema: "npm:^3.25.1"
   languageName: unknown
   linkType: soft
 
@@ -6456,7 +6484,7 @@ __metadata:
     msw: "npm:^1.0.0"
     supertest: "npm:^7.0.0"
     zod: "npm:^3.22.4"
-    zod-to-json-schema: "npm:^3.20.4"
+    zod-to-json-schema: "npm:^3.25.1"
   languageName: unknown
   linkType: soft
 
@@ -6875,7 +6903,7 @@ __metadata:
     yaml: "npm:^2.0.0"
     zen-observable: "npm:^0.10.0"
     zod: "npm:^3.22.4"
-    zod-to-json-schema: "npm:^3.20.4"
+    zod-to-json-schema: "npm:^3.25.1"
   languageName: unknown
   linkType: soft
 
@@ -6953,7 +6981,7 @@ __metadata:
     winston: "npm:^3.2.1"
     winston-transport: "npm:^4.7.0"
     zod: "npm:^3.22.4"
-    zod-to-json-schema: "npm:^3.20.4"
+    zod-to-json-schema: "npm:^3.25.1"
   languageName: unknown
   linkType: soft
 
@@ -7012,7 +7040,7 @@ __metadata:
     use-immer: "npm:^0.11.0"
     zen-observable: "npm:^0.10.0"
     zod: "npm:^3.22.4"
-    zod-to-json-schema: "npm:^3.20.4"
+    zod-to-json-schema: "npm:^3.25.1"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
@@ -7092,7 +7120,7 @@ __metadata:
     swr: "npm:^2.0.0"
     yaml: "npm:^2.0.0"
     zod: "npm:^3.22.4"
-    zod-to-json-schema: "npm:^3.20.4"
+    zod-to-json-schema: "npm:^3.25.1"
   peerDependencies:
     "@types/react": ^17.0.0 || ^18.0.0
     react: ^17.0.0 || ^18.0.0
@@ -16670,10 +16698,10 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@remix-run/router@npm:1.21.1":
-  version: 1.21.1
-  resolution: "@remix-run/router@npm:1.21.1"
-  checksum: 10/22a3dde5dd4ee131bddb5b589f974d6cb9e8378bda219bcdf592f399b9f10b8431d5f230bea507fc3b7f295998f8379942f5f07f920c087e2ecae65c76494e51
+"@remix-run/router@npm:1.23.2":
+  version: 1.23.2
+  resolution: "@remix-run/router@npm:1.23.2"
+  checksum: 10/50eb497854881bbd2e1016d4eb83c935ecd618e1c3888b74718851317e3b04edbaae9fe1baa49ec08c5c52cfe7118f4664e37144813d9500f45f922d6602a782
   languageName: node
   linkType: hard
 
@@ -20178,8 +20206,8 @@ __metadata:
   linkType: hard
 
 "@testing-library/react@npm:^16.0.0":
-  version: 16.3.0
-  resolution: "@testing-library/react@npm:16.3.0"
+  version: 16.3.1
+  resolution: "@testing-library/react@npm:16.3.1"
   dependencies:
     "@babel/runtime": "npm:^7.12.5"
   peerDependencies:
@@ -20193,7 +20221,7 @@ __metadata:
       optional: true
     "@types/react-dom":
       optional: true
-  checksum: 10/0ee9e31dd0d2396a924682d0e61a4ecc6bfab8eaff23dbf8a72c3c2ce22c116fa578148baeb4de75b968ef99d22e6e6aa0a00dba40286f71184918bb6bb5b06a
+  checksum: 10/2d1221861c41711f2767c57c5b5158593baf6f7ca4bf15fad9e79bc9aeaadb56c2e327943b8733d2788f1826499fe01daef7289a7a0149b48dd7f51b33b12e58
   languageName: node
   linkType: hard
 
@@ -44124,15 +44152,15 @@ __metadata:
   linkType: hard
 
 "react-router-dom@npm:^6.3.0":
-  version: 6.28.2
-  resolution: "react-router-dom@npm:6.28.2"
+  version: 6.30.3
+  resolution: "react-router-dom@npm:6.30.3"
   dependencies:
-    "@remix-run/router": "npm:1.21.1"
-    react-router: "npm:6.28.2"
+    "@remix-run/router": "npm:1.23.2"
+    react-router: "npm:6.30.3"
   peerDependencies:
     react: ">=16.8"
     react-dom: ">=16.8"
-  checksum: 10/4775cb484c497be5833ef5e048378d685f970a72c75a595c8b74fce147eda9e705d885b71d888b1090a8f22e7630adb851766d34e771c3a649f73171f0fa4c2b
+  checksum: 10/db974d801070e9967a076b31edca902e127793e02dc79f364461b94e81846a588c241d72e069f5b586b4a90ffd99798f5cb97753ac9d22fe90afa6dc008ab520
   languageName: node
   linkType: hard
 
@@ -44147,14 +44175,14 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-router@npm:6.28.2, react-router@npm:^6.3.0":
-  version: 6.28.2
-  resolution: "react-router@npm:6.28.2"
+"react-router@npm:6.30.3, react-router@npm:^6.3.0":
+  version: 6.30.3
+  resolution: "react-router@npm:6.30.3"
   dependencies:
-    "@remix-run/router": "npm:1.21.1"
+    "@remix-run/router": "npm:1.23.2"
   peerDependencies:
     react: ">=16.8"
-  checksum: 10/4cf150e3762acff8a087d6b474861fdb73efdf829ce0619bc980f3d8fc5d9e45e67333ab7d62af5b775fba8efe8f8d342f089bec75f9b41f3162e139c0187efd
+  checksum: 10/1a51bdcc42b8d7979228dea8b5c44a28a4add9b681781f75b74f5f920d20058a92ffe5f1d0ba0621f03abe1384b36025b53b402515ecb35f27a6a2f2f25d6fbe
   languageName: node
   linkType: hard
 
@@ -51116,21 +51144,21 @@ __metadata:
   languageName: node
   linkType: hard
 
-"zod-to-json-schema@npm:^3.20.4, zod-to-json-schema@npm:^3.21.4, zod-to-json-schema@npm:^3.25.0":
-  version: 3.25.0
-  resolution: "zod-to-json-schema@npm:3.25.0"
+"zod-to-json-schema@npm:^3.25.0, zod-to-json-schema@npm:^3.25.1":
+  version: 3.25.1
+  resolution: "zod-to-json-schema@npm:3.25.1"
   peerDependencies:
     zod: ^3.25 || ^4
-  checksum: 10/cb932e20b5b5e64c75b2c34a7e6dae74b727292eab9e014b93c2607378b8cb1b227f80b429053ceb77c8e0dddc338837f9e534b2a658540ff60c9e4ffdc7cc19
+  checksum: 10/744dd370f4452c8db120de1475ea4d484a11df884c4636111d630e5e1351b8a7590d99cf14a2b9f21e7906f8b78721d958663a7973a40994e7d28770876674cc
   languageName: node
   linkType: hard
 
-"zod-validation-error@npm:^3.4.0":
-  version: 3.5.4
-  resolution: "zod-validation-error@npm:3.5.4"
+"zod-validation-error@npm:^4.0.2":
+  version: 4.0.2
+  resolution: "zod-validation-error@npm:4.0.2"
   peerDependencies:
-    zod: ^3.24.4
-  checksum: 10/eb85392e6fd7af255fb233713b1f038134e66cbaff20d1a52d46bd4210fe7b776d48d7dd2170095fbd2b375f6c41d629109bd5eac245c576083c9cf6e131a20b
+    zod: ^3.25.0 || ^4.0.0
+  checksum: 10/5e35ca8ebb4602dcb526e122d7e9fca695c4a479bd97535f3400a732d49160f24f7213a9ed64986fc9dc3a2e8a6c4e1241ec0c4d8a4e3e69ea91a0328ded2192
   languageName: node
   linkType: hard
 

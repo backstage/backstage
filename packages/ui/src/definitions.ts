@@ -47,6 +47,8 @@ export { SearchFieldDefinition } from './components/SearchField/definition';
 export { SelectDefinition } from './components/Select/definition';
 export { SkeletonDefinition } from './components/Skeleton/definition';
 export { SwitchDefinition } from './components/Switch/definition';
+export { ToggleButtonDefinition } from './components/ToggleButton/definition';
+export { ToggleButtonGroupDefinition } from './components/ToggleButtonGroup/definition';
 export { TableDefinition } from './components/Table/definition';
 export { TablePaginationDefinition } from './components/TablePagination/definition';
 export { TabsDefinition } from './components/Tabs/definition';

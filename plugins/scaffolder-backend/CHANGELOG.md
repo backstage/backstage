@@ -1,5 +1,15 @@
 # @backstage/plugin-scaffolder-backend
 
+## 3.1.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.15.0-next.2
+  - @backstage/plugin-scaffolder-backend-module-github@0.9.4-next.1
+  - @backstage/plugin-auth-node@0.6.10
+  - @backstage/plugin-permission-node@0.10.7
+
 ## 3.1.1-next.1
 
 ### Patch Changes
