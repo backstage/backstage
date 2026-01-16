@@ -52,11 +52,8 @@ In order to override a Swappable Component, you need to create a `SwappableCompo
 There are two different ways to add extensions to the `app` plugin, both are documented below in an example of overriding the `Progress` Swappable Component.
 
 ```tsx title="in packages/app/src/App.tsx"
-import {
-  Progress,
-  SwappableComponentBlueprint,
-  createFrontendModule,
-} from '@backstage/frontend-plugin-api';
+import { Progress, createFrontendModule } from '@backstage/frontend-plugin-api';
+import { SwappableComponentBlueprint } from '@backstage/plugin-app-react';
 import { MyCustomProgress } from './CustomProgress';
 import { createApp } from '@backstage/frontend-defaults';
 import appPlugin from '@backstage/plugin-app';

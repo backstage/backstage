@@ -31,6 +31,7 @@ export const componentDataRef = createExtensionDataRef<{
  * Blueprint for creating swappable components from a SwappableComponentRef and a loader
  *
  * @public
+ * @deprecated Use {@link @backstage/plugin-app-react#SwappableComponentBlueprint} instead.
  */
 export const SwappableComponentBlueprint = createExtensionBlueprint({
   kind: 'component',
