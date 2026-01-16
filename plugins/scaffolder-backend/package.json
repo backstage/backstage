@@ -59,7 +59,7 @@
     "prepack": "backstage-cli package prepack",
     "postpack": "backstage-cli package postpack",
     "start": "backstage-cli package start",
-    "test": "backstage-cli package test"
+    "test": "NODE_OPTIONS=\"--experimental-vm-modules\" backstage-cli package test"
   },
   "dependencies": {
     "@backstage/backend-defaults": "workspace:^",

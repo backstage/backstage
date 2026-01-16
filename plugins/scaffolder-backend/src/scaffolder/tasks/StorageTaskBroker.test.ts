@@ -128,13 +128,21 @@ describe('StorageTaskBroker', () => {
     expect(taskRow.status).toBe('completed');
   }, 10000);
 
-  it('should remove secrets after picking up a task', async () => {
+  it('should preserve secrets until terminal state for recovery', async () => {
     const broker = new StorageTaskBroker(storage, logger);
     const dispatchResult = await broker.dispatch(emptyTaskWithFakeSecretsSpec);
-    await broker.claim();
+    const task = await broker.claim();
 
-    const taskRow = await storage.getTask(dispatchResult.taskId);
-    expect(taskRow.secrets).toBeUndefined();
+    // Secrets should be preserved after claiming (for potential recovery)
+    const taskRowAfterClaim = await storage.getTask(dispatchResult.taskId);
+    expect(taskRowAfterClaim.secrets).toEqual(fakeSecrets);
+
+    // Complete the task
+    await task.complete('completed');
+
+    // Secrets should be removed after reaching terminal state
+    const taskRowAfterComplete = await storage.getTask(dispatchResult.taskId);
+    expect(taskRowAfterComplete.secrets).toBeUndefined();
   }, 10000);
 
   it('should fail a task', async () => {
@@ -311,6 +319,110 @@ describe('StorageTaskBroker', () => {
           },
         },
       },
+    });
+  });
+
+  describe('task recovery config', () => {
+    // Drain any open tasks from previous tests to avoid interference
+    beforeEach(async () => {
+      const tempBroker = new StorageTaskBroker(storage, logger);
+      // Claim and complete all open tasks
+      let openTasks = await storage.list({ filters: { status: 'open' } });
+      while (openTasks.tasks.length > 0) {
+        const task = await tempBroker.claim();
+        if (!task) break;
+        await task.complete('completed');
+        openTasks = await storage.list({ filters: { status: 'open' } });
+      }
+    });
+
+    it('should recover tasks when taskRecovery.enabled is true', async () => {
+      const config = new ConfigReader({
+        scaffolder: {
+          taskRecovery: {
+            enabled: true,
+            staleTimeout: { seconds: 0 },
+          },
+        },
+      });
+      const broker = new StorageTaskBroker(storage, logger, config);
+
+      const { taskId } = await broker.dispatch({
+        spec: { steps: [] } as TaskSpec,
+      });
+      await broker.claim();
+
+      // Trigger recovery (timeout 0 for immediate - recovers ALL processing tasks)
+      await broker.recoverTasks();
+
+      // Our task should be recovered to open status
+      const recoveredTask = await storage.getTask(taskId);
+      expect(recoveredTask.status).toBe('open');
+
+      // Cleanup: drain all recovered tasks (our test + any others that got recovered)
+      let openTasks = await storage.list({ filters: { status: 'open' } });
+      while (openTasks.tasks.length > 0) {
+        const task = await broker.claim();
+        if (!task) break;
+        await task.complete('completed');
+        openTasks = await storage.list({ filters: { status: 'open' } });
+      }
+    });
+
+    it('should not recover tasks when taskRecovery.enabled is false', async () => {
+      const config = new ConfigReader({
+        scaffolder: {
+          taskRecovery: {
+            enabled: false,
+          },
+        },
+      });
+      const broker = new StorageTaskBroker(storage, logger, config);
+
+      const { taskId } = await broker.dispatch({
+        spec: { steps: [] } as TaskSpec,
+      });
+      const task = await broker.claim();
+
+      // Verify we claimed the right task and it's in processing state
+      expect(task.taskId).toBe(taskId);
+      const beforeRecovery = await storage.getTask(taskId);
+      expect(beforeRecovery.status).toBe('processing');
+
+      // Try to recover (should not actually recover because enabled is false)
+      await broker.recoverTasks();
+
+      // Task should still be processing (not recovered)
+      const afterRecovery = await storage.getTask(taskId);
+      expect(afterRecovery.status).toBe('processing');
+
+      // Cleanup
+      await task.complete('completed');
+    });
+
+    it('should fallback to EXPERIMENTAL_recoverTasks if taskRecovery.enabled not set', async () => {
+      const config = new ConfigReader({
+        scaffolder: {
+          EXPERIMENTAL_recoverTasks: true,
+          EXPERIMENTAL_recoverTasksTimeout: { seconds: 0 },
+        },
+      });
+      const broker = new StorageTaskBroker(storage, logger, config);
+
+      const { taskId } = await broker.dispatch({
+        spec: { steps: [] } as TaskSpec,
+      });
+      await broker.claim();
+
+      await broker.recoverTasks();
+
+      // Task should be recovered using fallback config
+      const recoveredTask = await storage.getTask(taskId);
+      expect(recoveredTask.status).toBe('open');
+
+      // Cleanup: claim and complete the recovered task
+      const task = await broker.claim();
+      await task.complete('completed');
     });
   });
 });

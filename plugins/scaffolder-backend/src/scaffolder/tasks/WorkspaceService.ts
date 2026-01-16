@@ -89,10 +89,13 @@ export class DefaultWorkspaceService implements WorkspaceService {
   }
 
   private isWorkspaceSerializationEnabled(): boolean {
+    // New config path with fallback to old experimental flag
     return (
+      this.config?.getOptionalBoolean('scaffolder.taskRecovery.enabled') ??
       this.config?.getOptionalBoolean(
         'scaffolder.EXPERIMENTAL_workspaceSerialization',
-      ) ?? false
+      ) ??
+      false
     );
   }
 }

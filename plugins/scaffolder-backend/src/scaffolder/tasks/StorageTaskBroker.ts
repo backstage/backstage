@@ -341,23 +341,47 @@ export class StorageTaskBroker implements TaskBroker {
   }
 
   public async recoverTasks(): Promise<void> {
+    // New config path with fallback to old experimental flag
     const enabled =
+      this.config?.getOptionalBoolean('scaffolder.taskRecovery.enabled') ??
       this.config?.getOptionalBoolean('scaffolder.EXPERIMENTAL_recoverTasks') ??
       false;
 
-    if (enabled) {
-      const defaultTimeout = { seconds: 30 };
-      const timeout = readDuration(
+    if (!enabled) {
+      return;
+    }
+
+    const defaultTimeout = { seconds: 30 };
+
+    // Try new config path first, then fallback to old
+    let timeout = defaultTimeout;
+    const newTimeoutConfig = this.config?.getOptional(
+      'scaffolder.taskRecovery.staleTimeout',
+    );
+    const oldTimeoutConfig = this.config?.getOptional(
+      'scaffolder.EXPERIMENTAL_recoverTasksTimeout',
+    );
+
+    if (newTimeoutConfig) {
+      timeout = readDuration(
+        this.config,
+        'scaffolder.taskRecovery.staleTimeout',
+        defaultTimeout,
+      );
+    } else if (oldTimeoutConfig) {
+      timeout = readDuration(
         this.config,
         'scaffolder.EXPERIMENTAL_recoverTasksTimeout',
         defaultTimeout,
       );
-      const { ids: recoveredTaskIds } = (await this.storage.recoverTasks?.({
-        timeout,
-      })) ?? { ids: [] };
-      if (recoveredTaskIds.length > 0) {
-        this.signalDispatch();
-      }
+    }
+
+    const { ids: recoveredTaskIds } = (await this.storage.recoverTasks?.({
+      timeout,
+    })) ?? { ids: [] };
+
+    if (recoveredTaskIds.length > 0) {
+      this.signalDispatch();
     }
   }
 
