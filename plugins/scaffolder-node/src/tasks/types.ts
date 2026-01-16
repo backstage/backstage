@@ -17,52 +17,7 @@
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { PermissionCriteria } from '@backstage/plugin-permission-common';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
-import { JsonObject, JsonValue, Observable } from '@backstage/types';
-
-/**
- * CheckpointStateValue
- *
- * @public
- */
-export type CheckpointStateValue =
-  | { status: 'failed'; reason: string }
-  | { status: 'success'; value: JsonValue };
-
-/**
- * StepStateValue
- *
- * @public
- */
-export type StepStateValue = {
-  status: 'completed' | 'failed';
-  output: { [name: string]: JsonValue };
-};
-
-/**
- * TaskState
- *
- * @public
- */
-export type TaskState = {
-  checkpoints?: { [key: string]: CheckpointStateValue };
-  steps?: { [stepId: string]: StepStateValue };
-};
-
-/**
- * UpdateTaskCheckpointOptions
- *
- * @public
- */
-export type UpdateTaskCheckpointOptions = {
-  key: string;
-} & CheckpointStateValue;
-
-/**
- * UpdateStepStateOptions
- *
- * @public
- */
-export type UpdateStepStateOptions = { stepId: string } & StepStateValue;
+import { JsonObject, Observable } from '@backstage/types';
 
 /**
  * TaskSecrets
@@ -112,7 +67,7 @@ export type SerializedTask = {
   lastHeartbeatAt?: string;
   createdBy?: string;
   secrets?: TaskSecrets;
-  state?: TaskState;
+  state?: JsonObject;
 };
 
 /**
@@ -213,11 +168,11 @@ export interface TaskContext {
 
   emitLog(message: string, logMetadata?: JsonObject): Promise<void>;
 
-  getTaskState?(): Promise<{ state?: TaskState } | undefined>;
+  getTaskState?(): Promise<{ state?: JsonObject } | undefined>;
 
-  updateCheckpoint?(options: UpdateTaskCheckpointOptions): Promise<void>;
+  updateCheckpoint?(options: JsonObject): Promise<void>;
 
-  updateStepState?(options: UpdateStepStateOptions): Promise<void>;
+  updateStepState?(options: JsonObject): Promise<void>;
 
   serializeWorkspace?(options: { path: string }): Promise<void>;
 

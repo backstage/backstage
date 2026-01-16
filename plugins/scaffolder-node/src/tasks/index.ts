@@ -27,9 +27,4 @@ export type {
   TaskContext,
   TaskEventType,
   TaskStatus,
-  TaskState,
-  CheckpointStateValue,
-  StepStateValue,
-  UpdateTaskCheckpointOptions,
-  UpdateStepStateOptions,
 } from './types';
