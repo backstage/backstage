@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { PluginWrapperApi } from '@backstage/frontend-plugin-api';
+import { PluginWrapperApi } from '@backstage/frontend-plugin-api/alpha';
 import { ComponentType, ReactNode, useEffect, useState } from 'react';
 
 type WrapperInput = {

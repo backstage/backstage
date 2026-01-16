@@ -1868,59 +1868,6 @@ export interface PluginOptions<
   routes?: TRoutes;
 }
 
-// @public
-export type PluginWrapperApi = {
-  getPluginWrapper(pluginId: string):
-    | ComponentType<{
-        children: ReactNode;
-      }>
-    | undefined;
-};
-
-// @public
-export const pluginWrapperApiRef: ApiRef<PluginWrapperApi>;
-
-// @public
-export const PluginWrapperBlueprint: ExtensionBlueprint_2<{
-  kind: 'plugin-wrapper';
-  params: (params: {
-    loader: () => Promise<{
-      component: ComponentType<{
-        children: ReactNode;
-      }>;
-    }>;
-  }) => ExtensionBlueprintParams_2<{
-    loader: () => Promise<{
-      component: ComponentType<{
-        children: ReactNode;
-      }>;
-    }>;
-  }>;
-  output: ExtensionDataRef_2<
-    () => Promise<{
-      component: ComponentType<{
-        children: ReactNode;
-      }>;
-    }>,
-    'core.plugin-wrapper.loader',
-    {}
-  >;
-  inputs: {};
-  config: {};
-  configInput: {};
-  dataRefs: {
-    wrapper: ConfigurableExtensionDataRef_2<
-      () => Promise<{
-        component: ComponentType<{
-          children: ReactNode;
-        }>;
-      }>,
-      'core.plugin-wrapper.loader',
-      {}
-    >;
-  };
-}>;
-
 // @public (undocumented)
 export type PortableSchema<TOutput, TInput = TOutput> = {
   parse: (input: TInput) => TOutput;

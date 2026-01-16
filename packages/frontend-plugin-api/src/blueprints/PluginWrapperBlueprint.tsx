@@ -28,7 +28,7 @@ const wrapperDataRef = createExtensionDataRef<
 /**
  * Creates extensions that wrap plugin extensions with providers.
  *
- * @public
+ * @alpha
  */
 export const PluginWrapperBlueprint = createExtensionBlueprint({
   kind: 'plugin-wrapper',

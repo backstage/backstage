@@ -15,7 +15,7 @@
  */
 
 import { ComponentType, ReactNode } from 'react';
-import { ApiRef, createApiRef } from '../system';
+import { createApiRef } from '@backstage/frontend-plugin-api';
 
 /**
  * The Plugin Wrapper API is used to wrap plugin extensions with providers,
@@ -27,7 +27,7 @@ import { ApiRef, createApiRef } from '../system';
  * system, but can be used for advanced use-cases. If you do override it, be
  * sure to include the default implementation as well.
  *
- * @public
+ * @alpha
  */
 export type PluginWrapperApi = {
   /**
@@ -43,8 +43,8 @@ export type PluginWrapperApi = {
 /**
  * The API reference of {@link PluginWrapperApi}.
  *
- * @public
+ * @alpha
  */
-export const pluginWrapperApiRef: ApiRef<PluginWrapperApi> = createApiRef({
-  id: 'core.plugin-wrapper',
+export const pluginWrapperApiRef = createApiRef<PluginWrapperApi>({
+  id: 'core.plugin-wrapper.alpha',
 });

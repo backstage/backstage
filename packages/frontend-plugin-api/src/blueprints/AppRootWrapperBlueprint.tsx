@@ -27,10 +27,11 @@ const componentDataRef = createExtensionDataRef<
  * and similar.
  *
  * @public
- * @deprecated Use {@link PluginWrapperBlueprint} instead if you want to wrap
- * all plugin components in the same wrapper. If you want to wrap the entire
- * app, use the `AppRootWrapperBlueprint` from `@backstage/plugin-app-react`
- * instead, although note that only app modules are able to use that blueprint.
+ * @deprecated Use `PluginWrapperBlueprint` from
+ * `@backstage/frontend-plugin-api/alpha` instead if you want to wrap all plugin
+ * components in the same wrapper. If you want to wrap the entire app, use the
+ * `AppRootWrapperBlueprint` from `@backstage/plugin-app-react` instead,
+ * although note that only app modules are able to use that blueprint.
  */
 export const AppRootWrapperBlueprint = createExtensionBlueprint({
   kind: 'app-root-wrapper',

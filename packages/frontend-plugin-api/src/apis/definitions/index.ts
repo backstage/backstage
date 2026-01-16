@@ -49,4 +49,3 @@ export * from './RouteResolutionApi';
 export * from './StorageApi';
 export * from './AnalyticsApi';
 export * from './TranslationApi';
-export * from './PluginWrapperApi';
