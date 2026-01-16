@@ -2,31 +2,39 @@ import { PropsTable } from '@/components/PropsTable';
 import { Snippet } from '@/components/Snippet';
 import { CodeBlock } from '@/components/CodeBlock';
 import { skeletonPropDefs } from './props-definition';
-import { skeletonUsageSnippet, demo1Snippet, demo2Snippet } from './snippets';
-import { Demo1, Demo2 } from './components';
-import { SkeletonSnippet } from '@/snippets/stories-snippets';
 import {
-  skeletonPropDefs,
-  skeletonUsageSnippet,
-  skeletonDefaultSnippet,
-  skeletonDemo1Snippet,
-  skeletonDemo2Snippet,
-  skeletonInferringSnippet,
-  skeletonInheritingSnippet,
-  skeletonRealWorldSnippet,
-  skeletonOnSurfaceSnippet,
-} from './skeleton.props';
+  Demo1,
+  Demo2,
+  InheritingTypography,
+  InferringDimensions,
+  RealWorldExample,
+  OnSurface,
+} from './components';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
 import { ChangelogComponent } from '@/components/ChangelogComponent';
 import { SkeletonDefinition } from '../../../utils/definitions';
+import {
+  skeletonUsageSnippet,
+  skeletonDemo1Snippet,
+  skeletonDemo2Snippet,
+  skeletonInheritingSnippet,
+  skeletonInferringSnippet,
+  skeletonRealWorldSnippet,
+  skeletonOnSurfaceSnippet,
+} from './snippets';
 
 <PageTitle
   title="Skeleton"
   description="Use to show a placeholder while content is loading."
 />
 
-<Snippet align="center" py={4} preview={<Demo2 />} code={demo2Snippet} />
+<Snippet
+  align="center"
+  py={4}
+  preview={<Demo2 />}
+  code={skeletonDemo2Snippet}
+/>
 
 ## Usage
 
@@ -55,7 +63,7 @@ This pattern works best when you expect the content to be a **single line of tex
 <Snippet
   align="center"
   py={4}
-  preview={<SkeletonSnippet story="InheritingTypography" />}
+  preview={<InheritingTypography />}
   code={skeletonInheritingSnippet}
   open
 />
@@ -69,7 +77,7 @@ This pattern is ideal for **multi-line content** where you want the skeleton to 
 <Snippet
   align="center"
   py={4}
-  preview={<SkeletonSnippet story="InferringDimensions" />}
+  preview={<InferringDimensions />}
   code={skeletonInferringSnippet}
 />
 
@@ -80,7 +88,7 @@ This example shows how to use Skeleton with Text components to prevent layout sh
 <Snippet
   align="center"
   py={4}
-  preview={<SkeletonSnippet story="RealWorldExample" />}
+  preview={<RealWorldExample />}
   code={skeletonRealWorldSnippet}
   open
 />
@@ -92,7 +100,7 @@ A complex skeleton layout with avatar and multiple text lines.
 <Snippet
   align="center"
   py={4}
-  preview={<SkeletonSnippet story="Demo1" />}
+  preview={<Demo1 />}
   code={skeletonDemo1Snippet}
 />
 
@@ -103,7 +111,7 @@ A simple skeleton layout with image and text placeholders.
 <Snippet
   align="center"
   py={4}
-  preview={<SkeletonSnippet story="Demo2" />}
+  preview={<Demo2 />}
   code={skeletonDemo2Snippet}
 />
 
@@ -114,7 +122,7 @@ Skeleton supports the `onSurface` prop to adapt its styling based on the surface
 <Snippet
   align="center"
   py={4}
-  preview={<SkeletonSnippet story="OnSurface" />}
+  preview={<OnSurface />}
   code={skeletonOnSurfaceSnippet}
   open
 />
