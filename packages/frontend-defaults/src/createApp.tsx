@@ -17,7 +17,6 @@
 import { JSX, lazy, ReactNode, Suspense } from 'react';
 import {
   ConfigApi,
-  coreExtensionData,
   ExtensionFactoryMiddleware,
   FrontendFeature,
   FrontendFeatureLoader,
@@ -32,6 +31,7 @@ import {
   CreateAppRouteBinder,
   createSpecializedApp,
   FrontendPluginInfoResolver,
+  EnabledConditionsGate,
 } from '@backstage/frontend-app-api';
 import appPlugin from '@backstage/plugin-app';
 import { discoverAvailableFeatures } from './discovery';
@@ -142,11 +142,16 @@ export function createApp(options?: CreateAppOptions): {
       return { default: () => errorPage };
     }
 
-    const rootEl = app.tree.root.instance!.getData(
-      coreExtensionData.reactElement,
-    );
-
-    return { default: () => rootEl };
+    // Wrap with EnabledConditionsGate to complete initialization at React mount time
+    return {
+      default: () => (
+        <EnabledConditionsGate
+          tree={app.tree}
+          completeInitialization={app.completeInitialization}
+          fallback={suspenseFallback}
+        />
+      ),
+    };
   }
 
   const LazyApp = lazy(appLoader);

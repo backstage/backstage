@@ -29,7 +29,10 @@ import {
 } from '@backstage/frontend-plugin-api';
 import { configApiRef, identityApiRef } from '@backstage/core-plugin-api';
 import { createPermissionCondition } from '@backstage/plugin-permission-react';
-import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common/alpha';
+import {
+  catalogEntityCreatePermission,
+  catalogLocationAnalyzePermission,
+} from '@backstage/plugin-catalog-common/alpha';
 import { useEffect, useState } from 'react';
 import { Route, Routes } from 'react-router-dom';
 
@@ -125,6 +128,10 @@ const IndexPage = PageBlueprint.make({
               <li>
                 <Link to="/permission-example">Permission Example</Link> -
                 Requires 'catalog.entity.create' permission
+              </li>
+              <li>
+                <Link to="/permission-example-2">Permission Example #2</Link> -
+                Requires 'catalog.location.analyze' permission
               </li>
             </ul>
             <p>
@@ -347,11 +354,10 @@ const UserBasedPage = PageBlueprint.make({
     const identity = apiHolder.get(identityApiRef);
     if (!identity) return false;
 
-    // TODO: IdentityApi actually waits for the profile to be loaded, so this will stall the entire
-    //   app load. Need to figure out how to prevent the stall while making this API available.
-    // const profile = await identity.getProfileInfo();
-    // console.log('profile', profile);
-    return false;
+    // Now that enabled conditions are evaluated at React mount time (not tree construction),
+    // identityApi will have user data available without stalling the app
+    const profile = await identity.getProfileInfo();
+    return profile?.email?.endsWith('@example.com') === true;
   },
 });
 
@@ -383,6 +389,36 @@ const PermissionBasedPage = PageBlueprint.make({
     },
   },
   enabled: createPermissionCondition(catalogEntityCreatePermission),
+});
+
+// Example: Permission-based access control
+// This page checks if the user has the catalog.entity.read permission
+const SecondPermissionBasedPage = PageBlueprint.make({
+  name: 'permissionExample2',
+  params: {
+    path: '/permission-example2',
+    loader: async () => {
+      const Component = () => {
+        const indexLink = useRouteRef(indexRouteRef);
+        return (
+          <div>
+            <h1>Permission-Based Access Page</h1>
+            <p>
+              This page is only accessible to users with the
+              'catalog.location.analyze' permission.
+            </p>
+            <p>
+              This demonstrates how to use the permission system to control
+              access to extensions at the tree-attachment level.
+            </p>
+            {indexLink && <Link to={indexLink()}>Go back</Link>}
+          </div>
+        );
+      };
+      return <Component />;
+    },
+  },
+  enabled: createPermissionCondition(catalogLocationAnalyzePermission),
 });
 
 export const pagesPlugin = createFrontendPlugin({
@@ -421,5 +457,6 @@ export const pagesPlugin = createFrontendPlugin({
     OrConditionsPage,
     UserBasedPage,
     PermissionBasedPage,
+    SecondPermissionBasedPage,
   ],
 });

@@ -460,105 +460,6 @@ export function createAppNodeInstance(options: {
 }
 
 /**
- * Recursively mark a node and all its descendants as disabled
- * @internal
- */
-function markNodeAndDescendantsDisabled(
-  node: AppNode,
-  disabledNodes: Set<AppNode>,
-): void {
-  disabledNodes.add(node);
-
-  for (const children of node.edges.attachments.values()) {
-    for (const child of children) {
-      markNodeAndDescendantsDisabled(child, disabledNodes);
-    }
-  }
-}
-
-/**
- * Evaluate all enabled conditions in parallel across the tree
- * @internal
- */
-export async function evaluateEnabledConditions(
-  node: AppNode,
-  apis: ApiHolder,
-  collector: ErrorCollector,
-  disabledNodes: Set<AppNode>,
-): Promise<void> {
-  if (node.spec.disabled) {
-    return;
-  }
-
-  // Collect all nodes and their enabled checks
-  const nodesToCheck: Array<{
-    node: AppNode;
-    check: () => Promise<boolean>;
-  }> = [];
-
-  function collectNodes(n: AppNode) {
-    if (!n.spec.disabled) {
-      const defaultDecision = async () => !n.spec.disabled;
-      if (n.spec.enabled) {
-        nodesToCheck.push({
-          node: n,
-          check: () =>
-            n.spec.enabled!(defaultDecision, {
-              apiHolder: apis,
-            }),
-        });
-      } else {
-        nodesToCheck.push({
-          node: n,
-          check: defaultDecision,
-        });
-      }
-    }
-
-    for (const children of n.edges.attachments.values()) {
-      for (const child of children) {
-        if (!child.spec.disabled) {
-          collectNodes(child);
-        }
-      }
-    }
-  }
-
-  collectNodes(node);
-
-  const openPromises = new Set<string>();
-  // Execute all enabled checks in parallel
-  const results = await Promise.allSettled(
-    nodesToCheck.map(async ({ check, node: n }) => {
-      openPromises.add(n.spec.id);
-      const response = await check();
-      openPromises.delete(n.spec.id);
-      console.log('remaining', openPromises);
-      return response;
-    }),
-  );
-
-  // Mark nodes as disabled based on results, and cascade to descendants
-  for (let i = 0; i < results.length; i++) {
-    const result = results[i];
-    const { node: checkedNode } = nodesToCheck[i];
-
-    if (result.status === 'rejected') {
-      collector.report({
-        code: 'ENABLED_CHECK_FAILED',
-        message: `Error evaluating enabled condition for extension '${checkedNode.spec.id}': ${result.reason}`,
-        context: {
-          node: checkedNode,
-        },
-      });
-      markNodeAndDescendantsDisabled(checkedNode, disabledNodes);
-    } else if (!result.value) {
-      markNodeAndDescendantsDisabled(checkedNode, disabledNodes);
-    }
-  }
-}
-
-/**
  * Starting at the provided node, instantiate all reachable nodes in the tree that have not been disabled.
  * @internal
  */
@@ -573,6 +474,8 @@ export function instantiateAppNodeTree(
     if (node.instance) {
       return node.instance;
     }
+    // Skip disabled nodes. `disabledNodes` may not always contain all disabled nodes,
+    //   so we check for that explicitly.
     if (node.spec.disabled || disabledNodes.has(node)) {
       return undefined;
     }
