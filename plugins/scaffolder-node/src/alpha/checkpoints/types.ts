@@ -55,3 +55,41 @@ export type CheckpointContext<T extends JsonValue | void = JsonValue> = {
    */
   fn: () => Promise<T> | T;
 };
+
+/**
+ * Options for updating a checkpoint in a task.
+ *
+ * @alpha
+ */
+export type UpdateTaskCheckpointOptions = {
+  key: string;
+} & CheckpointStateValue;
+
+/**
+ * StepStateValue
+ *
+ * @alpha
+ */
+export type StepStateValue = {
+  status: 'completed' | 'failed';
+  output: { [name: string]: JsonValue };
+};
+
+/**
+ * Options for updating step state in a task.
+ *
+ * @alpha
+ */
+export type UpdateStepStateOptions = {
+  stepId: string;
+} & StepStateValue;
+
+/**
+ * TaskState - represents the state of checkpoints and steps in a task.
+ *
+ * @alpha
+ */
+export type TaskState = {
+  checkpoints?: CheckpointState;
+  steps?: { [stepId: string]: StepStateValue };
+};

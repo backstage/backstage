@@ -34,30 +34,17 @@ import {
   TaskStatus,
 } from '@backstage/plugin-scaffolder-node';
 import {
-  CheckpointState,
+  TaskState,
+  UpdateStepStateOptions,
+  UpdateTaskCheckpointOptions,
   WorkspaceProvider,
 } from '@backstage/plugin-scaffolder-node/alpha';
-import {
-  JsonObject,
-  JsonValue,
-  Observable,
-  createDeferred,
-} from '@backstage/types';
+import { JsonObject, Observable, createDeferred } from '@backstage/types';
 import ObservableImpl from 'zen-observable';
 import { DefaultWorkspaceService, WorkspaceService } from './WorkspaceService';
 import { readDuration } from './helper';
 import { InternalTaskSecrets, TaskStore } from './types';
 import { PermissionCriteria } from '@backstage/plugin-permission-common';
-
-type TaskState = {
-  checkpoints: CheckpointState;
-  steps: {
-    [stepId: string]: {
-      status: 'completed' | 'failed';
-      output: { [name: string]: JsonValue };
-    };
-  };
-};
 /**
  * TaskManager
  */
@@ -164,15 +151,12 @@ export class TaskManager implements TaskContext {
     return this.storage.getTaskState?.({ taskId: this.task.taskId });
   }
 
-  async updateCheckpoint?(
-    options: Parameters<NonNullable<TaskContext['updateCheckpoint']>>[0],
-  ): Promise<void> {
+  async updateCheckpoint?(options: UpdateTaskCheckpointOptions): Promise<void> {
     const { key, ...value } = options;
 
-    const state = this.task.state as TaskState | undefined;
-    const newState: TaskState = state ?? { checkpoints: {}, steps: {} };
-    newState.checkpoints[key] = value;
-    this.task.state = newState;
+    this.task.state ??= { checkpoints: {}, steps: {} };
+    this.task.state.checkpoints ??= {};
+    this.task.state.checkpoints[key] = value;
 
     await this.storage.saveTaskState?.({
       taskId: this.task.taskId,
@@ -180,18 +164,12 @@ export class TaskManager implements TaskContext {
     });
   }
 
-  async updateStepState?(options: {
-    stepId: string;
-    status: 'completed' | 'failed';
-    output: { [name: string]: JsonValue };
-  }): Promise<void> {
+  async updateStepState?(options: UpdateStepStateOptions): Promise<void> {
     const { stepId, status, output } = options;
 
-    const state = this.task.state as TaskState | undefined;
-    const newState: TaskState = state ?? { checkpoints: {}, steps: {} };
-    newState.steps ??= {};
-    newState.steps[stepId] = { status, output };
-    this.task.state = newState;
+    this.task.state ??= { checkpoints: {}, steps: {} };
+    this.task.state.steps ??= {};
+    this.task.state.steps[stepId] = { status, output };
 
     await this.storage.saveTaskState?.({
       taskId: this.task.taskId,
@@ -275,9 +253,9 @@ export interface CurrentClaimedTask {
    */
   secrets?: TaskSecrets;
   /**
-   * The state of checkpoints of the task.
+   * The state of checkpoints and steps of the task.
    */
-  state?: JsonObject;
+  state?: TaskState;
   /**
    * The creator of the task.
    */

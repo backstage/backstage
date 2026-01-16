@@ -177,6 +177,22 @@ export const serializeWorkspace: (opts: { path: string }) => Promise<{
   contents: Buffer;
 }>;
 
+// @alpha
+export type StepStateValue = {
+  status: 'completed' | 'failed';
+  output: {
+    [name: string]: JsonValue;
+  };
+};
+
+// @alpha
+export type TaskState = {
+  checkpoints?: CheckpointState;
+  steps?: {
+    [stepId: string]: StepStateValue;
+  };
+};
+
 // @public (undocumented)
 export type TemplateFilter = (
   arg: JsonValue,
@@ -201,6 +217,16 @@ export type TemplateGlobalFunctionExample = {
   example: string;
   notes?: string;
 };
+
+// @alpha
+export type UpdateStepStateOptions = {
+  stepId: string;
+} & StepStateValue;
+
+// @alpha
+export type UpdateTaskCheckpointOptions = {
+  key: string;
+} & CheckpointStateValue;
 
 // @alpha
 export interface WorkspaceProvider {
