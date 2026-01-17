@@ -42,12 +42,13 @@ import { JsonObject, Observable, createDeferred } from '@backstage/types';
 import ObservableImpl from 'zen-observable';
 import { DefaultWorkspaceService, WorkspaceService } from './WorkspaceService';
 import { readDuration } from './helper';
-import { InternalTaskSecrets, TaskStore } from './types';
+import {
+  InternalTaskSecrets,
+  TaskStore,
+  UpdateStepStateOptions,
+  TaskState,
+} from './types';
 import { PermissionCriteria } from '@backstage/plugin-permission-common';
-
-type TaskState = {
-  checkpoints: CheckpointState;
-};
 /**
  * TaskManager
  */
@@ -162,12 +163,26 @@ export class TaskManager implements TaskContext {
   async updateCheckpoint?(options: UpdateTaskCheckpointOptions): Promise<void> {
     const { key, ...value } = options;
 
-    if (this.task.state) {
-      (this.task.state as TaskState).checkpoints[key] = value;
-    } else {
-      this.task.state = { checkpoints: { [key]: value } };
-    }
+    // Initialize state structure if needed
+    this.task.state ??= { checkpoints: {}, steps: {} };
+    this.task.state.checkpoints ??= {};
+    this.task.state.checkpoints[key] = value;
+
     await this.storage.saveTaskState?.({
+      taskId: this.task.taskId,
+      state: this.task.state,
+    });
+  }
+
+  async updateStepState?(options: UpdateStepStateOptions): Promise<void> {
+    const { stepId, status, output } = options;
+
+    // Initialize state structure if needed
+    this.task.state ??= { checkpoints: {}, steps: {} };
+    this.task.state.steps ??= {};
+    this.task.state.steps[stepId] = { status, output };
+
+    await this.storage.saveTaskState({
       taskId: this.task.taskId,
       state: this.task.state,
     });
@@ -251,7 +266,7 @@ export interface CurrentClaimedTask {
   /**
    * The state of checkpoints of the task.
    */
-  state?: JsonObject;
+  state?: TaskState;
   /**
    * The creator of the task.
    */

@@ -318,7 +318,76 @@ describe('StorageTaskBroker', () => {
             value: 'https://github.com/backstage/backstage.git',
           },
         },
+        steps: {},
       },
+    });
+  });
+
+  describe('step state persistence', () => {
+    it('should persist step state via updateStepState', async () => {
+      const broker = new StorageTaskBroker(storage, logger);
+      await broker.dispatch({ spec: { steps: [] } as TaskSpec });
+      const task = await broker.claim();
+
+      await task.updateStepState?.({
+        stepId: 'step1',
+        status: 'completed',
+        output: { result: 'success' },
+      });
+
+      const taskState = await task.getTaskState?.();
+      expect(taskState?.state?.steps?.step1).toEqual({
+        status: 'completed',
+        output: { result: 'success' },
+      });
+    });
+
+    it('should accumulate step states for multiple steps', async () => {
+      const broker = new StorageTaskBroker(storage, logger);
+      await broker.dispatch({ spec: { steps: [] } as TaskSpec });
+      const task = await broker.claim();
+
+      await task.updateStepState?.({
+        stepId: 'step1',
+        status: 'completed',
+        output: { result: 'first' },
+      });
+      await task.updateStepState?.({
+        stepId: 'step2',
+        status: 'completed',
+        output: { result: 'second' },
+      });
+
+      const taskState = await task.getTaskState?.();
+      expect(taskState?.state?.steps).toEqual({
+        step1: { status: 'completed', output: { result: 'first' } },
+        step2: { status: 'completed', output: { result: 'second' } },
+      });
+    });
+
+    it('should preserve checkpoints when updating step state', async () => {
+      const broker = new StorageTaskBroker(storage, logger);
+      await broker.dispatch({ spec: { steps: [] } as TaskSpec });
+      const task = await broker.claim();
+
+      // First save a checkpoint
+      await task.updateCheckpoint?.({
+        key: 'checkpoint1',
+        status: 'success',
+        value: { done: true },
+      });
+
+      // Then save step state
+      await task.updateStepState?.({
+        stepId: 'step1',
+        status: 'completed',
+        output: { result: 'done' },
+      });
+
+      const taskState = await task.getTaskState?.();
+      // Both should be present
+      expect(taskState?.state?.checkpoints?.checkpoint1).toBeDefined();
+      expect(taskState?.state?.steps?.step1).toBeDefined();
     });
   });
 
