@@ -1684,4 +1684,167 @@ describe('NunjucksWorkflowRunner', () => {
       expect(mockedPermissionApi.authorizeConditional).toHaveBeenCalledTimes(1);
     });
   });
+
+  describe('task recovery - step resumption', () => {
+    it('should skip completed steps when recovering and restore their outputs', async () => {
+      // Mock a task with saved state showing step1 was completed
+      const task = createMockTaskWithSpec({
+        steps: [
+          {
+            id: 'step1',
+            name: 'completed step',
+            action: 'jest-mock-action',
+            input: {},
+          },
+          {
+            id: 'step2',
+            name: 'pending step',
+            action: 'jest-mock-action',
+            input: {},
+          },
+        ],
+        output: { fromStep1: '${{ steps.step1.output.mock }}' },
+      });
+
+      // Override getTaskState to return saved step state
+      task.getTaskState = jest.fn().mockResolvedValue({
+        state: {
+          steps: {
+            step1: { status: 'completed', output: { mock: 'recovered-value' } },
+          },
+        },
+      });
+
+      const updateStepStateMock = jest.fn();
+      task.updateStepState = updateStepStateMock;
+
+      const result = await runner.execute(task);
+
+      // Step 1 should be skipped (action only called once for step2)
+      expect(fakeActionHandler).toHaveBeenCalledTimes(1);
+
+      // Output from step1 should come from saved state
+      expect(result.output.fromStep1).toBe('recovered-value');
+
+      // updateStepState should only be called for step2
+      expect(updateStepStateMock).toHaveBeenCalledTimes(1);
+      expect(updateStepStateMock).toHaveBeenCalledWith({
+        stepId: 'step2',
+        status: 'completed',
+        output: expect.any(Object),
+      });
+    });
+
+    it('should run all steps when no prior state exists', async () => {
+      const task = createMockTaskWithSpec({
+        steps: [
+          { id: 'step1', name: 'first', action: 'jest-mock-action', input: {} },
+          {
+            id: 'step2',
+            name: 'second',
+            action: 'jest-mock-action',
+            input: {},
+          },
+        ],
+      });
+
+      task.getTaskState = jest.fn().mockResolvedValue(undefined);
+      const updateStepStateMock = jest.fn();
+      task.updateStepState = updateStepStateMock;
+
+      await runner.execute(task);
+
+      // Both actions should run
+      expect(fakeActionHandler).toHaveBeenCalledTimes(2);
+      expect(updateStepStateMock).toHaveBeenCalledTimes(2);
+    });
+
+    it('should save step state after each step completes', async () => {
+      const task = createMockTaskWithSpec({
+        steps: [
+          { id: 'step1', name: 'first', action: 'output-action', input: {} },
+        ],
+      });
+
+      const updateStepStateMock = jest.fn();
+      task.updateStepState = updateStepStateMock;
+
+      await runner.execute(task);
+
+      expect(updateStepStateMock).toHaveBeenCalledWith({
+        stepId: 'step1',
+        status: 'completed',
+        output: expect.objectContaining({ mock: 'backstage' }),
+      });
+    });
+
+    it('should retry the in-progress step that was interrupted', async () => {
+      // step1 completed, step2 was in progress when crash happened (no entry in state)
+      const task = createMockTaskWithSpec({
+        steps: [
+          {
+            id: 'step1',
+            name: 'completed',
+            action: 'jest-mock-action',
+            input: {},
+          },
+          {
+            id: 'step2',
+            name: 'was-in-progress',
+            action: 'jest-mock-action',
+            input: {},
+          },
+        ],
+      });
+
+      task.getTaskState = jest.fn().mockResolvedValue({
+        state: {
+          steps: {
+            step1: { status: 'completed', output: { done: true } },
+            // step2 has no entry - it was in progress
+          },
+        },
+      });
+
+      const updateStepStateMock = jest.fn();
+      task.updateStepState = updateStepStateMock;
+
+      await runner.execute(task);
+
+      // Only step2 should run (step1 skipped)
+      expect(fakeActionHandler).toHaveBeenCalledTimes(1);
+    });
+
+    it('should emit log when skipping a recovered step', async () => {
+      const task = createMockTaskWithSpec({
+        steps: [
+          {
+            id: 'step1',
+            name: 'completed step',
+            action: 'jest-mock-action',
+            input: {},
+          },
+        ],
+      });
+
+      task.getTaskState = jest.fn().mockResolvedValue({
+        state: {
+          steps: {
+            step1: { status: 'completed', output: { mock: 'value' } },
+          },
+        },
+      });
+
+      const emitLogMock = jest.fn();
+      task.emitLog = emitLogMock;
+
+      await runner.execute(task);
+
+      // Should log that step was skipped
+      expect(emitLogMock).toHaveBeenCalledWith(
+        expect.stringContaining('Skipping'),
+        expect.objectContaining({ stepId: 'step1', status: 'skipped' }),
+      );
+    });
+  });
 });

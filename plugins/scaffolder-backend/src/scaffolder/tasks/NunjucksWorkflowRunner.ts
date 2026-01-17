@@ -515,6 +515,13 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
 
       context.steps[step.id] = { output: stepOutput };
 
+      // Persist step state for recovery
+      await task.updateStepState?.({
+        stepId: step.id,
+        status: 'completed',
+        output: stepOutput,
+      });
+
       if (task.cancelSignal.aborted) {
         throw new Error(
           `Step ${step.id} (${step.name}) of task ${task.taskId} has been cancelled.`,
@@ -583,7 +590,26 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
             )
           : [{ result: AuthorizeResult.ALLOW }];
 
+      // Get prior state for recovery
+      const prevTaskState = await task.getTaskState?.();
+      const savedSteps = prevTaskState?.state?.steps ?? {};
+
       for (const step of task.spec.steps) {
+        // Check if step was already completed (recovery scenario)
+        const savedStepState = savedSteps[step.id];
+        if (savedStepState?.status === 'completed') {
+          // Skip this step and restore its output to context
+          context.steps[step.id] = { output: savedStepState.output };
+          await task.emitLog(
+            `Skipping step ${step.name} - already completed (recovered)`,
+            {
+              stepId: step.id,
+              status: 'skipped',
+            },
+          );
+          continue;
+        }
+
         await this.executeStep(
           task,
           step,
