@@ -13,22 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { MetricsService } from '@backstage/backend-plugin-api/alpha';
 
 type McpActionsBaseAttributes = {
   action_name: string;
-  client: string;
 };
 
 type McpActionsExecutionAttributes = McpActionsBaseAttributes & {
   status: 'success' | 'error';
 };
 
-type McpActionsMessagesAttributes = Pick<McpActionsBaseAttributes, 'client'> & {
+type McpActionsMessagesAttributes = McpActionsBaseAttributes & {
   direction: 'request' | 'response';
 };
 
-type McpActionsLookupAttributes = Pick<McpActionsBaseAttributes, 'client'> & {
+type McpActionsLookupAttributes = McpActionsBaseAttributes & {
   result: 'found' | 'not_found';
 };
 

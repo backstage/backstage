@@ -35,7 +35,6 @@ export const createSseRouter = ({
   router.get('/', async (req, res) => {
     const server = mcpService.getServer({
       credentials: await httpAuth.credentials(req),
-      client: 'sse',
     });
 
     const transport = new SSEServerTransport(

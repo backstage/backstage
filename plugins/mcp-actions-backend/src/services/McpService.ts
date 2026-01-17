@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 The Backstage Authors
+ * Copyright 2026 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,26 +50,26 @@ export class McpService {
     return new McpService(actions, metrics);
   }
 
-  getServer({
-    credentials,
-    client,
-  }: {
-    credentials: BackstageCredentials;
-    client: 'sse' | 'streamable';
-  }) {
+  getServer({ credentials }: { credentials: BackstageCredentials }) {
     const server = new McpServer(
       {
         name: 'backstage',
+        // TODO: this version will most likely change in the future.
         version,
       },
       { capabilities: { tools: {} } },
     );
 
     server.setRequestHandler(ListToolsRequestSchema, async () => {
+      // TODO: switch this to be configuration based later
       const { actions } = await this.actions.list({ credentials });
+
       return {
         tools: actions.map(action => ({
           inputSchema: action.schema.input,
+          // todo(blam): this is unfortunately not supported by most clients yet.
+          // When this is provided you need to provide structuredContent instead.
+          outputSchema: action.schema.output,
           name: action.name,
           description: action.description,
           annotations: {
@@ -87,10 +87,9 @@ export class McpService {
       return handleErrors(async () => {
         const actionName = params.name;
 
-        // Measure request message size
         const requestSize = JSON.stringify(params).length;
         this.metrics.messagesSize.record(requestSize, {
-          client,
+          action_name: actionName,
           direction: 'request',
         });
 
@@ -99,18 +98,17 @@ export class McpService {
 
         if (!action) {
           this.metrics.actionsLookup.add(1, {
-            client,
+            action_name: actionName,
             result: 'not_found',
           });
           throw new NotFoundError(`Action "${actionName}" not found`);
         }
 
         this.metrics.actionsLookup.add(1, {
-          client,
+          action_name: actionName,
           result: 'found',
         });
 
-        // Measure execution time
         const startTime = performance.now();
         let status: 'success' | 'error' = 'success';
 
@@ -122,6 +120,9 @@ export class McpService {
           });
 
           const response = {
+            // todo(blam): unfortunately structuredContent is not supported by most clients yet.
+            // so the validation for the output happens in the default actions registry
+            // and we return it as json text instead for now.
             content: [
               {
                 type: 'text',
@@ -132,10 +133,9 @@ export class McpService {
             ],
           };
 
-          // Measure response message size
           const responseSize = JSON.stringify(response).length;
           this.metrics.messagesSize.record(responseSize, {
-            client,
+            action_name: actionName,
             direction: 'response',
           });
 
@@ -147,7 +147,6 @@ export class McpService {
           const durationSeconds = (performance.now() - startTime) / 1000;
           this.metrics.actionsExecutionDuration.record(durationSeconds, {
             action_name: actionName,
-            client,
             status,
           });
         }
