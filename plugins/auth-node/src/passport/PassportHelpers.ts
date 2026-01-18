@@ -199,6 +199,7 @@ export class PassportHelpers {
         ) => {
           if (err) {
             reject(new ForwardedError(`Failed to refresh access token`, err));
+            return;
           }
           if (!accessToken) {
             reject(
@@ -206,6 +207,7 @@ export class PassportHelpers {
                 `Failed to refresh access token, no access token received`,
               ),
             );
+            return;
           }
 
           resolve({
