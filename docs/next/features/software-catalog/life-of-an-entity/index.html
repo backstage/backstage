@@ -25,7 +25,7 @@
 <script src="/js/medium-zoom.js"></script>
 <script src="/js/dismissable-banner.js"></script>
 <script src="/js/scroll-nav-to-view-in-docs.js"></script><link rel="stylesheet" href="/assets/css/styles.23cb5106.css">
-<script src="/assets/js/runtime~main.8bd5d5b9.js" defer="defer"></script>
+<script src="/assets/js/runtime~main.c201a8c5.js" defer="defer"></script>
 <script src="/assets/js/main.a7539cf3.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
@@ -229,8 +229,8 @@ either, it becomes <em>orphaned</em>. The end result is as follows:</p>
 the child entity.</li>
 <li>The child entity is <em>not</em> removed from the catalog, but stays around until
 explicitly deleted via the catalog API, implicitly if <code>orphanStrategy: delete</code>
-configuration is set, or until it is &quot;reclaimed&quot; by the original parent
-or another parent starting to reference it.</li>
+configuration is set (the default), or until it is &quot;reclaimed&quot; by the original
+parent or another parent starting to reference it.</li>
 <li>The catalog page in Backstage for the child entity detects the new annotation
 and informs users about the orphan status.</li>
 </ul>
@@ -258,17 +258,10 @@ inability to find or read a distinct remote, are marked as such on the entity
 to inform the owner that something is wrong. But processing and other
 behaviors continue as usual.</p>
 </blockquote>
-<p>The reason that the orphaning mechanism exists instead of having an eager
-deletion triggered, is safety. Scenarios like these can happen purely by
-accident, due to the asynchronous nature of the system and the fallible nature
-of humans. In particular when external systems start consuming and relying on
-the catalog, there could be substantial consequences to suddenly dropping
-entities without explicit owner consent. The catalog therefore takes the stance
-that entities that often were added by direct user action should also be deleted
-only by direct user action.</p>
-<p>However, if you want to delete orphaned entities automatically anyway, you can
-enable the automated clean up with the following app-config option.</p>
-<div class="codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#9CDCFE;--prism-background-color:#232323"><div class="codeBlockContent_biex"><pre tabindex="0" class="prism-code language-text codeBlock_bY9V thin-scrollbar" style="color:#9CDCFE;background-color:#232323"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#9CDCFE"><span class="token plain">catalog:</span><br></span><span class="token-line" style="color:#9CDCFE"><span class="token plain">  orphanStrategy: delete</span><br></span></code></pre><div class="buttonGroup__atx"><button type="button" aria-label="Copy code to clipboard" title="Copy" class="clean-btn"><span class="copyButtonIcons_eSgA" aria-hidden="true"><svg viewBox="0 0 24 24" class="copyButtonIcon_y97N"><path fill="currentColor" d="M19,21H8V7H19M19,5H8A2,2 0 0,0 6,7V21A2,2 0 0,0 8,23H19A2,2 0 0,0 21,21V7A2,2 0 0,0 19,5M16,1H4A2,2 0 0,0 2,3V17H4V3H16V1Z"></path></svg><svg viewBox="0 0 24 24" class="copyButtonSuccessIcon_LjdS"><path fill="currentColor" d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"></path></svg></span></button></div></div></div>
+<p>The default behavior of the catalog is to automatically remove orphaned
+entities. However, if you want to keep them instead, you can disable the
+automated cleanup with the following app-config option.</p>
+<div class="codeBlockContainer_Ckt0 theme-code-block" style="--prism-color:#9CDCFE;--prism-background-color:#232323"><div class="codeBlockContent_biex"><pre tabindex="0" class="prism-code language-text codeBlock_bY9V thin-scrollbar" style="color:#9CDCFE;background-color:#232323"><code class="codeBlockLines_e6Vv"><span class="token-line" style="color:#9CDCFE"><span class="token plain">catalog:</span><br></span><span class="token-line" style="color:#9CDCFE"><span class="token plain">  orphanStrategy: keep</span><br></span></code></pre><div class="buttonGroup__atx"><button type="button" aria-label="Copy code to clipboard" title="Copy" class="clean-btn"><span class="copyButtonIcons_eSgA" aria-hidden="true"><svg viewBox="0 0 24 24" class="copyButtonIcon_y97N"><path fill="currentColor" d="M19,21H8V7H19M19,5H8A2,2 0 0,0 6,7V21A2,2 0 0,0 8,23H19A2,2 0 0,0 21,21V7A2,2 0 0,0 19,5M16,1H4A2,2 0 0,0 2,3V17H4V3H16V1Z"></path></svg><svg viewBox="0 0 24 24" class="copyButtonSuccessIcon_LjdS"><path fill="currentColor" d="M21,7L9,19L3.5,13.5L4.91,12.09L9,16.17L19.59,5.59L21,7Z"></path></svg></span></button></div></div></div>
 <h2 class="anchor anchorWithStickyNavbar_LWe7" id="implicit-deletion">Implicit Deletion<a href="#implicit-deletion" class="hash-link" aria-label="Direct link to Implicit Deletion" title="Direct link to Implicit Deletion">​</a></h2>
 <p>Entity providers - not processors - are subject to <em>eager</em> deletion of entities,
 which may trigger the implicit deletion of more than just the entity you thought
