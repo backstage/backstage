@@ -22,13 +22,12 @@ import { TranslationResource } from '@backstage/frontend-plugin-api';
 export const AppRootWrapperBlueprint: ExtensionBlueprint<{
   kind: 'app-root-wrapper';
   params: {
+    Component?: [error: 'Use the `component` parameter instead'];
     component: (props: { children: ReactNode }) => JSX.Element | null;
   };
   output: ExtensionDataRef<
-    ComponentType<{
-      children: ReactNode;
-    }>,
-    'app.root-wrapper-component',
+    (props: { children: ReactNode }) => JSX.Element | null,
+    'app.root.wrapper',
     {}
   >;
   inputs: {};
@@ -36,10 +35,8 @@ export const AppRootWrapperBlueprint: ExtensionBlueprint<{
   configInput: {};
   dataRefs: {
     component: ConfigurableExtensionDataRef<
-      ComponentType<{
-        children: ReactNode;
-      }>,
-      'app.root-wrapper-component',
+      (props: { children: ReactNode }) => JSX.Element | null,
+      'app.root.wrapper',
       {}
     >;
   };
@@ -163,7 +160,14 @@ export const SwappableComponentBlueprint: ExtensionBlueprint<{
     loader: Ref extends SwappableComponentRef<infer IInnerComponentProps, any>
       ?
           | (() => (props: IInnerComponentProps) => JSX.Element | null)
-          | (() => Promise<(props: IInnerComponentProps) => JSX.Element | null>)
+          | (() => Promise<
+              (props: IInnerComponentProps) => JSX.Element
+              /**
+               * Creates an extension that replaces the router component. This blueprint is limited to use by the app plugin.
+               *
+               * @public
+               */ | null
+            >)
       : never;
   }) => ExtensionBlueprintParams<{
     component: Ref extends SwappableComponentRef<
@@ -177,7 +181,14 @@ export const SwappableComponentBlueprint: ExtensionBlueprint<{
     loader: Ref extends SwappableComponentRef<infer IInnerComponentProps, any>
       ?
           | (() => (props: IInnerComponentProps) => JSX.Element | null)
-          | (() => Promise<(props: IInnerComponentProps) => JSX.Element | null>)
+          | (() => Promise<
+              (props: IInnerComponentProps) => JSX.Element
+              /**
+               * Creates an extension that replaces the router component. This blueprint is limited to use by the app plugin.
+               *
+               * @public
+               */ | null
+            >)
       : never;
   }>;
   output: ExtensionDataRef<

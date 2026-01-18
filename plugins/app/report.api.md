@@ -149,22 +149,11 @@ const appPlugin: OverridableFrontendPlugin<
           }
         >;
         wrappers: ExtensionInput<
-          | ConfigurableExtensionDataRef<
-              (props: { children: ReactNode }) => JSX.Element | null,
-              'app.root.wrapper',
-              {
-                optional: true;
-              }
-            >
-          | ConfigurableExtensionDataRef<
-              ComponentType<{
-                children: ReactNode;
-              }>,
-              'app.root-wrapper-component',
-              {
-                optional: true;
-              }
-            >,
+          ConfigurableExtensionDataRef<
+            (props: { children: ReactNode }) => JSX.Element | null,
+            'app.root.wrapper',
+            {}
+          >,
           {
             singleton: false;
             optional: false;

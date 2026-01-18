@@ -15,6 +15,7 @@
  */
 
 import {
+  AppRootWrapperBlueprint as _AppRootWrapperBlueprint,
   IconBundleBlueprint as _IconBundleBlueprint,
   NavContentBlueprint as _NavContentBlueprint,
   type NavContentComponent,
@@ -27,7 +28,13 @@ import {
   TranslationBlueprint as _TranslationBlueprint,
 } from '@backstage/frontend-plugin-api';
 
-export { AppRootWrapperBlueprint } from './AppRootWrapperBlueprint';
+/**
+ * Creates an extension that renders a React wrapper at the app root, enclosing
+ * the app layout. This blueprint is limited to use by the app plugin.
+ *
+ * @public
+ */
+export const AppRootWrapperBlueprint = _AppRootWrapperBlueprint;
 
 /**
  * Creates an extension that adds/replaces an app theme. This blueprint is limited to use by the app plugin.

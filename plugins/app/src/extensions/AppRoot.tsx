@@ -22,7 +22,7 @@ import {
   JSX,
 } from 'react';
 import {
-  AppRootWrapperBlueprint as OldAppRootWrapperBlueprint,
+  AppRootWrapperBlueprint,
   RouterBlueprint,
   SignInPageBlueprint,
   coreExtensionData,
@@ -44,7 +44,6 @@ import {
   identityApiRef,
   useApi,
 } from '@backstage/core-plugin-api';
-import { AppRootWrapperBlueprint } from '@backstage/plugin-app-react';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { isProtectedApp } from '../../../../packages/core-app-api/src/app/isProtectedApp';
 import { BrowserRouter } from 'react-router-dom';
@@ -70,8 +69,7 @@ export const AppRoot = createExtension({
     }),
     elements: createExtensionInput([coreExtensionData.reactElement]),
     wrappers: createExtensionInput([
-      OldAppRootWrapperBlueprint.dataRefs.component.optional(),
-      AppRootWrapperBlueprint.dataRefs.component.optional(),
+      AppRootWrapperBlueprint.dataRefs.component,
     ]),
   },
   output: [coreExtensionData.reactElement],
@@ -121,24 +119,13 @@ export const AppRoot = createExtension({
       const Component = wrapper.get(AppRootWrapperBlueprint.dataRefs.component);
       const pluginId = wrapper.node.spec.plugin.id;
       if (Component) {
-        if (pluginId === 'app') {
-          content = <Component>{content}</Component>;
-        } else {
+        content = <Component>{content}</Component>;
+        if (pluginId !== 'app') {
           // eslint-disable-next-line no-console
           console.warn(
-            `Warning: The app root wrapper extension from the '${pluginId}' plugin was ignored, only the 'app' plugin is allowed to provide app root wrappers.`,
+            `DEPRECATION WARNING: AppRootWrappers should only be installed as an extension in the app plugin. ` +
+              `You can either use appPlugin.override(), or a module for the app plugin. The following extension will be ignored in the future: ${wrapper.node.spec.id}`,
           );
-        }
-      } else {
-        const OldComponent = wrapper.get(
-          OldAppRootWrapperBlueprint.dataRefs.component,
-        );
-        if (OldComponent) {
-          // eslint-disable-next-line no-console
-          console.warn(
-            `DEPRECATION WARNING: The ${pluginId} plugin provided a deprecated app root wrapper extension using the AppRootWrapperBlueprint from @backstage/frontend-plugin-api. This will break in a future release.`,
-          );
-          content = <OldComponent>{content}</OldComponent>;
         }
       }
     }
