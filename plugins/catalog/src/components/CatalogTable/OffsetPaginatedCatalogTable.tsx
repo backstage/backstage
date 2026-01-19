@@ -15,10 +15,7 @@
  */
 
 import { ReactNode, useCallback } from 'react';
-import Typography from '@material-ui/core/Typography';
-import IconButton from '@material-ui/core/IconButton';
-
-import { Table, ColumnConfig, Cell } from '@backstage/ui';
+import { Table, ColumnConfig, Cell, ButtonIcon, Text } from '@backstage/ui';
 import { CatalogTableRow } from './types';
 import { useEntityList } from '@backstage/plugin-catalog-react';
 import { CatalogTableToolbar } from './CatalogTableToolbar';
@@ -59,20 +56,17 @@ export function OffsetPaginatedCatalogTable(props: {
             const IconElement = actionConfig.icon();
 
             return (
-              <IconButton
+              <ButtonIcon
                 key={index}
-                onClick={(e: React.MouseEvent) => {
-                  e.stopPropagation();
-                  e.preventDefault();
+                onPress={() => {
                   actionConfig.onClick?.();
                 }}
-                disabled={actionConfig.disabled}
-                title={actionConfig.tooltip}
-                size="small"
+                isDisabled={actionConfig.disabled}
+                aria-label={actionConfig.tooltip}
+                icon={IconElement}
+                variant="tertiary"
                 style={actionConfig.cellStyle as React.CSSProperties}
-              >
-                {IconElement}
-              </IconButton>
+              />
             );
           })}
         </div>
@@ -107,13 +101,13 @@ export function OffsetPaginatedCatalogTable(props: {
     <div>
       <CatalogTableToolbar title={title} />
       {subtitle && (
-        <Typography
-          color="textSecondary"
-          variant="body1"
+        <Text
+          color="secondary"
+          variant="body-medium"
           style={{ marginBottom: '16px', paddingLeft: '20px' }}
         >
           {subtitle}
-        </Typography>
+        </Text>
       )}
       <Table
         columnConfig={allColumns}

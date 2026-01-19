@@ -15,11 +15,16 @@
  */
 
 import { ReactNode, useMemo } from 'react';
-import Typography from '@material-ui/core/Typography';
-import IconButton from '@material-ui/core/IconButton';
 import { Entity } from '@backstage/catalog-model';
 import { humanizeEntityRef } from '@backstage/plugin-catalog-react';
-import { Table, useTable, ColumnConfig, Cell } from '@backstage/ui';
+import {
+  Table,
+  useTable,
+  ColumnConfig,
+  Cell,
+  ButtonIcon,
+  Text,
+} from '@backstage/ui';
 import { CatalogTableRow } from './types';
 
 /**
@@ -74,20 +79,17 @@ export function ClientSideCatalogTable(props: {
               const IconElement = actionConfig.icon();
 
               return (
-                <IconButton
+                <ButtonIcon
                   key={index}
-                  onClick={(e: React.MouseEvent) => {
-                    e.stopPropagation();
-                    e.preventDefault();
+                  onPress={() => {
                     actionConfig.onClick?.();
                   }}
-                  disabled={actionConfig.disabled}
-                  title={actionConfig.tooltip}
-                  size="small"
+                  isDisabled={actionConfig.disabled}
+                  aria-label={actionConfig.tooltip}
+                  icon={IconElement}
+                  variant="tertiary"
                   style={actionConfig.cellStyle as React.CSSProperties}
-                >
-                  {IconElement}
-                </IconButton>
+                />
               );
             })}
           </div>
@@ -155,18 +157,18 @@ export function ClientSideCatalogTable(props: {
   return (
     <div>
       {title && (
-        <Typography variant="h5" style={{ marginBottom: '8px' }}>
+        <Text as="h5" variant="heading-large" style={{ marginBottom: '8px' }}>
           {title}
-        </Typography>
+        </Text>
       )}
       {subtitle && (
-        <Typography
-          color="textSecondary"
-          variant="body1"
+        <Text
+          color="secondary"
+          variant="body-medium"
           style={{ marginBottom: '16px' }}
         >
           {subtitle}
-        </Typography>
+        </Text>
       )}
       <Table
         columnConfig={allColumns}

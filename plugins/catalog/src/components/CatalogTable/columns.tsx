@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 import { EntityRefLink, EntityRefLinks } from '@backstage/plugin-catalog-react';
-import Chip from '@material-ui/core/Chip';
 import { CatalogTableRow } from './types';
-import { ColumnConfig, Cell, CellText } from '@backstage/ui';
+import { ColumnConfig, Cell, CellText, TagGroup, Tag } from '@backstage/ui';
 import { Entity } from '@backstage/catalog-model';
 
 // The columnFactories symbol is not directly exported, but through the
@@ -121,16 +120,15 @@ export const columnFactories = Object.freeze({
       label: 'Tags',
       cell: ({ entity }) => (
         <Cell>
-          {entity.metadata.tags &&
-            entity.metadata.tags.map(t => (
-              <Chip
-                key={t}
-                label={t}
-                size="small"
-                variant="outlined"
-                style={{ marginBottom: '0px', marginRight: '4px' }}
-              />
-            ))}
+          {entity.metadata.tags && entity.metadata.tags.length > 0 && (
+            <TagGroup aria-label="Tags">
+              {entity.metadata.tags.map(t => (
+                <Tag key={t} size="small">
+                  {t}
+                </Tag>
+              ))}
+            </TagGroup>
+          )}
         </Cell>
       ),
     };
@@ -161,12 +159,11 @@ export const columnFactories = Object.freeze({
         return (
           <Cell>
             {specifiedLabelValue && (
-              <Chip
-                key={specifiedLabelValue}
-                label={specifiedLabelValue}
-                size="small"
-                variant="outlined"
-              />
+              <TagGroup aria-label={options?.title || 'Label'}>
+                <Tag key={specifiedLabelValue} size="small">
+                  {specifiedLabelValue}
+                </Tag>
+              </TagGroup>
             )}
           </Cell>
         );

@@ -15,9 +15,8 @@
  */
 
 import { ReactNode } from 'react';
-import IconButton from '@material-ui/core/IconButton';
 import { TableColumn, TableProps } from '@backstage/core-components';
-import { ColumnConfig } from '@backstage/ui';
+import { ColumnConfig, ButtonIcon } from '@backstage/ui';
 import { CatalogTableRow } from './types';
 
 /**
@@ -97,16 +96,15 @@ export function createActionsColumn(
             | undefined;
 
           return (
-            <IconButton
+            <ButtonIcon
               key={index}
-              onClick={handleClick}
-              disabled={actionConfig.disabled}
-              title={actionConfig.tooltip}
-              size="small"
+              onPress={() => actionConfig.onClick?.()}
+              isDisabled={actionConfig.disabled}
+              aria-label={actionConfig.tooltip}
+              icon={<Icon />}
+              variant="tertiary"
               style={cellStyle}
-            >
-              <Icon />
-            </IconButton>
+            />
           );
         }
         return null;

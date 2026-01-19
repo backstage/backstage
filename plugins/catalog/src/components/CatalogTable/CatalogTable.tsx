@@ -33,10 +33,8 @@ import {
   useStarredEntities,
 } from '@backstage/plugin-catalog-react';
 import type { ColumnConfig } from '@backstage/ui';
-import Typography from '@material-ui/core/Typography';
-import { visuallyHidden } from '@mui/utils';
-import Edit from '@material-ui/icons/Edit';
-import OpenInNew from '@material-ui/icons/OpenInNew';
+import { VisuallyHidden } from '@backstage/ui';
+import { RiPencilLine, RiExternalLinkLine } from '@remixicon/react';
 import { capitalize } from 'lodash';
 import pluralize from 'pluralize';
 import { ReactNode, useMemo } from 'react';
@@ -135,8 +133,8 @@ export const CatalogTable = (props: CatalogTableProps) => {
         return {
           icon: () => (
             <>
-              <Typography style={visuallyHidden}>{title}</Typography>
-              <OpenInNew fontSize="small" />
+              <VisuallyHidden>{title}</VisuallyHidden>
+              <RiExternalLinkLine size={18} />
             </>
           ),
           tooltip: title,
@@ -154,8 +152,8 @@ export const CatalogTable = (props: CatalogTableProps) => {
         return {
           icon: () => (
             <>
-              <Typography style={visuallyHidden}>{title}</Typography>
-              <Edit fontSize="small" />
+              <VisuallyHidden>{title}</VisuallyHidden>
+              <RiPencilLine size={18} />
             </>
           ),
           tooltip: title,
