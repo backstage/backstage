@@ -110,7 +110,7 @@ The following labels indicate the size of a pull request:
 
 - `size:tiny` - Tiny pull requests receive a higher priority for reviews.
 - `size:small` - Small pull requests receive a slightly higher priority for reviews.
-- `size:medium` - Medium-sized pull request receive no change in priority for reviews.
+- `size:medium` - Medium-sized pull requests receive no change in priority for reviews.
 - `size:large` - Large pull requests receive a slightly lower priority for reviews.
 - `size:huge` - Huge pull requests receive a lower priority for reviews.
 
