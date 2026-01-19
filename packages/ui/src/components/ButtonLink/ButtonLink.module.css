@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2026 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,7 @@
 @layer tokens, base, components, utilities;
 
 @layer components {
-  .bui-ButtonIcon {
-    --loading-duration: 200ms;
+  .bui-ButtonLink {
     --bg: transparent;
     --bg-hover: transparent;
     --bg-active: transparent;
@@ -26,16 +25,16 @@
 
     position: relative;
     display: inline-flex;
-    align-items: center;
-    justify-content: center;
     border: none;
     user-select: none;
+    font-family: var(--bui-font-regular);
+    font-weight: var(--bui-font-weight-bold);
     padding: 0;
     cursor: pointer;
     border-radius: var(--bui-radius-2);
     flex-shrink: 0;
-    transition: background-color var(--loading-duration) ease-out,
-      box-shadow var(--loading-duration) ease-out;
+    text-decoration: none;
+    transition: background-color 200ms ease-out, box-shadow 200ms ease-out;
 
     /* Apply variables */
     color: var(--fg);
@@ -53,20 +52,15 @@
     &[data-disabled='true'] {
       cursor: not-allowed;
     }
-
-    &[data-loading='true'] {
-      cursor: wait;
-    }
   }
 
-  .bui-ButtonIcon[data-variant='primary'] {
+  .bui-ButtonLink[data-variant='primary'] {
     --bg: var(--bui-bg-solid);
     --bg-hover: var(--bui-bg-solid-hover);
     --bg-active: var(--bui-bg-solid-pressed);
     --fg: var(--bui-fg-solid);
 
-    &[data-disabled='true'],
-    &[data-loading='true'] {
+    &[data-disabled='true'] {
       --bg: var(--bui-bg-solid-disabled);
       --bg-hover: var(--bui-bg-solid-disabled);
       --bg-active: var(--bui-bg-solid-disabled);
@@ -79,7 +73,7 @@
     }
   }
 
-  .bui-ButtonIcon[data-variant='secondary'] {
+  .bui-ButtonLink[data-variant='secondary'] {
     --bg: var(--bui-bg-neutral-on-surface-0);
     --bg-hover: var(--bui-bg-neutral-on-surface-0-hover);
     --bg-active: var(--bui-bg-neutral-on-surface-0-pressed);
@@ -103,8 +97,7 @@
       --bg-active: var(--bui-bg-neutral-on-surface-3-pressed);
     }
 
-    &[data-disabled='true'],
-    &[data-loading='true'] {
+    &[data-disabled='true'] {
       --bg-hover: var(--bg);
       --bg-active: var(--bg);
       --fg: var(--bui-fg-disabled);
@@ -117,7 +110,7 @@
     }
   }
 
-  .bui-ButtonIcon[data-variant='tertiary'] {
+  .bui-ButtonLink[data-variant='tertiary'] {
     --bg-hover: var(--bui-bg-neutral-on-surface-0-hover);
     --bg-active: var(--bui-bg-neutral-on-surface-0-pressed);
     --fg: var(--bui-fg-primary);
@@ -137,8 +130,7 @@
       --bg-active: var(--bui-bg-neutral-on-surface-3-pressed);
     }
 
-    &[data-disabled='true'],
-    &[data-loading='true'] {
+    &[data-disabled='true'] {
       --bg-hover: var(--bg);
       --bg-active: var(--bg);
       --fg: var(--bui-fg-disabled);
@@ -151,8 +143,9 @@
     }
   }
 
-  .bui-ButtonIcon[data-size='small'] {
-    width: 2rem;
+  .bui-ButtonLink[data-size='small'] {
+    font-size: var(--bui-font-size-3);
+    padding: 0 var(--bui-space-2);
     height: 2rem;
 
     svg {
@@ -161,8 +154,9 @@
     }
   }
 
-  .bui-ButtonIcon[data-size='medium'] {
-    width: 2.5rem;
+  .bui-ButtonLink[data-size='medium'] {
+    font-size: var(--bui-font-size-4);
+    padding: 0 var(--bui-space-3);
     height: 2.5rem;
 
     svg {
@@ -171,52 +165,18 @@
     }
   }
 
-  .bui-ButtonIconContent {
+  .bui-ButtonLinkContent {
     display: inline-flex;
     align-items: center;
     justify-content: center;
+    gap: var(--bui-space-1_5);
     height: 100%;
     width: 100%;
-    transition: opacity var(--loading-duration) ease-out;
-
-    .bui-ButtonIcon[data-loading='true'] & {
-      opacity: 0;
-    }
-  }
-
-  .bui-ButtonIconSpinner {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    display: flex;
-    opacity: 0;
-    transition: opacity var(--loading-duration) ease-in;
-
-    .bui-ButtonIcon[data-loading='true'] & {
-      opacity: 1;
-    }
-
-    & svg {
-      animation: bui-spin 1s linear infinite;
-    }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .bui-ButtonIcon {
+    .bui-ButtonLink {
       transition-duration: 50ms;
-    }
-
-    .bui-ButtonIconContent {
-      transition-duration: 50ms;
-    }
-
-    .bui-ButtonIconSpinner {
-      transition-duration: 50ms;
-    }
-
-    .bui-ButtonIconSpinner svg {
-      animation: none;
     }
   }
 }
