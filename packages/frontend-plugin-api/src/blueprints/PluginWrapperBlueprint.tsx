@@ -42,13 +42,7 @@ export const PluginWrapperBlueprint = createExtensionBlueprint({
       component: ComponentType<{ children: ReactNode }>;
     }>;
   }) {
-    return createExtensionBlueprintParams(
-      params as {
-        loader: () => Promise<{
-          component: ComponentType<{ children: ReactNode }>;
-        }>;
-      },
-    );
+    return createExtensionBlueprintParams(params);
   },
   *factory(params) {
     yield wrapperDataRef(params.loader);
