@@ -600,19 +600,22 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
       const taskState = prevTaskState?.state as TaskState | undefined;
       const savedSteps = taskState?.steps ?? {};
 
+      // Check if this is a recovered task
+      const completedStepIds = Object.keys(savedSteps).filter(
+        id => savedSteps[id]?.status === 'completed',
+      );
+      if (completedStepIds.length > 0) {
+        await task.emitLog(
+          `Task recovered - resuming from last known good state. ${completedStepIds.length} step(s) already completed.`,
+        );
+      }
+
       for (const step of task.spec.steps) {
         // Check if step was already completed (recovery scenario)
         const savedStepState = savedSteps[step.id];
         if (savedStepState?.status === 'completed') {
-          // Skip this step and restore its output to context
+          // Restore output to context without re-running the step
           context.steps[step.id] = { output: savedStepState.output };
-          await task.emitLog(
-            `Skipping step ${step.name} - already completed (recovered)`,
-            {
-              stepId: step.id,
-              status: 'skipped',
-            },
-          );
           continue;
         }
 
