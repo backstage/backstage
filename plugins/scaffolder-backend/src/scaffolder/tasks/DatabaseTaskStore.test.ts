@@ -799,4 +799,29 @@ describe('DatabaseTaskStore', () => {
       expect(task?.secrets).toEqual(secrets);
     });
   });
+
+  describe('recovery without template opt-in', () => {
+    it('should recover tasks regardless of EXPERIMENTAL_recovery setting', async () => {
+      const { store } = await createStore();
+      const secrets = { token: 'secret' };
+
+      // Task WITHOUT any EXPERIMENTAL_recovery setting
+      const { taskId } = await store.createTask({
+        spec: {} as TaskSpec,
+        createdBy: 'me',
+        secrets,
+      });
+
+      await store.claimTask();
+      await store.recoverTasks({ timeout: { milliseconds: 0 } });
+
+      // Should be recovered
+      const task = await store.getTask(taskId);
+      expect(task.status).toBe('open');
+
+      // Secrets should be intact
+      const recoveredTask = await store.claimTask();
+      expect(recoveredTask?.secrets).toEqual(secrets);
+    });
+  });
 });
