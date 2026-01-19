@@ -15,7 +15,7 @@
  */
 
 import { PluginWrapperApi } from '@backstage/frontend-plugin-api/alpha';
-import { ComponentType, ReactNode, useEffect, useState } from 'react';
+import { ComponentType, ReactNode, useEffect, useMemo, useState } from 'react';
 
 type WrapperInput = {
   loader: () => Promise<{ component: ComponentType<{ children: ReactNode }> }>;
@@ -86,17 +86,19 @@ export class DefaultPluginWrapperApi implements PluginWrapperApi {
           throw error;
         }
 
-        if (!loadedWrappers) {
-          return null;
-        }
+        return useMemo(() => {
+          if (!loadedWrappers) {
+            return null;
+          }
 
-        let content = props.children;
+          let current = props.children;
 
-        for (const Wrapper of loadedWrappers) {
-          content = <Wrapper>{content}</Wrapper>;
-        }
+          for (const Wrapper of loadedWrappers) {
+            current = <Wrapper>{current}</Wrapper>;
+          }
 
-        return <>{content}</>;
+          return current;
+        }, [loadedWrappers, props.children]);
       };
 
       composedWrappers.set(pluginId, ComposedWrapper);

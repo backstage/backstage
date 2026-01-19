@@ -14,12 +14,6 @@
  * limitations under the License.
  */
 
-/**
- * Alpha exports for plugin wrapper functionality.
- *
- * @alpha
- */
-
 export { PluginWrapperBlueprint } from './blueprints/PluginWrapperBlueprint';
 export {
   type PluginWrapperApi,
