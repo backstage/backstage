@@ -10,13 +10,15 @@ This file provides pointers for reviewing pull requests. While the main audience
 
 ## Review Workflow
 
-Pull request reviews are coordinated manually by maintainers and reviewers based on project area ownership. Reviews are prioritized and tracked using labels and GitHub Project boards. This review process only applies to the [main Backstage repository](https://github.com/backstage/backstage), other repositories may have their own review processes.
+Pull request reviews are coordinated manually by maintainers and reviewers based on project area ownership. Reviews are prioritized and tracked using labels and GitHub Project boards. This review process applies to all pull requests in the [main Backstage repository](https://github.com/backstage/backstage), other repositories may have their own review processes.
 
-All incoming pull request reviews are tracked on the [Incoming Reviews board](https://github.com/orgs/backstage/projects/14/views/1). This board can be used by members of the `@backstage/reviewers` group to find pull requests to review, as well as anyone else that wants an overview of all incoming pull requests.
+All incoming pull request reviews are tracked on the [Incoming Reviews board](https://github.com/orgs/backstage/projects/14/views/1). This board can be used by members of the `@backstage/reviewers` group to find pull requests to review, as well as maintainers that want an overview of all incoming pull requests.
 
 Project area maintainers can use the same board but with additional filters applied to only show incoming pull requests for their project area. These filtered boards are linked to for each project area in [OWNERS.md](./OWNERS.md). There is also a [personal review board](https://github.com/orgs/backstage/projects/14/views/2) that can be used to track reviews that you have been assigned to.
 
 There are several labels that help track the status and prioritize pull requests. You can find more information about these labels in [LABELS.md](./LABELS.md#pull-request-labels).
+
+All reviewers should always use the "request changes" option if they think the pull request should be changed in any way. This is both to clarify to the author that the pull request is not ready to be merged, but also to update the status of the pull request in the review queue. If you simply want to contribute to the discussion in a pull request you can just leave a regular comment.
 
 ### Review process for @backstage/reviewers
 
