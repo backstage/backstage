@@ -15,51 +15,36 @@
  */
 
 import { forwardRef, Ref } from 'react';
-import { Link as RALink, RouterProvider } from 'react-aria-components';
-import { useNavigate, useHref } from 'react-router-dom';
+import { Link as RALink } from 'react-aria-components';
 import type { ButtonLinkProps } from './types';
 import { useDefinition } from '../../hooks/useDefinition';
 import { ButtonLinkDefinition } from './definition';
-import { isExternalLink } from '../../utils/isExternalLink';
+import { InternalLinkProvider } from '../InternalLinkProvider';
 
 /** @public */
 export const ButtonLink = forwardRef(
   (props: ButtonLinkProps, ref: Ref<HTMLAnchorElement>) => {
-    const navigate = useNavigate();
-
     const { ownProps, restProps, dataAttributes } = useDefinition(
       ButtonLinkDefinition,
       props,
     );
     const { classes, iconStart, iconEnd, children } = ownProps;
 
-    const isExternal = isExternalLink(restProps.href);
-
-    const linkButton = (
-      <RALink
-        className={classes.root}
-        ref={ref}
-        {...dataAttributes}
-        {...restProps}
-      >
-        <span className={classes.content}>
-          {iconStart}
-          {children}
-          {iconEnd}
-        </span>
-      </RALink>
-    );
-
-    // If it's an external link, render RALink without RouterProvider
-    if (isExternal) {
-      return linkButton;
-    }
-
-    // For internal links, use RouterProvider
     return (
-      <RouterProvider navigate={navigate} useHref={useHref}>
-        {linkButton}
-      </RouterProvider>
+      <InternalLinkProvider href={restProps.href}>
+        <RALink
+          className={classes.root}
+          ref={ref}
+          {...dataAttributes}
+          {...restProps}
+        >
+          <span className={classes.content}>
+            {iconStart}
+            {children}
+            {iconEnd}
+          </span>
+        </RALink>
+      </InternalLinkProvider>
     );
   },
 );
