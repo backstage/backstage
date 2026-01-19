@@ -15,7 +15,6 @@
  */
 
 import { ReactNode, useMemo } from 'react';
-import { Entity } from '@backstage/catalog-model';
 import { humanizeEntityRef } from '@backstage/plugin-catalog-react';
 import {
   Table,
@@ -157,7 +156,7 @@ export function ClientSideCatalogTable(props: {
   return (
     <div>
       {title && (
-        <Text as="h5" variant="heading-large" style={{ marginBottom: '8px' }}>
+        <Text as="h5" variant="title-large" style={{ marginBottom: '8px' }}>
           {title}
         </Text>
       )}

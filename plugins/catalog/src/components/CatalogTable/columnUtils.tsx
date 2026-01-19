@@ -84,11 +84,6 @@ export function createActionsColumn(
         if (typeof action === 'function') {
           const actionConfig = action(row);
           const Icon = actionConfig.icon;
-          const handleClick = (e: React.MouseEvent) => {
-            e.stopPropagation();
-            e.preventDefault();
-            actionConfig.onClick?.();
-          };
 
           // Extract cellStyle if it exists (it's a non-standard property)
           const cellStyle = (actionConfig as any).cellStyle as
@@ -98,7 +93,12 @@ export function createActionsColumn(
           return (
             <ButtonIcon
               key={index}
-              onPress={() => actionConfig.onClick?.()}
+              onPress={() => {
+                if (actionConfig.onClick) {
+                  // Material Table actions expect (event, data) but we don't have event here
+                  actionConfig.onClick(null as any, row);
+                }
+              }}
               isDisabled={actionConfig.disabled}
               aria-label={actionConfig.tooltip}
               icon={<Icon />}
