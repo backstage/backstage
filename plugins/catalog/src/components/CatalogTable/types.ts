@@ -16,10 +16,10 @@
 
 import { CompoundEntityRef, Entity } from '@backstage/catalog-model';
 import { EntityListContextProps } from '@backstage/plugin-catalog-react';
-import { TableColumn } from '@backstage/core-components';
+import { ColumnConfig, TableItem } from '@backstage/ui';
 
 /** @public */
-export interface CatalogTableRow {
+export interface CatalogTableRow extends TableItem {
   entity: Entity;
   resolved: {
     // This name is here for backwards compatibility mostly; the presentation of
@@ -41,4 +41,4 @@ export interface CatalogTableRow {
  */
 export type CatalogTableColumnsFunc = (
   entityListContext: EntityListContextProps,
-) => TableColumn<CatalogTableRow>[];
+) => ColumnConfig<CatalogTableRow>[];

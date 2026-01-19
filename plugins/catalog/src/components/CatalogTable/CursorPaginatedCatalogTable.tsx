@@ -14,50 +14,112 @@
  * limitations under the License.
  */
 
-import { Table, TableProps } from '@backstage/core-components';
+import { ReactNode } from 'react';
+import Typography from '@material-ui/core/Typography';
+import IconButton from '@material-ui/core/IconButton';
+
+import { Table, ColumnConfig, Cell } from '@backstage/ui';
 import { CatalogTableRow } from './types';
 import { CatalogTableToolbar } from './CatalogTableToolbar';
 
 type PaginatedCatalogTableProps = {
+  columns: ColumnConfig<CatalogTableRow>[];
+  data: CatalogTableRow[];
   prev?(): void;
   next?(): void;
-} & TableProps<CatalogTableRow>;
+  isLoading?: boolean;
+  title?: string;
+  subtitle?: string;
+  emptyContent?: ReactNode;
+  actions: Array<
+    (row: CatalogTableRow) => {
+      icon: () => React.ReactElement;
+      tooltip: string;
+      disabled?: boolean;
+      onClick?: () => void;
+      cellStyle?: React.CSSProperties;
+    }
+  >;
+};
 
 /**
  * @internal
  */
-
 export function CursorPaginatedCatalogTable(props: PaginatedCatalogTableProps) {
-  const { columns, data, next, prev, options, ...restProps } = props;
+  const {
+    columns,
+    data,
+    next,
+    prev,
+    isLoading,
+    title,
+    subtitle,
+    emptyContent,
+    actions,
+  } = props;
+
+  // Create actions column
+  const actionsColumn: ColumnConfig<CatalogTableRow> = {
+    id: 'actions',
+    label: 'Actions',
+    cell: (row: CatalogTableRow) => (
+      <Cell>
+        <div style={{ display: 'flex', gap: '4px', alignItems: 'center' }}>
+          {actions.map((action, index) => {
+            const actionConfig = action(row);
+            const IconElement = actionConfig.icon();
+
+            return (
+              <IconButton
+                key={index}
+                onClick={(e: React.MouseEvent) => {
+                  e.stopPropagation();
+                  e.preventDefault();
+                  actionConfig.onClick?.();
+                }}
+                disabled={actionConfig.disabled}
+                title={actionConfig.tooltip}
+                size="small"
+                style={actionConfig.cellStyle as React.CSSProperties}
+              >
+                {IconElement}
+              </IconButton>
+            );
+          })}
+        </div>
+      </Cell>
+    ),
+  };
+
+  const allColumns = [...columns, actionsColumn];
 
   return (
-    <Table
-      columns={columns}
-      data={data}
-      options={{
-        ...options,
-        // These settings are configured to force server side pagination
-        pageSizeOptions: [],
-        showFirstLastPageButtons: false,
-        pageSize: Number.MAX_SAFE_INTEGER,
-        emptyRowsWhenPaging: false,
-      }}
-      onPageChange={page => {
-        if (page > 0) {
-          next?.();
-        } else {
-          prev?.();
-        }
-      }}
-      components={{
-        Toolbar: CatalogTableToolbar,
-      }}
-      /* this will enable the prev button accordingly */
-      page={prev ? 1 : 0}
-      /* this will enable the next button accordingly */
-      totalCount={next ? Number.MAX_VALUE : Number.MAX_SAFE_INTEGER}
-      localization={{ pagination: { labelDisplayedRows: '' } }}
-      {...restProps}
-    />
+    <div>
+      <CatalogTableToolbar title={title} />
+      {subtitle && (
+        <Typography
+          color="textSecondary"
+          variant="body1"
+          style={{ marginBottom: '16px', paddingLeft: '20px' }}
+        >
+          {subtitle}
+        </Typography>
+      )}
+      <Table
+        columnConfig={allColumns}
+        data={data}
+        loading={isLoading}
+        emptyState={emptyContent}
+        pagination={{
+          type: 'page',
+          pageSize: data.length,
+          hasNextPage: !!next,
+          hasPreviousPage: !!prev,
+          onNextPage: () => next?.(),
+          onPreviousPage: () => prev?.(),
+          showPageSizeOptions: false,
+        }}
+      />
+    </div>
   );
 }

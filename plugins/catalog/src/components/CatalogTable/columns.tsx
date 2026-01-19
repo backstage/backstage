@@ -13,17 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  humanizeEntityRef,
-  EntityRefLink,
-  EntityRefLinks,
-} from '@backstage/plugin-catalog-react';
+import { EntityRefLink, EntityRefLinks } from '@backstage/plugin-catalog-react';
 import Chip from '@material-ui/core/Chip';
 import { CatalogTableRow } from './types';
-import { OverflowTooltip, TableColumn } from '@backstage/core-components';
+import { ColumnConfig, Cell, CellText } from '@backstage/ui';
 import { Entity } from '@backstage/catalog-model';
-import { JsonArray } from '@backstage/types';
-import { EntityTableColumnTitle } from '@backstage/plugin-catalog-react/alpha';
 
 // The columnFactories symbol is not directly exported, but through the
 // CatalogTable.columns field.
@@ -31,142 +25,102 @@ import { EntityTableColumnTitle } from '@backstage/plugin-catalog-react/alpha';
 export const columnFactories = Object.freeze({
   createNameColumn(options?: {
     defaultKind?: string;
-  }): TableColumn<CatalogTableRow> {
-    function formatContent(entity: Entity): string {
-      return (
-        entity.metadata?.title ||
-        humanizeEntityRef(entity, {
-          defaultKind: options?.defaultKind,
-        })
-      );
-    }
-
+  }): ColumnConfig<CatalogTableRow> {
     return {
-      title: <EntityTableColumnTitle translationKey="name" />,
-      field: 'resolved.entityRef',
-      highlight: true,
-      customSort({ entity: entity1 }, { entity: entity2 }) {
-        // TODO: We could implement this more efficiently by comparing field by field.
-        // This has similar issues as above.
-        return formatContent(entity1).localeCompare(formatContent(entity2));
-      },
-      render: ({ entity }) => (
-        <EntityRefLink
-          entityRef={entity}
-          defaultKind={options?.defaultKind || 'Component'}
-        />
+      id: 'name',
+      label: 'Name',
+      isRowHeader: true,
+      isSortable: true,
+      cell: ({ entity }) => (
+        <Cell>
+          <EntityRefLink
+            entityRef={entity}
+            defaultKind={options?.defaultKind || 'Component'}
+          />
+        </Cell>
       ),
     };
   },
-  createSystemColumn(): TableColumn<CatalogTableRow> {
+  createSystemColumn(): ColumnConfig<CatalogTableRow> {
     return {
-      title: <EntityTableColumnTitle translationKey="system" />,
-      field: 'resolved.partOfSystemRelationTitle',
-      customFilterAndSearch: (query, row) => {
-        if (!row.resolved.partOfSystemRelations) {
-          return false;
-        }
-
-        const systemNames = row.resolved.partOfSystemRelations.map(
-          ref => ref.name,
-        ); // Extract system names from entityRefs
-
-        const searchText = systemNames.join(', ').toLocaleUpperCase('en-US');
-        return searchText.includes(query.toLocaleUpperCase('en-US'));
-      },
-      render: ({ resolved }) => (
-        <EntityRefLinks
-          entityRefs={resolved.partOfSystemRelations}
-          defaultKind="system"
-        />
+      id: 'system',
+      label: 'System',
+      cell: ({ resolved }) => (
+        <Cell>
+          <EntityRefLinks
+            entityRefs={resolved.partOfSystemRelations}
+            defaultKind="system"
+          />
+        </Cell>
       ),
     };
   },
-  createOwnerColumn(): TableColumn<CatalogTableRow> {
+  createOwnerColumn(): ColumnConfig<CatalogTableRow> {
     return {
-      title: <EntityTableColumnTitle translationKey="owner" />,
-      field: 'resolved.ownedByRelationsTitle',
-      render: ({ resolved }) => (
-        <EntityRefLinks
-          entityRefs={resolved.ownedByRelations}
-          defaultKind="group"
-        />
+      id: 'owner',
+      label: 'Owner',
+      cell: ({ resolved }) => (
+        <Cell>
+          <EntityRefLinks
+            entityRefs={resolved.ownedByRelations}
+            defaultKind="group"
+          />
+        </Cell>
       ),
     };
   },
-  createSpecTargetsColumn(): TableColumn<CatalogTableRow> {
+  createSpecTargetsColumn(): ColumnConfig<CatalogTableRow> {
     return {
-      title: <EntityTableColumnTitle translationKey="targets" />,
-      field: 'entity.spec.targets',
-      customFilterAndSearch: (query, row) => {
-        let targets: JsonArray = [];
-        if (
-          row.entity?.spec?.targets &&
-          Array.isArray(row.entity?.spec?.targets)
-        ) {
-          targets = row.entity?.spec?.targets;
-        } else if (row.entity?.spec?.target) {
-          targets = [row.entity?.spec?.target];
-        }
-        return targets
-          .join(', ')
-          .toLocaleUpperCase('en-US')
-          .includes(query.toLocaleUpperCase('en-US'));
+      id: 'targets',
+      label: 'Targets',
+      cell: ({ entity }) => {
+        const targets = entity?.spec?.targets || entity?.spec?.target;
+        if (!targets) return <Cell />;
+        const targetText = Array.isArray(targets)
+          ? targets.join(', ')
+          : String(targets);
+        return <CellText title={targetText} />;
       },
-      render: ({ entity }) => (
-        <>
-          {(entity?.spec?.targets || entity?.spec?.target) && (
-            <OverflowTooltip
-              text={(
-                (entity!.spec!.targets as JsonArray) || [entity.spec.target]
-              ).join(', ')}
-              placement="bottom-start"
-            />
-          )}
-        </>
-      ),
     };
   },
   createSpecTypeColumn(
     options: {
       hidden: boolean;
     } = { hidden: false },
-  ): TableColumn<CatalogTableRow> {
+  ): ColumnConfig<CatalogTableRow> {
     return {
-      title: <EntityTableColumnTitle translationKey="type" />,
-      field: 'entity.spec.type',
-      hidden: options.hidden,
-      width: 'auto',
-    };
-  },
-  createSpecLifecycleColumn(): TableColumn<CatalogTableRow> {
-    return {
-      title: <EntityTableColumnTitle translationKey="lifecycle" />,
-      field: 'entity.spec.lifecycle',
-    };
-  },
-  createMetadataDescriptionColumn(): TableColumn<CatalogTableRow> {
-    return {
-      title: <EntityTableColumnTitle translationKey="description" />,
-      field: 'entity.metadata.description',
-      render: ({ entity }) => (
-        <OverflowTooltip
-          text={entity.metadata.description}
-          placement="bottom-start"
-        />
+      id: 'type',
+      label: 'Type',
+      isHidden: options.hidden,
+      cell: ({ entity }) => (
+        <CellText title={String(entity.spec?.type || '')} />
       ),
-      width: 'auto',
     };
   },
-  createTagsColumn(): TableColumn<CatalogTableRow> {
+  createSpecLifecycleColumn(): ColumnConfig<CatalogTableRow> {
     return {
-      title: <EntityTableColumnTitle translationKey="tags" />,
-      field: 'entity.metadata.tags',
-      cellStyle: {
-        padding: '0px 16px 0px 20px',
-      },
-      render: ({ entity }) => (
-        <>
+      id: 'lifecycle',
+      label: 'Lifecycle',
+      cell: ({ entity }) => (
+        <CellText title={String(entity.spec?.lifecycle || '')} />
+      ),
+    };
+  },
+  createMetadataDescriptionColumn(): ColumnConfig<CatalogTableRow> {
+    return {
+      id: 'description',
+      label: 'Description',
+      cell: ({ entity }) => (
+        <CellText title={entity.metadata.description || ''} />
+      ),
+    };
+  },
+  createTagsColumn(): ColumnConfig<CatalogTableRow> {
+    return {
+      id: 'tags',
+      label: 'Tags',
+      cell: ({ entity }) => (
+        <Cell>
           {entity.metadata.tags &&
             entity.metadata.tags.map(t => (
               <Chip
@@ -174,54 +128,38 @@ export const columnFactories = Object.freeze({
                 label={t}
                 size="small"
                 variant="outlined"
-                style={{ marginBottom: '0px' }}
+                style={{ marginBottom: '0px', marginRight: '4px' }}
               />
             ))}
-        </>
+        </Cell>
       ),
-      width: 'auto',
     };
   },
   createTitleColumn(options?: {
     hidden?: boolean;
-  }): TableColumn<CatalogTableRow> {
+  }): ColumnConfig<CatalogTableRow> {
     return {
-      title: <EntityTableColumnTitle translationKey="title" />,
-      field: 'entity.metadata.title',
-      hidden: options?.hidden,
-      searchable: true,
+      id: 'title',
+      label: 'Title',
+      isHidden: options?.hidden,
+      cell: ({ entity }) => <CellText title={entity.metadata.title || ''} />,
     };
   },
   createLabelColumn(
     key: string,
     options?: { title?: string; defaultValue?: string },
-  ): TableColumn<CatalogTableRow> {
-    function formatContent(keyLabel: string, entity: Entity): string {
-      const labels: Record<string, string> | undefined =
-        entity.metadata?.labels;
-      return (labels && labels[keyLabel]) || '';
-    }
-
+  ): ColumnConfig<CatalogTableRow> {
     return {
-      title: options?.title || (
-        <EntityTableColumnTitle translationKey="label" />
-      ),
-      field: 'entity.metadata.labels',
-      cellStyle: {
-        padding: '0px 16px 0px 20px',
-      },
-      customSort({ entity: entity1 }, { entity: entity2 }) {
-        return formatContent(key, entity1).localeCompare(
-          formatContent(key, entity2),
-        );
-      },
-      render: ({ entity }: { entity: Entity }) => {
+      id: `label-${key}`,
+      label: options?.title || 'Label',
+      isSortable: true,
+      cell: ({ entity }: { entity: Entity }) => {
         const labels: Record<string, string> | undefined =
           entity.metadata?.labels;
         const specifiedLabelValue =
           (labels && labels[key]) || options?.defaultValue;
         return (
-          <>
+          <Cell>
             {specifiedLabelValue && (
               <Chip
                 key={specifiedLabelValue}
@@ -230,17 +168,18 @@ export const columnFactories = Object.freeze({
                 variant="outlined"
               />
             )}
-          </>
+          </Cell>
         );
       },
-      width: 'auto',
     };
   },
-  createNamespaceColumn(): TableColumn<CatalogTableRow> {
+  createNamespaceColumn(): ColumnConfig<CatalogTableRow> {
     return {
-      title: <EntityTableColumnTitle translationKey="namespace" />,
-      field: 'entity.metadata.namespace',
-      width: 'auto',
+      id: 'namespace',
+      label: 'Namespace',
+      cell: ({ entity }) => (
+        <CellText title={entity.metadata.namespace || 'default'} />
+      ),
     };
   },
 });
