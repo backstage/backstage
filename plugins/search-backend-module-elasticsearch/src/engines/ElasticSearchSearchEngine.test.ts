@@ -996,6 +996,84 @@ describe('ElasticSearchSearchEngine', () => {
           }),
       ).not.toThrow();
     });
+
+    it('should accept an authProvider and not require auth config', async () => {
+      const config = new ConfigReader({
+        search: {
+          elasticsearch: {
+            node: 'http://test-node',
+            // No auth config - using authProvider instead
+          },
+        },
+      });
+
+      const authProvider = {
+        getAuthHeaders: jest
+          .fn()
+          .mockResolvedValue({ Authorization: 'Bearer test-token' }),
+      };
+
+      const engine = await ElasticSearchSearchEngine.fromConfig({
+        logger: mockServices.logger.mock(),
+        config,
+        authProvider,
+      });
+
+      expect(engine).toBeDefined();
+    });
+
+    it('should accept an authProvider with opensearch provider', async () => {
+      const config = new ConfigReader({
+        search: {
+          elasticsearch: {
+            provider: 'opensearch',
+            node: 'http://test-node',
+            // No auth config - using authProvider instead
+          },
+        },
+      });
+
+      const authProvider = {
+        getAuthHeaders: jest
+          .fn()
+          .mockResolvedValue({ Authorization: 'Bearer test-token' }),
+      };
+
+      const engine = await ElasticSearchSearchEngine.fromConfig({
+        logger: mockServices.logger.mock(),
+        config,
+        authProvider,
+      });
+
+      expect(engine).toBeDefined();
+    });
+
+    it('should throw error when using authProvider with aws provider', async () => {
+      const config = new ConfigReader({
+        search: {
+          elasticsearch: {
+            provider: 'aws',
+            node: 'http://test-node.us-east-1.es.amazonaws.com',
+          },
+        },
+      });
+
+      const authProvider = {
+        getAuthHeaders: jest
+          .fn()
+          .mockResolvedValue({ Authorization: 'Bearer test-token' }),
+      };
+
+      await expect(
+        ElasticSearchSearchEngine.fromConfig({
+          logger: mockServices.logger.mock(),
+          config,
+          authProvider,
+        }),
+      ).rejects.toThrow(
+        'Custom auth provider is not supported with AWS provider',
+      );
+    });
   });
 });
 
