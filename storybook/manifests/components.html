@@ -509,7 +509,7 @@
 <header>
   <div class="wrap">
     <h1>Components Manifest</h1>
-    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><span class="filter-pill ok" aria-disabled="true">39 components ok</span><a class="filter-pill info" data-k="infos" href="#filter-infos">30/39 infos</a><span class="filter-pill ok" aria-disabled="true">350 stories ok</span></div>
+    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><span class="filter-pill ok" aria-disabled="true">39 components ok</span><a class="filter-pill info" data-k="infos" href="#filter-infos">30/39 infos</a><span class="filter-pill ok" aria-disabled="true">351 stories ok</span></div>
   </div>
 </header>
 <main>
@@ -2410,7 +2410,7 @@ import { RiArrowRightSLine, RiCloudLine } from "@remixicon/react";</code></pre>
       <div class="badges">
         <label for="c-7-backstage-ui-checkbox-props" class="badge ok as-toggle">1 prop type</label>
         <label for="c-7-backstage-ui-checkbox-info" class="badge info as-toggle">1 info</label>
-        <label for="c-7-backstage-ui-checkbox-stories" class="badge ok as-toggle">2 stories</label>
+        <label for="c-7-backstage-ui-checkbox-stories" class="badge ok as-toggle">3 stories</label>
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Checkbox/Checkbox.stories.tsx">backstage-ui-checkbox · ./packages/ui/src/components/Checkbox/Checkbox.stories.tsx</div>
@@ -2471,6 +2471,15 @@ import { RiArrowRightSLine, RiCloudLine } from "@remixicon/react";</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
+                <span class="ex-name">Indeterminate</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Indeterminate = () =&gt; &lt;Checkbox isIndeterminate&gt;Select all&lt;/Checkbox&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
                 <span class="ex-name">AllVariants</span>
                 <span class="badge ok">story ok</span>
               </div>
@@ -2480,9 +2489,13 @@ import { RiArrowRightSLine, RiCloudLine } from "@remixicon/react";</code></pre>
   &lt;Flex direction=&quot;column&quot; gap=&quot;2&quot;&gt;
     &lt;Checkbox&gt;Unchecked&lt;/Checkbox&gt;
     &lt;Checkbox isSelected&gt;Checked&lt;/Checkbox&gt;
+    &lt;Checkbox isIndeterminate&gt;Indeterminate&lt;/Checkbox&gt;
     &lt;Checkbox isDisabled&gt;Disabled&lt;/Checkbox&gt;
     &lt;Checkbox isSelected isDisabled&gt;
       Checked &amp; Disabled
+    &lt;/Checkbox&gt;
+    &lt;Checkbox isIndeterminate isDisabled&gt;
+      Indeterminate &amp; Disabled
     &lt;/Checkbox&gt;
   &lt;/Flex&gt;
 );</code></pre>
