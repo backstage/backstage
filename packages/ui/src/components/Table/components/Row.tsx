@@ -20,14 +20,12 @@ import {
   useTableOptions,
   Cell as ReactAriaCell,
   Collection,
-  RouterProvider,
 } from 'react-aria-components';
 import { Checkbox } from '../../Checkbox';
 import { useStyles } from '../../../hooks/useStyles';
 import { TableDefinition } from '../definition';
-import { useNavigate } from 'react-router-dom';
-import { useHref } from 'react-router-dom';
 import { isExternalLink } from '../../../utils/isExternalLink';
+import { InternalLinkProvider } from '../../InternalLinkProvider';
 import styles from '../Table.module.css';
 import clsx from 'clsx';
 import { Flex } from '../../Flex';
@@ -36,8 +34,7 @@ import { Flex } from '../../Flex';
 export function Row<T extends object>(props: RowProps<T>) {
   const { classNames, cleanedProps } = useStyles(TableDefinition, props);
   const { id, columns, children, href, ...rest } = cleanedProps;
-  const navigate = useNavigate();
-  const isExternal = isExternalLink(href);
+  const hasInternalHref = !!href && !isExternalLink(href);
 
   let { selectionBehavior, selectionMode } = useTableOptions();
 
@@ -62,30 +59,17 @@ export function Row<T extends object>(props: RowProps<T>) {
     </>
   );
 
-  if (!href || isExternal) {
-    return (
-      <ReactAriaRow
-        id={id}
-        href={href}
-        className={clsx(classNames.row, styles[classNames.row])}
-        {...rest}
-      >
-        {content}
-      </ReactAriaRow>
-    );
-  }
-
   return (
-    <RouterProvider navigate={navigate} useHref={useHref}>
+    <InternalLinkProvider href={href}>
       <ReactAriaRow
         id={id}
         href={href}
         className={clsx(classNames.row, styles[classNames.row])}
-        data-react-aria-pressable="true"
+        data-react-aria-pressable={hasInternalHref ? 'true' : undefined}
         {...rest}
       >
         {content}
       </ReactAriaRow>
-    </RouterProvider>
+    </InternalLinkProvider>
   );
 }
