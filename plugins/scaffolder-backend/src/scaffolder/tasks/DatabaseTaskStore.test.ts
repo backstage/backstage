@@ -824,4 +824,146 @@ describe('DatabaseTaskStore', () => {
       expect(recoveredTask?.secrets).toEqual(secrets);
     });
   });
+
+  describe('end-to-end recovery flow', () => {
+    it('should recover a stale task with secrets and step state intact', async () => {
+      const { store } = await createStore();
+      const secrets = { gheAccessToken: 'secret-token' };
+      const { taskId } = await store.createTask({
+        spec: {
+          apiVersion: 'scaffolder.backstage.io/v1beta3',
+          steps: [{ id: 'step1' }, { id: 'step2' }],
+        } as TaskSpec,
+        createdBy: 'me',
+        secrets,
+      });
+
+      // First worker claims and starts processing
+      const firstClaim = await store.claimTask();
+      expect(firstClaim?.secrets).toEqual(secrets);
+
+      // Simulate step 1 completion
+      await store.saveTaskState({
+        taskId,
+        state: {
+          steps: {
+            step1: { status: 'completed', output: { result: 'done' } },
+          },
+        },
+      });
+
+      // Simulate worker crash (heartbeat goes stale)
+      // Recovery runs
+      await store.recoverTasks({ timeout: { milliseconds: 0 } });
+
+      // Verify task is back to open
+      const taskAfterRecovery = await store.getTask(taskId);
+      expect(taskAfterRecovery.status).toBe('open');
+
+      // Second worker claims
+      const secondClaim = await store.claimTask();
+      expect(secondClaim).toBeDefined();
+      expect(secondClaim!.id).toBe(taskId);
+
+      // Secrets should still be available
+      expect(secondClaim!.secrets).toEqual(secrets);
+
+      // Step state should be preserved
+      const state = await store.getTaskState({ taskId });
+      expect(state?.state?.steps?.step1).toEqual({
+        status: 'completed',
+        output: { result: 'done' },
+      });
+    });
+
+    it('should handle multiple recovery cycles', async () => {
+      const { store } = await createStore();
+      const secrets = { token: 'secret' };
+      const { taskId } = await store.createTask({
+        spec: {} as TaskSpec,
+        createdBy: 'me',
+        secrets,
+      });
+
+      // First crash
+      await store.claimTask();
+      await store.recoverTasks({ timeout: { milliseconds: 0 } });
+
+      // Second crash
+      await store.claimTask();
+      await store.recoverTasks({ timeout: { milliseconds: 0 } });
+
+      // Third crash
+      await store.claimTask();
+      await store.recoverTasks({ timeout: { milliseconds: 0 } });
+
+      // Fourth claim should still work
+      const task = await store.claimTask();
+      expect(task).toBeDefined();
+      expect(task!.secrets).toEqual(secrets);
+    });
+
+    it('should accumulate step state across recovery cycles', async () => {
+      const { store } = await createStore();
+      const { taskId } = await store.createTask({
+        spec: {
+          apiVersion: 'scaffolder.backstage.io/v1beta3',
+          steps: [{ id: 'step1' }, { id: 'step2' }, { id: 'step3' }],
+        } as TaskSpec,
+        createdBy: 'me',
+      });
+
+      // First run: complete step1
+      await store.claimTask();
+      await store.saveTaskState({
+        taskId,
+        state: { steps: { step1: { status: 'completed', output: { v: 1 } } } },
+      });
+      await store.recoverTasks({ timeout: { milliseconds: 0 } });
+
+      // Second run: complete step2
+      await store.claimTask();
+      await store.saveTaskState({
+        taskId,
+        state: {
+          steps: {
+            step1: { status: 'completed', output: { v: 1 } },
+            step2: { status: 'completed', output: { v: 2 } },
+          },
+        },
+      });
+      await store.recoverTasks({ timeout: { milliseconds: 0 } });
+
+      // Third run should see both completed steps
+      await store.claimTask();
+      const state = await store.getTaskState({ taskId });
+      expect(state?.state?.steps).toEqual({
+        step1: { status: 'completed', output: { v: 1 } },
+        step2: { status: 'completed', output: { v: 2 } },
+      });
+    });
+
+    it('should clean up secrets only on final completion', async () => {
+      const { store } = await createStore();
+      const secrets = { token: 'secret' };
+      const { taskId } = await store.createTask({
+        spec: {} as TaskSpec,
+        createdBy: 'me',
+        secrets,
+      });
+
+      // Claim and complete successfully
+      await store.claimTask();
+      await store.completeTask({
+        taskId,
+        status: 'completed',
+        eventBody: { message: 'All done' },
+      });
+
+      // Secrets should now be deleted
+      const task = await store.getTask(taskId);
+      expect(task.secrets).toBeUndefined();
+      expect(task.status).toBe('completed');
+    });
+  });
 });
