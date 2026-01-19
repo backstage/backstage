@@ -82,6 +82,7 @@ export default {
         { mountedRoutes: { '/': routeRef } },
       ),
   ],
+  tags: ['!manifest'],
 };
 
 export const Default = () => {

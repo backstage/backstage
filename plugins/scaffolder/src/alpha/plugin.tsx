@@ -35,6 +35,7 @@ import {
   ownedEntityPickerFormField,
   ownerPickerFormField,
   repoBranchPickerFormField,
+  repoOwnerPickerFormField,
   repoUrlPickerFormField,
   scaffolderApi,
   scaffolderNavItem,
@@ -88,5 +89,6 @@ export default createFrontendPlugin({
     myGroupsPickerFormField,
     ownedEntityPickerFormField,
     repoBranchPickerFormField,
+    repoOwnerPickerFormField,
   ],
 });

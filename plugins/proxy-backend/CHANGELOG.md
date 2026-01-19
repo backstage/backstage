@@ -1,5 +1,24 @@
 # @backstage/plugin-proxy-backend
 
+## 0.6.9
+
+### Patch Changes
+
+- de96a60: chore(deps): bump `express` from 4.21.2 to 4.22.0
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.0
+  - @backstage/plugin-proxy-node@0.1.11
+
+## 0.6.9-next.1
+
+### Patch Changes
+
+- de96a60: chore(deps): bump `express` from 4.21.2 to 4.22.0
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.0-next.1
+  - @backstage/types@1.2.2
+  - @backstage/plugin-proxy-node@0.1.11-next.1
+
 ## 0.6.9-next.0
 
 ### Patch Changes

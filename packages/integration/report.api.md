@@ -250,6 +250,8 @@ export type BitbucketCloudIntegrationConfig = {
   username?: string;
   appPassword?: string;
   token?: string;
+  clientId?: string;
+  clientSecret?: string;
   commitSigningKey?: string;
 };
 
@@ -451,11 +453,17 @@ export function getBitbucketCloudFileFetchUrl(
 ): string;
 
 // @public
+export function getBitbucketCloudOAuthToken(
+  clientId: string,
+  clientSecret: string,
+): Promise<string>;
+
+// @public
 export function getBitbucketCloudRequestOptions(
   config: BitbucketCloudIntegrationConfig,
-): {
+): Promise<{
   headers: Record<string, string>;
-};
+}>;
 
 // @public @deprecated
 export function getBitbucketDefaultBranch(
@@ -665,6 +673,7 @@ export type GithubAppConfig = {
   clientId: string;
   clientSecret: string;
   allowedInstallationOwners?: string[];
+  publicAccess?: boolean;
 };
 
 // @public
@@ -773,7 +782,29 @@ export type GitLabIntegrationConfig = {
 };
 
 // @public
+export class GoogleGcsIntegration implements ScmIntegration {
+  constructor(integrationConfig: GoogleGcsIntegrationConfig);
+  // (undocumented)
+  get config(): GoogleGcsIntegrationConfig;
+  // (undocumented)
+  static factory: ScmIntegrationsFactory<GoogleGcsIntegration>;
+  // (undocumented)
+  resolveEditUrl(url: string): string;
+  // (undocumented)
+  resolveUrl(options: {
+    url: string;
+    base: string;
+    lineNumber?: number | undefined;
+  }): string;
+  // (undocumented)
+  get title(): string;
+  // (undocumented)
+  get type(): string;
+}
+
+// @public
 export type GoogleGcsIntegrationConfig = {
+  host: string;
   clientEmail?: string;
   privateKey?: string;
 };
@@ -830,6 +861,8 @@ export interface IntegrationsByType {
   github: ScmIntegrationsGroup<GithubIntegration>;
   // (undocumented)
   gitlab: ScmIntegrationsGroup<GitLabIntegration>;
+  // (undocumented)
+  googleGcs: ScmIntegrationsGroup<GoogleGcsIntegration>;
   // (undocumented)
   harness: ScmIntegrationsGroup<HarnessIntegration>;
 }
@@ -1100,6 +1133,8 @@ export class ScmIntegrations implements ScmIntegrationRegistry {
   get github(): ScmIntegrationsGroup<GithubIntegration>;
   // (undocumented)
   get gitlab(): ScmIntegrationsGroup<GitLabIntegration>;
+  // (undocumented)
+  get googleGcs(): ScmIntegrationsGroup<GoogleGcsIntegration>;
   // (undocumented)
   get harness(): ScmIntegrationsGroup<HarnessIntegration>;
   // (undocumented)

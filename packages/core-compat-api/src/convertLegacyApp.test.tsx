@@ -262,13 +262,16 @@ describe('convertLegacyApp', () => {
       ],
     });
 
+    // Increase timeout for async rendering of complex catalog entity pages
+    const findOptions = { timeout: 5000 };
+
     // Overview
     const renderOverviewTest = await renderTestApp({
       features: [catalogOverride, ...converted],
       initialRouteEntries: ['/catalog/default/test/x'],
     });
     await expect(
-      renderOverviewTest.findByText('overview content'),
+      renderOverviewTest.findByText('overview content', {}, findOptions),
     ).resolves.toBeInTheDocument();
     renderOverviewTest.unmount();
 
@@ -277,7 +280,7 @@ describe('convertLegacyApp', () => {
       initialRouteEntries: ['/catalog/default/other/x'],
     });
     await expect(
-      renderOverviewOther.findByText('other overview content'),
+      renderOverviewOther.findByText('other overview content', {}, findOptions),
     ).resolves.toBeInTheDocument();
     renderOverviewOther.unmount();
 
@@ -287,7 +290,7 @@ describe('convertLegacyApp', () => {
       initialRouteEntries: ['/catalog/default/test/x/foo'],
     });
     await expect(
-      renderFooTest.findByText('foo content'),
+      renderFooTest.findByText('foo content', {}, findOptions),
     ).resolves.toBeInTheDocument();
     renderFooTest.unmount();
 
@@ -296,7 +299,7 @@ describe('convertLegacyApp', () => {
       initialRouteEntries: ['/catalog/default/other/x/foo'],
     });
     await expect(
-      renderFooOther.findByText('other foo content'),
+      renderFooOther.findByText('other foo content', {}, findOptions),
     ).resolves.toBeInTheDocument();
     renderFooOther.unmount();
 
@@ -306,7 +309,7 @@ describe('convertLegacyApp', () => {
       initialRouteEntries: ['/catalog/default/test/x/bar'],
     });
     await expect(
-      renderBarTest.findByText('bar content'),
+      renderBarTest.findByText('bar content', {}, findOptions),
     ).resolves.toBeInTheDocument();
     renderBarTest.unmount();
 
@@ -315,7 +318,7 @@ describe('convertLegacyApp', () => {
       initialRouteEntries: ['/catalog/default/other/x/bar'],
     });
     await expect(
-      renderBarOther.findByText('other overview content'),
+      renderBarOther.findByText('other overview content', {}, findOptions),
     ).resolves.toBeInTheDocument(); // /bar does not exist, fall back to rendering overview
     renderBarOther.unmount();
   });

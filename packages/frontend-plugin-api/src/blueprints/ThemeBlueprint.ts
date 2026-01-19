@@ -25,6 +25,7 @@ const themeDataRef = createExtensionDataRef<AppTheme>().with({
  * Creates an extension that adds/replaces an app theme.
  *
  * @public
+ * @deprecated Use {@link @backstage/plugin-app-react#ThemeBlueprint} instead.
  */
 export const ThemeBlueprint = createExtensionBlueprint({
   kind: 'theme',

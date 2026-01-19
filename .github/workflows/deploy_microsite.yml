@@ -28,7 +28,7 @@ jobs:
           egress-policy: audit
 
       - name: find latest release
-        uses: actions/github-script@f28e40c7f34bde8b3046d885e986cb6290c5673b # v7
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
         id: find-release
         with:
           script: |
@@ -54,20 +54,20 @@ jobs:
           result-encoding: string
 
       - name: checkout latest release
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
         with:
           ref: refs/tags/${{ steps.find-release.outputs.result }}
 
-      - name: Use Node.js 20.x
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+      - name: Use Node.js 22.x
+        uses: actions/setup-node@395ad3262231945c25e8478fd5baf05154b1d79f # v6.1.0
         with:
-          node-version: 20.x
+          node-version: 22.x
           registry-url: https://registry.npmjs.org/ # Needed for auth
 
       - name: yarn install
         uses: backstage/actions/yarn-install@b3c1841fd69e1658ac631afafd0fb140a2309024 # v0.6.17
         with:
-          cache-prefix: ${{ runner.os }}-v20.x
+          cache-prefix: ${{ runner.os }}-v22.x
 
       - name: build API reference
         run: yarn build:api-docs
@@ -140,18 +140,18 @@ jobs:
           egress-policy: audit
 
       - name: checkout master
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
 
-      - name: Use Node.js 20.x
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+      - name: Use Node.js 22.x
+        uses: actions/setup-node@395ad3262231945c25e8478fd5baf05154b1d79f # v6.1.0
         with:
-          node-version: 20.x
+          node-version: 22.x
           registry-url: https://registry.npmjs.org/ # Needed for auth
 
       - name: yarn install
         uses: backstage/actions/yarn-install@b3c1841fd69e1658ac631afafd0fb140a2309024 # v0.6.17
         with:
-          cache-prefix: ${{ runner.os }}-v20.x
+          cache-prefix: ${{ runner.os }}-v22.x
 
       - name: build API reference
         run: yarn build:api-docs
@@ -244,15 +244,15 @@ jobs:
         with:
           egress-policy: audit
 
-      - name: Use Node.js 20.x
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+      - name: Use Node.js 22.x
+        uses: actions/setup-node@395ad3262231945c25e8478fd5baf05154b1d79f # v6.1.0
         with:
-          node-version: 20.x
+          node-version: 22.x
           registry-url: https://registry.npmjs.org/ # Needed for auth
 
       # Stable docs
       - name: checkout latest release
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
         with:
           ref: refs/tags/${{ needs.stable.outputs.release }}
 
@@ -286,7 +286,7 @@ jobs:
 
       # Next docs
       - name: checkout master
-        uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
         with:
           clean: false
 
@@ -329,7 +329,7 @@ jobs:
         run: ls microsite/build && ls microsite/build/storybook && ls microsite/build/api/stable && ls microsite/build/api/next
 
       - name: Deploy both microsite and storybook to gh-pages
-        uses: JamesIves/github-pages-deploy-action@4a3abc783e1a24aeb44c16e869ad83caf6b4cc23 # v4.7.4
+        uses: JamesIves/github-pages-deploy-action@9d877eea73427180ae43cf98e8914934fe157a1a # v4.7.6
         with:
           branch: gh-pages
           folder: microsite/build

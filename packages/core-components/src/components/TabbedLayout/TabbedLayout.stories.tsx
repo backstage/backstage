@@ -20,6 +20,7 @@ import { TabbedLayout } from './TabbedLayout';
 export default {
   title: 'Navigation/TabbedLayout',
   component: TabbedLayout,
+  tags: ['!manifest'],
 };
 
 const Wrapper = ({ children }: PropsWithChildren<{}>) => (

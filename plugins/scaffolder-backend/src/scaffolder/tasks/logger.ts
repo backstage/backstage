@@ -84,9 +84,10 @@ export class BackstageLoggerTransport extends Transport {
         break;
       default:
         this.backstageLogger.info(String(message));
+        break;
     }
 
-    this.taskContext.emitLog(message, { stepId: this.stepId });
+    this.taskContext.emitLog(String(message), { stepId: this.stepId });
     callback();
   }
 }
@@ -131,7 +132,9 @@ export class WinstonLogger implements RootLoggerService {
           return obj;
         }
 
-        obj[MESSAGE] = obj[MESSAGE]?.replace?.(redactionPattern, '***');
+        if (typeof obj[MESSAGE] === 'string') {
+          obj[MESSAGE] = obj[MESSAGE].replace(redactionPattern, '***');
+        }
 
         return obj;
       })(),
@@ -189,10 +192,13 @@ export class WinstonLogger implements RootLoggerService {
         const level = info[LEVEL];
         const fields = info[SPLAT];
         const prefix = plugin || service;
-        const timestampColor = colorizer.colorize('timestamp', timestamp);
-        const prefixColor = colorizer.colorize('prefix', prefix);
+        const timestampColor = colorizer.colorize(
+          'timestamp',
+          String(timestamp),
+        );
+        const prefixColor = colorizer.colorize('prefix', String(prefix));
 
-        const extraFields = Object.entries(fields)
+        const extraFields = Object.entries(fields as any)
           .map(
             ([key, value]) =>
               `${colorizer.colorize('field', `${key}`)}=${value}`,

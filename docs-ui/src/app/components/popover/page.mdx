@@ -1,0 +1,39 @@
+import { PropsTable } from '@/components/PropsTable';
+import { Snippet } from '@/components/Snippet';
+import { CodeBlock } from '@/components/CodeBlock';
+import { dialogTriggerPropDefs, popoverPropDefs } from './props-definition';
+import { popoverUsageSnippet, defaultSnippet } from './snippets';
+import { Default } from './components';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { PopoverDefinition } from '../../../utils/definitions';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+
+<PageTitle
+  title="Popover"
+  description="A popover displays floating content anchored to a trigger element with automatic positioning and collision detection."
+/>
+
+<Snippet align="center" py={4} preview={<Default />} code={defaultSnippet} />
+
+## Usage
+
+<CodeBlock code={popoverUsageSnippet} />
+
+## API reference
+
+### DialogTrigger
+
+The trigger component that wraps both the trigger button and the popover content.
+
+<PropsTable data={dialogTriggerPropDefs} />
+
+### Popover
+
+The main popover component that displays floating content with automatic positioning.
+
+<PropsTable data={popoverPropDefs} />
+
+<Theming definition={PopoverDefinition} />
+
+<ChangelogComponent component="popover" />

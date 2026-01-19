@@ -6,7 +6,7 @@
 import { AnyRouteRefParams as AnyRouteRefParams_2 } from '@backstage/frontend-plugin-api';
 import { ApiRef as ApiRef_2 } from '@backstage/frontend-plugin-api';
 import { ComponentType } from 'react';
-import { Config } from '@backstage/config';
+import type { Config } from '@backstage/config';
 import { ConfigurableExtensionDataRef as ConfigurableExtensionDataRef_2 } from '@backstage/frontend-plugin-api';
 import { Expand } from '@backstage/types';
 import { ExpandRecursive } from '@backstage/types';
@@ -23,7 +23,7 @@ import { PropsWithChildren } from 'react';
 import { ReactNode } from 'react';
 import { RouteRef as RouteRef_2 } from '@backstage/frontend-plugin-api';
 import { SwappableComponentRef as SwappableComponentRef_2 } from '@backstage/frontend-plugin-api';
-import { z } from 'zod';
+import type { z } from 'zod';
 
 // @public
 export type AlertApi = {
@@ -1006,10 +1006,10 @@ export interface ExtensionBlueprint<
     },
     UFactoryOutput extends ExtensionDataValue<any, any>,
     UNewOutput extends ExtensionDataRef,
+    UParentInputs extends ExtensionDataRef,
     TExtraInputs extends {
       [inputName in string]: ExtensionInput;
-    },
-    UParentInputs extends ExtensionDataRef,
+    } = {},
   >(args: {
     name?: TName;
     attachTo?: ExtensionDefinitionAttachTo<UParentInputs> &
@@ -1063,26 +1063,30 @@ export interface ExtensionBlueprint<
         UFactoryOutput
       >;
   }): OverridableExtensionDefinition<{
-    config: (string extends keyof TExtensionConfigSchema
-      ? {}
-      : {
-          [key in keyof TExtensionConfigSchema]: z.infer<
-            ReturnType<TExtensionConfigSchema[key]>
-          >;
-        }) &
-      T['config'];
-    configInput: (string extends keyof TExtensionConfigSchema
-      ? {}
-      : z.input<
-          z.ZodObject<{
-            [key in keyof TExtensionConfigSchema]: ReturnType<
-              TExtensionConfigSchema[key]
+    config: Expand<
+      (string extends keyof TExtensionConfigSchema
+        ? {}
+        : {
+            [key in keyof TExtensionConfigSchema]: z.infer<
+              ReturnType<TExtensionConfigSchema[key]>
             >;
-          }>
-        >) &
-      T['configInput'];
+          }) &
+        T['config']
+    >;
+    configInput: Expand<
+      (string extends keyof TExtensionConfigSchema
+        ? {}
+        : z.input<
+            z.ZodObject<{
+              [key in keyof TExtensionConfigSchema]: ReturnType<
+                TExtensionConfigSchema[key]
+              >;
+            }>
+          >) &
+        T['configInput']
+    >;
     output: ExtensionDataRef extends UNewOutput ? T['output'] : UNewOutput;
-    inputs: T['inputs'] & TExtraInputs;
+    inputs: Expand<T['inputs'] & TExtraInputs>;
     kind: T['kind'];
     name: string | undefined extends TName ? undefined : TName;
     params: T['params'];
@@ -1141,6 +1145,8 @@ export namespace ExtensionBoundary {
 export interface ExtensionBoundaryProps {
   // (undocumented)
   children: ReactNode;
+  // (undocumented)
+  errorPresentation?: 'error-api' | 'error-display';
   // (undocumented)
   node: AppNode;
 }
@@ -1451,7 +1457,7 @@ export const googleAuthApiRef: ApiRef<
     SessionApi
 >;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const IconBundleBlueprint: ExtensionBlueprint_2<{
   kind: 'icon-bundle';
   params: {
@@ -1516,7 +1522,7 @@ export const microsoftAuthApiRef: ApiRef<
     SessionApi
 >;
 
-// @public
+// @public @deprecated
 export const NavContentBlueprint: ExtensionBlueprint_2<{
   kind: 'nav-content';
   params: {
@@ -1917,7 +1923,7 @@ export type RouteFunc<TParams extends AnyRouteRefParams> = (
     : readonly [params: TParams]
 ) => string;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const RouterBlueprint: ExtensionBlueprint_2<{
   kind: 'app-router-component';
   params: {
@@ -1992,7 +1998,7 @@ export namespace SessionState {
   export type SignedOut = typeof SessionState.SignedOut;
 }
 
-// @public
+// @public @deprecated
 export const SignInPageBlueprint: ExtensionBlueprint_2<{
   kind: 'sign-in-page';
   params: {
@@ -2060,7 +2066,7 @@ export interface SubRouteRef<
   readonly T: TParams;
 }
 
-// @public
+// @public @deprecated
 export const SwappableComponentBlueprint: ExtensionBlueprint_2<{
   kind: 'component';
   params: <Ref extends SwappableComponentRef<any>>(params: {
@@ -2144,7 +2150,7 @@ export interface SwappableComponentsApi {
 // @public
 export const swappableComponentsApiRef: ApiRef_2<SwappableComponentsApi>;
 
-// @public
+// @public @deprecated
 export const ThemeBlueprint: ExtensionBlueprint_2<{
   kind: 'theme';
   params: {
@@ -2180,7 +2186,7 @@ export type TranslationApi = {
 // @public (undocumented)
 export const translationApiRef: ApiRef<TranslationApi>;
 
-// @public
+// @public @deprecated
 export const TranslationBlueprint: ExtensionBlueprint_2<{
   kind: 'translation';
   params: {

@@ -68,7 +68,7 @@ describe('<Table />', () => {
           <Table data={minProps.data} columns={columns} />,
         );
         expect(rendered.getByText('second value, first row')).toHaveStyle({
-          color: 'blue',
+          color: 'rgb(0, 0, 255)', // blue
         });
       });
 
@@ -85,7 +85,7 @@ describe('<Table />', () => {
           <Table data={minProps.data} columns={columns} />,
         );
         expect(rendered.getByText('second value, first row')).toHaveStyle({
-          color: 'blue',
+          color: 'rgb(0, 0, 255)', // blue
           'font-weight': 700,
         });
       });
@@ -115,10 +115,10 @@ describe('<Table />', () => {
           <Table data={minProps.data} columns={columns} />,
         );
         expect(rendered.getByText('second value, first row')).toHaveStyle({
-          color: 'green',
+          color: 'rgb(0, 128, 0)', // green
         });
         expect(rendered.getByText('second value, second row')).toHaveStyle({
-          color: 'red',
+          color: 'rgb(255, 0, 0)', // red
         });
       });
 
@@ -135,11 +135,11 @@ describe('<Table />', () => {
           <Table data={minProps.data} columns={columns} />,
         );
         expect(rendered.getByText('second value, first row')).toHaveStyle({
-          color: 'green',
+          color: 'rgb(0, 128, 0)', // green
           'font-weight': 700,
         });
         expect(rendered.getByText('second value, second row')).toHaveStyle({
-          color: 'red',
+          color: 'rgb(255, 0, 0)', // red
           'font-weight': 700,
         });
       });
@@ -165,11 +165,11 @@ describe('<Table />', () => {
 
         expect(rendered.getByText(column1.title).closest('th')).not.toHaveStyle(
           {
-            backgroundColor: 'pink',
+            backgroundColor: 'rgb(255, 192, 203)', // pink
           },
         );
         expect(rendered.getByText(column2.title).closest('th')).toHaveStyle({
-          backgroundColor: 'pink',
+          backgroundColor: 'rgb(255, 192, 203)', // pink
         });
       });
 

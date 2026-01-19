@@ -67,12 +67,10 @@ const _default: OverridableFrontendPlugin<
     'page:search': OverridableExtensionDefinition<{
       config: {
         noTrack: boolean;
-      } & {
         path: string | undefined;
       };
       configInput: {
         noTrack?: boolean | undefined;
-      } & {
         path?: string | undefined;
       };
       output:
@@ -187,12 +185,10 @@ export const searchNavItem: OverridableExtensionDefinition<{
 export const searchPage: OverridableExtensionDefinition<{
   config: {
     noTrack: boolean;
-  } & {
     path: string | undefined;
   };
   configInput: {
     noTrack?: boolean | undefined;
-  } & {
     path?: string | undefined;
   };
   output:
@@ -268,8 +264,8 @@ export const searchTranslationRef: TranslationRef<
     readonly 'searchType.tabs.allTitle': 'All';
     readonly 'searchType.allResults': 'All Results';
     readonly 'searchType.accordion.collapse': 'Collapse';
-    readonly 'searchType.accordion.allTitle': 'All';
     readonly 'searchType.accordion.numberOfResults': '{{number}} results';
+    readonly 'searchType.accordion.allTitle': 'All';
     readonly 'sidebarSearchModal.title': 'Search';
   }
 >;
