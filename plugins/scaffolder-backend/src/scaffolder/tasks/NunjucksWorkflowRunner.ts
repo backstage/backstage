@@ -15,6 +15,7 @@
  */
 
 import { InputError, NotAllowedError, stringifyError } from '@backstage/errors';
+import safeStringify from 'safe-stable-stringify';
 import { ScmIntegrations } from '@backstage/integration';
 import {
   TaskRecovery,
@@ -446,9 +447,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
           secrets: task.secrets ?? {},
           logger: taskLogger,
           workspacePath,
-          async checkpoint<T extends JsonValue | void>(
-            opts: CheckpointContext<T>,
-          ) {
+          async checkpoint<T>(opts: CheckpointContext<T>) {
             const { key: checkpointKey, fn } = opts;
             const key = `v1.task.checkpoint.${step.id}.${checkpointKey}`;
 
@@ -468,10 +467,14 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
               const value = prevValue ? prevValue : await fn();
 
               if (!prevValue) {
+                // Safely serialize the value, handling circular refs, functions, etc.
+                const serializedValue = JSON.parse(
+                  safeStringify(value) ?? '{}',
+                );
                 task.updateCheckpoint?.({
                   key,
                   status: 'success',
-                  value: value ?? {},
+                  value: serializedValue,
                 });
               }
               return value;
