@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import { TableColumn, TableProps } from '@backstage/core-components';
 import { configApiRef, storageApiRef } from '@backstage/core-plugin-api';
 import {
   CatalogTableRow,
   DefaultStarredEntitiesApi,
 } from '@backstage/plugin-catalog';
+import type { ColumnConfig } from '@backstage/ui';
 import {
   catalogApiRef,
   entityRouteRef,
@@ -137,16 +137,18 @@ describe('DefaultApiExplorerPage', () => {
   });
 
   it('should render the custom column passed as prop', async () => {
-    const columns: TableColumn<CatalogTableRow>[] = [
-      { title: 'Foo', field: 'entity.foo' },
-      { title: 'Bar', field: 'entity.bar' },
-      { title: 'Baz', field: 'entity.spec.lifecycle' },
+    const columns: ColumnConfig<CatalogTableRow>[] = [
+      { id: 'foo', label: 'Foo', cell: () => 'foo' },
+      { id: 'bar', label: 'Bar', cell: () => 'bar' },
+      {
+        id: 'lifecycle',
+        label: 'Baz',
+        cell: row => String(row.entity.spec?.lifecycle || ''),
+      },
     ];
     await renderWrapped(<DefaultApiExplorerPage columns={columns} />);
 
-    const columnHeader = screen
-      .getAllByRole('button')
-      .filter(c => c.tagName === 'SPAN');
+    const columnHeader = screen.getAllByRole('columnheader');
     const columnHeaderLabels = columnHeader.map(c => c.textContent);
 
     await waitFor(() =>
@@ -168,27 +170,27 @@ describe('DefaultApiExplorerPage', () => {
   });
 
   it('should render the custom actions of an item passed as prop', async () => {
-    const actions: TableProps<CatalogTableRow>['actions'] = [
-      {
+    const actions = [
+      () => ({
         icon: () => <DashboardIcon fontSize="small" />,
         tooltip: 'Foo Action',
         disabled: false,
         onClick: jest.fn(),
-      },
-      {
+      }),
+      () => ({
         icon: () => <DashboardIcon fontSize="small" />,
         tooltip: 'Bar Action',
         disabled: true,
         onClick: jest.fn(),
-      },
+      }),
     ];
 
     await renderWrapped(<DefaultApiExplorerPage actions={actions} />);
     await waitFor(() => {
       expect(screen.getByText(/All apis \(1\)/)).toBeInTheDocument();
     });
-    expect(screen.getByTitle(/Foo Action/)).toBeInTheDocument();
-    expect(screen.getByTitle(/Bar Action/)).toBeInTheDocument();
-    expect(screen.getByTitle(/Bar Action/).firstChild).toBeDisabled();
+    expect(screen.getByLabelText(/Foo Action/)).toBeInTheDocument();
+    expect(screen.getByLabelText(/Bar Action/)).toBeInTheDocument();
+    expect(screen.getByLabelText(/Bar Action/)).toBeDisabled();
   });
 });

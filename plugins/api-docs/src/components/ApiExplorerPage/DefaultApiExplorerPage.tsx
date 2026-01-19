@@ -20,11 +20,14 @@ import {
   CreateButton,
   PageWithHeader,
   SupportButton,
-  TableColumn,
-  TableProps,
 } from '@backstage/core-components';
 import { configApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
-import { CatalogTable, CatalogTableRow } from '@backstage/plugin-catalog';
+import {
+  CatalogTable,
+  CatalogTableRow,
+  CatalogTableProps,
+} from '@backstage/plugin-catalog';
+import type { ColumnConfig } from '@backstage/ui';
 import {
   EntityKindPicker,
   EntityLifecyclePicker,
@@ -44,7 +47,7 @@ import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common/
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { apiDocsTranslationRef } from '../../translation';
 
-const defaultColumns: TableColumn<CatalogTableRow>[] = [
+const defaultColumns: ColumnConfig<CatalogTableRow>[] = [
   CatalogTable.columns.createTitleColumn({ hidden: true }),
   CatalogTable.columns.createNameColumn({ defaultKind: 'API' }),
   CatalogTable.columns.createSystemColumn(),
@@ -61,8 +64,8 @@ const defaultColumns: TableColumn<CatalogTableRow>[] = [
  */
 export type DefaultApiExplorerPageProps = {
   initiallySelectedFilter?: UserListFilterKind;
-  columns?: TableColumn<CatalogTableRow>[];
-  actions?: TableProps<CatalogTableRow>['actions'];
+  columns?: ColumnConfig<CatalogTableRow>[];
+  actions?: CatalogTableProps['actions'];
   ownerPickerMode?: EntityOwnerPickerProps['mode'];
   pagination?: EntityListPagination;
 };

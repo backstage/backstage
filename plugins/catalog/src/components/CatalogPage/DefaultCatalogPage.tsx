@@ -20,8 +20,6 @@ import {
   CreateButton,
   PageWithHeader,
   SupportButton,
-  TableColumn,
-  TableProps,
 } from '@backstage/core-components';
 import { configApiRef, useApi, useRouteRef } from '@backstage/core-plugin-api';
 import {
@@ -34,12 +32,17 @@ import {
 } from '@backstage/plugin-catalog-react';
 import { ReactNode } from 'react';
 import { createComponentRouteRef } from '../../routes';
-import { CatalogTable, CatalogTableRow } from '../CatalogTable';
+import {
+  CatalogTable,
+  CatalogTableRow,
+  CatalogTableProps,
+} from '../CatalogTable';
 import { catalogTranslationRef } from '../../alpha/translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { CatalogTableColumnsFunc } from '../CatalogTable/types';
 import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common/alpha';
 import { usePermission } from '@backstage/plugin-permission-react';
+import type { ColumnConfig } from '@backstage/ui';
 
 /** @internal */
 export type BaseCatalogPageProps = {
@@ -89,10 +92,10 @@ export function BaseCatalogPage(props: BaseCatalogPageProps) {
  */
 export interface DefaultCatalogPageProps {
   initiallySelectedFilter?: UserListFilterKind;
-  columns?: TableColumn<CatalogTableRow>[] | CatalogTableColumnsFunc;
-  actions?: TableProps<CatalogTableRow>['actions'];
+  columns?: ColumnConfig<CatalogTableRow>[] | CatalogTableColumnsFunc;
+  actions?: CatalogTableProps['actions'];
   initialKind?: string;
-  tableOptions?: TableProps<CatalogTableRow>['options'];
+  tableOptions?: CatalogTableProps['tableOptions'];
   emptyContent?: ReactNode;
   ownerPickerMode?: EntityOwnerPickerProps['mode'];
   filters?: ReactNode;
