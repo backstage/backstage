@@ -18,7 +18,7 @@ import MaterialButton, {
   ButtonProps as MaterialButtonProps,
 } from '@material-ui/core/Button';
 import { forwardRef } from 'react';
-import { Link, LinkProps } from '../Link';
+import { UnstyledLink, LinkProps } from '../Link/Link';
 
 /**
  * Properties for {@link LinkButton}
@@ -35,7 +35,7 @@ export type LinkButtonProps = MaterialButtonProps &
  * This wrapper is here to reset the color of the Link and make typescript happy.
  */
 const LinkWrapper = forwardRef<any, LinkProps>((props, ref) => (
-  <Link ref={ref} {...props} color="initial" />
+  <UnstyledLink ref={ref} {...props} color="initial" />
 ));
 
 /**

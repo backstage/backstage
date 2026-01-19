@@ -38,4 +38,12 @@ describe('<LinkButton />', () => {
     });
     expect(screen.getByText(testString)).toBeInTheDocument();
   });
+
+  it('should not have MuiLink class names', async () => {
+    await renderInTestApp(<LinkButton to="/test">Navigate!</LinkButton>);
+
+    const button = await screen.findByRole('button', { name: 'Navigate!' });
+    expect(button).toHaveClass(/MuiButton/);
+    expect(button).not.toHaveClass(/MuiLink/);
+  });
 });
