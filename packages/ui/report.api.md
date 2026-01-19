@@ -460,6 +460,7 @@ export const CheckboxDefinition: {
   };
   readonly dataAttributes: {
     readonly selected: readonly [true, false];
+    readonly indeterminate: readonly [true, false];
   };
 };
 
