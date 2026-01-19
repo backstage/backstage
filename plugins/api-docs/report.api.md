@@ -6,7 +6,9 @@
 import { ApiEntity } from '@backstage/catalog-model';
 import { ApiRef } from '@backstage/frontend-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
+import { CatalogTableProps } from '@backstage/plugin-catalog';
 import { CatalogTableRow } from '@backstage/plugin-catalog';
+import type { ColumnConfig } from '@backstage/ui';
 import { ComponentEntity } from '@backstage/catalog-model';
 import { EntityListPagination } from '@backstage/plugin-catalog-react';
 import { EntityOwnerPickerProps } from '@backstage/plugin-catalog-react';
@@ -17,7 +19,6 @@ import { ReactElement } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { TableColumn } from '@backstage/core-components';
 import { TableOptions } from '@backstage/core-components';
-import { TableProps } from '@backstage/core-components';
 import { UserListFilterKind } from '@backstage/plugin-catalog-react';
 
 // @public (undocumented)
@@ -115,8 +116,8 @@ export const DefaultApiExplorerPage: (
 // @public
 export type DefaultApiExplorerPageProps = {
   initiallySelectedFilter?: UserListFilterKind;
-  columns?: TableColumn<CatalogTableRow>[];
-  actions?: TableProps<CatalogTableRow>['actions'];
+  columns?: ColumnConfig<CatalogTableRow>[];
+  actions?: CatalogTableProps['actions'];
   ownerPickerMode?: EntityOwnerPickerProps['mode'];
   pagination?: EntityListPagination;
 };
