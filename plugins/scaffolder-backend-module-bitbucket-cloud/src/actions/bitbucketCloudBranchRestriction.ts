@@ -37,6 +37,8 @@ const createBitbucketCloudBranchRestriction = async (opts: {
     token?: string;
     username?: string;
     appPassword?: string;
+    clientId?: string;
+    clientSecret?: string;
   };
 }) => {
   const {
@@ -52,7 +54,7 @@ const createBitbucketCloudBranchRestriction = async (opts: {
     authorization,
   } = opts;
 
-  const bitbucket = getBitbucketClient(authorization);
+  const bitbucket = await getBitbucketClient(authorization);
   return await bitbucket.branchrestrictions.create({
     _body: {
       groups: groups,

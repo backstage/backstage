@@ -1,6 +1,6 @@
 {
   "name": "example-app-next",
-  "version": "0.0.30-next.2",
+  "version": "0.0.31-next.3",
   "backstage": {
     "role": "frontend"
   },
@@ -97,7 +97,7 @@
     "@types/react": "*",
     "@types/react-dom": "*",
     "@types/zen-observable": "^0.8.0",
-    "cross-env": "^7.0.0"
+    "cross-env": "^10.0.0"
   },
   "bundled": true
 }

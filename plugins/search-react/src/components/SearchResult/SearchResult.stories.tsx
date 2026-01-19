@@ -80,6 +80,7 @@ export default {
         </TestApiProvider>,
       ),
   ],
+  tags: ['!manifest'],
 };
 
 const CustomResultListItem = (props: { result: SearchDocument }) => {

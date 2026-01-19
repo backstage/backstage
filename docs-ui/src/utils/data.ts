@@ -77,6 +77,11 @@ export const components: Page[] = [
     slug: 'password-field',
   },
   {
+    title: 'Popover',
+    slug: 'popover',
+    status: 'new',
+  },
+  {
     title: 'RadioGroup',
     slug: 'radio-group',
   },
@@ -115,6 +120,14 @@ export const components: Page[] = [
   {
     title: 'TextField',
     slug: 'text-field',
+  },
+  {
+    title: 'ToggleButton',
+    slug: 'toggle-button',
+  },
+  {
+    title: 'ToggleButtonGroup',
+    slug: 'toggle-button-group',
   },
   {
     title: 'Tooltip',

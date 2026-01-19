@@ -15,15 +15,26 @@
  */
 
 /** @public */
-export interface TablePaginationProps
-  extends React.HTMLAttributes<HTMLDivElement> {
+export interface PageSizeOption {
+  label: string;
+  value: number;
+}
+
+/** @public */
+export interface TablePaginationProps {
+  pageSize: number;
+  pageSizeOptions?: number[] | PageSizeOption[];
   offset?: number;
-  pageSize?: number;
-  setPageSize?: (pageSize: number) => void;
-  setOffset?: (offset: number) => void;
-  rowCount?: number;
-  onNextPage?: () => void;
-  onPreviousPage?: () => void;
-  onPageSizeChange?: (pageSize: number) => void;
+  totalCount?: number;
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
+  onNextPage: () => void;
+  onPreviousPage: () => void;
+  onPageSizeChange?: (size: number) => void;
   showPageSizeOptions?: boolean;
+  getLabel?: (params: {
+    pageSize: number;
+    offset?: number;
+    totalCount?: number;
+  }) => string;
 }

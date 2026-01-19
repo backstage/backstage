@@ -7,7 +7,7 @@ description: General technical questions about Backstage.
 ### What technology does Backstage use?
 
 Backstage is a large scale [TypeScript](https://www.typescriptlang.org/)
-application whose frontend parts use [React](https://react.dev/) and
+framework whose frontend parts use [React](https://react.dev/) and
 [Material UI](https://material-ui.com/), while the backend parts use
 [Node.js](https://nodejs.org/) and the [Express](https://expressjs.com/)
 framework.

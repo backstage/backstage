@@ -25,6 +25,8 @@ export interface KafkaConsumerConfig {
   backstageTopic: string;
   consumerConfig: ConsumerConfig;
   consumerSubscribeTopics: ConsumerSubscribeTopics;
+  autoCommit: boolean;
+  pauseOnError: boolean;
 }
 
 export interface KafkaConsumingEventPublisherConfig {
@@ -78,7 +80,16 @@ const processSinglePublisher = (
           },
           consumerSubscribeTopics: {
             topics: topicConfig.getStringArray('kafka.topics'),
+            fromBeginning: topicConfig.getOptionalBoolean(
+              'kafka.fromBeginning',
+            ),
           },
+          // Default autoCommit to true to match KafkaJS default and ensure consistency
+          // between KafkaJS's auto-commit behavior and our manual commit logic
+          autoCommit:
+            topicConfig.getOptionalBoolean('kafka.autoCommit') ?? true,
+          pauseOnError:
+            topicConfig.getOptionalBoolean('kafka.pauseOnError') ?? false,
         };
       }),
   };

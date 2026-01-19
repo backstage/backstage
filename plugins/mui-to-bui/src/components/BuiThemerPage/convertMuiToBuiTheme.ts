@@ -110,9 +110,10 @@ function generateBuiVariables(theme: Mui5Theme): Record<string, string> {
 
   // Generate surface colors
   Object.entries({
-    '': palette.background.default,
+    'surface-0': palette.background.default,
     'surface-1': palette.background.paper,
     'surface-2': palette.background.default,
+    'surface-3': palette.background.default,
     solid: palette.primary.main,
     'solid-hover': blend(palette.primary.main, palette.primary.dark, 0.5),
     'solid-pressed': palette.primary.dark,
@@ -125,7 +126,7 @@ function generateBuiVariables(theme: Mui5Theme): Record<string, string> {
     warning: palette.warning.light,
     success: palette.success.light,
   }).forEach(([key, value]) => {
-    styleObject[`--bui-bg${key ? `-${key}` : ''}`] = value;
+    styleObject[`--bui-bg-${key}`] = value;
   });
 
   // Border colors

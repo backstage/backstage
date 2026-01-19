@@ -25,6 +25,7 @@ const translationDataRef = createExtensionDataRef<
  * Creates an extension that adds translations to your app.
  *
  * @public
+ * @deprecated Use {@link @backstage/plugin-app-react#TranslationBlueprint} instead.
  */
 export const TranslationBlueprint = createExtensionBlueprint({
   kind: 'translation',

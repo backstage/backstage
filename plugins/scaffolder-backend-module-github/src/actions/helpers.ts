@@ -79,6 +79,7 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
   subscribe: boolean | undefined,
   logger: LoggerService,
   autoInit?: boolean | undefined,
+  workflowAccess?: 'none' | 'organization' | 'user',
 ) {
   // eslint-disable-next-line testing-library/no-await-sync-queries
   const user = await client.rest.users.getByUsername({
@@ -267,6 +268,14 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
     await client.rest.activity.setRepoSubscription({
       subscribed: true,
       ignored: false,
+      owner,
+      repo,
+    });
+  }
+
+  if (workflowAccess) {
+    await client.rest.actions.setWorkflowAccessToRepository({
+      access_level: workflowAccess,
       owner,
       repo,
     });

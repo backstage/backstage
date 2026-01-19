@@ -18,6 +18,7 @@ import { StillTherePrompt, StillTherePromptProps } from './StillTherePrompt';
 export default {
   title: 'Data Display/StillTherePrompt',
   component: StillTherePrompt,
+  tags: ['!manifest'],
 };
 
 export const Open = (args: StillTherePromptProps) => (

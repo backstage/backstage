@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,15 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import type { Meta, StoryObj } from '@storybook/react-vite';
+import preview from '../../../../../.storybook/preview';
 import { Button } from './Button';
 import { Flex } from '../Flex';
+import { Box } from '../Box';
 import { Text } from '../Text';
 import { RiArrowRightSLine, RiCloudLine } from '@remixicon/react';
 import { useState } from 'react';
 
-const meta = {
+const meta = preview.meta({
   title: 'Backstage UI/Button',
   component: Button,
   argTypes: {
@@ -34,18 +34,15 @@ const meta = {
       options: ['primary', 'secondary'],
     },
   },
-} satisfies Meta<typeof Button>;
+});
 
-export default meta;
-type Story = StoryObj<typeof meta>;
-
-export const Default: Story = {
+export const Default = meta.story({
   args: {
     children: 'Button',
   },
-};
+});
 
-export const Variants: Story = {
+export const Variants = meta.story({
   args: {
     children: 'Button',
   },
@@ -57,21 +54,82 @@ export const Variants: Story = {
     },
   },
   render: () => (
-    <Flex align="center">
-      <Button iconStart={<RiCloudLine />} variant="primary">
-        Button
-      </Button>
-      <Button iconStart={<RiCloudLine />} variant="secondary">
-        Button
-      </Button>
-      <Button iconStart={<RiCloudLine />} variant="tertiary">
-        Button
-      </Button>
+    <Flex direction="column" gap="4">
+      <Flex direction="column" gap="4">
+        <Text>Default</Text>
+        <Flex align="center" p="4">
+          <Button iconStart={<RiCloudLine />} variant="primary">
+            Button
+          </Button>
+          <Button iconStart={<RiCloudLine />} variant="secondary">
+            Button
+          </Button>
+          <Button iconStart={<RiCloudLine />} variant="tertiary">
+            Button
+          </Button>
+        </Flex>
+      </Flex>
+      <Flex direction="column" gap="4">
+        <Text>On Surface 0</Text>
+        <Flex align="center" surface="0" p="4">
+          <Button iconStart={<RiCloudLine />} variant="primary">
+            Button
+          </Button>
+          <Button iconStart={<RiCloudLine />} variant="secondary">
+            Button
+          </Button>
+          <Button iconStart={<RiCloudLine />} variant="tertiary">
+            Button
+          </Button>
+        </Flex>
+      </Flex>
+      <Flex direction="column" gap="4">
+        <Text>On Surface 1</Text>
+        <Flex align="center" surface="1" p="4">
+          <Button iconStart={<RiCloudLine />} variant="primary">
+            Button
+          </Button>
+          <Button iconStart={<RiCloudLine />} variant="secondary">
+            Button
+          </Button>
+          <Button iconStart={<RiCloudLine />} variant="tertiary">
+            Button
+          </Button>
+        </Flex>
+      </Flex>
+      <Flex direction="column" gap="4">
+        <Text>On Surface 2</Text>
+        <Flex align="center" surface="2" p="4">
+          <Button iconStart={<RiCloudLine />} variant="primary">
+            Button
+          </Button>
+          <Button iconStart={<RiCloudLine />} variant="secondary">
+            Button
+          </Button>
+          <Button iconStart={<RiCloudLine />} variant="tertiary">
+            Button
+          </Button>
+        </Flex>
+      </Flex>
+      <Flex direction="column" gap="4">
+        <Text>On Surface 3</Text>
+        <Flex align="center" surface="3" p="4">
+          <Button iconStart={<RiCloudLine />} variant="primary">
+            Button
+          </Button>
+          <Button iconStart={<RiCloudLine />} variant="secondary">
+            Button
+          </Button>
+          <Button iconStart={<RiCloudLine />} variant="tertiary">
+            Button
+          </Button>
+        </Flex>
+      </Flex>
     </Flex>
   ),
-};
+});
 
-export const Sizes: Story = {
+export const Sizes = meta.story({
   args: {
     children: 'Button',
   },
@@ -85,9 +143,9 @@ export const Sizes: Story = {
       </Button>
     </Flex>
   ),
-};
+});
 
-export const WithIcons: Story = {
+export const WithIcons = meta.story({
   args: {
     children: 'Button',
   },
@@ -102,9 +160,9 @@ export const WithIcons: Story = {
       />
     </Flex>
   ),
-};
+});
 
-export const FullWidth: Story = {
+export const FullWidth = meta.story({
   args: {
     children: 'Button',
   },
@@ -119,9 +177,9 @@ export const FullWidth: Story = {
       />
     </Flex>
   ),
-};
+});
 
-export const Disabled: Story = {
+export const Disabled = meta.story({
   render: () => (
     <Flex direction="row" gap="4">
       <Button variant="primary" isDisabled>
@@ -135,9 +193,9 @@ export const Disabled: Story = {
       </Button>
     </Flex>
   ),
-};
+});
 
-export const Responsive: Story = {
+export const Responsive = meta.story({
   args: {
     children: 'Button',
     variant: {
@@ -149,72 +207,9 @@ export const Responsive: Story = {
       sm: 'medium',
     },
   },
-};
+});
 
-const variants = ['primary', 'secondary'] as const;
-const sizes = ['small', 'medium'] as const;
-
-export const Playground: Story = {
-  args: {
-    children: 'Button',
-  },
-  render: () => (
-    <Flex direction="column">
-      {variants.map(variant => (
-        <Flex direction="column" key={variant}>
-          <Text>{variant}</Text>
-          {sizes.map(size => (
-            <Flex align="center" key={size}>
-              <Button variant={variant} size={size}>
-                Button
-              </Button>
-              <Button iconStart={<RiCloudLine />} variant={variant} size={size}>
-                Button
-              </Button>
-              <Button
-                iconEnd={<RiArrowRightSLine />}
-                variant={variant}
-                size={size}
-              >
-                Button
-              </Button>
-              <Button
-                iconStart={<RiCloudLine />}
-                iconEnd={<RiArrowRightSLine />}
-                style={{ width: '200px' }}
-                variant={variant}
-                size={size}
-              >
-                Button
-              </Button>
-              <Button variant={variant} size={size} isDisabled>
-                Button
-              </Button>
-              <Button
-                iconStart={<RiCloudLine />}
-                variant={variant}
-                size={size}
-                isDisabled
-              >
-                Button
-              </Button>
-              <Button
-                iconEnd={<RiArrowRightSLine />}
-                variant={variant}
-                size={size}
-                isDisabled
-              >
-                Button
-              </Button>
-            </Flex>
-          ))}
-        </Flex>
-      ))}
-    </Flex>
-  ),
-};
-
-export const Loading: Story = {
+export const Loading = meta.story({
   render: () => {
     const [isLoading, setIsLoading] = useState(false);
 
@@ -231,9 +226,9 @@ export const Loading: Story = {
       </Button>
     );
   },
-};
+});
 
-export const LoadingVariants: Story = {
+export const LoadingVariants = meta.story({
   render: () => (
     <Flex direction="column" gap="4">
       <Text>Primary</Text>
@@ -289,4 +284,53 @@ export const LoadingVariants: Story = {
       </Flex>
     </Flex>
   ),
-};
+});
+
+export const OnSurfaceAuto = meta.story({
+  render: () => (
+    <Flex direction="column" gap="4">
+      <div style={{ maxWidth: '600px' }}>
+        Using onSurface="auto" on buttons inherits their container's surface
+        level, making them reusable. This is equivalent to not specifying
+        onSurface. To override, use explicit surface values like onSurface="0"
+        or onSurface="2".
+      </div>
+      <Box surface="0" p="4">
+        <Text>Surface 0 container</Text>
+        <Flex gap="2" mt="2">
+          <Button variant="secondary">Default (inherits 0)</Button>
+          <Button variant="secondary" onSurface="auto">
+            Auto (inherits 0)
+          </Button>
+          <Button variant="secondary" onSurface="1">
+            Explicit 1
+          </Button>
+        </Flex>
+      </Box>
+      <Box surface="1" p="4">
+        <Text>Surface 1 container</Text>
+        <Flex gap="2" mt="2">
+          <Button variant="secondary">Default (inherits 1)</Button>
+          <Button variant="secondary" onSurface="auto">
+            Auto (inherits 1)
+          </Button>
+          <Button variant="secondary" onSurface="2">
+            Explicit 2
+          </Button>
+        </Flex>
+      </Box>
+      <Box surface="2" p="4">
+        <Text>Surface 2 container</Text>
+        <Flex gap="2" mt="2">
+          <Button variant="secondary">Default (inherits 2)</Button>
+          <Button variant="secondary" onSurface="auto">
+            Auto (inherits 2)
+          </Button>
+          <Button variant="secondary" onSurface="3">
+            Explicit 3
+          </Button>
+        </Flex>
+      </Box>
+    </Flex>
+  ),
+});

@@ -55,6 +55,7 @@ export function SelectContent({
           classNames.searchWrapper,
           styles[classNames.searchWrapper],
         )}
+        aria-label={searchPlaceholder}
       >
         <Input
           placeholder={searchPlaceholder}
