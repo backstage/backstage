@@ -191,3 +191,13 @@ export type Surface =
   | 'warning'
   | 'success'
   | 'auto';
+
+/** @public */
+export interface LeafSurfaceProps {
+  onSurface?: Responsive<Surface>;
+}
+
+/** @public */
+export interface ContainerSurfaceProps {
+  surface?: Responsive<Surface>;
+}

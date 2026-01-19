@@ -39,6 +39,25 @@ export interface ComponentConfig<
   surface?: 'container' | 'leaf';
 }
 
+/**
+ * Type constraint that validates surface props are present in the props type.
+ * - If surface is 'leaf', P must include 'onSurface'
+ * - If surface is 'container', P must include 'surface'
+ */
+export type SurfacePropsConstraint<P, Surface> = Surface extends 'leaf'
+  ? 'onSurface' extends keyof P
+    ? {}
+    : {
+        __error: 'Leaf components must include onSurface in props type. Extend LeafProps.';
+      }
+  : Surface extends 'container'
+  ? 'surface' extends keyof P
+    ? {}
+    : {
+        __error: 'Container components must include surface in props type. Extend ContainerProps.';
+      }
+  : {};
+
 export interface UseDefinitionOptions<D extends ComponentConfig<any, any>> {
   utilityTarget?: keyof D['classNames'] | null;
   classNameTarget?: keyof D['classNames'] | null;
