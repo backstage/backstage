@@ -25,6 +25,7 @@ import { DatabaseTaskStore } from './DatabaseTaskStore';
 import { StorageTaskBroker, TaskManager } from './StorageTaskBroker';
 import { mockServices } from '@backstage/backend-test-utils';
 import { loggerToWinstonLogger } from '../../util/loggerToWinstonLogger';
+import { TaskState } from './types';
 
 async function createStore(): Promise<DatabaseTaskStore> {
   const manager = DatabaseManager.fromConfig(
@@ -326,7 +327,7 @@ describe('StorageTaskBroker', () => {
   describe('step state persistence', () => {
     it('should persist step state via updateStepState', async () => {
       const broker = new StorageTaskBroker(storage, logger);
-      await broker.dispatch({ spec: { steps: [] } as TaskSpec });
+      await broker.dispatch({ spec: { steps: [] } as unknown as TaskSpec });
       const task = await broker.claim();
 
       await task.updateStepState?.({
@@ -336,7 +337,8 @@ describe('StorageTaskBroker', () => {
       });
 
       const taskState = await task.getTaskState?.();
-      expect(taskState?.state?.steps?.step1).toEqual({
+      const state = taskState?.state as TaskState | undefined;
+      expect(state?.steps?.step1).toEqual({
         status: 'completed',
         output: { result: 'success' },
       });
@@ -344,7 +346,7 @@ describe('StorageTaskBroker', () => {
 
     it('should accumulate step states for multiple steps', async () => {
       const broker = new StorageTaskBroker(storage, logger);
-      await broker.dispatch({ spec: { steps: [] } as TaskSpec });
+      await broker.dispatch({ spec: { steps: [] } as unknown as TaskSpec });
       const task = await broker.claim();
 
       await task.updateStepState?.({
@@ -359,7 +361,8 @@ describe('StorageTaskBroker', () => {
       });
 
       const taskState = await task.getTaskState?.();
-      expect(taskState?.state?.steps).toEqual({
+      const state = taskState?.state as TaskState | undefined;
+      expect(state?.steps).toEqual({
         step1: { status: 'completed', output: { result: 'first' } },
         step2: { status: 'completed', output: { result: 'second' } },
       });
@@ -367,7 +370,7 @@ describe('StorageTaskBroker', () => {
 
     it('should preserve checkpoints when updating step state', async () => {
       const broker = new StorageTaskBroker(storage, logger);
-      await broker.dispatch({ spec: { steps: [] } as TaskSpec });
+      await broker.dispatch({ spec: { steps: [] } as unknown as TaskSpec });
       const task = await broker.claim();
 
       // First save a checkpoint
@@ -385,9 +388,10 @@ describe('StorageTaskBroker', () => {
       });
 
       const taskState = await task.getTaskState?.();
+      const state = taskState?.state as TaskState | undefined;
       // Both should be present
-      expect(taskState?.state?.checkpoints?.checkpoint1).toBeDefined();
-      expect(taskState?.state?.steps?.step1).toBeDefined();
+      expect(state?.checkpoints?.checkpoint1).toBeDefined();
+      expect(state?.steps?.step1).toBeDefined();
     });
   });
 
@@ -417,7 +421,7 @@ describe('StorageTaskBroker', () => {
       const broker = new StorageTaskBroker(storage, logger, config);
 
       const { taskId } = await broker.dispatch({
-        spec: { steps: [] } as TaskSpec,
+        spec: { steps: [] } as unknown as TaskSpec,
       });
       await broker.claim();
 
@@ -449,7 +453,7 @@ describe('StorageTaskBroker', () => {
       const broker = new StorageTaskBroker(storage, logger, config);
 
       const { taskId } = await broker.dispatch({
-        spec: { steps: [] } as TaskSpec,
+        spec: { steps: [] } as unknown as TaskSpec,
       });
       const task = await broker.claim();
 
@@ -479,7 +483,7 @@ describe('StorageTaskBroker', () => {
       const broker = new StorageTaskBroker(storage, logger, config);
 
       const { taskId } = await broker.dispatch({
-        spec: { steps: [] } as TaskSpec,
+        spec: { steps: [] } as unknown as TaskSpec,
       });
       await broker.claim();
 

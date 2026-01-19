@@ -580,7 +580,7 @@ export class DatabaseTaskStore implements TaskStore {
   async listEvents(
     options: TaskStoreListEventsOptions,
   ): Promise<{ events: SerializedTaskEvent[] }> {
-    const { isTaskRecoverable, taskId, after } = options;
+    const { taskId, after, isTaskRecoverable } = options;
     const rawEvents = await this.db<RawDbTaskEventRow>('task_events')
       .where({
         task_id: taskId,

@@ -27,6 +27,7 @@ import fs from 'fs-extra';
 import { EventsService } from '@backstage/plugin-events-node';
 import { PermissionCriteria } from '@backstage/plugin-permission-common';
 import { TaskFilters } from '@backstage/plugin-scaffolder-node';
+import { TaskState } from './types';
 
 const createStore = async (events?: EventsService) => {
   const manager = DatabaseManager.fromConfig(
@@ -780,7 +781,7 @@ describe('DatabaseTaskStore', () => {
     it('should preserve secrets through multiple recovery cycles', async () => {
       const { store } = await createStore();
       const secrets = { token: 'secret' };
-      const { taskId } = await store.createTask({
+      await store.createTask({
         spec: {} as TaskSpec,
         createdBy: 'me',
         secrets,
@@ -870,7 +871,8 @@ describe('DatabaseTaskStore', () => {
 
       // Step state should be preserved
       const state = await store.getTaskState({ taskId });
-      expect(state?.state?.steps?.step1).toEqual({
+      const taskState = state?.state as TaskState | undefined;
+      expect(taskState?.steps?.step1).toEqual({
         status: 'completed',
         output: { result: 'done' },
       });
@@ -879,7 +881,7 @@ describe('DatabaseTaskStore', () => {
     it('should handle multiple recovery cycles', async () => {
       const { store } = await createStore();
       const secrets = { token: 'secret' };
-      const { taskId } = await store.createTask({
+      await store.createTask({
         spec: {} as TaskSpec,
         createdBy: 'me',
         secrets,

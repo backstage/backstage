@@ -35,7 +35,12 @@ import {
 } from '../../lib/templating/SecureTemplater';
 import { TemplateActionRegistry } from '../actions/TemplateActionRegistry';
 import { generateExampleOutput, isTruthy } from './helper';
-import { TaskTrackType, WorkflowResponse, WorkflowRunner } from './types';
+import {
+  TaskTrackType,
+  TaskState,
+  WorkflowResponse,
+  WorkflowRunner,
+} from './types';
 
 import type {
   AuditorService,
@@ -592,7 +597,8 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
 
       // Get prior state for recovery
       const prevTaskState = await task.getTaskState?.();
-      const savedSteps = prevTaskState?.state?.steps ?? {};
+      const taskState = prevTaskState?.state as TaskState | undefined;
+      const savedSteps = taskState?.steps ?? {};
 
       for (const step of task.spec.steps) {
         // Check if step was already completed (recovery scenario)

@@ -66,9 +66,9 @@ export type UpdateStepStateOptions = {
  *
  */
 export type TaskStoreListEventsOptions = {
-  isTaskRecoverable?: boolean;
   taskId: string;
   after?: number | undefined;
+  isTaskRecoverable?: boolean;
 };
 
 /**

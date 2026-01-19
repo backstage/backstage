@@ -34,11 +34,15 @@ import {
   TaskStatus,
 } from '@backstage/plugin-scaffolder-node';
 import {
-  CheckpointState,
   WorkspaceProvider,
   UpdateTaskCheckpointOptions,
 } from '@backstage/plugin-scaffolder-node/alpha';
-import { JsonObject, Observable, createDeferred } from '@backstage/types';
+import {
+  HumanDuration,
+  JsonObject,
+  Observable,
+  createDeferred,
+} from '@backstage/types';
 import ObservableImpl from 'zen-observable';
 import { DefaultWorkspaceService, WorkspaceService } from './WorkspaceService';
 import { readDuration } from './helper';
@@ -366,10 +370,10 @@ export class StorageTaskBroker implements TaskBroker {
       return;
     }
 
-    const defaultTimeout = { seconds: 30 };
+    const defaultTimeout: HumanDuration = { seconds: 30 };
 
     // Try new config path first, then fallback to old
-    let timeout = defaultTimeout;
+    let timeout: HumanDuration = defaultTimeout;
     const newTimeoutConfig = this.config?.getOptional(
       'scaffolder.taskRecovery.staleTimeout',
     );
@@ -457,6 +461,12 @@ export class StorageTaskBroker implements TaskBroker {
     taskId: string;
     after?: number;
   }): Observable<{ events: SerializedTaskEvent[] }> {
+    // Check if recovery is enabled via config
+    const isTaskRecoverable =
+      this.config?.getOptionalBoolean('scaffolder.taskRecovery.enabled') ??
+      this.config?.getOptionalBoolean('scaffolder.EXPERIMENTAL_recoverTasks') ??
+      false;
+
     return new ObservableImpl(observer => {
       const { taskId } = options;
 
@@ -464,16 +474,11 @@ export class StorageTaskBroker implements TaskBroker {
       let cancelled = false;
 
       (async () => {
-        const task = await this.storage.getTask(taskId);
-        const isTaskRecoverable =
-          task.spec.EXPERIMENTAL_recovery?.EXPERIMENTAL_strategy ===
-          'startOver';
-
         while (!cancelled) {
           const result = await this.storage.listEvents({
-            isTaskRecoverable,
             taskId,
             after,
+            isTaskRecoverable,
           });
           const { events } = result;
           if (events.length) {
