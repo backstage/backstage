@@ -14,4 +14,11 @@
  * limitations under the License.
  */
 
-export { InternalLinkProvider } from './InternalLinkProvider';
+export {
+  InternalLinkProvider,
+  RoutedContainer,
+  useRoutingRegistration,
+  isInternalLink,
+  createRoutingRegistration,
+} from './InternalLinkProvider';
+export type { RoutingContextValue } from './InternalLinkProvider';

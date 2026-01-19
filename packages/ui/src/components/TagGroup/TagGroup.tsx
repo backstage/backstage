@@ -20,16 +20,17 @@ import {
   TagList as ReactAriaTagList,
   Tag as ReactAriaTag,
   Button as ReactAriaButton,
-  RouterProvider,
 } from 'react-aria-components';
 import type { ReactNode } from 'react';
 import { RiCloseCircleLine } from '@remixicon/react';
 import clsx from 'clsx';
 import { useStyles } from '../../hooks/useStyles';
 import { TagGroupDefinition } from './definition';
-import { isExternalLink } from '../../utils/isExternalLink';
-import { useNavigate, useHref } from 'react-router-dom';
+import { createRoutingRegistration } from '../InternalLinkProvider';
 import styles from './TagGroup.module.css';
+
+const { RoutingProvider, useRoutingRegistrationEffect } =
+  createRoutingRegistration();
 
 /**
  * A component that renders a list of tags.
@@ -41,18 +42,20 @@ export const TagGroup = <T extends object>(props: TagGroupProps<T>) => {
   const { items, children, renderEmptyState, ...rest } = cleanedProps;
 
   return (
-    <ReactAriaTagGroup
-      className={clsx(classNames.group, styles[classNames.group])}
-      {...rest}
-    >
-      <ReactAriaTagList
-        className={clsx(classNames.list, styles[classNames.list])}
-        items={items}
-        renderEmptyState={renderEmptyState}
+    <RoutingProvider>
+      <ReactAriaTagGroup
+        className={clsx(classNames.group, styles[classNames.group])}
+        {...rest}
       >
-        {children}
-      </ReactAriaTagList>
-    </ReactAriaTagGroup>
+        <ReactAriaTagList
+          className={clsx(classNames.list, styles[classNames.list])}
+          items={items}
+          renderEmptyState={renderEmptyState}
+        >
+          {children}
+        </ReactAriaTagList>
+      </ReactAriaTagGroup>
+    </RoutingProvider>
   );
 };
 
@@ -68,11 +71,10 @@ export const Tag = (props: TagProps) => {
   });
   const { children, className, icon, size, href, ...rest } = cleanedProps;
   const textValue = typeof children === 'string' ? children : undefined;
-  const navigate = useNavigate();
-  const isLink = href !== undefined;
-  const isExternal = isExternalLink(href);
 
-  const content = (
+  useRoutingRegistrationEffect(href);
+
+  return (
     <ReactAriaTag
       textValue={textValue}
       className={clsx(classNames.tag, styles[classNames.tag], className)}
@@ -105,14 +107,4 @@ export const Tag = (props: TagProps) => {
       )}
     </ReactAriaTag>
   );
-
-  if (isLink && !isExternal) {
-    return (
-      <RouterProvider navigate={navigate} useHref={useHref}>
-        {content}
-      </RouterProvider>
-    );
-  }
-
-  return content;
 };
