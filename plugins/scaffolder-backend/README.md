@@ -125,6 +125,26 @@ Default secrets are resolved from environment variables and accessible via `${{ 
 
 **Security Note:** Secrets are automatically masked in logs and are only available to backend actions, never exposed to the frontend.
 
+### Task Recovery
+
+The scaffolder supports automatic task recovery when workers restart or crash. When enabled, tasks that were in a `processing` state will be recovered and can be resumed from where they left off.
+
+```yaml
+scaffolder:
+  taskRecovery:
+    enabled: true
+    staleTimeout: { seconds: 30 } # Optional: how long before a task is considered stale
+```
+
+When task recovery is enabled:
+
+- Tasks in `processing` state with stale heartbeats are automatically recovered to `open` state
+- Secrets are preserved until the task reaches a terminal state (completed/failed)
+- Completed steps are skipped on retry, resuming from the last incomplete step
+- Step outputs are restored so subsequent steps can access previous results
+
+This replaces the previous experimental flags (`EXPERIMENTAL_recoverTasks`, `EXPERIMENTAL_workspaceSerialization`, `EXPERIMENTAL_recoverTasksTimeout`) which are still supported as fallbacks.
+
 ## Audit Events
 
 The Scaffolder backend emits audit events for various operations. Events are grouped logically by `eventId`, with `subEventId` providing further distinction when needed.
