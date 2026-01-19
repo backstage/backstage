@@ -16,21 +16,15 @@
 
 import type { ReactElement, ReactNode, CSSProperties } from 'react';
 import type { ButtonProps as RAButtonProps } from 'react-aria-components';
-import type { Responsive, Surface } from '../../types';
+import type { LeafSurfaceProps, Responsive } from '../../types';
 
-/**
- * Button's own properties (excluding inherited React Aria props)
- *
- * @public
- */
-export type ButtonOwnProps = {
+/** @public */
+export type ButtonOwnProps = LeafSurfaceProps & {
   size?: Responsive<'small' | 'medium' | 'large'>;
   variant?: Responsive<'primary' | 'secondary' | 'tertiary'>;
   iconStart?: ReactElement;
   iconEnd?: ReactElement;
   loading?: boolean;
-  /** Surface the button is placed on. Defaults to context surface if available */
-  onSurface?: Responsive<Surface>;
   children?: ReactNode;
   className?: string;
   style?: CSSProperties;

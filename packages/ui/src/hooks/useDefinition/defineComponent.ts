@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import type { ComponentConfig } from './types';
+import type { ComponentConfig, SurfacePropsConstraint } from './types';
 
 export function defineComponent<P extends Record<string, any>>() {
   return <
     const S extends Record<string, string>,
     const C extends ComponentConfig<P, S>,
   >(
-    config: C,
+    config: C & SurfacePropsConstraint<P, C['surface']>,
   ): C => config;
 }
