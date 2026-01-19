@@ -18,7 +18,7 @@ Project area maintainers can use the same board but with additional filters appl
 
 There are several labels that help track the status and prioritize pull requests. You can find more information about these labels in [LABELS.md](./LABELS.md#pull-request-labels).
 
-All reviewers should always use the "request changes" option if they think the pull request should be changed in any way. This is both to clarify to the author that the pull request is not ready to be merged, but also to update the status of the pull request in the review queue. If you simply want to contribute to the discussion in a pull request you can just leave a regular comment.
+Reviewers should use the "request changes" option when they believe changes are necessary before the pull request can be merged. This is both to clarify to the author that the pull request is not ready to be merged, but also to update the status of the pull request in the review queue. If you simply want to contribute to the discussion in a pull request, or have minor or optional suggestions, you can just leave a regular comment.
 
 ### Review process for @backstage/reviewers
 
