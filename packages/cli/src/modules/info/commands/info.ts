@@ -147,14 +147,14 @@ export default async (options: InfoOptions) => {
       }
     }
 
-    // Helper to get version string for a package
-    const getVersions = (dep: string): string => {
+    // Helper to get versions for a package as an array of objects
+    const getVersions = (dep: string): Array<{ version: string }> => {
       const entries = lockfile.get(dep);
       if (!entries) {
-        return 'unknown';
+        return [{ version: 'unknown' }];
       }
       const versions = [...new Set(entries.map(i => i.version))];
-      return versions.join(', ');
+      return versions.map(v => ({ version: v }));
     };
 
     const sortedInstalled = [...installedDeps].sort();
@@ -170,7 +170,7 @@ export default async (options: InfoOptions) => {
         local: Object.fromEntries(
           sortedLocal.map(dep => [
             dep,
-            workspacePackages.get(dep) ?? 'unknown',
+            [{ version: workspacePackages.get(dep) ?? 'unknown' }],
           ]),
         ),
       };
@@ -192,7 +192,9 @@ export default async (options: InfoOptions) => {
     if (sortedInstalled.length > 0) {
       const maxLength = Math.max(...sortedInstalled.map(d => d.length));
       for (const dep of sortedInstalled) {
-        const versions = getVersions(dep);
+        const versions = getVersions(dep)
+          .map(v => v.version)
+          .join(', ');
         console.log(`  ${dep.padEnd(maxLength)} ${versions}`);
       }
     } else {
