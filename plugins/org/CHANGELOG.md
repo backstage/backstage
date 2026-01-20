@@ -1,5 +1,15 @@
 # @backstage/plugin-org
 
+## 0.6.48
+
+### Patch Changes
+
+- db3cfd7: Adds the Resource kind to the `useGetEntities` fallback so that Resources are included by default when no specific kinds are provided in the group ownership card.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.3
+  - @backstage/core-components@0.18.5
+  - @backstage/plugin-catalog-react@1.21.5
+
 ## 0.6.48-next.1
 
 ### Patch Changes

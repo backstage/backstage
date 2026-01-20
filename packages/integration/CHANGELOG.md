@@ -1,5 +1,12 @@
 # @backstage/integration
 
+## 1.19.2
+
+### Patch Changes
+
+- 3afeab4: Implementing `ScmIntegration` for `GoogleGcs`
+- 9083273: Rollback the lowercase replacing in GitHub integration config
+
 ## 1.19.2-next.0
 
 ### Patch Changes
