@@ -634,7 +634,7 @@ describe('Entity page', () => {
         Object.assign({ namespace: 'catalog' }, catalogEntityPage),
       ).add(menuItem);
 
-      renderInTestApp(
+      await renderInTestApp(
         <TestApiProvider
           apis={[
             [catalogApiRef, mockCatalogApi],
@@ -659,8 +659,9 @@ describe('Entity page', () => {
       );
       const { disabled } = params.useProps();
 
+      await userEvent.click(await screen.findByTestId('menu-button'));
+
       await waitFor(async () => {
-        await userEvent.click(screen.getByTestId('menu-button'));
         expect(screen.getByText('Test Title')).toBeInTheDocument();
         expect(screen.getByText('Test Icon')).toBeInTheDocument();
         const anchor = screen.getByText('Test Title').closest('a');
@@ -696,7 +697,7 @@ describe('Entity page', () => {
         Object.assign({ namespace: 'catalog' }, catalogEntityPage),
       ).add(menuItem);
 
-      renderInTestApp(
+      await renderInTestApp(
         <TestApiProvider
           apis={[
             [catalogApiRef, mockCatalogApi],
@@ -796,7 +797,7 @@ describe('Entity page', () => {
           .add(menuItem)
           .add(filteredMenuItem);
 
-        renderInTestApp(
+        await renderInTestApp(
           <TestApiProvider
             apis={[
               [catalogApiRef, mockCatalogApi],
@@ -820,8 +821,9 @@ describe('Entity page', () => {
           },
         );
 
+        await userEvent.click(await screen.findByTestId('menu-button'));
+
         await waitFor(async () => {
-          await userEvent.click(screen.getByTestId('menu-button'));
           expect(screen.getByText('Should Render')).toBeInTheDocument();
           expect(
             screen.queryByText('Should Not Render'),

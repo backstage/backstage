@@ -1,0 +1,47 @@
+import { PropsTable } from '@/components/PropsTable';
+import { Snippet } from '@/components/Snippet';
+import { CodeBlock } from '@/components/CodeBlock';
+import { visuallyHiddenPropDefs } from './props-definition';
+import {
+  visuallyHiddenUsageSnippet,
+  defaultSnippet,
+  exampleUsageSnippet,
+} from './snippets';
+import { Default, ExampleUsage } from './components';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { VisuallyHiddenDefinition } from '../../../utils/definitions';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+
+<PageTitle
+  title="VisuallyHidden"
+  description="Visually hides content while keeping it accessible to screen readers."
+/>
+
+<Snippet align="start" py={4} preview={<Default />} code={defaultSnippet} />
+
+## Usage
+
+<CodeBlock code={visuallyHiddenUsageSnippet} />
+
+## API reference
+
+<PropsTable data={visuallyHiddenPropDefs} />
+
+## Examples
+
+### Example Usage
+
+Here's an example of providing screen reader context for a list of links in a footer.
+
+<Snippet
+  align="start"
+  py={4}
+  preview={<ExampleUsage />}
+  code={exampleUsageSnippet}
+  open
+/>
+
+<Theming definition={VisuallyHiddenDefinition} />
+
+<ChangelogComponent component="visually-hidden" />

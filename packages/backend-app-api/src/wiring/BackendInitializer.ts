@@ -157,6 +157,8 @@ export class BackendInitializer {
   #serviceRegistry: ServiceRegistry;
   #registeredFeatures = new Array<Promise<BackendFeature>>();
   #registeredFeatureLoaders = new Array<InternalBackendFeatureLoader>();
+  #unhandledRejectionHandler?: (reason: Error) => void;
+  #uncaughtExceptionHandler?: (error: Error) => void;
 
   constructor(defaultApiFactories: ServiceFactory[]) {
     this.#serviceRegistry = ServiceRegistry.create([...defaultApiFactories]);
@@ -265,16 +267,18 @@ export class BackendInitializer {
         coreServices.rootLogger,
         'root',
       );
-      process.on('unhandledRejection', (reason: Error) => {
+      this.#unhandledRejectionHandler = (reason: Error) => {
         rootLogger
           ?.child({ type: 'unhandledRejection' })
           ?.error('Unhandled rejection', reason);
-      });
-      process.on('uncaughtException', error => {
+      };
+      this.#uncaughtExceptionHandler = (error: Error) => {
         rootLogger
           ?.child({ type: 'uncaughtException' })
           ?.error('Uncaught exception', error);
-      });
+      };
+      process.on('unhandledRejection', this.#unhandledRejectionHandler);
+      process.on('uncaughtException', this.#uncaughtExceptionHandler);
     }
 
     // Initialize all root scoped services
@@ -490,6 +494,16 @@ export class BackendInitializer {
 
     // Once all plugin shutdown hooks are done, run root shutdown hooks.
     await rootLifecycleService.shutdown();
+
+    // Clean up process event listeners to prevent memory leaks and duplicate logging
+    if (this.#unhandledRejectionHandler) {
+      process.off('unhandledRejection', this.#unhandledRejectionHandler);
+      this.#unhandledRejectionHandler = undefined;
+    }
+    if (this.#uncaughtExceptionHandler) {
+      process.off('uncaughtException', this.#uncaughtExceptionHandler);
+      this.#uncaughtExceptionHandler = undefined;
+    }
   }
 
   // Bit of a hacky way to grab the lifecycle services, potentially find a nicer way to do this

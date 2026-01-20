@@ -99,6 +99,7 @@ dataflow
 dataloader
 dayjs
 debounce
+debounced
 debounces
 debuggability
 declaratively
@@ -523,6 +524,7 @@ transpile
 transpiled
 transpiler
 transpilers
+trixie
 truthy
 tsconfig
 TSDoc

@@ -19,6 +19,7 @@ import {
   ReactNode,
   Suspense,
   useEffect,
+  useMemo,
   lazy as reactLazy,
 } from 'react';
 import { AnalyticsContext, useAnalytics } from '../analytics';
@@ -27,6 +28,10 @@ import { ErrorApiBoundary } from './ErrorApiBoundary';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { routableExtensionRenderedEvent } from '../../../core-plugin-api/src/analytics/Tracker';
 import { AppNode, ErrorApi, errorApiRef, useApi } from '../apis';
+import {
+  PluginWrapperApi,
+  pluginWrapperApiRef,
+} from '../apis/definitions/PluginWrapperApi';
 import { coreExtensionData } from '../wiring';
 import { AppNodeProvider } from './AppNodeProvider';
 import { Progress } from './DefaultSwappableComponents';
@@ -39,6 +44,13 @@ function useOptionalErrorApi(): ErrorApi | undefined {
   }
 }
 
+function useOptionalPluginWrapperApi(): PluginWrapperApi | undefined {
+  try {
+    return useApi(pluginWrapperApiRef);
+  } catch {
+    return undefined;
+  }
+}
 type RouteTrackerProps = PropsWithChildren<{
   enabled?: boolean;
 }>;
@@ -78,11 +90,18 @@ export function ExtensionBoundary(props: ExtensionBoundaryProps) {
   );
 
   const plugin = node.spec.plugin;
+  const pluginId = plugin.id ?? 'app';
+
+  const pluginWrapperApi = useOptionalPluginWrapperApi();
+
+  const PluginWrapper = useMemo(() => {
+    return pluginWrapperApi?.getPluginWrapper(pluginId);
+  }, [pluginWrapperApi, pluginId]);
 
   // Skipping "routeRef" attribute in the new system, the extension "id" should provide more insight
   const attributes = {
     extensionId: node.spec.id,
-    pluginId: plugin.id ?? 'app',
+    pluginId,
   };
 
   let content = (
@@ -90,6 +109,10 @@ export function ExtensionBoundary(props: ExtensionBoundaryProps) {
       <RouteTracker enabled={hasRoutePathOutput}>{children}</RouteTracker>
     </AnalyticsContext>
   );
+
+  if (PluginWrapper) {
+    content = <PluginWrapper>{content}</PluginWrapper>;
+  }
 
   if (props.errorPresentation === 'error-api') {
     content = (

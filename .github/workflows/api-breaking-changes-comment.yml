@@ -115,13 +115,13 @@ jobs:
         with:
           issue-number: ${{ needs.setup.outputs.pr-number }}
           comment-author: 'github-actions[bot]'
-          body-includes: API changes
+          body-includes: api-breaking-changes-comment
           direction: last
 
       - name: Create or Update Comment with API Changes
         uses: peter-evans/create-or-update-comment@71345be0265236311c031f5c7866368bd1eff043 # v4
         with:
           comment-id: ${{ steps.find-comment.outputs.comment-id }}
-          issue-number: ${{ github.event.pull_request.number }}
+          issue-number: ${{ needs.setup.outputs.pr-number }}
           body-path: comment.md
           edit-mode: replace

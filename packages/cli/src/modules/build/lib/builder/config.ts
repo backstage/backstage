@@ -16,7 +16,9 @@
 
 import chalk from 'chalk';
 import fs from 'fs-extra';
+import { createHash } from 'crypto';
 import {
+  basename,
   extname,
   relative as relativePath,
   resolve as resolvePath,
@@ -239,7 +241,18 @@ export async function makeRollupConfigs(
           include: /node_modules/,
           exclude: [/\/[^/]+\.(?:stories|test)\.[^/]+$/],
         }),
-        postcss(),
+        postcss({
+          modules: {
+            generateScopedName(name: string, filename: string, css: string) {
+              const hash = createHash('md5')
+                .update(css)
+                .digest('hex')
+                .slice(0, 10);
+              const file = basename(filename, '.module.css');
+              return `${file}_${name}__${hash}`;
+            },
+          },
+        }),
         forwardFileImports({
           exclude: /\.icon\.svg$/,
           include: [

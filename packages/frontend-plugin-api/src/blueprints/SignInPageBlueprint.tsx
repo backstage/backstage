@@ -44,6 +44,7 @@ const componentDataRef = createExtensionDataRef<
  * Creates an extension that replaces the sign in page.
  *
  * @public
+ * @deprecated Use {@link @backstage/plugin-app-react#SignInPageBlueprint} instead.
  */
 export const SignInPageBlueprint = createExtensionBlueprint({
   kind: 'sign-in-page',

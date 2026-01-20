@@ -6,6 +6,7 @@
 import { AnyApiFactory } from '@backstage/frontend-plugin-api';
 import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
 import { ApiFactory } from '@backstage/frontend-plugin-api';
+import { DevToolsContentBlueprintParams } from '@backstage/plugin-devtools-react';
 import { ExtensionBlueprintParams } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { IconComponent } from '@backstage/frontend-plugin-api';
@@ -88,6 +89,33 @@ const _default: OverridableFrontendPlugin<
   }
 >;
 export default _default;
+
+// @alpha
+export const unprocessedEntitiesDevToolsContent: OverridableExtensionDefinition<{
+  kind: 'devtools-content';
+  name: undefined;
+  config: {
+    path: string | undefined;
+    title: string | undefined;
+  };
+  configInput: {
+    title?: string | undefined;
+    path?: string | undefined;
+  };
+  output:
+    | ExtensionDataRef<string, 'core.routing.path', {}>
+    | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+    | ExtensionDataRef<
+        RouteRef_2<AnyRouteRefParams>,
+        'core.routing.ref',
+        {
+          optional: true;
+        }
+      >
+    | ExtensionDataRef<string, 'core.title', {}>;
+  inputs: {};
+  params: DevToolsContentBlueprintParams;
+}>;
 
 // (No @packageDocumentation comment for this package)
 ```

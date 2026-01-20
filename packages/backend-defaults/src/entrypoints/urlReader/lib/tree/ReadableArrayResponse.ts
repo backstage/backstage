@@ -15,6 +15,7 @@
  */
 
 import {
+  resolveSafeChildPath,
   UrlReaderServiceReadTreeResponse,
   UrlReaderServiceReadTreeResponseDirOptions,
   UrlReaderServiceReadTreeResponseFile,
@@ -98,7 +99,7 @@ export class ReadableArrayResponse implements UrlReaderServiceReadTreeResponse {
 
     for (let i = 0; i < this.stream.length; i++) {
       if (!this.stream[i].path.endsWith('/')) {
-        const filePath = platformPath.join(dir, this.stream[i].path);
+        const filePath = resolveSafeChildPath(dir, this.stream[i].path);
         await fs.mkdir(dirname(filePath), { recursive: true });
         await pipeline(this.stream[i].data, fs.createWriteStream(filePath));
       }

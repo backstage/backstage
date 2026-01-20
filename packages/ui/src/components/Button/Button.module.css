@@ -19,6 +19,11 @@
 @layer components {
   .bui-Button {
     --loading-duration: 200ms;
+    --bg: transparent;
+    --bg-hover: transparent;
+    --bg-active: transparent;
+    --fg: inherit;
+
     position: relative;
     display: inline-flex;
     border: none;
@@ -32,6 +37,19 @@
     transition: background-color var(--loading-duration) ease-out,
       box-shadow var(--loading-duration) ease-out;
 
+    /* Apply variables */
+    color: var(--fg);
+    background-color: var(--bg);
+
+    &:hover {
+      background-color: var(--bg-hover);
+      transition: background-color 150ms ease;
+    }
+
+    &:active {
+      background-color: var(--bg-active);
+    }
+
     &[data-disabled='true'] {
       cursor: not-allowed;
     }
@@ -42,80 +60,94 @@
   }
 
   .bui-Button[data-variant='primary'] {
-    background-color: var(--bui-bg-solid);
-    color: var(--bui-fg-solid);
+    --bg: var(--bui-bg-solid);
+    --bg-hover: var(--bui-bg-solid-hover);
+    --bg-active: var(--bui-bg-solid-pressed);
+    --fg: var(--bui-fg-solid);
 
-    &:hover {
-      background-color: var(--bui-bg-solid-hover);
-      transition: background-color 150ms ease;
-    }
-
-    &:active {
-      background-color: var(--bui-bg-solid-pressed);
+    &[data-disabled='true'],
+    &[data-loading='true'] {
+      --bg: var(--bui-bg-solid-disabled);
+      --bg-hover: var(--bui-bg-solid-disabled);
+      --bg-active: var(--bui-bg-solid-disabled);
+      --fg: var(--bui-fg-solid-disabled);
     }
 
     &:focus-visible {
       outline: 2px solid var(--bui-ring);
       outline-offset: 2px;
     }
-
-    &[data-disabled='true'],
-    &[data-loading='true'] {
-      background-color: var(--bui-bg-solid-disabled);
-      color: var(--bui-fg-solid-disabled);
-    }
   }
 
   .bui-Button[data-variant='secondary'] {
-    background-color: var(--bui-bg-surface-1);
-    box-shadow: inset 0 0 0 1px var(--bui-border);
-    color: var(--bui-fg-primary);
+    --bg: var(--bui-bg-neutral-on-surface-0);
+    --bg-hover: var(--bui-bg-neutral-on-surface-0-hover);
+    --bg-active: var(--bui-bg-neutral-on-surface-0-pressed);
+    --fg: var(--bui-fg-primary);
 
-    &:hover {
-      box-shadow: inset 0 0 0 1px var(--bui-border-hover);
-      transition: box-shadow 150ms ease;
+    &[data-on-surface='1'] {
+      --bg: var(--bui-bg-neutral-on-surface-1);
+      --bg-hover: var(--bui-bg-neutral-on-surface-1-hover);
+      --bg-active: var(--bui-bg-neutral-on-surface-1-pressed);
     }
 
-    &:active {
-      box-shadow: inset 0 0 0 1px var(--bui-border-pressed);
+    &[data-on-surface='2'] {
+      --bg: var(--bui-bg-neutral-on-surface-2);
+      --bg-hover: var(--bui-bg-neutral-on-surface-2-hover);
+      --bg-active: var(--bui-bg-neutral-on-surface-2-pressed);
+    }
+
+    &[data-on-surface='3'] {
+      --bg: var(--bui-bg-neutral-on-surface-3);
+      --bg-hover: var(--bui-bg-neutral-on-surface-3-hover);
+      --bg-active: var(--bui-bg-neutral-on-surface-3-pressed);
+    }
+
+    &[data-disabled='true'],
+    &[data-loading='true'] {
+      --bg-hover: var(--bg);
+      --bg-active: var(--bg);
+      --fg: var(--bui-fg-disabled);
     }
 
     &:focus-visible {
       outline: none;
       transition: none;
       box-shadow: inset 0 0 0 2px var(--bui-ring);
-    }
-
-    &[data-disabled='true'],
-    &[data-loading='true'] {
-      box-shadow: inset 0 0 0 1px var(--bui-border-disabled);
-      color: var(--bui-fg-disabled);
     }
   }
 
   .bui-Button[data-variant='tertiary'] {
-    background-color: transparent;
-    color: var(--bui-fg-primary);
+    --bg-hover: var(--bui-bg-neutral-on-surface-0-hover);
+    --bg-active: var(--bui-bg-neutral-on-surface-0-pressed);
+    --fg: var(--bui-fg-primary);
 
-    &:hover {
-      background-color: var(--bui-bg-surface-1);
-      transition: background-color 200ms ease;
+    &[data-on-surface='1'] {
+      --bg-hover: var(--bui-bg-neutral-on-surface-1-hover);
+      --bg-active: var(--bui-bg-neutral-on-surface-1-pressed);
     }
 
-    &:active {
-      background-color: var(--bui-bg-surface-2);
+    &[data-on-surface='2'] {
+      --bg-hover: var(--bui-bg-neutral-on-surface-2-hover);
+      --bg-active: var(--bui-bg-neutral-on-surface-2-pressed);
+    }
+
+    &[data-on-surface='3'] {
+      --bg-hover: var(--bui-bg-neutral-on-surface-3-hover);
+      --bg-active: var(--bui-bg-neutral-on-surface-3-pressed);
+    }
+
+    &[data-disabled='true'],
+    &[data-loading='true'] {
+      --bg-hover: var(--bg);
+      --bg-active: var(--bg);
+      --fg: var(--bui-fg-disabled);
     }
 
     &:focus-visible {
       outline: none;
       transition: none;
       box-shadow: inset 0 0 0 2px var(--bui-ring);
-    }
-
-    &[data-disabled='true'],
-    &[data-loading='true'] {
-      background-color: transparent;
-      color: var(--bui-fg-disabled);
     }
   }
 

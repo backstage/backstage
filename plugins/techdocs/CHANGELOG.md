@@ -1,5 +1,17 @@
 # @backstage/plugin-techdocs
 
+## 1.16.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.5-next.0
+  - @backstage/integration-react@1.2.14-next.0
+  - @backstage/plugin-auth-react@0.1.23-next.0
+  - @backstage/plugin-catalog-react@1.21.5-next.1
+  - @backstage/plugin-search-react@1.10.2-next.0
+  - @backstage/plugin-techdocs-react@1.3.7-next.0
+
 ## 1.16.2-next.0
 
 ### Patch Changes

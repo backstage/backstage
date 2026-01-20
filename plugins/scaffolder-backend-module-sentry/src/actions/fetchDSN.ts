@@ -51,6 +51,13 @@ export function createSentryFetchDSNAction(options: { config: Config }) {
                 'authenticate via bearer auth token. Requires one of the following scopes: project:admin, project:read, project:write',
             })
             .optional(),
+        apiBaseUrl: z =>
+          z
+            .string({
+              description:
+                'Optional base URL for the Sentry API. e.g. https://sentry.io/api/0',
+            })
+            .optional(),
       },
       output: {
         dsn: z =>
@@ -62,7 +69,8 @@ export function createSentryFetchDSNAction(options: { config: Config }) {
       },
     },
     async handler(ctx) {
-      const { organizationSlug, projectSlug, authToken } = ctx.input;
+      const { organizationSlug, projectSlug, authToken, apiBaseUrl } =
+        ctx.input;
 
       const token = authToken
         ? authToken
@@ -72,8 +80,13 @@ export function createSentryFetchDSNAction(options: { config: Config }) {
         throw new InputError(`No valid sentry token given`);
       }
 
+      const baseUrl =
+        apiBaseUrl ||
+        config.getOptionalString('scaffolder.sentry.apiBaseUrl') ||
+        'https://sentry.io/api/0';
+
       const response = await fetch(
-        `https://sentry.io/api/0/projects/${organizationSlug}/${projectSlug}/keys/`,
+        `${baseUrl}/projects/${organizationSlug}/${projectSlug}/keys/`,
         {
           method: 'GET',
           headers: {

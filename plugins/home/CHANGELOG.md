@@ -1,5 +1,20 @@
 # @backstage/plugin-home
 
+## 0.9.0-next.2
+
+### Minor Changes
+
+- e091a83: Widget configurations are now only saved to storage when the Save button is explicitly clicked. Added a Cancel button that allows users to discard unsaved changes and revert to the last saved state.
+
+## 0.8.16-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.5-next.0
+  - @backstage/plugin-catalog-react@1.21.5-next.1
+  - @backstage/plugin-home-react@0.1.34-next.0
+
 ## 0.8.16-next.0
 
 ### Patch Changes
