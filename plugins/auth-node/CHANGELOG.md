@@ -1,5 +1,14 @@
 # @backstage/plugin-auth-node
 
+## 0.6.11
+
+### Patch Changes
+
+- 4eeba9e: Upgrade `zod-validation-error` to version 4
+- 872eb91: Upgrade `zod-to-json-schema` to latest version
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.1
+
 ## 0.6.10
 
 ### Patch Changes

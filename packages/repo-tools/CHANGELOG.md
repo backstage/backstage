@@ -1,5 +1,14 @@
 # @backstage/repo-tools
 
+## 0.16.2
+
+### Patch Changes
+
+- 498f9dd: Fixed help text for `backstage-repo-tools package schema openapi generate` command.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.1
+  - @backstage/cli-common@0.1.17
+
 ## 0.16.1
 
 ### Patch Changes
