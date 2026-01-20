@@ -18,6 +18,7 @@ export function createSentryCreateProjectAction(options: {
     slug?: string | undefined;
     platform?: string | undefined;
     authToken?: string | undefined;
+    apiBaseUrl?: string | undefined;
   },
   {
     [x: string]: any;
@@ -33,6 +34,7 @@ export function createSentryFetchDSNAction(options: {
     organizationSlug: string;
     projectSlug: string;
     authToken?: string | undefined;
+    apiBaseUrl?: string | undefined;
   },
   {
     dsn?: string | undefined;
