@@ -15,8 +15,8 @@ export const coreComponentsTranslationRef: TranslationRef<
     readonly 'table.body.emptyDataSourceMessage': 'No records to display';
     readonly 'table.header.actions': 'Actions';
     readonly 'table.toolbar.search': 'Filter';
-    readonly 'table.pagination.labelDisplayedRows': '{from}-{to} of {count}';
     readonly 'table.pagination.firstTooltip': 'First Page';
+    readonly 'table.pagination.labelDisplayedRows': '{from}-{to} of {count}';
     readonly 'table.pagination.labelRowsSelect': 'rows';
     readonly 'table.pagination.lastTooltip': 'Last Page';
     readonly 'table.pagination.nextTooltip': 'Next Page';
@@ -24,10 +24,10 @@ export const coreComponentsTranslationRef: TranslationRef<
     readonly 'signIn.title': 'Sign In';
     readonly 'signIn.loginFailed': 'Login failed';
     readonly 'signIn.customProvider.title': 'Custom User';
+    readonly 'signIn.customProvider.continue': 'Continue';
     readonly 'signIn.customProvider.subtitle': 'Enter your own User ID and credentials.\n This selection will not be stored.';
     readonly 'signIn.customProvider.userId': 'User ID';
     readonly 'signIn.customProvider.tokenInvalid': 'Token is not a valid OpenID Connect JWT Token';
-    readonly 'signIn.customProvider.continue': 'Continue';
     readonly 'signIn.customProvider.idToken': 'ID Token (optional)';
     readonly 'signIn.guestProvider.title': 'Guest';
     readonly 'signIn.guestProvider.enter': 'Enter';
