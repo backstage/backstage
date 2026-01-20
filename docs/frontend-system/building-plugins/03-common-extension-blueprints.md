@@ -23,6 +23,12 @@ Navigation item extensions are used to provide menu items that link to different
 
 Page extensions provide content for a particular route in the app. By default pages are attached to the app routes extensions, which renders the root routes.
 
+## Extension blueprints in `@backstage/frontend-plugin-api/alpha`
+
+### Plugin Wrapper - [Reference](https://backstage.io/api/stable/variables/_backstage_frontend-plugin-api.packages-frontend-plugin-api_src_alpha.PluginWrapperBlueprint.html)
+
+Plugin wrappers allow you to install components that will wrap all elements rendered as part of a plugin. This can be useful if you need to add a global provider, for example for a query client. The provided wrapper will be rendered as separate elements for each wrapped plugin element, so be sure to use a central store like a [Utility API](../utility-apis/01-index.md) if you want to share state between wrapper instances.
+
 ## Extension blueprints in `@backstage/plugin-app-react`
 
 ### SignInPage - [Reference](https://backstage.io/api/stable/variables/_backstage_frontend-plugin-api.SignInPageBlueprint.html)

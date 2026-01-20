@@ -4,6 +4,7 @@
 
 Moved the following blueprints from `@backstage/frontend-plugin-api`:
 
+- `AppRootWrapperBlueprint`
 - `IconBundleBlueprint`
 - `NavContentBlueprint`
 - `RouterBlueprint`
