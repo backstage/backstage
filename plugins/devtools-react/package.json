@@ -1,42 +1,31 @@
 {
-  "name": "@backstage/plugin-catalog-unprocessed-entities",
-  "version": "0.2.25-next.0",
+  "name": "@backstage/plugin-devtools-react",
+  "version": "0.0.0",
+  "description": "Web library for the devtools plugin",
   "backstage": {
-    "role": "frontend-plugin",
-    "pluginId": "catalog-unprocessed-entities",
+    "role": "web-library",
+    "pluginId": "devtools",
     "pluginPackages": [
-      "@backstage/plugin-catalog-unprocessed-entities",
-      "@backstage/plugin-catalog-unprocessed-entities-common"
+      "@backstage/plugin-devtools",
+      "@backstage/plugin-devtools-backend",
+      "@backstage/plugin-devtools-common",
+      "@backstage/plugin-devtools-react"
     ]
   },
   "publishConfig": {
-    "access": "public"
+    "access": "public",
+    "main": "dist/index.esm.js",
+    "types": "dist/index.d.ts"
   },
-  "homepage": "https://backstage.io",
   "repository": {
     "type": "git",
     "url": "https://github.com/backstage/backstage",
-    "directory": "plugins/catalog-unprocessed-entities"
+    "directory": "plugins/devtools-react"
   },
   "license": "Apache-2.0",
   "sideEffects": false,
-  "exports": {
-    ".": "./src/index.ts",
-    "./alpha": "./src/alpha.ts",
-    "./package.json": "./package.json"
-  },
   "main": "src/index.ts",
   "types": "src/index.ts",
-  "typesVersions": {
-    "*": {
-      "alpha": [
-        "src/alpha.ts"
-      ],
-      "package.json": [
-        "package.json"
-      ]
-    }
-  },
   "files": [
     "dist"
   ],
@@ -50,24 +39,15 @@
     "test": "backstage-cli package test"
   },
   "dependencies": {
-    "@backstage/core-compat-api": "workspace:^",
-    "@backstage/core-components": "workspace:^",
     "@backstage/core-plugin-api": "workspace:^",
-    "@backstage/errors": "workspace:^",
     "@backstage/frontend-plugin-api": "workspace:^",
-    "@backstage/plugin-catalog-unprocessed-entities-common": "workspace:^",
-    "@backstage/plugin-devtools-react": "workspace:^",
-    "@material-ui/core": "^4.9.13",
-    "@material-ui/icons": "^4.9.1",
-    "@material-ui/lab": "^4.0.0-alpha.60",
-    "luxon": "^3.5.0",
-    "react-use": "^17.2.4"
+    "@material-ui/core": "^4.9.13"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
-    "@backstage/dev-utils": "workspace:^",
+    "@backstage/test-utils": "workspace:^",
     "@testing-library/jest-dom": "^6.0.0",
-    "@testing-library/react": "^16.0.0",
+    "@testing-library/react": "^14.0.0",
     "@types/react": "^18.0.0",
     "react": "^18.0.2",
     "react-dom": "^18.0.2",

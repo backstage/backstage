@@ -166,6 +166,39 @@ You can also add tabs to show content from other plugins that fit well with the 
 
 #### Catalog Unprocessed Entities Tab
 
+##### New Frontend System
+
+Create an extension and/or load a 3rd party extension to add additional tabs.
+
+```shell
+yarn --cwd plugins/<your-plugin> add @backstage/plugin-devtools-react
+```
+
+```tsx
+import { DevToolsContentBlueprint } from '@backstage/plugin-devtools-react';
+
+export const unprocessedEntitiesDevToolsContent = DevToolsContentBlueprint.make(
+  {
+    disabled: true,
+    params: {
+      path: 'unprocessed-entities',
+      title: 'Unprocessed Entities',
+      loader: () =>
+        import('../components/UnprocessedEntities').then(m => (
+          <m.UnprocessedEntitiesContent />
+        )),
+    },
+  },
+);
+
+const appFeature = createFrontendModule({
+  pluginId: 'catalog-unprocessed-entities',
+  extensions: [unprocessedEntitiesDevToolsContent],
+});
+```
+
+##### Old System
+
 Here's how to add the Catalog Unprocessed Entities tab:
 
 1. Install and setup the [Catalog Unprocessed Entities plugin](https://github.com/backstage/backstage/tree/master/plugins/catalog-unprocessed-entities) as per its documentation
