@@ -1,12 +1,12 @@
 # @backstage/backend-dynamic-feature-service
 
-This package provides support for **dynamic backend features (plugins and modules)** in Backstage, allowing you to load plugins at runtime from a separate directory without including them in your main application's package.json.
+This package provides experimental support for **dynamic backend features (plugins and modules)** in Backstage, allowing you to load plugins at runtime from a separate directory without including them in your main application's package.json.
 
 ## Purpose
 
 This enables:
 
-- **Plugin distribution**: Distributing plugins as standalone packages
+- **Plugin distribution**: Distributing plugins as standalone artifacts
 - **Runtime flexibility**: Adding or updating plugins without rebuilding the entire application
 - **Isolation**: Keeping plugin-specific dependencies separate from core application dependencies
 - **Modular deployments**: Different environments can load different sets of plugins
@@ -135,8 +135,6 @@ yarn install  # Installs all the plugin's dependencies
 **Why this works:** Each plugin gets its own `node_modules` directory with all its dependencies.
 
 **Example scenario:** Plugin needs `axios@1.4.0` which isn't available in the main application.
-
-**Limitation:** `@backstage/*` dependencies will also be installed in the plugin's `node_modules` and will take priority over the main application's versions, leading to a big number of unnecessary duplicated dependencies, and potentially breaking consistency between core Backstage packages.
 
 ### 3. Custom packaging CLI tool
 
