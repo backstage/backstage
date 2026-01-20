@@ -19250,18 +19250,18 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/addon-mcp@npm:0.1.4-next.2":
-  version: 0.1.4-next.2
-  resolution: "@storybook/addon-mcp@npm:0.1.4-next.2"
+"@storybook/addon-mcp@npm:0.1.8":
+  version: 0.1.8
+  resolution: "@storybook/addon-mcp@npm:0.1.8"
   dependencies:
-    "@storybook/mcp": "npm:0.0.7-next.0"
+    "@storybook/mcp": "npm:0.2.1"
     "@tmcp/adapter-valibot": "npm:^0.1.4"
     "@tmcp/transport-http": "npm:^0.8.0"
     tmcp: "npm:^1.16.0"
-    valibot: "npm:^1.1.0"
+    valibot: "npm:1.2.0"
   peerDependencies:
     storybook: ^9.1.16 || ^10.0.0 || ^10.1.0-0 || ^10.2.0-0 || ^10.3.0-0 || ^10.4.0-0
-  checksum: 10/b4d2ab875183b5edccd3a9531f385c6a4d628662d6f976d3adfb1ce483510563befa491192eb78867c5a2345a8f7b071d142a3a1c8b5274477e5c66554fa952a
+  checksum: 10/7243a242eec5010d4d45727901244da8fc40102a757076929f665d04db12d02f38e2bc0c7b16dc23ea7eeb23340bf445eff0a5610dd24b3fc9c9104c901d802f
   languageName: node
   linkType: hard
 
@@ -19356,15 +19356,15 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@storybook/mcp@npm:0.0.7-next.0":
-  version: 0.0.7-next.0
-  resolution: "@storybook/mcp@npm:0.0.7-next.0"
+"@storybook/mcp@npm:0.2.1":
+  version: 0.2.1
+  resolution: "@storybook/mcp@npm:0.2.1"
   dependencies:
     "@tmcp/adapter-valibot": "npm:^0.1.4"
     "@tmcp/transport-http": "npm:^0.8.0"
     tmcp: "npm:^1.16.0"
-    valibot: "npm:^1.1.0"
-  checksum: 10/8a70f0f16305fcc291fb248bdd09f818a0f1960416e27ab29ea7f4ed59878f3eae0865b407f7fbdba159727a9e9820a7ea0085fba948094cb1d946f63eeb18f4
+    valibot: "npm:1.2.0"
+  checksum: 10/fc2cbd82c1e8ed4dbaebdc4db5b7142516a2a1cc7e91e578a7bf9d8b7c7f01072ba69c335fd0cec58b849404da95c3f637615c95587381b1a310b2e10b233d23
   languageName: node
   linkType: hard
 
@@ -45573,7 +45573,7 @@ __metadata:
     "@storybook/addon-a11y": "npm:^10.2.0-alpha.7"
     "@storybook/addon-docs": "npm:^10.2.0-alpha.7"
     "@storybook/addon-links": "npm:^10.2.0-alpha.7"
-    "@storybook/addon-mcp": "npm:0.1.4-next.2"
+    "@storybook/addon-mcp": "npm:0.1.8"
     "@storybook/addon-themes": "npm:^10.2.0-alpha.7"
     "@storybook/addon-vitest": "npm:^10.2.0-alpha.7"
     "@storybook/react-vite": "npm:^10.2.0-alpha.7"
@@ -50053,7 +50053,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"valibot@npm:^1.1.0":
+"valibot@npm:1.2.0, valibot@npm:^1.1.0":
   version: 1.2.0
   resolution: "valibot@npm:1.2.0"
   peerDependencies:
