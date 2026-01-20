@@ -298,6 +298,7 @@ export async function createSpecializedApp(
   apis: ApiHolder;
   tree: AppTree;
   errors?: AppError[];
+  completeInitialization(): Promise<JSX.Element | undefined>;
 }> {
   const config = options?.config ?? new ConfigReader({}, 'empty-config');
   const features = deduplicateFeatures(options?.features ?? []).map(
@@ -368,20 +369,13 @@ export async function createSpecializedApp(
     }
   }
 
-  // === PHASE 2: Instantiate extensions that don't need enabled checks ===
-  // Only extensions with enabled conditions need to be deferred until after mount
-  // Everything else can be instantiated immediately
-
-  // Collect nodes that need enabled condition evaluation
+  // Collect nodes with enabled conditions to defer until after mount
   const nodesToEvaluate = new Set<AppNode>();
 
   function collectNodesToEvaluate(node: AppNode) {
-    // Only defer nodes that have an enabled condition
     if (!node.spec.disabled && node.spec.enabled) {
       nodesToEvaluate.add(node);
     }
-
-    // Recurse into children
     for (const children of node.edges.attachments.values()) {
       for (const child of children) {
         collectNodesToEvaluate(child);
@@ -391,8 +385,7 @@ export async function createSpecializedApp(
 
   collectNodesToEvaluate(tree.root);
 
-  // Instantiate tree with extensions that have enabled conditions disabled for now
-  // This allows pages without conditions to render immediately
+  // Instantiate tree with enabled conditions temporarily disabled
   instantiateAppNodeTree(
     tree.root,
     apis,
@@ -400,7 +393,7 @@ export async function createSpecializedApp(
     mergeExtensionFactoryMiddleware(
       options?.advanced?.extensionFactoryMiddleware,
     ),
-    nodesToEvaluate, // Nodes with enabled conditions disabled for now
+    nodesToEvaluate,
   );
 
   const routeInfo = extractRouteInfoFromAppNode(
@@ -415,11 +408,11 @@ export async function createSpecializedApp(
     apis,
     tree,
     errors: collector.collectErrors(),
-    // Function to complete Phase 3: evaluate enabled conditions and instantiate entire tree
     async completeInitialization() {
       const disabledNodes = new Set<AppNode>();
       const newlyEnabledNodes: AppNode[] = [];
 
+      // Evaluate all enabled conditions in parallel
       await Promise.allSettled(
         [...nodesToEvaluate].map(async node => {
           const defaultDecision = async () => !node.spec.disabled;
@@ -443,27 +436,21 @@ export async function createSpecializedApp(
         }),
       );
 
-      // Clear instances of all parents of newly enabled nodes
+      // Clear parent instances so they can be recreated with newly enabled children
       const nodesToClear = new Set<AppNode>();
       for (const node of newlyEnabledNodes) {
-        // Walk up to root, clearing all parent instances
-        // Note: edges.attachedTo is { node: AppNode, input: string }, not AppNode directly
         let current = node?.edges?.attachedTo?.node;
-        while (current) {
-          if (nodesToClear.has(current)) {
-            break; // Already processed this branch
-          }
+        while (current && !nodesToClear.has(current)) {
           nodesToClear.add(current);
           current = current.edges.attachedTo?.node;
         }
       }
 
-      // Clear parent instances so they get recreated with newly enabled children
       for (const node of nodesToClear) {
         (node as any).instance = undefined;
       }
 
-      // Re-run instantiation - parents will be recreated with newly enabled children
+      // Re-instantiate with newly enabled extensions
       instantiateAppNodeTree(
         tree.root,
         apis,
@@ -475,13 +462,16 @@ export async function createSpecializedApp(
       );
 
       // Re-initialize routing with newly enabled extensions
-      const routeInfo = extractRouteInfoFromAppNode(
+      const reInitializedRouteInfo = extractRouteInfoFromAppNode(
         tree.root,
         createRouteAliasResolver(routeRefsById),
       );
 
-      routeResolutionApi.initialize(routeInfo, routeRefsById.routes);
-      appTreeApi.initialize(routeInfo);
+      routeResolutionApi.initialize(
+        reInitializedRouteInfo,
+        routeRefsById.routes,
+      );
+      appTreeApi.initialize(reInitializedRouteInfo);
 
       return tree.root.instance!.getData(coreExtensionData.reactElement);
     },

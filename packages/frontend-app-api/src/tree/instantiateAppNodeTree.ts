@@ -474,8 +474,6 @@ export function instantiateAppNodeTree(
     if (node.instance) {
       return node.instance;
     }
-    // Skip disabled nodes. `disabledNodes` may not always contain all disabled nodes,
-    //   so we check for that explicitly.
     if (node.spec.disabled || disabledNodes.has(node)) {
       return undefined;
     }
