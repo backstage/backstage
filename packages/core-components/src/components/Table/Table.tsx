@@ -186,6 +186,11 @@ const useFilterStyles = makeStyles(
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
+      flexWrap: 'wrap',
+    },
+    filterControls: {
+      display: 'flex',
+      alignItems: 'center',
     },
     title: {
       fontWeight: theme.typography.fontWeightBold,
@@ -315,7 +320,7 @@ export function TableToolbar(toolbarProps: {
   if (hasFilters) {
     return (
       <Box className={filtersClasses.root}>
-        <Box className={filtersClasses.root}>
+        <Box className={filtersClasses.filterControls}>
           <IconButton onClick={toggleFilters} aria-label="filter list">
             <FilterList />
           </IconButton>
