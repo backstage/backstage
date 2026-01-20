@@ -60,10 +60,11 @@ describe('ElasticSearchSearchEngineIndexer', () => {
       bulkSpy,
     );
     refreshSpy = jest.fn().mockReturnValue({});
+    // Use specific pattern to avoid conflict with /some-type-index__* wildcard mock
     mock.add(
       {
         method: 'GET',
-        path: '/:index/_refresh',
+        path: '/some-type-index__:ts/_refresh',
       },
       refreshSpy,
     );
