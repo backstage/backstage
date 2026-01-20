@@ -16,7 +16,10 @@
 
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import { InputError } from '@backstage/errors';
-import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
+import {
+  isChildPath,
+  resolveSafeChildPath,
+} from '@backstage/backend-plugin-api';
 import fs from 'fs-extra';
 import globby from 'globby';
 import { examples } from './delete.examples';
@@ -58,10 +61,11 @@ export const createFilesystemDeleteAction = () => {
 
         for (const filepath of resolvedPaths) {
           try {
-            await fs.remove(filepath);
-            ctx.logger.info(`File ${filepath} deleted successfully`);
+            const safePath = resolveSafeChildPath(ctx.workspacePath, filepath);
+            await fs.remove(safePath);
+            ctx.logger.info(`File ${safePath} deleted successfully`);
           } catch (err) {
-            ctx.logger.error(`Failed to delete file ${filepath}:`, err);
+            ctx.logger.error(`Failed to delete file`, err);
             throw err;
           }
         }

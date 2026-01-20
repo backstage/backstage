@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
 import { readdir, stat } from 'fs-extra';
 import { join, relative } from 'path';
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
@@ -66,8 +67,16 @@ export function createDebugLogAction() {
             .map(f => {
               const relativePath = relative(ctx.workspacePath, f);
               if (ctx.input?.listWorkspace === 'with-contents') {
-                const content = fs.readFileSync(f, 'utf-8');
-                return ` - ${relativePath}:\n\n  ${content}`;
+                try {
+                  const safePath = resolveSafeChildPath(
+                    ctx.workspacePath,
+                    relativePath,
+                  );
+                  const content = fs.readFileSync(safePath, 'utf-8');
+                  return ` - ${relativePath}:\n\n  ${content}`;
+                } catch {
+                  return ` - ${relativePath}: [skipped]`;
+                }
               }
               return `  - ${relativePath}`;
             })
