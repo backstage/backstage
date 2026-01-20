@@ -15,7 +15,9 @@
  */
 
 import clsx from 'clsx';
-import { Text, ButtonIcon, Select } from '../..';
+import { Text } from '../Text';
+import { ButtonIcon } from '../ButtonIcon';
+import { Select } from '../Select';
 import type { TablePaginationProps, PageSizeOption } from './types';
 import { useStyles } from '../../hooks/useStyles';
 import { TablePaginationDefinition } from './definition';
