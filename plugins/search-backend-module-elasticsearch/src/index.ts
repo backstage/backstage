@@ -22,11 +22,6 @@
 
 export { default } from './module';
 export * from './module';
-export type {
-  ElasticSearchAuthProvider,
-  ElasticSearchAuthExtensionPoint,
-} from './auth';
-export { elasticsearchAuthExtensionPoint } from './auth';
 export {
   decodeElasticSearchPageCursor,
   ElasticSearchSearchEngine,
