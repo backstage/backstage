@@ -53,7 +53,9 @@ export async function fetchContents(options: {
   if (!fetchUrlIsAbsolute && baseUrl?.startsWith('file://')) {
     const basePath = baseUrl.slice('file://'.length);
     const srcDir = resolveSafeChildPath(path.dirname(basePath), fetchUrl);
-    await fs.copy(srcDir, outputPath, { filter: src => isChildPath(srcDir, src) });
+    await fs.copy(srcDir, outputPath, {
+      filter: src => isChildPath(srcDir, src),
+    });
   } else {
     const readUrl = getReadUrl(fetchUrl, baseUrl, integrations);
 

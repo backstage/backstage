@@ -16,10 +16,7 @@
 
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import { InputError } from '@backstage/errors';
-import {
-  isChildPath,
-  resolveSafeChildPath,
-} from '@backstage/backend-plugin-api';
+import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
 import fs from 'fs-extra';
 import globby from 'globby';
 import { examples } from './delete.examples';
