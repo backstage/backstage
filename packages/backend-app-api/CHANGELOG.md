@@ -1,5 +1,13 @@
 # @backstage/backend-app-api
 
+## 1.4.1
+
+### Patch Changes
+
+- 04db26b: Clean up process event listeners on backend stop to prevent leaks
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.1
+
 ## 1.4.0
 
 ### Minor Changes

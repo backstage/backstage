@@ -1,5 +1,16 @@
 # @backstage/plugin-catalog-unprocessed-entities
 
+## 0.2.25
+
+### Patch Changes
+
+- be6cef5: Add support for adding `unprocessed-entities` and other tabs to `devtools` when using the New Frontend system
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.3
+  - @backstage/core-components@0.18.5
+  - @backstage/plugin-devtools-react@0.1.0
+  - @backstage/core-compat-api@0.5.6
+
 ## 0.2.25-next.0
 
 ### Patch Changes
