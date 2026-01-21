@@ -16,13 +16,13 @@
 .info {
   background-color: #f2f2f2;
   border-color: #cdcdcd;
-  color: #888888;
+  color: #4b4b4b;
 }
 
 .warning {
   background-color: #fff2b9;
-  border-color: #ffd000;
-  color: #d79927;
+  border-color: #d79927;
+  color: #8a3d09;
 }
 
 .icon {
