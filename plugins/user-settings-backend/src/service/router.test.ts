@@ -74,6 +74,30 @@ describe('createRouter', () => {
       });
     });
 
+    it('returns ok for keys with forward slashes', async () => {
+      const setting = {
+        bucket: 'my-bucket',
+        key: 'my-key/with/slashes',
+        value: 'a',
+      };
+
+      userSettingsStore.get.mockResolvedValue(setting);
+
+      const responses = await request(app).get(
+        '/buckets/my-bucket/keys/my-key/with/slashes',
+      );
+
+      expect(responses.status).toEqual(200);
+      expect(responses.body).toEqual(setting);
+
+      expect(userSettingsStore.get).toHaveBeenCalledTimes(1);
+      expect(userSettingsStore.get).toHaveBeenCalledWith({
+        userEntityRef: mockUserRef,
+        bucket: 'my-bucket',
+        key: 'my-key/with/slashes',
+      });
+    });
+
     it('returns an error if the Authorization header is missing', async () => {
       const responses = await request(app)
         .get('/buckets/my-bucket/keys/my-key')
@@ -104,6 +128,28 @@ describe('createRouter', () => {
         recipients: { type: 'user', entityRef: mockUserRef },
         channel: `user-settings`,
         message: { type: 'key-deleted', key: 'my-key' },
+      });
+    });
+
+    it('returns ok for keys with forward slashes', async () => {
+      userSettingsStore.delete.mockResolvedValue();
+
+      const responses = await request(app).delete(
+        '/buckets/my-bucket/keys/my-key/with/slashes',
+      );
+
+      expect(responses.status).toEqual(204);
+
+      expect(userSettingsStore.delete).toHaveBeenCalledTimes(1);
+      expect(userSettingsStore.delete).toHaveBeenCalledWith({
+        userEntityRef: mockUserRef,
+        bucket: 'my-bucket',
+        key: 'my-key/with/slashes',
+      });
+      expect(signalService.publish).toHaveBeenCalledWith({
+        recipients: { type: 'user', entityRef: mockUserRef },
+        channel: `user-settings`,
+        message: { type: 'key-deleted', key: 'my-key/with/slashes' },
       });
     });
 
@@ -149,6 +195,26 @@ describe('createRouter', () => {
         channel: `user-settings`,
         message: { type: 'key-changed', key: 'my-key' },
       });
+    });
+
+    it('returns ok for keys with forward slashes', async () => {
+      const setting = {
+        bucket: 'my-bucket',
+        key: 'my-key/with/slashes',
+        value: 'a',
+      };
+
+      userSettingsStore.set.mockResolvedValue();
+      userSettingsStore.get.mockResolvedValue(setting);
+
+      const responses = await request(app)
+        .put('/buckets/my-bucket/keys/my-key/with/slashes')
+        .send({ value: 'a' });
+
+      expect(responses.status).toEqual(200);
+      expect(responses.body).toEqual(setting);
+
+      expect(userSettingsStore.set).toHaveBeenCalledTimes(1);
     });
 
     it('returns an error if the value is not given', async () => {

@@ -1,5 +1,70 @@
 # @backstage/plugin-auth-node
 
+## 0.6.11
+
+### Patch Changes
+
+- 4eeba9e: Upgrade `zod-validation-error` to version 4
+- 872eb91: Upgrade `zod-to-json-schema` to latest version
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.1
+
+## 0.6.10
+
+### Patch Changes
+
+- 2389358: remove leading dot in auth cookie cleanup call
+- de96a60: chore(deps): bump `express` from 4.21.2 to 4.22.0
+- b35f8b2: Fixed chunked cookie replacing edge case in OAuthCookieManager class where some of the old chunks would not get removed if new chunked cookie would have fewer chunks.
+- e9dd634: fix flawed cookie removal logic with chunked tokens
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.0
+
+## 0.6.10-next.1
+
+### Patch Changes
+
+- de96a60: chore(deps): bump `express` from 4.21.2 to 4.22.0
+- e9dd634: fix flawed cookie removal logic with chunked tokens
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.0-next.1
+  - @backstage/catalog-client@1.12.1
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
+## 0.6.10-next.0
+
+### Patch Changes
+
+- 2389358: remove leading dot in auth cookie cleanup call
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.1-next.0
+  - @backstage/config@1.3.6
+  - @backstage/catalog-client@1.12.1
+  - @backstage/catalog-model@1.7.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
+## 0.6.9
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.0
+  - @backstage/config@1.3.6
+  - @backstage/catalog-model@1.7.6
+  - @backstage/catalog-client@1.12.1
+
+## 0.6.9-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.0-next.1
+
 ## 0.6.9-next.0
 
 ### Patch Changes

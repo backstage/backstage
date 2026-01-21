@@ -1,5 +1,39 @@
 # @backstage/cli-common
 
+## 0.1.17
+
+### Patch Changes
+
+- ae4dd5d: Move some of the symlink resolution to `isChildPath`
+
+## 0.1.16
+
+### Patch Changes
+
+- 5cfb2a4: Added new `run`, `runOutput`, and `runCheck` utilities to help run child processes in a safe and portable way.
+- c8c2329: Add proxy configuration from env-vars to create-app tasks
+- 2bae83a: Bumped dev dependencies `@types/node`
+
+## 0.1.16-next.2
+
+### Patch Changes
+
+- 2bae83a: Bumped dev dependencies `@types/node`
+- Updated dependencies
+  - @backstage/errors@1.2.7
+
+## 0.1.16-next.1
+
+### Patch Changes
+
+- 5cfb2a4: Added new `run`, `runOutput`, and `runCheck` utilities to help run child processes in a safe and portable way.
+
+## 0.1.16-next.0
+
+### Patch Changes
+
+- c8c2329: Add proxy configuration from env-vars to create-app tasks
+
 ## 0.1.15
 
 ### Patch Changes

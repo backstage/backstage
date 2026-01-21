@@ -36,6 +36,14 @@ scaffolder:
     token: ${SENTRY_TOKEN}
 ```
 
+You can optionally override the default Sentry API Base URL (`https://sentry.io/api/0`) in your `app-config.yaml`:
+
+```yaml
+scaffolder:
+  sentry:
+    apiBaseUrl: API-BASE-URL
+```
+
 After that you can use the action in your template:
 
 ```yaml

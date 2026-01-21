@@ -21,10 +21,18 @@ app:
         ownerEntityRefs: [cubic-belugas]
 
   extensions:
+    # set availableLanguages example
+    - api:app/app-language:
+        config:
+          availableLanguages: ['en', 'es', 'fr', 'de', 'ja']
+          defaultLanguage: 'en'
     - entity-card:org/members-list:
         config:
           showAggregateMembersToggle: true
           initialRelationAggregation: aggregated
+    - entity-card:org/ownership:
+        config:
+          ownedKinds: ['Component', 'API', 'System']
 
     # - apis.plugin.graphiql.browse.gitlab: true
     # - graphiql-endpoint:graphiql/gitlab: true
@@ -105,6 +113,11 @@ app:
     # - entity-content:azure-devops/pipelines
     # - entity-content:azure-devops/pull-requests
     # - entity-content:azure-devops/git-tags
+
+    # Enable the catalog-unprocessed-entities tab in devtools
+    - devtools-content:catalog-unprocessed-entities: true
+    # Disable the catalog-unprocessed-entities element outside devtools
+    - page:catalog-unprocessed-entities: false
 
   # scmAuthExtension: >-
   #   createScmAuthExtension({

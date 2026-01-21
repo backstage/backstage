@@ -14,4 +14,5 @@
  * limitations under the License.
  */
 export * from './Dialog';
+export { DialogDefinition } from './definition';
 export * from './types';

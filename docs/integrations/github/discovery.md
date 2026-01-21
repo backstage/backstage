@@ -141,7 +141,7 @@ events:
               region: us-east-2
 ```
 
-The [AWS SQS module `README`](https://github.com/backstage/backstage/blob/master/plugins/events-backend-module-aws-sqs/README.md#configuration) has more details on the configuration options, the example above includes on the required options.
+The [AWS SQS module `README`](https://github.com/backstage/backstage/blob/master/plugins/events-backend-module-aws-sqs/README.md#configuration) has more details on the configuration options, the example above includes only the required options.
 
 ### Events Setup using Google Pub/Sub module
 
@@ -179,7 +179,53 @@ events:
             targetTopic: 'github.{{ event.attributes.x-github-event }}'
 ```
 
-The [Google Pub/Sub module `README`](https://github.com/backstage/backstage/blob/master/plugins/events-backend-module-google-pubsub/README.md#configuration) has more details on the configuration options, the example above includes on the required options.
+The [Google Pub/Sub module `README`](https://github.com/backstage/backstage/blob/master/plugins/events-backend-module-google-pubsub/README.md#configuration) has more details on the configuration options, the example above includes only the required options.
+
+### Events Setup using Kafka module
+
+Alternatively to using the HTTP endpoint you can use the Kafka module, here's how.
+
+First we need to add the package:
+
+```bash title="from your Backstage root directory"
+yarn --cwd packages/backend add @backstage/plugin-events-backend-module-kafka
+```
+
+Then we need to add it to your backend:
+
+```ts title="in packages/backend/src/index.ts"
+backend.add(import('@backstage/plugin-events-backend'));
+backend.add(import('@backstage/plugin-events-backend-module-github'));
+/* highlight-add-start */
+backend.add(import('@backstage/plugin-events-backend-module-kafka'));
+/* highlight-add-end */
+```
+
+Finally you will want to configure it:
+
+```yaml title="app-config.yaml
+events:
+  modules:
+    kafka:
+      kafkaConsumingEventPublisher:
+        # Client ID used by Backstage to identify when connecting to the Kafka cluster.
+        clientId: your-client-id
+        # List of brokers in the Kafka cluster to connect to.
+        brokers:
+          - broker1
+          - broker2
+        topics:
+          # Replace with actual topic name as expected by subscribers
+          - topic: 'backstage.topic'
+            kafka:
+              # The Kafka topics to subscribe to.
+              topics:
+                - topic1
+              # The GroupId to be used by the topic consumers.
+              groupId: your-group-id
+```
+
+The [Kafka module `README`](https://github.com/backstage/backstage/blob/master/plugins/events-backend-module-kafka/README.md#configuration) has more details on the configuration options, the example above includes only the required options.
 
 ## Configuration
 
@@ -210,6 +256,8 @@ catalog:
         filters: # optional filters
           branch: 'develop' # optional string
           repository: '.*' # optional Regex
+        pageSizes:
+          repositories: 25
       wildcardProviderId:
         organization: 'new-org' # string
         catalogPath: '/groups/**/*.yaml' # this will search all folders for files that end in .yaml
@@ -308,6 +356,10 @@ If you do so, `default` will be used as provider ID.
     The amount of time that should pass before the first invocation happens.
   - **`scope`** _(optional)_:
     `'global'` or `'local'`. Sets the scope of concurrency control.
+- **`pageSizes`** _(optional)_:
+  Configure page sizes for GitHub GraphQL API queries. This can help prevent `RESOURCE_LIMITS_EXCEEDED` errors.
+  - **`repositories`** _(optional)_:
+    Number of repositories to fetch per page. Defaults to `25`. Reduce this value if hitting API resource limits.
 
 ## GitHub API Rate Limits
 

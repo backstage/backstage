@@ -33,9 +33,9 @@ import {
   RouterProvider,
   Virtualizer,
   ListLayout,
-  OverlayTriggerStateContext,
 } from 'react-aria-components';
 import { useStyles } from '../../hooks/useStyles';
+import { MenuDefinition } from './definition';
 import type {
   MenuTriggerProps,
   SubmenuTriggerProps,
@@ -55,7 +55,6 @@ import {
 } from '@remixicon/react';
 import { useNavigate, useHref } from 'react-router-dom';
 import { isExternalLink } from '../../utils/isExternalLink';
-import { useRef, useEffect, useContext } from 'react';
 import styles from './Menu.module.css';
 import clsx from 'clsx';
 
@@ -63,7 +62,7 @@ import clsx from 'clsx';
 const rowHeight = 32;
 
 const MenuEmptyState = () => {
-  const { classNames } = useStyles('Menu');
+  const { classNames } = useStyles(MenuDefinition);
 
   return (
     <div className={clsx(classNames.emptyState, styles[classNames.emptyState])}>
@@ -84,7 +83,7 @@ export const SubmenuTrigger = (props: SubmenuTriggerProps) => {
 
 /** @public */
 export const Menu = (props: MenuProps<object>) => {
-  const { classNames, cleanedProps } = useStyles('Menu', props);
+  const { classNames, cleanedProps } = useStyles(MenuDefinition, props);
   const {
     className,
     placement = 'bottom start',
@@ -97,33 +96,6 @@ export const Menu = (props: MenuProps<object>) => {
 
   const navigate = useNavigate();
   let newMaxWidth = maxWidth || (virtualized ? '260px' : 'undefined');
-  const popoverRef = useRef<HTMLDivElement>(null);
-  const state = useContext(OverlayTriggerStateContext);
-
-  // Custom click-outside handler for non-modal popovers
-  useEffect(() => {
-    if (!state?.isOpen) return;
-
-    const handleClickOutside = (event: MouseEvent) => {
-      const target = event.target as Node;
-
-      // Check if click is outside the popover
-      if (popoverRef.current && !popoverRef.current.contains(target)) {
-        // Check if click is on a trigger button or submenu
-        const isOnTrigger = (target as Element).closest('[data-trigger]');
-        const isOnSubmenu = (target as Element).closest('[role="menu"]');
-
-        if (!isOnTrigger && !isOnSubmenu) {
-          state.close();
-        }
-      }
-    };
-
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [state]);
 
   const menuContent = (
     <RAMenu
@@ -136,15 +108,12 @@ export const Menu = (props: MenuProps<object>) => {
 
   return (
     <RAPopover
-      ref={popoverRef}
       className={clsx(
         classNames.popover,
         styles[classNames.popover],
         className,
       )}
       placement={placement}
-      isNonModal={true}
-      isKeyboardDismissDisabled={false}
     >
       <RouterProvider navigate={navigate} useHref={useHref}>
         {virtualized ? (
@@ -166,7 +135,7 @@ export const Menu = (props: MenuProps<object>) => {
 
 /** @public */
 export const MenuListBox = (props: MenuListBoxProps<object>) => {
-  const { classNames, cleanedProps } = useStyles('Menu', props);
+  const { classNames, cleanedProps } = useStyles(MenuDefinition, props);
   const {
     className,
     selectionMode = 'single',
@@ -215,7 +184,7 @@ export const MenuListBox = (props: MenuListBoxProps<object>) => {
 
 /** @public */
 export const MenuAutocomplete = (props: MenuAutocompleteProps<object>) => {
-  const { classNames, cleanedProps } = useStyles('Menu', props);
+  const { classNames, cleanedProps } = useStyles(MenuDefinition, props);
   const {
     className,
     placement = 'bottom start',
@@ -254,13 +223,13 @@ export const MenuAutocomplete = (props: MenuAutocompleteProps<object>) => {
               classNames.searchField,
               styles[classNames.searchField],
             )}
+            aria-label={props.placeholder || 'Search'}
           >
             <RAInput
               className={clsx(
                 classNames.searchFieldInput,
                 styles[classNames.searchFieldInput],
               )}
-              aria-label="Search"
               placeholder={props.placeholder || 'Search...'}
             />
             <RAButton
@@ -294,7 +263,7 @@ export const MenuAutocomplete = (props: MenuAutocompleteProps<object>) => {
 export const MenuAutocompleteListbox = (
   props: MenuAutocompleteListBoxProps<object>,
 ) => {
-  const { classNames, cleanedProps } = useStyles('Menu', props);
+  const { classNames, cleanedProps } = useStyles(MenuDefinition, props);
   const {
     className,
     selectionMode = 'single',
@@ -333,13 +302,13 @@ export const MenuAutocompleteListbox = (
             classNames.searchField,
             styles[classNames.searchField],
           )}
+          aria-label={props.placeholder || 'Search'}
         >
           <RAInput
             className={clsx(
               classNames.searchFieldInput,
               styles[classNames.searchFieldInput],
             )}
-            aria-label="Search"
             placeholder={props.placeholder || 'Search...'}
           />
           <RAButton
@@ -370,7 +339,7 @@ export const MenuAutocompleteListbox = (
 
 /** @public */
 export const MenuItem = (props: MenuItemProps) => {
-  const { classNames, cleanedProps } = useStyles('Menu', props);
+  const { classNames, cleanedProps } = useStyles(MenuDefinition, props);
   const {
     className,
     iconStart,
@@ -449,7 +418,7 @@ export const MenuItem = (props: MenuItemProps) => {
 
 /** @public */
 export const MenuListBoxItem = (props: MenuListBoxItemProps) => {
-  const { classNames, cleanedProps } = useStyles('Menu', props);
+  const { classNames, cleanedProps } = useStyles(MenuDefinition, props);
   const { children, className, ...rest } = cleanedProps;
 
   return (
@@ -490,7 +459,7 @@ export const MenuListBoxItem = (props: MenuListBoxItemProps) => {
 
 /** @public */
 export const MenuSection = (props: MenuSectionProps<object>) => {
-  const { classNames, cleanedProps } = useStyles('Menu', props);
+  const { classNames, cleanedProps } = useStyles(MenuDefinition, props);
   const { children, className, title, ...rest } = cleanedProps;
 
   return (
@@ -517,7 +486,7 @@ export const MenuSection = (props: MenuSectionProps<object>) => {
 
 /** @public */
 export const MenuSeparator = (props: MenuSeparatorProps) => {
-  const { classNames, cleanedProps } = useStyles('Menu', props);
+  const { classNames, cleanedProps } = useStyles(MenuDefinition, props);
   const { className, ...rest } = cleanedProps;
 
   return (

@@ -21,6 +21,7 @@ import { FieldLabel } from '../FieldLabel';
 import { FieldError } from '../FieldError';
 import type { TextFieldProps } from './types';
 import { useStyles } from '../../hooks/useStyles';
+import { TextFieldDefinition } from './definition';
 import styles from './TextField.module.css';
 
 /** @public */
@@ -41,7 +42,7 @@ export const TextField = forwardRef<HTMLDivElement, TextFieldProps>(
     }, [label, ariaLabel, ariaLabelledBy]);
 
     const { classNames, dataAttributes, style, cleanedProps } = useStyles(
-      'TextField',
+      TextFieldDefinition,
       {
         size: 'small',
         ...props,

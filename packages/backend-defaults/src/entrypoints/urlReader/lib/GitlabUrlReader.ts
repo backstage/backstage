@@ -319,14 +319,10 @@ export class GitlabUrlReader implements UrlReaderService {
    */
   private getStaticPart(globPattern: string) {
     const segments = globPattern.split('/');
-    let i = segments.length;
-    while (
-      i > 0 &&
-      new Minimatch(segments.slice(0, i).join('/')).match(globPattern)
-    ) {
-      i--;
-    }
-    return segments.slice(0, i).join('/');
+    const globIndex = segments.findIndex(segment => segment.match(/[*?]/));
+    return globIndex === -1
+      ? globPattern
+      : segments.slice(0, globIndex).join('/');
   }
 
   toString() {

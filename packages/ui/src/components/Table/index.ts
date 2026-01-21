@@ -15,18 +15,48 @@
  */
 
 export { Table } from './components/Table';
+export { TableRoot } from './components/TableRoot';
 export { TableHeader } from './components/TableHeader';
 export { TableBody } from './components/TableBody';
 export { Column } from './components/Column';
 export { Row } from './components/Row';
 export { Cell } from './components/Cell';
+export { CellText } from './components/CellText';
 export { CellProfile } from './components/CellProfile';
 export { useTable } from './hooks/useTable';
 
-export type { CellProps, CellProfileProps, ColumnProps } from './types';
 export type {
-  UseTableConfig,
+  CellProps,
+  CellTextProps,
+  CellProfileProps,
+  ColumnProps,
+  TableProps,
+  TableRootProps,
+  TableItem,
+  ColumnConfig,
+  RowConfig,
+  RowRenderFn,
+  TableSelection,
+  SortState,
+  SortDescriptor,
+  NoPagination,
+  PagePagination,
+  TablePaginationType,
+} from './types';
+export type {
+  UseTableOptions,
   UseTableResult,
-  UseTablePagination,
-  UseTablePaginationConfig,
+  UseTableCompleteOptions,
+  UseTableOffsetOptions,
+  UseTableCursorOptions,
+  OffsetParams,
+  OffsetResponse,
+  CursorParams,
+  CursorResponse,
+  FilterState,
+  SearchState,
+  QueryOptions,
+  PaginationOptions,
 } from './hooks/types';
+
+export { TableDefinition } from './definition';

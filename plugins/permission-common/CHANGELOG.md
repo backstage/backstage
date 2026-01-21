@@ -1,5 +1,25 @@
 # @backstage/plugin-permission-common
 
+## 0.9.4
+
+### Patch Changes
+
+- 872eb91: Upgrade `zod-to-json-schema` to latest version
+
+## 0.9.3
+
+### Patch Changes
+
+- b2bef92: Convert all enums to erasable-syntax compliant patterns
+- Updated dependencies
+  - @backstage/config@1.3.6
+
+## 0.9.3-next.1
+
+### Patch Changes
+
+- b2bef92: Convert all enums to erasable-syntax compliant patterns
+
 ## 0.9.3-next.0
 
 ### Patch Changes

@@ -133,7 +133,8 @@ export function ApiDefinitionDialog(props: {
     >
       <DialogTitle id="api-definition-dialog-title" disableTypography>
         <Typography className={classes.type}>
-          API - {definitionWidget?.title ?? 'Raw'}
+          API -{' '}
+          {definitionWidget?.title ?? t('apiDefinitionDialog.rawButtonTitle')}
         </Typography>
         <Typography className={classes.title} variant="h1">
           {entity.metadata.title ?? entity.metadata.name}
@@ -151,7 +152,10 @@ export function ApiDefinitionDialog(props: {
           {definitionWidget ? (
             <Tab label={definitionWidget.title} {...a11yProps(tabIndex++)} />
           ) : null}
-          <Tab label="Raw" {...a11yProps(tabIndex++)} />
+          <Tab
+            label={t('apiDefinitionDialog.rawButtonTitle')}
+            {...a11yProps(tabIndex++)}
+          />
         </Tabs>
 
         {definitionWidget ? (

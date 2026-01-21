@@ -22,21 +22,16 @@ import {
   fetchApiRef,
 } from '@backstage/frontend-plugin-api';
 import { rootRouteRef } from './routes';
-import {
-  compatWrapper,
-  convertLegacyRouteRef,
-  convertLegacyRouteRefs,
-} from '@backstage/core-compat-api';
 import { NotificationsClient, notificationsApiRef } from './api';
 
 const page = PageBlueprint.make({
   params: {
     path: '/notifications',
-    routeRef: convertLegacyRouteRef(rootRouteRef),
+    routeRef: rootRouteRef,
     loader: () =>
-      import('./components/NotificationsPage').then(m =>
-        compatWrapper(<m.NotificationsPage />),
-      ),
+      import('./components/NotificationsPage').then(m => (
+        <m.NotificationsPage />
+      )),
   },
 });
 
@@ -54,9 +49,11 @@ const api = ApiBlueprint.make({
 export default createFrontendPlugin({
   pluginId: 'notifications',
   info: { packageJson: () => import('../package.json') },
-  routes: convertLegacyRouteRefs({
+  routes: {
     root: rootRouteRef,
-  }),
+  },
   // TODO(Rugvip): Nav item (i.e. NotificationsSidebarItem) currently needs to be installed manually
   extensions: [page, api],
 });
+
+export { notificationsTranslationRef } from './translation';

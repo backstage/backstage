@@ -1,5 +1,35 @@
 # @backstage/plugin-devtools-common
 
+## 0.1.21
+
+### Patch Changes
+
+- be6cef5: Add support for adding `unprocessed-entities` and other tabs to `devtools` when using the New Frontend system
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.4
+
+## 0.1.20
+
+### Patch Changes
+
+- 291bf9d: Added scheduled tasks UI feature for the DevTools plugin
+
+## 0.1.19
+
+### Patch Changes
+
+- b2bef92: Convert all enums to erasable-syntax compliant patterns
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.3
+
+## 0.1.19-next.1
+
+### Patch Changes
+
+- b2bef92: Convert all enums to erasable-syntax compliant patterns
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.3-next.1
+
 ## 0.1.19-next.0
 
 ### Patch Changes

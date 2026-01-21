@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import { componentDefinitions } from './utils/componentDefinitions';
-
 /** @public */
 export type Breakpoint = 'initial' | 'xs' | 'sm' | 'md' | 'lg' | 'xl';
 
@@ -177,14 +175,19 @@ export interface ComponentDefinition {
 }
 
 /**
- * Type utilities for extracting information from the component styles
+ * Surface type
+ *
+ * Supports absolute levels ('0'-'3'), intent surfaces ('danger', 'warning', 'success'),
+ * and 'auto' which increments from the parent surface context.
+ *
  * @public
  */
-export type ComponentDefinitionName = keyof typeof componentDefinitions;
-
-/**
- * Helper type to extract class names for a component
- * @public
- */
-export type ComponentClassNames<T extends ComponentDefinitionName> =
-  (typeof componentDefinitions)[T]['classNames'];
+export type Surface =
+  | '0'
+  | '1'
+  | '2'
+  | '3'
+  | 'danger'
+  | 'warning'
+  | 'success'
+  | 'auto';

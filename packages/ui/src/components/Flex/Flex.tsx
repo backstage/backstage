@@ -18,18 +18,28 @@ import { forwardRef } from 'react';
 import { FlexProps } from './types';
 import clsx from 'clsx';
 import { useStyles } from '../../hooks/useStyles';
+import { FlexDefinition } from './definition';
 import styles from './Flex.module.css';
+import { SurfaceProvider, useSurface } from '../../hooks/useSurface';
 
 /** @public */
 export const Flex = forwardRef<HTMLDivElement, FlexProps>((props, ref) => {
-  const { classNames, utilityClasses, style, cleanedProps } = useStyles(
-    'Flex',
-    { gap: '4', ...props },
-  );
+  // Resolve the surface this Flex creates for its children
+  // Using 'surface' parameter = container behavior (auto increments)
+  const { surface: resolvedSurface } = useSurface({
+    surface: props.surface,
+  });
 
-  const { className, ...rest } = cleanedProps;
+  const { classNames, dataAttributes, utilityClasses, style, cleanedProps } =
+    useStyles(FlexDefinition, {
+      gap: '4',
+      ...props,
+      surface: resolvedSurface, // Use resolved surface for data attribute
+    });
 
-  return (
+  const { className, surface, ...rest } = cleanedProps;
+
+  const content = (
     <div
       ref={ref}
       className={clsx(
@@ -39,7 +49,14 @@ export const Flex = forwardRef<HTMLDivElement, FlexProps>((props, ref) => {
         className,
       )}
       style={style}
+      {...dataAttributes}
       {...rest}
     />
+  );
+
+  return resolvedSurface ? (
+    <SurfaceProvider surface={resolvedSurface}>{content}</SurfaceProvider>
+  ) : (
+    content
   );
 });

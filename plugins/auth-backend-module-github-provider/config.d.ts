@@ -44,6 +44,10 @@ export interface Config {
                   resolver: 'preferredUsernameMatchingUserEntityName';
                   dangerouslyAllowSignInWithoutUserInCatalog?: boolean;
                 }
+              | {
+                  resolver: 'userIdMatchingUserEntityAnnotation';
+                  dangerouslyAllowSignInWithoutUserInCatalog?: boolean;
+                }
             >;
           };
           sessionDuration?: HumanDuration | string;

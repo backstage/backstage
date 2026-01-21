@@ -59,6 +59,7 @@ Chanwit
 CI/CD
 classname
 cli
+CLIs
 cloudbuild
 Cloudflare
 Cloudformation
@@ -98,6 +99,7 @@ dataflow
 dataloader
 dayjs
 debounce
+debounced
 debounces
 debuggability
 declaratively
@@ -110,6 +112,7 @@ dependabot
 deps
 dequeue
 dequeueing
+dereferencing
 deserialization
 destructured
 destructuring
@@ -148,6 +151,7 @@ etag
 Expedia
 facto
 failover
+faq
 Fargate
 faqs
 featureful
@@ -229,6 +233,7 @@ JWTs
 Kaewkasi
 Kaswell
 keepalive
+Keycloak
 Keyv
 Knex
 knip
@@ -264,6 +269,7 @@ maintainer's
 maintainership
 makefile
 Matomo
+matchers
 md
 memcache
 memoization
@@ -323,6 +329,7 @@ onboarded
 onboarding
 Onboarding
 onelogin
+openapi
 OpenSearch
 OpenShift
 openssl
@@ -504,6 +511,7 @@ thumbsup
 todo
 todos
 togglable
+tokenizer
 tolerations
 Tolerations
 toolchain
@@ -516,6 +524,7 @@ transpile
 transpiled
 transpiler
 transpilers
+trixie
 truthy
 tsconfig
 TSDoc
@@ -569,3 +578,5 @@ Zolotusky
 zoomable
 zsh
 resizable
+enums
+LLMs

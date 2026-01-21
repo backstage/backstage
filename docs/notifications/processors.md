@@ -149,10 +149,62 @@ notifications:
         broadcastChannels: # Optional, if you wish to support broadcast notifications.
           - C12345678
         username: 'Backstage Bot' # Optional, defaults to the name of the Slack App.
+        concurrencyLimit: 20 # Optional, number of messages allowed per interval. Defaults to 10.
+        throttleInterval: 1m # Optional, Accepts ISO-8601 duration, ms-style ("1m", "30s"), or HumanDuration ({ minutes: 2  }). Defaults to 1 minute
 ```
 
 Multiple instances can be added in the `slack` array, allowing you to have multiple configurations if you need to send
 messages to more than one Slack workspace. Org-Wide App installation is not currently supported.
+
+### Broadcast Channel Routing
+
+For more granular control over where broadcast notifications are sent, you can use `broadcastRoutes` to route notifications to different Slack channels based on their origin and/or topic. This is useful when you want different types of notifications to go to different channels.
+
+```yaml
+notifications:
+  processors:
+    slack:
+      - token: xoxb-XXXXXXXXX
+        # Legacy option - used as fallback when no routes match
+        broadcastChannels:
+          - general-notifications
+        # Route broadcasts based on origin and/or topic
+        broadcastRoutes:
+          # Most specific: matches both origin AND topic
+          - origin: plugin:catalog
+            topic: alerts
+            channel: catalog-alerts
+          # Origin only: all notifications from this origin
+          - origin: plugin:catalog
+            channel: catalog-updates
+          # Topic only: all notifications with this topic (any origin)
+          - topic: security
+            channel: security-team
+          # Multiple channels: send to several channels at once
+          - origin: external:monitoring
+            channel:
+              - ops-team
+              - on-call-alerts
+```
+
+#### Route Matching Precedence
+
+Routes are evaluated in the following order of priority:
+
+1. **Origin + Topic match** (most specific) - A route that specifies both `origin` and `topic` will match first
+2. **Origin-only match** - A route with only `origin` specified (no `topic`)
+3. **Topic-only match** - A route with only `topic` specified (no `origin`)
+4. **Default fallback** - If no routes match, falls back to `broadcastChannels`
+
+The first matching route wins. If no routes match and no `broadcastChannels` are configured, the broadcast notification will not be sent to Slack.
+
+#### Configuration Options
+
+| Property  | Type                   | Description                                                                                |
+| --------- | ---------------------- | ------------------------------------------------------------------------------------------ |
+| `origin`  | `string`               | Optional. The notification origin to match (e.g., `plugin:catalog`, `external:my-service`) |
+| `topic`   | `string`               | Optional. The notification topic to match (e.g., `alerts`, `updates`, `security`)          |
+| `channel` | `string` or `string[]` | Required. The Slack channel(s) to send to. Can be channel IDs, channel names, or user IDs  |
 
 ### Entity Requirements
 

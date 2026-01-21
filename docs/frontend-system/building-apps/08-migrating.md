@@ -9,7 +9,7 @@ description: How to migrate existing apps to the new frontend system
 
 This section describes how to migrate an existing Backstage app package to use the new frontend system. The app package is typically found at `packages/app` in your project and is responsible for wiring together the Backstage frontend application.
 
-> **Who is this for?**  
+> **Who is this for?**
 > This guide is intended for maintainers of Backstage app packages (`packages/app`) who want to upgrade from the legacy frontend system to the new extension-based architecture.
 
 > **Prerequisites:**
@@ -22,10 +22,10 @@ This section describes how to migrate an existing Backstage app package to use t
 
 We recommend a **two-phase migration process** to ensure a smooth and manageable transition:
 
-- **Phase 1: Minimal Changes for Hybrid Configuration**  
+- **Phase 1: Minimal Changes for Hybrid Configuration**
   In this phase, you make the smallest set of changes necessary to enable your app to run in a hybrid mode. This allows you to start using the new frontend system while still relying on compatibility helpers and legacy code. The goal is to unblock your migration quickly, so you can benefit from the new system without a full rewrite.
 
-- **Phase 2: Complete Transition to the New Frontend System**  
+- **Phase 2: Complete Transition to the New Frontend System**
   After your app is running in hybrid mode, you can gradually refactor your codebase to remove legacy code and compatibility helpers. This phase focuses on fully adopting the new frontend architecture, ensuring your codebase is clean, maintainable, and takes full advantage of the new features.
 
 :::warning
@@ -154,36 +154,6 @@ const app = createApp({
     // ...
     convertedOptionsModule,
   ],
-});
-```
-
-If you were binding routes from a legacy `createApp`, you will need to use the `convertLegacyRouteRefs` and/or `convertLegacyRouteRef` to convert the routes to be compatible with the new system.
-
-For example, if both the `catalogPlugin` and `scaffolderPlugin` are legacy plugins, you can bind their routes like this:
-
-```ts
-import { createApp } from '@backstage/frontend-defaults';
-import {
-  // ...
-  convertLegacyRouteRefs,
-  convertLegacyRouteRef,
-} from '@backstage/core-compat-api';
-
-// Ommitting converted options changes
-//...
-
-const app = createApp({
-  features: [
-    // ...
-    convertedOptionsModule,
-  ],
-  // highlight-add-start
-  bindRoutes({ bind }) {
-    bind(convertLegacyRouteRefs(catalogPlugin.externalRoutes), {
-      createComponent: convertLegacyRouteRef(scaffolderPlugin.routes.root),
-    });
-  },
-  // highlight-add-end
 });
 ```
 
@@ -474,7 +444,7 @@ const app = createApp({
 Can be converted to the following extension:
 
 ```tsx
-import { SignInPageBlueprint } from '@backstage/frontend-plugin-api';
+import { SignInPageBlueprint } from '@backstage/plugin-app-react';
 
 const signInPage = SignInPageBlueprint.make({
   params: {
@@ -522,7 +492,7 @@ const app = createApp({
 Can be converted to the following extension:
 
 ```tsx
-import { ThemeBlueprint } from '@backstage/frontend-plugin-api';
+import { ThemeBlueprint } from '@backstage/plugin-app-react';
 
 const customLightThemeExtension = ThemeBlueprint.make({
   name: 'custom-light',
@@ -565,7 +535,7 @@ const app = createApp({
 Icons are now installed as extensions, using the `IconBundleBlueprint` to make new instances which can be added to the app.
 
 ```ts
-import { IconBundleBlueprint } from '@backstage/frontend-plugin-api';
+import { IconBundleBlueprint } from '@backstage/plugin-app-react';
 
 const exampleIconBundle = IconBundleBlueprint.make({
   name: 'example-bundle',
@@ -589,21 +559,6 @@ const app = createApp({
 #### `bindRoutes`
 
 Route bindings can still be done using this option, but you now also have the ability to bind routes using static configuration instead. See the section on [binding routes](../architecture/36-routes.md#binding-external-route-references) for more information.
-
-Note that if you are binding routes from a legacy plugin that was converted using `convertLegacyAppRoot`, you will need to use the `convertLegacyRouteRefs` and/or `convertLegacyRouteRef` to convert the routes to be compatible with the new system.
-
-For example, if both the `catalogPlugin` and `scaffolderPlugin` are legacy plugins, you can bind their routes like this:
-
-```ts
-const app = createApp({
-  features: convertLegacyAppRoot(...),
-  bindRoutes({ bind }) {
-    bind(convertLegacyRouteRefs(catalogPlugin.externalRoutes), {
-      createComponent: convertLegacyRouteRef(scaffolderPlugin.routes.root),
-    });
-  },
-});
-```
 
 #### `__experimentalTranslations`
 
@@ -631,10 +586,8 @@ Can be converted to the following extension:
 
 ```tsx
 import { catalogTranslationRef } from '@backstage/plugin-catalog/alpha';
-import {
-  createTranslationMessages,
-  TranslationBlueprint,
-} from '@backstage/frontend-plugin-api';
+import { createTranslationMessages } from '@backstage/frontend-plugin-api';
+import { TranslationBlueprint } from '@backstage/plugin-app-react';
 
 const catalogTranslations = TranslationBlueprint.make({
   name: 'catalog-overrides',
@@ -707,7 +660,7 @@ const convertedRootFeatures = convertLegacyAppRoot(
 );
 ```
 
-Any app root wrapper needs to be migrated to be an extension, created using `AppRootWrapperBlueprint`. Note that if you have multiple wrappers they must be completely independent of each other, i.e. the order in which they the appear in the React tree should not matter. If that is not the case then you should group them into a single wrapper.
+Any app root wrapper needs to be migrated to be an extension, created using `AppRootWrapperBlueprint` from `@backstage/plugin-app-react`. Note that if you have multiple wrappers they must be completely independent of each other, i.e. the order in which they the appear in the React tree should not matter. If that is not the case then you should group them into a single wrapper.
 
 Here is an example converting the `CustomAppBarrier` into extension:
 
@@ -721,8 +674,6 @@ createApp({
         AppRootWrapperBlueprint.make({
           name: 'custom-app-barrier',
           params: {
-            // Whenever your component uses legacy core packages, wrap it with "compatWrapper"
-            // e.g. props => compatWrapper(<CustomAppBarrier {...props} />)
             Component: CustomAppBarrier,
           },
         }),
@@ -749,37 +700,33 @@ export const navModule = createFrontendModule({
 });
 ```
 
-Then in the actual implementation for the `SidebarContent` extension, you can provide something like the following, where the component that is passed to the `compatWrapper` is the entire `Sidebar` component from your `Root` component.
-
-The `compatWrapper` is there to ensure that any legacy plugins using things like `useRouteRef` work well in the new system, so if you run into some errors which look like compatibility issues, make sure that this wrapper is used in the relevant places.
+Then in the actual implementation for the `SidebarContent` extension, you can provide something like the following, where you implement the entire `Sidebar` component.
 
 ```tsx title="in packages/app/src/modules/nav/Sidebar.tsx"
-import { compatWrapper } from '@backstage/core-compat-api';
-import { NavContentBlueprint } from '@backstage/frontend-plugin-api';
+import { NavContentBlueprint } from '@backstage/plugin-app-react';
 
 export const SidebarContent = NavContentBlueprint.make({
   params: {
-    component: ({ items }) =>
-      compatWrapper(
-        <Sidebar>
-          <SidebarLogo />
-          <SidebarGroup label="Search" icon={<SearchIcon />} to="/search">
-            <SidebarSearchModal />
-          </SidebarGroup>
-          <SidebarDivider />
-          <SidebarGroup label="Menu" icon={<MenuIcon />}>
-            ...
-          </SidebarGroup>
-          <SidebarGroup label="Plugins">
-            <SidebarScrollWrapper>
-              {/* Items in this group will be scrollable if they run out of space */}
-              {items.map((item, index) => (
-                <SidebarItem {...item} key={index} />
-              ))}
-            </SidebarScrollWrapper>
-          </SidebarGroup>
-        </Sidebar>,
-      ),
+    component: ({ items }) => (
+      <Sidebar>
+        <SidebarLogo />
+        <SidebarGroup label="Search" icon={<SearchIcon />} to="/search">
+          <SidebarSearchModal />
+        </SidebarGroup>
+        <SidebarDivider />
+        <SidebarGroup label="Menu" icon={<MenuIcon />}>
+          ...
+        </SidebarGroup>
+        <SidebarGroup label="Plugins">
+          <SidebarScrollWrapper>
+            {/* Items in this group will be scrollable if they run out of space */}
+            {items.map((item, index) => (
+              <SidebarItem {...item} key={index} />
+            ))}
+          </SidebarScrollWrapper>
+        </SidebarGroup>
+      </Sidebar>
+    ),
   },
 });
 ```

@@ -14,7 +14,7 @@ system, see [migrating](./08-migrating.md).
 
 This section covers how to set up and customize your own Backstage backend. It covers some aspects of how backend instances fit into the larger system, but for a more in-depth explanation of the role of backends in the backend system, see [the architecture section](../architecture/02-backends.md).
 
-# Overview
+## Overview
 
 A minimal Backstage backend is very lightweight. It is a single package with a `package.json` file and a `src/index.ts` file, not counting surrounding tooling and documentation. The package is typically placed within the `packages/backend` folder of a Backstage monorepo, but that is up to you. The backend package is part of any project created with `@backstage/create-app`, so you typically do not need to create it yourself.
 

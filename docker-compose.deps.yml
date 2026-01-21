@@ -2,7 +2,7 @@
 name: backstage
 services:
   psql:
-    image: postgres:17.6
+    image: postgres:17.7
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
@@ -24,7 +24,7 @@ services:
       timeout: 3s
       retries: 5
   opensearch:
-    image: opensearchproject/opensearch:2.19.3
+    image: opensearchproject/opensearch:2.19.4
     environment:
       plugins.security.disabled: true
       discovery.type: single-node

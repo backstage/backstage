@@ -16,7 +16,7 @@ import { JSX as JSX_2 } from 'react';
 import { ReactNode } from 'react';
 import { ResourcePermission } from '@backstage/plugin-permission-common';
 import { RouteRef } from '@backstage/frontend-plugin-api';
-import { TranslationRef } from '@backstage/core-plugin-api/alpha';
+import { TranslationRef } from '@backstage/frontend-plugin-api';
 
 // @alpha
 export const CatalogFilterBlueprint: ExtensionBlueprint<{
@@ -45,8 +45,10 @@ export const catalogReactTranslationRef: TranslationRef<
     readonly 'entityProcessingStatusPicker.title': 'Processing Status';
     readonly 'entityTagPicker.title': 'Tags';
     readonly 'entityPeekAheadPopover.title': 'Drill into the entity to see all of the tags.';
+    readonly 'entityPeekAheadPopover.entityCardActionsAriaLabel': 'Show';
     readonly 'entityPeekAheadPopover.entityCardActionsTitle': 'Show details';
     readonly 'entityPeekAheadPopover.emailCardAction.title': 'Email {{email}}';
+    readonly 'entityPeekAheadPopover.emailCardAction.ariaLabel': 'Email';
     readonly 'entityPeekAheadPopover.emailCardAction.subTitle': 'mailto {{email}}';
     readonly 'entitySearchBar.placeholder': 'Search';
     readonly 'entityTypePicker.title': 'Type';
@@ -56,16 +58,33 @@ export const catalogReactTranslationRef: TranslationRef<
     readonly 'favoriteEntity.removeFromFavorites': 'Remove from favorites';
     readonly 'inspectEntityDialog.title': 'Entity Inspector';
     readonly 'inspectEntityDialog.closeButtonTitle': 'Close';
+    readonly 'inspectEntityDialog.tabsAriaLabel': 'Inspector options';
     readonly 'inspectEntityDialog.ancestryPage.title': 'Ancestry';
+    readonly 'inspectEntityDialog.ancestryPage.description': 'This is the ancestry of entities above the current one - as in, the chain(s) of entities down to the current one, where {{processorsLink}} child entities that ultimately led to the current one existing. Note that this is a completely different mechanism from relations.';
+    readonly 'inspectEntityDialog.ancestryPage.processorsLink': 'processors emitted';
     readonly 'inspectEntityDialog.colocatedPage.title': 'Colocated';
     readonly 'inspectEntityDialog.colocatedPage.description': 'These are the entities that are colocated with this entity - as in, they originated from the same data source (e.g. came from the same YAML file), or from the same origin (e.g. the originally registered URL).';
     readonly 'inspectEntityDialog.colocatedPage.alertNoLocation': 'Entity had no location information.';
     readonly 'inspectEntityDialog.colocatedPage.alertNoEntity': 'There were no other entities on this location.';
+    readonly 'inspectEntityDialog.colocatedPage.locationHeader': 'At the same location';
+    readonly 'inspectEntityDialog.colocatedPage.originHeader': 'At the same origin';
     readonly 'inspectEntityDialog.jsonPage.title': 'Entity as JSON';
     readonly 'inspectEntityDialog.jsonPage.description': 'This is the raw entity data as received from the catalog, on JSON form.';
     readonly 'inspectEntityDialog.overviewPage.title': 'Overview';
+    readonly 'inspectEntityDialog.overviewPage.metadata.title': 'Metadata';
+    readonly 'inspectEntityDialog.overviewPage.labels': 'Labels';
+    readonly 'inspectEntityDialog.overviewPage.status.title': 'Status';
+    readonly 'inspectEntityDialog.overviewPage.identity.title': 'Identity';
+    readonly 'inspectEntityDialog.overviewPage.annotations': 'Annotations';
+    readonly 'inspectEntityDialog.overviewPage.tags': 'Tags';
+    readonly 'inspectEntityDialog.overviewPage.relation.title': 'Relations';
     readonly 'inspectEntityDialog.yamlPage.title': 'Entity as YAML';
     readonly 'inspectEntityDialog.yamlPage.description': 'This is the raw entity data as received from the catalog, on YAML form.';
+    readonly 'inspectEntityDialog.tabNames.json': 'Raw JSON';
+    readonly 'inspectEntityDialog.tabNames.yaml': 'Raw YAML';
+    readonly 'inspectEntityDialog.tabNames.overview': 'Overview';
+    readonly 'inspectEntityDialog.tabNames.ancestry': 'Ancestry';
+    readonly 'inspectEntityDialog.tabNames.colocated': 'Colocated';
     readonly 'unregisterEntityDialog.title': 'Are you sure you want to unregister this entity?';
     readonly 'unregisterEntityDialog.cancelButtonTitle': 'Cancel';
     readonly 'unregisterEntityDialog.deleteButtonTitle': 'Delete Entity';
@@ -93,11 +112,16 @@ export const catalogReactTranslationRef: TranslationRef<
     readonly 'entityTableColumnTitle.description': 'Description';
     readonly 'entityTableColumnTitle.domain': 'Domain';
     readonly 'entityTableColumnTitle.system': 'System';
-    readonly 'entityTableColumnTitle.tags': 'Tags';
     readonly 'entityTableColumnTitle.namespace': 'Namespace';
+    readonly 'entityTableColumnTitle.tags': 'Tags';
     readonly 'entityTableColumnTitle.lifecycle': 'Lifecycle';
     readonly 'entityTableColumnTitle.owner': 'Owner';
     readonly 'entityTableColumnTitle.targets': 'Targets';
+    readonly 'missingAnnotationEmptyState.title': 'Missing Annotation';
+    readonly 'missingAnnotationEmptyState.readMore': 'Read more';
+    readonly 'missingAnnotationEmptyState.annotationYaml': 'Add the annotation to your {{entityKind}} YAML as shown in the highlighted example below:';
+    readonly 'missingAnnotationEmptyState.generateDescription_one': 'The annotation {{annotations}} is missing. You need to add the annotation to your {{entityKind}} if you want to enable this tool.';
+    readonly 'missingAnnotationEmptyState.generateDescription_other': 'The annotations {{annotations}} are missing. You need to add the annotations to your {{entityKind}} if you want to enable this tool.';
   }
 >;
 
@@ -525,7 +549,7 @@ export type EntityPredicateValue =
       $in: EntityPredicatePrimitive[];
     }
   | {
-      $contains: EntityPredicateExpression;
+      $contains: EntityPredicate;
     };
 
 // @alpha (undocumented)

@@ -9,6 +9,7 @@ import { JsonValue } from '@backstage/types';
 // @public (undocumented)
 export type ChannelSetting = {
   id: string;
+  enabled?: boolean;
   origins: OriginSetting[];
 };
 

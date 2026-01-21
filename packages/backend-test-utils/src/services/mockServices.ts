@@ -34,7 +34,7 @@ import {
   DatabaseService,
   DiscoveryService,
   HttpAuthService,
-  LoggerService,
+  RootInstanceMetadataService,
   PermissionsService,
   RootConfigService,
   SchedulerService,
@@ -43,6 +43,7 @@ import {
   UserInfoService,
   coreServices,
   createServiceFactory,
+  RootLoggerService,
 } from '@backstage/backend-plugin-api';
 import { ConfigReader } from '@backstage/config';
 import { EventsService, eventsServiceRef } from '@backstage/plugin-events-node';
@@ -76,14 +77,15 @@ function createLoggerMock() {
 function simpleFactoryWithOptions<
   TService,
   TScope extends 'root' | 'plugin',
+  TInstances extends 'singleton' | 'multiton',
   TOptions extends [options?: object] = [],
 >(
-  ref: ServiceRef<TService, TScope>,
+  ref: ServiceRef<TService, TScope, TInstances>,
   factory: (...options: TOptions) => TService,
-): (...options: TOptions) => ServiceFactory<TService, TScope> {
+): (...options: TOptions) => ServiceFactory<TService, TScope, TInstances> {
   const factoryWithOptions = (...options: TOptions) =>
     createServiceFactory({
-      service: ref as ServiceRef<TService, any>,
+      service: ref as ServiceRef<TService, any, any>,
       deps: {},
       async factory() {
         return factory(...options);
@@ -92,8 +94,8 @@ function simpleFactoryWithOptions<
   return Object.assign(
     factoryWithOptions,
     factoryWithOptions(...([undefined] as unknown as TOptions)),
-  ) as ServiceFactory<TService, TScope> &
-    ((...options: TOptions) => ServiceFactory<TService, TScope>);
+  ) as ServiceFactory<TService, TScope, TInstances> &
+    ((...options: TOptions) => ServiceFactory<TService, TScope, TInstances>);
 }
 
 /**
@@ -177,7 +179,7 @@ export namespace mockServices {
     }));
   }
 
-  export function rootLogger(options?: rootLogger.Options): LoggerService {
+  export function rootLogger(options?: rootLogger.Options): RootLoggerService {
     return MockRootLoggerService.create(options);
   }
   export namespace rootLogger {
@@ -555,5 +557,20 @@ export namespace mockServices {
       publish: jest.fn(),
       subscribe: jest.fn(),
     }));
+  }
+
+  export function rootInstanceMetadata(): RootInstanceMetadataService {
+    return {
+      getInstalledPlugins: () => Promise.resolve([]),
+    };
+  }
+  export namespace rootInstanceMetadata {
+    export const mock = simpleMock(coreServices.rootInstanceMetadata, () => ({
+      getInstalledPlugins: jest.fn(),
+    }));
+    export const factory = simpleFactoryWithOptions(
+      coreServices.rootInstanceMetadata,
+      rootInstanceMetadata,
+    );
   }
 }

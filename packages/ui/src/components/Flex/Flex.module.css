@@ -23,4 +23,32 @@
     /* This helps when using `truncate` on text inside a flex container */
     min-width: 0;
   }
+
+  .bui-Flex[data-surface='0'] {
+    background-color: var(--bui-bg-surface-0);
+  }
+
+  .bui-Flex[data-surface='1'] {
+    background-color: var(--bui-bg-surface-1);
+  }
+
+  .bui-Flex[data-surface='2'] {
+    background-color: var(--bui-bg-surface-2);
+  }
+
+  .bui-Flex[data-surface='3'] {
+    background-color: var(--bui-bg-surface-3);
+  }
+
+  .bui-Flex[data-surface='danger'] {
+    background-color: var(--bui-bg-danger);
+  }
+
+  .bui-Flex[data-surface='warning'] {
+    background-color: var(--bui-bg-warning);
+  }
+
+  .bui-Flex[data-surface='success'] {
+    background-color: var(--bui-bg-success);
+  }
 }

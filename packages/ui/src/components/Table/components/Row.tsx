@@ -18,45 +18,55 @@ import {
   Row as ReactAriaRow,
   RowProps,
   useTableOptions,
-  Cell,
+  Cell as ReactAriaCell,
   Collection,
-  Checkbox,
   RouterProvider,
 } from 'react-aria-components';
+import { Checkbox } from '../../Checkbox';
 import { useStyles } from '../../../hooks/useStyles';
+import { TableDefinition } from '../definition';
 import { useNavigate } from 'react-router-dom';
 import { useHref } from 'react-router-dom';
 import { isExternalLink } from '../../../utils/isExternalLink';
 import styles from '../Table.module.css';
 import clsx from 'clsx';
+import { Flex } from '../../Flex';
 
 /** @public */
 export function Row<T extends object>(props: RowProps<T>) {
-  const { classNames, cleanedProps } = useStyles<'Table', RowProps<T>>(
-    'Table',
-    props,
-  );
+  const { classNames, cleanedProps } = useStyles(TableDefinition, props);
   const { id, columns, children, href, ...rest } = cleanedProps;
   const navigate = useNavigate();
   const isExternal = isExternalLink(href);
 
-  let { selectionBehavior } = useTableOptions();
+  let { selectionBehavior, selectionMode } = useTableOptions();
 
   const content = (
     <>
-      {selectionBehavior === 'toggle' && (
-        <Cell>
-          <Checkbox slot="selection" />
-        </Cell>
+      {selectionBehavior === 'toggle' && selectionMode === 'multiple' && (
+        <ReactAriaCell
+          className={clsx(
+            classNames.cellSelection,
+            styles[classNames.cell],
+            styles[classNames.cellSelection],
+          )}
+        >
+          <Flex justify="center" align="center">
+            <Checkbox slot="selection">
+              <></>
+            </Checkbox>
+          </Flex>
+        </ReactAriaCell>
       )}
       <Collection items={columns}>{children}</Collection>
     </>
   );
 
-  if (isExternal) {
+  if (!href || isExternal) {
     return (
       <ReactAriaRow
         id={id}
+        href={href}
         className={clsx(classNames.row, styles[classNames.row])}
         {...rest}
       >
@@ -69,6 +79,7 @@ export function Row<T extends object>(props: RowProps<T>) {
     <RouterProvider navigate={navigate} useHref={useHref}>
       <ReactAriaRow
         id={id}
+        href={href}
         className={clsx(classNames.row, styles[classNames.row])}
         data-react-aria-pressable="true"
         {...rest}

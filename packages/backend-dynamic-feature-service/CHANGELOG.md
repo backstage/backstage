@@ -1,5 +1,181 @@
 # @backstage/backend-dynamic-feature-service
 
+## 0.7.8
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.15.0
+  - @backstage/backend-plugin-api@1.6.1
+  - @backstage/cli-common@0.1.17
+  - @backstage/plugin-app-node@0.1.41
+  - @backstage/plugin-scaffolder-node@0.12.3
+  - @backstage/backend-openapi-utils@0.6.5
+  - @backstage/plugin-auth-node@0.6.11
+  - @backstage/plugin-permission-common@0.9.4
+  - @backstage/plugin-permission-node@0.10.8
+  - @backstage/plugin-catalog-backend@3.3.1
+  - @backstage/plugin-events-backend@0.5.10
+
+## 0.7.8-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.15.0-next.2
+  - @backstage/plugin-auth-node@0.6.10
+  - @backstage/plugin-catalog-backend@3.3.1-next.1
+  - @backstage/plugin-events-backend@0.5.10-next.0
+  - @backstage/plugin-permission-node@0.10.7
+  - @backstage/plugin-search-backend-node@1.4.0
+
+## 0.7.8-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.14.1-next.1
+  - @backstage/plugin-catalog-backend@3.3.1-next.1
+  - @backstage/plugin-scaffolder-node@0.12.3-next.0
+
+## 0.7.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-openapi-utils@0.6.5-next.0
+  - @backstage/backend-defaults@0.14.1-next.0
+  - @backstage/backend-plugin-api@1.6.0
+  - @backstage/cli-common@0.1.16
+  - @backstage/cli-node@0.2.16
+  - @backstage/config@1.3.6
+  - @backstage/config-loader@1.10.7
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-app-node@0.1.40
+  - @backstage/plugin-auth-node@0.6.10
+  - @backstage/plugin-catalog-backend@3.3.1-next.0
+  - @backstage/plugin-events-backend@0.5.10-next.0
+  - @backstage/plugin-events-node@0.4.18
+  - @backstage/plugin-permission-common@0.9.3
+  - @backstage/plugin-permission-node@0.10.7
+  - @backstage/plugin-scaffolder-node@0.12.2
+  - @backstage/plugin-search-backend-node@1.4.0
+  - @backstage/plugin-search-common@1.2.21
+
+## 0.7.7
+
+### Patch Changes
+
+- de96a60: chore(deps): bump `express` from 4.21.2 to 4.22.0
+- Updated dependencies
+  - @backstage/cli-node@0.2.16
+  - @backstage/plugin-search-backend-node@1.4.0
+  - @backstage/plugin-auth-node@0.6.10
+  - @backstage/backend-defaults@0.14.0
+  - @backstage/backend-openapi-utils@0.6.4
+  - @backstage/plugin-app-node@0.1.40
+  - @backstage/plugin-catalog-backend@3.3.0
+  - @backstage/plugin-events-backend@0.5.9
+  - @backstage/plugin-events-node@0.4.18
+  - @backstage/plugin-permission-node@0.10.7
+  - @backstage/backend-plugin-api@1.6.0
+  - @backstage/cli-common@0.1.16
+  - @backstage/config-loader@1.10.7
+  - @backstage/plugin-scaffolder-node@0.12.2
+
+## 0.7.7-next.1
+
+### Patch Changes
+
+- de96a60: chore(deps): bump `express` from 4.21.2 to 4.22.0
+- Updated dependencies
+  - @backstage/backend-defaults@0.14.0-next.1
+  - @backstage/backend-openapi-utils@0.6.4-next.1
+  - @backstage/plugin-app-node@0.1.40-next.1
+  - @backstage/plugin-auth-node@0.6.10-next.1
+  - @backstage/plugin-catalog-backend@3.2.1-next.1
+  - @backstage/plugin-events-backend@0.5.9-next.1
+  - @backstage/plugin-events-node@0.4.18-next.1
+  - @backstage/plugin-permission-node@0.10.7-next.1
+  - @backstage/backend-plugin-api@1.6.0-next.1
+  - @backstage/config-loader@1.10.7-next.1
+  - @backstage/cli-common@0.1.16-next.2
+  - @backstage/cli-node@0.2.16-next.1
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-permission-common@0.9.3
+  - @backstage/plugin-scaffolder-node@0.12.2-next.1
+  - @backstage/plugin-search-backend-node@1.4.0-next.1
+  - @backstage/plugin-search-common@1.2.21
+
+## 0.7.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@1.4.0-next.0
+  - @backstage/plugin-auth-node@0.6.10-next.0
+  - @backstage/backend-defaults@0.14.0-next.0
+  - @backstage/backend-plugin-api@1.5.1-next.0
+  - @backstage/cli-common@0.1.16-next.0
+  - @backstage/plugin-permission-node@0.10.7-next.0
+  - @backstage/plugin-events-backend@0.5.9-next.0
+  - @backstage/plugin-catalog-backend@3.2.1-next.0
+  - @backstage/backend-openapi-utils@0.6.4-next.0
+  - @backstage/plugin-app-node@0.1.40-next.0
+  - @backstage/plugin-events-node@0.4.18-next.0
+  - @backstage/plugin-scaffolder-node@0.12.2-next.0
+  - @backstage/cli-node@0.2.16-next.0
+  - @backstage/config@1.3.6
+  - @backstage/config-loader@1.10.7-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-permission-common@0.9.3
+  - @backstage/plugin-search-common@1.2.21
+
+## 0.7.6
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/backend-defaults@0.13.1
+  - @backstage/plugin-catalog-backend@3.2.0
+  - @backstage/backend-plugin-api@1.5.0
+  - @backstage/plugin-permission-common@0.9.3
+  - @backstage/plugin-search-backend-node@1.3.17
+  - @backstage/plugin-events-backend@0.5.8
+  - @backstage/plugin-events-node@0.4.17
+  - @backstage/plugin-auth-node@0.6.9
+  - @backstage/config-loader@1.10.6
+  - @backstage/config@1.3.6
+  - @backstage/cli-node@0.2.15
+  - @backstage/plugin-scaffolder-node@0.12.1
+  - @backstage/backend-openapi-utils@0.6.3
+  - @backstage/plugin-app-node@0.1.39
+  - @backstage/plugin-permission-node@0.10.6
+  - @backstage/plugin-search-common@1.2.21
+
+## 0.7.6-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend@3.2.0-next.1
+  - @backstage/backend-defaults@0.13.1-next.1
+  - @backstage/backend-plugin-api@1.5.0-next.1
+  - @backstage/plugin-permission-common@0.9.3-next.1
+  - @backstage/backend-openapi-utils@0.6.3-next.1
+  - @backstage/plugin-app-node@0.1.39-next.1
+  - @backstage/plugin-auth-node@0.6.9-next.1
+  - @backstage/plugin-events-backend@0.5.8-next.1
+  - @backstage/plugin-events-node@0.4.17-next.1
+  - @backstage/plugin-permission-node@0.10.6-next.1
+  - @backstage/plugin-scaffolder-node@0.12.1-next.1
+  - @backstage/plugin-search-backend-node@1.3.17-next.1
+
 ## 0.7.6-next.0
 
 ### Patch Changes

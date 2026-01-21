@@ -13,8 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { BACKSTAGE_JSON, bootstrapEnvProxyAgents } from '@backstage/cli-common';
 
-maybeBootstrapProxy();
+bootstrapEnvProxyAgents();
 
 import { env } from 'process';
 import fs from 'fs-extra';
@@ -32,7 +33,6 @@ import {
   mapDependencies,
   YarnInfoInspectData,
 } from '../../../../lib/versioning';
-import { BACKSTAGE_JSON } from '@backstage/cli-common';
 import { runParallelWorkers } from '../../../../lib/parallel';
 import {
   getManifestByReleaseLine,
@@ -41,27 +41,7 @@ import {
 } from '@backstage/release-manifests';
 import { migrateMovedPackages } from './migrate';
 import { runYarnInstall } from '../../lib/utils';
-import { run } from '../../../../lib/run';
-
-function maybeBootstrapProxy() {
-  // see https://www.npmjs.com/package/global-agent
-  const globalAgentNamespace =
-    process.env.GLOBAL_AGENT_ENVIRONMENT_VARIABLE_NAMESPACE ?? 'GLOBAL_AGENT_';
-  if (
-    process.env[`${globalAgentNamespace}HTTP_PROXY`] ||
-    process.env[`${globalAgentNamespace}HTTPS_PROXY`]
-  ) {
-    const globalAgent =
-      require('global-agent') as typeof import('global-agent');
-    globalAgent.bootstrap();
-  }
-
-  if (process.env.HTTP_PROXY || process.env.HTTPS_PROXY) {
-    const { setGlobalDispatcher, EnvHttpProxyAgent } =
-      require('undici') as typeof import('undici');
-    setGlobalDispatcher(new EnvHttpProxyAgent());
-  }
-}
+import { run } from '@backstage/cli-common';
 
 const DEP_TYPES = [
   'dependencies',
@@ -155,7 +135,7 @@ export default async (opts: OptionValues) => {
       ? `${env.BACKSTAGE_VERSIONS_BASE_URL}/v1/releases/${releaseManifest.releaseVersion}/yarn-plugin`
       : `https://versions.backstage.io/v1/releases/${releaseManifest.releaseVersion}/yarn-plugin`;
 
-    await run('yarn', ['plugin', 'import', yarnPluginUrl]);
+    await run(['yarn', 'plugin', 'import', yarnPluginUrl]).waitForExit();
     console.log();
   }
 

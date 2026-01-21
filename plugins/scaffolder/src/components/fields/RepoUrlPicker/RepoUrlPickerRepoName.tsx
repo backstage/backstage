@@ -78,7 +78,7 @@ export const RepoUrlPickerRepoName = (props: {
         ) : (
           <Autocomplete
             value={repoName}
-            onInputChange={(_, newValue) => {
+            onChange={(_, newValue) => {
               const selectedRepo = availableRepos?.find(
                 r => r.name === newValue,
               );

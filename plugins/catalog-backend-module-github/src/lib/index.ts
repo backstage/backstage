@@ -22,6 +22,8 @@ export {
   getOrganizationUsers,
   type GithubUser,
   type GithubTeam,
+  type GithubPageSizes,
+  DEFAULT_PAGE_SIZES,
 } from './github';
 export {
   type UserTransformer,
@@ -36,3 +38,8 @@ export {
   buildOrgHierarchy,
 } from './org';
 export { parseGithubOrgUrl } from './util';
+export {
+  ANNOTATION_GITHUB_USER_LOGIN,
+  ANNOTATION_GITHUB_TEAM_SLUG,
+  ANNOTATION_GITHUB_USER_ID,
+} from './annotation';

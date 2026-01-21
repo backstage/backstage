@@ -27,7 +27,7 @@
   }
 
   body {
-    background-color: var(--bui-bg);
+    background-color: var(--bui-bg-surface-0);
 
     /* Text defaults */
     color: var(--bui-fg-primary);
@@ -38,5 +38,13 @@
     /* Smoothing for text rendering */
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+
+  [data-theme-mode='dark'] {
+    color-scheme: dark;
+  }
+
+  [data-theme-mode='light'] {
+    color-scheme: light;
   }
 }

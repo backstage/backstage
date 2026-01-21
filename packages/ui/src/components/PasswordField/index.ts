@@ -15,4 +15,5 @@
  */
 
 export * from './PasswordField';
+export { PasswordFieldDefinition } from './definition';
 export * from './types';

@@ -5,8 +5,8 @@
 ```ts
 import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
-import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { JSX as JSX_2 } from 'react';
+import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 
@@ -17,7 +17,7 @@ const _default: OverridableFrontendPlugin<
   },
   {},
   {
-    'page:auth': ExtensionDefinition<{
+    'page:auth': OverridableExtensionDefinition<{
       kind: 'page';
       name: undefined;
       config: {

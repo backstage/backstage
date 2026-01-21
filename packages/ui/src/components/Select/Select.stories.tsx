@@ -13,19 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import type { Meta, StoryObj } from '@storybook/react-vite';
+
+import preview from '../../../../../.storybook/preview';
 import { Select } from './Select';
 import { Flex } from '../Flex';
 import { Form } from 'react-aria-components';
 import { RiCloudLine } from '@remixicon/react';
 
-const meta = {
+const meta = preview.meta({
   title: 'Backstage UI/Select',
   component: Select,
-} satisfies Meta<typeof Select>;
-
-export default meta;
-type Story = StoryObj<typeof meta>;
+  args: {
+    style: { width: 300 },
+  },
+});
 
 const fontOptions = [
   { value: 'sans', label: 'Sans-serif' },
@@ -34,14 +35,75 @@ const fontOptions = [
   { value: 'cursive', label: 'Cursive' },
 ];
 
-export const Default: Story = {
+const countries = [
+  { value: 'us', label: 'United States' },
+  { value: 'ca', label: 'Canada' },
+  { value: 'mx', label: 'Mexico' },
+  { value: 'uk', label: 'United Kingdom' },
+  { value: 'fr', label: 'France' },
+  { value: 'de', label: 'Germany' },
+  { value: 'it', label: 'Italy' },
+  { value: 'es', label: 'Spain' },
+  { value: 'jp', label: 'Japan' },
+  { value: 'cn', label: 'China' },
+  { value: 'in', label: 'India' },
+  { value: 'br', label: 'Brazil' },
+  { value: 'au', label: 'Australia' },
+];
+
+const skills = [
+  { value: 'react', label: 'React' },
+  { value: 'typescript', label: 'TypeScript' },
+  { value: 'javascript', label: 'JavaScript' },
+  { value: 'python', label: 'Python' },
+  { value: 'java', label: 'Java' },
+  { value: 'csharp', label: 'C#' },
+  { value: 'go', label: 'Go' },
+  { value: 'rust', label: 'Rust' },
+  { value: 'kotlin', label: 'Kotlin' },
+  { value: 'swift', label: 'Swift' },
+];
+
+export const Default = meta.story({
   args: {
     options: fontOptions,
     name: 'font',
   },
-};
+});
 
-export const Preview: Story = {
+export const Searchable = meta.story({
+  args: {
+    label: 'Country',
+    searchable: true,
+    searchPlaceholder: 'Search countries...',
+    options: countries,
+  },
+});
+
+export const MultipleSelection = meta.story({
+  args: {
+    label: 'Select multiple options',
+    selectionMode: 'multiple',
+    options: [
+      { value: 'option1', label: 'Option 1' },
+      { value: 'option2', label: 'Option 2' },
+      { value: 'option3', label: 'Option 3' },
+      { value: 'option4', label: 'Option 4' },
+    ],
+  },
+});
+
+export const SearchableMultiple = meta.story({
+  args: {
+    label: 'Skills',
+    searchable: true,
+    selectionMode: 'multiple',
+    searchPlaceholder: 'Filter skills...',
+    options: skills,
+  },
+});
+
+export const Preview = meta.story({
   args: {
     label: 'Font Family',
     options: fontOptions,
@@ -49,40 +111,40 @@ export const Preview: Story = {
     name: 'font',
     style: { maxWidth: 260 },
   },
-};
+});
 
-export const WithLabel: Story = {
+export const WithLabel = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
     label: 'Font Family',
   },
-};
+});
 
-export const WithFullWidth: Story = {
+export const WithFullWidth = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
     label: 'Font Family',
     style: { width: '100%' },
   },
-};
+});
 
-export const WithLabelAndDescription: Story = {
+export const WithLabelAndDescription = meta.story({
   args: {
-    ...WithLabel.args,
+    ...WithLabel.input.args,
     description: 'Choose a font family for your document',
   },
-};
+});
 
-export const WithIcon: Story = {
+export const WithIcon = meta.story({
   args: {
-    ...WithLabel.args,
+    ...WithLabel.input.args,
   },
   render: args => <Select {...args} icon={<RiCloudLine />} />,
-};
+});
 
-export const Sizes: Story = {
+export const Sizes = meta.story({
   args: {
-    ...Preview.args,
+    ...Preview.input.args,
   },
   render: args => (
     <Flex direction="row" gap="2">
@@ -90,52 +152,52 @@ export const Sizes: Story = {
       <Select {...args} size="medium" icon={<RiCloudLine />} />
     </Flex>
   ),
-};
+});
 
-export const Required: Story = {
+export const Required = meta.story({
   args: {
-    ...Preview.args,
+    ...Preview.input.args,
     isRequired: true,
   },
-};
+});
 
-export const Disabled: Story = {
+export const Disabled = meta.story({
   args: {
-    ...Preview.args,
+    ...Preview.input.args,
     isDisabled: true,
   },
-};
+});
 
-export const DisabledOption: Story = {
+export const DisabledOption = meta.story({
   args: {
-    ...Preview.args,
+    ...Preview.input.args,
     disabledKeys: ['cursive', 'serif'],
   },
-};
+});
 
-export const NoOptions: Story = {
+export const NoOptions = meta.story({
   args: {
-    ...Preview.args,
+    ...Preview.input.args,
     options: undefined,
   },
-};
+});
 
-export const WithValue: Story = {
+export const WithValue = meta.story({
   args: {
-    ...Preview.args,
+    ...Preview.input.args,
     selectedKey: 'mono',
     defaultSelectedKey: 'serif',
   },
-};
+});
 
-export const WithDefaultValue: Story = {
+export const WithDefaultValue = meta.story({
   args: {
-    ...Preview.args,
+    ...Preview.input.args,
     defaultSelectedKey: 'serif',
     options: fontOptions,
     name: 'font',
   },
-};
+});
 
 const generateOptions = (count = 100) => {
   const firstWords = [
@@ -259,17 +321,17 @@ const generateOptions = (count = 100) => {
   }));
 };
 
-export const WithManyOptions: Story = {
+export const WithManyOptions = meta.story({
   args: {
     label: 'Font Family',
     options: generateOptions(),
     name: 'font',
   },
-};
+});
 
-export const WithError: Story = {
+export const WithError = meta.story({
   args: {
-    ...WithLabel.args,
+    ...WithLabel.input.args,
     name: 'font',
   },
   render: args => (
@@ -277,9 +339,9 @@ export const WithError: Story = {
       <Select {...args} />
     </Form>
   ),
-};
+});
 
-export const WithLongNames: Story = {
+export const WithLongNames = meta.story({
   args: {
     label: 'Document Template',
     options: [
@@ -314,11 +376,11 @@ export const WithLongNames: Story = {
     style: { maxWidth: 400 },
     defaultSelectedKey: 'annual-report-2024',
   },
-};
+});
 
-export const WithLongNamesAndPadding: Story = {
+export const WithLongNamesAndPadding = meta.story({
   args: {
-    ...WithLongNames.args,
+    ...WithLongNames.input.args,
   },
   decorators: [
     (Story, { args }) => (
@@ -327,11 +389,11 @@ export const WithLongNamesAndPadding: Story = {
       </div>
     ),
   ],
-};
+});
 
-export const WithAccessibilityProps: Story = {
+export const WithAccessibilityProps = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
   },
   render: args => (
     <Flex direction="column" gap="4">
@@ -358,4 +420,4 @@ export const WithAccessibilityProps: Story = {
       </div>
     </Flex>
   ),
-};
+});

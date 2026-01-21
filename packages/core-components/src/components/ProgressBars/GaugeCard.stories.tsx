@@ -34,6 +34,7 @@ const Wrapper = ({ children }: PropsWithChildren<{}>) => (
 export default {
   title: 'Data Display/Progress Card',
   component: GaugeCard,
+  tags: ['!manifest'],
 };
 
 export const Default = () => (

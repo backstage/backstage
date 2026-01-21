@@ -19,6 +19,8 @@ import OpenInBrowserIcon from '@material-ui/icons/OpenInBrowser';
 import { KubernetesDialog } from '../KubernetesDialog';
 import { useIsPodExecTerminalSupported } from '../../hooks';
 import { PodExecTerminal, PodExecTerminalProps } from './PodExecTerminal';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { kubernetesReactTranslationRef } from '../../translation';
 
 /**
  * Opens a terminal connected to the given pod's container in a dialog
@@ -27,23 +29,25 @@ import { PodExecTerminal, PodExecTerminalProps } from './PodExecTerminal';
  */
 export const PodExecTerminalDialog = (props: PodExecTerminalProps) => {
   const { cluster, containerName, podName } = props;
-
+  const { t } = useTranslationRef(kubernetesReactTranslationRef);
   const isPodExecTerminalSupported = useIsPodExecTerminalSupported();
 
   return (
     !isPodExecTerminalSupported.loading &&
     isPodExecTerminalSupported.value && (
       <KubernetesDialog
-        buttonAriaLabel="open terminal"
+        buttonAriaLabel={t('podExecTerminal.buttonAriaLabel')}
         buttonIcon={<OpenInBrowserIcon />}
-        buttonText="Terminal"
+        buttonText={t('podExecTerminal.buttonText')}
         disabled={
           isPodExecTerminalSupported.loading ||
           !isPodExecTerminalSupported.value
         }
-        title={`${podName} - ${containerName} terminal shell on cluster ${
-          cluster.title || cluster.name
-        }`}
+        title={t('podExecTerminal.titleTemplate', {
+          podName,
+          containerName,
+          clusterName: cluster.title || cluster.name,
+        })}
       >
         <PodExecTerminal {...props} />
       </KubernetesDialog>

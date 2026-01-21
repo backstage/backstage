@@ -14,7 +14,49 @@
  * limitations under the License.
  */
 
-import { relative, isAbsolute } from 'path';
+import {
+  relative,
+  isAbsolute,
+  resolve as resolvePath,
+  dirname,
+  basename,
+} from 'path';
+import { realpathSync, lstatSync, readlinkSync } from 'fs';
+
+// Resolves a path to its real location, following symlinks.
+// Handles cases where the final target doesn't exist by recursively
+// resolving parent directories.
+function resolveRealPath(path: string): string {
+  try {
+    return realpathSync(path);
+  } catch (ex) {
+    if (ex.code !== 'ENOENT') {
+      throw ex;
+    }
+  }
+
+  // Check if path itself is a dangling symlink - recursively resolve the target
+  // to handle symlink chains (e.g., link1 -> link2 -> /outside)
+  try {
+    if (lstatSync(path).isSymbolicLink()) {
+      const target = resolvePath(dirname(path), readlinkSync(path));
+      return resolveRealPath(target);
+    }
+  } catch (ex) {
+    if (ex.code !== 'ENOENT') {
+      throw ex;
+    }
+  }
+
+  // Path doesn't exist - walk up the tree until we find an existing path,
+  // resolve it, then rebuild the non-existent portion on top
+  const parent = dirname(path);
+  if (parent === path) {
+    return path; // Hit filesystem root
+  }
+
+  return resolvePath(resolveRealPath(parent), basename(path));
+}
 
 /**
  * Checks if path is the same as or a child path of base.
@@ -22,7 +64,10 @@ import { relative, isAbsolute } from 'path';
  * @public
  */
 export function isChildPath(base: string, path: string): boolean {
-  const relativePath = relative(base, path);
+  const resolvedBase = resolveRealPath(base);
+  const resolvedPath = resolveRealPath(path);
+
+  const relativePath = relative(resolvedBase, resolvedPath);
   if (relativePath === '') {
     // The same directory
     return true;

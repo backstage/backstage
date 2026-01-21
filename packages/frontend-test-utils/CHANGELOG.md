@@ -1,5 +1,57 @@
 # @backstage/frontend-test-utils
 
+## 0.4.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.3
+  - @backstage/plugin-app@0.3.4
+  - @backstage/frontend-app-api@0.14.0
+
+## 0.4.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-app@0.3.4-next.0
+  - @backstage/frontend-app-api@0.13.4-next.0
+  - @backstage/frontend-plugin-api@0.13.2
+
+## 0.4.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-app@0.3.3
+  - @backstage/frontend-plugin-api@0.13.2
+  - @backstage/test-utils@1.7.14
+  - @backstage/frontend-app-api@0.13.3
+
+## 0.4.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.2-next.0
+  - @backstage/test-utils@1.7.14-next.0
+  - @backstage/plugin-app@0.3.3-next.0
+  - @backstage/frontend-app-api@0.13.3-next.0
+  - @backstage/config@1.3.6
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.11
+
+## 0.4.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.0
+  - @backstage/frontend-app-api@0.13.2
+  - @backstage/config@1.3.6
+  - @backstage/plugin-app@0.3.2
+  - @backstage/test-utils@1.7.13
+
 ## 0.4.1-next.0
 
 ### Patch Changes
