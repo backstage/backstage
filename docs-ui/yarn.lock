@@ -3386,8 +3386,8 @@ __metadata:
   linkType: hard
 
 "html-react-parser@npm:^5.2.5":
-  version: 5.2.10
-  resolution: "html-react-parser@npm:5.2.10"
+  version: 5.2.11
+  resolution: "html-react-parser@npm:5.2.11"
   dependencies:
     domhandler: "npm:5.0.3"
     html-dom-parser: "npm:5.1.2"
@@ -3399,7 +3399,7 @@ __metadata:
   peerDependenciesMeta:
     "@types/react":
       optional: true
-  checksum: 10/3b0debac58e4b39d853731fd117b323a5d9582482cdc0b6dc5179d0c469acf63e64b8fdb3b678e758673633c579b09fd21d75d256c32104c65355f4434ba7f59
+  checksum: 10/5b52699e63e6ebd7c1c2d76f6b5214fdbf017571785c5c01f0630704a84fcd3b75a9539e0f4e8bb65e91d8871ee3e80980baa21660cfd9749587dafd96a959bf
   languageName: node
   linkType: hard
 
