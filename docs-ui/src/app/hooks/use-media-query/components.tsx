@@ -1,13 +1,12 @@
 'use client';
 import { useMediaQuery } from '@backstage/ui/src/hooks/useMediaQuery';
+import './example.css';
 
 export function UseMediaQueryThemeExample() {
   const isDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
 
   return (
-    <div>
-      {isDarkMode ? 'User prefers Dark mode' : 'User prefers Light mode'}
-    </div>
+    <p>{isDarkMode ? 'User prefers Dark mode' : 'User prefers Light mode'}</p>
   );
 }
 
@@ -17,11 +16,11 @@ export function UseMediaQueryResponsiveExample() {
   const isDesktop = useMediaQuery('(min-width: 1025px)');
 
   return (
-    <div>
+    <p>
       {isMobile && '<MobileLayout />'}
       {isTablet && '<TabletLayout />'}
       {isDesktop && '<DesktopLayout />'}
-    </div>
+    </p>
   );
 }
 
@@ -31,12 +30,14 @@ export function UseMediaQueryPreferencesExample() {
   );
 
   return (
-    <div className={prefersReducedMotion ? 'no-animations' : ''}>Content</div>
+    <p className={prefersReducedMotion ? 'no-animations' : 'animated-border'}>
+      Content
+    </p>
   );
 }
 
 export function UseMediaQueryOrientationExample() {
   const isPortrait = useMediaQuery('(orientation: portrait)');
 
-  return <div>{isPortrait ? 'Portrait mode' : 'Landscape mode'}</div>;
+  return <p>{isPortrait ? 'Portrait mode' : 'Landscape mode'}</p>;
 }

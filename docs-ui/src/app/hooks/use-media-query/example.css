@@ -1,0 +1,25 @@
+@keyframes borderSlide {
+  0%,
+  100% {
+    transform: translateX(-90%);
+  }
+  50% {
+    transform: translateX(190%);
+  }
+}
+
+.animated-border {
+  position: relative;
+  overflow: hidden;
+}
+
+.animated-border::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 50%;
+  height: 2px;
+  background-color: currentColor;
+  animation: borderSlide 5s ease-in-out infinite;
+}
