@@ -168,7 +168,9 @@ export const CatalogTable = (props: CatalogTableProps) => {
       };
     },
     ({ entity }) => {
-      const isStarred = isStarredEntity(entity);
+      const entityRefString = stringifyEntityRef(entity);
+      const isStarred = isStarredEntity(entityRefString);
+
       const title = isStarred
         ? t('catalogTable.unStarActionTitle')
         : t('catalogTable.starActionTitle');
@@ -177,14 +179,14 @@ export const CatalogTable = (props: CatalogTableProps) => {
         cellStyle: { paddingLeft: '1em' },
         icon: () => <FavoriteToggleIcon isFavorite={isStarred} />,
         tooltip: title,
-        onClick: () => toggleStarredEntity(entity),
+        onClick: () => toggleStarredEntity(entityRefString),
       };
     },
   ];
 
   const currentKind = filters.kind?.label || '';
   const currentType = filters.type?.value || '';
-  const currentCount = typeof totalItems === 'number' ? `(${totalItems})` : '';
+  const currentCount = `(${entities.length})`;
   // TODO(timbonicus): remove the title from the CatalogTable once using EntitySearchBar
   const titlePreamble = capitalize(filters.user?.value ?? 'all');
   const title =
