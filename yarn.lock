@@ -48673,8 +48673,8 @@ __metadata:
   linkType: hard
 
 "ts-checker-rspack-plugin@npm:^1.1.5":
-  version: 1.2.1
-  resolution: "ts-checker-rspack-plugin@npm:1.2.1"
+  version: 1.2.6
+  resolution: "ts-checker-rspack-plugin@npm:1.2.6"
   dependencies:
     "@babel/code-frame": "npm:^7.27.1"
     "@rspack/lite-tapable": "npm:^1.1.0"
@@ -48684,12 +48684,12 @@ __metadata:
     minimatch: "npm:^9.0.5"
     picocolors: "npm:^1.1.1"
   peerDependencies:
-    "@rspack/core": ^1.0.0
+    "@rspack/core": ^1.0.0 || ^2.0.0-0
     typescript: ">=3.8.0"
   peerDependenciesMeta:
     "@rspack/core":
       optional: true
-  checksum: 10/c2e4a4e0cfda6a358e2b3c134446359f74ed57787c23cb270ae6d72bfa1fae91e42968d04c9c5921a39c2995869a56fb8f3c8f906f24d7a94a33dca31ece2f22
+  checksum: 10/fc7af29af284caed8adedb766bbd289168f8ec0f45bbc8add9ba15900d143b8149d9ca197d7747bc54a79a052b7a24cb2c447141c8eab16ec4a80bc475d5e75a
   languageName: node
   linkType: hard
 
