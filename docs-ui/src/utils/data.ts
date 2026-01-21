@@ -145,19 +145,11 @@ export const hooks: Page[] = [
     slug: 'use-breakpoint',
   },
   {
-    title: 'useIsomorphicLayoutEffect',
-    slug: 'use-isomorphic-layout-effect',
-  },
-  {
     title: 'useMediaQuery',
     slug: 'use-media-query',
   },
   {
     title: 'useStyles',
     slug: 'use-styles',
-  },
-  {
-    title: 'useSurface',
-    slug: 'use-surface',
   },
 ];
