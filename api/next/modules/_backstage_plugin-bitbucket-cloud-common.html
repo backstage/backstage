@@ -1,35 +1,42 @@
 <!DOCTYPE html><html class="default" lang="en" data-base="../"><head><meta charset="utf-8"/><meta http-equiv="x-ua-compatible" content="IE=edge"/><title>@backstage/plugin-bitbucket-cloud-common | Backstage</title><meta name="description" content="Documentation for Backstage"/><meta name="viewport" content="width=device-width, initial-scale=1"/><link rel="stylesheet" href="../assets/style.css"/><link rel="stylesheet" href="../assets/highlight.css"/><script defer src="../assets/main.js"></script><script async src="../assets/icons.js" id="tsd-icons-script"></script><script async src="../assets/search.js" id="tsd-search-script"></script><script async src="../assets/navigation.js" id="tsd-nav-script"></script><script async src="../assets/hierarchy.js" id="tsd-hierarchy-script"></script></head><body><script>document.documentElement.dataset.theme = localStorage.getItem("tsd-theme") || "os";document.body.style.display="none";setTimeout(() => window.app?app.showPage():document.body.style.removeProperty("display"),500)</script><header class="tsd-page-toolbar"><div class="tsd-toolbar-contents container"><a href="../index.html" class="title">Backstage</a><div id="tsd-toolbar-links"><a href="https://backstage.io/docs">Docs</a><a href="https://github.com/backstage/backstage">Github</a></div><button id="tsd-search-trigger" class="tsd-widget" aria-label="Search"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-search"></use></svg></button><dialog id="tsd-search" aria-label="Search"><input role="combobox" id="tsd-search-input" aria-controls="tsd-search-results" aria-autocomplete="list" aria-expanded="true" autocapitalize="off" autocomplete="off" placeholder="Search the docs" maxLength="100"/><ul role="listbox" id="tsd-search-results"></ul><div id="tsd-search-status" aria-live="polite" aria-atomic="true"><div>Preparing search index...</div></div></dialog><a href="#" class="tsd-widget menu" id="tsd-toolbar-menu-trigger" data-toggle="menu" aria-label="Menu"><svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true"><use href="../assets/icons.svg#icon-menu"></use></svg></a></div></header><div class="container container-main"><div class="col-content"><div class="tsd-page-title"><ul class="tsd-breadcrumb" aria-label="Breadcrumb"><li><a href="" aria-current="page">@backstage/plugin-bitbucket-cloud-common</a></li></ul><h1>Module @backstage/plugin-bitbucket-cloud-common</h1></div><section class="tsd-panel tsd-comment"><div class="tsd-comment tsd-typography"><p>Common functionalities for bitbucket-cloud plugins.</p>
-</div></section><section class="tsd-panel tsd-typography"><h1 id="backstageplugin-bitbucket-cloud-common" class="tsd-anchor-link">@backstage/plugin-bitbucket-cloud-common<a href="#backstageplugin-bitbucket-cloud-common" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h1><p>Welcome to the common package for bitbucket-cloud plugins!</p>
+</div></section><section class="tsd-panel tsd-typography"><h1 id="backstageplugin-bitbucket-cloud-common" class="tsd-anchor-link">@backstage/plugin-bitbucket-cloud-common<a href="#backstageplugin-bitbucket-cloud-common" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h1>
+<p>Welcome to the common package for bitbucket-cloud plugins!</p>
 <p>This common package provides a reusable API client for the Bitbucket Cloud API
 which can be reused in catalog-backend-module plugins, scaffolder modules, etc.</p>
 <p>Using a shared client allows to control all traffic going from Backstage to
 the Bitbucket Cloud API compared to separate clients or inline API calls.</p>
 <p>We may want to leverage this later to add rate limiting, etc.</p>
-<h2 id="how-to-maintain-the-generated-code" class="tsd-anchor-link">How to maintain the generated code<a href="#how-to-maintain-the-generated-code" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2><h3 id="update-the-models" class="tsd-anchor-link">Update the Models<a href="#update-the-models" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3><p>This command will</p>
+<h2 id="how-to-maintain-the-generated-code" class="tsd-anchor-link">How to maintain the generated code<a href="#how-to-maintain-the-generated-code" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2>
+<h3 id="update-the-models" class="tsd-anchor-link">Update the Models<a href="#update-the-models" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<p>This command will</p>
 <ol>
 <li><a href="#refresh-the-schema">refresh the schema/OpenAPI Specification</a></li>
 <li><a href="#generate-models">re-generate the models</a></li>
 <li><a href="#reduce-models">reduce the models to the minimal needed</a></li>
 </ol>
-<h3 id="refresh-the-schema" class="tsd-anchor-link">Refresh the schema<a href="#refresh-the-schema" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3><p>This command will download the latest version of the Bitbucket Cloud OpenAPI Specification
+<h3 id="refresh-the-schema" class="tsd-anchor-link">Refresh the schema<a href="#refresh-the-schema" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<p>This command will download the latest version of the Bitbucket Cloud OpenAPI Specification
 and apply some mutations to fix bugs or improve the schema for a better code generation output.</p>
 <pre><code class="sh"><span class="hl-1">yarn</span><span class="hl-2"> </span><span class="hl-4">refresh-schema</span>
 </code><button type="button">Copy</button></pre>
 
-<h3 id="generate-models" class="tsd-anchor-link">Generate Models<a href="#generate-models" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3><p>The models used are created based on the <a href="bitbucket-cloud.oas.json">local OpenAPI Specification file</a>
+<h3 id="generate-models" class="tsd-anchor-link">Generate Models<a href="#generate-models" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<p>The models used are created based on the <a href="bitbucket-cloud.oas.json">local OpenAPI Specification file</a>
 using a code generator.
 Some post-cleanup is applied to improve the generated output.</p>
 <p>The client itself using the models is not generated.</p>
 <pre><code class="sh"><span class="hl-1">yarn</span><span class="hl-2"> </span><span class="hl-4">generate-models</span>
 </code><button type="button">Copy</button></pre>
 
-<h3 id="reduce-models" class="tsd-anchor-link">Reduce Models<a href="#reduce-models" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3><p>In order to keep the API surface minimal, this command helps to only keep the minimal part of the
+<h3 id="reduce-models" class="tsd-anchor-link">Reduce Models<a href="#reduce-models" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h3>
+<p>In order to keep the API surface minimal, this command helps to only keep the minimal part of the
 generated models by considering all <code>Models</code> module members directly or transitively used by the
 client implementation.</p>
 <pre><code class="sh"><span class="hl-1">yarn</span><span class="hl-2"> </span><span class="hl-4">reduce-models</span>
 </code><button type="button">Copy</button></pre>
 
-<h2 id="adding-a-new-client-method" class="tsd-anchor-link">Adding a New Client Method<a href="#adding-a-new-client-method" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2><p>If you want to add a new method to the client implementation which may use a new endpoint or &quot;new&quot; models
+<h2 id="adding-a-new-client-method" class="tsd-anchor-link">Adding a New Client Method<a href="#adding-a-new-client-method" aria-label="Permalink" class="tsd-anchor-icon"><svg viewBox="0 0 24 24" aria-hidden="true"><use href="../assets/icons.svg#icon-anchor"></use></svg></a></h2>
+<p>If you want to add a new method to the client implementation which may use a new endpoint or &quot;new&quot; models
 you can</p>
 <ol>
 <li>optionally <a href="#refresh-the-schema">refresh the schema</a> to get the latest version</li>
