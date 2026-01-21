@@ -33,3 +33,11 @@ jobs:
           version: latest
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Link Checker
+        uses: lycheeverse/lychee-action@f81112d0d2814dd44817c27b72fb64d937fb3332 # v1.9.3
+        with:
+          args: --verbose --no-progress './**/*.md'
+          fail: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
