@@ -39,32 +39,51 @@ export class DefaultWorkspaceService implements WorkspaceService {
     additionalWorkspaceProviders?: Record<string, WorkspaceProvider>,
     config?: Config,
   ) {
+    // New config path with fallback to old experimental flags
+    // workspaceProvider being set enables serialization
     const workspaceProviderName =
+      config?.getOptionalString('scaffolder.taskRecovery.workspaceProvider') ??
       config?.getOptionalString(
         'scaffolder.EXPERIMENTAL_workspaceSerializationProvider',
-      ) ?? 'database';
+      );
+
+    // Check old boolean flag for backwards compat
+    const legacyEnabled = config?.getOptionalBoolean(
+      'scaffolder.EXPERIMENTAL_workspaceSerialization',
+    );
+
+    // Serialization is enabled if:
+    // 1. workspaceProvider is explicitly set, OR
+    // 2. EXPERIMENTAL_workspaceSerialization is true (legacy)
+    const isEnabled = workspaceProviderName !== undefined || legacyEnabled;
+
+    if (!isEnabled) {
+      return new DefaultWorkspaceService(task, undefined, config);
+    }
+
+    // Use the configured provider, or 'database' as default when enabled
+    const providerName = workspaceProviderName ?? 'database';
     const workspaceProvider =
-      additionalWorkspaceProviders?.[workspaceProviderName] ??
+      additionalWorkspaceProviders?.[providerName] ??
       DatabaseWorkspaceProvider.create(storage);
+
     return new DefaultWorkspaceService(task, workspaceProvider, config);
   }
 
   private readonly task: CurrentClaimedTask;
-  private readonly workspaceProvider: WorkspaceProvider;
-  private readonly config?: Config;
+  private readonly workspaceProvider?: WorkspaceProvider;
 
   private constructor(
     task: CurrentClaimedTask,
-    workspaceProvider: WorkspaceProvider,
-    config?: Config,
+    workspaceProvider: WorkspaceProvider | undefined,
+    _config?: Config,
   ) {
     this.task = task;
     this.workspaceProvider = workspaceProvider;
-    this.config = config;
   }
 
   public async serializeWorkspace(options: { path: string }): Promise<void> {
-    if (this.isWorkspaceSerializationEnabled()) {
+    if (this.workspaceProvider) {
       await this.workspaceProvider.serializeWorkspace({
         path: options.path,
         taskId: this.task.taskId,
@@ -73,7 +92,7 @@ export class DefaultWorkspaceService implements WorkspaceService {
   }
 
   public async cleanWorkspace(): Promise<void> {
-    if (this.isWorkspaceSerializationEnabled()) {
+    if (this.workspaceProvider) {
       await this.workspaceProvider.cleanWorkspace({ taskId: this.task.taskId });
     }
   }
@@ -82,20 +101,9 @@ export class DefaultWorkspaceService implements WorkspaceService {
     taskId: string;
     targetPath: string;
   }): Promise<void> {
-    if (this.isWorkspaceSerializationEnabled()) {
+    if (this.workspaceProvider) {
       await fs.mkdirp(options.targetPath);
       await this.workspaceProvider.rehydrateWorkspace(options);
     }
-  }
-
-  private isWorkspaceSerializationEnabled(): boolean {
-    // New config path with fallback to old experimental flag
-    return (
-      this.config?.getOptionalBoolean('scaffolder.taskRecovery.enabled') ??
-      this.config?.getOptionalBoolean(
-        'scaffolder.EXPERIMENTAL_workspaceSerialization',
-      ) ??
-      false
-    );
   }
 }

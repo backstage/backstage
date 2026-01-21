@@ -134,6 +134,7 @@ scaffolder:
   taskRecovery:
     enabled: true
     staleTimeout: { seconds: 30 } # Optional: how long before a task is considered stale
+    workspaceProvider: database # Optional: enables workspace serialization with specified provider
 ```
 
 When task recovery is enabled:
@@ -142,6 +143,8 @@ When task recovery is enabled:
 - Secrets are preserved until the task reaches a terminal state (completed/failed)
 - Completed steps are skipped on retry, resuming from the last incomplete step
 - Step outputs are restored so subsequent steps can access previous results
+
+**Note:** `workspaceProvider` is a separate option from `enabled`. Setting `enabled: true` activates task recovery (secrets preservation, step skipping), but workspace serialization only happens if you also set `workspaceProvider`. The `workspaceProvider` value specifies which storage backend to use (e.g., `database` for the built-in database provider, or `gcpBucket` for GCS).
 
 This replaces the previous experimental flags (`EXPERIMENTAL_recoverTasks`, `EXPERIMENTAL_workspaceSerialization`, `EXPERIMENTAL_recoverTasksTimeout`) which are still supported as fallbacks.
 

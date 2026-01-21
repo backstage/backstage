@@ -498,4 +498,117 @@ describe('StorageTaskBroker', () => {
       await task.complete('completed');
     });
   });
+
+  describe('workspace cleanup on completion', () => {
+    it('should clean workspace on successful completion', async () => {
+      const cleanWorkspaceMock = jest.fn();
+      const mockWorkspaceProvider = {
+        serializeWorkspace: jest.fn(),
+        rehydrateWorkspace: jest.fn(),
+        cleanWorkspace: cleanWorkspaceMock,
+      };
+
+      const config = new ConfigReader({
+        scaffolder: {
+          taskRecovery: {
+            workspaceProvider: 'mock',
+          },
+        },
+      });
+
+      const broker = new StorageTaskBroker(storage, logger, config, undefined, {
+        mock: mockWorkspaceProvider,
+      });
+
+      await broker.dispatch(emptyTaskSpec);
+      const task = await broker.claim();
+      await task.complete('completed');
+
+      expect(cleanWorkspaceMock).toHaveBeenCalledWith({
+        taskId: task.taskId,
+      });
+    });
+
+    it('should not clean workspace on failed completion', async () => {
+      const cleanWorkspaceMock = jest.fn();
+      const mockWorkspaceProvider = {
+        serializeWorkspace: jest.fn(),
+        rehydrateWorkspace: jest.fn(),
+        cleanWorkspace: cleanWorkspaceMock,
+      };
+
+      const config = new ConfigReader({
+        scaffolder: {
+          taskRecovery: {
+            workspaceProvider: 'mock',
+          },
+        },
+      });
+
+      const broker = new StorageTaskBroker(storage, logger, config, undefined, {
+        mock: mockWorkspaceProvider,
+      });
+
+      await broker.dispatch(emptyTaskSpec);
+      const task = await broker.claim();
+      await task.complete('failed');
+
+      expect(cleanWorkspaceMock).not.toHaveBeenCalled();
+    });
+
+    it('should not fail task completion if workspace cleanup fails', async () => {
+      const cleanWorkspaceMock = jest
+        .fn()
+        .mockRejectedValue(new Error('Cleanup failed'));
+      const mockWorkspaceProvider = {
+        serializeWorkspace: jest.fn(),
+        rehydrateWorkspace: jest.fn(),
+        cleanWorkspace: cleanWorkspaceMock,
+      };
+
+      const config = new ConfigReader({
+        scaffolder: {
+          taskRecovery: {
+            workspaceProvider: 'mock',
+          },
+        },
+      });
+
+      const broker = new StorageTaskBroker(storage, logger, config, undefined, {
+        mock: mockWorkspaceProvider,
+      });
+
+      const { taskId } = await broker.dispatch(emptyTaskSpec);
+      const task = await broker.claim();
+
+      // Should not throw even though cleanup fails
+      await expect(task.complete('completed')).resolves.toBeUndefined();
+
+      // Task should still be marked as completed
+      const taskRow = await storage.getTask(taskId);
+      expect(taskRow.status).toBe('completed');
+    });
+
+    it('should not attempt cleanup when workspace serialization is disabled', async () => {
+      const cleanWorkspaceMock = jest.fn();
+      const mockWorkspaceProvider = {
+        serializeWorkspace: jest.fn(),
+        rehydrateWorkspace: jest.fn(),
+        cleanWorkspace: cleanWorkspaceMock,
+      };
+
+      // No workspaceProvider config = disabled
+      const config = new ConfigReader({});
+
+      const broker = new StorageTaskBroker(storage, logger, config, undefined, {
+        mock: mockWorkspaceProvider,
+      });
+
+      await broker.dispatch(emptyTaskSpec);
+      const task = await broker.claim();
+      await task.complete('completed');
+
+      expect(cleanWorkspaceMock).not.toHaveBeenCalled();
+    });
+  });
 });

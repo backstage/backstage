@@ -34,9 +34,7 @@ export type ActionContext<
   secrets?: TaskSecrets;
   workspacePath: string;
   input: TActionInput;
-  checkpoint<T extends JsonValue | void>(
-    opts: CheckpointContext<T>,
-  ): Promise<T>;
+  checkpoint<T>(opts: CheckpointContext<T>): Promise<T>;
   output(
     name: keyof TActionOutput,
     value: TActionOutput[keyof TActionOutput],
@@ -463,6 +461,14 @@ export interface TaskContext {
   taskId?: string;
   // (undocumented)
   updateCheckpoint?(options: UpdateTaskCheckpointOptions): Promise<void>;
+  // (undocumented)
+  updateStepState?(options: {
+    stepId: string;
+    status: 'completed' | 'failed';
+    output: {
+      [name: string]: JsonValue;
+    };
+  }): Promise<void>;
 }
 
 // @public @deprecated

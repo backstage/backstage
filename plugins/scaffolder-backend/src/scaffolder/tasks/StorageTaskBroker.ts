@@ -216,6 +216,19 @@ export class TaskManager implements TaskContext {
     if (this.heartbeatTimeoutId) {
       clearTimeout(this.heartbeatTimeoutId);
     }
+
+    // Clean up serialized workspace on success only
+    // Failed tasks may be retried later, so keep their workspace
+    if (result === 'completed') {
+      try {
+        await this.workspaceService.cleanWorkspace();
+      } catch (error) {
+        this.logger.warn(
+          `Failed to clean workspace for task ${this.task.taskId}`,
+          error,
+        );
+      }
+    }
   }
 
   private startTimeout() {

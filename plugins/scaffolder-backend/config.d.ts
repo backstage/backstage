@@ -56,7 +56,6 @@ export interface Config {
        * - Secrets are preserved until task completion
        * - Step state is saved after each step
        * - Crashed tasks resume from last completed step
-       * - Workspace is serialized for recovery
        * @visibility backend
        */
       enabled?: boolean;
@@ -66,6 +65,14 @@ export interface Config {
        * @visibility backend
        */
       staleTimeout?: HumanDuration | string;
+      /**
+       * The workspace provider to use for serializing and restoring workspaces.
+       * Setting this value enables workspace serialization.
+       * If not set, workspace serialization is disabled.
+       * Common values: 'database'
+       * @visibility backend
+       */
+      workspaceProvider?: string;
     };
 
     /**
