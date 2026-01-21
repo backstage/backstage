@@ -136,6 +136,7 @@ export const getGitAuth = async (config: {
 
   // Username + API token (new method)
   // For git operations, use the static username 'x-bitbucket-api-token-auth'
+  // https://support.atlassian.com/bitbucket-cloud/docs/using-api-tokens/
   if (config.username && config.token) {
     return {
       username: 'x-bitbucket-api-token-auth',
