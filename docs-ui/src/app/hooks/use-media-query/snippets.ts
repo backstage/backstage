@@ -4,9 +4,12 @@ function MyComponent() {
   const isDarkMode = useMediaQuery('(prefers-color-scheme: dark)');
 
   return (
-    <div>
-      {isDarkMode ? 'Dark mode enabled' : 'Light mode enabled'}
-    </div>
+    <p>
+      {isDarkMode
+        ? 'User prefers Dark mode'
+        : 'User prefers Light mode'
+      }
+    </p>
   );
 }`;
 
@@ -18,11 +21,11 @@ function ResponsiveLayout() {
   const isDesktop = useMediaQuery('(min-width: 1025px)');
 
   return (
-    <div>
+    <p>
       {isMobile && <MobileLayout />}
       {isTablet && <TabletLayout />}
       {isDesktop && <DesktopLayout />}
-    </div>
+    </p>
   );
 }`;
 
@@ -32,11 +35,9 @@ function AccessibleComponent() {
   const prefersReducedMotion = useMediaQuery('(prefers-reduced-motion: reduce)');
 
   return (
-    <div
-      className={prefersReducedMotion ? 'no-animations' : ''}
-    >
+    <p className={prefersReducedMotion ? 'no-animations' : 'animated-border'}>
       Content
-    </div>
+    </p>
   );
 }`;
 
@@ -46,8 +47,8 @@ function OrientationAware() {
   const isPortrait = useMediaQuery('(orientation: portrait)');
 
   return (
-    <div>
+    <p>
       {isPortrait ? 'Portrait mode' : 'Landscape mode'}
-    </div>
+    </p>
   );
 }`;
