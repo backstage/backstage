@@ -27,11 +27,12 @@ import {
   RouteRef,
   useRouteRef,
   IconComponent,
-  RouterBlueprint,
   NavItemBlueprint,
   createFrontendPlugin,
   FrontendFeature,
+  createFrontendModule,
 } from '@backstage/frontend-plugin-api';
+import { RouterBlueprint } from '@backstage/plugin-app-react';
 import appPlugin from '@backstage/plugin-app';
 
 const DEFAULT_MOCK_CONFIG = {
@@ -154,15 +155,6 @@ export function renderInTestApp(
         return [coreExtensionData.reactElement(element)];
       },
     }),
-    RouterBlueprint.make({
-      params: {
-        component: ({ children }) => (
-          <MemoryRouter initialEntries={options?.initialRouteEntries}>
-            {children}
-          </MemoryRouter>
-        ),
-      },
-    }),
   ];
 
   if (options?.mountedRoutes) {
@@ -189,6 +181,20 @@ export function renderInTestApp(
   }
 
   const features: FrontendFeature[] = [
+    createFrontendModule({
+      pluginId: 'app',
+      extensions: [
+        RouterBlueprint.make({
+          params: {
+            component: ({ children }) => (
+              <MemoryRouter initialEntries={options?.initialRouteEntries}>
+                {children}
+              </MemoryRouter>
+            ),
+          },
+        }),
+      ],
+    }),
     createFrontendPlugin({
       pluginId: 'test',
       extensions,
