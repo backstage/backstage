@@ -1,5 +1,11 @@
 # @backstage/plugin-scaffolder-node
 
+## 0.11.2
+
+### Patch Changes
+
+- Backport security fixes
+
 ## 0.11.1
 
 ### Patch Changes

@@ -1,5 +1,14 @@
 # @backstage/plugin-scaffolder-backend
 
+## 2.2.2
+
+### Patch Changes
+
+- Backport security fixes
+- Updated dependencies
+  - @backstage/backend-defaults@0.12.2
+  - @backstage/plugin-scaffolder-node@0.11.2
+
 ## 2.2.1
 
 ### Patch Changes
