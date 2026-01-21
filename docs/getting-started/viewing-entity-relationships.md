@@ -4,7 +4,7 @@ title: Viewing entity relationships
 description: View the relationships between the entities in the Catalog
 ---
 
-Audience: Developers
+Audience: All
 
 Each of the entities in the Catalog have various relationships to each other. For example, the demo data includes an API that provides data to a website. `guests` is the owner of the API and the website, and anyone signed in as part of the `guests` group can maintain them.
 
@@ -14,7 +14,7 @@ To see these relationships:
 
    ![Screenshot of the Backstage portal with example-website selected.](../assets/uiguide/select-example-website.png)
 
-A page is displayed that includes a `Relations` section. This section displays the selected entity and any other types of entities to which it is related. Each relationship is also designated, such as `hasPart/partOf` and `apiProvidedBy/providesApi`. [Well-known Relations between Catalog Entities](../features/software-catalog/well-known-relations.md) describes the most common relationships but you can also [create your own relationships](../features/software-catalog/extending-the-model.md#adding-a-new-relation-type).
+A page is displayed that includes a `Relations` section. This section displays the selected entity and any other types of entities to which it is related. Each relationship is also designated, such as `hasPart/partOf` and `apiProvidedBy/providesApi`. [Well-known Relations between Catalog Entities](../features/software-catalog/well-known-relations.md) describes the most common relationships, but you can also [create your own relationships](../features/software-catalog/extending-the-model.md#adding-a-new-relation-type).
 
 Selecting any of the related entities allows you to drill down further through the system model.
 
@@ -40,9 +40,15 @@ The `Catalog Graph` is displayed.
 
 You can set the following filters:
 
-- `MAX DEPTH` - 1 or infinite
+- `MAX DEPTH`
+  - `MAX DEPTH` = 1
 
-  ![Max Depth at 1 and infinite.](../assets/uiguide/max-depth-1-and-infinite.png)
+    ![Max Depth at 1](../assets/uiguide/max-depth-1.png)
+    
+  - `MAX DEPTH` = infinite
+
+    ![Max Depth at infinite](../assets/uiguide/max-depth-infinite.png)
+  
 
 - `KINDS` - select what kinds of entities you want to view, default is all kinds
 - `RELATIONS` - select which relationships you want to view, default is all relationships
@@ -53,19 +59,38 @@ You can set the following filters:
   - Right to left
 - `Curve`
 
-  - Monotone
-  - Step Before
+  - `Curve` = Monotone
 
-    ![Curve at Monotone and Step Before.](../assets/uiguide/curve-monotone-step-before.png)
+    ![Curve at Monotone.](../assets/uiguide/curve-monotone.png)
+    
+  - `Curve` = Step Before
+
+    ![Curve at Step Before.](../assets/uiguide/curve-step-before.png)
 
 You can also toggle:
 
 - `Simplified`
-- On = simple view
-- Off = detailed view
+  - On = simple view
+  - Off = detailed view
 - `Merge relations`
 
   - On = You see the relationship from the selected entity to the nodes and from the nodes to the selected entity.
   - Off = You only see relations from the selected entity to its nodes.
 
-    ![Graphic showing results of toggling Merge relations.](../assets/uiguide/simplify-merge-relations-on-off.png)
+  The following graphics illustrate the view of the nodes and relationships, based on the combination of the settings of `Simplified` and `Merge relations`.
+
+    - `Simplified` = On and `Merge Relations` = On
+
+      ![Simplfied is On and Merge Relations is On.](../assets/uiguide/simplify-on-merge-relations-on.png)
+
+    - `Simplified` = On and `Merge Relations` = Off
+
+      ![Simplfied is On and Merge Relations is Off.](../assets/uiguide/simplify-on-merge-relations-off.png)
+
+    - `Simplified` = Off and `Merge Relations` = On
+
+      ![Simplfied is Off and Merge Relations is On.](../assets/uiguide/simplify-off-merge-relations-on.png)
+
+    - `Simplified` = Off and `Merge Relations` = Off
+
+      ![Simplified is Off and Merge Relations is Off.](../assets/uiguide/simplify-off-merge-relations-off.png)
