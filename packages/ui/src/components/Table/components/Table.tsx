@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { useId } from 'react-aria';
 import { type Key, ResizableTableContainer } from 'react-aria-components';
 import { TableRoot } from './TableRoot';
 import { TableHeader } from './TableHeader';
@@ -28,7 +29,7 @@ import type {
   RowRenderFn,
   TablePaginationType,
 } from '../types';
-import { Fragment, useId, useMemo } from 'react';
+import { Fragment, useMemo } from 'react';
 import { VisuallyHidden } from '../../VisuallyHidden';
 import { Flex } from '../../Flex';
 
