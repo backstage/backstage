@@ -15,6 +15,7 @@
  */
 
 import {
+  isChildPath,
   UrlReaderServiceReadTreeResponse,
   UrlReaderServiceReadTreeResponseDirOptions,
   UrlReaderServiceReadTreeResponseFile,
@@ -23,7 +24,7 @@ import concatStream from 'concat-stream';
 import fs from 'fs-extra';
 import platformPath from 'path';
 import { pipeline as pipelineCb, Readable } from 'stream';
-import tar, { Parse, ParseStream, ReadEntry } from 'tar';
+import tar, { FileStat, Parse, ParseStream, ReadEntry } from 'tar';
 import { promisify } from 'util';
 import { stripFirstDirectoryFromPath } from './util';
 
@@ -180,6 +181,22 @@ export class TarArchiveResponse implements UrlReaderServiceReadTreeResponse {
           // Filter errors will short-circuit the rest of the filtering and then throw
           if (filterError) {
             return false;
+          }
+
+          // Block symlinks/hardlinks that escape the extraction directory
+          const entry = stat as FileStat & { type?: string; linkpath?: string };
+          if (
+            (entry.type === 'SymbolicLink' || entry.type === 'Link') &&
+            entry.linkpath
+          ) {
+            const strippedPath = path.split('/').slice(strip).join('/');
+            const linkDir = platformPath.dirname(
+              platformPath.join(dir, strippedPath),
+            );
+            const targetPath = platformPath.resolve(linkDir, entry.linkpath);
+            if (!isChildPath(dir, targetPath)) {
+              return false;
+            }
           }
 
           // File path relative to the root extracted directory. Will remove the

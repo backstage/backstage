@@ -108,4 +108,16 @@ describe('ReadableArrayResponse', () => {
       },
     });
   });
+
+  it('should validate relative paths', async () => {
+    const arr: FromReadableArrayOptions = [
+      { data: createReadStream(path1), path: '../other/file.yaml' },
+    ];
+
+    const res = new ReadableArrayResponse(arr, targetDir.path, 'etag');
+
+    await expect(res.dir()).rejects.toThrow(
+      'Relative path is not allowed to refer to a directory outside its parent',
+    );
+  });
 });
