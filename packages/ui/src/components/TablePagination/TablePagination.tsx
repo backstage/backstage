@@ -15,6 +15,7 @@
  */
 
 import clsx from 'clsx';
+import { useId } from 'react-aria';
 import { Text } from '../Text';
 import { ButtonIcon } from '../ButtonIcon';
 import { Select } from '../Select';
@@ -23,7 +24,7 @@ import { useStyles } from '../../hooks/useStyles';
 import { TablePaginationDefinition } from './definition';
 import styles from './TablePagination.module.css';
 import { RiArrowLeftSLine, RiArrowRightSLine } from '@remixicon/react';
-import { useId, useMemo } from 'react';
+import { useMemo } from 'react';
 
 const DEFAULT_PAGE_SIZE_OPTIONS: PageSizeOption[] = [
   { label: 'Show 5 results', value: 5 },
