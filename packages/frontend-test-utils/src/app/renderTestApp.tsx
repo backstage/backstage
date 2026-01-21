@@ -17,16 +17,17 @@
 import { createSpecializedApp } from '@backstage/frontend-app-api';
 import {
   coreExtensionData,
+  createFrontendModule,
   createFrontendPlugin,
   ExtensionDefinition,
   FrontendFeature,
-  RouterBlueprint,
 } from '@backstage/frontend-plugin-api';
 import { render } from '@testing-library/react';
 import appPlugin from '@backstage/plugin-app';
 import { JsonObject } from '@backstage/types';
 import { ConfigReader } from '@backstage/config';
 import { MemoryRouter } from 'react-router-dom';
+import { RouterBlueprint } from '@backstage/plugin-app-react';
 
 const DEFAULT_MOCK_CONFIG = {
   app: { baseUrl: 'http://localhost:3000' },
@@ -74,20 +75,23 @@ const appPluginOverride = appPlugin.withOverrides({
  * @public
  */
 export function renderTestApp(options: RenderTestAppOptions) {
-  const extensions = [
-    RouterBlueprint.make({
-      params: {
-        component: ({ children }) => (
-          <MemoryRouter initialEntries={options.initialRouteEntries}>
-            {children}
-          </MemoryRouter>
-        ),
-      },
-    }),
-    ...(options.extensions ?? []),
-  ];
+  const extensions = [...(options.extensions ?? [])];
 
   const features: FrontendFeature[] = [
+    createFrontendModule({
+      pluginId: 'app',
+      extensions: [
+        RouterBlueprint.make({
+          params: {
+            component: ({ children }) => (
+              <MemoryRouter initialEntries={options.initialRouteEntries}>
+                {children}
+              </MemoryRouter>
+            ),
+          },
+        }),
+      ],
+    }),
     createFrontendPlugin({
       pluginId: 'test',
       extensions,
