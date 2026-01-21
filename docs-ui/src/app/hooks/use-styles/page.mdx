@@ -1,0 +1,59 @@
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+import { CodeBlock } from '@/components/CodeBlock';
+import { Banner } from '@/components/Banner';
+import { PageTitle } from '@/components/PageTitle';
+import { PropsTable } from '@/components/PropsTable';
+import {
+  useStylesUsageSnippet,
+  useStylesDefsSnippet,
+  useStylesAttributesSnippet,
+} from './snippets';
+import { useStylesPropsDefs, useStylesReturnDefs } from './props-definition';
+
+<PageTitle
+  title="useStyles"
+  description="React hook to get class names and data attributes for a component with responsive support"
+/>
+
+<Banner
+  variant="warning"
+  text="This hook is currently intended for internal use within the design system."
+/>
+
+## Usage
+
+The `useStyles` hook is the core styling utility that processes component definitions and props to generate:
+
+- **Class names**
+- **Data attributes** for state-based styling (e.g., `data-disabled`, `data-variant`)
+- **Utility classes** from utility props like `padding`, `margin`, `display` (with responsive support)
+- **CSS custom properties** for custom values not in predefined utility lists
+- **Cleaned props** with utility props removed (safe to spread onto DOM elements)
+
+<CodeBlock code={useStylesUsageSnippet} />
+
+## Parameters
+<PropsTable data={useStylesPropsDefs} isHook />
+
+## Return Value
+
+<PropsTable data={useStylesReturnDefs} isHook />
+
+## How It Works
+
+### Component Definition
+
+A component definition describes how a component should be styled:
+
+<CodeBlock code={useStylesDefsSnippet} />
+
+<Banner variant="info" text="The data-attributes definition should be kebab-case instead of camelCase." />
+
+### Data Attributes
+
+Data attributes enable state-based styling through CSS selectors. The hook automatically adds `data-*` to the attributes based on the defined props:
+
+<CodeBlock code={useStylesAttributesSnippet} />
+
+
+<ChangelogComponent component="use-styles" />
