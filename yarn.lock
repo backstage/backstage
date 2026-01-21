@@ -47882,14 +47882,14 @@ __metadata:
   linkType: hard
 
 "swr@npm:^2.0.0, swr@npm:^2.2.5":
-  version: 2.3.7
-  resolution: "swr@npm:2.3.7"
+  version: 2.3.8
+  resolution: "swr@npm:2.3.8"
   dependencies:
     dequal: "npm:^2.0.3"
-    use-sync-external-store: "npm:^1.4.0"
+    use-sync-external-store: "npm:^1.6.0"
   peerDependencies:
     react: ^16.11.0 || ^17.0.0 || ^18.0.0 || ^19.0.0
-  checksum: 10/a7a9f141ea31146f2787c36854ca0998f65d38503fe73fc3c0695ebba37821487eb43e62cece15d1739bc531e8430c15ac5f6ea695293e861fdbc2de92514d96
+  checksum: 10/fc4c992902da13bc2c82f066131cdf0b73147d6a590984c0b746704ad7ac8e40ac72afab679c47ad3abc7c09789a31964ffbb963904ec6c29e650790991b0eac
   languageName: node
   linkType: hard
 
@@ -49927,7 +49927,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"use-sync-external-store@npm:^1.4.0, use-sync-external-store@npm:^1.5.0":
+"use-sync-external-store@npm:^1.4.0, use-sync-external-store@npm:^1.5.0, use-sync-external-store@npm:^1.6.0":
   version: 1.6.0
   resolution: "use-sync-external-store@npm:1.6.0"
   peerDependencies:
