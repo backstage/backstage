@@ -1,0 +1,3 @@
+site_name: Test Site
+hooks:
+  - hooks/custom_hook.py

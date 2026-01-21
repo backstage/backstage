@@ -92,6 +92,9 @@ const mkdocsYmlWithAdditionalPluginsWithConfig = fs.readFileSync(
 const mkdocsYmlWithEnvTag = fs.readFileSync(
   resolvePath(__filename, '../__fixtures__/mkdocs_with_env_tag.yml'),
 );
+const mkdocsYmlWithHooks = fs.readFileSync(
+  resolvePath(__filename, '../__fixtures__/mkdocs_with_hooks.yml'),
+);
 const mockLogger = mockServices.logger.mock();
 const warn = jest.spyOn(mockLogger, 'warn');
 
@@ -725,6 +728,23 @@ describe('helpers', () => {
       await expect(
         validateMkdocsYaml(inputDir, mkdocsYmlWithEnvTag.toString()),
       ).resolves.toBeUndefined();
+    });
+
+    it('should reject mkdocs.yml with hooks configuration for security reasons', async () => {
+      await expect(
+        validateMkdocsYaml(inputDir, mkdocsYmlWithHooks.toString()),
+      ).rejects.toThrow(
+        /The 'hooks' configuration is not allowed in mkdocs.yml for security reasons/,
+      );
+    });
+
+    it('should reject mkdocs.yml with empty hooks array', async () => {
+      const mkdocsWithEmptyHooks = 'site_name: Test\nhooks: []';
+      await expect(
+        validateMkdocsYaml(inputDir, mkdocsWithEmptyHooks),
+      ).rejects.toThrow(
+        /The 'hooks' configuration is not allowed in mkdocs.yml for security reasons/,
+      );
     });
   });
 });

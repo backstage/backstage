@@ -288,6 +288,16 @@ export const validateMkdocsYaml = async (
   }
 
   const parsedMkdocsYml: Record<string, any> = mkdocsYml;
+
+  // Reject hooks configuration to prevent arbitrary code execution.
+  // MkDocs hooks allow loading Python scripts which could be used for malicious purposes.
+  if (parsedMkdocsYml.hooks) {
+    throw new Error(
+      `The 'hooks' configuration is not allowed in mkdocs.yml for security reasons. ` +
+        `MkDocs hooks allow arbitrary Python code execution which poses a security risk.`,
+    );
+  }
+
   if (
     parsedMkdocsYml.docs_dir &&
     !isChildPath(inputDir, resolvePath(inputDir, parsedMkdocsYml.docs_dir))
