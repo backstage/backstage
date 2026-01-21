@@ -33,6 +33,7 @@ The `useStyles` hook is the core styling utility that processes component defini
 <CodeBlock code={useStylesUsageSnippet} />
 
 ## Parameters
+
 <PropsTable data={useStylesPropsDefs} isHook />
 
 ## Return Value
@@ -47,13 +48,15 @@ A component definition describes how a component should be styled:
 
 <CodeBlock code={useStylesDefsSnippet} />
 
-<Banner variant="info" text="The data-attributes definition should be kebab-case instead of camelCase." />
+<Banner
+  variant="info"
+  text="The data-attributes definition should be kebab-case instead of camelCase."
+/>
 
 ### Data Attributes
 
 Data attributes enable state-based styling through CSS selectors. The hook automatically adds `data-*` to the attributes based on the defined props:
 
 <CodeBlock code={useStylesAttributesSnippet} />
-
 
 <ChangelogComponent component="use-styles" />
