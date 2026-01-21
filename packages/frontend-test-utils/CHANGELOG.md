@@ -1,5 +1,11 @@
 # @backstage/frontend-test-utils
 
+## 0.4.4
+
+### Patch Changes
+
+- 3d8a37b: Fixed Router deprecation warning and switched to using new `RouterBlueprint` from `@backstage/plugin-app-api`.
+
 ## 0.4.3
 
 ### Patch Changes
