@@ -200,7 +200,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@apidevtools/json-schema-ref-parser@npm:^14.0.3, @apidevtools/json-schema-ref-parser@npm:^14.2.1":
+"@apidevtools/json-schema-ref-parser@npm:^14.2.1":
   version: 14.2.1
   resolution: "@apidevtools/json-schema-ref-parser@npm:14.2.1"
   dependencies:
@@ -21494,12 +21494,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@types/multer@npm:^1.4.13":
-  version: 1.4.13
-  resolution: "@types/multer@npm:1.4.13"
+"@types/multer@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "@types/multer@npm:2.0.0"
   dependencies:
     "@types/express": "npm:*"
-  checksum: 10/f650a9f431007f05a5c51d6359140bea5f77d1299668d45a0791ddbf7789f1c220a3e038039c5e0de6608e273d5ee8001e9649c606d7e0e847e8774ccc5d1d68
+  checksum: 10/87ddd5b39fd572b1d98f84908738eed9fef53fc20628bff066d43b3bcf70481f51010a997554ed65c97121e7b8fe44b59a24cd68ccf59c3d7c64bbffb8c5a127
   languageName: node
   linkType: hard
 
@@ -31082,11 +31082,11 @@ __metadata:
   linkType: hard
 
 "express-openapi-validator@npm:^5.5.8":
-  version: 5.6.0
-  resolution: "express-openapi-validator@npm:5.6.0"
+  version: 5.6.2
+  resolution: "express-openapi-validator@npm:5.6.2"
   dependencies:
-    "@apidevtools/json-schema-ref-parser": "npm:^14.0.3"
-    "@types/multer": "npm:^1.4.13"
+    "@apidevtools/json-schema-ref-parser": "npm:^14.2.1"
+    "@types/multer": "npm:^2.0.0"
     ajv: "npm:^8.17.1"
     ajv-draft-04: "npm:^1.0.0"
     ajv-formats: "npm:^3.0.1"
@@ -31097,11 +31097,11 @@ __metadata:
     media-typer: "npm:^1.1.0"
     multer: "npm:^2.0.2"
     ono: "npm:^7.1.3"
-    path-to-regexp: "npm:^8.2.0"
-    qs: "npm:^6.14.0"
+    path-to-regexp: "npm:^8.3.0"
+    qs: "npm:^6.14.1"
   peerDependencies:
     express: "*"
-  checksum: 10/03b5d26f16d9b1cc4742b9bd87570c6429fabb856b385658c0f0b323d53d241969c1572bda068ba59e694e45ded094d085674f860665aacf0a6a820f0317cef4
+  checksum: 10/c0e08aab007a4a7b73aad87b3a52ac82e986af46cbe329ba1b9e2f9b896415441e73ed42d4297edc92e3f0267364d0677707613caff2c22b90e61744cfd96b37
   languageName: node
   linkType: hard
 
@@ -41877,7 +41877,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"path-to-regexp@npm:8.3.0, path-to-regexp@npm:^8.0.0, path-to-regexp@npm:^8.1.0, path-to-regexp@npm:^8.2.0":
+"path-to-regexp@npm:8.3.0, path-to-regexp@npm:^8.0.0, path-to-regexp@npm:^8.1.0, path-to-regexp@npm:^8.3.0":
   version: 8.3.0
   resolution: "path-to-regexp@npm:8.3.0"
   checksum: 10/568f148fc64f5fd1ecebf44d531383b28df924214eabf5f2570dce9587a228e36c37882805ff02d71c6209b080ea3ee6a4d2b712b5df09741b67f1f3cf91e55a
@@ -43366,7 +43366,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"qs@npm:^6.10.1, qs@npm:^6.10.3, qs@npm:^6.11.2, qs@npm:^6.12.2, qs@npm:^6.12.3, qs@npm:^6.14.0, qs@npm:^6.7.0, qs@npm:^6.9.4, qs@npm:~6.14.0":
+"qs@npm:^6.10.1, qs@npm:^6.10.3, qs@npm:^6.11.2, qs@npm:^6.12.2, qs@npm:^6.12.3, qs@npm:^6.14.0, qs@npm:^6.14.1, qs@npm:^6.7.0, qs@npm:^6.9.4, qs@npm:~6.14.0":
   version: 6.14.1
   resolution: "qs@npm:6.14.1"
   dependencies:
