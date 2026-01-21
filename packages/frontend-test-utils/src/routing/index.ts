@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 export {
-  TestRouterProvider,
-  type TestRouterProviderProps,
-} from './TestRouterProvider';
+  TestMemoryRouterProvider,
+  type TestMemoryRouterProviderProps,
+} from './TestMemoryRouterProvider';
+
+export {
+  TestBrowserRouterProvider,
+  type TestBrowserRouterProviderProps,
+} from './TestBrowserRouterProvider';

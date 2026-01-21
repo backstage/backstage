@@ -15,15 +15,19 @@
  */
 
 import { useMemo, ReactNode } from 'react';
-import { MockRouterApi, MockRouterApiOptions } from '../apis/RouterApi';
+import {
+  MockMemoryRouterApi,
+  MockMemoryRouterApiOptions,
+} from '../apis/RouterApi';
 import { routerApiRef } from '@backstage/frontend-plugin-api';
 import { TestApiProvider } from '@backstage/test-utils';
 
 /**
- * Props for TestRouterProvider.
+ * Props for TestMemoryRouterProvider.
  * @public
  */
-export interface TestRouterProviderProps extends MockRouterApiOptions {
+export interface TestMemoryRouterProviderProps
+  extends MockMemoryRouterApiOptions {
   /** Children to render within the router context */
   children: ReactNode;
 }
@@ -33,13 +37,13 @@ export interface TestRouterProviderProps extends MockRouterApiOptions {
  *
  * @public
  */
-export const TestRouterProvider = ({
+export const TestMemoryRouterProvider = ({
   children,
   initialEntries,
   initialIndex,
-}: TestRouterProviderProps) => {
+}: TestMemoryRouterProviderProps) => {
   const mockRouterApi = useMemo(
-    () => new MockRouterApi({ initialEntries, initialIndex }),
+    () => new MockMemoryRouterApi({ initialEntries, initialIndex }),
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [JSON.stringify(initialEntries), initialIndex],
   );

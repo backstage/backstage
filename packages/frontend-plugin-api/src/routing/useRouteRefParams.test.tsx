@@ -15,7 +15,7 @@
  */
 
 import { render } from '@testing-library/react';
-import { TestRouterProvider } from '@backstage/frontend-test-utils';
+import { TestMemoryRouterProvider } from '@backstage/frontend-test-utils';
 import { useRouteRefParams } from './useRouteRefParams';
 import { createRouteRef } from './RouteRef';
 import { Routes, Route } from './components';
@@ -38,11 +38,11 @@ describe('useRouteRefParams', () => {
     };
 
     const { getByText } = render(
-      <TestRouterProvider initialEntries={['/foo/bar']}>
+      <TestMemoryRouterProvider initialEntries={['/foo/bar']}>
         <Routes>
           <Route path="/:a/:b" element={<Page />} />
         </Routes>
-      </TestRouterProvider>,
+      </TestMemoryRouterProvider>,
     );
 
     expect(getByText('foo')).toBeInTheDocument();

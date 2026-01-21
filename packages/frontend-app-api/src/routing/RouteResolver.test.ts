@@ -28,7 +28,7 @@ import {
   createSubRouteRef as createLegacySubRouteRef,
   createExternalRouteRef as createLegacyExternalRouteRef,
 } from '@backstage/core-plugin-api';
-import { MockRouterApi } from '@backstage/frontend-test-utils';
+import { MockMemoryRouterApi } from '@backstage/frontend-test-utils';
 import { RouteResolver } from './RouteResolver';
 import { MATCH_ALL_ROUTE } from './extractRouteInfoFromAppNode';
 import {
@@ -36,7 +36,7 @@ import {
   createRouteAliasResolver,
 } from './RouteAliasResolver';
 
-const mockRouter = new MockRouterApi();
+const mockRouter = new MockMemoryRouterApi();
 const matchRoutes = mockRouter.matchRoutes.bind(mockRouter);
 const generatePath = mockRouter.generatePath.bind(mockRouter);
 

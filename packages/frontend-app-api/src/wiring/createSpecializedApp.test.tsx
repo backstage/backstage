@@ -37,13 +37,13 @@ import { createSpecializedApp } from './createSpecializedApp';
 import { mockApis, TestApiRegistry } from '@backstage/test-utils';
 import { configApiRef, featureFlagsApiRef } from '@backstage/core-plugin-api';
 import {
-  MockRouterApi,
-  MockRouterApiOptions,
-  TestRouterProvider,
+  MockMemoryRouterApi,
+  MockMemoryRouterApiOptions,
+  TestMemoryRouterProvider,
 } from '@backstage/frontend-test-utils';
 import { ApiProvider, ConfigReader } from '@backstage/core-app-api';
 
-function mockRouterApiExtension(options?: MockRouterApiOptions) {
+function mockRouterApiExtension(options?: MockMemoryRouterApiOptions) {
   return createFrontendPlugin({
     pluginId: 'test-router',
     extensions: [
@@ -53,7 +53,7 @@ function mockRouterApiExtension(options?: MockRouterApiOptions) {
           defineParams({
             api: routerApiRef,
             deps: {},
-            factory: () => new MockRouterApi(options),
+            factory: () => new MockMemoryRouterApi(options),
           }),
       }),
     ],
@@ -614,13 +614,13 @@ describe('createSpecializedApp', () => {
             return [
               coreExtensionData.reactElement(
                 <ApiProvider apis={apis}>
-                  <TestRouterProvider>
+                  <TestMemoryRouterProvider>
                     {inputs.children.map(i => (
                       <Fragment key={i.node.spec.id}>
                         {i.get(coreExtensionData.reactElement)}
                       </Fragment>
                     ))}
-                  </TestRouterProvider>
+                  </TestMemoryRouterProvider>
                 </ApiProvider>,
               ),
             ];
