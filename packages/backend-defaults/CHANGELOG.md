@@ -1,5 +1,11 @@
 # @backstage/backend-defaults
 
+## 0.14.1
+
+### Patch Changes
+
+- Backport security fixes
+
 ## 0.14.0
 
 ### Minor Changes
