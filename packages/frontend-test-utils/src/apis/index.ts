@@ -29,4 +29,9 @@ export {
 } from '@backstage/test-utils';
 
 export { MockAnalyticsApi } from './AnalyticsApi/MockAnalyticsApi';
-export { MockRouterApi, type MockRouterApiOptions } from './RouterApi';
+export {
+  MockMemoryRouterApi,
+  type MockMemoryRouterApiOptions,
+  MockBrowserRouterApi,
+  type MockBrowserRouterApiOptions,
+} from './RouterApi';

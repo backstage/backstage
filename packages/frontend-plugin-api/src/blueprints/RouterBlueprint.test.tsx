@@ -22,7 +22,7 @@ import {
 } from '../wiring';
 import {
   createExtensionTester,
-  TestRouterProvider,
+  TestMemoryRouterProvider,
 } from '@backstage/frontend-test-utils';
 
 describe('RouterBlueprint', () => {
@@ -61,9 +61,9 @@ describe('RouterBlueprint', () => {
     const extension = RouterBlueprint.make({
       params: {
         component: ({ children }) => (
-          <TestRouterProvider>
+          <TestMemoryRouterProvider>
             <div data-testid="test-router">{children}</div>
-          </TestRouterProvider>
+          </TestMemoryRouterProvider>
         ),
       },
     });
@@ -97,13 +97,13 @@ describe('RouterBlueprint', () => {
       *factory(originalFactory, { inputs, config }) {
         yield* originalFactory({
           component: ({ children }) => (
-            <TestRouterProvider>
+            <TestMemoryRouterProvider>
               <div
                 data-testid={`test-router-${config.name}-${inputs.children.length}`}
               >
                 {children}
               </div>
-            </TestRouterProvider>
+            </TestMemoryRouterProvider>
           ),
         });
       },

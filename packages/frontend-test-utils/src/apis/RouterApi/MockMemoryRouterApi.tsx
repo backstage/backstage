@@ -68,10 +68,10 @@ function adaptRouteMatches<T extends RouteObject>(
 }
 
 /**
- * Options for creating a MockRouterApi.
+ * Options for creating a MockMemoryRouterApi.
  * @public
  */
-export interface MockRouterApiOptions {
+export interface MockMemoryRouterApiOptions {
   /** Initial entries for the memory router */
   initialEntries?: string[];
   /** Initial index in the history stack */
@@ -82,11 +82,11 @@ export interface MockRouterApiOptions {
  * Mock implementation of RouterApi using MemoryRouter for testing.
  * @public
  */
-export class MockRouterApi implements RouterApi {
+export class MockMemoryRouterApi implements RouterApi {
   private initialEntries: string[];
   private initialIndex?: number;
 
-  constructor(options?: MockRouterApiOptions) {
+  constructor(options?: MockMemoryRouterApiOptions) {
     this.initialEntries = options?.initialEntries ?? ['/'];
     this.initialIndex = options?.initialIndex;
   }

@@ -21,7 +21,7 @@ import { useRouteRef } from './useRouteRef';
 import { createRouteRef } from './RouteRef';
 import {
   TestApiProvider,
-  TestRouterProvider,
+  TestMemoryRouterProvider,
 } from '@backstage/frontend-test-utils';
 import { routeResolutionApiRef } from '../apis';
 import { useNavigate } from './hooks';
@@ -41,7 +41,7 @@ describe('v1 consumer', () => {
     const renderedHook = renderHook(() => useRouteRef(routeRef), {
       wrapper: ({ children }: PropsWithChildren<{}>) => (
         <TestApiProvider apis={[[routeResolutionApiRef, { resolve }]]}>
-          <TestRouterProvider
+          <TestMemoryRouterProvider
             initialEntries={['/my-page']}
             children={children}
           />
@@ -67,7 +67,7 @@ describe('v1 consumer', () => {
         <TestApiProvider
           apis={[[routeResolutionApiRef, { resolve: () => undefined }]]}
         >
-          <TestRouterProvider
+          <TestMemoryRouterProvider
             initialEntries={['/my-page']}
             children={children}
           />
@@ -96,9 +96,9 @@ describe('v1 consumer', () => {
 
     render(
       <TestApiProvider apis={[[routeResolutionApiRef, { resolve }]]}>
-        <TestRouterProvider initialEntries={['/my-page']}>
+        <TestMemoryRouterProvider initialEntries={['/my-page']}>
           <Helper />
-        </TestRouterProvider>
+        </TestMemoryRouterProvider>
       </TestApiProvider>,
     );
 
@@ -125,9 +125,9 @@ describe('v1 consumer', () => {
 
     render(
       <TestApiProvider apis={[[routeResolutionApiRef, { resolve }]]}>
-        <TestRouterProvider initialEntries={['/my-page']}>
+        <TestMemoryRouterProvider initialEntries={['/my-page']}>
           <Helper />
-        </TestRouterProvider>
+        </TestMemoryRouterProvider>
       </TestApiProvider>,
     );
 
@@ -154,9 +154,9 @@ describe('v1 consumer', () => {
 
     render(
       <TestApiProvider apis={[[routeResolutionApiRef, { resolve }]]}>
-        <TestRouterProvider initialEntries={['/my-page']}>
+        <TestMemoryRouterProvider initialEntries={['/my-page']}>
           <Helper />
-        </TestRouterProvider>
+        </TestMemoryRouterProvider>
       </TestApiProvider>,
     );
 
@@ -183,9 +183,9 @@ describe('v1 consumer', () => {
 
     render(
       <TestApiProvider apis={[[routeResolutionApiRef, { resolve }]]}>
-        <TestRouterProvider initialEntries={['/my-page']}>
+        <TestMemoryRouterProvider initialEntries={['/my-page']}>
           <Helper />
-        </TestRouterProvider>
+        </TestMemoryRouterProvider>
       </TestApiProvider>,
     );
 

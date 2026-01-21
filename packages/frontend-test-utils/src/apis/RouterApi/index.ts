@@ -14,4 +14,12 @@
  * limitations under the License.
  */
 
-export { MockRouterApi, type MockRouterApiOptions } from './MockRouterApi';
+export {
+  MockMemoryRouterApi,
+  type MockMemoryRouterApiOptions,
+} from './MockMemoryRouterApi';
+
+export {
+  MockBrowserRouterApi,
+  type MockBrowserRouterApiOptions,
+} from './MockBrowserRouterApi';

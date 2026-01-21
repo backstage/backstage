@@ -15,7 +15,7 @@
  */
 
 import { Fragment } from 'react';
-import { TestRouterProvider } from '../routing/TestRouterProvider';
+import { TestMemoryRouterProvider } from '../routing/TestMemoryRouterProvider';
 import { createSpecializedApp } from '@backstage/frontend-app-api';
 import { RenderResult, render } from '@testing-library/react';
 import { ConfigReader } from '@backstage/config';
@@ -188,9 +188,11 @@ export function renderInTestApp(
         RouterBlueprint.make({
           params: {
             component: ({ children }) => (
-              <TestRouterProvider initialEntries={options?.initialRouteEntries}>
+              <TestMemoryRouterProvider
+                initialEntries={options?.initialRouteEntries}
+              >
                 {children}
-              </TestRouterProvider>
+              </TestMemoryRouterProvider>
             ),
           },
         }),
