@@ -68,17 +68,14 @@ You can set the following filters:
     ![Curve at Step Before.](../assets/uiguide/curve-step-before.png)
 
 You can also toggle:
-
 - `Simplified`
   - On = simple view
   - Off = detailed view
 - `Merge relations`
-
   - On = You see the relationship from the selected entity to the nodes and from the nodes to the selected entity.
   - Off = You only see relations from the selected entity to its nodes.
 
   The following graphics illustrate the view of the nodes and relationships, based on the combination of the settings of `Simplified` and `Merge relations`.
-
     - `Simplified` = On and `Merge Relations` = On
 
       ![Simplfied is On and Merge Relations is On.](../assets/uiguide/simplify-on-merge-relations-on.png)
