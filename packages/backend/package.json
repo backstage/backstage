@@ -69,7 +69,8 @@
     "@opentelemetry/auto-instrumentations-node": "^0.67.0",
     "@opentelemetry/exporter-prometheus": "^0.208.0",
     "@opentelemetry/sdk-node": "^0.208.0",
-    "example-app": "link:../app"
+    "example-app": "link:../app",
+    "knex-pglite": "^0.13.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^"

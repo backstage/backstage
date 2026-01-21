@@ -585,7 +585,7 @@ export interface Config {
     /** Database connection configuration, select base database type using the `client` field */
     database: {
       /** Default database client to use */
-      client: 'better-sqlite3' | 'sqlite3' | 'pg';
+      client: 'better-sqlite3' | 'sqlite3' | 'pg' | 'pglite';
       /**
        * Base database connection string, or object with individual connection properties
        * @visibility secret
