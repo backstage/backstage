@@ -68,10 +68,7 @@ export const workspaceDatabaseModule = createBackendModule({
         }
 
         scaffolderWorkspaceProviders.addProviders({
-          database: DatabaseWorkspaceProvider.create({
-            db,
-            logger,
-          }),
+          database: DatabaseWorkspaceProvider.create({ db }),
         });
       },
     });

@@ -30,7 +30,6 @@ const migrationsDir = path.resolve(__dirname, '../../migrations');
 describe('DatabaseWorkspaceProvider', () => {
   let db: Knex;
   let provider: DatabaseWorkspaceProvider;
-  const logger = mockServices.logger.mock();
 
   const workspaceDir = createMockDirectory({
     content: {
@@ -66,11 +65,7 @@ app:
 
   beforeEach(() => {
     jest.clearAllMocks();
-    provider = DatabaseWorkspaceProvider.create({
-      db,
-      logger,
-      isProduction: false,
-    });
+    provider = DatabaseWorkspaceProvider.create({ db });
   });
 
   afterAll(async () => {
@@ -207,54 +202,6 @@ app:
 
       // Should not throw
       await provider.cleanWorkspace({ taskId });
-    });
-  });
-
-  describe('production warning', () => {
-    it('should log warning in production mode', async () => {
-      const prodProvider = DatabaseWorkspaceProvider.create({
-        db,
-        logger,
-        isProduction: true,
-      });
-
-      await prodProvider.serializeWorkspace({
-        path: workspaceDir.path,
-        taskId: 'prod-task-1',
-      });
-
-      expect(logger.warn).toHaveBeenCalledWith(
-        expect.stringContaining('not recommended for production'),
-      );
-    });
-
-    it('should only log warning once', async () => {
-      const prodProvider = DatabaseWorkspaceProvider.create({
-        db,
-        logger,
-        isProduction: true,
-      });
-
-      await prodProvider.serializeWorkspace({
-        path: workspaceDir.path,
-        taskId: 'prod-task-2',
-      });
-
-      await prodProvider.serializeWorkspace({
-        path: workspaceDir.path,
-        taskId: 'prod-task-3',
-      });
-
-      expect(logger.warn).toHaveBeenCalledTimes(1);
-    });
-
-    it('should not log warning in development mode', async () => {
-      await provider.serializeWorkspace({
-        path: workspaceDir.path,
-        taskId: 'dev-task-1',
-      });
-
-      expect(logger.warn).not.toHaveBeenCalled();
     });
   });
 });

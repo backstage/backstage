@@ -15,7 +15,6 @@
  */
 
 import { Knex } from 'knex';
-import { LoggerService } from '@backstage/backend-plugin-api';
 import {
   WorkspaceProvider,
   serializeWorkspace,
@@ -35,51 +34,25 @@ type RawDbTaskWorkspaceRow = {
  *
  * @remarks
  * This provider is intended for development use only. It has a 5MB size limit
- * and will log a warning when used in production environments.
+ * and is disabled in production unless explicitly enabled via config.
  *
  * For production use, consider using an external storage provider like GCS.
  */
 export class DatabaseWorkspaceProvider implements WorkspaceProvider {
   private readonly db: Knex;
-  private readonly logger: LoggerService;
-  private readonly isProduction: boolean;
-  private hasLoggedProductionWarning = false;
 
-  static create(options: {
-    db: Knex;
-    logger: LoggerService;
-    isProduction?: boolean;
-  }) {
-    return new DatabaseWorkspaceProvider(
-      options.db,
-      options.logger,
-      options.isProduction ?? process.env.NODE_ENV === 'production',
-    );
+  static create(options: { db: Knex }) {
+    return new DatabaseWorkspaceProvider(options.db);
   }
 
-  private constructor(db: Knex, logger: LoggerService, isProduction: boolean) {
+  private constructor(db: Knex) {
     this.db = db;
-    this.logger = logger;
-    this.isProduction = isProduction;
-  }
-
-  private warnIfProduction(): void {
-    if (this.isProduction && !this.hasLoggedProductionWarning) {
-      this.logger.warn(
-        'Database workspace provider is not recommended for production use. ' +
-          'Consider using an external storage provider like GCS ' +
-          '(@backstage/plugin-scaffolder-backend-module-gcp).',
-      );
-      this.hasLoggedProductionWarning = true;
-    }
   }
 
   public async serializeWorkspace(options: {
     path: string;
     taskId: string;
   }): Promise<void> {
-    this.warnIfProduction();
-
     const { contents: workspace } = await serializeWorkspace({
       path: options.path,
     });
