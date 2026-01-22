@@ -21,6 +21,9 @@
 /**
  * @public
  */
-export interface EntityPredicateValueOneOf {
-  $exists: boolean;
+export interface QueryEntitiesByPredicate200ResponsePageInfo {
+  /**
+   * The cursor for the next batch of entities.
+   */
+  nextCursor?: string;
 }

@@ -21,9 +21,4 @@
 /**
  * @public
  */
-export interface GetEntitiesByPredicates200ResponsePageInfo {
-  /**
-   * The cursor for the next batch of entities.
-   */
-  nextCursor?: string;
-}
+export type EntityPredicateInInInner = boolean | number | string;

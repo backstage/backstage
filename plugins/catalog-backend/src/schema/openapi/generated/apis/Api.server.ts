@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 The Backstage Authors
+ * Copyright 2026 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,9 +24,9 @@ import { EntitiesQueryResponse } from '../models/EntitiesQueryResponse.model';
 import { Entity } from '../models/Entity.model';
 import { EntityAncestryResponse } from '../models/EntityAncestryResponse.model';
 import { EntityFacetsResponse } from '../models/EntityFacetsResponse.model';
-import { GetEntitiesByPredicates200Response } from '../models/GetEntitiesByPredicates200Response.model';
-import { GetEntitiesByPredicatesRequest } from '../models/GetEntitiesByPredicatesRequest.model';
 import { GetEntitiesByRefsRequest } from '../models/GetEntitiesByRefsRequest.model';
+import { QueryEntitiesByPredicate200Response } from '../models/QueryEntitiesByPredicate200Response.model';
+import { QueryEntitiesByPredicateRequest } from '../models/QueryEntitiesByPredicateRequest.model';
 import { RefreshEntityRequest } from '../models/RefreshEntityRequest.model';
 import { ValidateEntity400Response } from '../models/ValidateEntity400Response.model';
 import { ValidateEntityRequest } from '../models/ValidateEntityRequest.model';
@@ -53,19 +53,6 @@ export type GetEntities = {
     order?: Array<string>;
   };
   response: Array<Entity> | Error | Error;
-};
-/**
- * @public
- */
-export type GetEntitiesByPredicates = {
-  body: GetEntitiesByPredicatesRequest;
-  query: {
-    limit?: number;
-    offset?: number;
-    after?: string;
-    order?: Array<string>;
-  };
-  response: GetEntitiesByPredicates200Response | Error | Error;
 };
 /**
  * @public
@@ -133,6 +120,19 @@ export type GetEntityFacets = {
     filter?: Array<string>;
   };
   response: EntityFacetsResponse | Error | Error;
+};
+/**
+ * @public
+ */
+export type QueryEntitiesByPredicate = {
+  body: QueryEntitiesByPredicateRequest;
+  query: {
+    limit?: number;
+    offset?: number;
+    orderField?: Array<string>;
+    after?: string;
+  };
+  response: QueryEntitiesByPredicate200Response | Error | Error;
 };
 /**
  * @public
@@ -213,8 +213,6 @@ export type EndpointMap = {
 
   '#get|/entities': GetEntities;
 
-  '#post|/entities/by-predicates': GetEntitiesByPredicates;
-
   '#get|/entities/by-query': GetEntitiesByQuery;
 
   '#post|/entities/by-refs': GetEntitiesByRefs;
@@ -226,6 +224,8 @@ export type EndpointMap = {
   '#get|/entities/by-uid/{uid}': GetEntityByUid;
 
   '#get|/entity-facets': GetEntityFacets;
+
+  '#post|/entities/by-query': QueryEntitiesByPredicate;
 
   '#post|/refresh': RefreshEntity;
 
