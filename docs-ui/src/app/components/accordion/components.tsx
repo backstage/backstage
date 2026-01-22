@@ -52,10 +52,7 @@ export const WithSubtitle = () => {
 export const WithIcon = () => {
   return (
     <Accordion>
-      <AccordionTrigger
-        title="System Settings"
-        icon={<RiSettings4Line />}
-      />
+      <AccordionTrigger title="System Settings" icon={<RiSettings4Line />} />
       <AccordionPanel>
         <Content />
       </AccordionPanel>
