@@ -81,7 +81,7 @@ export const formattedMDXComponents: MDXComponents = {
         backgroundColor: 'var(--bg)',
         padding: '0.2rem 0.375rem',
         borderRadius: '0.25rem',
-        color: 'var(--secondary)',
+        color: 'var(--primary)',
         border: '1px solid var(--border)',
         fontSize: '0.875rem',
       }}
@@ -97,6 +97,11 @@ export const formattedMDXComponents: MDXComponents = {
       {...(rest as Omit<ImageProps, 'src'>)}
     />
   ),
+  table: ({ children }) => (
+    <table className={styles.table}>{children as ReactNode}</table>
+  ),
+  th: ({ children }) => <th className={styles.th}>{children as ReactNode}</th>,
+  td: ({ children }) => <td className={styles.td}>{children as ReactNode}</td>,
 };
 
 export function useMDXComponents(components: MDXComponents): MDXComponents {
