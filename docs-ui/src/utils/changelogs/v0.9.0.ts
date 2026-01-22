@@ -288,7 +288,7 @@ export const changelog_0_9_0: ChangelogProps[] = [
     commitSha: '3c0ea67',
   },
   {
-    components: ['radiogroup'],
+    components: ['radio-group'],
     version: '0.9.0',
     prs: ['31576'],
     description: `Fixed RadioGroup radio button ellipse distortion by preventing flex shrink and grow.`,
