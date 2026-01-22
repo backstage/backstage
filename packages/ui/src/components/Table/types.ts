@@ -19,7 +19,7 @@ import {
   ColumnProps as ReactAriaColumnProps,
   TableProps as ReactAriaTableProps,
 } from 'react-aria-components';
-import type { ReactNode } from 'react';
+import type { ReactElement, ReactNode } from 'react';
 import type { SortDescriptor as ReactStatelySortDescriptor } from 'react-stately';
 import type { ColumnSize, ColumnStaticSize } from '@react-types/table';
 import type { TextColors } from '../../types';
@@ -89,8 +89,8 @@ export type TablePaginationType = NoPagination | PagePagination;
 export interface ColumnConfig<T extends TableItem> {
   id: string;
   label: string;
-  cell: (item: T) => ReactNode;
-  header?: () => ReactNode;
+  cell: (item: T) => ReactElement;
+  header?: () => ReactElement;
   isSortable?: boolean;
   isHidden?: boolean;
   width?: ColumnSize | null;

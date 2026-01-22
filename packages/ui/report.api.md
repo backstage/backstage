@@ -479,11 +479,11 @@ export const Column: (props: ColumnProps) => JSX_2.Element;
 // @public (undocumented)
 export interface ColumnConfig<T extends TableItem> {
   // (undocumented)
-  cell: (item: T) => ReactNode;
+  cell: (item: T) => ReactElement;
   // (undocumented)
   defaultWidth?: ColumnSize | null;
   // (undocumented)
-  header?: () => ReactNode;
+  header?: () => ReactElement;
   // (undocumented)
   id: string;
   // (undocumented)
