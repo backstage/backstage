@@ -15,12 +15,7 @@
  */
 
 import { InputError, NotAllowedError, stringifyError } from '@backstage/errors';
-// Using require() because safe-stable-stringify's ESM export doesn't resolve
-// correctly with the TypeScript/Node module resolution in this project.
-// eslint-disable-next-line @typescript-eslint/no-require-imports
-const safeStringify = require('safe-stable-stringify') as (
-  value: unknown,
-) => string | undefined;
+import safeStringify from 'safe-stable-stringify';
 
 import { ScmIntegrations } from '@backstage/integration';
 import {

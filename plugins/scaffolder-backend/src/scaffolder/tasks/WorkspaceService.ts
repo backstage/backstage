@@ -39,32 +39,21 @@ export class DefaultWorkspaceService implements WorkspaceService {
     logger?: LoggerService,
   ) {
     // New config path with fallback to old experimental flags
-    const workspaceProviderName =
+    const providerName =
       config?.getOptionalString('scaffolder.taskRecovery.workspaceProvider') ??
       config?.getOptionalString(
         'scaffolder.EXPERIMENTAL_workspaceSerializationProvider',
-      );
-
-    // Check old boolean flag for backwards compat
-    const legacyEnabled = config?.getOptionalBoolean(
-      'scaffolder.EXPERIMENTAL_workspaceSerialization',
-    );
-
-    // Determine the provider name to use
-    let providerName: string | undefined;
-    if (workspaceProviderName) {
-      providerName = workspaceProviderName;
-    } else if (legacyEnabled) {
-      // Legacy mode defaulted to 'database'
-      providerName = 'database';
-    }
+      ) ??
+      (config?.getOptionalBoolean(
+        'scaffolder.EXPERIMENTAL_workspaceSerialization',
+      )
+        ? 'database'
+        : undefined);
 
     if (!providerName) {
-      // No workspace serialization configured
       return new DefaultWorkspaceService(task, undefined);
     }
 
-    // Look up the provider
     const workspaceProvider = workspaceProviders?.[providerName];
 
     if (!workspaceProvider) {

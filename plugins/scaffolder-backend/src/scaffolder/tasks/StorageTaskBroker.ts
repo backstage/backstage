@@ -373,7 +373,6 @@ export class StorageTaskBroker implements TaskBroker {
   }
 
   public async recoverTasks(): Promise<void> {
-    // New config path with fallback to old experimental flag
     const enabled =
       this.config?.getOptionalBoolean('scaffolder.taskRecovery.enabled') ??
       this.config?.getOptionalBoolean('scaffolder.EXPERIMENTAL_recoverTasks') ??
@@ -384,29 +383,15 @@ export class StorageTaskBroker implements TaskBroker {
     }
 
     const defaultTimeout: HumanDuration = { seconds: 30 };
-
-    // Try new config path first, then fallback to old
-    let timeout: HumanDuration = defaultTimeout;
-    const newTimeoutConfig = this.config?.getOptional(
+    const timeout = readDuration(
+      this.config,
       'scaffolder.taskRecovery.staleTimeout',
-    );
-    const oldTimeoutConfig = this.config?.getOptional(
-      'scaffolder.EXPERIMENTAL_recoverTasksTimeout',
-    );
-
-    if (newTimeoutConfig) {
-      timeout = readDuration(
-        this.config,
-        'scaffolder.taskRecovery.staleTimeout',
-        defaultTimeout,
-      );
-    } else if (oldTimeoutConfig) {
-      timeout = readDuration(
+      readDuration(
         this.config,
         'scaffolder.EXPERIMENTAL_recoverTasksTimeout',
         defaultTimeout,
-      );
-    }
+      ),
+    );
 
     const { ids: recoveredTaskIds } = (await this.storage.recoverTasks?.({
       timeout,
@@ -474,7 +459,6 @@ export class StorageTaskBroker implements TaskBroker {
     taskId: string;
     after?: number;
   }): Observable<{ events: SerializedTaskEvent[] }> {
-    // Check if recovery is enabled via config
     const isTaskRecoverable =
       this.config?.getOptionalBoolean('scaffolder.taskRecovery.enabled') ??
       this.config?.getOptionalBoolean('scaffolder.EXPERIMENTAL_recoverTasks') ??
