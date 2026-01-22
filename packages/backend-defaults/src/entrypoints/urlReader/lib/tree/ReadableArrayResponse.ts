@@ -25,7 +25,7 @@ import platformPath, { dirname } from 'path';
 import getRawBody from 'raw-body';
 import fs from 'fs-extra';
 import { promisify } from 'util';
-import tar from 'tar';
+import * as tar from 'tar';
 import { pipeline as pipelineCb, Readable } from 'stream';
 import { FromReadableArrayOptions } from '../types';
 
