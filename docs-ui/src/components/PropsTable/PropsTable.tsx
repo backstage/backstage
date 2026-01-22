@@ -1,7 +1,7 @@
 'use client';
 
-import { Chip } from '../Chip';
 import * as Table from '../Table';
+import { Chip } from '../Chip';
 import { TypePopup } from './TypePopup';
 
 import { PropDef } from '@/utils/propDefs';
