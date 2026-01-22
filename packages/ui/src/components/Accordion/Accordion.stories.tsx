@@ -182,10 +182,7 @@ export const GroupMultipleOpen = meta.story({
 export const WithIcon = meta.story({
   render: () => (
     <Accordion>
-      <AccordionTrigger 
-        title="System Settings" 
-        icon={<RiSettings4Line />}
-      />
+      <AccordionTrigger title="System Settings" icon={<RiSettings4Line />} />
       <AccordionPanel>
         <Content />
       </AccordionPanel>
@@ -196,8 +193,8 @@ export const WithIcon = meta.story({
 export const WithIconEnd = meta.story({
   render: () => (
     <Accordion>
-      <AccordionTrigger 
-        title="Analytics Dashboard" 
+      <AccordionTrigger
+        title="Analytics Dashboard"
         icon={<RiBarChartBoxLine />}
         iconPosition="end"
       />
@@ -212,8 +209,8 @@ export const MultipleWithIcons = meta.story({
   render: () => (
     <AccordionGroup>
       <Accordion>
-        <AccordionTrigger 
-          title="Security Settings" 
+        <AccordionTrigger
+          title="Security Settings"
           icon={<RiShieldCheckLine />}
         />
         <AccordionPanel>
@@ -225,10 +222,7 @@ export const MultipleWithIcons = meta.story({
         </AccordionPanel>
       </Accordion>
       <Accordion>
-        <AccordionTrigger 
-          title="Notifications" 
-          icon={<RiBellLine />}
-        />
+        <AccordionTrigger title="Notifications" icon={<RiBellLine />} />
         <AccordionPanel>
           <Box>
             <Text as="p">
@@ -238,15 +232,10 @@ export const MultipleWithIcons = meta.story({
         </AccordionPanel>
       </Accordion>
       <Accordion>
-        <AccordionTrigger 
-          title="Appearance" 
-          icon={<RiPaletteLine />}
-        />
+        <AccordionTrigger title="Appearance" icon={<RiPaletteLine />} />
         <AccordionPanel>
           <Box>
-            <Text as="p">
-              Customize theme, colors, and display preferences
-            </Text>
+            <Text as="p">Customize theme, colors, and display preferences</Text>
           </Box>
         </AccordionPanel>
       </Accordion>
