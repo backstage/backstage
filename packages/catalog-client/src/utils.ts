@@ -27,6 +27,19 @@ export function isQueryEntitiesInitialRequest(
 }
 
 /**
+ * Check if a cursor contains a predicate query by attempting to decode it.
+ * @internal
+ */
+export function cursorContainsQuery(cursor: string): boolean {
+  try {
+    const decoded = JSON.parse(Buffer.from(cursor, 'base64').toString('utf8'));
+    return !!decoded.query;
+  } catch {
+    return false;
+  }
+}
+
+/**
  * Takes a set of entity refs, and splits them into chunks (groups) such that
  * the total string length in each chunk does not exceed the default Express.js
  * request body limit of 100 kB (with some margin) when JSON encoded as an
