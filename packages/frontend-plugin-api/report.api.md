@@ -4,7 +4,6 @@
 
 ```ts
 import { AnyRouteRefParams as AnyRouteRefParams_2 } from '@backstage/frontend-plugin-api';
-import { ApiHolder as ApiHolder_2 } from '@backstage/core-plugin-api';
 import { ApiRef as ApiRef_2 } from '@backstage/frontend-plugin-api';
 import { ComponentType } from 'react';
 import type { Config } from '@backstage/config';
@@ -1179,7 +1178,7 @@ export interface ExtensionBoundaryProps {
 export type ExtensionConditionFunc = (
   originalDecision: () => Promise<boolean>,
   context: {
-    apiHolder: ApiHolder_2;
+    apiHolder: ApiHolder;
   },
 ) => Promise<boolean>;
 
