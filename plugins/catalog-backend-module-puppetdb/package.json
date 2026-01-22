@@ -55,7 +55,7 @@
     "@backstage/errors": "workspace:^",
     "@backstage/plugin-catalog-node": "workspace:^",
     "@backstage/types": "workspace:^",
-    "lodash": "^4.17.21",
+    "lodash": "^4.17.23",
     "uuid": "^11.0.0"
   },
   "devDependencies": {

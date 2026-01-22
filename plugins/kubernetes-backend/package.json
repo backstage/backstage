@@ -67,7 +67,7 @@
     "express-promise-router": "^4.1.0",
     "fs-extra": "^11.2.0",
     "http-proxy-middleware": "^2.0.6",
-    "lodash": "^4.17.21",
+    "lodash": "^4.17.23",
     "luxon": "^3.0.0",
     "node-fetch": "^2.7.0"
   },

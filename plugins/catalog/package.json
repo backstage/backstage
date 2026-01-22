@@ -83,7 +83,7 @@
     "classnames": "^2.3.1",
     "dataloader": "^2.0.0",
     "history": "^5.0.0",
-    "lodash": "^4.17.21",
+    "lodash": "^4.17.23",
     "pluralize": "^8.0.0",
     "react-helmet": "6.1.0",
     "react-use": "^17.2.4",

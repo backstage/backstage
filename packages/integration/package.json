@@ -45,7 +45,7 @@
     "@octokit/rest": "^19.0.3",
     "cross-fetch": "^4.0.0",
     "git-url-parse": "^15.0.0",
-    "lodash": "^4.17.21",
+    "lodash": "^4.17.23",
     "luxon": "^3.0.0"
   },
   "devDependencies": {

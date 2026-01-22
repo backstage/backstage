@@ -60,7 +60,7 @@
     "dataloader": "^2.0.0",
     "express": "^4.22.0",
     "express-promise-router": "^4.1.0",
-    "lodash": "^4.17.21",
+    "lodash": "^4.17.23",
     "yn": "^4.0.0",
     "zod": "^3.22.4"
   },

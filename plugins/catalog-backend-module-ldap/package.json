@@ -46,7 +46,7 @@
     "@backstage/plugin-catalog-node": "workspace:^",
     "@backstage/types": "workspace:^",
     "ldapts": "^8.0.6",
-    "lodash": "^4.17.21",
+    "lodash": "^4.17.23",
     "uuid": "^11.0.0"
   },
   "devDependencies": {

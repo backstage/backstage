@@ -57,7 +57,7 @@
     "@opensearch-project/opensearch": "^2.2.1",
     "aws4": "^1.12.0",
     "elastic-builder": "^2.16.0",
-    "lodash": "^4.17.21",
+    "lodash": "^4.17.23",
     "uuid": "^11.0.0"
   },
   "devDependencies": {

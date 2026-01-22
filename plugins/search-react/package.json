@@ -66,7 +66,7 @@
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.61",
-    "lodash": "^4.17.21",
+    "lodash": "^4.17.23",
     "qs": "^6.9.4",
     "react-use": "^17.3.2",
     "uuid": "^11.0.2"

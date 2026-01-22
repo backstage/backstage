@@ -58,7 +58,7 @@
     "@backstage/plugin-search-backend-node": "workspace:^",
     "@backstage/plugin-search-common": "workspace:^",
     "@backstage/plugin-techdocs-node": "workspace:^",
-    "lodash": "^4.17.21",
+    "lodash": "^4.17.23",
     "p-limit": "^3.1.0"
   },
   "devDependencies": {

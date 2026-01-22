@@ -40,7 +40,7 @@
     "@backstage/frontend-plugin-api": "workspace:^",
     "@backstage/types": "workspace:^",
     "@backstage/version-bridge": "workspace:^",
-    "lodash": "^4.17.21",
+    "lodash": "^4.17.23",
     "zod": "^3.22.4"
   },
   "devDependencies": {

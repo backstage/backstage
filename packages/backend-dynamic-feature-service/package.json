@@ -73,7 +73,7 @@
     "express": "^4.22.0",
     "express-promise-router": "^4.1.0",
     "fs-extra": "^11.2.0",
-    "lodash": "^4.17.21",
+    "lodash": "^4.17.23",
     "winston": "^3.2.1"
   },
   "devDependencies": {

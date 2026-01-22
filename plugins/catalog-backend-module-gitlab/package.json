@@ -60,7 +60,7 @@
     "@backstage/plugin-catalog-node": "workspace:^",
     "@backstage/plugin-events-node": "workspace:^",
     "@gitbeaker/rest": "^40.0.3",
-    "lodash": "^4.17.21",
+    "lodash": "^4.17.23",
     "node-fetch": "^2.7.0",
     "uuid": "^11.0.0"
   },

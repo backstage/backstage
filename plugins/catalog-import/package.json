@@ -72,7 +72,7 @@
     "@octokit/rest": "^19.0.3",
     "git-url-parse": "^15.0.0",
     "js-base64": "^3.6.0",
-    "lodash": "^4.17.21",
+    "lodash": "^4.17.23",
     "react-hook-form": "^7.12.2",
     "react-use": "^17.2.4",
     "yaml": "^2.0.0"

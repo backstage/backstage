@@ -80,7 +80,7 @@
     "@material-ui/lab": "4.0.0-alpha.61",
     "@react-hookz/web": "^24.0.0",
     "classnames": "^2.2.6",
-    "lodash": "^4.17.21",
+    "lodash": "^4.17.23",
     "material-ui-popup-state": "^5.3.6",
     "qs": "^6.9.4",
     "react-use": "^17.2.4",

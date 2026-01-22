@@ -1,0 +1,55 @@
+---
+'@backstage/backend-defaults': patch
+'@backstage/backend-dynamic-feature-service': patch
+'@backstage/backend-openapi-utils': patch
+'@backstage/backend-test-utils': patch
+'@backstage/catalog-model': patch
+'@backstage/cli': patch
+'@backstage/config-loader': patch
+'@backstage/core-app-api': patch
+'@backstage/core-compat-api': patch
+'@backstage/core-components': patch
+'@backstage/frontend-app-api': patch
+'@backstage/integration': patch
+'@backstage/repo-tools': patch
+'@backstage/plugin-app-backend': patch
+'@backstage/plugin-auth-backend': patch
+'@backstage/plugin-auth-node': patch
+'@backstage/plugin-catalog-backend-module-backstage-openapi': patch
+'@backstage/plugin-catalog-backend-module-github': patch
+'@backstage/plugin-catalog-backend-module-gitlab': patch
+'@backstage/plugin-catalog-backend-module-ldap': patch
+'@backstage/plugin-catalog-backend-module-msgraph': patch
+'@backstage/plugin-catalog-backend-module-puppetdb': patch
+'@backstage/plugin-catalog-backend': patch
+'@backstage/plugin-catalog-graph': patch
+'@backstage/plugin-catalog-import': patch
+'@backstage/plugin-catalog-node': patch
+'@backstage/plugin-catalog-react': patch
+'@backstage/plugin-catalog': patch
+'@backstage/plugin-devtools-backend': patch
+'@backstage/plugin-devtools': patch
+'@backstage/plugin-events-backend-module-github': patch
+'@backstage/plugin-home': patch
+'@backstage/plugin-kubernetes-backend': patch
+'@backstage/plugin-kubernetes-common': patch
+'@backstage/plugin-kubernetes-react': patch
+'@backstage/plugin-notifications-backend-module-email': patch
+'@backstage/plugin-notifications': patch
+'@backstage/plugin-org': patch
+'@backstage/plugin-permission-backend': patch
+'@backstage/plugin-scaffolder-backend': patch
+'@backstage/plugin-scaffolder-node': patch
+'@backstage/plugin-scaffolder-react': patch
+'@backstage/plugin-scaffolder': patch
+'@backstage/plugin-search-backend-module-elasticsearch': patch
+'@backstage/plugin-search-backend-module-pg': patch
+'@backstage/plugin-search-backend-module-techdocs': patch
+'@backstage/plugin-search-backend-node': patch
+'@backstage/plugin-search-backend': patch
+'@backstage/plugin-search-react': patch
+'@backstage/plugin-techdocs-react': patch
+'@backstage/plugin-techdocs': patch
+---
+
+chore(deps): bump `lodash` from 4.17.21 to 4.17.23
