@@ -18,7 +18,7 @@ import fs from 'fs-extra';
 import { resolve as resolvePath, join as joinPath } from 'path';
 import { TarArchiveResponse } from './TarArchiveResponse';
 import { createMockDirectory } from '@backstage/backend-test-utils';
-import tar from 'tar';
+import * as tar from 'tar';
 
 const archiveData = fs.readFileSync(
   resolvePath(__filename, '../../__fixtures__/mock-main.tar.gz'),
