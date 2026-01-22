@@ -276,40 +276,13 @@ export const spec = {
             type: 'boolean',
           },
           {
-            type: 'object',
-            additionalProperties: false,
-            properties: {
-              $all: {
-                type: 'array',
-                items: {
-                  $ref: '#/components/schemas/EntityPredicate',
-                },
-              },
-            },
-            required: ['$all'],
+            $ref: '#/components/schemas/EntityPredicateAll',
           },
           {
-            type: 'object',
-            additionalProperties: false,
-            properties: {
-              $any: {
-                type: 'array',
-                items: {
-                  $ref: '#/components/schemas/EntityPredicate',
-                },
-              },
-            },
-            required: ['$any'],
+            $ref: '#/components/schemas/EntityPredicateAny',
           },
           {
-            type: 'object',
-            additionalProperties: false,
-            properties: {
-              $not: {
-                $ref: '#/components/schemas/EntityPredicate',
-              },
-            },
-            required: ['$not'],
+            $ref: '#/components/schemas/EntityPredicateNot',
           },
           {
             type: 'object',
@@ -318,6 +291,45 @@ export const spec = {
             },
           },
         ],
+      },
+      EntityPredicateAll: {
+        type: 'object',
+        description: 'All conditions must match (AND logic)',
+        additionalProperties: false,
+        properties: {
+          $all: {
+            type: 'array',
+            items: {
+              $ref: '#/components/schemas/EntityPredicate',
+            },
+          },
+        },
+        required: ['$all'],
+      },
+      EntityPredicateAny: {
+        type: 'object',
+        description: 'At least one condition must match (OR logic)',
+        additionalProperties: false,
+        properties: {
+          $any: {
+            type: 'array',
+            items: {
+              $ref: '#/components/schemas/EntityPredicate',
+            },
+          },
+        },
+        required: ['$any'],
+      },
+      EntityPredicateNot: {
+        type: 'object',
+        description: 'Negates the condition',
+        additionalProperties: false,
+        properties: {
+          $not: {
+            $ref: '#/components/schemas/EntityPredicate',
+          },
+        },
+        required: ['$not'],
       },
       EntityPredicateValue: {
         description: 'Value for a field predicate',
@@ -332,39 +344,47 @@ export const spec = {
             type: 'boolean',
           },
           {
-            type: 'object',
-            additionalProperties: false,
-            properties: {
-              $exists: {
-                type: 'boolean',
-              },
-            },
-            required: ['$exists'],
+            $ref: '#/components/schemas/EntityPredicateExists',
           },
           {
-            type: 'object',
-            additionalProperties: false,
-            properties: {
-              $in: {
-                type: 'array',
-                items: {
-                  oneOf: [
-                    {
-                      type: 'string',
-                    },
-                    {
-                      type: 'number',
-                    },
-                    {
-                      type: 'boolean',
-                    },
-                  ],
-                },
-              },
-            },
-            required: ['$in'],
+            $ref: '#/components/schemas/EntityPredicateIn',
           },
         ],
+      },
+      EntityPredicateExists: {
+        type: 'object',
+        description: 'Check if field exists',
+        additionalProperties: false,
+        properties: {
+          $exists: {
+            type: 'boolean',
+          },
+        },
+        required: ['$exists'],
+      },
+      EntityPredicateIn: {
+        type: 'object',
+        description: 'Match any value in array',
+        additionalProperties: false,
+        properties: {
+          $in: {
+            type: 'array',
+            items: {
+              oneOf: [
+                {
+                  type: 'string',
+                },
+                {
+                  type: 'number',
+                },
+                {
+                  type: 'boolean',
+                },
+              ],
+            },
+          },
+        },
+        required: ['$in'],
       },
       MapStringString: {
         type: 'object',
@@ -1332,13 +1352,11 @@ export const spec = {
           },
         ],
       },
-    },
-    '/entities/by-predicates': {
       post: {
-        operationId: 'GetEntitiesByPredicates',
+        operationId: 'QueryEntitiesByPredicate',
         tags: ['Entity'],
         description:
-          'Query entities using predicate-based filters. This endpoint supports a more\nexpressive filter syntax with logical operators ($all, $any, $not) and\nvalue operators ($exists, $in).\n\nExample filter:\n```json\n{\n  "filter": {\n    "$all": [\n      {"kind": "component"},\n      {"$any": [\n        {"spec.type": "service"},\n        {"spec.type": "website"}\n      ]},\n      {"$not": {"spec.lifecycle": "experimental"}}\n    ]\n  }\n}\n```\n',
+          'Query entities using predicate-based filters. This endpoint provides an\nalternative filtering method with a more expressive filter syntax supporting\nlogical operators ($all, $any, $not) and value operators ($exists, $in).\n\nExample query:\n```json\n{\n  "query": {\n    "$all": [\n      {"kind": "component"},\n      {"$any": [\n        {"spec.type": "service"},\n        {"spec.type": "website"}\n      ]},\n      {"$not": {"spec.lifecycle": "experimental"}}\n    ]\n  }\n}\n```\n',
         responses: {
           '200': {
             description: 'Ok',
@@ -1392,19 +1410,10 @@ export const spec = {
             $ref: '#/components/parameters/offset',
           },
           {
-            $ref: '#/components/parameters/after',
+            $ref: '#/components/parameters/orderField',
           },
           {
-            name: 'order',
-            in: 'query',
-            allowReserved: true,
-            required: false,
-            schema: {
-              type: 'array',
-              items: {
-                type: 'string',
-              },
-            },
+            $ref: '#/components/parameters/after',
           },
         ],
         requestBody: {
@@ -1415,7 +1424,7 @@ export const spec = {
                 type: 'object',
                 additionalProperties: false,
                 properties: {
-                  filter: {
+                  query: {
                     $ref: '#/components/schemas/EntityPredicate',
                   },
                 },
@@ -1423,7 +1432,7 @@ export const spec = {
               examples: {
                 'Get all service components': {
                   value: {
-                    filter: {
+                    query: {
                       $all: [
                         {
                           kind: 'component',
@@ -1437,7 +1446,7 @@ export const spec = {
                 },
                 'Get components owned by specific teams': {
                   value: {
-                    filter: {
+                    query: {
                       $all: [
                         {
                           kind: 'component',
@@ -1453,7 +1462,7 @@ export const spec = {
                 },
                 'Get non-production services': {
                   value: {
-                    filter: {
+                    query: {
                       $all: [
                         {
                           kind: 'component',

@@ -350,59 +350,74 @@ components:
         - type: string
         - type: number
         - type: boolean
-        - type: object
-          additionalProperties: false
-          properties:
-            $all:
-              type: array
-              items:
-                $ref: '#/components/schemas/EntityPredicate'
-          required:
-            - $all
-        - type: object
-          additionalProperties: false
-          properties:
-            $any:
-              type: array
-              items:
-                $ref: '#/components/schemas/EntityPredicate'
-          required:
-            - $any
-        - type: object
-          additionalProperties: false
-          properties:
-            $not:
-              $ref: '#/components/schemas/EntityPredicate'
-          required:
-            - $not
+        - $ref: '#/components/schemas/EntityPredicateAll'
+        - $ref: '#/components/schemas/EntityPredicateAny'
+        - $ref: '#/components/schemas/EntityPredicateNot'
         - type: object
           additionalProperties:
             $ref: '#/components/schemas/EntityPredicateValue'
+    EntityPredicateAll:
+      type: object
+      description: All conditions must match (AND logic)
+      additionalProperties: false
+      properties:
+        $all:
+          type: array
+          items:
+            $ref: '#/components/schemas/EntityPredicate'
+      required:
+        - $all
+    EntityPredicateAny:
+      type: object
+      description: At least one condition must match (OR logic)
+      additionalProperties: false
+      properties:
+        $any:
+          type: array
+          items:
+            $ref: '#/components/schemas/EntityPredicate'
+      required:
+        - $any
+    EntityPredicateNot:
+      type: object
+      description: Negates the condition
+      additionalProperties: false
+      properties:
+        $not:
+          $ref: '#/components/schemas/EntityPredicate'
+      required:
+        - $not
     EntityPredicateValue:
       description: Value for a field predicate
       oneOf:
         - type: string
         - type: number
         - type: boolean
-        - type: object
-          additionalProperties: false
-          properties:
-            $exists:
-              type: boolean
-          required:
-            - $exists
-        - type: object
-          additionalProperties: false
-          properties:
-            $in:
-              type: array
-              items:
-                oneOf:
-                  - type: string
-                  - type: number
-                  - type: boolean
-          required:
-            - $in
+        - $ref: '#/components/schemas/EntityPredicateExists'
+        - $ref: '#/components/schemas/EntityPredicateIn'
+    EntityPredicateExists:
+      type: object
+      description: Check if field exists
+      additionalProperties: false
+      properties:
+        $exists:
+          type: boolean
+      required:
+        - $exists
+    EntityPredicateIn:
+      type: object
+      description: Match any value in array
+      additionalProperties: false
+      properties:
+        $in:
+          type: array
+          items:
+            oneOf:
+              - type: string
+              - type: number
+              - type: boolean
+      required:
+        - $in
     MapStringString:
       type: object
       properties: {}
@@ -1160,20 +1175,19 @@ paths:
               type: string
           explode: false
           style: form
-  /entities/by-predicates:
     post:
-      operationId: GetEntitiesByPredicates
+      operationId: QueryEntitiesByPredicate
       tags:
         - Entity
       description: |
-        Query entities using predicate-based filters. This endpoint supports a more
-        expressive filter syntax with logical operators ($all, $any, $not) and
-        value operators ($exists, $in).
+        Query entities using predicate-based filters. This endpoint provides an
+        alternative filtering method with a more expressive filter syntax supporting
+        logical operators ($all, $any, $not) and value operators ($exists, $in).
 
-        Example filter:
+        Example query:
         ```json
         {
-          "filter": {
+          "query": {
             "$all": [
               {"kind": "component"},
               {"$any": [
@@ -1217,15 +1231,8 @@ paths:
       parameters:
         - $ref: '#/components/parameters/limit'
         - $ref: '#/components/parameters/offset'
+        - $ref: '#/components/parameters/orderField'
         - $ref: '#/components/parameters/after'
-        - name: order
-          in: query
-          allowReserved: true
-          required: false
-          schema:
-            type: array
-            items:
-              type: string
       requestBody:
         required: true
         content:
@@ -1234,18 +1241,18 @@ paths:
               type: object
               additionalProperties: false
               properties:
-                filter:
+                query:
                   $ref: '#/components/schemas/EntityPredicate'
             examples:
               Get all service components:
                 value:
-                  filter:
+                  query:
                     $all:
                       - kind: component
                       - spec.type: service
               Get components owned by specific teams:
                 value:
-                  filter:
+                  query:
                     $all:
                       - kind: component
                       - spec.owner:
@@ -1254,7 +1261,7 @@ paths:
                             - platform-team
               Get non-production services:
                 value:
-                  filter:
+                  query:
                     $all:
                       - kind: component
                       - spec.type: service

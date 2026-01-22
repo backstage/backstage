@@ -29,6 +29,8 @@ import { Entity } from '../models/Entity.model';
 import { EntityAncestryResponse } from '../models/EntityAncestryResponse.model';
 import { EntityFacetsResponse } from '../models/EntityFacetsResponse.model';
 import { GetEntitiesByRefsRequest } from '../models/GetEntitiesByRefsRequest.model';
+import { QueryEntitiesByPredicate200Response } from '../models/QueryEntitiesByPredicate200Response.model';
+import { QueryEntitiesByPredicateRequest } from '../models/QueryEntitiesByPredicateRequest.model';
 import { RefreshEntityRequest } from '../models/RefreshEntityRequest.model';
 import { ValidateEntityRequest } from '../models/ValidateEntityRequest.model';
 import { AnalyzeLocationRequest } from '../models/AnalyzeLocationRequest.model';
@@ -137,6 +139,18 @@ export type GetEntityFacets = {
   query: {
     facet: Array<string>;
     filter?: Array<string>;
+  };
+};
+/**
+ * @public
+ */
+export type QueryEntitiesByPredicate = {
+  body: QueryEntitiesByPredicateRequest;
+  query: {
+    limit?: number;
+    offset?: number;
+    orderField?: Array<string>;
+    after?: string;
   };
 };
 /**
@@ -446,6 +460,37 @@ export class DefaultApiClient {
         ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
       },
       method: 'GET',
+    });
+  }
+
+  /**
+   * Query entities using predicate-based filters. This endpoint provides an alternative filtering method with a more expressive filter syntax supporting logical operators ($all, $any, $not) and value operators ($exists, $in).  Example query: ```json {   \"query\": {     \"$all\": [       {\"kind\": \"component\"},       {\"$any\": [         {\"spec.type\": \"service\"},         {\"spec.type\": \"website\"}       ]},       {\"$not\": {\"spec.lifecycle\": \"experimental\"}}     ]   } } ```
+   * @param queryEntitiesByPredicateRequest -
+   * @param limit - Number of records to return in the response.
+   * @param offset - Number of records to skip in the query page.
+   * @param orderField - By default the entities are returned ordered by their internal uid. You can customize the &#x60;orderField&#x60; query parameters to affect that ordering.  For example, to return entities by their name:  &#x60;/entities/by-query?orderField&#x3D;metadata.name,asc&#x60;  Each parameter can be followed by &#x60;asc&#x60; for ascending lexicographical order or &#x60;desc&#x60; for descending (reverse) lexicographical order.
+   * @param after - Pointer to the previous page of results.
+   */
+  public async queryEntitiesByPredicate(
+    // @ts-ignore
+    request: QueryEntitiesByPredicate,
+    options?: RequestOptions,
+  ): Promise<TypedResponse<QueryEntitiesByPredicate200Response>> {
+    const baseUrl = await this.discoveryApi.getBaseUrl(pluginId);
+
+    const uriTemplate = `/entities/by-query{?limit,offset,orderField*,after}`;
+
+    const uri = parser.parse(uriTemplate).expand({
+      ...request.query,
+    });
+
+    return await this.fetchApi.fetch(`${baseUrl}${uri}`, {
+      headers: {
+        'Content-Type': 'application/json',
+        ...(options?.token && { Authorization: `Bearer ${options?.token}` }),
+      },
+      method: 'POST',
+      body: JSON.stringify(request.body),
     });
   }
 
