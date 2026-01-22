@@ -187,7 +187,7 @@
     "rate-limit-redis": "^4.2.0",
     "raw-body": "^2.4.1",
     "selfsigned": "^2.0.0",
-    "tar": "^6.1.12",
+    "tar": "^7.5.4",
     "triple-beam": "^1.4.1",
     "uuid": "^11.0.0",
     "winston": "^3.2.1",
