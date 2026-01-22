@@ -12,8 +12,10 @@ type PropData = PropDef;
 // Modify the PropsTable component to use the new type
 export const PropsTable = <T extends Record<string, PropData>>({
   data,
+  isHook,
 }: {
   data: T;
+  isHook?: boolean;
 }) => {
   if (!data) return null;
 
@@ -21,12 +23,18 @@ export const PropsTable = <T extends Record<string, PropData>>({
     <Table.Root>
       <Table.Header>
         <Table.HeaderRow>
-          <Table.HeaderCell style={{ width: '16%' }}>Prop</Table.HeaderCell>
-          <Table.HeaderCell style={{ width: '50%' }}>Type</Table.HeaderCell>
-          <Table.HeaderCell style={{ width: '20%' }}>Default</Table.HeaderCell>
-          <Table.HeaderCell style={{ width: '14%' }}>
-            Responsive
+          <Table.HeaderCell style={{ width: isHook ? '30%' : '16%' }}>
+            Prop
           </Table.HeaderCell>
+          <Table.HeaderCell style={{ width: '40%' }}>Type</Table.HeaderCell>
+          <Table.HeaderCell style={{ width: isHook ? '30%' : '20%' }}>
+            Default
+          </Table.HeaderCell>
+          {!isHook && (
+            <Table.HeaderCell style={{ width: '14%' }}>
+              Responsive
+            </Table.HeaderCell>
+          )}
         </Table.HeaderRow>
       </Table.Header>
       <Table.Body>
@@ -37,10 +45,10 @@ export const PropsTable = <T extends Record<string, PropData>>({
 
           return (
             <Table.Row key={n}>
-              <Table.Cell style={{ width: '16%' }}>
+              <Table.Cell style={{ width: isHook ? '30%' : '16%' }}>
                 <Chip head>{n}</Chip>
               </Table.Cell>
-              <Table.Cell style={{ width: '50%' }}>
+              <Table.Cell style={{ width: '40%' }}>
                 <div
                   style={{ display: 'flex', flexWrap: 'wrap', gap: '0.375rem' }}
                 >
@@ -68,12 +76,14 @@ export const PropsTable = <T extends Record<string, PropData>>({
                   )}
                 </div>
               </Table.Cell>
-              <Table.Cell style={{ width: '20%' }}>
+              <Table.Cell style={{ width: isHook ? '30%' : '20%' }}>
                 <Chip>{data[n].default ? data[n].default : '-'}</Chip>
               </Table.Cell>
-              <Table.Cell style={{ width: '14%' }}>
-                <Chip>{data[n].responsive ? 'Yes' : 'No'}</Chip>
-              </Table.Cell>
+              {!isHook && (
+                <Table.Cell style={{ width: '14%' }}>
+                  <Chip>{data[n].responsive ? 'Yes' : 'No'}</Chip>
+                </Table.Cell>
+              )}
             </Table.Row>
           );
         })}

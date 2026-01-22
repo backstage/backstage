@@ -138,3 +138,18 @@ export const components: Page[] = [
     slug: 'visually-hidden',
   },
 ];
+
+export const hooks: Page[] = [
+  {
+    title: 'useBreakpoint',
+    slug: 'use-breakpoint',
+  },
+  {
+    title: 'useMediaQuery',
+    slug: 'use-media-query',
+  },
+  {
+    title: 'useStyles',
+    slug: 'use-styles',
+  },
+];
