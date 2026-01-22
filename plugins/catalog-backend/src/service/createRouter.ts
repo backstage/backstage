@@ -68,6 +68,7 @@ import {
   encodeLocationQueryCursor,
   parseLocationQuery,
 } from './request/parseLocationQuery';
+import { parseEntityOrderFieldParams } from './request/parseEntityOrderFieldParams';
 
 /**
  * Options used by {@link createRouter}.
@@ -261,24 +262,24 @@ export async function createRouter(
           throw err;
         }
       })
-      .post('/entities/by-predicates', async (req, res) => {
+      .post('/entities/by-query', async (req, res) => {
         const auditorEvent = await auditor.createEvent({
           eventId: 'entity-fetch',
           request: req,
           meta: {
-            queryType: 'by-predicates',
+            queryType: 'by-query-predicate',
           },
         });
 
         try {
-          const filter = req.body.filter as EntityPredicate | undefined;
-          const order = parseEntityOrderParams(req.query);
+          const query = req.body.query as EntityPredicate | undefined;
+          const order = parseEntityOrderFieldParams(req.query);
           const pagination = parseEntityPaginationParams(req.query);
           const credentials = await httpAuth.credentials(req);
 
           const { entities, pageInfo } =
             await entitiesCatalog.queryEntitiesByPredicate({
-              filter,
+              query,
               order,
               pagination,
               credentials,

@@ -418,8 +418,14 @@ export type QueryEntitiesRequest =
  * The method takes this type in an initial pagination request,
  * when requesting the first batch of entities.
  *
- * The properties filter, sortField, query and sortFieldOrder, are going
+ * The properties filter, query, sortField and sortFieldOrder, are going
  * to be immutable for the entire lifecycle of the following requests.
+ *
+ * @remarks
+ *
+ * Either `filter` or `query` can be provided, but not both:
+ * - `filter`: Uses the traditional key-value filter syntax (GET endpoint)
+ * - `query`: Uses the predicate-based filter syntax with logical operators (POST endpoint)
  *
  * @public
  */
@@ -427,7 +433,27 @@ export type QueryEntitiesInitialRequest = {
   fields?: string[];
   limit?: number;
   offset?: number;
+  /**
+   * Traditional key-value based filter. Mutually exclusive with `query`.
+   */
   filter?: EntityFilterQuery;
+  /**
+   * Predicate-based filter with logical operators ($all, $any, $not, $exists, $in).
+   * Mutually exclusive with `filter`.
+   *
+   * @example
+   * ```typescript
+   * {
+   *   query: {
+   *     $all: [
+   *       { kind: 'component' },
+   *       { 'spec.type': 'service' }
+   *     ]
+   *   }
+   * }
+   * ```
+   */
+  query?: FilterPredicate;
   orderFields?: EntityOrderQuery;
   fullTextFilter?: {
     term: string;
