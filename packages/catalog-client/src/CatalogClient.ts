@@ -46,7 +46,11 @@ import {
   StreamEntitiesRequest,
   ValidateEntityResponse,
 } from './types/api';
-import { isQueryEntitiesInitialRequest, splitRefsIntoChunks } from './utils';
+import {
+  isQueryEntitiesInitialRequest,
+  splitRefsIntoChunks,
+  cursorContainsQuery,
+} from './utils';
 import {
   DefaultApiClient,
   GetLocationsByQueryRequest,
@@ -266,6 +270,30 @@ export class CatalogClient implements CatalogApi {
     request: QueryEntitiesRequest = {},
     options?: CatalogRequestOptions,
   ): Promise<QueryEntitiesResponse> {
+    // Validate that filter and query are mutually exclusive
+    if (
+      isQueryEntitiesInitialRequest(request) &&
+      request.filter &&
+      request.query
+    ) {
+      throw new Error(
+        'Cannot specify both "filter" and "query" in the same request. Use "filter" for traditional key-value filtering or "query" for predicate-based filtering.',
+      );
+    }
+
+    // Route to POST endpoint if query predicate is provided (initial request)
+    if (isQueryEntitiesInitialRequest(request) && request.query) {
+      return this.queryEntitiesByPredicate(request, options);
+    }
+
+    // Route to POST endpoint if cursor contains a query predicate (pagination)
+    if (
+      !isQueryEntitiesInitialRequest(request) &&
+      cursorContainsQuery(request.cursor)
+    ) {
+      return this.queryEntitiesByPredicate(request, options);
+    }
+
     const params: Partial<
       Parameters<typeof this.apiClient.getEntitiesByQuery>[0]['query']
     > = {};
@@ -318,6 +346,72 @@ export class CatalogClient implements CatalogApi {
     return this.requestRequired(
       await this.apiClient.getEntitiesByQuery({ query: params }, options),
     );
+  }
+
+  /**
+   * Query entities using predicate-based filters (POST endpoint).
+   * @internal
+   */
+  private async queryEntitiesByPredicate(
+    request: QueryEntitiesRequest,
+    options?: CatalogRequestOptions,
+  ): Promise<QueryEntitiesResponse> {
+    const params: {
+      limit?: number;
+      offset?: number;
+      after?: string;
+      orderField?: string[];
+      cursor?: string;
+      fields?: string[];
+    } = {};
+
+    let query;
+
+    if (isQueryEntitiesInitialRequest(request)) {
+      // Initial request with query predicate
+      const { query: requestQuery, limit, offset, orderFields } = request;
+      query = requestQuery;
+
+      if (limit !== undefined) {
+        params.limit = limit;
+      }
+      if (offset !== undefined) {
+        params.offset = offset;
+      }
+      if (orderFields !== undefined) {
+        params.orderField = (
+          Array.isArray(orderFields) ? orderFields : [orderFields]
+        ).map(({ field, order }) => `${field},${order}`);
+      }
+    } else {
+      // Cursor-based pagination request
+      const { cursor, limit } = request;
+
+      params.after = cursor;
+      if (limit !== undefined) {
+        params.limit = limit;
+      }
+      // Query will be extracted from cursor on the backend
+      query = undefined;
+    }
+
+    const response = await this.apiClient.queryEntitiesByPredicate(
+      {
+        body: query ? { query } : {},
+        query: params,
+      },
+      options,
+    );
+
+    const result = await this.requestRequired(response);
+
+    return {
+      items: result.items,
+      totalItems: result.items.length,
+      pageInfo: {
+        nextCursor: result.pageInfo?.nextCursor,
+      },
+    };
   }
 
   /**

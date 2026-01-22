@@ -540,6 +540,311 @@ describe('CatalogClient', () => {
     });
   });
 
+  describe('queryEntities with predicate-based queries (POST endpoint)', () => {
+    const defaultResponse = {
+      items: [
+        {
+          apiVersion: '1',
+          kind: 'Component',
+          metadata: {
+            name: 'service-1',
+            namespace: 'default',
+          },
+          spec: {
+            type: 'service',
+            owner: 'team-a',
+          },
+        },
+        {
+          apiVersion: '1',
+          kind: 'Component',
+          metadata: {
+            name: 'service-2',
+            namespace: 'default',
+          },
+          spec: {
+            type: 'service',
+            owner: 'team-b',
+          },
+        },
+      ],
+      pageInfo: {},
+    };
+
+    it('should use POST endpoint when query is provided', async () => {
+      const mockedEndpoint = jest.fn().mockImplementation((req, res, ctx) => {
+        expect(req.method).toBe('POST');
+        expect(req.body).toMatchObject({
+          query: {
+            kind: 'component',
+          },
+        });
+        return res(ctx.json(defaultResponse));
+      });
+
+      server.use(rest.post(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
+
+      const response = await client.queryEntities({
+        query: { kind: 'component' },
+        limit: 20,
+      });
+
+      expect(mockedEndpoint).toHaveBeenCalledTimes(1);
+      expect(response.items).toEqual(defaultResponse.items);
+      expect(response.totalItems).toBe(defaultResponse.items.length);
+    });
+
+    it('should throw error when both filter and query are provided', async () => {
+      await expect(
+        client.queryEntities({
+          filter: { kind: 'component' },
+          query: { kind: 'component' },
+        } as any),
+      ).rejects.toThrow(
+        'Cannot specify both "filter" and "query" in the same request',
+      );
+    });
+
+    it('should support $all operator', async () => {
+      const mockedEndpoint = jest.fn().mockImplementation((req, res, ctx) => {
+        expect(req.body).toMatchObject({
+          query: {
+            $all: [{ kind: 'component' }, { 'spec.type': 'service' }],
+          },
+        });
+        return res(ctx.json(defaultResponse));
+      });
+
+      server.use(rest.post(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
+
+      await client.queryEntities({
+        query: {
+          $all: [{ kind: 'component' }, { 'spec.type': 'service' }],
+        },
+      });
+
+      expect(mockedEndpoint).toHaveBeenCalledTimes(1);
+    });
+
+    it('should support $any operator', async () => {
+      const mockedEndpoint = jest.fn().mockImplementation((req, res, ctx) => {
+        expect(req.body).toMatchObject({
+          query: {
+            $any: [{ 'spec.type': 'service' }, { 'spec.type': 'website' }],
+          },
+        });
+        return res(ctx.json(defaultResponse));
+      });
+
+      server.use(rest.post(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
+
+      await client.queryEntities({
+        query: {
+          $any: [{ 'spec.type': 'service' }, { 'spec.type': 'website' }],
+        },
+      });
+
+      expect(mockedEndpoint).toHaveBeenCalledTimes(1);
+    });
+
+    it('should support $not operator', async () => {
+      const mockedEndpoint = jest.fn().mockImplementation((req, res, ctx) => {
+        expect(req.body).toMatchObject({
+          query: {
+            $not: { 'spec.lifecycle': 'experimental' },
+          },
+        });
+        return res(ctx.json(defaultResponse));
+      });
+
+      server.use(rest.post(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
+
+      await client.queryEntities({
+        query: {
+          $not: { 'spec.lifecycle': 'experimental' },
+        },
+      });
+
+      expect(mockedEndpoint).toHaveBeenCalledTimes(1);
+    });
+
+    it('should support $exists operator', async () => {
+      const mockedEndpoint = jest.fn().mockImplementation((req, res, ctx) => {
+        expect(req.body).toMatchObject({
+          query: {
+            'spec.owner': { $exists: true },
+          },
+        });
+        return res(ctx.json(defaultResponse));
+      });
+
+      server.use(rest.post(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
+
+      await client.queryEntities({
+        query: {
+          'spec.owner': { $exists: true },
+        },
+      });
+
+      expect(mockedEndpoint).toHaveBeenCalledTimes(1);
+    });
+
+    it('should support $in operator', async () => {
+      const mockedEndpoint = jest.fn().mockImplementation((req, res, ctx) => {
+        expect(req.body).toMatchObject({
+          query: {
+            'spec.owner': { $in: ['team-a', 'team-b', 'team-c'] },
+          },
+        });
+        return res(ctx.json(defaultResponse));
+      });
+
+      server.use(rest.post(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
+
+      await client.queryEntities({
+        query: {
+          'spec.owner': { $in: ['team-a', 'team-b', 'team-c'] },
+        },
+      });
+
+      expect(mockedEndpoint).toHaveBeenCalledTimes(1);
+    });
+
+    it('should support complex nested predicates', async () => {
+      const mockedEndpoint = jest.fn().mockImplementation((req, res, ctx) => {
+        expect(req.body).toMatchObject({
+          query: {
+            $all: [
+              { kind: 'component' },
+              {
+                $any: [{ 'spec.type': 'service' }, { 'spec.type': 'website' }],
+              },
+              {
+                $not: {
+                  'spec.lifecycle': 'experimental',
+                },
+              },
+            ],
+          },
+        });
+        return res(ctx.json(defaultResponse));
+      });
+
+      server.use(rest.post(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
+
+      await client.queryEntities({
+        query: {
+          $all: [
+            { kind: 'component' },
+            {
+              $any: [{ 'spec.type': 'service' }, { 'spec.type': 'website' }],
+            },
+            {
+              $not: {
+                'spec.lifecycle': 'experimental',
+              },
+            },
+          ],
+        },
+      });
+
+      expect(mockedEndpoint).toHaveBeenCalledTimes(1);
+    });
+
+    it('should send orderFields with correct format (field,order)', async () => {
+      const mockedEndpoint = jest.fn().mockImplementation((req, res, ctx) => {
+        const url = new URL(req.url);
+        expect(url.searchParams.getAll('orderField')).toEqual([
+          'metadata.name,asc',
+        ]);
+        return res(ctx.json(defaultResponse));
+      });
+
+      server.use(rest.post(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
+
+      await client.queryEntities({
+        query: { kind: 'component' },
+        orderFields: { field: 'metadata.name', order: 'asc' },
+      });
+
+      expect(mockedEndpoint).toHaveBeenCalledTimes(1);
+    });
+
+    it('should send multiple orderFields with correct format', async () => {
+      const mockedEndpoint = jest.fn().mockImplementation((req, res, ctx) => {
+        const url = new URL(req.url);
+        expect(url.searchParams.getAll('orderField')).toEqual([
+          'metadata.name,asc',
+          'spec.type,desc',
+        ]);
+        return res(ctx.json(defaultResponse));
+      });
+
+      server.use(rest.post(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
+
+      await client.queryEntities({
+        query: { kind: 'component' },
+        orderFields: [
+          { field: 'metadata.name', order: 'asc' },
+          { field: 'spec.type', order: 'desc' },
+        ],
+      });
+
+      expect(mockedEndpoint).toHaveBeenCalledTimes(1);
+    });
+
+    it('should send limit and offset parameters', async () => {
+      const mockedEndpoint = jest.fn().mockImplementation((req, res, ctx) => {
+        const url = new URL(req.url);
+        expect(url.searchParams.get('limit')).toBe('50');
+        expect(url.searchParams.get('offset')).toBe('10');
+        return res(ctx.json(defaultResponse));
+      });
+
+      server.use(rest.post(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
+
+      await client.queryEntities({
+        query: { kind: 'component' },
+        limit: 50,
+        offset: 10,
+      });
+
+      expect(mockedEndpoint).toHaveBeenCalledTimes(1);
+    });
+
+    it('should not allow cursor with query (cursor takes precedence)', async () => {
+      // When cursor is provided, it's not an initial request, so the query
+      // parameter is ignored and it goes to GET endpoint
+      const mockedEndpoint = jest.fn().mockImplementation((req, res, ctx) => {
+        // Should use GET endpoint, not POST
+        expect(req.method).toBe('GET');
+        return res(ctx.json({ items: [], totalItems: 0, pageInfo: {} }));
+      });
+
+      server.use(rest.get(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
+
+      // This will use GET endpoint with cursor, ignoring the query parameter
+      await client.queryEntities({
+        cursor: 'some-cursor',
+        query: { kind: 'component' },
+      } as any);
+
+      expect(mockedEndpoint).toHaveBeenCalledTimes(1);
+    });
+
+    it('should handle errors from POST endpoint', async () => {
+      const mockedEndpoint = jest
+        .fn()
+        .mockImplementation((_req, res, ctx) => res(ctx.status(400)));
+
+      server.use(rest.post(`${mockBaseUrl}/entities/by-query`, mockedEndpoint));
+
+      await expect(() =>
+        client.queryEntities({ query: { kind: 'component' } }),
+      ).rejects.toThrow(/Request failed with 400/);
+    });
+  });
+
   describe('streamEntities', () => {
     const defaultResponse: QueryEntitiesResponse = {
       items: [
