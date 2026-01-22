@@ -43,8 +43,21 @@ export const workspaceDatabaseModule = createBackendModule({
         scaffolderWorkspaceProviders: scaffolderWorkspaceProviderExtensionPoint,
         database: coreServices.database,
         logger: coreServices.logger,
+        config: coreServices.rootConfig,
       },
-      async init({ database, logger, scaffolderWorkspaceProviders }) {
+      async init({ database, logger, scaffolderWorkspaceProviders, config }) {
+        if (
+          process.env.NODE_ENV === 'production' &&
+          !config.getOptionalBoolean(
+            'scaffolder.taskRecovery.database.dangerouslyEnableInProduction',
+          )
+        ) {
+          logger.warn(
+            'Database workspace provider is not supported in production and will not be enabled',
+          );
+          return;
+        }
+
         const db = await database.getClient();
 
         // Run migrations for our table

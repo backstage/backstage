@@ -31,7 +31,8 @@
   },
   "files": [
     "dist",
-    "migrations"
+    "migrations",
+    "config.d.ts"
   ],
   "scripts": {
     "build": "backstage-cli package build",
@@ -54,5 +55,6 @@
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "fs-extra": "^11.0.0"
-  }
+  },
+  "configSchema": "config.d.ts"
 }
