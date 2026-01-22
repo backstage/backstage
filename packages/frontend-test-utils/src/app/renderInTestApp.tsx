@@ -143,10 +143,10 @@ const appPluginOverride = appPlugin.withOverrides({
  * @public
  * Renders the given element in a test app, for use in unit tests.
  */
-export async function renderInTestApp(
+export function renderInTestApp(
   element: JSX.Element,
   options?: TestAppOptions,
-): Promise<RenderResult> {
+): RenderResult {
   const extensions: Array<ExtensionDefinition> = [
     createExtension({
       attachTo: { id: 'app/root', input: 'children' },

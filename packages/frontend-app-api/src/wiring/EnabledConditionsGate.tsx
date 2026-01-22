@@ -17,6 +17,9 @@
 import { ReactNode, useEffect, useState } from 'react';
 import { AppNode, coreExtensionData } from '@backstage/frontend-plugin-api';
 
+/**
+ * @public
+ */
 export interface EnabledConditionsGateProps {
   tree: { root: AppNode };
   completeInitialization: () => Promise<JSX.Element | undefined>;
@@ -30,6 +33,8 @@ export interface EnabledConditionsGateProps {
  * 1. Renders immediately with core extensions
  * 2. Evaluates enabled conditions for user extensions in background
  * 3. Re-renders with full app once user extensions are ready
+ * 
+ * @public
  */
 export function EnabledConditionsGate({
   tree,
