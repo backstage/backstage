@@ -17,9 +17,9 @@
 import { ConfigReader } from '@backstage/config';
 import { DefaultWorkspaceService } from './WorkspaceService';
 import { CurrentClaimedTask } from './StorageTaskBroker';
-import { TaskStore } from './types';
 import { WorkspaceProvider } from '@backstage/plugin-scaffolder-node/alpha';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
+import { mockServices } from '@backstage/backend-test-utils';
 
 describe('DefaultWorkspaceService', () => {
   const mockTask: CurrentClaimedTask = {
@@ -29,26 +29,7 @@ describe('DefaultWorkspaceService', () => {
     createdBy: 'user:default/test',
   };
 
-  const mockStorage: TaskStore = {
-    createTask: jest.fn(),
-    getTask: jest.fn(),
-    claimTask: jest.fn(),
-    completeTask: jest.fn(),
-    heartbeatTask: jest.fn(),
-    listStaleTasks: jest.fn(),
-    list: jest.fn(),
-    emitLogEvent: jest.fn(),
-    listEvents: jest.fn(),
-    shutdownTask: jest.fn(),
-    cancelTask: jest.fn(),
-    retryTask: jest.fn(),
-    saveTaskState: jest.fn(),
-    getTaskState: jest.fn(),
-    rehydrateWorkspace: jest.fn(),
-    cleanWorkspace: jest.fn(),
-    serializeWorkspace: jest.fn(),
-    recoverTasks: jest.fn(),
-  };
+  const mockLogger = mockServices.logger.mock();
 
   const createMockProvider = (): WorkspaceProvider => ({
     serializeWorkspace: jest.fn(),
@@ -67,9 +48,9 @@ describe('DefaultWorkspaceService', () => {
 
       const service = DefaultWorkspaceService.create(
         mockTask,
-        mockStorage,
         { database: mockProvider },
         config,
+        mockLogger,
       );
 
       await service.serializeWorkspace({ path: '/tmp/test' });
@@ -88,9 +69,9 @@ describe('DefaultWorkspaceService', () => {
 
       const service = DefaultWorkspaceService.create(
         mockTask,
-        mockStorage,
         { database: mockProvider },
         config,
+        mockLogger,
       );
 
       await service.serializeWorkspace({ path: '/tmp/test' });
@@ -113,9 +94,9 @@ describe('DefaultWorkspaceService', () => {
 
       const service = DefaultWorkspaceService.create(
         mockTask,
-        mockStorage,
         { database: databaseProvider, custom: customProvider },
         config,
+        mockLogger,
       );
 
       await service.serializeWorkspace({ path: '/tmp/test' });
@@ -133,9 +114,9 @@ describe('DefaultWorkspaceService', () => {
 
       const service = DefaultWorkspaceService.create(
         mockTask,
-        mockStorage,
         { database: mockProvider },
         config,
+        mockLogger,
       );
 
       await service.serializeWorkspace({ path: '/tmp/test' });
@@ -152,9 +133,9 @@ describe('DefaultWorkspaceService', () => {
 
       const service = DefaultWorkspaceService.create(
         mockTask,
-        mockStorage,
         { database: mockProvider },
         config,
+        mockLogger,
       );
 
       await service.serializeWorkspace({ path: '/tmp/test' });
@@ -175,9 +156,9 @@ describe('DefaultWorkspaceService', () => {
 
       const service = DefaultWorkspaceService.create(
         mockTask,
-        mockStorage,
         { database: databaseProvider, custom: customProvider },
         config,
+        mockLogger,
       );
 
       await service.serializeWorkspace({ path: '/tmp/test' });
@@ -199,9 +180,9 @@ describe('DefaultWorkspaceService', () => {
 
       const service = DefaultWorkspaceService.create(
         mockTask,
-        mockStorage,
         { database: mockProvider },
         config,
+        mockLogger,
       );
 
       await service.cleanWorkspace();
@@ -216,9 +197,9 @@ describe('DefaultWorkspaceService', () => {
 
       const service = DefaultWorkspaceService.create(
         mockTask,
-        mockStorage,
         { database: mockProvider },
         config,
+        mockLogger,
       );
 
       await service.cleanWorkspace();
@@ -239,9 +220,9 @@ describe('DefaultWorkspaceService', () => {
 
       const service = DefaultWorkspaceService.create(
         mockTask,
-        mockStorage,
         { database: mockProvider },
         config,
+        mockLogger,
       );
 
       await service.rehydrateWorkspace({
@@ -260,9 +241,9 @@ describe('DefaultWorkspaceService', () => {
 
       const service = DefaultWorkspaceService.create(
         mockTask,
-        mockStorage,
         { database: mockProvider },
         config,
+        mockLogger,
       );
 
       await service.rehydrateWorkspace({

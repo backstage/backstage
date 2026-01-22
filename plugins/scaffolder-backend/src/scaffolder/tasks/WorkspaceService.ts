@@ -17,9 +17,8 @@
 import { Config } from '@backstage/config';
 import { CurrentClaimedTask } from './StorageTaskBroker';
 import { WorkspaceProvider } from '@backstage/plugin-scaffolder-node/alpha';
-import { DatabaseWorkspaceProvider } from './DatabaseWorkspaceProvider';
-import { TaskStore } from './types';
 import fs from 'fs-extra';
+import { LoggerService } from '@backstage/backend-plugin-api';
 
 export interface WorkspaceService {
   serializeWorkspace(options: { path: string }): Promise<void>;
@@ -35,12 +34,11 @@ export interface WorkspaceService {
 export class DefaultWorkspaceService implements WorkspaceService {
   static create(
     task: CurrentClaimedTask,
-    storage: TaskStore,
-    additionalWorkspaceProviders?: Record<string, WorkspaceProvider>,
+    workspaceProviders?: Record<string, WorkspaceProvider>,
     config?: Config,
+    logger?: LoggerService,
   ) {
     // New config path with fallback to old experimental flags
-    // workspaceProvider being set enables serialization
     const workspaceProviderName =
       config?.getOptionalString('scaffolder.taskRecovery.workspaceProvider') ??
       config?.getOptionalString(
@@ -52,22 +50,34 @@ export class DefaultWorkspaceService implements WorkspaceService {
       'scaffolder.EXPERIMENTAL_workspaceSerialization',
     );
 
-    // Serialization is enabled if:
-    // 1. workspaceProvider is explicitly set, OR
-    // 2. EXPERIMENTAL_workspaceSerialization is true (legacy)
-    const isEnabled = workspaceProviderName !== undefined || legacyEnabled;
-
-    if (!isEnabled) {
-      return new DefaultWorkspaceService(task, undefined, config);
+    // Determine the provider name to use
+    let providerName: string | undefined;
+    if (workspaceProviderName) {
+      providerName = workspaceProviderName;
+    } else if (legacyEnabled) {
+      // Legacy mode defaulted to 'database'
+      providerName = 'database';
     }
 
-    // Use the configured provider, or 'database' as default when enabled
-    const providerName = workspaceProviderName ?? 'database';
-    const workspaceProvider =
-      additionalWorkspaceProviders?.[providerName] ??
-      DatabaseWorkspaceProvider.create(storage);
+    if (!providerName) {
+      // No workspace serialization configured
+      return new DefaultWorkspaceService(task, undefined);
+    }
 
-    return new DefaultWorkspaceService(task, workspaceProvider, config);
+    // Look up the provider
+    const workspaceProvider = workspaceProviders?.[providerName];
+
+    if (!workspaceProvider) {
+      logger?.warn(
+        `Workspace provider '${providerName}' is configured but not available. ` +
+          `Make sure to install the corresponding module. ` +
+          `For database storage, add '@backstage/plugin-scaffolder-backend-module-workspace-database'. ` +
+          `Workspace serialization will be disabled.`,
+      );
+      return new DefaultWorkspaceService(task, undefined);
+    }
+
+    return new DefaultWorkspaceService(task, workspaceProvider);
   }
 
   private readonly task: CurrentClaimedTask;
@@ -76,7 +86,6 @@ export class DefaultWorkspaceService implements WorkspaceService {
   private constructor(
     task: CurrentClaimedTask,
     workspaceProvider: WorkspaceProvider | undefined,
-    _config?: Config,
   ) {
     this.task = task;
     this.workspaceProvider = workspaceProvider;

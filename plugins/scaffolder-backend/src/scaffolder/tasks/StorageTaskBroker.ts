@@ -72,9 +72,9 @@ export class TaskManager implements TaskContext {
   ) {
     const workspaceService = DefaultWorkspaceService.create(
       task,
-      storage,
       additionalWorkspaceProviders,
       config,
+      logger,
     );
 
     const agent = new TaskManager(

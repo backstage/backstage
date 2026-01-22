@@ -19,11 +19,7 @@ import { ConfigReader } from '@backstage/config';
 import { DatabaseTaskStore, RawDbTaskEventRow } from './DatabaseTaskStore';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { ConflictError } from '@backstage/errors';
-import {
-  mockServices,
-  createMockDirectory,
-} from '@backstage/backend-test-utils';
-import fs from 'fs-extra';
+import { mockServices } from '@backstage/backend-test-utils';
 import { EventsService } from '@backstage/plugin-events-node';
 import { PermissionCriteria } from '@backstage/plugin-permission-common';
 import { TaskFilters } from '@backstage/plugin-scaffolder-node';
@@ -49,18 +45,6 @@ const createStore = async (events?: EventsService) => {
   });
   return { store, manager };
 };
-
-const workspaceDir = createMockDirectory({
-  content: {
-    'app-config.yaml': `
-            app:
-              title: Example App
-              sessionKey:
-                $file: secrets/session-key.txt
-              escaped: \$\${Escaped}
-          `,
-  },
-});
 
 describe('DatabaseTaskStore', () => {
   const eventsService = {
@@ -569,24 +553,6 @@ describe('DatabaseTaskStore', () => {
         },
       },
     });
-  });
-
-  it('serialize and restore the workspace', async () => {
-    const { store } = await createStore();
-    const { taskId } = await store.createTask({
-      spec: {} as TaskSpec,
-      createdBy: 'me',
-    });
-
-    await store.serializeWorkspace({ path: workspaceDir.path, taskId });
-    expect(fs.existsSync(`${workspaceDir.path}/app-config.yaml`)).toBeTruthy();
-
-    fs.removeSync(workspaceDir.path);
-    expect(fs.existsSync(`${workspaceDir.path}/app-config.yaml`)).toBeFalsy();
-
-    fs.mkdirSync(workspaceDir.path);
-    await store.rehydrateWorkspace({ targetPath: workspaceDir.path, taskId });
-    expect(fs.existsSync(`${workspaceDir.path}/app-config.yaml`)).toBeTruthy();
   });
 
   describe('secrets persistence for recovery', () => {
