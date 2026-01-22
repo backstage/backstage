@@ -28,9 +28,12 @@ import { DefaultSwappableComponentsApi } from '../apis/SwappableComponentsApi';
 export const SwappableComponentsApi = ApiBlueprint.makeWithOverrides({
   name: 'swappable-components',
   inputs: {
-    components: createExtensionInput([
-      SwappableComponentBlueprint.dataRefs.component,
-    ]),
+    components: createExtensionInput(
+      [SwappableComponentBlueprint.dataRefs.component],
+      {
+        internal: true,
+      },
+    ),
   },
   factory: (originalFactory, { inputs }) => {
     return originalFactory(defineParams =>
@@ -38,25 +41,8 @@ export const SwappableComponentsApi = ApiBlueprint.makeWithOverrides({
         api: swappableComponentsApiRef,
         deps: {},
         factory: () => {
-          const nonAppExtensions = inputs.components.filter(
-            i => i.node.spec.plugin?.id !== 'app',
-          );
-
-          if (nonAppExtensions.length > 0) {
-            // eslint-disable-next-line no-console
-            console.warn(
-              `SwappableComponents should only be installed as an extension in the app plugin. You can either use appPlugin.override(), or provide a module for the app-plugin with the extension there instead. Invalid extensions: ${nonAppExtensions
-                .map(i => i.node.spec.id)
-                .join(', ')}`,
-            );
-          }
-
-          const appExtensions = inputs.components.filter(
-            i => i.node.spec.plugin?.id === 'app',
-          );
-
           return DefaultSwappableComponentsApi.fromComponents(
-            appExtensions.map(i =>
+            inputs.components.map(i =>
               i.get(SwappableComponentBlueprint.dataRefs.component),
             ),
           );

@@ -219,6 +219,7 @@ export const formFieldsApi: OverridableExtensionDefinition<{
       {
         singleton: false;
         optional: false;
+        internal: false;
       }
     >;
   };

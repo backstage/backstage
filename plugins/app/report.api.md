@@ -40,6 +40,7 @@ const appPlugin: OverridableFrontendPlugin<
           {
             singleton: true;
             optional: false;
+            internal: false;
           }
         >;
       };
@@ -57,6 +58,7 @@ const appPlugin: OverridableFrontendPlugin<
           {
             singleton: true;
             optional: false;
+            internal: false;
           }
         >;
         content: ExtensionInput<
@@ -64,6 +66,7 @@ const appPlugin: OverridableFrontendPlugin<
           {
             singleton: true;
             optional: false;
+            internal: false;
           }
         >;
       };
@@ -89,6 +92,7 @@ const appPlugin: OverridableFrontendPlugin<
           {
             singleton: false;
             optional: false;
+            internal: false;
           }
         >;
         content: ExtensionInput<
@@ -100,6 +104,7 @@ const appPlugin: OverridableFrontendPlugin<
           {
             singleton: true;
             optional: true;
+            internal: true;
           }
         >;
       };
@@ -121,6 +126,7 @@ const appPlugin: OverridableFrontendPlugin<
           {
             singleton: true;
             optional: true;
+            internal: true;
           }
         >;
         signInPage: ExtensionInput<
@@ -132,6 +138,7 @@ const appPlugin: OverridableFrontendPlugin<
           {
             singleton: true;
             optional: true;
+            internal: true;
           }
         >;
         children: ExtensionInput<
@@ -139,6 +146,7 @@ const appPlugin: OverridableFrontendPlugin<
           {
             singleton: true;
             optional: false;
+            internal: false;
           }
         >;
         elements: ExtensionInput<
@@ -146,6 +154,7 @@ const appPlugin: OverridableFrontendPlugin<
           {
             singleton: false;
             optional: false;
+            internal: false;
           }
         >;
         wrappers: ExtensionInput<
@@ -157,6 +166,7 @@ const appPlugin: OverridableFrontendPlugin<
           {
             singleton: false;
             optional: false;
+            internal: true;
           }
         >;
       };
@@ -182,6 +192,7 @@ const appPlugin: OverridableFrontendPlugin<
           {
             singleton: false;
             optional: false;
+            internal: false;
           }
         >;
       };
@@ -218,6 +229,7 @@ const appPlugin: OverridableFrontendPlugin<
           {
             singleton: false;
             optional: false;
+            internal: false;
           }
         >;
       };
@@ -262,6 +274,7 @@ const appPlugin: OverridableFrontendPlugin<
           {
             singleton: false;
             optional: false;
+            internal: true;
           }
         >;
       };
@@ -471,6 +484,7 @@ const appPlugin: OverridableFrontendPlugin<
           {
             singleton: false;
             optional: false;
+            internal: true;
           }
         >;
       };
@@ -592,6 +606,7 @@ const appPlugin: OverridableFrontendPlugin<
           {
             singleton: false;
             optional: false;
+            internal: false;
           }
         >;
       };
@@ -669,6 +684,7 @@ const appPlugin: OverridableFrontendPlugin<
           {
             singleton: false;
             optional: false;
+            internal: true;
           }
         >;
       };
@@ -703,6 +719,7 @@ const appPlugin: OverridableFrontendPlugin<
           {
             singleton: false;
             optional: false;
+            internal: true;
           }
         >;
       };

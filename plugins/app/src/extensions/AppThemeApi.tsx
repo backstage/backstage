@@ -37,6 +37,7 @@ export const AppThemeApi = ApiBlueprint.makeWithOverrides({
   inputs: {
     themes: createExtensionInput([ThemeBlueprint.dataRefs.theme], {
       replaces: [{ id: 'app', input: 'themes' }],
+      internal: true,
     }),
   },
   factory: (originalFactory, { inputs }) => {
@@ -45,19 +46,6 @@ export const AppThemeApi = ApiBlueprint.makeWithOverrides({
         api: appThemeApiRef,
         deps: {},
         factory: () => {
-          const nonAppExtensions = inputs.themes.filter(
-            i => i.node.spec.plugin?.id !== 'app',
-          );
-
-          if (nonAppExtensions.length > 0) {
-            const list = nonAppExtensions.map(i => i.node.spec.id).join(', ');
-            // eslint-disable-next-line no-console
-            console.warn(
-              `DEPRECATION WARNING: Theme should only be installed as an extension in the app plugin. ` +
-                `You can either use appPlugin.override(), or a module for the app plugin. The following extension will be ignored in the future: ${list}`,
-            );
-          }
-
           return AppThemeSelector.createWithStorage(
             inputs.themes.map(i => i.get(ThemeBlueprint.dataRefs.theme)),
           );

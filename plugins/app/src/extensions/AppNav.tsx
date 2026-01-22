@@ -90,18 +90,11 @@ export const AppNav = createExtension({
     content: createExtensionInput([NavContentBlueprint.dataRefs.component], {
       singleton: true,
       optional: true,
+      internal: true,
     }),
   },
   output: [coreExtensionData.reactElement],
   *factory({ inputs }) {
-    if (inputs.content && inputs.content.node.spec.plugin?.id !== 'app') {
-      // eslint-disable-next-line no-console
-      console.warn(
-        `DEPRECATION WARNING: NavContent should only be installed as an extension in the app plugin. ` +
-          `You can either use appPlugin.override(), or a module for the app plugin. The following extension will be ignored in the future: ${inputs.content.node.spec.id}`,
-      );
-    }
-
     const Content =
       inputs.content?.get(NavContentBlueprint.dataRefs.component) ??
       DefaultNavContent;

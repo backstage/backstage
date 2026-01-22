@@ -604,7 +604,7 @@ export function createExtensionDataRef<TData>(): {
   }): ConfigurableExtensionDataRef<TData, TId>;
 };
 
-// @public (undocumented)
+// @public
 export function createExtensionInput<
   UExtensionData extends ExtensionDataRef<
     unknown,
@@ -616,6 +616,7 @@ export function createExtensionInput<
   TConfig extends {
     singleton?: boolean;
     optional?: boolean;
+    internal?: boolean;
   },
 >(
   extensionData: Array<UExtensionData>,
@@ -630,6 +631,7 @@ export function createExtensionInput<
   {
     singleton: TConfig['singleton'] extends true ? true : false;
     optional: TConfig['optional'] extends true ? true : false;
+    internal: TConfig['internal'] extends true ? true : false;
   }
 >;
 
@@ -1288,9 +1290,11 @@ export interface ExtensionInput<
   TConfig extends {
     singleton: boolean;
     optional: boolean;
+    internal?: boolean;
   } = {
     singleton: boolean;
     optional: boolean;
+    internal?: boolean;
   },
 > {
   // (undocumented)

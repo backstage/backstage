@@ -27,9 +27,14 @@ export interface ExtensionInput<
     string,
     { optional?: true }
   > = ExtensionDataRef,
-  TConfig extends { singleton: boolean; optional: boolean } = {
+  TConfig extends {
     singleton: boolean;
     optional: boolean;
+    internal?: boolean;
+  } = {
+    singleton: boolean;
+    optional: boolean;
+    internal?: boolean;
   },
 > {
   readonly $$type: '@backstage/ExtensionInput';
@@ -38,10 +43,60 @@ export interface ExtensionInput<
   readonly replaces?: Array<{ id: string; input: string }>;
 }
 
-/** @public */
+/**
+ * Creates a new extension input to be passed to the input map of an extension.
+ *
+ * @remarks
+ *
+ * Extension inputs created with this function can be passed to any `inputs` map
+ * as part of creating or overriding an extension.
+ *
+ * The array of extension data references defines the data this input expects.
+ * If the required data is not provided by the attached extension, the
+ * attachment will fail.
+ *
+ * The `config` object can be used to restrict the behavior and shape of the
+ * input. By default an input will accept zero or more extensions from any
+ * plugin. The following options are available:
+ *
+ * - `singleton`: If set to `true`, only one extension can be attached to the
+ *   input at a time. Additional extension will trigger an app error and be
+ *   ignored.
+ * - `optional`: If set to `true`, the input is optional and can be omitted,
+ *   this only has an effect if the `singleton` is set to `true`.
+ * - `internal`: If set to `true`, only extensions from the same plugins will be
+ *   allowed to attach to this input. Other extensions will trigger an app error
+ *   and be ignored.
+ *
+ * @param extensionData - The array of extension data references that this input
+ * expects.
+ * @param config - The configuration object for the input.
+ * @returns An extension input declaration.
+ * @example
+ * ```ts
+ * const extension = createExtension({
+ *   attachTo: { id: 'example-parent', input: 'example-input' },
+ *   inputs: {
+ *     content: createExtensionInput([coreExtensionData.reactElement], {
+ *       singleton: true,
+ *     }),
+ *   },
+ *   output: [coreExtensionData.reactElement],
+ *   *factory({ inputs }) {
+ *     const content = inputs.content?.get(coreExtensionData.reactElement);
+ *     yield coreExtensionData.reactElement(<ContentWrapper>{content}</ContentWrapper>);
+ *   },
+ * });
+ * ```
+ * @public
+ */
 export function createExtensionInput<
   UExtensionData extends ExtensionDataRef<unknown, string, { optional?: true }>,
-  TConfig extends { singleton?: boolean; optional?: boolean },
+  TConfig extends {
+    singleton?: boolean;
+    optional?: boolean;
+    internal?: boolean;
+  },
 >(
   extensionData: Array<UExtensionData>,
   config?: TConfig & { replaces?: Array<{ id: string; input: string }> },
@@ -50,6 +105,7 @@ export function createExtensionInput<
   {
     singleton: TConfig['singleton'] extends true ? true : false;
     optional: TConfig['optional'] extends true ? true : false;
+    internal: TConfig['internal'] extends true ? true : false;
   }
 > {
   if (process.env.NODE_ENV !== 'production') {
@@ -81,6 +137,9 @@ export function createExtensionInput<
       optional: Boolean(config?.optional) as TConfig['optional'] extends true
         ? true
         : false,
+      internal: Boolean(config?.internal) as TConfig['internal'] extends true
+        ? true
+        : false,
     },
     replaces: config?.replaces,
   };
@@ -90,6 +149,7 @@ export function createExtensionInput<
     {
       singleton: TConfig['singleton'] extends true ? true : false;
       optional: TConfig['optional'] extends true ? true : false;
+      internal: TConfig['internal'] extends true ? true : false;
     }
   > {
     return OpaqueExtensionInput.createInstance(undefined, {

@@ -33,6 +33,7 @@ export const IconsApi = ApiBlueprint.makeWithOverrides({
   inputs: {
     icons: createExtensionInput([IconBundleBlueprint.dataRefs.icons], {
       replaces: [{ id: 'app', input: 'icons' }],
+      internal: true,
     }),
   },
   factory: (originalFactory, { inputs }) => {
@@ -41,19 +42,6 @@ export const IconsApi = ApiBlueprint.makeWithOverrides({
         api: iconsApiRef,
         deps: {},
         factory: () => {
-          const nonAppExtensions = inputs.icons.filter(
-            i => i.node.spec.plugin?.id !== 'app',
-          );
-
-          if (nonAppExtensions.length > 0) {
-            const list = nonAppExtensions.map(i => i.node.spec.id).join(', ');
-            // eslint-disable-next-line no-console
-            console.warn(
-              `DEPRECATION WARNING: IconBundle should only be installed as an extension in the app plugin. ` +
-                `You can either use appPlugin.override(), or a module for the app plugin. The following extension will be ignored in the future: ${list}`,
-            );
-          }
-
           return new DefaultIconsApi(
             inputs.icons
               .map(i => i.get(IconBundleBlueprint.dataRefs.icons))
