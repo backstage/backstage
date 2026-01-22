@@ -15,8 +15,12 @@
  */
 
 import { ConfigReader } from '@backstage/config';
-import { mockServices } from '@backstage/backend-test-utils';
-import { PackageDiscoveryService } from './PackageDiscoveryService';
+import { mockServices, ServiceMock } from '@backstage/backend-test-utils';
+import { RootLoggerService } from '@backstage/backend-plugin-api';
+import {
+  PackageDiscoveryService,
+  isBackendPackageName,
+} from './PackageDiscoveryService';
 
 // Mock package.json for testing getDependencyNames
 jest.mock(
@@ -32,20 +36,39 @@ jest.mock(
   { virtual: true },
 );
 
-function createService(packagesConfig?: unknown) {
-  const config = new ConfigReader(
-    packagesConfig !== undefined
-      ? { backend: { packages: packagesConfig } }
-      : {},
-  );
-  return new PackageDiscoveryService(config, mockServices.rootLogger.mock());
-}
-
 describe('PackageDiscoveryService', () => {
+  let service: PackageDiscoveryService;
+  let logger: ServiceMock<RootLoggerService>;
+  const mockPathExists = jest.fn();
+
+  function setupService(
+    packagesConfig?: unknown,
+    options?: { alwaysExcludedPackages?: string[] },
+  ) {
+    const config = new ConfigReader(
+      packagesConfig !== undefined
+        ? { backend: { packages: packagesConfig } }
+        : {},
+    );
+    logger = mockServices.rootLogger.mock();
+    service = new PackageDiscoveryService(
+      config,
+      logger,
+      options,
+      mockPathExists,
+    );
+  }
+
+  beforeEach(() => {
+    jest.clearAllMocks();
+    mockPathExists.mockResolvedValue(false);
+  });
+
   describe('getDependencyNames', () => {
     it('returns all dependencies when config is "all"', () => {
-      const result =
-        createService('all').getDependencyNames('/mock/package.json');
+      setupService('all');
+
+      const result = service.getDependencyNames('/mock/package.json');
 
       expect(result).toEqual([
         '@backstage/plugin-catalog-backend',
@@ -56,12 +79,14 @@ describe('PackageDiscoveryService', () => {
     });
 
     it('returns only included packages', () => {
-      const result = createService({
+      setupService({
         include: [
           '@backstage/plugin-catalog-backend',
           '@backstage/plugin-auth-backend',
         ],
-      }).getDependencyNames('/mock/package.json');
+      });
+
+      const result = service.getDependencyNames('/mock/package.json');
 
       expect(result).toEqual([
         '@backstage/plugin-catalog-backend',
@@ -70,9 +95,11 @@ describe('PackageDiscoveryService', () => {
     });
 
     it('excludes specified packages', () => {
-      const result = createService({
+      setupService({
         exclude: ['some-other-package'],
-      }).getDependencyNames('/mock/package.json');
+      });
+
+      const result = service.getDependencyNames('/mock/package.json');
 
       expect(result).toEqual([
         '@backstage/plugin-catalog-backend',
@@ -82,31 +109,138 @@ describe('PackageDiscoveryService', () => {
     });
 
     it('applies both include and exclude filters', () => {
-      const result = createService({
+      setupService({
         include: [
           '@backstage/plugin-catalog-backend',
           '@backstage/plugin-auth-backend',
           '@backstage/plugin-scaffolder-backend',
         ],
         exclude: ['@backstage/plugin-scaffolder-backend'],
-      }).getDependencyNames('/mock/package.json');
+      });
+
+      const result = service.getDependencyNames('/mock/package.json');
 
       expect(result).toEqual([
         '@backstage/plugin-catalog-backend',
         '@backstage/plugin-auth-backend',
       ]);
     });
+
+    it('warns when included packages do not match backend naming convention', () => {
+      setupService({
+        include: ['fake-plugin-backend', 'lodash', 'some-other-package'],
+      });
+
+      service.getDependencyNames('/mock/package.json');
+
+      expect(logger.warn).toHaveBeenCalledWith(
+        expect.stringContaining('lodash'),
+      );
+      expect(logger.warn).toHaveBeenCalledWith(
+        expect.stringContaining('some-other-package'),
+      );
+    });
+
+    it('does not warn when all included packages match backend naming convention', () => {
+      setupService({
+        include: [
+          '@backstage/plugin-catalog-backend',
+          '@backstage/plugin-auth-backend',
+        ],
+      });
+
+      service.getDependencyNames('/mock/package.json');
+
+      expect(logger.warn).not.toHaveBeenCalled();
+    });
+
+    it('does not warn when config is "all"', () => {
+      setupService('all');
+
+      service.getDependencyNames('/mock/package.json');
+
+      expect(logger.warn).not.toHaveBeenCalled();
+    });
+
+    it('excludes packages from alwaysExcludedPackages option even if config is "all"', () => {
+      setupService('all', {
+        alwaysExcludedPackages: ['@backstage/plugin-catalog-backend'],
+      });
+
+      const result = service.getDependencyNames('/mock/package.json');
+
+      expect(result).toEqual([
+        '@backstage/plugin-auth-backend',
+        '@backstage/plugin-scaffolder-backend',
+        'some-other-package',
+      ]);
+    });
+
+    it('excludes packages from alwaysExcludedPackages option even if explicitly included', () => {
+      setupService(
+        {
+          include: [
+            '@backstage/plugin-catalog-backend',
+            '@backstage/plugin-auth-backend',
+          ],
+        },
+        {
+          alwaysExcludedPackages: ['@backstage/plugin-catalog-backend'],
+        },
+      );
+
+      const result = service.getDependencyNames('/mock/package.json');
+
+      expect(result).toEqual(['@backstage/plugin-auth-backend']);
+    });
   });
 
   describe('getBackendFeatures', () => {
     it('returns empty features when packages config is not set', async () => {
-      const result = await createService().getBackendFeatures();
+      setupService();
+
+      const result = await service.getBackendFeatures();
+
       expect(result).toEqual({ features: [] });
     });
 
     it('returns empty features when packages config is empty object', async () => {
-      const result = await createService({}).getBackendFeatures();
+      setupService({});
+
+      const result = await service.getBackendFeatures();
+
       expect(result).toEqual({ features: [] });
     });
+  });
+});
+
+describe('isBackendPackageName', () => {
+  it('matches packages ending with -backend', () => {
+    expect(isBackendPackageName('@backstage/plugin-catalog-backend')).toBe(
+      true,
+    );
+    expect(
+      isBackendPackageName('@spotify/backstage-plugin-insights-backend'),
+    ).toBe(true);
+    expect(isBackendPackageName('my-custom-backend')).toBe(true);
+  });
+
+  it('matches packages containing -backend-module-', () => {
+    expect(
+      isBackendPackageName('@backstage/plugin-catalog-backend-module-github'),
+    ).toBe(true);
+    expect(isBackendPackageName('my-backend-module-custom')).toBe(true);
+  });
+
+  it('does not match frontend or other packages', () => {
+    expect(isBackendPackageName('@backstage/plugin-catalog')).toBe(false);
+    expect(isBackendPackageName('@backstage/core-components')).toBe(false);
+    expect(isBackendPackageName('lodash')).toBe(false);
+    expect(isBackendPackageName('@opentelemetry/sdk-trace-base')).toBe(false);
+  });
+
+  it('does not match packages with backend elsewhere in name', () => {
+    expect(isBackendPackageName('backend-utils')).toBe(false);
+    expect(isBackendPackageName('@internal/backend-common')).toBe(false);
   });
 });
