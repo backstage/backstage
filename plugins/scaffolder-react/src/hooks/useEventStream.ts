@@ -246,6 +246,7 @@ export const useTaskEventStream = (taskId: string): TaskStream => {
                   dispatch({ type: 'COMPLETED', data: event });
                   return undefined;
                 case 'recovered':
+                  emitLogs();
                   dispatch({ type: 'RECOVERED', data: event });
                   return undefined;
                 default:
