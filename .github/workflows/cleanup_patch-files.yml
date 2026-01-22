@@ -22,7 +22,7 @@ jobs:
           egress-policy: audit
 
       - name: Checkout
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 0
           token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
@@ -89,7 +89,7 @@ jobs:
 
       - name: Checkout master
         if: steps.extract-pr-numbers.outputs.has_pr_numbers == 'true'
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           ref: master
           token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
