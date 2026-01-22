@@ -44084,16 +44084,16 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-draggable@npm:^4.0.0, react-draggable@npm:^4.0.3":
-  version: 4.4.6
-  resolution: "react-draggable@npm:4.4.6"
+"react-draggable@npm:^4.0.0, react-draggable@npm:^4.5.0":
+  version: 4.5.0
+  resolution: "react-draggable@npm:4.5.0"
   dependencies:
-    clsx: "npm:^1.1.1"
+    clsx: "npm:^2.1.1"
     prop-types: "npm:^15.8.1"
   peerDependencies:
     react: ">= 16.3.0"
     react-dom: ">= 16.3.0"
-  checksum: 10/51b9ac7f913797fc1cebc30ae383f346883033c45eb91e9b0b92e9ebd224bb1545b4ae2391825b649b798cc711a38351a5f41be24d949c64c6703ebc24eba661
+  checksum: 10/fd4080a082fad199103c6978c8a78c80154a0205dbd14ca2c7bb75634132a6afd83a3e4669f2d8fe54efe68569ef24a992439183289d83e71030b0a1791d3476
   languageName: node
   linkType: hard
 
@@ -44415,14 +44415,15 @@ __metadata:
   linkType: hard
 
 "react-resizable@npm:^3.0.4, react-resizable@npm:^3.0.5":
-  version: 3.0.5
-  resolution: "react-resizable@npm:3.0.5"
+  version: 3.1.3
+  resolution: "react-resizable@npm:3.1.3"
   dependencies:
     prop-types: "npm:15.x"
-    react-draggable: "npm:^4.0.3"
+    react-draggable: "npm:^4.5.0"
   peerDependencies:
     react: ">= 16.3"
-  checksum: 10/745fad6ac827857b3a80d1d648b8d6723aa72fc17d5410a01707073f3d37b4adf6e0354dfe3cc33dee34d6e546a3fbd5603ef73e385dfc5218a425a39bf96275
+    react-dom: ">= 16.3"
+  checksum: 10/bc7126fabbd2f0ba422fa0da77fcfcebf2b4f28141d3faf02067632d258e345bc5f63891f9d5eca0e9ea31dc461b74ec69073a18f905b25bdd392ca6283577f9
   languageName: node
   linkType: hard
 
