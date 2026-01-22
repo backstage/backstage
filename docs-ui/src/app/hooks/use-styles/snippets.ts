@@ -54,7 +54,7 @@ export function Button({
       {...dataAttributes}
       {...cleanedProps}
     >
-      {props.icon ?? <span className={classNames.icon}>{props.icon}</span>}
+      {props.icon && <span className={classNames.icon}>{props.icon}</span>}
       {props.children}
     </button>
   );
