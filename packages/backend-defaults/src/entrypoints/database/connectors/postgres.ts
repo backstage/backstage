@@ -310,7 +310,7 @@ export interface PgPluginDatabaseConfig {
   /** The plugin division mode ('database' or 'schema') */
   pluginDivisionMode: string;
   /** The connection configuration */
-  connection: Knex.StaticConnectionConfig;
+  connection: Knex.PgConnectionConfig;
   /** The database name, if any */
   databaseName: string | undefined;
   /** Database client overrides including schema overrides if applicable */
@@ -394,7 +394,7 @@ export function computePgPluginConfig(
     // Include base connection if client type has not been overridden
     ...(clientOverridden ? {} : baseConnection),
     ...pluginConnection,
-  } as Knex.StaticConnectionConfig;
+  } as Knex.PgConnectionConfig;
 
   // Database name
   const connectionDatabaseName = (connection as Knex.ConnectionConfig)
