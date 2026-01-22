@@ -8,8 +8,6 @@
     "lint": "next lint",
     "prestart": "yarn sync:css",
     "start": "next dev",
-    "sync:changelog": "node scripts/sync-changelog.mjs",
-    "sync:changelog:dry-run": "node scripts/sync-changelog.mjs --dry-run",
     "sync:css": "node scripts/sync-css.js",
     "sync:css:watch": "node scripts/sync-css.js --watch"
   },

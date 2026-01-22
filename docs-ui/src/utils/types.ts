@@ -35,12 +35,13 @@ export type Component =
   | 'tag-group';
 
 export type Version = `${number}.${number}.${number}`;
+export type Version = `${number}.${number}.${number}` | 'next';
 
 export interface ChangelogProps {
   components: Component[];
   description: string;
   version: Version;
-  prs: string[];
+  prs?: string[];
   type?: 'breaking' | 'new' | 'fix';
   commitSha?: string;
 }

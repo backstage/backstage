@@ -32,6 +32,8 @@
     "build:backend": "yarn workspace example-backend build",
     "build:knip-reports": "backstage-repo-tools knip-reports",
     "build:plugins-report": "node ./scripts/build-plugins-report",
+    "changeset-ui": "node scripts/changeset-ui/index.js",
+    "changeset-ui:release": "node scripts/changeset-ui/organize-next.js",
     "clean": "backstage-cli repo clean",
     "create-plugin": "echo \"use 'yarn new' instead\"",
     "dev": "echo \"use 'yarn start' instead\"",
