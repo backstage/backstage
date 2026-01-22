@@ -73,7 +73,7 @@
     width: 1rem;
     height: 1rem;
 
-    [data-expanded='true'] & {
+    .bui-AccordionTriggerButton[data-expanded='true'] > & {
       transform: rotate(180deg);
     }
   }
