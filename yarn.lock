@@ -8508,6 +8508,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@devcontainers/cli@npm:^0.81.1":
+  version: 0.81.1
+  resolution: "@devcontainers/cli@npm:0.81.1"
+  bin:
+    devcontainer: devcontainer.js
+  checksum: 10/269c88697af36823d6d5d128dd8c08f28714ffd7050d76965da90907bbf579411162a2d499cf3d7ff2d37f442b5419db58d936e5a828b812d4b3d555c923a578
+  languageName: node
+  linkType: hard
+
 "@elastic/elasticsearch-mock@npm:^1.0.0":
   version: 1.0.0
   resolution: "@elastic/elasticsearch-mock@npm:1.0.0"
@@ -45374,6 +45383,7 @@ __metadata:
     "@backstage/eslint-plugin": "workspace:*"
     "@backstage/repo-tools": "workspace:*"
     "@changesets/cli": "npm:^2.14.0"
+    "@devcontainers/cli": "npm:^0.81.1"
     "@jest/environment-jsdom-abstract": "npm:^30"
     "@manypkg/get-packages": "npm:^1.1.3"
     "@octokit/rest": "npm:^19.0.3"
