@@ -34,7 +34,6 @@ export type Component =
   | 'dialog'
   | 'tag-group';
 
-export type Version = `${number}.${number}.${number}`;
 export type Version = `${number}.${number}.${number}` | 'next';
 
 export interface ChangelogProps {
