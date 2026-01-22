@@ -53,7 +53,7 @@ export type EntitiesRequest = {
 };
 
 export type EntityPredicateRequest = {
-  filter?: EntityPredicate;
+  query?: EntityPredicate;
   order?: EntityOrder[];
   pagination?: EntityPagination;
   credentials: BackstageCredentials;
@@ -228,6 +228,11 @@ export interface QueryEntitiesInitialRequest {
   limit?: number;
   offset?: number;
   filter?: EntityFilter;
+  /**
+   * Predicate-based query for filtering entities.
+   * Mutually exclusive with filter.
+   */
+  query?: EntityPredicate;
   orderFields?: EntityOrder[];
   fullTextFilter?: {
     term: string;
@@ -289,6 +294,11 @@ export type Cursor = {
    * A filter to be applied to the full list of entities.
    */
   filter?: EntityFilter;
+  /**
+   * A predicate-based query to be applied to the full list of entities.
+   * Mutually exclusive with filter.
+   */
+  query?: EntityPredicate;
   /**
    * true if the cursor is a previous cursor.
    */
