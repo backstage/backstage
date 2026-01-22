@@ -27,6 +27,7 @@ export const AccordionDefinition = {
     triggerButton: 'bui-AccordionTriggerButton',
     triggerTitle: 'bui-AccordionTriggerTitle',
     triggerSubtitle: 'bui-AccordionTriggerSubtitle',
+    triggerLeadingIcon: 'bui-AccordionTriggerLeadingIcon',
     triggerIcon: 'bui-AccordionTriggerIcon',
     panel: 'bui-AccordionPanel',
     group: 'bui-AccordionGroup',

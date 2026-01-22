@@ -11,6 +11,7 @@ import {
   accordionUsageSnippet,
   defaultSnippet,
   withSubtitleSnippet,
+  withIconSnippet,
   customTriggerSnippet,
   defaultExpandedSnippet,
   groupSingleOpenSnippet,
@@ -19,6 +20,7 @@ import {
 import {
   Default,
   WithSubtitle,
+  WithIcon,
   CustomTrigger,
   DefaultExpanded,
   GroupSingleOpen,
@@ -84,6 +86,18 @@ Here's a view when using both title and subtitle props.
   height={240}
   preview={<WithSubtitle />}
   code={withSubtitleSnippet}
+/>
+
+### With Icon
+
+Add an icon to improve visual hierarchy and scanability. Icons can be positioned at the start (default) or end of the title.
+
+<Snippet
+  align="center"
+  py={4}
+  height={240}
+  preview={<WithIcon />}
+  code={withIconSnippet}
 />
 
 ### Custom Trigger

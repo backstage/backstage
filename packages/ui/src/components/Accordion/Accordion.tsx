@@ -57,7 +57,7 @@ Accordion.displayName = 'Accordion';
 export const AccordionTrigger = forwardRef<
   React.ElementRef<typeof RAHeading>,
   AccordionTriggerProps
->(({ className, title, subtitle, children, ...props }, ref) => {
+>(({ className, title, subtitle, children, icon, iconPosition = 'start', ...props }, ref) => {
   const { classNames, cleanedProps } = useStyles(AccordionDefinition, props);
 
   return (
@@ -81,6 +81,16 @@ export const AccordionTrigger = forwardRef<
           children
         ) : (
           <Flex gap="2" align="center">
+            {icon && iconPosition === 'start' && (
+              <span
+                className={clsx(
+                  classNames.triggerLeadingIcon,
+                  styles[classNames.triggerLeadingIcon],
+                )}
+              >
+                {icon}
+              </span>
+            )}
             <span
               className={clsx(
                 classNames.triggerTitle,
@@ -97,6 +107,16 @@ export const AccordionTrigger = forwardRef<
                 )}
               >
                 {subtitle}
+              </span>
+            )}
+            {icon && iconPosition === 'end' && (
+              <span
+                className={clsx(
+                  classNames.triggerLeadingIcon,
+                  styles[classNames.triggerLeadingIcon],
+                )}
+              >
+                {icon}
               </span>
             )}
           </Flex>
