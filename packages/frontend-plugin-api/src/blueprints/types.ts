@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { ApiHolder } from '@backstage/core-plugin-api';
+import { ApiHolder } from '../apis/system';
 
 /**
  * A function that determines whether an extension should be enabled and attached to the extension tree.

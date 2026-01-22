@@ -95,10 +95,8 @@ describe('SearchFilterResultTypeBlueprint', () => {
     });
 
     await expect(
-      (
-        await renderInTestApp(
-          createExtensionTester(searchPage).add(extension).reactElement(),
-        )
+      renderInTestApp(
+        createExtensionTester(searchPage).add(extension).reactElement(),
       ).findByText('Test Result Type'),
     ).resolves.toBeInTheDocument();
   });

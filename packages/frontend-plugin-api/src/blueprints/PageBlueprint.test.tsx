@@ -102,7 +102,7 @@ describe('PageBlueprint', () => {
 
     expect(tester.get(coreExtensionData.routeRef)).toBe(mockRouteRef);
 
-    const { getByTestId } = await renderInTestApp(tester.reactElement());
+    const { getByTestId } = renderInTestApp(tester.reactElement());
 
     await waitFor(() => expect(getByTestId('test')).toBeInTheDocument());
   });
@@ -146,9 +146,7 @@ describe('PageBlueprint', () => {
       CardBlueprint.make({ name: 'card', params: {} }),
     );
 
-    const { getByTestId, getByText } = await renderInTestApp(
-      tester.reactElement(),
-    );
+    const { getByTestId, getByText } = renderInTestApp(tester.reactElement());
 
     await waitFor(() => expect(getByTestId('card')).toBeInTheDocument());
     await waitFor(() =>
