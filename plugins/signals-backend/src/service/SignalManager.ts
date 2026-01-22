@@ -51,12 +51,14 @@ export type SignalManagerOptions = {
 
 /** @internal */
 export class SignalManager {
-  private connections: Map<string, SignalConnection> = new Map<
+  private readonly instanceId: string;
+  private readonly connections: Map<string, SignalConnection> = new Map<
     string,
     SignalConnection
   >();
-  private events: EventsService;
-  private logger: LoggerService;
+  private readonly channelConnectionCount: Map<string, number> = new Map();
+  private readonly events: EventsService;
+  private readonly logger: LoggerService;
   private pingInterval: ReturnType<typeof setInterval> | undefined;
 
   static create(options: SignalManagerOptions) {
@@ -69,16 +71,9 @@ export class SignalManager {
     // Use a unique subscriber ID for each signals instance, in order to fan-out
     // all events to each signals instance. This ensures that events always
     // reach users in a scaled deployment.
-    const id = `signals-${crypto.randomBytes(8).toString('hex')}`;
-    this.logger = options.logger.child({ subscriberId: id });
+    this.instanceId = `signals-${crypto.randomBytes(8).toString('hex')}`;
+    this.logger = options.logger.child({ subscriberId: this.instanceId });
     this.logger.info(`Signals manager is subscribing to signals events`);
-
-    this.events.subscribe({
-      id,
-      topics: ['signals'],
-      onEvent: (params: EventParams) =>
-        this.onEventBrokerEvent(params.eventPayload as SignalPayload),
-    });
 
     options.lifecycle.addShutdownHook(() => this.onShutdown());
   }
@@ -87,7 +82,7 @@ export class SignalManager {
     this.connections.forEach(conn => {
       if (!conn.isAlive) {
         this.logger.debug(`Connection ${conn.id} is not alive, terminating`);
-        conn.ws.terminate();
+        this.terminateConnection(conn.id, conn.ws);
         return;
       }
 
@@ -101,12 +96,12 @@ export class SignalManager {
       clearInterval(this.pingInterval);
     }
 
-    // TODO: Unsubscribe from events?
-
     this.connections.forEach(conn => {
       conn.ws.terminate();
     });
     this.connections.clear();
+    // TODO: Unsubscribe from events?
+    this.channelConnectionCount.clear();
   }
 
   addConnection(ws: WebSocket, identity?: BackstageUserInfo) {
@@ -134,16 +129,14 @@ export class SignalManager {
       this.logger.error(
         `Error occurred with connection ${id}: ${err}, closing connection`,
       );
-      ws.terminate();
-      this.connections.delete(id);
+      this.terminateConnection(id, ws);
     });
 
     ws.on('close', (code: number, reason: Buffer) => {
       this.logger.debug(
         `Connection ${id} closed with code ${code}, reason: ${reason}`,
       );
-      ws.terminate();
-      this.connections.delete(id);
+      this.terminateConnection(id, ws);
     });
 
     ws.on('ping', () => {
@@ -176,13 +169,54 @@ export class SignalManager {
       this.logger.debug(
         `Connection ${connection.id} subscribed to ${message.channel}`,
       );
-      connection.subscriptions.add(message.channel as string);
+      const channel = message.channel as string;
+      this.increaseChannelConnectionCount(channel);
+      connection.subscriptions.add(channel);
     } else if (message.action === 'unsubscribe' && message.channel) {
       this.logger.debug(
         `Connection ${connection.id} unsubscribed from ${message.channel}`,
       );
-      connection.subscriptions.delete(message.channel as string);
+      const channel = message.channel as string;
+      this.decreaseChannelConnectionCount(channel);
+      connection.subscriptions.delete(channel);
     }
+  }
+
+  private terminateConnection(id: string, ws: WebSocket) {
+    const connection = this.connections.get(id);
+    if (connection) {
+      for (const subscription of connection.subscriptions) {
+        this.decreaseChannelConnectionCount(subscription);
+      }
+      this.connections.delete(id);
+    }
+    ws.terminate();
+  }
+
+  private increaseChannelConnectionCount(channel: string) {
+    const existingCount = this.channelConnectionCount.get(channel);
+    // If the channel exists, even with zero count, we do not want to subscribe
+    // again as EventsService does not handle the onEvent callback duplicates.
+    // See comment in the decrease section.
+    if (existingCount === undefined) {
+      this.events.subscribe({
+        id: this.instanceId,
+        topics: [`signals:${channel}`],
+        onEvent: (params: EventParams) =>
+          this.onEventBrokerEvent(params.eventPayload as SignalPayload),
+      });
+      this.channelConnectionCount.set(channel, 1);
+      return;
+    }
+    this.channelConnectionCount.set(channel, existingCount + 1);
+  }
+
+  private decreaseChannelConnectionCount(channel: string) {
+    const cur = this.channelConnectionCount.get(channel);
+    // TODO: If EventService would support unsubscribing, we could do it here. But as it
+    //       doesn't, we just have to set the count to zero not to subscribe multiple callbacks
+    //       when new subscription is added after the counter has reached zero.
+    this.channelConnectionCount.set(channel, (cur ?? 1) - 1);
   }
 
   private async onEventBrokerEvent(eventPayload: SignalPayload): Promise<void> {
