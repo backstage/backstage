@@ -247,6 +247,7 @@ export default {
             'features/software-catalog/extending-the-model',
             'features/software-catalog/external-integrations',
             'features/software-catalog/catalog-customization',
+            'features/software-catalog/audit-events',
             {
               type: 'category',
               label: 'API',
@@ -289,6 +290,7 @@ export default {
             'features/software-templates/dry-run-testing',
             'features/software-templates/experimental',
             'features/software-templates/templating-extensions',
+            'features/software-templates/audit-events',
             {
               type: 'category',
               label: 'API',
