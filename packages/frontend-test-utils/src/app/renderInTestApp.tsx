@@ -206,7 +206,7 @@ export async function renderInTestApp(
     features.push(...options.features);
   }
 
-  const app = await createSpecializedApp({
+  const app = createSpecializedApp({
     features,
     config: ConfigReader.fromConfigs([
       {

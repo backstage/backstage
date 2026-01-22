@@ -103,7 +103,7 @@ export function renderTestApp(options: RenderTestAppOptions) {
     features.push(...options.features);
   }
 
-  const app = await createSpecializedApp({
+  const app = createSpecializedApp({
     features,
     config: ConfigReader.fromConfigs([
       {

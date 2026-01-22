@@ -879,13 +879,12 @@ describe('createSpecializedApp', () => {
   describe('enabled conditions', () => {
     it('should defer extensions with enabled conditions until completeInitialization', async () => {
       let enabledCheckCalled = false;
-      const app = await createSpecializedApp({
+      const app = createSpecializedApp({
         features: [
           createFrontendPlugin({
             pluginId: 'test',
             extensions: [
               createExtension({
-                namespace: 'test',
                 name: 'conditional',
                 attachTo: { id: 'root', input: 'app' },
                 output: [coreExtensionData.reactElement],
@@ -920,13 +919,12 @@ describe('createSpecializedApp', () => {
     });
 
     it('should exclude extensions when enabled condition returns false', async () => {
-      const app = await createSpecializedApp({
+      const app = createSpecializedApp({
         features: [
           createFrontendPlugin({
             pluginId: 'test',
             extensions: [
               createExtension({
-                namespace: 'test',
                 name: 'disabled',
                 attachTo: { id: 'root', input: 'app' },
                 output: [coreExtensionData.reactElement],
@@ -936,7 +934,6 @@ describe('createSpecializedApp', () => {
                 enabled: async () => false,
               }),
               createExtension({
-                namespace: 'test',
                 name: 'enabled',
                 attachTo: { id: 'root', input: 'app' },
                 output: [coreExtensionData.reactElement],
@@ -962,14 +959,13 @@ describe('createSpecializedApp', () => {
     it('should provide apiHolder to enabled conditions', async () => {
       let receivedApiHolder: any;
 
-      const app = await createSpecializedApp({
+      const app = createSpecializedApp({
         config: mockApis.config({ data: { test: 'value' } }),
         features: [
           createFrontendPlugin({
             pluginId: 'test',
             extensions: [
               createExtension({
-                namespace: 'test',
                 name: 'apiCheck',
                 attachTo: { id: 'root', input: 'app' },
                 output: [coreExtensionData.reactElement],
@@ -997,13 +993,12 @@ describe('createSpecializedApp', () => {
     });
 
     it('should handle errors in enabled conditions gracefully', async () => {
-      const app = await createSpecializedApp({
+      const app = createSpecializedApp({
         features: [
           createFrontendPlugin({
             pluginId: 'test',
             extensions: [
               createExtension({
-                namespace: 'test',
                 name: 'failing',
                 attachTo: { id: 'root', input: 'app' },
                 output: [coreExtensionData.reactElement],
@@ -1019,8 +1014,7 @@ describe('createSpecializedApp', () => {
         ],
       });
 
-      // Should not throw
-      await expect(app.completeInitialization()).resolves.toBeDefined();
+      await app.completeInitialization()
 
       // Extension should be disabled due to error
       const node = app.tree.nodes.get('test/failing');
@@ -1036,13 +1030,12 @@ describe('createSpecializedApp', () => {
     });
 
     it('should instantiate extensions without enabled conditions immediately', async () => {
-      const app = await createSpecializedApp({
+      const app = createSpecializedApp({
         features: [
           createFrontendPlugin({
             pluginId: 'test',
             extensions: [
               createExtension({
-                namespace: 'test',
                 name: 'immediate',
                 attachTo: { id: 'root', input: 'app' },
                 output: [coreExtensionData.reactElement],

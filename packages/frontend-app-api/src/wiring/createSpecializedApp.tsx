@@ -275,8 +275,8 @@ export type CreateSpecializedAppOptions = {
      * it gets emitted by extensions being instantiated.
      */
     extensionFactoryMiddleware?:
-      | ExtensionFactoryMiddleware
-      | ExtensionFactoryMiddleware[];
+    | ExtensionFactoryMiddleware
+    | ExtensionFactoryMiddleware[];
 
     /**
      * Allows for customizing how plugin info is retrieved.
@@ -292,14 +292,14 @@ export type CreateSpecializedAppOptions = {
  *
  * @public
  */
-export async function createSpecializedApp(
+export function createSpecializedApp(
   options?: CreateSpecializedAppOptions,
-): Promise<{
+): {
   apis: ApiHolder;
   tree: AppTree;
   errors?: AppError[];
   completeInitialization(): Promise<JSX.Element | undefined>;
-}> {
+} {
   const config = options?.config ?? new ConfigReader({}, 'empty-config');
   const features = deduplicateFeatures(options?.features ?? []).map(
     createPluginInfoAttacher(config, options?.advanced?.pluginInfoResolver),
@@ -321,9 +321,8 @@ export async function createSpecializedApp(
     collector,
   );
 
-  // === PHASE 1: Collect APIs (without enabled checks) ===
   // We need to collect all API factories first before we can check enabled conditions,
-  // since those conditions may depend on APIs like featureFlagsApiRef, configApiRef, etc.
+  //  since those conditions may depend on APIs like featureFlagsApiRef, configApiRef, etc.
   const factories = createApiFactories({ tree, collector });
   const appBasePath = getBasePath(config);
   const appTreeApi = new AppTreeApiProxy(tree, appBasePath);

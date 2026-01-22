@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import React, { ReactNode, useEffect, useState } from 'react';
+import { ReactNode, useEffect, useState } from 'react';
 import { AppNode, coreExtensionData } from '@backstage/frontend-plugin-api';
 
 export interface EnabledConditionsGateProps {
   tree: { root: AppNode };
-  completeInitialization: () => Promise<JSX.Element>;
+  completeInitialization: () => Promise<JSX.Element | undefined>;
   fallback?: ReactNode;
 }
 
@@ -35,9 +35,9 @@ export function EnabledConditionsGate({
   tree,
   completeInitialization,
   fallback = null,
-}: EnabledConditionsGateProps): JSX.Element | null {
+}: EnabledConditionsGateProps): JSX.Element | undefined {
   // Start with core extensions (already instantiated)
-  const [rootElement, setRootElement] = useState<JSX.Element | null>(() => {
+  const [rootElement, setRootElement] = useState<JSX.Element | undefined>(() => {
     const initialEl = tree.root.instance!.getData(
       coreExtensionData.reactElement,
     );

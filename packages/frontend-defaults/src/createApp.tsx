@@ -85,8 +85,8 @@ export interface CreateAppOptions {
      * it gets emitted by extensions being instantiated.
      */
     extensionFactoryMiddleware?:
-      | ExtensionFactoryMiddleware
-      | ExtensionFactoryMiddleware[];
+    | ExtensionFactoryMiddleware
+    | ExtensionFactoryMiddleware[];
 
     /**
      * The element to render while loading the app (waiting for config, features, etc).
@@ -130,7 +130,7 @@ export function createApp(options?: CreateAppOptions): {
       features: [...discoveredFeaturesAndLoaders, ...(options?.features ?? [])],
     });
 
-    const app = await createSpecializedApp({
+    const app = createSpecializedApp({
       features: [appPlugin, ...loadedFeatures],
       config,
       bindRoutes: options?.bindRoutes,
