@@ -348,7 +348,12 @@ async function parseListItem(
     /\*\*Migration:\*\*\s*\n([\s\S]+?)(?=\n\s*$|$)/,
   );
   if (migrationMatch) {
-    migration = migrationMatch[1].trim();
+    // Clean up indentation from list format (remove leading 2 spaces from each line)
+    migration = migrationMatch[1]
+      .split('\n')
+      .map(line => line.replace(/^  /, ''))
+      .join('\n')
+      .trim();
     // Strip migration section from description
     description = description
       .replace(/\n*\*\*Migration:\*\*[\s\S]+$/, '')
@@ -357,8 +362,8 @@ async function parseListItem(
 
   const prs = []; // Will be populated later by fetchPRNumbers()
 
-  // Infer type from section and description
-  const type = inferChangeType(section, description, version);
+  // Check if this is a breaking change
+  const breaking = isBreakingChange(section, description, version);
 
   return {
     version: normalizeVersion(version),
@@ -367,7 +372,7 @@ async function parseListItem(
     description,
     components,
     prs,
-    type,
+    breaking,
     migration,
   };
 }
@@ -375,27 +380,18 @@ async function parseListItem(
 /**
  * Infer change type from section and description
  */
-function inferChangeType(section, description, version) {
-  const isPre1 = version.startsWith('0.');
-
-  // Check description keywords first
-  if (description.match(/^(New|Add(ed)?)\s/i)) {
-    return 'new';
-  }
+function isBreakingChange(section, description, version) {
+  // Mark as breaking if explicitly mentioned in description
   if (description.includes('BREAKING')) {
-    return 'breaking';
+    return true;
   }
 
-  // Infer from section
-  if (section === 'Minor Changes') {
-    return isPre1 ? 'breaking' : undefined;
-  } else if (section === 'Major Changes') {
-    return 'breaking';
-  } else if (section === 'Patch Changes') {
-    return 'fix';
+  // Or if it's in the Major or Minor Changes section
+  if (section === 'Major Changes' || section === 'Minor Changes') {
+    return true;
   }
 
-  return undefined;
+  return false;
 }
 
 /**
@@ -450,7 +446,12 @@ async function fetchPRNumbers(entries, dryRun = false) {
 /**
  * Generate per-version changelog files in changelogs/ directory
  */
-async function generateVersionFiles(entries, changelogsDir, dryRun = false) {
+async function generateVersionFiles(
+  entries,
+  changelogsDir,
+  dryRun = false,
+  force = false,
+) {
   // Group entries by normalized version
   const byVersion = {};
   entries.forEach(entry => {
@@ -470,8 +471,8 @@ async function generateVersionFiles(entries, changelogsDir, dryRun = false) {
     const filePath = path.join(changelogsDir, fileName);
     const varName = `changelog_${version.replace(/\./g, '_')}`;
 
-    // Check if file already exists - skip if it does
-    if (fs.existsSync(filePath)) {
+    // Check if file already exists - skip if it does (unless force flag)
+    if (fs.existsSync(filePath) && !force) {
       skippedVersions.push(version);
       // Still add to versionFiles array so main changelog.ts can import it
       versionFiles.push({
@@ -492,7 +493,7 @@ async function generateVersionFiles(entries, changelogsDir, dryRun = false) {
           .map(c => `'${c}'`)
           .join(', ')}]`;
         const prsStr = `[${entry.prs.map(pr => `'${pr}'`).join(', ')}]`;
-        const typeStr = entry.type ? `type: '${entry.type}',` : '';
+        const breakingStr = entry.breaking ? `breaking: true,` : '';
         const shaStr = entry.commitSha
           ? `commitSha: '${entry.commitSha}',`
           : '';
@@ -516,7 +517,7 @@ async function generateVersionFiles(entries, changelogsDir, dryRun = false) {
     version: '${entry.version}',
     prs: ${prsStr},
     description: \`${descEscaped}\`,
-    ${migrationStr}${typeStr}
+    ${migrationStr}${breakingStr}
     ${shaStr}
   }`;
       })
@@ -846,6 +847,7 @@ async function findPRNumber(commitSha) {
 async function main() {
   const args = process.argv.slice(2);
   const dryRun = args.includes('--dry-run');
+  const force = args.includes('--force');
 
   const changelogTsPath = path.join(__dirname, '../src/utils/changelog.ts');
   const changelogMdPath = path.join(
@@ -862,10 +864,15 @@ async function main() {
   }
 
   console.log('📋 Syncing UI component changelogs...\n');
+  if (force) {
+    console.log('⚠️  Force mode: Will overwrite existing version files\n');
+  }
 
-  // Get last synced version
-  const lastVersion = getLastSyncedVersion(changelogTsPath);
-  console.log(`Last synced version: ${lastVersion || '(none)'}`);
+  // Get last synced version (null if force mode to process all)
+  const lastVersion = force ? null : getLastSyncedVersion(changelogTsPath);
+  console.log(
+    `Last synced version: ${lastVersion || '(none - processing all versions)'}`,
+  );
 
   // Get valid components
   const validComponents = getValidComponents(changelogTsPath);
@@ -878,7 +885,11 @@ async function main() {
     lastVersion,
     validComponents,
   );
-  console.log(`Found ${allEntries.length} total entries since ${lastVersion}`);
+  console.log(
+    `Found ${allEntries.length} total entries${
+      force ? '' : ` since ${lastVersion}`
+    }`,
+  );
 
   // Read existing changelog content for duplicate detection
   const existingContent = fs.readFileSync(changelogTsPath, 'utf-8');
@@ -964,6 +975,7 @@ async function main() {
     relevantEntries,
     changelogsDir,
     dryRun,
+    force,
   );
 
   // Generate main changelog.ts

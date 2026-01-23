@@ -45,7 +45,7 @@
 
   **Affected components:** Table, TableRoot, TablePagination
 
-- 95246eb: **Breaking** Updating color tokens to match the new neutral style on different surfaces.
+- 95246eb: **BREAKING**: Updating color tokens to match the new neutral style on different surfaces.
 
   **Migration:**
 
@@ -56,12 +56,18 @@
   - `--bui-bg-tint-pressed` can be replaced by `--bui-bg-neutral-on-surface-0-pressed`
   - `--bui-bg-tint-disabled` can be replaced by `--bui-bg-neutral-on-surface-0-disabled`
 
-- ea0c6d8: Introduce new `ToggleButton` & `ToggleButtonGroup` components in Backstage UI
+- ea0c6d8: **BREAKING**: Introduce new `ToggleButton` & `ToggleButtonGroup` components in Backstage UI
+
+  **Affected components:** ToggleButton, ToggleButtonGroup
+
 - 4ea1d15: **BREAKING**: Renamed CSS variable `--bui-bg` to `--bui-bg-surface-0` for consistency.
 
 ### Patch Changes
 
 - 1880402: Fixes app background color on dark mode.
+
+  **Affected components:** Box
+
 - d2fdded: Added indeterminate state support to the Checkbox component for handling partial selection scenarios like table header checkboxes.
 
   **Affected components:** Checkbox
@@ -71,14 +77,26 @@
   **Affected components:** Select, MenuAutocomplete, MenuAutocompleteListbox
 
 - 21c87cc: Fixes disabled state in primary and secondary buttons in Backstage UI.
+
+  **Affected components:** Button
+
 - 9c76682: build(deps-dev): bump `storybook` from 10.1.9 to 10.1.10
 - de80336: Fixed disabled tertiary buttons incorrectly showing hover effects on surfaces.
+
+  **Affected components:** Button
+
 - 133d5c6: Added new Popover component for Backstage UI with automatic overflow handling, and full placement support. Also introduced `--bui-shadow` token for consistent elevation styling across overlay components (Popover, Tooltip, Menu).
+
+  **Affected components:** Popover
+
 - 973c839: Fixed Table sorting indicator not being visible when a column is actively sorted.
 
   **Affected components:** Table, Column
 
 - df40cfc: Fixed Menu component trigger button not toggling correctly. Removed custom click-outside handler that was interfering with React Aria's built-in state management, allowing the menu to properly open and close when clicking the trigger button.
+
+  **Affected components:** Menu
+
 - b01ab96: Added support for column width configuration in Table component. Columns now accept `width`, `defaultWidth`, `minWidth`, and `maxWidth` props for responsive layout control.
 
   **Affected components:** Table, Column
@@ -145,7 +163,7 @@
 
   **Affected components:** Table, TableRoot, TablePagination
 
-- 95246eb: **Breaking** Updating color tokens to match the new neutral style on different surfaces.
+- 95246eb: **BREAKING**: Updating color tokens to match the new neutral style on different surfaces.
 
   **Migration:**
 
@@ -181,7 +199,7 @@
 
 ### Minor Changes
 
-- 16543fa: **Breaking change** The `Cell` component has been refactored to be a generic wrapper component that accepts `children` for custom cell content. The text-specific functionality (previously part of `Cell`) has been moved to a new `CellText` component.
+- 16543fa: **BREAKING**: The `Cell` component has been refactored to be a generic wrapper component that accepts `children` for custom cell content. The text-specific functionality (previously part of `Cell`) has been moved to a new `CellText` component.
 
   **Migration:**
 
@@ -242,7 +260,7 @@
 
 ### Minor Changes
 
-- 16543fa: **Breaking change** The `Cell` component has been refactored to be a generic wrapper component that accepts `children` for custom cell content. The text-specific functionality (previously part of `Cell`) has been moved to a new `CellText` component.
+- 16543fa: **BREAKING**: The `Cell` component has been refactored to be a generic wrapper component that accepts `children` for custom cell content. The text-specific functionality (previously part of `Cell`) has been moved to a new `CellText` component.
 
   **Migration:**
 
@@ -331,6 +349,8 @@
 
   Added `purpose` prop for accessibility control (`'informative'` or `'decoration'`).
 
+  **Affected components:** Avatar
+
 - 5c614ff: **BREAKING**: Migrated Checkbox component from Base UI to React Aria Components.
 
   API changes required:
@@ -386,12 +406,12 @@
   </Checkbox>
   ```
 
-- 134151f: Fixing styles on SearchField in Backstage UI after migration to CSS modules. `SearchField` has now its own set of class names. We previously used class names from `TextField` but this approach was creating some confusion so going forward in your theme you'll be able to theme `TextField` and `SearchField` separately.
+- 134151f: **BREAKING**: Fixing styles on SearchField in Backstage UI after migration to CSS modules. `SearchField` has now its own set of class names. We previously used class names from `TextField` but this approach was creating some confusion so going forward in your theme you'll be able to theme `TextField` and `SearchField` separately.
 - a67670d: **BREAKING**: Removed central `componentDefinitions` object and related type utilities (`ComponentDefinitionName`, `ComponentClassNames`).
 
   Component definitions are primarily intended for documenting the CSS class API for theming purposes, not for programmatic use in JavaScript/TypeScript.
 
-  **Migration Guide:**
+  **Migration:**
 
   If you were using component definitions or class names to build custom components, we recommend migrating to either:
 
@@ -450,27 +470,68 @@
 
   If you're using `SelectProps` type directly, update from `SelectProps` to `SelectProps<'single' | 'multiple'>`. Component usage remains backward compatible.
 
+  **Affected components:** Select
+
 ### Patch Changes
 
 - d01de00: Fix broken external links in Backstage UI Header component.
+
+  **Affected components:** Header
+
 - 35a3614: Fixed CSS issues in Select component including popover width constraints, focus outline behavior, and overflow handling.
+
+  **Affected components:** Select
+
 - 01476f0: Improved visual consistency of PasswordField, SearchField, and MenuAutocomplete components.
+
+  **Affected components:** PasswordField, SearchField, MenuAutocomplete
+
 - 26c6a78: Fix default text color in Backstage UI
+
+  **Affected components:** Text
+
 - deaa427: Fixed Text component to prevent `truncate` prop from being spread to the underlying DOM element.
+
+  **Affected components:** Text
+
 - 1059f95: Improved the Link component structure in Backstage UI.
+
+  **Affected components:** Link
+
 - 836b0c7: Fixed dialog backdrop appearance in dark mode.
+
+  **Affected components:** Dialog
+
 - 6874094: Migrated CellProfile component from Base UI Avatar to Backstage UI Avatar component.
+
+  **Affected components:** Avatar
+
 - 719d772: Avatar components in x-small and small sizes now display only one initial instead of two, improving readability at smaller dimensions.
+
+  **Affected components:** Avatar
+
 - 6d35a6b: Removed `@base-ui-components/react` dependency as all components now use React Aria Components.
 - dac851f: Fix the default font size in Backstage UI.
 - 3c0ea67: Fix CSS layer ordering in Backstage UI to make sure component styles are loaded after tokens and base declarations.
 - 3b18d80: Fixed RadioGroup radio button ellipse distortion by preventing flex shrink and grow.
+
+  **Affected components:** RadioGroup
+
 - 4eb455c: Fix font smoothing as default in Backstage UI.
 - ff9f0c3: Enable tree-shaking of imports other than `*.css`.
 - 7839e7b: Added `loading` prop to Button and ButtonIcon components for displaying spinner during async operations.
+
+  **Affected components:** Button, ButtonIcon
+
 - a00fb88: Fixed Table Row component to properly support opening links in new tabs via right-click or Cmd+Click when using the `href` prop.
+
+  **Affected components:** Table
+
 - e16ece5: Set the color-scheme property depending on theme
 - 1ef3ca4: Added new VisuallyHidden component for hiding content visually while keeping it accessible to screen readers.
+
+  **Affected components:** VisuallyHidden
+
 - 00bfb83: Fix default font wight and font family in Backstage UI.
 
 ## 0.9.0-next.3
@@ -560,7 +621,7 @@
 
   Added `purpose` prop for accessibility control (`'informative'` or `'decoration'`).
 
-- 134151f: Fixing styles on SearchField in Backstage UI after migration to CSS modules. `SearchField` has now its own set of class names. We previously used class names from `TextField` but this approach was creating some confusion so going forward in your theme you'll be able to theme `TextField` and `SearchField` separately.
+- 134151f: **BREAKING**: Fixing styles on SearchField in Backstage UI after migration to CSS modules. `SearchField` has now its own set of class names. We previously used class names from `TextField` but this approach was creating some confusion so going forward in your theme you'll be able to theme `TextField` and `SearchField` separately.
 
 ### Patch Changes
 
@@ -723,10 +784,10 @@
 
 ### Minor Changes
 
-- 0615e54: We are moving our DataTable component to React Aria. We removed our DataTable to only use Table as a single and opinionated option for tables. This new structure is made possible by using React Aria under the hood.
-- b245c9d: Backstage UI - HeaderPage - We are updating the breadcrumb to be more visible and accessible.
-- 800f593: **Breaking change** We are updating the Menu component to use React Aria under the hood. The structure and all props are changing to follow React Aria's guidance.
-- b0e47f3: **Breaking** We are upgrading our `Text` component to support all font sizes making the `Heading` component redundant. The new `Text` component introduces 4 sizes for title and 4 sizes for body text. All of these work in multiple colors and font weights. We improved the `as` prop to include all possible values. The `Link` component has also been updated to match the new `Text` component.
+- 0615e54: **BREAKING**: We are moving our DataTable component to React Aria. We removed our DataTable to only use Table as a single and opinionated option for tables. This new structure is made possible by using React Aria under the hood.
+- b245c9d: **BREAKING**: Backstage UI - HeaderPage - We are updating the breadcrumb to be more visible and accessible.
+- 800f593: **BREAKING**: We are updating the Menu component to use React Aria under the hood. The structure and all props are changing to follow React Aria's guidance.
+- b0e47f3: **BREAKING**: We are upgrading our `Text` component to support all font sizes making the `Heading` component redundant. The new `Text` component introduces 4 sizes for title and 4 sizes for body text. All of these work in multiple colors and font weights. We improved the `as` prop to include all possible values. The `Link` component has also been updated to match the new `Text` component.
 
 ### Patch Changes
 
@@ -735,7 +796,7 @@
 - f761306: Add new TagGroup component to Backstage UI.
 - 75fead9: Fixes a couple of small bugs in BUI including setting H1 and H2 correctly on the Header and HeaderPage.
 - e7ff178: Update styling of Tooltip element
-- 230b410: **Breaking change** Move breadcrumb to fit in the `HeaderPage` instead of the `Header` in Backstage UI.
+- 230b410: **BREAKING**: Move breadcrumb to fit in the `HeaderPage` instead of the `Header` in Backstage UI.
 - 2f9a084: We are motion away from `motion` to use `gsap` instead to make Backstage UI backward compatible with React 17.
 - d4e603e: Updated Menu component in Backstage UI to use useId() from React Aria instead of React to support React 17.
 - 8bdc491: Remove stylesheet import from Select component.
@@ -746,11 +807,11 @@
 
 ### Minor Changes
 
-- 0615e54: We are moving our DataTable component to React Aria. We removed our DataTable to only use Table as a single and opinionated option for tables. This new structure is made possible by using React Aria under the hood.
+- 0615e54: **BREAKING**: We are moving our DataTable component to React Aria. We removed our DataTable to only use Table as a single and opinionated option for tables. This new structure is made possible by using React Aria under the hood.
 
 ### Patch Changes
 
-- 230b410: **Breaking change** Move breadcrumb to fit in the `HeaderPage` instead of the `Header` in Backstage UI.
+- 230b410: **BREAKING**: Move breadcrumb to fit in the `HeaderPage` instead of the `Header` in Backstage UI.
 - 8bdc491: Remove stylesheet import from Select component.
 - 404b426: Add `startCollapsed` prop on the `SearchField` component in BUI.
 
@@ -772,7 +833,7 @@
 
 ### Minor Changes
 
-- b0e47f3: **Breaking** We are upgrading our `Text` component to support all font sizes making the `Heading` component redundant. The new `Text` component introduces 4 sizes for title and 4 sizes for body text. All of these work in multiple colors and font weights. We improved the `as` prop to include all possible values. The `Link` component has also been updated to match the new `Text` component.
+- b0e47f3: **BREAKING**: We are upgrading our `Text` component to support all font sizes making the `Heading` component redundant. The new `Text` component introduces 4 sizes for title and 4 sizes for body text. All of these work in multiple colors and font weights. We improved the `as` prop to include all possible values. The `Link` component has also been updated to match the new `Text` component.
 
 ### Patch Changes
 
@@ -783,13 +844,13 @@
 
 ### Minor Changes
 
-- e92bb9b: Canon has been renamed to Backstage UI. This means that `@backstage/canon` has been deprecated and replaced by `@backstage/ui`.
+- e92bb9b: **BREAKING**: Canon has been renamed to Backstage UI. This means that `@backstage/canon` has been deprecated and replaced by `@backstage/ui`.
 
 ## 0.6.0-next.1
 
 ### Minor Changes
 
-- 2e30459: We are moving our Tooltip component to use React Aria under the hood. In doing so, the structure of the component and its prop are changing to follow the new underlying structure.
+- 2e30459: **BREAKING**: We are moving our Tooltip component to use React Aria under the hood. In doing so, the structure of the component and its prop are changing to follow the new underlying structure.
 
 ### Patch Changes
 
@@ -804,7 +865,7 @@
 
 ### Minor Changes
 
-- 4c6d891: **BREAKING CHANGES**
+- 4c6d891: **BREAKING**:
 
   We’re updating our Button component to provide better support for button links.
 
@@ -827,12 +888,12 @@
 
 ### Minor Changes
 
-- 621fac9: We are updating the default size of the Button component in Canon to be small instead of medium.
-- a842554: We set the default size for IconButton in Canon to be small instead of medium.
-- 35fd51d: Move TextField component to use react Aria under the hood. Introducing a new FieldLabel component to help build custom fields.
-- 78204a2: **Breaking** We are adding a new as prop on the Heading and Text component to make it easier to change the component tag. We are removing the render prop in favour of the as prop.
-- c49e335: TextField in Canon now has multiple label sizes as well as the capacity to hide label and description but still make them available for screen readers.
-- 24b45ef: Fixes spacing props on layout components and aligned on naming for the Grid component. You should now call the Grid root component using <Grid.Root /> instead of just <Grid />.
+- 621fac9: **BREAKING**: We are updating the default size of the Button component in Canon to be small instead of medium.
+- a842554: **BREAKING**: We set the default size for IconButton in Canon to be small instead of medium.
+- 35fd51d: **BREAKING**: Move TextField component to use react Aria under the hood. Introducing a new FieldLabel component to help build custom fields.
+- 78204a2: **BREAKING**: We are adding a new as prop on the Heading and Text component to make it easier to change the component tag. We are removing the render prop in favour of the as prop.
+- c49e335: **BREAKING**: TextField in Canon now has multiple label sizes as well as the capacity to hide label and description but still make them available for screen readers.
+- 24b45ef: **BREAKING**: Fixes spacing props on layout components and aligned on naming for the Grid component. You should now call the Grid root component using `<Grid.Root />` instead of just `<Grid />`.
 
 ### Patch Changes
 
@@ -862,7 +923,7 @@
 
 ### Minor Changes
 
-- 24b45ef: Fixes spacing props on layout components and aligned on naming for the Grid component. You should now call the Grid root component using <Grid.Root /> instead of just <Grid />.
+- 24b45ef: Fixes spacing props on layout components and aligned on naming for the Grid component. You should now call the Grid root component using `<Grid.Root />` instead of just `<Grid />`.
 
 ### Patch Changes
 
@@ -872,9 +933,9 @@
 
 ### Minor Changes
 
-- ea36f74: **Breaking Change** Icons on Button and IconButton now need to be imported and placed like this: <Button iconStart={<ChevronDownIcon />} />
-- ccb1fc6: We are modifying the way we treat custom render using 'useRender()' under the hood from BaseUI.
-- 04a65c6: The icon prop in TextField now accept a ReactNode instead of an icon name. We also updated the icon sizes for each input sizes.
+- ea36f74: **BREAKING**: Icons on Button and IconButton now need to be imported and placed like this: `<Button iconStart={<ChevronDownIcon />} />`
+- ccb1fc6: **BREAKING**: We are modifying the way we treat custom render using 'useRender()' under the hood from BaseUI.
+- 04a65c6: **BREAKING**: The icon prop in TextField now accept a ReactNode instead of an icon name. We also updated the icon sizes for each input sizes.
 
 ### Patch Changes
 
@@ -908,7 +969,7 @@
 
 ### Minor Changes
 
-- ea36f74: **Breaking Change** Icons on Button and IconButton now need to be imported and placed like this: <Button iconStart={<ChevronDownIcon />} />
+- ea36f74: **BREAKING**: Icons on Button and IconButton now need to be imported and placed like this: `<Button iconStart={<ChevronDownIcon />} />`
 
 ### Patch Changes
 
@@ -926,9 +987,9 @@
 
 ### Minor Changes
 
-- df4e292: Improve class name structure using data attributes instead of class names.
-- f038613: Updated TextField and Select component to work with React Hook Form.
-- 1b0cf40: Add new Select component for Canon
+- df4e292: **BREAKING**: Improve class name structure using data attributes instead of class names.
+- f038613: **BREAKING**: Updated TextField and Select component to work with React Hook Form.
+- 1b0cf40: **BREAKING**: Add new Select component for Canon
 - 5074d61: **BREAKING**: Added a new TextField component to replace the Field and Input component. After feedback, it became clear that we needed to build a more opinionated version to avoid any problem in the future.
 
 ### Patch Changes
@@ -940,7 +1001,7 @@
 - 35b36ec: Add new Collapsible component for Canon.
 - a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
 
-  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+  https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html
 
 - 513477f: Add global CSS reset for anchor tags.
 - 24f0e08: Improved Container styles, changing our max-width to 120rem and improving padding on smaller screens.
@@ -967,7 +1028,7 @@
 
 - a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
 
-  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+  https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html
 
 - 24f0e08: Improved Container styles, changing our max-width to 120rem and improving padding on smaller screens.
 - 7ae28ba: Move styles to the root of the TextField component.
@@ -992,14 +1053,14 @@
 
 ### Minor Changes
 
-- 5a5db29: Fix CSS imports and move CSS outputs out of the dist folder.
-- 4557beb: Added a new Tooltip component to Canon.
-- 1e4dfdb: We added a new IconButton component with fixed sizes showcasing a single icon.
-- e8d12f9: Added about 40 new icons to Canon.
-- 8689010: We are renaming CanonProvider to IconProvider to improve clarity on how to override icons.
-- bf319b7: Added a new Menu component to Canon.
-- cb7e99d: Updating styles for Text and Link components as well as global surface tokens.
-- bd8520d: Added a new ScrollArea component for Canon.
+- 5a5db29: **BREAKING**: Fix CSS imports and move CSS outputs out of the dist folder.
+- 4557beb: **BREAKING**: Added a new Tooltip component to Canon.
+- 1e4dfdb: **BREAKING**: We added a new IconButton component with fixed sizes showcasing a single icon.
+- e8d12f9: **BREAKING**: Added about 40 new icons to Canon.
+- 8689010: **BREAKING**: We are renaming CanonProvider to IconProvider to improve clarity on how to override icons.
+- bf319b7: **BREAKING**: Added a new Menu component to Canon.
+- cb7e99d: **BREAKING**: Updating styles for Text and Link components as well as global surface tokens.
+- bd8520d: **BREAKING**: Added a new ScrollArea component for Canon.
 
 ### Patch Changes
 
@@ -1028,9 +1089,9 @@
 ### Minor Changes
 
 - 72c9800: **BREAKING**: Merged the Stack and Inline component into a single component called Flex.
-- 65f4acc: This is the first alpha release for Canon. As part of this release we are introducing 5 layout components and 7 components. All theming is done through CSS variables.
+- 65f4acc: **BREAKING**: This is the first alpha release for Canon. As part of this release we are introducing 5 layout components and 7 components. All theming is done through CSS variables.
 - 1e4ccce: **BREAKING**: Fixing css structure and making sure that props are applying the correct styles for all responsive values.
-- 8309bdb: Updated core CSS tokens and fixing the Button component accordingly.
+- 8309bdb: **BREAKING**: Updated core CSS tokens and fixing the Button component accordingly.
 
 ### Patch Changes
 
