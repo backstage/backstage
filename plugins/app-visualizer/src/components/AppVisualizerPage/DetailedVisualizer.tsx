@@ -31,6 +31,7 @@ import {
   RiCloseCircleLine as DisabledIcon,
 } from '@remixicon/react';
 import { Focusable } from 'react-aria-components';
+import { memo, useMemo, useState, useEffect, useRef } from 'react';
 
 function getContrastColor(bgColor: string): string {
   const hex = bgColor.replace('#', '');
@@ -105,72 +106,157 @@ function getFullPath(node?: AppNode): string {
   return getFullPath(parent) + part;
 }
 
-function Output(props: { dataRef: ExtensionDataRef<unknown>; node?: AppNode }) {
-  const { dataRef, node } = props;
-  const { id } = dataRef;
-  const instance = node?.instance;
-
-  const routeResolutionApi = useApi(routeResolutionApiRef);
-
-  const { backgroundColor, color } = getOutputColor(id);
-
-  const chipStyle: React.CSSProperties = {
-    height: 20,
-    padding: '0 10px',
-    borderRadius: '10px',
-    color,
-    backgroundColor,
-    display: 'flex',
-    alignItems: 'center',
-    fontWeight:
-      'var(--bui-font-weight-regular)' as React.CSSProperties['fontWeight'],
-  };
-
-  if (id === coreExtensionData.routeRef.id && node) {
-    try {
-      const routeRef = props.node?.instance?.getData(
-        coreExtensionData.routeRef,
-      );
-      const link = routeRef && routeResolutionApi.resolve(routeRef)?.();
-      if (link) {
-        return (
-          <TooltipTrigger>
-            <Link href={link} style={chipStyle}>
-              link
-            </Link>
-            <Tooltip>{id}</Tooltip>
-          </TooltipTrigger>
-        );
-      }
-    } catch {
-      /* ignore */
+function collectAllNodes(node: AppNode): AppNode[] {
+  const nodes: AppNode[] = [node];
+  for (const children of node.edges.attachments.values()) {
+    for (const child of children) {
+      nodes.push(...collectAllNodes(child));
     }
   }
-
-  let tooltip = id;
-  let text: string | undefined = undefined;
-  if (id === coreExtensionData.routePath.id) {
-    text = String(instance?.getData(dataRef) ?? '');
-    tooltip = getFullPath(node);
-  }
-
-  return (
-    <TooltipTrigger>
-      <Focusable>
-        <Text style={{ ...chipStyle, cursor: 'help' }}>{text}</Text>
-      </Focusable>
-      <Tooltip style={{ maxWidth: 'unset' }}>{tooltip}</Tooltip>
-    </TooltipTrigger>
-  );
+  return nodes;
 }
 
-function Attachments(props: {
+function useProgressiveRender(rootNode: AppNode) {
+  const [renderedNodes, setRenderedNodes] = useState<Set<string>>(new Set());
+  const [isComplete, setIsComplete] = useState(false);
+  const processingRef = useRef(false);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    if (processingRef.current) {
+      return undefined;
+    }
+
+    processingRef.current = true;
+    const allNodes = collectAllNodes(rootNode);
+
+    const batchSize = 10;
+    let currentIndex = 0;
+    const rendered = new Set<string>();
+
+    const processBatch = () => {
+      const endIndex = Math.min(currentIndex + batchSize, allNodes.length);
+      for (let i = currentIndex; i < endIndex; i++) {
+        rendered.add(allNodes[i].spec.id);
+      }
+      currentIndex = endIndex;
+
+      setRenderedNodes(new Set(rendered));
+
+      if (currentIndex < allNodes.length) {
+        timeoutRef.current = setTimeout(processBatch, 0);
+      } else {
+        setIsComplete(true);
+        processingRef.current = false;
+        timeoutRef.current = null;
+      }
+    };
+
+    rendered.add(rootNode.spec.id);
+    setRenderedNodes(new Set(rendered));
+    currentIndex = 1;
+
+    if (allNodes.length > 1) {
+      timeoutRef.current = setTimeout(processBatch, 0);
+    } else {
+      setIsComplete(true);
+      processingRef.current = false;
+    }
+
+    return () => {
+      processingRef.current = false;
+      if (timeoutRef.current !== null) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
+    };
+  }, [rootNode]);
+
+  return { renderedNodes, isComplete };
+}
+
+const Output = memo(
+  function Output(props: {
+    dataRef: ExtensionDataRef<unknown>;
+    node?: AppNode;
+  }) {
+    const { dataRef, node } = props;
+    const { id } = dataRef;
+    const instance = node?.instance;
+
+    const routeResolutionApi = useApi(routeResolutionApiRef);
+
+    const { backgroundColor, color } = getOutputColor(id);
+
+    const chipStyle: React.CSSProperties = {
+      height: 20,
+      padding: '0 10px',
+      borderRadius: '10px',
+      color,
+      backgroundColor,
+      display: 'flex',
+      alignItems: 'center',
+      fontWeight:
+        'var(--bui-font-weight-regular)' as React.CSSProperties['fontWeight'],
+    };
+
+    if (id === coreExtensionData.routeRef.id && node) {
+      try {
+        const routeRef = props.node?.instance?.getData(
+          coreExtensionData.routeRef,
+        );
+        const link = routeRef && routeResolutionApi.resolve(routeRef)?.();
+        if (link) {
+          return (
+            <TooltipTrigger>
+              <Link href={link} style={chipStyle}>
+                link
+              </Link>
+              <Tooltip>{id}</Tooltip>
+            </TooltipTrigger>
+          );
+        }
+      } catch {
+        /* ignore */
+      }
+    }
+
+    let tooltip = id;
+    let text: string | undefined = undefined;
+    if (id === coreExtensionData.routePath.id) {
+      text = String(instance?.getData(dataRef) ?? '');
+      tooltip = getFullPath(node);
+    }
+
+    return (
+      <TooltipTrigger>
+        <Focusable>
+          <Text style={{ ...chipStyle, cursor: 'help' }}>{text}</Text>
+        </Focusable>
+        <Tooltip style={{ maxWidth: 'unset' }}>{tooltip}</Tooltip>
+      </TooltipTrigger>
+    );
+  },
+  (prevProps, nextProps) => {
+    return (
+      prevProps.dataRef.id === nextProps.dataRef.id &&
+      prevProps.node?.spec.id === nextProps.node?.spec.id
+    );
+  },
+);
+
+function AttachmentsComponent(props: {
   node: AppNode;
   enabled: boolean;
   depth: number;
+  renderedNodes: Set<string>;
 }) {
-  const { node, depth } = props;
+  const { node, depth, renderedNodes } = props;
   const { attachments } = node.edges;
+
+  const sortedAttachments = useMemo(() => {
+    return [...attachments.entries()].sort(([a], [b]) => a.localeCompare(b));
+  }, [attachments]);
 
   if (attachments.size === 0) {
     return null;
@@ -178,58 +264,75 @@ function Attachments(props: {
 
   return (
     <Flex direction="column" gap="4">
-      {[...attachments.entries()]
-        .sort(([a], [b]) => a.localeCompare(b))
-        .map(([key, children], idx) => {
-          return (
-            <Box key={key}>
-              <Flex
-                p="2"
-                align="center"
-                style={{
-                  borderTopWidth: 'var(--bui-space-1_5)',
-                  borderTopStyle: 'solid',
-                  borderTopColor: getBorderColor(depth),
-                  borderTop: idx === 0 ? 'none' : undefined,
-                  width: 'fit-content',
-                }}
-              >
-                <InputIcon size={16} />
-                <div style={{ marginLeft: 'var(--bui-space-2)' }}>{key}</div>
-              </Flex>
-              <Flex ml="2" mb="2" direction="column" align="start" gap="1">
-                {children.map(childNode => (
-                  <Extension
-                    key={childNode.spec.id}
-                    node={childNode}
-                    depth={depth + 1}
-                  />
-                ))}
-              </Flex>
-            </Box>
-          );
-        })}
+      {sortedAttachments.map(([key, children], idx) => {
+        return (
+          <Box key={key}>
+            <Flex
+              p="2"
+              align="center"
+              style={{
+                borderTopWidth: 'var(--bui-space-1_5)',
+                borderTopStyle: 'solid',
+                borderTopColor: getBorderColor(depth),
+                borderTop: idx === 0 ? 'none' : undefined,
+                width: 'fit-content',
+              }}
+            >
+              <InputIcon size={16} />
+              <div style={{ marginLeft: 'var(--bui-space-2)' }}>{key}</div>
+            </Flex>
+            <Flex ml="2" mb="2" direction="column" align="start" gap="1">
+              {children.map(childNode => (
+                <ExtensionComponent
+                  key={childNode.spec.id}
+                  node={childNode}
+                  depth={depth + 1}
+                  renderedNodes={renderedNodes}
+                />
+              ))}
+            </Flex>
+          </Box>
+        );
+      })}
     </Flex>
   );
 }
 
-function Extension(props: { node: AppNode; depth: number }) {
-  const { node, depth } = props;
+function ExtensionComponent(props: {
+  node: AppNode;
+  depth: number;
+  renderedNodes: Set<string>;
+}) {
+  const { node, depth, renderedNodes } = props;
 
   const enabled = Boolean(node.instance);
-  const dataRefs = node.instance && [...node.instance.getDataRefs()];
 
-  // Build tooltip text
-  const tooltipParts = [];
-  let currentNode = node;
-  tooltipParts.push(currentNode.spec.id);
-  while (currentNode.edges.attachedTo) {
-    const input = currentNode.edges.attachedTo.input;
-    currentNode = currentNode.edges.attachedTo.node;
-    tooltipParts.push(`${currentNode.spec.id} [${input}]`);
+  const tooltipText = useMemo(() => {
+    const tooltipParts = [];
+    let currentNode = node;
+    tooltipParts.push(currentNode.spec.id);
+    while (currentNode.edges.attachedTo) {
+      const input = currentNode.edges.attachedTo.input;
+      currentNode = currentNode.edges.attachedTo.node;
+      tooltipParts.push(`${currentNode.spec.id} [${input}]`);
+    }
+    tooltipParts.reverse();
+    return tooltipParts.join('\n');
+  }, [node]);
+
+  const sortedDataRefs = useMemo(() => {
+    if (!node.instance) {
+      return [];
+    }
+    const dataRefs = [...node.instance.getDataRefs()];
+    return dataRefs.sort((a, b) => a.id.localeCompare(b.id));
+  }, [node.instance]);
+
+  const shouldRender = renderedNodes.has(node.spec.id);
+
+  if (!shouldRender) {
+    return null;
   }
-  tooltipParts.reverse();
-  const tooltipText = tooltipParts.join('\n');
 
   return (
     <Box
@@ -261,18 +364,55 @@ function Extension(props: { node: AppNode; depth: number }) {
           </Tooltip>
         </TooltipTrigger>
         <Flex ml="2" align="center" gap="2">
-          {dataRefs &&
-            dataRefs.length > 0 &&
-            dataRefs
-              .sort((a, b) => a.id.localeCompare(b.id))
-              .map(ref => <Output key={ref.id} dataRef={ref} node={node} />)}
+          {sortedDataRefs.length > 0 &&
+            sortedDataRefs.map(ref => (
+              <Output key={ref.id} dataRef={ref} node={node} />
+            ))}
           {!enabled && <DisabledIcon size={16} />}
         </Flex>
       </Flex>
-      <Attachments node={node} enabled={enabled} depth={depth} />
+      <AttachmentsComponent
+        node={node}
+        enabled={enabled}
+        depth={depth}
+        renderedNodes={renderedNodes}
+      />
     </Box>
   );
 }
+
+const Extension = memo(ExtensionComponent, (prevProps, nextProps) => {
+  if (
+    prevProps.node.spec.id !== nextProps.node.spec.id ||
+    prevProps.depth !== nextProps.depth
+  ) {
+    return false;
+  }
+
+  const nodeId = prevProps.node.spec.id;
+  const wasRendered = prevProps.renderedNodes.has(nodeId);
+  const isRendered = nextProps.renderedNodes.has(nodeId);
+
+  if (wasRendered !== isRendered) {
+    return false;
+  }
+
+  if (prevProps.renderedNodes.size !== nextProps.renderedNodes.size) {
+    return false;
+  }
+
+  for (const children of prevProps.node.edges.attachments.values()) {
+    for (const child of children) {
+      const wasChildRendered = prevProps.renderedNodes.has(child.spec.id);
+      const isChildRendered = nextProps.renderedNodes.has(child.spec.id);
+      if (wasChildRendered !== isChildRendered) {
+        return false;
+      }
+    }
+  }
+
+  return true;
+});
 
 const legendMap = {
   'React Element': coreExtensionData.reactElement,
@@ -305,10 +445,12 @@ function Legend() {
 }
 
 export function DetailedVisualizer({ tree }: { tree: AppTree }) {
+  const { renderedNodes } = useProgressiveRender(tree.root);
+
   return (
     <Flex direction="column" style={{ height: '100%', flex: '1 1 100%' }}>
       <Box ml="4" mt="4" style={{ flex: '1 1 0', overflow: 'auto' }}>
-        <Extension node={tree.root} depth={0} />
+        <Extension node={tree.root} depth={0} renderedNodes={renderedNodes} />
       </Box>
 
       <Box
