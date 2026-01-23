@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 The Backstage Authors
+ * Copyright 2026 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,26 +24,6 @@ import {
   ObservableUpDownCounter,
   UpDownCounter,
 } from '@opentelemetry/api';
-
-/**
- * Required options for creating a metrics service.
- *
- * @alpha
- */
-export interface MetricsServiceOptions {
-  /**
-   * The service namespace applied to each instrument.
-   */
-  namespace: string;
-  /**
-   * The version of the instrumentation library.
-   */
-  version?: string;
-  /**
-   * The schema URL of the instrumentation library.
-   */
-  schemaUrl?: string;
-}
 
 /**
  * A service that provides a facility for emitting metrics.

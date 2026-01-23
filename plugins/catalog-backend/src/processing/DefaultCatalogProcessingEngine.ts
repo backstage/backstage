@@ -410,7 +410,6 @@ function progressTracker(metrics: MetricsService) {
     help: 'The amount of delay between being scheduled for processing, and the start of actually being processed, DEPRECATED, use OpenTelemetry metrics instead',
   });
 
-  // const meter = metrics.getMeter('default');
   const processedEntities = metrics.createCounter(
     'catalog.processed.entities.count',
     { description: 'Amount of entities processed' },

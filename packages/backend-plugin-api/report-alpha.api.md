@@ -145,13 +145,6 @@ export interface MetricsService {
 }
 
 // @alpha
-export interface MetricsServiceOptions {
-  namespace: string;
-  schemaUrl?: string;
-  version?: string;
-}
-
-// @alpha
 export const metricsServiceRef: ServiceRef<
   MetricsService,
   'plugin',
