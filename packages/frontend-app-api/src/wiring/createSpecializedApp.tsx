@@ -320,7 +320,7 @@ export function createSpecializedApp(options?: CreateSpecializedAppOptions): {
   );
 
   // We need to collect all API factories first before we can check enabled conditions,
-  //  since those conditions may depend on APIs like featureFlagsApiRef, configApiRef, etc.
+  // since those conditions may depend on APIs like featureFlagsApiRef, configApiRef, etc.
   const factories = createApiFactories({ tree, collector });
   const appBasePath = getBasePath(config);
   const appTreeApi = new AppTreeApiProxy(tree, appBasePath);
