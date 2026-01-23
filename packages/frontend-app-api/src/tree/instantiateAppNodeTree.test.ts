@@ -1574,41 +1574,109 @@ describe('instantiateAppNodeTree', () => {
         ]);
       });
 
-      it('should refuse to create an instance with multiple inputs that did not provide required data', () => {
-        const node = makeNode(
-          resolveExtensionDefinition(
-            createExtension({
-              name: 'test',
-              attachTo: { id: 'ignored', input: 'ignored' },
-              inputs: {
-                singleton: createExtensionInput([otherDataRef], {
-                  singleton: true,
-                }),
-              },
-              output: [],
-              factory: () => [],
-            }),
-            { namespace: 'app' },
-          ),
+      describe('with attachment failures', () => {
+        const inputCountRef = createExtensionDataRef<number>().with({
+          id: 'input-count',
+        });
+
+        const attachmentWithoutRequiredData = makeInstanceWithId(
+          simpleExtension,
+          undefined,
         );
-        expect(
-          createAppNodeInstance({
-            apis: testApis,
-            attachments: new Map([
-              ['singleton', [makeInstanceWithId(simpleExtension, undefined)]],
-            ]),
-            node,
-            collector,
-          }),
-        ).toBeUndefined();
-        expect(collector.collectErrors()).toEqual([
-          {
-            code: 'EXTENSION_INPUT_DATA_MISSING',
-            message:
-              "extension 'app/test' could not be attached because its output data ('test') does not match what the input 'singleton' requires ('other')",
-            context: { node, inputName: 'singleton' },
-          },
-        ]);
+
+        it('should proceed if input is optional', () => {
+          const node = makeNode(
+            resolveExtensionDefinition(
+              createExtension({
+                name: 'test',
+                attachTo: { id: 'ignored', input: 'ignored' },
+                inputs: {
+                  singleton: createExtensionInput([otherDataRef], {
+                    singleton: true,
+                    optional: true,
+                  }),
+                },
+                output: [inputCountRef],
+                factory: ({ inputs }) => [
+                  inputCountRef(inputs.singleton ? 1 : 0),
+                ],
+              }),
+              { namespace: 'app' },
+            ),
+          );
+          expect(
+            createAppNodeInstance({
+              apis: testApis,
+              attachments: new Map([
+                ['singleton', [attachmentWithoutRequiredData]],
+              ]),
+              node,
+              collector,
+            })?.getData(inputCountRef),
+          ).toBe(0);
+
+          expect(collector.collectErrors()).toEqual([
+            {
+              code: 'EXTENSION_INPUT_DATA_MISSING',
+              message:
+                "extension 'app/test' could not be attached because its output data ('test') does not match what the input 'singleton' requires ('other')",
+              context: {
+                node: attachmentWithoutRequiredData,
+                inputName: 'singleton',
+              },
+            },
+          ]);
+        });
+
+        it('should fail if input is required', () => {
+          const node = makeNode(
+            resolveExtensionDefinition(
+              createExtension({
+                name: 'test',
+                attachTo: { id: 'ignored', input: 'ignored' },
+                inputs: {
+                  singleton: createExtensionInput([otherDataRef], {
+                    singleton: true,
+                  }),
+                },
+                output: [inputCountRef],
+                factory: ({ inputs }) => [
+                  inputCountRef(inputs.singleton ? 1 : 0),
+                ],
+              }),
+              { namespace: 'app' },
+            ),
+          );
+
+          expect(
+            createAppNodeInstance({
+              apis: testApis,
+              attachments: new Map([
+                ['singleton', [attachmentWithoutRequiredData]],
+              ]),
+              node,
+              collector,
+            })?.getData(inputCountRef),
+          ).toBeUndefined();
+
+          expect(collector.collectErrors()).toEqual([
+            {
+              code: 'EXTENSION_ATTACHMENT_MISSING',
+              message:
+                "input 'singleton' is required but it failed to be instantiated",
+              context: { inputName: 'singleton', node },
+            },
+            {
+              code: 'EXTENSION_INPUT_DATA_MISSING',
+              message:
+                "extension 'app/test' could not be attached because its output data ('test') does not match what the input 'singleton' requires ('other')",
+              context: {
+                node: attachmentWithoutRequiredData,
+                inputName: 'singleton',
+              },
+            },
+          ]);
+        });
       });
     });
   });

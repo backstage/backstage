@@ -119,7 +119,7 @@ function resolveInputDataContainer(
         .map(r => `'${r.id}'`)
         .join(', ');
 
-      collector.report({
+      collector.child({ node: attachment }).report({
         code: 'EXTENSION_INPUT_DATA_MISSING',
         message: `extension '${attachment.spec.id}' could not be attached because its output data (${provided}) does not match what the input '${inputName}' requires (${expected})`,
       });
@@ -271,12 +271,25 @@ function resolveV2Inputs(
         }
         return undefined;
       }
-      return resolveInputDataContainer(
-        input.extensionData,
-        attachedNodes[0],
-        inputName,
-        collector,
-      );
+      try {
+        return resolveInputDataContainer(
+          input.extensionData,
+          attachedNodes[0],
+          inputName,
+          collector,
+        );
+      } catch (error) {
+        if (error === INSTANTIATION_FAILED) {
+          if (input.config.optional) {
+            return undefined;
+          }
+          collector.report({
+            code: 'EXTENSION_ATTACHMENT_MISSING',
+            message: `input '${inputName}' is required but it failed to be instantiated`,
+          });
+        }
+        throw error;
+      }
     }
 
     return mapWithFailures(attachedNodes, attachment =>
