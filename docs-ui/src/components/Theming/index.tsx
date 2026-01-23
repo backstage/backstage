@@ -1,11 +1,16 @@
-import { MDXRemote } from 'next-mdx-remote-client/rsc';
-import { formattedMDXComponents } from '@/mdx-components';
-import type {
-  ComponentDefinition,
-  DataAttributeValues,
-} from '../../../../packages/ui/src/types';
+'use client';
 
-export function Theming({ definition }: { definition: ComponentDefinition }) {
+import { formattedMDXComponents } from '@/mdx-components';
+import type { DataAttributeValues } from '../../../../packages/ui/src/types';
+
+interface ThemingProps {
+  definition: {
+    classNames: Record<string, string>;
+    dataAttributes?: Record<string, string[]>;
+  };
+}
+
+export function Theming({ definition }: ThemingProps) {
   const classNames = definition.classNames;
   const dataAttributes = definition.dataAttributes;
 
@@ -33,15 +38,28 @@ export function Theming({ definition }: { definition: ComponentDefinition }) {
     ...Object.values(classNames).slice(1),
   ];
 
+  // Use the same styled components from MDX
+  const H2 = formattedMDXComponents.h2!;
+  const P = formattedMDXComponents.p!;
+  const Ul = formattedMDXComponents.ul!;
+  const Li = formattedMDXComponents.li!;
+  const Code = formattedMDXComponents.code!;
+
   return (
-    <MDXRemote
-      components={formattedMDXComponents}
-      source={`## Theming
-
-        Our theming system is based on a mix between CSS classes, CSS variables and data attributes. If you want to customise this component, you can use one of these class names below.
-
-        ${classNamesArray.map(selector => `- \`${selector}\``).join('\n')}
-      `}
-    />
+    <div>
+      <H2>Theming</H2>
+      <P>
+        Our theming system is based on a mix between CSS classes, CSS variables
+        and data attributes. If you want to customise this component, you can
+        use one of these class names below.
+      </P>
+      <Ul>
+        {classNamesArray.map((selector, index) => (
+          <Li key={index}>
+            <Code>{selector}</Code>
+          </Li>
+        ))}
+      </Ul>
+    </div>
   );
 }
