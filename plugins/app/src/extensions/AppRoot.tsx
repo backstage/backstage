@@ -22,9 +22,6 @@ import {
   JSX,
 } from 'react';
 import {
-  AppRootWrapperBlueprint,
-  RouterBlueprint,
-  SignInPageBlueprint,
   coreExtensionData,
   discoveryApiRef,
   fetchApiRef,
@@ -33,6 +30,11 @@ import {
   createExtensionInput,
   routeResolutionApiRef,
 } from '@backstage/frontend-plugin-api';
+import {
+  AppRootWrapperBlueprint,
+  RouterBlueprint,
+  SignInPageBlueprint,
+} from '@backstage/plugin-app-react';
 import {
   DiscoveryApi,
   ErrorApi,

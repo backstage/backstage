@@ -21,7 +21,6 @@ import {
   coreExtensionData,
   ApiBlueprint,
   NavItemBlueprint,
-  ThemeBlueprint,
   useApi,
   routeResolutionApiRef,
 } from '@backstage/frontend-plugin-api';
@@ -78,7 +77,6 @@ const getOutputColor = createOutputColorGenerator(
     [coreExtensionData.routePath.id]: '#ffeb3b',
     [coreExtensionData.routeRef.id]: '#9c27b0',
     [ApiBlueprint.dataRefs.factory.id]: '#2196f3',
-    [ThemeBlueprint.dataRefs.theme.id]: '#cddc39',
     [NavItemBlueprint.dataRefs.target.id]: '#ff9800',
   },
 
@@ -280,7 +278,6 @@ const legendMap = {
   'Route Path': coreExtensionData.routePath,
   'Route Ref': coreExtensionData.routeRef,
   'Nav Target': NavItemBlueprint.dataRefs.target,
-  Theme: ThemeBlueprint.dataRefs.theme,
 };
 
 function Legend() {

@@ -15,9 +15,9 @@
  */
 import {
   ApiBlueprint,
-  TranslationBlueprint,
   createExtensionInput,
 } from '@backstage/frontend-plugin-api';
+import { TranslationBlueprint } from '@backstage/plugin-app-react';
 import {
   appLanguageApiRef,
   translationApiRef,

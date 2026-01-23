@@ -22,11 +22,11 @@ import {
   PageBlueprint,
   createFrontendPlugin,
   createFrontendFeatureLoader,
-  ThemeBlueprint,
   createFrontendModule,
   useAppNode,
   FrontendPluginInfo,
 } from '@backstage/frontend-plugin-api';
+import { ThemeBlueprint } from '@backstage/plugin-app-react';
 import { screen, waitFor } from '@testing-library/react';
 import { createApp } from './createApp';
 import { mockApis, renderWithEffects } from '@backstage/test-utils';

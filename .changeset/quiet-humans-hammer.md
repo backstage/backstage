@@ -1,8 +1,8 @@
 ---
-'@backstage/plugin-app': patch
+'@backstage/plugin-app': minor
 ---
 
-The deprecation of the following blueprints listed below is not complete. These blueprints must now be provided via an override or a module for the `app` plugin. Extensions from other plugins will now trigger a warning in the app and be ignored.
+**BREAKING**: Extensions created with the following blueprints must now be provided via an override or a module for the `app` plugin. Extensions from other plugins will now trigger a warning in the app and be ignored.
 
 - `IconBundleBlueprint`
 - `NavContentBlueprint`

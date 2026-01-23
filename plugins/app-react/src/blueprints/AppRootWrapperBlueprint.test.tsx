@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2026 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import {
   coreExtensionData,
   createExtension,
   createExtensionInput,
-} from '../wiring';
+} from '@backstage/frontend-plugin-api';
 import { renderTestApp } from '@backstage/frontend-test-utils';
 
 describe('AppRootWrapperBlueprint', () => {

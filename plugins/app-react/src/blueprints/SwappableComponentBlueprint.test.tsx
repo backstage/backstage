@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 import { renderTestApp } from '@backstage/frontend-test-utils';
-import { createSwappableComponent } from '../components';
+import {
+  createSwappableComponent,
+  PageBlueprint,
+} from '@backstage/frontend-plugin-api';
 import { SwappableComponentBlueprint } from './SwappableComponentBlueprint';
-import { PageBlueprint } from './PageBlueprint';
 import { screen } from '@testing-library/react';
 
 describe('SwappableComponentBlueprint', () => {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2026 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,9 +15,12 @@
  */
 
 import { ComponentType, lazy, ReactNode } from 'react';
-import { createExtensionBlueprint, createExtensionDataRef } from '../wiring';
-import { ExtensionBoundary } from '../components';
-import { IdentityApi } from '../apis';
+import {
+  createExtensionBlueprint,
+  createExtensionDataRef,
+  ExtensionBoundary,
+  IdentityApi,
+} from '@backstage/frontend-plugin-api';
 
 /**
  * Props for the `SignInPage` component.
@@ -41,10 +44,9 @@ const componentDataRef = createExtensionDataRef<
 >().with({ id: 'core.sign-in-page.component' });
 
 /**
- * Creates an extension that replaces the sign in page.
+ * Creates an extension that replaces the sign in page. This blueprint is limited to use by the app plugin.
  *
  * @public
- * @deprecated Use {@link @backstage/plugin-app-react#SignInPageBlueprint} instead.
  */
 export const SignInPageBlueprint = createExtensionBlueprint({
   kind: 'sign-in-page',

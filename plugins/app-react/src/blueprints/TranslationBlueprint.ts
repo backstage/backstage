@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2026 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,21 @@
  * limitations under the License.
  */
 
-import { createExtensionBlueprint, createExtensionDataRef } from '../wiring';
-import { TranslationMessages, TranslationResource } from '../translation';
+import {
+  createExtensionBlueprint,
+  createExtensionDataRef,
+  TranslationMessages,
+  TranslationResource,
+} from '@backstage/frontend-plugin-api';
 
 const translationDataRef = createExtensionDataRef<
   TranslationResource | TranslationMessages
 >().with({ id: 'core.translation.translation' });
 
 /**
- * Creates an extension that adds translations to your app.
+ * Creates an extension that adds translations to your app. This blueprint is limited to use by the app plugin.
  *
  * @public
- * @deprecated Use {@link @backstage/plugin-app-react#TranslationBlueprint} instead.
  */
 export const TranslationBlueprint = createExtensionBlueprint({
   kind: 'translation',

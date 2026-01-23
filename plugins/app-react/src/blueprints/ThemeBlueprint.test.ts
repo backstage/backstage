@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { AppTheme } from '../apis/definitions/AppThemeApi';
+import { AppTheme } from '@backstage/frontend-plugin-api';
 import { ThemeBlueprint } from './ThemeBlueprint';
 import { createExtensionTester } from '@backstage/frontend-test-utils';
 

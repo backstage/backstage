@@ -15,11 +15,11 @@
  */
 
 import {
-  SwappableComponentBlueprint,
   createExtensionInput,
   ApiBlueprint,
   swappableComponentsApiRef,
 } from '@backstage/frontend-plugin-api';
+import { SwappableComponentBlueprint } from '@backstage/plugin-app-react';
 import { DefaultSwappableComponentsApi } from '../apis/SwappableComponentsApi';
 
 /**

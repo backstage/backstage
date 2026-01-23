@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2026 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,10 @@
  */
 
 import { ReactNode } from 'react';
-import { createExtensionBlueprint, createExtensionDataRef } from '../wiring';
+import {
+  createExtensionBlueprint,
+  createExtensionDataRef,
+} from '@backstage/frontend-plugin-api';
 
 const componentDataRef = createExtensionDataRef<
   (props: { children: ReactNode }) => JSX.Element | null
@@ -24,12 +27,9 @@ const componentDataRef = createExtensionDataRef<
 /**
  * Creates a extensions that render a React wrapper at the app root, enclosing
  * the app layout. This is useful for example for adding global React contexts
- * and similar.
+ * and similar. This blueprint is limited to use by the app plugin.
  *
  * @public
- * @deprecated Use {@link @backstage/plugin-app-react#AppRootWrapperBlueprint} instead.
- * If you were using this blueprint to provide a context for your plugin,
- * use `PluginWrapperBlueprint` from `@backstage/frontend-plugin-api/alpha` instead.
  */
 export const AppRootWrapperBlueprint = createExtensionBlueprint({
   kind: 'app-root-wrapper',
