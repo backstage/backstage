@@ -38,12 +38,12 @@ export function Theming({ definition }: ThemingProps) {
     ...Object.values(classNames).slice(1),
   ];
 
-  // Use the same styled components from MDX
-  const H2 = formattedMDXComponents.h2!;
-  const P = formattedMDXComponents.p!;
-  const Ul = formattedMDXComponents.ul!;
-  const Li = formattedMDXComponents.li!;
-  const Code = formattedMDXComponents.code!;
+  // Use the same styled components from MDX, with fallbacks to HTML elements
+  const H2 = formattedMDXComponents.h2 || 'h2';
+  const P = formattedMDXComponents.p || 'p';
+  const Ul = formattedMDXComponents.ul || 'ul';
+  const Li = formattedMDXComponents.li || 'li';
+  const Code = formattedMDXComponents.code || 'code';
 
   return (
     <div>

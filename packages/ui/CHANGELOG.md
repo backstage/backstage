@@ -532,7 +532,7 @@
 
   **Affected components:** VisuallyHidden
 
-- 00bfb83: Fix default font wight and font family in Backstage UI.
+- 00bfb83: Fix default font weight and font family in Backstage UI.
 
 ## 0.9.0-next.3
 
