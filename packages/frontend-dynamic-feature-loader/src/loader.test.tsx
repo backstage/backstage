@@ -995,11 +995,6 @@ describe('dynamicFrontendFeaturesLoader', () => {
     const errorCalls = mocks.console.error.mock.calls.flatMap(e => e[0]);
     const warnCalls = mocks.console.warn.mock.calls.flatMap(e => e[0]);
 
-    // eslint-disable-next-line no-console
-    console.log(warnCalls);
-    // eslint-disable-next-line no-console
-    console.log(errorCalls);
-
     expect(warnCalls).toEqual(['[ Federation Runtime ]']);
     expect(errorCalls).toEqual([
       "Failed loading remote module 'plugin_1' of dynamic plugin 'plugin-1': Error: [ Federation Runtime ]: http://localhost:7007/.backstage/dynamic-features/remotes/plugin-1/mf-manifest.json is not a federation manifest",
