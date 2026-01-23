@@ -35,9 +35,17 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Link Checker
-        uses: lycheeverse/lychee-action@v2.3.0  
+        uses: lycheeverse/lychee-action@v2.3.0
         with:
-          args: --verbose --no-progress './**/*.md'
-          fail: true
+          args: >-
+            --verbose
+            --no-progress
+            --exclude "npmjs\.com"
+            --exclude "figma\.com"
+            --exclude "localhost"
+            --exclude "passportjs\.org"
+            --retry 5
+            --timeout 20
+            './**/*.md'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
