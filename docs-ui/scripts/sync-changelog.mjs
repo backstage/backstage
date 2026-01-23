@@ -379,6 +379,9 @@ async function parseListItem(
 
 /**
  * Infer change type from section and description
+ * Breaking change rules (semver):
+ * - version >= 1.0.0: Major changes are breaking
+ * - version < 1.0.0: Major and Minor changes are breaking
  */
 function isBreakingChange(section, description, version) {
   // Mark as breaking if explicitly mentioned in description
@@ -386,12 +389,17 @@ function isBreakingChange(section, description, version) {
     return true;
   }
 
-  // Or if it's in the Major or Minor Changes section
-  if (section === 'Major Changes' || section === 'Minor Changes') {
-    return true;
+  // Parse version to determine breaking change rules
+  const normalizedVersion = normalizeVersion(version);
+  const [major] = normalizedVersion.split('.').map(Number);
+
+  // Version >= 1.0.0: Only Major Changes are breaking
+  if (major >= 1) {
+    return section === 'Major Changes';
   }
 
-  return false;
+  // Version < 1.0.0: Both Major and Minor Changes are breaking
+  return section === 'Major Changes' || section === 'Minor Changes';
 }
 
 /**
