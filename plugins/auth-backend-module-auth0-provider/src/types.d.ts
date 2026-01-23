@@ -18,7 +18,7 @@ declare module 'passport-auth0' {
   import passport from 'passport';
   import express from 'express';
 
-  declare class StrategyInternal extends passport.Strategy {
+  class StrategyInternal extends passport.Strategy {
     constructor(
       options: StrategyInternal.StrategyOptionWithRequest,
       verify: StrategyInternal.VerifyFunctionWithRequest,
@@ -33,7 +33,7 @@ declare module 'passport-auth0' {
     authorizationParams(options: Record<string, any>): Record<string, any>;
   }
 
-  declare namespace StrategyInternal {
+  namespace StrategyInternal {
     interface Profile extends passport.Profile {
       id: string;
       displayName: string;
