@@ -13,6 +13,7 @@ import { FrontendFeature } from '@backstage/frontend-plugin-api';
 import { FrontendPlugin } from '@backstage/frontend-plugin-api';
 import { FrontendPluginInfo } from '@backstage/frontend-plugin-api';
 import { JsonObject } from '@backstage/types';
+import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { SubRouteRef } from '@backstage/frontend-plugin-api';
 
@@ -104,6 +105,11 @@ export type AppErrorTypes = {
       node: AppNode;
     };
   };
+  ENABLED_CHECK_FAILED: {
+    context: {
+      node: AppNode;
+    };
+  };
   API_EXTENSION_INVALID: {
     context: {
       node: AppNode;
@@ -152,6 +158,7 @@ export function createSpecializedApp(options?: CreateSpecializedAppOptions): {
   apis: ApiHolder;
   tree: AppTree;
   errors?: AppError[];
+  completeInitialization(): Promise<JSX.Element | undefined>;
 };
 
 // @public
@@ -168,6 +175,25 @@ export type CreateSpecializedAppOptions = {
     pluginInfoResolver?: FrontendPluginInfoResolver;
   };
 };
+
+// @public
+export function EnabledConditionsGate({
+  tree,
+  completeInitialization,
+  fallback,
+}: EnabledConditionsGateProps): JSX.Element | undefined;
+
+// @public (undocumented)
+export interface EnabledConditionsGateProps {
+  // (undocumented)
+  completeInitialization: () => Promise<JSX.Element | undefined>;
+  // (undocumented)
+  fallback?: ReactNode;
+  // (undocumented)
+  tree: {
+    root: AppNode;
+  };
+}
 
 // @public
 export type FrontendPluginInfoResolver = (ctx: {

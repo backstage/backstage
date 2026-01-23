@@ -114,6 +114,7 @@ export type CreateExtensionBlueprintOptions<
   attachTo: ExtensionDefinitionAttachTo<UParentInputs> &
     VerifyExtensionAttachTo<UOutput, UParentInputs>;
   disabled?: boolean;
+  enabled?: import('../blueprints/types').ExtensionConditionFunc;
   inputs?: TInputs;
   output: Array<UOutput>;
   config?: {
@@ -221,6 +222,7 @@ export interface ExtensionBlueprint<
     attachTo?: ExtensionDefinitionAttachTo<UParentInputs> &
       VerifyExtensionAttachTo<NonNullable<T['output']>, UParentInputs>;
     disabled?: boolean;
+    enabled?: import('../blueprints/types').ExtensionConditionFunc;
     params: TParamsInput extends ExtensionBlueprintDefineParams
       ? TParamsInput
       : T['params'] extends ExtensionBlueprintDefineParams
@@ -261,6 +263,7 @@ export interface ExtensionBlueprint<
         UParentInputs
       >;
     disabled?: boolean;
+    enabled?: import('../blueprints/types').ExtensionConditionFunc;
     inputs?: TExtraInputs & {
       [KName in keyof T['inputs']]?: `Error: Input '${KName &
         string}' is already defined in parent definition`;
@@ -510,6 +513,7 @@ export function createExtensionBlueprint<
         attachTo: (args.attachTo ??
           options.attachTo) as ExtensionDefinitionAttachTo,
         disabled: args.disabled ?? options.disabled,
+        enabled: args.enabled ?? options.enabled,
         inputs: options.inputs,
         output: options.output as ExtensionDataRef[],
         config: options.config,
@@ -527,6 +531,7 @@ export function createExtensionBlueprint<
         attachTo: (args.attachTo ??
           options.attachTo) as ExtensionDefinitionAttachTo,
         disabled: args.disabled ?? options.disabled,
+        enabled: args.enabled ?? options.enabled,
         inputs: { ...args.inputs, ...options.inputs },
         output: (args.output ?? options.output) as ExtensionDataRef[],
         config:

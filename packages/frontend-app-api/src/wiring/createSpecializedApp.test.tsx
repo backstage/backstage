@@ -97,7 +97,7 @@ describe('createSpecializedApp', () => {
     expect(screen.getByText('Test foo')).toBeInTheDocument();
   });
 
-  it('should support APIs and feature flags', async () => {
+  it('should support APIs and feature flags', () => {
     const flags = new Array<{ name: string; pluginId: string }>();
     const app = createSpecializedApp({
       features: [
@@ -391,7 +391,7 @@ describe('createSpecializedApp', () => {
   });
 
   it('should use provided apis', async () => {
-    const app = createSpecializedApp({
+    const app = await createSpecializedApp({
       advanced: {
         apis: TestApiRegistry.from([
           configApiRef,
@@ -444,7 +444,7 @@ describe('createSpecializedApp', () => {
   it('should make the app structure available through the AppTreeApi', async () => {
     let appTreeApi: AppTreeApi | undefined = undefined;
 
-    const { tree } = createSpecializedApp({
+    const { tree } = await createSpecializedApp({
       features: [
         createFrontendPlugin({
           pluginId: 'test',
@@ -593,12 +593,14 @@ describe('createSpecializedApp', () => {
     });
 
     render(
-      createSpecializedApp({
-        features: [pluginA, pluginB],
-        bindRoutes({ bind }) {
-          bind(pluginA.externalRoutes, { ext: pluginB.routes.root });
-        },
-      }).tree.root.instance!.getData(coreExtensionData.reactElement),
+      (
+        await createSpecializedApp({
+          features: [pluginA, pluginB],
+          bindRoutes({ bind }) {
+            bind(pluginA.externalRoutes, { ext: pluginB.routes.root });
+          },
+        })
+      ).tree.root.instance!.getData(coreExtensionData.reactElement),
     );
 
     expect(screen.getByText('link: /test')).toBeInTheDocument();
@@ -607,7 +609,7 @@ describe('createSpecializedApp', () => {
   it('should support multiple attachment points', async () => {
     let appTreeApi: AppTreeApi | undefined = undefined;
 
-    createSpecializedApp({
+    await createSpecializedApp({
       features: [
         createFrontendPlugin({
           pluginId: 'test',
@@ -684,10 +686,10 @@ describe('createSpecializedApp', () => {
     `);
   });
 
-  it('should apply multiple middlewares in order', () => {
+  it('should apply multiple middlewares in order', async () => {
     const textDataRef = createExtensionDataRef<string>().with({ id: 'text' });
 
-    const app = createSpecializedApp({
+    const app = await createSpecializedApp({
       features: [
         createFrontendPlugin({
           pluginId: 'test',
@@ -770,7 +772,7 @@ describe('createSpecializedApp', () => {
         "Attempted to load plugin info for plugin 'test', but the plugin instance is not installed in an app";
       await expect(plugin.info()).rejects.toThrow(errorMsg);
 
-      const app = createSpecializedApp({ features: [plugin] });
+      const app = await createSpecializedApp({ features: [plugin] });
 
       await expect(plugin.info()).rejects.toThrow(errorMsg);
 
@@ -789,7 +791,7 @@ describe('createSpecializedApp', () => {
         extensions: [testExtension],
       });
 
-      const app = createSpecializedApp({ features: [plugin] });
+      const app = await createSpecializedApp({ features: [plugin] });
       const info = await app.tree.nodes.get('test')?.spec.plugin?.info();
       expect(info).toMatchObject({
         packageName: '@backstage/frontend-app-api',
@@ -812,7 +814,7 @@ describe('createSpecializedApp', () => {
         },
       });
 
-      const app = createSpecializedApp({ features: [overriddenPlugin] });
+      const app = await createSpecializedApp({ features: [overriddenPlugin] });
       const info = await app.tree.nodes.get('test')?.spec.plugin?.info();
       expect(info).toMatchObject({
         packageName: 'test-override',
@@ -836,7 +838,7 @@ describe('createSpecializedApp', () => {
         extensions: [testExtension],
       });
 
-      const app = createSpecializedApp({ features: [plugin] });
+      const app = await createSpecializedApp({ features: [plugin] });
       const info = await app.tree.nodes.get('test')?.spec.plugin?.info();
       expect(info).toEqual({
         packageName: '@backstage/frontend-app-api',
@@ -855,7 +857,7 @@ describe('createSpecializedApp', () => {
         extensions: [testExtension],
       });
 
-      const app = createSpecializedApp({
+      const app = await createSpecializedApp({
         features: [plugin],
         advanced: {
           pluginInfoResolver: async ctx => {
@@ -871,6 +873,184 @@ describe('createSpecializedApp', () => {
       expect(info).toEqual({
         packageName: 'decorated:@backstage/frontend-app-api',
       });
+    });
+  });
+
+  describe('enabled conditions', () => {
+    it('should defer extensions with enabled conditions until completeInitialization', async () => {
+      let enabledCheckCalled = false;
+      const app = createSpecializedApp({
+        features: [
+          createFrontendPlugin({
+            pluginId: 'test',
+            extensions: [
+              createExtension({
+                name: 'conditional',
+                attachTo: { id: 'root', input: 'app' },
+                output: [coreExtensionData.reactElement],
+                factory: () => [
+                  coreExtensionData.reactElement(<div>Conditional</div>),
+                ],
+                enabled: async () => {
+                  enabledCheckCalled = true;
+                  return true;
+                },
+              }),
+            ],
+          }),
+        ],
+      });
+
+      // Enabled condition should not be evaluated during initial tree construction
+      expect(enabledCheckCalled).toBe(false);
+
+      // Extension should not be instantiated yet
+      const conditionalNode = app.tree.nodes.get('test/conditional');
+      expect(conditionalNode?.instance).toBeUndefined();
+
+      // Complete initialization
+      await app.completeInitialization();
+
+      // Now enabled condition should have been checked
+      expect(enabledCheckCalled).toBe(true);
+
+      // And extension should be instantiated
+      expect(conditionalNode?.instance).toBeDefined();
+    });
+
+    it('should exclude extensions when enabled condition returns false', async () => {
+      const app = createSpecializedApp({
+        features: [
+          createFrontendPlugin({
+            pluginId: 'test',
+            extensions: [
+              createExtension({
+                name: 'disabled',
+                attachTo: { id: 'root', input: 'app' },
+                output: [coreExtensionData.reactElement],
+                factory: () => [
+                  coreExtensionData.reactElement(<div>Disabled</div>),
+                ],
+                enabled: async () => false,
+              }),
+              createExtension({
+                name: 'enabled',
+                attachTo: { id: 'root', input: 'app' },
+                output: [coreExtensionData.reactElement],
+                factory: () => [
+                  coreExtensionData.reactElement(<div>Enabled</div>),
+                ],
+                enabled: async () => true,
+              }),
+            ],
+          }),
+        ],
+      });
+
+      await app.completeInitialization();
+
+      const disabledNode = app.tree.nodes.get('test/disabled');
+      const enabledNode = app.tree.nodes.get('test/enabled');
+
+      expect(disabledNode?.instance).toBeUndefined();
+      expect(enabledNode?.instance).toBeDefined();
+    });
+
+    it('should provide apiHolder to enabled conditions', async () => {
+      let receivedApiHolder: any;
+
+      const app = createSpecializedApp({
+        config: mockApis.config({ data: { test: 'value' } }),
+        features: [
+          createFrontendPlugin({
+            pluginId: 'test',
+            extensions: [
+              createExtension({
+                name: 'apiCheck',
+                attachTo: { id: 'root', input: 'app' },
+                output: [coreExtensionData.reactElement],
+                factory: () => [
+                  coreExtensionData.reactElement(<div>API Check</div>),
+                ],
+                enabled: async (_defaultDecision, { apiHolder }) => {
+                  receivedApiHolder = apiHolder;
+                  const config = apiHolder.get(configApiRef);
+                  return config?.getString('test') === 'value';
+                },
+              }),
+            ],
+          }),
+        ],
+      });
+
+      await app.completeInitialization();
+
+      expect(receivedApiHolder).toBeDefined();
+      expect(receivedApiHolder.get(configApiRef)).toBeDefined();
+
+      const node = app.tree.nodes.get('test/apiCheck');
+      expect(node?.instance).toBeDefined();
+    });
+
+    it('should handle errors in enabled conditions gracefully', async () => {
+      const app = createSpecializedApp({
+        features: [
+          createFrontendPlugin({
+            pluginId: 'test',
+            extensions: [
+              createExtension({
+                name: 'failing',
+                attachTo: { id: 'root', input: 'app' },
+                output: [coreExtensionData.reactElement],
+                factory: () => [
+                  coreExtensionData.reactElement(<div>Failing</div>),
+                ],
+                enabled: async () => {
+                  throw new Error('Enabled check failed');
+                },
+              }),
+            ],
+          }),
+        ],
+      });
+
+      await app.completeInitialization();
+
+      // Extension should be disabled due to error
+      const node = app.tree.nodes.get('test/failing');
+      expect(node?.instance).toBeUndefined();
+
+      // Error should be reported
+      expect(app.errors).toContainEqual(
+        expect.objectContaining({
+          code: 'ENABLED_CHECK_FAILED',
+          message: expect.stringContaining('Enabled check failed'),
+        }),
+      );
+    });
+
+    it('should instantiate extensions without enabled conditions immediately', async () => {
+      const app = createSpecializedApp({
+        features: [
+          createFrontendPlugin({
+            pluginId: 'test',
+            extensions: [
+              createExtension({
+                name: 'immediate',
+                attachTo: { id: 'root', input: 'app' },
+                output: [coreExtensionData.reactElement],
+                factory: () => [
+                  coreExtensionData.reactElement(<div>Immediate</div>),
+                ],
+              }),
+            ],
+          }),
+        ],
+      });
+
+      // Extension without enabled condition should be instantiated immediately
+      const node = app.tree.nodes.get('test/immediate');
+      expect(node?.instance).toBeDefined();
     });
   });
 });

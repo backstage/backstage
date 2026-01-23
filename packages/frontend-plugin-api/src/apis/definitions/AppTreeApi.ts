@@ -32,6 +32,7 @@ export interface AppNodeSpec {
   readonly attachTo: ExtensionAttachTo;
   readonly extension: Extension<unknown, unknown>;
   readonly disabled: boolean;
+  readonly enabled?: import('../../blueprints/types').ExtensionConditionFunc;
   readonly config?: unknown;
   readonly plugin: FrontendPlugin;
 }
