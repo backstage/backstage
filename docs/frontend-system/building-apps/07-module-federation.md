@@ -144,10 +144,10 @@ const moduleFederationLoader = createFrontendFeatureLoader({
       },
     ]);
     const myFirstRemoteModule1 = await moduleFederationInstance.loadRemote<any>(
-      'myFirstRemoteWith2Exposes/module1',
+      'myFirstRemoteWith2ExposedModules/module1',
     );
     const myFirstRemoteModule2 = await moduleFederationInstance.loadRemote<any>(
-      'myFirstRemoteWith2Exposes/module2',
+      'myFirstRemoteWith2ExposedModules/module2',
     );
     const mySecondRemoteModule = await moduleFederationInstance.loadRemote<any>(
       'mySecondRemote',
