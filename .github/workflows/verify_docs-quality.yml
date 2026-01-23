@@ -35,7 +35,7 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Link Checker
-        uses: lycheeverse/lychee-action@v2.3.0
+        uses: lycheeverse/lychee-action@9f5e5c22c21c9b2981517972ed85e8b4785905a6 # v2.3.0
         with:
           args: >-
             --verbose
