@@ -52,6 +52,7 @@ describe('NavItemBlueprint', () => {
           },
         },
         "disabled": false,
+        "enabled": undefined,
         "factory": [Function],
         "inputs": {},
         "kind": "nav-item",
