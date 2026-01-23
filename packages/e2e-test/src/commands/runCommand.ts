@@ -497,6 +497,8 @@ async function testBackendStart(appDir: string, ...args: string[]) {
     env: {
       ...process.env,
       GITHUB_TOKEN: 'abc',
+      // Ensure that the backend fails on unhandledRejection errors.
+      NODE_ENV: 'test',
       // TODO: Default auth policy is disabled for e2e tests - replace this with external service auth
       APP_CONFIG_backend_auth_dangerouslyDisableDefaultAuthPolicy: 'true',
     },
