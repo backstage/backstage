@@ -1,5 +1,5 @@
 ---
-id: 002-poking-around
+id: poking-around
 sidebar_label: 002 - Poking around
 title: 002 - Poking around
 ---
