@@ -1,6 +1,6 @@
 ---
 id: setting-up-a-poc
-sidebar_label: 002 - Setting up a PoC
+sidebar_label: 003 - Setting up a PoC
 title: Setting up a PoC
 ---
 

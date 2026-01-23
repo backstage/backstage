@@ -8,7 +8,7 @@ You now have the knowledge of what your users want and the go from leadership to
 
 ## Open Source or Build it yourself?
 
-There's a huge community of plugins available for easy installation at https://backstage.io/plugins. We would recommend that you start here for any needs you may be trying to solve. Building a plugin yourself is an ordeal that can be hard to justify early on in your adoption story. If there is a clear gap in the existing offerings for your company, you should build something yourself - otherwise, save yourself the maintenance overhead.
+There's a huge community of plugins available for easy installation at https://backstage.io/plugins. We would recommend that you start here for any needs you may be trying to solve. Building a plugin yourself requires significant effort and can be hard to justify early on in your adoption story. If there is a clear gap in the existing offerings for your company, you should build something yourself - otherwise, save yourself the maintenance overhead.
 
 ## Customizing the theme
 
