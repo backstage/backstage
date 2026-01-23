@@ -71,8 +71,8 @@ describe('createSpecializedApp', () => {
     expect(screen.getByText('Test 2')).toBeInTheDocument();
   });
 
-  it('should forward config', async () => {
-    const app = await createSpecializedApp({
+  it('should forward config', () => {
+    const app = createSpecializedApp({
       config: mockApis.config({ data: { test: 'foo' } }),
       features: [
         createFrontendPlugin({
@@ -97,9 +97,9 @@ describe('createSpecializedApp', () => {
     expect(screen.getByText('Test foo')).toBeInTheDocument();
   });
 
-  it('should support APIs and feature flags', async () => {
+  it('should support APIs and feature flags', () => {
     const flags = new Array<{ name: string; pluginId: string }>();
-    const app = await createSpecializedApp({
+    const app = createSpecializedApp({
       features: [
         createFrontendPlugin({
           pluginId: 'test',
@@ -222,10 +222,10 @@ describe('createSpecializedApp', () => {
     `);
   });
 
-  it('should initialize the APIs in the correct order to allow for overrides', async () => {
+  it('should initialize the APIs in the correct order to allow for overrides', () => {
     const mockAnalyticsApi = jest.fn(() => ({ captureEvent: jest.fn() }));
 
-    const app = await createSpecializedApp({
+    const app = createSpecializedApp({
       features: [
         makeAppPlugin(),
         createFrontendModule({
