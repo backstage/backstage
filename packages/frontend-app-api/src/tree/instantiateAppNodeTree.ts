@@ -38,21 +38,22 @@ const INSTANTIATION_FAILED = new Error('Instantiation failed');
 function mapWithFailures<T, U>(
   iterable: Iterable<T>,
   callback: (item: T) => U,
+  options?: { ignoreFailures?: boolean },
 ): U[] {
   let failed = false;
-  const results = Array.from(iterable).map(item => {
+  const results = [];
+  for (const item of iterable) {
     try {
-      return callback(item);
+      results.push(callback(item));
     } catch (error) {
       if (error === INSTANTIATION_FAILED) {
         failed = true;
       } else {
         throw error;
       }
-      return null as any;
     }
-  });
-  if (failed) {
+  }
+  if (failed && !options?.ignoreFailures) {
     throw INSTANTIATION_FAILED;
   }
   return results;
@@ -292,13 +293,16 @@ function resolveV2Inputs(
       }
     }
 
-    return mapWithFailures(attachedNodes, attachment =>
-      resolveInputDataContainer(
-        input.extensionData,
-        attachment,
-        inputName,
-        collector,
-      ),
+    return mapWithFailures(
+      attachedNodes,
+      attachment =>
+        resolveInputDataContainer(
+          input.extensionData,
+          attachment,
+          inputName,
+          collector,
+        ),
+      { ignoreFailures: true },
     );
   }) as ResolvedExtensionInputs<{ [inputName in string]: ExtensionInput }>;
 }

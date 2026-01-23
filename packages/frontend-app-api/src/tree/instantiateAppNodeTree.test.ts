@@ -1677,6 +1677,55 @@ describe('instantiateAppNodeTree', () => {
             },
           ]);
         });
+
+        it('should filter out failed attachments for non-singleton inputs', () => {
+          const node = makeNode(
+            resolveExtensionDefinition(
+              createExtension({
+                name: 'test',
+                attachTo: { id: 'ignored', input: 'ignored' },
+                inputs: {
+                  children: createExtensionInput([otherDataRef]),
+                },
+                output: [inputCountRef],
+                factory: ({ inputs }) => [
+                  inputCountRef(inputs.children.length),
+                ],
+              }),
+              { namespace: 'app' },
+            ),
+          );
+          expect(
+            createAppNodeInstance({
+              apis: testApis,
+              attachments: new Map([
+                [
+                  'children',
+                  [
+                    attachmentWithoutRequiredData,
+                    makeInstanceWithId(simpleExtension, {
+                      other: 42,
+                    }),
+                  ],
+                ],
+              ]),
+              node,
+              collector,
+            })?.getData(inputCountRef),
+          ).toBe(1);
+
+          expect(collector.collectErrors()).toEqual([
+            {
+              code: 'EXTENSION_INPUT_DATA_MISSING',
+              message:
+                "extension 'app/test' could not be attached because its output data ('test') does not match what the input 'children' requires ('other')",
+              context: {
+                node: attachmentWithoutRequiredData,
+                inputName: 'children',
+              },
+            },
+          ]);
+        });
       });
     });
   });
