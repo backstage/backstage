@@ -24,11 +24,11 @@ Backstage can help! We provide a core plugin called Software Catalog that automa
 
 > My developers have been complaining recently about having to use a growing number of different websites and tools in their day to day. It's getting hard to keep track of all of the tools and for those that we don't use frequently, we lose X minutes trying to remember how to access them.
 
-Tool fragmentation is a real issue and Backstage can also help here! You can create plugins tailored for your company that talk to these external services. These plugins can be standalone or integrated with the Software Catalog for better context. Imagine all of your [GOOD EXAMPLE HERE](link to good example) directly on the page for your team's projects.
+Tool fragmentation is a real issue and Backstage can also help here! You can create plugins tailored for your company that talk to these external services. These plugins can be standalone or integrated with the Software Catalog for better context. Imagine all of your [CI/CD workflows visible directly](https://backstage.io/plugins/) on the page for your team's projects.
 
 It's important to note that Backstage shouldn't be fully replacing these tools, we don't want to reinvent the wheel. The goal is to have all of the really important information in one place. The tool should still be where teams go to do more advanced or in depth work.
 
-> We have been struggling recently with getting teams to use a standard template for new services. There's no standard set of libraries these services are using or standard infra management. It's increasingly difficult as a platform team to manage everything. 
+> We have been struggling recently with getting teams to use a standard template for new services. There's no standard set of libraries these services are using or standard infra management. It's increasingly difficult as a platform team to manage everything.
 
 Backstage can help here too! The Scaffolder provides a templating framework that you can plug a Golden Path implementation to. Similar to Github template repos, this can provide a standard base for teams to create based off of.
 
@@ -41,6 +41,7 @@ Backstage can help! With the Scaffolder, you can create a template that lets use
 a.k.a "what am I signing myself up for?"
 
 Successfully adopting Backstage usually looks something like this,
+
 1. Setting up a PoC,
 2. Getting leadership buy-in,
 3. Identify a group of key stakeholders for the project and iterate with them aggressively,
@@ -52,7 +53,7 @@ A truly successful Backstage implementation bridges delivering value to customer
 
 ## Getting started
 
-Now that you know what to expect, let's walk through how to get started. 
+Now that you know what to expect, let's walk through how to get started.
 
 :::note
 
