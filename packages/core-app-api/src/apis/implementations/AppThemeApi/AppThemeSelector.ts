@@ -14,11 +14,23 @@
  * limitations under the License.
  */
 
-import { AppThemeApi, AppTheme } from '@backstage/core-plugin-api';
+import { AppThemeApi, AppTheme, StorageApi } from '@backstage/core-plugin-api';
 import { Observable } from '@backstage/types';
 import { BehaviorSubject } from '../../../lib/subjects';
 
 const STORAGE_KEY = 'theme';
+const BUCKET_NAME = 'userSettings';
+const CACHE_KEY = `/${BUCKET_NAME}/${STORAGE_KEY}`;
+
+/**
+ * Options for creating AppThemeSelector with storage.
+ *
+ * @public
+ */
+export interface AppThemeSelectorOptions {
+  themes: AppTheme[];
+  storageApi?: StorageApi;
+}
 
 /**
  * Exposes the themes installed in the app, and permits switching the currently
@@ -27,38 +39,119 @@ const STORAGE_KEY = 'theme';
  * @public
  */
 export class AppThemeSelector implements AppThemeApi {
-  static createWithStorage(themes: AppTheme[]) {
-    const selector = new AppThemeSelector(themes);
+  static createWithStorage(options: AppThemeSelectorOptions) {
+    const selector = new AppThemeSelector(options.themes);
+    const storageApi = options.storageApi;
 
-    if (!window.localStorage) {
+    // storageApi isn't available during early boot (before config/other APIs are ready)
+    if (!storageApi) {
       return selector;
     }
 
-    const initialThemeId =
-      window.localStorage.getItem(STORAGE_KEY) ?? undefined;
+    const readLastKnownValue = (): string | undefined => {
+      if (typeof window === 'undefined' || !window.localStorage) {
+        return undefined;
+      }
+      try {
+        const cached = window.localStorage.getItem(CACHE_KEY);
+        if (cached === 'undefined') {
+          window.localStorage.removeItem(CACHE_KEY);
+          return undefined;
+        }
+        if (cached === null) {
+          return undefined;
+        }
+        const parsed = JSON.parse(cached);
+        return typeof parsed === 'string' ? parsed : undefined;
+      } catch {
+        return undefined;
+      }
+    };
 
-    selector.setActiveThemeId(initialThemeId);
+    const writeLastKnownValue = (themeId: string | undefined): void => {
+      if (typeof window === 'undefined' || !window.localStorage) {
+        return;
+      }
+      try {
+        if (themeId === undefined) {
+          window.localStorage.removeItem(CACHE_KEY);
+          return;
+        }
+        window.localStorage.setItem(CACHE_KEY, JSON.stringify(themeId));
+      } catch {
+        // Ignore localStorage errors
+      }
+    };
 
-    selector.activeThemeId$().subscribe(themeId => {
-      if (themeId) {
-        window.localStorage.setItem(STORAGE_KEY, themeId);
-      } else {
-        window.localStorage.removeItem(STORAGE_KEY);
+    const bucket = storageApi.forBucket(BUCKET_NAME);
+    const snapshot = bucket.snapshot<string | null>(STORAGE_KEY);
+    const useCache = snapshot.presence === 'unknown';
+    let hasLoadedFromStorage = false;
+    if (snapshot.presence !== 'unknown') {
+      const storedThemeId = snapshot.value ?? undefined;
+      selector.setActiveThemeId(storedThemeId);
+      if (useCache) {
+        writeLastKnownValue(storedThemeId);
+      }
+      hasLoadedFromStorage = true;
+    } else {
+      const cachedThemeId = readLastKnownValue();
+      if (cachedThemeId) {
+        selector.setActiveThemeId(cachedThemeId);
+      }
+    }
+
+    const writeSubscription = () => {
+      selector.activeThemeId$().subscribe(themeId => {
+        if (selector.suppressStorageWrite) {
+          return;
+        }
+        bucket.set(STORAGE_KEY, themeId ?? null).catch(() => {});
+        if (useCache) {
+          writeLastKnownValue(themeId);
+        }
+      });
+    };
+
+    if (hasLoadedFromStorage) {
+      writeSubscription();
+    }
+
+    bucket.observe$(STORAGE_KEY).subscribe(stored => {
+      const themeId = stored?.value as string | null | undefined;
+      if (themeId !== selector.getActiveThemeId()) {
+        selector.suppressStorageWrite = true;
+        selector.setActiveThemeId(themeId ?? undefined);
+        selector.suppressStorageWrite = false;
+      }
+      if (useCache) {
+        writeLastKnownValue(themeId ?? undefined);
+      }
+      if (!hasLoadedFromStorage) {
+        hasLoadedFromStorage = true;
+        writeSubscription();
       }
     });
 
-    window.addEventListener('storage', event => {
-      if (event.key === STORAGE_KEY) {
-        const themeId = localStorage.getItem(STORAGE_KEY) ?? undefined;
-        selector.setActiveThemeId(themeId);
-      }
-    });
+    if (useCache && typeof window !== 'undefined' && window.addEventListener) {
+      window.addEventListener('storage', event => {
+        if (event.key !== CACHE_KEY) {
+          return;
+        }
+        const cachedThemeId = readLastKnownValue();
+        const currentThemeId = selector.getActiveThemeId();
+        if (cachedThemeId !== currentThemeId) {
+          selector.setActiveThemeId(cachedThemeId);
+        }
+      });
+    }
 
     return selector;
   }
 
   private activeThemeId: string | undefined;
   private readonly subject = new BehaviorSubject<string | undefined>(undefined);
+  private suppressStorageWrite = false;
 
   constructor(private readonly themes: AppTheme[]) {}
 
@@ -75,6 +168,9 @@ export class AppThemeSelector implements AppThemeApi {
   }
 
   setActiveThemeId(themeId?: string): void {
+    if (themeId === this.activeThemeId) {
+      return;
+    }
     this.activeThemeId = themeId;
     this.subject.next(themeId);
   }

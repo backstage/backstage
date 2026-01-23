@@ -15,6 +15,7 @@
  */
 
 import { AppTheme } from '@backstage/core-plugin-api';
+import { MockStorageApi } from '@backstage/test-utils';
 import { AppThemeSelector } from './AppThemeSelector';
 
 describe('AppThemeSelector', () => {
@@ -46,40 +47,28 @@ describe('AppThemeSelector', () => {
     expect(selector.getInstalledThemes()).not.toBe(themes);
   });
 
-  it('should store theme in local storage', async () => {
-    expect(AppThemeSelector.createWithStorage([]).getActiveThemeId()).toBe(
-      undefined,
-    );
-    localStorage.setItem('theme', 'x');
-    expect(AppThemeSelector.createWithStorage([]).getActiveThemeId()).toBe('x');
-    localStorage.removeItem('theme');
-    expect(AppThemeSelector.createWithStorage([]).getActiveThemeId()).toBe(
-      undefined,
-    );
+  it('should store theme in storage api', async () => {
+    const storageApi = MockStorageApi.create({
+      userSettings: { theme: 'x' },
+    });
+    const bucket = storageApi.forBucket('userSettings');
+    const selector = AppThemeSelector.createWithStorage({
+      themes: [],
+      storageApi,
+    });
 
-    const addListenerSpy = jest.spyOn(window, 'addEventListener');
-    const selector = AppThemeSelector.createWithStorage([]);
-
-    expect(addListenerSpy).toHaveBeenCalledTimes(1);
-    expect(addListenerSpy).toHaveBeenCalledWith(
-      'storage',
-      expect.any(Function),
-    );
+    expect(selector.getActiveThemeId()).toBe('x');
 
     selector.setActiveThemeId('y');
     await 'wait a tick';
-    expect(localStorage.getItem('theme')).toBe('y');
+    expect(bucket.snapshot<string | null>('theme').value).toBe('y');
 
     selector.setActiveThemeId(undefined);
     await 'wait a tick';
-    expect(localStorage.getItem('theme')).toBe(null);
+    expect(bucket.snapshot<string | null>('theme').value).toBe(null);
 
-    localStorage.setItem('theme', 'z');
-    expect(selector.getActiveThemeId()).toBe(undefined);
-
-    const listener = addListenerSpy.mock.calls[0][1] as EventListener;
-    listener({ key: 'theme' } as StorageEvent);
-
+    await bucket.set('theme', 'z');
+    await 'wait a tick';
     expect(selector.getActiveThemeId()).toBe('z');
   });
 });
