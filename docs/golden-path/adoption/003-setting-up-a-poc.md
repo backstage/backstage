@@ -4,7 +4,7 @@ sidebar_label: 002 - Setting up a PoC
 title: Setting up a PoC
 ---
 
-If you're non-techncal, this section should be completed by your technical partner.
+If you're non-technical, this section should be completed by your technical partner.
 
 Follow [our golden path for creating an app](../create-app/index.md). Once you have that set up, we recommend adding a few `catalog-info.yaml` files to a few repos/projects you own and setting up [the github catalog provider](../../integrations/github/discovery.md).
 

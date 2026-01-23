@@ -42,12 +42,12 @@ curl -X POST http://localhost:7007/api/todo/todos \
 -H 'Content-Type: application/json; charset=utf-8' \
 --data-binary @- << EOF
 {
-    "title": "My Todo",
+    "title": "My Todo"
 }
 EOF
 ```
 
-The 401 error is because we track the ID of the user that created each TODO. If you send a request to create a TODO but don't provide an `Authentication` header, you will see this failure. For plugins that have a frontend as well, this credential management should happen automatically. Let's try this:
+The 401 error is because we track the ID of the user that created each TODO. If you send a request to create a TODO but don't provide an `Authorization` header, you will see this failure. For plugins that have a frontend as well, this credential management should happen automatically. Let's try this:
 
 ```sh
 curl -v -X POST http://localhost:7007/api/todo/todos \

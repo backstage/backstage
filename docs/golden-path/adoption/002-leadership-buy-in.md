@@ -24,7 +24,7 @@ Step 4 and 5 are painful moments. Successful Backstage adoptions can lose steam 
 
 ### Recommendations
 
-1. Bring something real to your leadership team. This can either be a true proof of concept or [the demo site](demo.backstage.io).
+1. Bring something real to your leadership team. This can either be a true proof of concept or [the demo site](https://demo.backstage.io).
 2. Define metrics around what you're looking to drive up/down. That may be time to onboarding a new engineer, time to production for a new service, time to mitigate incidents, etc. As we say above, this is the meaty problem that is unique to your company that solving will really move the needle.
 3. Lower the barrier to adoption. Many people see yet another YAML file as overhead. If you have an existing cataloging solution, use that to simplify the onboarding process. If you don't, this might be a good opportunity to do that work.
 4. Knowledge silos. Every team has preferences on how to do things. Centralizing that data into a single interface while letting teams continue to do things how they want to is a powerful goal and something that Backstage can make happen.
