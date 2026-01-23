@@ -209,69 +209,6 @@ export const Responsive = meta.story({
   },
 });
 
-const variants = ['primary', 'secondary'] as const;
-const sizes = ['small', 'medium'] as const;
-
-export const Playground = meta.story({
-  args: {
-    children: 'Button',
-  },
-  render: () => (
-    <Flex direction="column">
-      {variants.map(variant => (
-        <Flex direction="column" key={variant}>
-          <Text>{variant}</Text>
-          {sizes.map(size => (
-            <Flex align="center" key={size}>
-              <Button variant={variant} size={size}>
-                Button
-              </Button>
-              <Button iconStart={<RiCloudLine />} variant={variant} size={size}>
-                Button
-              </Button>
-              <Button
-                iconEnd={<RiArrowRightSLine />}
-                variant={variant}
-                size={size}
-              >
-                Button
-              </Button>
-              <Button
-                iconStart={<RiCloudLine />}
-                iconEnd={<RiArrowRightSLine />}
-                style={{ width: '200px' }}
-                variant={variant}
-                size={size}
-              >
-                Button
-              </Button>
-              <Button variant={variant} size={size} isDisabled>
-                Button
-              </Button>
-              <Button
-                iconStart={<RiCloudLine />}
-                variant={variant}
-                size={size}
-                isDisabled
-              >
-                Button
-              </Button>
-              <Button
-                iconEnd={<RiArrowRightSLine />}
-                variant={variant}
-                size={size}
-                isDisabled
-              >
-                Button
-              </Button>
-            </Flex>
-          ))}
-        </Flex>
-      ))}
-    </Flex>
-  ),
-});
-
 export const Loading = meta.story({
   render: () => {
     const [isLoading, setIsLoading] = useState(false);

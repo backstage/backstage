@@ -1,5 +1,27 @@
 # @backstage/plugin-app
 
+## 0.3.4
+
+### Patch Changes
+
+- 4554a4e: Implemented support for the new `PluginWrapperBlueprint` from `@backstage/frontend-plugin-api/alpha`.
+- 9ccf84e: The following blueprints are being restricted to only be used in app plugin overrides and modules. They will now produce a deprecation warning when used outside of the app plugin:
+
+  - `AppRootWrapperBlueprint`
+  - `IconBundleBlueprint`
+  - `NavContentBlueprint`
+  - `RouterBlueprint`
+  - `SignInPageBlueprint`
+  - `SwappableComponentBlueprint`
+  - `ThemeBlueprint`
+  - `TranslationBlueprint`
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.3
+  - @backstage/plugin-app-react@0.1.0
+  - @backstage/core-components@0.18.5
+  - @backstage/integration-react@1.2.14
+
 ## 0.3.4-next.1
 
 ### Patch Changes

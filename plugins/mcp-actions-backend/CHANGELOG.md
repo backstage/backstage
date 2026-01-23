@@ -1,5 +1,22 @@
 # @backstage/plugin-mcp-actions-backend
 
+## 0.1.7
+
+### Patch Changes
+
+- 4d82a35: build(deps): bump `@modelcontextprotocol/sdk` from 1.24.3 to 1.25.2
+- Updated dependencies
+  - @backstage/backend-defaults@0.15.0
+  - @backstage/backend-plugin-api@1.6.1
+
+## 0.1.7-next.1
+
+### Patch Changes
+
+- 4d82a35: build(deps): bump `@modelcontextprotocol/sdk` from 1.24.3 to 1.25.2
+- Updated dependencies
+  - @backstage/backend-defaults@0.15.0-next.2
+
 ## 0.1.7-next.0
 
 ### Patch Changes

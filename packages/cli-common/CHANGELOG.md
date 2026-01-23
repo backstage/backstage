@@ -1,5 +1,11 @@
 # @backstage/cli-common
 
+## 0.1.17
+
+### Patch Changes
+
+- ae4dd5d: Move some of the symlink resolution to `isChildPath`
+
 ## 0.1.16
 
 ### Patch Changes

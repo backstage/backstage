@@ -12,6 +12,7 @@ import { AzureIntegration } from '@backstage/integration';
 import { BitbucketCloudIntegration } from '@backstage/integration';
 import { BitbucketIntegration } from '@backstage/integration';
 import { BitbucketServerIntegration } from '@backstage/integration';
+import { Config } from '@backstage/config';
 import { GerritIntegration } from '@backstage/integration';
 import { GiteaIntegration } from '@backstage/integration';
 import { GithubCredentialsProvider } from '@backstage/integration';
@@ -224,6 +225,8 @@ export class BitbucketUrlReader implements UrlReaderService {
 // @public
 export class FetchUrlReader implements UrlReaderService {
   static factory: ReaderFactory;
+  // (undocumented)
+  static fromConfig(config: Config): FetchUrlReader;
   // (undocumented)
   read(url: string): Promise<Buffer>;
   // (undocumented)

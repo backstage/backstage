@@ -20,6 +20,7 @@
   .bui-MenuPopover {
     display: flex;
     flex-direction: column;
+    box-shadow: var(--bui-shadow);
     border: 1px solid var(--bui-border);
     border-radius: var(--bui-radius-2);
     background: var(--bui-bg-surface-1);

@@ -1,5 +1,13 @@
 # @backstage/backend-openapi-utils
 
+## 0.6.5
+
+### Patch Changes
+
+- 6678b78: Internal update to use native feature from our request validation library for handling base path determination.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.1
+
 ## 0.6.5-next.0
 
 ### Patch Changes

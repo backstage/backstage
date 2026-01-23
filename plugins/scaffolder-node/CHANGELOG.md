@@ -1,5 +1,18 @@
 # @backstage/plugin-scaffolder-node
 
+## 0.12.3
+
+### Patch Changes
+
+- c641c14: Wrap some of the action logic with `resolveSafeChildPath` and improve symlink handling when fetching remote and local files
+- 27f9061: REwrite]
+- 872eb91: Upgrade `zod-to-json-schema` to latest version
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.1
+  - @backstage/integration@1.19.2
+  - @backstage/plugin-permission-common@0.9.4
+  - @backstage/plugin-scaffolder-common@1.7.5
+
 ## 0.12.3-next.0
 
 ### Patch Changes

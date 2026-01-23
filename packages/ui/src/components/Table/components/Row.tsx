@@ -47,6 +47,7 @@ export function Row<T extends object>(props: RowProps<T>) {
         <ReactAriaCell
           className={clsx(
             classNames.cellSelection,
+            styles[classNames.cell],
             styles[classNames.cellSelection],
           )}
         >

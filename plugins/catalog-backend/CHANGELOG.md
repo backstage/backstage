@@ -1,5 +1,16 @@
 # @backstage/plugin-catalog-backend
 
+## 3.3.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.1
+  - @backstage/integration@1.19.2
+  - @backstage/backend-openapi-utils@0.6.5
+  - @backstage/plugin-permission-common@0.9.4
+  - @backstage/plugin-permission-node@0.10.8
+
 ## 3.3.1-next.1
 
 ### Patch Changes

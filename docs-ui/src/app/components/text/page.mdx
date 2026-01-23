@@ -1,0 +1,65 @@
+import { PropsTable } from '@/components/PropsTable';
+import { Snippet } from '@/components/Snippet';
+import { CodeBlock } from '@/components/CodeBlock';
+import { textPropDefs } from './props-definition';
+import {
+  textUsageSnippet,
+  defaultSnippet,
+  variantsSnippet,
+  weightsSnippet,
+  colorsSnippet,
+  truncateSnippet,
+} from './snippets';
+import { Default, Variants, Weights, Colors, Truncate } from './components';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { TextDefinition } from '../../../utils/definitions';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+
+<PageTitle
+  title="Text"
+  description="The `Text` component is used to display content on your page."
+/>
+
+<Snippet py={4} preview={<Default />} code={defaultSnippet} />
+
+## Usage
+
+<CodeBlock code={textUsageSnippet} />
+
+## API reference
+
+<PropsTable data={textPropDefs} />
+
+## Examples
+
+### All variants
+
+The `Text` component has a `variant` prop that can be used to change the
+appearance of the text.
+
+<Snippet open preview={<Variants />} code={variantsSnippet} />
+
+### All weights
+
+The `Text` component has a `weight` prop that can be used to change the
+appearance of the text.
+
+<Snippet open preview={<Weights />} code={weightsSnippet} />
+
+### All colors
+
+The `Text` component has a `color` prop that can be used to change the
+appearance of the text.
+
+<Snippet open preview={<Colors />} code={colorsSnippet} />
+
+### Truncate
+
+The `Text` component has a `truncate` prop that can be used to truncate the text.
+
+<Snippet open preview={<Truncate />} code={truncateSnippet} />
+
+<Theming definition={TextDefinition} />
+
+<ChangelogComponent component="text" />

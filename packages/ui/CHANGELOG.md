@@ -1,5 +1,168 @@
 # @backstage/ui
 
+## 0.11.0
+
+### Minor Changes
+
+- 243e5e7: **BREAKING**: Redesigned Table component with new `useTable` hook API.
+
+  - The `Table` component (React Aria wrapper) is renamed to `TableRoot`
+  - New high-level `Table` component that handles data display, pagination, sorting, and selection
+  - The `useTable` hook is completely redesigned with a new API supporting three pagination modes (complete, offset, cursor)
+  - New types: `ColumnConfig`, `TableProps`, `TableItem`, `UseTableOptions`, `UseTableResult`
+
+  New features include unified pagination modes, debounced query changes, stale data preservation during reloads, and row selection with toggle/replace behaviors.
+
+  **Migration guide:**
+
+  1. Update imports and use the new `useTable` hook:
+
+  ```diff
+  -import { Table, useTable } from '@backstage/ui';
+  -const { data, paginationProps } = useTable({ data: items, pagination: {...} });
+  +import { Table, useTable, type ColumnConfig } from '@backstage/ui';
+  +const { tableProps } = useTable({
+  +  mode: 'complete',
+  +  getData: () => items,
+  +});
+  ```
+
+  2. Define columns and render with the new Table API:
+
+  ```diff
+  -<Table aria-label="My table">
+  -  <TableHeader>...</TableHeader>
+  -  <TableBody items={data}>...</TableBody>
+  -</Table>
+  -<TablePagination {...paginationProps} />
+  +const columns: ColumnConfig<Item>[] = [
+  +  { id: 'name', label: 'Name', isRowHeader: true, cell: item => <CellText title={item.name} /> },
+  +  { id: 'type', label: 'Type', cell: item => <CellText title={item.type} /> },
+  +];
+  +
+  +<Table columnConfig={columns} {...tableProps} />
+  ```
+
+  Affected components: Table, TableRoot, TablePagination
+
+- 95246eb: **Breaking** Updating color tokens to match the new neutral style on different surfaces.
+
+  ## Migration notes
+
+  There's no direct replacement for the old tint tokens but you can use the new neutral set of color tokens on surface 0 or 1 as a replacement.
+
+  - `--bui-bg-tint` can be replaced by `--bui-bg-neutral-on-surface-0`
+  - `--bui-bg-tint-hover` can be replaced by `--bui-bg-neutral-on-surface-0-hover`
+  - `--bui-bg-tint-pressed` can be replaced by `--bui-bg-neutral-on-surface-0-pressed`
+  - `--bui-bg-tint-disabled` can be replaced by `--bui-bg-neutral-on-surface-0-disabled`
+
+- ea0c6d8: Introduce new `ToggleButton` & `ToggleButtonGroup` components in Backstage UI
+- 4ea1d15: **BREAKING**: Renamed CSS variable `--bui-bg` to `--bui-bg-surface-0` for consistency.
+
+### Patch Changes
+
+- 1880402: Fixes app background color on dark mode.
+- d2fdded: Added indeterminate state support to the Checkbox component for handling partial selection scenarios like table header checkboxes.
+
+  Affected components: Checkbox
+
+- 4fb15d2: Added missing `aria-label` attributes to `SearchField` components in `Select`, `MenuAutocomplete`, and `MenuAutocompleteListbox` to fix accessibility warnings.
+
+  Affected components: Select, MenuAutocomplete, MenuAutocompleteListbox
+
+- 21c87cc: Fixes disabled state in primary and secondary buttons in Backstage UI.
+- 9c76682: build(deps-dev): bump `storybook` from 10.1.9 to 10.1.10
+- de80336: Fixed disabled tertiary buttons incorrectly showing hover effects on surfaces.
+- 133d5c6: Added new Popover component for Backstage UI with automatic overflow handling, and full placement support. Also introduced `--bui-shadow` token for consistent elevation styling across overlay components (Popover, Tooltip, Menu).
+- 973c839: Fixed Table sorting indicator not being visible when a column is actively sorted.
+
+  Affected components: Table, Column
+
+- df40cfc: Fixed Menu component trigger button not toggling correctly. Removed custom click-outside handler that was interfering with React Aria's built-in state management, allowing the menu to properly open and close when clicking the trigger button.
+- b01ab96: Added support for column width configuration in Table component. Columns now accept `width`, `defaultWidth`, `minWidth`, and `maxWidth` props for responsive layout control.
+
+  Affected components: Table, Column
+
+- b4a4911: Fixed SearchField `startCollapsed` prop not working correctly in Backstage UI. The field now properly starts in a collapsed state, expands when clicked and focused, and collapses back when unfocused with no input. Also fixed CSS logic to work correctly in all layout contexts (flex row, flex column, and regular containers).
+
+  Affected components: SearchField
+
+- b3253b6: Fixed `Link` component causing hard page refreshes for internal routes. The component now properly uses React Router's navigation instead of full page reloads.
+- fe7fe69: Added support for custom pagination options in `useTable` hook and `Table` component. You can now configure `pageSizeOptions` to customize the page size dropdown, and hook into pagination events via `onPageSizeChange`, `onNextPage`, and `onPreviousPage` callbacks. When `pageSize` doesn't match any option, the first option is used and a warning is logged.
+
+  Affected components: Table, TablePagination
+
+- cfac8a4: Fixed missing border styles on table selection cells in multi-select mode.
+
+  Affected components: Table
+
+- 2532d2a: Added `className` and `style` props to the `Table` component.
+
+  Affected components: Table
+
+## 0.11.0-next.1
+
+### Minor Changes
+
+- 243e5e7: **BREAKING**: Redesigned Table component with new `useTable` hook API.
+
+  - The `Table` component (React Aria wrapper) is renamed to `TableRoot`
+  - New high-level `Table` component that handles data display, pagination, sorting, and selection
+  - The `useTable` hook is completely redesigned with a new API supporting three pagination modes (complete, offset, cursor)
+  - New types: `ColumnConfig`, `TableProps`, `TableItem`, `UseTableOptions`, `UseTableResult`
+
+  New features include unified pagination modes, debounced query changes, stale data preservation during reloads, and row selection with toggle/replace behaviors.
+
+  **Migration guide:**
+
+  1. Update imports and use the new `useTable` hook:
+
+  ```diff
+  -import { Table, useTable } from '@backstage/ui';
+  -const { data, paginationProps } = useTable({ data: items, pagination: {...} });
+  +import { Table, useTable, type ColumnConfig } from '@backstage/ui';
+  +const { tableProps } = useTable({
+  +  mode: 'complete',
+  +  getData: () => items,
+  +});
+  ```
+
+  2. Define columns and render with the new Table API:
+
+  ```diff
+  -<Table aria-label="My table">
+  -  <TableHeader>...</TableHeader>
+  -  <TableBody items={data}>...</TableBody>
+  -</Table>
+  -<TablePagination {...paginationProps} />
+  +const columns: ColumnConfig<Item>[] = [
+  +  { id: 'name', label: 'Name', isRowHeader: true, cell: item => <CellText title={item.name} /> },
+  +  { id: 'type', label: 'Type', cell: item => <CellText title={item.type} /> },
+  +];
+  +
+  +<Table columnConfig={columns} {...tableProps} />
+  ```
+
+  Affected components: Table, TableRoot, TablePagination
+
+- 95246eb: **Breaking** Updating color tokens to match the new neutral style on different surfaces.
+
+  ## Migration notes
+
+  There's no direct replacement for the old tint tokens but you can use the new neutral set of color tokens on surface 0 or 1 as a replacement.
+
+  - `--bui-bg-tint` can be replaced by `--bui-bg-neutral-on-surface-0`
+  - `--bui-bg-tint-hover` can be replaced by `--bui-bg-neutral-on-surface-0-hover`
+  - `--bui-bg-tint-pressed` can be replaced by `--bui-bg-neutral-on-surface-0-pressed`
+  - `--bui-bg-tint-disabled` can be replaced by `--bui-bg-neutral-on-surface-0-disabled`
+
+- ea0c6d8: Introduce new `ToggleButton` & `ToggleButtonGroup` components in Backstage UI
+
+### Patch Changes
+
+- 21c87cc: Fixes disabled state in primary and secondary buttons in Backstage UI.
+- b3253b6: Fixed `Link` component causing hard page refreshes for internal routes. The component now properly uses React Router's navigation instead of full page reloads.
+
 ## 0.11.0-next.0
 
 ### Minor Changes

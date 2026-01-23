@@ -1,5 +1,16 @@
 # @backstage/plugin-scaffolder-react
 
+## 1.19.5
+
+### Patch Changes
+
+- 872eb91: Upgrade `zod-to-json-schema` to latest version
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.3
+  - @backstage/core-components@0.18.5
+  - @backstage/plugin-catalog-react@1.21.5
+  - @backstage/plugin-scaffolder-common@1.7.5
+
 ## 1.19.5-next.1
 
 ### Patch Changes

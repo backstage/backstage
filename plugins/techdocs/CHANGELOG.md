@@ -1,5 +1,21 @@
 # @backstage/plugin-techdocs
 
+## 1.16.2
+
+### Patch Changes
+
+- 0afb8a6: Corrected color of some elements such as Grid cards and Tables.
+- 94ff7ab: Code block "Copy to clipboard" button was not positioned correctly for docs built with `mkdocs-material>=9.7`
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.3
+  - @backstage/core-components@0.18.5
+  - @backstage/integration@1.19.2
+  - @backstage/plugin-search-react@1.10.2
+  - @backstage/integration-react@1.2.14
+  - @backstage/plugin-auth-react@0.1.23
+  - @backstage/plugin-catalog-react@1.21.5
+  - @backstage/plugin-techdocs-react@1.3.7
+
 ## 1.16.2-next.1
 
 ### Patch Changes

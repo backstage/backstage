@@ -1,5 +1,24 @@
 # @backstage/frontend-plugin-api
 
+## 0.13.3
+
+### Patch Changes
+
+- 3bd2a1a: Updated documentation for `createApiRef` to clarify the role of the ID in specifying the owning plugin of an API.
+- 9ccf84e: The following blueprints are being restricted to only be used in app plugin overrides and modules. They are being moved to the `@backstage/plugin-app-react` package and have been deprecated:
+
+  - `AppRootWrapperBlueprint`
+  - `IconBundleBlueprint`
+  - `NavContentBlueprint`
+  - `RouterBlueprint`
+  - `SignInPageBlueprint`
+  - `SwappableComponentBlueprint`
+  - `ThemeBlueprint`
+  - `TranslationBlueprint`
+
+- 4554a4e: Added an alpha `PluginWrapperBlueprint` exported from `@backstage/frontend-plugin-api/alpha`, which can install components that will wrap all plugin elements.
+- 872eb91: Upgrade `zod-to-json-schema` to latest version
+
 ## 0.13.2
 
 ### Patch Changes

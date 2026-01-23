@@ -1,6 +1,6 @@
 {
   "name": "@backstage/core-components",
-  "version": "0.18.5-next.0",
+  "version": "0.18.5",
   "description": "Core components used by Backstage plugins and apps",
   "backstage": {
     "role": "web-library"

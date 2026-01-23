@@ -24,9 +24,8 @@
     "@lezer/highlight": "^1.2.1",
     "@mdx-js/loader": "^3.1.0",
     "@mdx-js/react": "^3.1.0",
-    "@next/mdx": "15.5.7",
+    "@next/mdx": "15.5.9",
     "@remixicon/react": "^4.6.0",
-    "@storybook/react": "^8.6.12",
     "@uiw/codemirror-themes": "^4.23.7",
     "@uiw/react-codemirror": "^4.23.7",
     "clsx": "^2.1.1",
@@ -37,8 +36,7 @@
     "prop-types": "^15.8.1",
     "react": "19.1.1",
     "react-dom": "19.1.1",
-    "shiki": "^3.13.0",
-    "storybook": "^8.6.15"
+    "shiki": "^3.13.0"
   },
   "devDependencies": {
     "@octokit/rest": "^22.0.1",
@@ -49,7 +47,7 @@
     "@types/react-dom": "19.1.7",
     "chokidar": "^3.6.0",
     "eslint": "^8",
-    "eslint-config-next": "15.5.7",
+    "eslint-config-next": "15.5.9",
     "lightningcss": "^1.28.2",
     "typescript": "^5",
     "unified": "^11.0.4"

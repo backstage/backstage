@@ -1,6 +1,6 @@
 {
   "name": "@backstage/repo-tools",
-  "version": "0.16.1",
+  "version": "0.16.2",
   "description": "CLI for Backstage repo tooling ",
   "backstage": {
     "role": "cli"
@@ -80,7 +80,7 @@
     "minimatch": "^9.0.0",
     "p-limit": "^3.0.2",
     "portfinder": "^1.0.32",
-    "tar": "^6.1.12",
+    "tar": "^7.5.6",
     "ts-morph": "^24.0.0",
     "yaml-diff-patch": "^2.0.0",
     "zod": "^3.22.4"

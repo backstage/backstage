@@ -1,5 +1,15 @@
 # @backstage/plugin-mui-to-bui
 
+## 0.2.3
+
+### Patch Changes
+
+- f157f43: Fix installation command
+- e4a1180: Updated tokens from `--bui-bg` to `--bui-bg-surface-0`
+- Updated dependencies
+  - @backstage/ui@0.11.0
+  - @backstage/frontend-plugin-api@0.13.3
+
 ## 0.2.3-next.0
 
 ### Patch Changes

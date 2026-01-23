@@ -1,5 +1,19 @@
 # @backstage/plugin-catalog-backend-module-puppetdb
 
+## 0.2.18
+
+### Patch Changes
+
+- a307700: Fixed crash when `latest_report_status` is undefined
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.1
+
+## 0.2.18-next.0
+
+### Patch Changes
+
+- a307700: Fixed crash when `latest_report_status` is undefined
+
 ## 0.2.17
 
 ### Patch Changes

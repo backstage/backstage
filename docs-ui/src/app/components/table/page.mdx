@@ -1,0 +1,163 @@
+import { PropsTable } from '@/components/PropsTable';
+import { Snippet } from '@/components/Snippet';
+import { CodeBlock } from '@/components/CodeBlock';
+import {
+  TableRockBand,
+  SelectionModePlayground,
+  SelectionBehaviorPlayground,
+  SelectionToggleWithActions,
+} from './components';
+import {
+  tablePropDefs,
+  tableHeaderPropDefs,
+  tableBodyPropDefs,
+  tablePaginationPropDefs,
+  columnPropDefs,
+  rowPropDefs,
+  cellPropDefs,
+} from './props-definition';
+import {
+  tableUsageSnippet,
+  tableBasicSnippet,
+  tableSelectionActionsSnippet,
+  tableSelectionModeSnippet,
+  tableSelectionBehaviorSnippet,
+} from './snippets';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { TableDefinition } from '../../../utils/definitions';
+
+<PageTitle
+  title="Table"
+  description="A flexible table component built on top of TanStack Table with built-in styling, interactions, and pagination support."
+/>
+
+<Snippet py={4} preview={<TableRockBand />} code={tableBasicSnippet} />
+
+## Usage
+
+<CodeBlock code={tableUsageSnippet} />
+
+## API reference
+
+### Table
+
+The main table component that renders data in a structured grid format.
+
+<PropsTable data={tablePropDefs} />
+
+### TableHeader
+
+The header section of the table that contains the column definitions.
+
+<PropsTable data={tableHeaderPropDefs} />
+
+### Column
+
+A column definition that describes how a column should be rendered.
+
+<PropsTable data={columnPropDefs} />
+
+### TableBody
+
+The body section of the table that contains the rows.
+
+<PropsTable data={tableBodyPropDefs} />
+
+### Row
+
+A row definition that describes how a row should be rendered.
+
+<PropsTable data={rowPropDefs} />
+
+### Cell
+
+A cell definition that describes how a cell should be rendered.
+
+<PropsTable data={cellPropDefs} />
+
+### TablePagination
+
+A pagination component designed to work with the Table component.
+
+<PropsTable data={tablePaginationPropDefs} />
+
+## Examples
+
+### Basic Table
+
+Coming soon.
+
+### Row selection
+
+Tables support row selection with two configuration options: selection mode and selection behavior.
+
+#### Selection mode
+
+Use `selectionMode` to control how many rows can be selected. With `single`, only one row can be selected at a time. With `multiple`, any number of rows can be selected, and a header checkbox provides select-all functionality.
+
+<Snippet
+  preview={<SelectionModePlayground />}
+  code={tableSelectionModeSnippet}
+/>
+
+#### Selection behavior
+
+Use `selectionBehavior` to control how selection is indicated and interacted with. With `toggle`, checkboxes appear for selection. With `replace`, selection is indicated by row background color—click to select, Cmd/Ctrl+click for multiple.
+
+<Snippet
+  preview={<SelectionBehaviorPlayground />}
+  code={tableSelectionBehaviorSnippet}
+/>
+
+#### With row actions
+
+With toggle behavior, clicking a row triggers its action when nothing is selected. Once any row is selected, clicking toggles selection instead.
+
+With replace behavior, clicking selects the row and double-clicking triggers the action.
+
+<Snippet
+  preview={<SelectionToggleWithActions />}
+  code={tableSelectionActionsSnippet}
+/>
+
+### Row Clicks
+
+Coming soon.
+
+### Pagination
+
+Coming soon.
+
+### Sorting
+
+Coming soon.
+
+### Asynchronous loading
+
+Coming soon.
+
+### Empty state
+
+Coming soon.
+
+### Column resizing
+
+This feature is not available yet — let us know if you'd like us to explore it!
+
+### Column reordering
+
+This feature is not available yet — let us know if you'd like us to explore it!
+
+### Column pinning
+
+This feature is not available yet — let us know if you'd like us to explore it!
+
+### Column visibility
+
+This feature is not available yet — let us know if you'd like us to explore it!
+
+<Theming definition={TableDefinition} />
+
+<ChangelogComponent component="table" />

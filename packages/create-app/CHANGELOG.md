@@ -1,5 +1,22 @@
 # @backstage/create-app
 
+## 0.7.8
+
+### Patch Changes
+
+- fea3e39: Bumped create-app version.
+- 9f1ee3e: Bumped create-app version.
+- 880310b: Bumped create-app version.
+- f1fe6fe: Updated Dockerfile to use Node 24 and Debian Trixie
+- Updated dependencies
+  - @backstage/cli-common@0.1.17
+
+## 0.7.8-next.3
+
+### Patch Changes
+
+- Bumped create-app version.
+
 ## 0.7.8-next.2
 
 ### Patch Changes

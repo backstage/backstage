@@ -1,5 +1,106 @@
 # @backstage/backend-defaults
 
+## 0.15.0
+
+### Minor Changes
+
+- 6fc00e6: Added action filtering support with glob patterns and attribute constraints.
+
+  The `ActionsService` now supports filtering actions based on configuration. This allows controlling which actions are exposed to consumers like the MCP backend.
+
+  Configuration example:
+
+  ```yaml
+  backend:
+    actions:
+      pluginSources:
+        - catalog
+        - scaffolder
+      filter:
+        include:
+          - id: 'catalog:*'
+            attributes:
+              destructive: false
+          - id: 'scaffolder:*'
+        exclude:
+          - id: '*:delete-*'
+          - attributes:
+              readOnly: false
+  ```
+
+  Filtering logic:
+
+  - `include`: Rules for actions to include. Each rule can specify an `id` glob pattern and/or `attributes` constraints. An action must match at least one rule to be included. If no include rules are specified, all actions are included by default.
+  - `exclude`: Rules for actions to exclude. Takes precedence over include rules.
+  - Each rule combines `id` and `attributes` with AND logic (both must match if specified).
+
+- 27f9061: **BREAKING**: The constructor for `FetchUrlReader` is now private. If you have to construct an instance of it, please use `FetchUrlReader.fromConfig` instead.
+- 27f9061: **BREAKING**: `coreServices.urlReader` now validates that redirect chains are subject to the allow list in `reading.allow` of your app config. If you were relying on redirects that pointed to URLs that were not allowlisted, you will now have to add those to your config as well.
+
+  Example:
+
+  ```diff
+   backend:
+     reading:
+       allow:
+         - host: example.com
+  +      - host: storage-api.example.com
+  ```
+
+### Patch Changes
+
+- 3afeab4: Implementing `readTree` for `GoogleGcsReader`
+- c641c14: Wrap some of the action logic with `resolveSafeChildPath` and improve symlink handling when fetching remote and local files
+- 7126bf2: Fixed a spelling mistake in root health service shutdown response.
+- 872eb91: Upgrade `zod-to-json-schema` to latest version
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.1
+  - @backstage/backend-app-api@1.4.1
+  - @backstage/integration@1.19.2
+  - @backstage/plugin-auth-node@0.6.11
+  - @backstage/plugin-permission-node@0.10.8
+
+## 0.15.0-next.2
+
+### Minor Changes
+
+- 6fc00e6: Added action filtering support with glob patterns and attribute constraints.
+
+  The `ActionsService` now supports filtering actions based on configuration. This allows controlling which actions are exposed to consumers like the MCP backend.
+
+  Configuration example:
+
+  ```yaml
+  backend:
+    actions:
+      pluginSources:
+        - catalog
+        - scaffolder
+      filter:
+        include:
+          - id: 'catalog:*'
+            attributes:
+              destructive: false
+          - id: 'scaffolder:*'
+        exclude:
+          - id: '*:delete-*'
+          - attributes:
+              readOnly: false
+  ```
+
+  Filtering logic:
+
+  - `include`: Rules for actions to include. Each rule can specify an `id` glob pattern and/or `attributes` constraints. An action must match at least one rule to be included. If no include rules are specified, all actions are included by default.
+  - `exclude`: Rules for actions to exclude. Takes precedence over include rules.
+  - Each rule combines `id` and `attributes` with AND logic (both must match if specified).
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-app-api@1.4.0
+  - @backstage/plugin-auth-node@0.6.10
+  - @backstage/plugin-permission-node@0.10.7
+
 ## 0.14.1-next.1
 
 ### Patch Changes

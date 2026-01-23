@@ -1,6 +1,6 @@
 {
   "name": "example-app-next",
-  "version": "0.0.31-next.2",
+  "version": "0.0.31",
   "backstage": {
     "role": "frontend"
   },
@@ -57,6 +57,7 @@
     "@backstage/plugin-catalog-import": "workspace:^",
     "@backstage/plugin-catalog-react": "workspace:^",
     "@backstage/plugin-catalog-unprocessed-entities": "workspace:^",
+    "@backstage/plugin-devtools": "workspace:^",
     "@backstage/plugin-home": "workspace:^",
     "@backstage/plugin-kubernetes": "workspace:^",
     "@backstage/plugin-kubernetes-cluster": "workspace:^",

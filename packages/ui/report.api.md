@@ -7,6 +7,8 @@ import { ButtonProps as ButtonProps_2 } from 'react-aria-components';
 import { CellProps as CellProps_2 } from 'react-aria-components';
 import { CheckboxProps as CheckboxProps_2 } from 'react-aria-components';
 import { ColumnProps as ColumnProps_2 } from 'react-aria-components';
+import type { ColumnSize } from '@react-types/table';
+import type { ColumnStaticSize } from '@react-types/table';
 import { ComponentProps } from 'react';
 import type { ComponentPropsWithRef } from 'react';
 import { DetailedHTMLProps } from 'react';
@@ -27,7 +29,7 @@ import type { MenuProps as MenuProps_2 } from 'react-aria-components';
 import type { MenuSectionProps as MenuSectionProps_2 } from 'react-aria-components';
 import type { MenuTriggerProps as MenuTriggerProps_2 } from 'react-aria-components';
 import type { ModalOverlayProps } from 'react-aria-components';
-import type { PopoverProps } from 'react-aria-components';
+import { PopoverProps as PopoverProps_2 } from 'react-aria-components';
 import type { RadioGroupProps as RadioGroupProps_2 } from 'react-aria-components';
 import type { RadioProps as RadioProps_2 } from 'react-aria-components';
 import { ReactElement } from 'react';
@@ -51,6 +53,8 @@ import type { TagGroupProps as TagGroupProps_2 } from 'react-aria-components';
 import type { TagListProps } from 'react-aria-components';
 import type { TagProps as TagProps_2 } from 'react-aria-components';
 import type { TextFieldProps as TextFieldProps_2 } from 'react-aria-components';
+import type { ToggleButtonGroupProps as ToggleButtonGroupProps_2 } from 'react-aria-components';
+import type { ToggleButtonProps as ToggleButtonProps_2 } from 'react-aria-components';
 import { TooltipProps as TooltipProps_2 } from 'react-aria-components';
 import { TooltipTriggerComponentProps } from 'react-aria-components';
 
@@ -456,6 +460,7 @@ export const CheckboxDefinition: {
   };
   readonly dataAttributes: {
     readonly selected: readonly [true, false];
+    readonly indeterminate: readonly [true, false];
   };
 };
 
@@ -476,6 +481,8 @@ export interface ColumnConfig<T extends TableItem> {
   // (undocumented)
   cell: (item: T) => ReactNode;
   // (undocumented)
+  defaultWidth?: ColumnSize | null;
+  // (undocumented)
   header?: () => ReactNode;
   // (undocumented)
   id: string;
@@ -488,7 +495,11 @@ export interface ColumnConfig<T extends TableItem> {
   // (undocumented)
   label: string;
   // (undocumented)
-  width?: number | string;
+  maxWidth?: ColumnStaticSize | null;
+  // (undocumented)
+  minWidth?: ColumnStaticSize | null;
+  // (undocumented)
+  width?: ColumnSize | null;
 }
 
 // @public (undocumented)
@@ -1023,7 +1034,7 @@ export interface MenuAutocompleteListBoxProps<T>
   // (undocumented)
   placeholder?: string;
   // (undocumented)
-  placement?: PopoverProps['placement'];
+  placement?: PopoverProps_2['placement'];
   // (undocumented)
   virtualized?: boolean;
 }
@@ -1039,7 +1050,7 @@ export interface MenuAutocompleteProps<T>
   // (undocumented)
   placeholder?: string;
   // (undocumented)
-  placement?: PopoverProps['placement'];
+  placement?: PopoverProps_2['placement'];
   // (undocumented)
   virtualized?: boolean;
 }
@@ -1104,7 +1115,7 @@ export interface MenuListBoxProps<T>
   // (undocumented)
   maxWidth?: string;
   // (undocumented)
-  placement?: PopoverProps['placement'];
+  placement?: PopoverProps_2['placement'];
   // (undocumented)
   virtualized?: boolean;
 }
@@ -1118,7 +1129,7 @@ export interface MenuProps<T>
   // (undocumented)
   maxWidth?: string;
   // (undocumented)
-  placement?: PopoverProps['placement'];
+  placement?: PopoverProps_2['placement'];
   // (undocumented)
   virtualized?: boolean;
 }
@@ -1193,15 +1204,49 @@ export interface PagePagination extends TablePaginationProps {
 }
 
 // @public (undocumented)
-export interface PaginationOptions {
+export interface PageSizeOption {
   // (undocumented)
-  getLabel?: TablePaginationProps['getLabel'];
+  label: string;
+  // (undocumented)
+  value: number;
+}
+
+// @public (undocumented)
+export interface PaginationOptions
+  extends Partial<
+    Pick<
+      TablePaginationProps,
+      | 'pageSize'
+      | 'pageSizeOptions'
+      | 'onPageSizeChange'
+      | 'onNextPage'
+      | 'onPreviousPage'
+      | 'showPageSizeOptions'
+      | 'getLabel'
+    >
+  > {
   // (undocumented)
   initialOffset?: number;
-  // (undocumented)
-  pageSize?: number;
-  // (undocumented)
-  showPageSizeOptions?: boolean;
+}
+
+// @public
+export const Popover: ForwardRefExoticComponent<
+  PopoverProps & RefAttributes<HTMLDivElement>
+>;
+
+// @public
+export const PopoverDefinition: {
+  readonly classNames: {
+    readonly root: 'bui-Popover';
+    readonly arrow: 'bui-PopoverArrow';
+    readonly content: 'bui-PopoverContent';
+  };
+};
+
+// @public
+export interface PopoverProps extends Omit<PopoverProps_2, 'children'> {
+  children: React.ReactNode;
+  hideArrow?: boolean;
 }
 
 // @public (undocumented)
@@ -1488,6 +1533,8 @@ export function Table<T extends TableItem>({
   rowConfig,
   selection,
   emptyState,
+  className,
+  style,
 }: TableProps<T>): JSX_2.Element;
 
 // @public (undocumented)
@@ -1537,6 +1584,7 @@ export interface TableItem {
 // @public
 export function TablePagination({
   pageSize,
+  pageSizeOptions,
   offset,
   totalCount,
   hasNextPage,
@@ -1581,6 +1629,8 @@ export interface TablePaginationProps {
   // (undocumented)
   pageSize: number;
   // (undocumented)
+  pageSizeOptions?: number[] | PageSizeOption[];
+  // (undocumented)
   showPageSizeOptions?: boolean;
   // (undocumented)
   totalCount?: number;
@@ -1591,6 +1641,8 @@ export type TablePaginationType = NoPagination | PagePagination;
 
 // @public (undocumented)
 export interface TableProps<T extends TableItem> {
+  // (undocumented)
+  className?: string;
   // (undocumented)
   columnConfig: readonly ColumnConfig<T>[];
   // (undocumented)
@@ -1611,6 +1663,8 @@ export interface TableProps<T extends TableItem> {
   selection?: TableSelection;
   // (undocumented)
   sort?: SortState;
+  // (undocumented)
+  style?: React.CSSProperties;
 }
 
 // @public (undocumented)
@@ -1813,6 +1867,55 @@ export type TextVariants =
 
 // @public (undocumented)
 export type TextWeights = 'regular' | 'bold';
+
+// @public (undocumented)
+export const ToggleButton: ForwardRefExoticComponent<
+  ToggleButtonProps & RefAttributes<HTMLButtonElement>
+>;
+
+// @public
+export const ToggleButtonDefinition: {
+  readonly classNames: {
+    readonly root: 'bui-ToggleButton';
+    readonly content: 'bui-ToggleButtonContent';
+  };
+  readonly dataAttributes: {
+    readonly size: readonly ['small', 'medium'];
+  };
+};
+
+// @public (undocumented)
+export const ToggleButtonGroup: ForwardRefExoticComponent<
+  ToggleButtonGroupProps & RefAttributes<HTMLDivElement>
+>;
+
+// @public
+export const ToggleButtonGroupDefinition: {
+  readonly classNames: {
+    readonly root: 'bui-ToggleButtonGroup';
+  };
+  readonly dataAttributes: {
+    readonly orientation: readonly ['horizontal', 'vertical'];
+  };
+};
+
+// @public (undocumented)
+export interface ToggleButtonGroupProps
+  extends Omit<ToggleButtonGroupProps_2, 'orientation'> {
+  // (undocumented)
+  orientation?: NonNullable<ToggleButtonGroupProps_2['orientation']>;
+}
+
+// @public
+export interface ToggleButtonProps extends ToggleButtonProps_2 {
+  // (undocumented)
+  iconEnd?: ReactElement;
+  // (undocumented)
+  iconStart?: ReactElement;
+  onSurface?: Responsive<Surface>;
+  // (undocumented)
+  size?: 'small' | 'medium' | Partial<Record<Breakpoint, 'small' | 'medium'>>;
+}
 
 // @public (undocumented)
 export const Tooltip: ForwardRefExoticComponent<

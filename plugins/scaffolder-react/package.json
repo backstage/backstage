@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-scaffolder-react",
-  "version": "1.19.5-next.1",
+  "version": "1.19.5",
   "description": "A frontend library that helps other Backstage plugins interact with the Scaffolder",
   "backstage": {
     "role": "web-library",
@@ -93,7 +93,7 @@
     "use-immer": "^0.11.0",
     "zen-observable": "^0.10.0",
     "zod": "^3.22.4",
-    "zod-to-json-schema": "^3.20.4"
+    "zod-to-json-schema": "^3.25.1"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",

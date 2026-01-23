@@ -1,5 +1,23 @@
 # @backstage/plugin-user-settings-backend
 
+## 0.3.10
+
+### Patch Changes
+
+- ad01e54: Resolves an issue where user setting keys containing slashes returned 404 not found.
+- Updated dependencies
+  - @backstage/backend-defaults@0.15.0
+  - @backstage/backend-plugin-api@1.6.1
+  - @backstage/plugin-auth-node@0.6.11
+
+## 0.3.10-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.15.0-next.2
+  - @backstage/plugin-auth-node@0.6.10
+
 ## 0.3.10-next.0
 
 ### Patch Changes

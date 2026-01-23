@@ -1,5 +1,28 @@
 # @backstage/plugin-catalog
 
+## 1.32.2
+
+### Patch Changes
+
+- 7ca91e8: Header in EntityLayout should always be shown.
+  Monitoring the loading status caused flickering when the refresh() method of the Async Entity was invoked.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.3
+  - @backstage/core-components@0.18.5
+  - @backstage/core-compat-api@0.5.6
+  - @backstage/plugin-search-react@1.10.2
+  - @backstage/integration-react@1.2.14
+  - @backstage/plugin-catalog-react@1.21.5
+  - @backstage/plugin-scaffolder-common@1.7.5
+  - @backstage/plugin-techdocs-react@1.3.7
+
+## 1.32.2-next.2
+
+### Patch Changes
+
+- 7ca91e8: Header in EntityLayout should always be shown.
+  Monitoring the loading status caused flickering when the refresh() method of the Async Entity was invoked.
+
 ## 1.32.2-next.1
 
 ### Patch Changes

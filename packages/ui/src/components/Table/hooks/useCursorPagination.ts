@@ -24,13 +24,14 @@ import type {
 import { usePageCache } from './usePageCache';
 import { useStableCallback } from './useStableCallback';
 import { useDebouncedReload } from './useDebouncedReload';
+import { getEffectivePageSize } from './getEffectivePageSize';
 
 export function useCursorPagination<T extends TableItem, TFilter>(
   options: UseTableCursorOptions<T, TFilter>,
   query: QueryState<TFilter>,
 ): PaginationResult<T> & { reload: () => void } {
   const { getData: getDataProp, paginationOptions = {} } = options;
-  const { pageSize: defaultPageSize = 20 } = paginationOptions;
+  const defaultPageSize = getEffectivePageSize(paginationOptions);
 
   const getData = useStableCallback(getDataProp);
   const { sort, filter, search } = query;

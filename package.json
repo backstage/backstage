@@ -1,6 +1,6 @@
 {
   "name": "root",
-  "version": "1.47.0-next.2",
+  "version": "1.47.0",
   "backstage": {
     "cli": {
       "new": {
@@ -141,7 +141,7 @@
     "@storybook/addon-a11y": "^10.2.0-alpha.7",
     "@storybook/addon-docs": "^10.2.0-alpha.7",
     "@storybook/addon-links": "^10.2.0-alpha.7",
-    "@storybook/addon-mcp": "0.1.4-next.2",
+    "@storybook/addon-mcp": "0.1.8",
     "@storybook/addon-themes": "^10.2.0-alpha.7",
     "@storybook/addon-vitest": "^10.2.0-alpha.7",
     "@storybook/react-vite": "^10.2.0-alpha.7",

@@ -271,7 +271,7 @@ export const AppRootElementBlueprint: ExtensionBlueprint_2<{
   dataRefs: never;
 }>;
 
-// @public
+// @public @deprecated
 export const AppRootWrapperBlueprint: ExtensionBlueprint_2<{
   kind: 'app-root-wrapper';
   params: {
@@ -1457,7 +1457,7 @@ export const googleAuthApiRef: ApiRef<
     SessionApi
 >;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const IconBundleBlueprint: ExtensionBlueprint_2<{
   kind: 'icon-bundle';
   params: {
@@ -1522,7 +1522,7 @@ export const microsoftAuthApiRef: ApiRef<
     SessionApi
 >;
 
-// @public
+// @public @deprecated
 export const NavContentBlueprint: ExtensionBlueprint_2<{
   kind: 'nav-content';
   params: {
@@ -1923,7 +1923,7 @@ export type RouteFunc<TParams extends AnyRouteRefParams> = (
     : readonly [params: TParams]
 ) => string;
 
-// @public (undocumented)
+// @public @deprecated (undocumented)
 export const RouterBlueprint: ExtensionBlueprint_2<{
   kind: 'app-router-component';
   params: {
@@ -1998,7 +1998,7 @@ export namespace SessionState {
   export type SignedOut = typeof SessionState.SignedOut;
 }
 
-// @public
+// @public @deprecated
 export const SignInPageBlueprint: ExtensionBlueprint_2<{
   kind: 'sign-in-page';
   params: {
@@ -2066,7 +2066,7 @@ export interface SubRouteRef<
   readonly T: TParams;
 }
 
-// @public
+// @public @deprecated
 export const SwappableComponentBlueprint: ExtensionBlueprint_2<{
   kind: 'component';
   params: <Ref extends SwappableComponentRef<any>>(params: {
@@ -2150,7 +2150,7 @@ export interface SwappableComponentsApi {
 // @public
 export const swappableComponentsApiRef: ApiRef_2<SwappableComponentsApi>;
 
-// @public
+// @public @deprecated
 export const ThemeBlueprint: ExtensionBlueprint_2<{
   kind: 'theme';
   params: {
@@ -2186,7 +2186,7 @@ export type TranslationApi = {
 // @public (undocumented)
 export const translationApiRef: ApiRef<TranslationApi>;
 
-// @public
+// @public @deprecated
 export const TranslationBlueprint: ExtensionBlueprint_2<{
   kind: 'translation';
   params: {

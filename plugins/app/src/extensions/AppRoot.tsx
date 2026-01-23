@@ -74,6 +74,22 @@ export const AppRoot = createExtension({
   },
   output: [coreExtensionData.reactElement],
   factory({ inputs, apis }) {
+    if (inputs.router && inputs.router.node.spec.plugin?.id !== 'app') {
+      // eslint-disable-next-line no-console
+      console.warn(
+        `DEPRECATION WARNING: Router should only be installed as an extension in the app plugin. ` +
+          `You can either use appPlugin.override(), or a module for the app plugin. The following extension will be ignored in the future: ${inputs.router.node.spec.id}`,
+      );
+    }
+
+    if (inputs.signInPage && inputs.signInPage.node.spec.plugin?.id !== 'app') {
+      // eslint-disable-next-line no-console
+      console.warn(
+        `DEPRECATION WARNING: SignInPage should only be installed as an extension in the app plugin. ` +
+          `You can either use appPlugin.override(), or a module for the app plugin. The following extension will be ignored in the future: ${inputs.signInPage.node.spec.id}`,
+      );
+    }
+
     if (isProtectedApp()) {
       const identityApi = apis.get(identityApiRef);
       if (!identityApi) {
@@ -101,7 +117,17 @@ export const AppRoot = createExtension({
 
     for (const wrapper of inputs.wrappers) {
       const Component = wrapper.get(AppRootWrapperBlueprint.dataRefs.component);
-      content = <Component>{content}</Component>;
+      const pluginId = wrapper.node.spec.plugin.id;
+      if (Component) {
+        content = <Component>{content}</Component>;
+        if (pluginId !== 'app') {
+          // eslint-disable-next-line no-console
+          console.warn(
+            `DEPRECATION WARNING: AppRootWrappers should only be installed as an extension in the app plugin. ` +
+              `You can either use appPlugin.override(), or a module for the app plugin. The following extension will be ignored in the future: ${wrapper.node.spec.id}`,
+          );
+        }
+      }
     }
 
     return [

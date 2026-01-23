@@ -1,5 +1,23 @@
 # @backstage/plugin-techdocs-backend
 
+## 2.1.4
+
+### Patch Changes
+
+- b6ff2a5: Some AWS `publisher` config options such as `region`, `endpoint`, `accountId` are now marked as `@visibility backend` instead of `secret`.
+- Updated dependencies
+  - @backstage/backend-defaults@0.15.0
+  - @backstage/backend-plugin-api@1.6.1
+  - @backstage/integration@1.19.2
+  - @backstage/plugin-techdocs-node@1.14.0
+
+## 2.1.4-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.15.0-next.2
+
 ## 2.1.4-next.1
 
 ### Patch Changes
