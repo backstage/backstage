@@ -44,6 +44,7 @@ describe('createFrontendModule', () => {
             },
             "configSchema": undefined,
             "disabled": false,
+            "enabled": undefined,
             "factory": [Function],
             "id": "route:test/test",
             "inputs": {},
