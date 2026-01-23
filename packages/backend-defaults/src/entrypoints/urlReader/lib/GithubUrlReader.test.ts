@@ -373,7 +373,7 @@ describe('GithubUrlReader', () => {
                 'content-disposition',
                 'attachment; filename=backstage-mock-etag123.tar.gz',
               ),
-              ctx.body(repoBuffer),
+              ctx.body(new Uint8Array(repoBuffer)),
             ),
         ),
         rest.get(
@@ -390,7 +390,7 @@ describe('GithubUrlReader', () => {
                 'content-disposition',
                 'attachment; filename=backstage-mock-etag123.tar.gz',
               ),
-              ctx.body(repoBuffer),
+              ctx.body(new Uint8Array(repoBuffer)),
             ),
         ),
         rest.get(
@@ -480,7 +480,7 @@ describe('GithubUrlReader', () => {
                 'content-disposition',
                 'attachment; filename=backstage-mock-etag123.tar.gz',
               ),
-              ctx.body(repoBuffer),
+              ctx.body(new Uint8Array(repoBuffer)),
             );
           },
         ),
@@ -531,7 +531,7 @@ describe('GithubUrlReader', () => {
                 'content-disposition',
                 'attachment; filename=backstage-mock-etag123.tar.gz',
               ),
-              ctx.body(repoBuffer),
+              ctx.body(new Uint8Array(repoBuffer)),
             );
           },
         ),
@@ -720,7 +720,7 @@ describe('GithubUrlReader', () => {
                 'content-disposition',
                 'attachment; filename=backstage-mock-etag123.tar.gz',
               ),
-              ctx.body(repoBuffer),
+              ctx.body(new Uint8Array(repoBuffer)),
             ),
         ),
         rest.get(
@@ -733,7 +733,7 @@ describe('GithubUrlReader', () => {
                 'content-disposition',
                 'attachment; filename=backstage-mock-etag123.tar.gz',
               ),
-              ctx.body(repoBuffer),
+              ctx.body(new Uint8Array(repoBuffer)),
             ),
         ),
       );

@@ -20,13 +20,14 @@ const path = require('path');
 const semver = require('semver');
 const { Octokit } = require('@octokit/rest');
 const { execFile: execFileCb } = require('child_process');
-const { promisify } = require('util');
+const { promisify, parseArgs } = require('util');
 
 const execFile = promisify(execFileCb);
 
 const owner = 'backstage';
 const repo = 'backstage';
 const rootDir = path.resolve(__dirname, '..');
+const PATCH_FILE_PATTERN = /^pr-(\d+)\.txt$/;
 
 const octokit = new Octokit({
   auth: process.env.GITHUB_TOKEN,
@@ -81,15 +82,120 @@ async function findCurrentReleaseVersion() {
   throw new Error('No stable release found');
 }
 
-async function main(args) {
-  const prNumbers = args.map(s => {
-    const num = parseInt(s, 10);
-    if (!Number.isInteger(num)) {
-      throw new Error(`Must provide valid PR number arguments, got ${s}`);
-    }
-    return num;
+/**
+ * Parses command-line arguments and determines which patches to use.
+ * Returns an object with prNumbers and descriptions, or null if should exit early.
+ */
+async function parsePatchArguments(args) {
+  const { values, positionals } = parseArgs({
+    args,
+    options: {
+      'from-dir': {
+        type: 'boolean',
+        short: 'd',
+      },
+    },
+    allowPositionals: true,
   });
-  console.log(`PR number(s): ${prNumbers.join(', ')}`);
+
+  const useDirectory = values['from-dir'] === true;
+
+  let prNumbers;
+  let descriptions;
+
+  if (useDirectory) {
+    // Read patches from directory
+    const patchesFromDir = await readPatchesFromDirectory();
+
+    if (patchesFromDir) {
+      // Use patches from directory
+      prNumbers = patchesFromDir.map(p => p.prNumber);
+      descriptions = patchesFromDir.map(p => p.description);
+      console.log(`Reading patches from .patches/ directory`);
+      console.log(`PR number(s): ${prNumbers.join(', ')}`);
+      return { prNumbers, descriptions };
+    }
+    // No patches found in directory - exit early
+    return null;
+  } else if (positionals.length > 0) {
+    // Use command-line arguments
+    prNumbers = positionals.map(s => {
+      const num = parseInt(s, 10);
+      if (!Number.isInteger(num)) {
+        throw new Error(`Must provide valid PR number arguments, got ${s}`);
+      }
+      return num;
+    });
+    console.log(`Using command-line arguments`);
+    console.log(`PR number(s): ${prNumbers.join(', ')}`);
+    return { prNumbers, descriptions: undefined };
+  }
+  // No patches found and no command-line args - exit early
+  return null;
+}
+
+/**
+ * Reads patch files from .patches/ directory and returns PR numbers with descriptions.
+ * Returns null if directory doesn't exist or contains no matching files.
+ */
+async function readPatchesFromDirectory() {
+  const patchesDir = path.resolve(rootDir, '.patches');
+
+  try {
+    const exists = await fs.pathExists(patchesDir);
+    if (!exists) {
+      return null;
+    }
+
+    const files = await fs.readdir(patchesDir);
+    const patchFiles = files.filter(file => PATCH_FILE_PATTERN.test(file));
+
+    if (patchFiles.length === 0) {
+      return null;
+    }
+
+    const patches = [];
+    for (const file of patchFiles) {
+      const match = file.match(PATCH_FILE_PATTERN);
+      const prNumber = parseInt(match[1], 10);
+      const filePath = path.resolve(patchesDir, file);
+      const content = await fs.readFile(filePath, 'utf8');
+      const description = content.trim() || '<empty>';
+      patches.push({ prNumber, description });
+    }
+
+    // Sort by PR number for consistent ordering
+    patches.sort((a, b) => a.prNumber - b.prNumber);
+
+    return patches;
+  } catch {
+    // If there's an error reading the directory, return null to fall back to CLI args
+    return null;
+  }
+}
+
+async function ensureCommitExists(sha) {
+  try {
+    await run('git', 'cat-file', '-e', sha);
+  } catch {
+    console.log(`Commit ${sha} not found locally, fetching...`);
+
+    try {
+      await run('git', 'fetch', 'origin', sha);
+    } catch (error) {
+      throw new Error(`Failed to fetch commit ${sha}: ${error}`);
+    }
+  }
+}
+
+async function main(args) {
+  const patchInfo = await parsePatchArguments(args);
+  if (!patchInfo) {
+    // No patches found and no command-line args - exit early
+    return;
+  }
+
+  const { prNumbers, descriptions } = patchInfo;
 
   if (await run('git', 'status', '--porcelain')) {
     throw new Error('Cannot run with a dirty working tree');
@@ -101,6 +207,16 @@ async function main(args) {
   await run('git', 'fetch');
 
   const patchBranch = `patch/v${release}`;
+
+  // Output patch branch for CI workflows to capture
+  if (process.env.PATCH_RELEASE_BRANCH && process.env.GITHUB_OUTPUT) {
+    // Use native fs for appendFileSync (fs-extra doesn't have sync version)
+    const nativeFs = require('fs');
+    nativeFs.appendFileSync(
+      process.env.GITHUB_OUTPUT,
+      `patch_branch=${patchBranch}\n`,
+    );
+  }
   try {
     await run('git', 'checkout', `origin/${patchBranch}`);
   } catch {
@@ -109,8 +225,24 @@ async function main(args) {
   }
 
   // Create new branch, apply changes from all commits on PR branch, commit, push
-  const branchName = `patch-release-pr-${prNumbers.join('-')}`;
-  await run('git', 'checkout', '-b', branchName);
+  // Allow fixed branch name via environment variable for CI workflows
+  const branchName =
+    process.env.PATCH_RELEASE_BRANCH ||
+    `patch-release-pr-${prNumbers.join('-')}`;
+
+  // Check if branch already exists (for CI workflows using fixed branch name)
+  try {
+    await run(
+      'git',
+      'show-ref',
+      '--verify',
+      '--quiet',
+      `refs/heads/${branchName}`,
+    );
+    await run('git', 'checkout', branchName);
+  } catch {
+    await run('git', 'checkout', '-b', branchName);
+  }
 
   for (const prNumber of prNumbers) {
     const { data } = await octokit.pulls.get({
@@ -127,6 +259,9 @@ async function main(args) {
     if (!baseSha) {
       throw new Error('base sha not available');
     }
+
+    await ensureCommitExists(headSha);
+
     const mergeBaseSha = await run('git', 'merge-base', headSha, baseSha);
 
     const logLines = await run(
@@ -155,6 +290,10 @@ async function main(args) {
   console.log('Running "yarn release" ...');
   await run('yarn', 'release');
 
+  // Note: Patch files are not deleted here because this script runs in the patch
+  // release branch, not master. The cleanup_patch-files.yml workflow handles
+  // deletion from master after the patch release PR is merged.
+
   await run('git', 'add', '.');
   await run(
     'git',
@@ -165,18 +304,41 @@ async function main(args) {
     'Generate Release',
   );
 
-  await run('git', 'push', 'origin', '-u', branchName);
+  // Use force push if using a specific branch name (for CI workflows)
+  if (process.env.PATCH_RELEASE_BRANCH) {
+    await run('git', 'push', 'origin', '-u', '--force-with-lease', branchName);
+  } else {
+    await run('git', 'push', 'origin', '-u', branchName);
+  }
+
+  // Generate PR body
+  let body;
+  if (descriptions) {
+    const descriptionList = descriptions
+      .map((desc, index) => {
+        const prNumber = prNumbers[index];
+        const prLink = `https://github.com/${owner}/${repo}/pull/${prNumber}`;
+        return `- ${desc} ([#${prNumber}](${prLink}))`;
+      })
+      .join('\n');
+    body = `This patch release includes the following fixes:\n\n${descriptionList}`;
+  } else {
+    body = 'This release fixes an issue where';
+  }
 
   const params = new URLSearchParams({
     expand: 1,
-    body: 'This release fixes an issue where',
+    body: body,
     title: `Patch release of ${prNumbers.map(nr => `#${nr}`).join(', ')}`,
   });
 
   const url = `https://github.com/backstage/backstage/compare/${patchBranch}...${branchName}?${params}`;
-  console.log(`Opening ${url} ...`);
+  console.log(`PR URL: ${url}`);
 
-  await run('open', url);
+  // Only open URL if not in CI (no PATCH_RELEASE_BRANCH env var means manual run)
+  if (!process.env.PATCH_RELEASE_BRANCH) {
+    await run('open', url);
+  }
 }
 
 main(process.argv.slice(2)).catch(error => {

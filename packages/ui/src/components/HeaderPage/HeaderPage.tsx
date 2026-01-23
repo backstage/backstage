@@ -15,12 +15,16 @@
  */
 
 import type { HeaderPageProps } from './types';
-import { Menu } from '../Menu';
 import { Text } from '../Text';
-import { ButtonIcon } from '../ButtonIcon';
-import { RiMore2Line } from '@remixicon/react';
+import { RiArrowRightSLine } from '@remixicon/react';
 import { Tabs, TabList, Tab } from '../Tabs';
 import { useStyles } from '../../hooks/useStyles';
+import { HeaderPageDefinition } from './definition';
+import { Container } from '../Container';
+import { Link } from '../Link';
+import { Fragment } from 'react/jsx-runtime';
+import styles from './HeaderPage.module.css';
+import clsx from 'clsx';
 
 /**
  * A component that renders a header page.
@@ -28,49 +32,51 @@ import { useStyles } from '../../hooks/useStyles';
  * @public
  */
 export const HeaderPage = (props: HeaderPageProps) => {
-  const { title, menuItems, tabs, customActions } = props;
-  const { classNames } = useStyles('HeaderPage');
+  const { classNames, cleanedProps } = useStyles(HeaderPageDefinition, props);
+  const { className, title, tabs, customActions, breadcrumbs } = cleanedProps;
 
   return (
-    <div className={classNames.root}>
-      <div className={classNames.content}>
-        <Text variant="title-small" weight="bold" as="h2">
-          {title}
-        </Text>
-        <div className={classNames.controls}>
-          {customActions}
-          {menuItems && (
-            <Menu.Root>
-              <Menu.Trigger
-                render={props => (
-                  <ButtonIcon
-                    {...props}
-                    size="small"
-                    icon={<RiMore2Line />}
-                    variant="tertiary"
-                  />
-                )}
-              />
-              <Menu.Portal>
-                <Menu.Positioner sideOffset={4} align="end">
-                  <Menu.Popup>
-                    {menuItems.map(menuItem => (
-                      <Menu.Item
-                        key={menuItem.value}
-                        onClick={() => menuItem.onClick?.()}
-                      >
-                        {menuItem.label}
-                      </Menu.Item>
-                    ))}
-                  </Menu.Popup>
-                </Menu.Positioner>
-              </Menu.Portal>
-            </Menu.Root>
+    <Container
+      className={clsx(classNames.root, styles[classNames.root], className)}
+    >
+      <div className={clsx(classNames.content, styles[classNames.content])}>
+        <div
+          className={clsx(
+            classNames.breadcrumbs,
+            styles[classNames.breadcrumbs],
           )}
+        >
+          {breadcrumbs &&
+            breadcrumbs.map(breadcrumb => (
+              <Fragment key={breadcrumb.label}>
+                <Link
+                  href={breadcrumb.href}
+                  variant="title-small"
+                  weight="bold"
+                  color="secondary"
+                  truncate
+                  style={{ maxWidth: '240px' }}
+                >
+                  {breadcrumb.label}
+                </Link>
+                <RiArrowRightSLine size={16} color="var(--bui-fg-secondary)" />
+              </Fragment>
+            ))}
+          <Text variant="title-small" weight="bold" as="h2">
+            {title}
+          </Text>
+        </div>
+        <div className={clsx(classNames.controls, styles[classNames.controls])}>
+          {customActions}
         </div>
       </div>
       {tabs && (
-        <div className={classNames.tabsWrapper}>
+        <div
+          className={clsx(
+            classNames.tabsWrapper,
+            styles[classNames.tabsWrapper],
+          )}
+        >
           <Tabs>
             <TabList>
               {tabs.map(tab => (
@@ -87,6 +93,6 @@ export const HeaderPage = (props: HeaderPageProps) => {
           </Tabs>
         </div>
       )}
-    </div>
+    </Container>
   );
 };

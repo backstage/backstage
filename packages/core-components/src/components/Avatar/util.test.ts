@@ -42,4 +42,24 @@ describe('extractInitials', () => {
   it('removes spaces from beginning or the end', () => {
     expect(extractInitials(' John Jonathan Doe ')).toEqual('JD');
   });
+
+  it('handles any sequence of whitespace between words', () => {
+    expect(extractInitials('John\tJonathan   Doe')).toEqual('JD');
+    expect(extractInitials('  John\nDoe  ')).toEqual('JD');
+    expect(extractInitials('John\r\nDoe')).toEqual('JD');
+  });
+
+  it('removes bracketed content from initials', () => {
+    expect(extractInitials('John Doe (jd1234)')).toEqual('JD');
+    expect(extractInitials('Jane Smith [js5678]')).toEqual('JS');
+    expect(extractInitials('Alice (admin) Johnson')).toEqual('AJ');
+    expect(extractInitials('(admin) Alice Johnson')).toEqual('AJ');
+  });
+
+  it('removes non-letter characters from initials', () => {
+    expect(extractInitials('John D0e!')).toEqual('JD');
+    expect(extractInitials("Ann-Marie O'Neil")).toEqual('AO');
+    expect(extractInitials('Élodie Brûlé!')).toEqual('ÉB');
+    expect(extractInitials('Doe1231*')).toEqual('D');
+  });
 });

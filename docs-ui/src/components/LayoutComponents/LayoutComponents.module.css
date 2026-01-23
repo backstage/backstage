@@ -19,7 +19,7 @@
 
   & .content {
     flex: none;
-    background-color: var(--panel);
+    background-color: var(--bg);
     border: 1px solid var(--border);
     border-radius: 4px;
     width: 100%;

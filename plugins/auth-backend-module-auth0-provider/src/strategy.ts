@@ -25,10 +25,13 @@ export interface Auth0StrategyOptionsWithRequest {
   domain: string;
   passReqToCallback: true;
   store: StateStore;
+  organization?: string;
 }
 
 /** @public */
 export class Auth0Strategy extends Auth0InternalStrategy {
+  private organization: string | undefined;
+
   constructor(
     options: Auth0StrategyOptionsWithRequest,
     verify: Auth0InternalStrategy.VerifyFunction,
@@ -41,5 +44,18 @@ export class Auth0Strategy extends Auth0InternalStrategy {
       apiUrl: `https://${options.domain}/api`,
     };
     super(optionsWithURLs, verify);
+    this.organization = options.organization;
+  }
+
+  authorizationParams(options: Record<string, any>): Record<string, any> {
+    const params = super.authorizationParams(options);
+
+    if (this.organization) {
+      return {
+        ...params,
+        organization: this.organization,
+      };
+    }
+    return params;
   }
 }

@@ -21,7 +21,7 @@ import { Command } from 'commander';
 import { version } from '../lib/version';
 import chalk from 'chalk';
 import { exitWithError } from '../lib/errors';
-import { assertError } from '@backstage/errors';
+import { ForwardedError } from '@backstage/errors';
 import { isPromise } from 'util/types';
 
 type UninitializedFeature = CliFeature | Promise<{ default: CliFeature }>;
@@ -126,8 +126,7 @@ export class CliInitializer {
                 },
               });
               process.exit(0);
-            } catch (error) {
-              assertError(error);
+            } catch (error: unknown) {
               exitWithError(error);
             }
           });
@@ -142,11 +141,7 @@ export class CliInitializer {
     });
 
     process.on('unhandledRejection', rejection => {
-      if (rejection instanceof Error) {
-        exitWithError(rejection);
-      } else {
-        exitWithError(new Error(`Unknown rejection: '${rejection}'`));
-      }
+      exitWithError(new ForwardedError('Unhandled rejection', rejection));
     });
 
     program.parse(process.argv);

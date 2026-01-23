@@ -105,6 +105,7 @@ describe('github:branch-protection:create', () => {
       },
       required_conversation_resolution: false,
       required_linear_history: false,
+      block_creations: false,
     });
     expect(
       mockOctokit.rest.repos.createCommitSignatureProtection,
@@ -142,6 +143,7 @@ describe('github:branch-protection:create', () => {
       },
       required_conversation_resolution: false,
       required_linear_history: false,
+      block_creations: false,
     });
     expect(
       mockOctokit.rest.repos.createCommitSignatureProtection,
@@ -178,6 +180,7 @@ describe('github:branch-protection:create', () => {
         requireLastPushApproval: true,
         requiredCommitSigning: true,
         requiredLinearHistory: true,
+        blockCreations: true,
       },
     });
 
@@ -211,6 +214,7 @@ describe('github:branch-protection:create', () => {
       },
       required_conversation_resolution: true,
       required_linear_history: true,
+      block_creations: true,
     });
     expect(
       mockOctokit.rest.repos.createCommitSignatureProtection,

@@ -18,20 +18,19 @@ import {
   parseEntityRef,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
-import { CatalogApi } from '@backstage/catalog-client';
 import { InputError } from '@backstage/errors';
 import express, { Request } from 'express';
 import { KubernetesObjectsProvider } from '@backstage/plugin-kubernetes-node';
-import { AuthService, HttpAuthService } from '@backstage/backend-plugin-api';
+import { HttpAuthService } from '@backstage/backend-plugin-api';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import { requirePermission } from '../auth/requirePermission';
 import { kubernetesResourcesReadPermission } from '@backstage/plugin-kubernetes-common';
+import { CatalogService } from '@backstage/plugin-catalog-node';
 
 export const addResourceRoutesToRouter = (
   router: express.Router,
-  catalogApi: CatalogApi,
+  catalog: CatalogService,
   objectsProvider: KubernetesObjectsProvider,
-  auth: AuthService,
   httpAuth: HttpAuthService,
   permissionApi: PermissionEvaluator,
 ) => {
@@ -50,12 +49,9 @@ export const addResourceRoutesToRouter = (
       throw new InputError(`Invalid entity ref, ${error}`);
     }
 
-    const { token } = await auth.getPluginRequestToken({
-      onBehalfOf: await httpAuth.credentials(req),
-      targetPluginId: 'catalog',
+    const entity = await catalog.getEntityByRef(entityRef, {
+      credentials: await httpAuth.credentials(req),
     });
-
-    const entity = await catalogApi.getEntityByRef(entityRef, { token });
     if (!entity) {
       throw new InputError(
         `Entity ref missing, ${stringifyEntityRef(entityRef)}`,

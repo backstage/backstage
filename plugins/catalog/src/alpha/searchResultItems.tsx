@@ -15,9 +15,11 @@
  */
 
 import { SearchResultListItemBlueprint } from '@backstage/plugin-search-react/alpha';
+import { CatalogIcon } from '@backstage/core-components';
 
 export const catalogSearchResultListItem = SearchResultListItemBlueprint.make({
   params: {
+    icon: <CatalogIcon />,
     predicate: result => result.type === 'software-catalog',
     component: () =>
       import('../components/CatalogSearchResultListItem').then(

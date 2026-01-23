@@ -26,11 +26,11 @@ interface BuildAppOptions {
   writeStats: boolean;
   configPaths: string[];
   isModuleFederationRemote?: true;
-  rspack?: typeof import('@rspack/core').rspack;
+  webpack?: typeof import('webpack');
 }
 
 export async function buildFrontend(options: BuildAppOptions) {
-  const { targetDir, writeStats, configPaths, rspack } = options;
+  const { targetDir, writeStats, configPaths, webpack } = options;
   const packageJson = (await fs.readJson(
     resolvePath(targetDir, 'package.json'),
   )) as BackstagePackageJson;
@@ -48,6 +48,6 @@ export async function buildFrontend(options: BuildAppOptions) {
       args: configPaths,
       fromPackage: packageJson.name,
     })),
-    rspack,
+    webpack,
   });
 }

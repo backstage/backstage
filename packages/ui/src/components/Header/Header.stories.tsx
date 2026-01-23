@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,31 +14,36 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryObj, StoryFn } from '@storybook/react';
+import preview from '../../../../../.storybook/preview';
+import type { StoryFn } from '@storybook/react-vite';
 import { Header } from './Header';
-import { HeaderBreadcrumb, HeaderMenuItem, HeaderTab } from './types';
-import { Button } from '../Button';
-import { HeaderPage } from '../HeaderPage';
+import type { HeaderTab } from './types';
+import {
+  Button,
+  HeaderPage,
+  Container,
+  Text,
+  ButtonIcon,
+  MenuTrigger,
+  Menu,
+  MenuItem,
+} from '../../';
 import { MemoryRouter } from 'react-router-dom';
-import { Container } from '../Container';
-import { Text } from '../Text';
-import { ButtonIcon } from '../ButtonIcon';
 import {
   RiHeartLine,
   RiEmotionHappyLine,
   RiCloudy2Line,
+  RiMore2Line,
 } from '@remixicon/react';
+import { HeaderPageBreadcrumb } from '../HeaderPage/types';
 
-const meta = {
-  title: 'Components/Header',
+const meta = preview.meta({
+  title: 'Backstage UI/Header',
   component: Header,
   parameters: {
     layout: 'fullscreen',
   },
-} satisfies Meta<typeof Header>;
-
-export default meta;
-type Story = StoryObj<typeof meta>;
+});
 
 const withRouter = (Story: StoryFn) => (
   <MemoryRouter>
@@ -50,14 +55,17 @@ const tabs: HeaderTab[] = [
   {
     id: 'overview',
     label: 'Overview',
+    href: '/overview',
   },
   {
     id: 'checks',
     label: 'Checks',
+    href: '/checks',
   },
   {
     id: 'tracks',
     label: 'Tracks',
+    href: '/tracks',
   },
   {
     id: 'campaigns',
@@ -75,18 +83,41 @@ const tabs2: HeaderTab[] = [
   {
     id: 'Banana',
     label: 'Banana',
+    href: '/banana',
   },
   {
     id: 'Apple',
     label: 'Apple',
+    href: '/apple',
   },
   {
     id: 'Orange',
     label: 'Orange',
+    href: '/orange',
   },
 ];
 
-const breadcrumbs: HeaderBreadcrumb[] = [
+const menuItems = [
+  {
+    label: 'Settings',
+    value: 'settings',
+    href: '/settings',
+  },
+  {
+    label: 'Invite new members',
+    value: 'invite-new-members',
+    href: '/invite-new-members',
+  },
+  {
+    label: 'Logout',
+    value: 'logout',
+    onClick: () => {
+      alert('logout');
+    },
+  },
+];
+
+const breadcrumbs: HeaderPageBreadcrumb[] = [
   {
     label: 'Home',
     href: '/',
@@ -98,17 +129,6 @@ const breadcrumbs: HeaderBreadcrumb[] = [
   {
     label: 'Settings',
     href: '/settings',
-  },
-];
-
-const menuItems: HeaderMenuItem[] = [
-  {
-    label: 'Settings',
-    value: 'settings',
-  },
-  {
-    label: 'Invite new members',
-    value: 'invite-new-members',
   },
 ];
 
@@ -138,7 +158,35 @@ const layoutDecorator = [
       >
         <Story />
         <Container>
-          <Text>
+          <Text as="p">
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam,
+            quos.
+          </Text>
+          <Text as="p">
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam,
+            quos.
+          </Text>
+          <Text as="p">
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam,
+            quos.
+          </Text>
+          <Text as="p">
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam,
+            quos.
+          </Text>
+          <Text as="p">
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam,
+            quos.
+          </Text>
+          <Text as="p">
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam,
+            quos.
+          </Text>
+          <Text as="p">
+            Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam,
+            quos.
+          </Text>
+          <Text as="p">
             Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam,
             quos.
           </Text>
@@ -149,26 +197,19 @@ const layoutDecorator = [
   withRouter,
 ];
 
-export const Default: Story = {
+export const Default = meta.story({
   args: {},
   decorators: [withRouter],
-};
+});
 
-export const WithTabs: Story = {
+export const WithTabs = meta.story({
   args: {
     tabs,
   },
   decorators: [withRouter],
-};
+});
 
-export const WithOptions: Story = {
-  args: {
-    menuItems,
-  },
-  decorators: [withRouter],
-};
-
-export const WithCustomActions: Story = {
+export const WithCustomActions = meta.story({
   args: {},
   decorators: [withRouter],
   render: args => (
@@ -179,42 +220,35 @@ export const WithCustomActions: Story = {
           <ButtonIcon variant="tertiary" icon={<RiCloudy2Line />} />
           <ButtonIcon variant="tertiary" icon={<RiEmotionHappyLine />} />
           <ButtonIcon variant="tertiary" icon={<RiHeartLine />} />
+          <MenuTrigger>
+            <ButtonIcon variant="tertiary" icon={<RiMore2Line />} />
+            <Menu placement="bottom end">
+              {menuItems.map(option => (
+                <MenuItem
+                  key={option.value}
+                  onAction={option.onClick}
+                  href={option.href}
+                >
+                  {option.label}
+                </MenuItem>
+              ))}
+            </Menu>
+          </MenuTrigger>
         </>
       }
     />
   ),
-};
+});
 
-export const WithAllOptions: Story = {
+export const WithAllOptionsAndTabs = WithCustomActions.extend({
   args: {
-    title: 'My plugin',
-    titleLink: '/',
-    menuItems,
-  },
-  decorators: [withRouter],
-  render: WithCustomActions.render,
-};
-
-export const WithBreadcrumbs: Story = {
-  args: {
-    breadcrumbs,
     tabs,
   },
-  decorators: [withRouter],
-};
+});
 
-export const WithAllOptionsAndTabs: Story = {
+export const WithHeaderPage = meta.story({
   args: {
-    ...WithAllOptions.args,
-    tabs,
-  },
-  decorators: [withRouter],
-  render: WithAllOptions.render,
-};
-
-export const WithHeaderPage: Story = {
-  args: {
-    ...WithAllOptionsAndTabs.args,
+    ...WithAllOptionsAndTabs.input.args,
   },
   decorators: [withRouter],
   render: args => (
@@ -231,51 +265,41 @@ export const WithHeaderPage: Story = {
       />
       <HeaderPage
         title="Page title"
-        menuItems={args.menuItems}
         tabs={tabs2}
         customActions={<Button>Custom action</Button>}
+        breadcrumbs={breadcrumbs}
       />
     </>
   ),
-};
+});
 
-export const WithLayout: Story = {
-  args: {
-    menuItems,
-    breadcrumbs,
-  },
+export const WithLayout = meta.story({
   decorators: layoutDecorator,
   render: args => (
     <>
       <Header {...args} tabs={tabs} />
       <HeaderPage
         title="Page title"
-        menuItems={args.menuItems}
         tabs={tabs2}
         customActions={<Button>Custom action</Button>}
+        breadcrumbs={breadcrumbs}
       />
     </>
   ),
-};
+});
 
-export const WithLayoutNoTabs: Story = {
-  args: {
-    menuItems,
-    breadcrumbs,
-  },
+export const WithLayoutNoTabs = meta.story({
   decorators: layoutDecorator,
   render: args => (
     <>
       <Header {...args} />
-      <HeaderPage title="Page title" menuItems={args.menuItems} tabs={tabs2} />
+      <HeaderPage title="Page title" tabs={tabs2} />
     </>
   ),
-};
+});
 
-export const WithEverything: Story = {
+export const WithEverything = meta.story({
   args: {
-    menuItems,
-    breadcrumbs,
     tabs,
     titleLink: '/',
   },
@@ -294,7 +318,6 @@ export const WithEverything: Story = {
       />
       <HeaderPage
         title="Page title"
-        menuItems={args.menuItems}
         tabs={tabs2}
         customActions={
           <>
@@ -305,9 +328,9 @@ export const WithEverything: Story = {
       />
     </>
   ),
-};
+});
 
-export const WithMockedURLCampaigns: Story = {
+export const WithMockedURLCampaigns = meta.story({
   args: {
     tabs,
   },
@@ -325,9 +348,9 @@ export const WithMockedURLCampaigns: Story = {
       </Container>
     </MemoryRouter>
   ),
-};
+});
 
-export const WithMockedURLIntegrations: Story = {
+export const WithMockedURLIntegrations = meta.story({
   args: {
     tabs,
   },
@@ -345,9 +368,9 @@ export const WithMockedURLIntegrations: Story = {
       </Container>
     </MemoryRouter>
   ),
-};
+});
 
-export const WithMockedURLNoMatch: Story = {
+export const WithMockedURLNoMatch = meta.story({
   args: {
     tabs,
   },
@@ -369,9 +392,9 @@ export const WithMockedURLNoMatch: Story = {
       </Container>
     </MemoryRouter>
   ),
-};
+});
 
-export const WithTabsMatchingStrategies: Story = {
+export const WithTabsMatchingStrategies = meta.story({
   args: {
     title: 'Route Matching Demo',
     tabs: [
@@ -429,9 +452,9 @@ export const WithTabsMatchingStrategies: Story = {
       </Container>
     </MemoryRouter>
   ),
-};
+});
 
-export const WithTabsExactMatching: Story = {
+export const WithTabsExactMatching = meta.story({
   args: {
     title: 'Exact Matching Demo',
     tabs: [
@@ -468,9 +491,9 @@ export const WithTabsExactMatching: Story = {
       </Container>
     </MemoryRouter>
   ),
-};
+});
 
-export const WithTabsPrefixMatchingDeep: Story = {
+export const WithTabsPrefixMatchingDeep = meta.story({
   args: {
     title: 'Deep Nesting Demo',
     tabs: [
@@ -498,26 +521,31 @@ export const WithTabsPrefixMatchingDeep: Story = {
     <MemoryRouter initialEntries={['/catalog/users/john/details']}>
       <Header {...args} />
       <Container>
-        <Text>
+        <Text as="p">
           <strong>Current URL:</strong> /catalog/users/john/details
         </Text>
         <br />
-        <Text>Both "Catalog" and "Users" tabs are active because:</Text>
-        <Text>
-          • <strong>Catalog</strong>: URL starts with /catalog
+        <Text as="p">
+          Active tab is <strong>Users</strong> because:
         </Text>
-        <Text>
-          • <strong>Users</strong>: URL starts with /catalog/users
-        </Text>
-        <Text>
-          • <strong>Components</strong>: not active (URL doesn't start with
-          /catalog/components)
-        </Text>
-        <br />
-        <Text>
+        <ul>
+          <li>
+            <strong>Catalog</strong>: Matches since URL starts with /catalog
+          </li>
+          <li>
+            <strong>Users</strong>: Is active since URL starts with
+            /catalog/users, and is more specific (has more url segments) than
+            "Catalog"
+          </li>
+          <li>
+            <strong>Components</strong>: not active (URL doesn't start with
+            /catalog/components)
+          </li>
+        </ul>
+        <Text as="p">
           This demonstrates how prefix matching works with deeply nested routes.
         </Text>
       </Container>
     </MemoryRouter>
   ),
-};
+});

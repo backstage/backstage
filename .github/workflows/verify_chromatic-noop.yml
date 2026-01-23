@@ -1,0 +1,27 @@
+# NO-OP placeholder that always passes for other paths
+# This is here so that we're able to set the status check as required
+
+name: Chromatic Void
+on:
+  pull_request:
+    paths-ignore:
+      - '.github/workflows/verify_chromatic.yml'
+      - '.storybook/**'
+      - 'packages/ui/src/**'
+      - '**/*.stories.tsx'
+
+permissions:
+  contents: read
+
+jobs:
+  noop:
+    runs-on: ubuntu-latest
+
+    name: Chromatic
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@df199fb7be9f65074067a9eb93f12bb4c5547cf2 # v2.13.3
+        with:
+          egress-policy: audit
+
+      - run: echo NOOP

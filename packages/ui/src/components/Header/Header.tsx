@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,10 @@ import type { HeaderProps } from './types';
 import { HeaderToolbar } from './HeaderToolbar';
 import { Tabs, TabList, Tab } from '../Tabs';
 import { useStyles } from '../../hooks/useStyles';
+import { HeaderDefinition } from './definition';
 import { type NavigateOptions } from 'react-router-dom';
+import styles from './Header.module.css';
+import clsx from 'clsx';
 
 declare module 'react-aria-components' {
   interface RouterConfig {
@@ -32,18 +35,16 @@ declare module 'react-aria-components' {
  * @public
  */
 export const Header = (props: HeaderProps) => {
+  const { classNames, cleanedProps } = useStyles(HeaderDefinition, props);
   const {
+    className,
     tabs,
     icon,
     title,
     titleLink,
-    menuItems,
-    breadcrumbs,
     customActions,
     onTabSelectionChange,
-  } = props;
-
-  const { classNames } = useStyles('Header');
+  } = cleanedProps;
 
   const hasTabs = tabs && tabs.length > 0;
 
@@ -53,13 +54,17 @@ export const Header = (props: HeaderProps) => {
         icon={icon}
         title={title}
         titleLink={titleLink}
-        menuItems={menuItems}
-        breadcrumbs={breadcrumbs}
         customActions={customActions}
         hasTabs={hasTabs}
       />
       {tabs && (
-        <div className={classNames.tabsWrapper}>
+        <div
+          className={clsx(
+            classNames.tabsWrapper,
+            styles[classNames.tabsWrapper],
+            className,
+          )}
+        >
           <Tabs onSelectionChange={onTabSelectionChange}>
             <TabList>
               {tabs?.map(tab => (

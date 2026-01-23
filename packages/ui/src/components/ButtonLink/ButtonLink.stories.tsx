@@ -14,15 +14,23 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryObj } from '@storybook/react';
+import preview from '../../../../../.storybook/preview';
+import type { StoryFn } from '@storybook/react-vite';
 import { ButtonLink } from './ButtonLink';
 import { Flex } from '../Flex';
-import { Text } from '../Text';
-import { Icon } from '../Icon';
+import { MemoryRouter } from 'react-router-dom';
+import { RiArrowRightSLine, RiCloudLine } from '@remixicon/react';
 
-const meta = {
-  title: 'Components/ButtonLink',
+const meta = preview.meta({
+  title: 'Backstage UI/ButtonLink',
   component: ButtonLink,
+  decorators: [
+    (Story: StoryFn) => (
+      <MemoryRouter>
+        <Story />
+      </MemoryRouter>
+    ),
+  ],
   argTypes: {
     size: {
       control: 'select',
@@ -33,22 +41,19 @@ const meta = {
       options: ['primary', 'secondary'],
     },
   },
-} satisfies Meta<typeof ButtonLink>;
+});
 
-export default meta;
-type Story = StoryObj<typeof meta>;
-
-export const Default: Story = {
+export const Default = meta.story({
   args: {
     children: 'Button',
   },
-};
+});
 
-export const Variants: Story = {
+export const Variants = meta.story({
   render: () => (
     <Flex align="center">
       <ButtonLink
-        iconStart={<Icon name="cloud" />}
+        iconStart={<RiCloudLine />}
         variant="primary"
         href="https://ui.backstage.io"
         target="_blank"
@@ -56,7 +61,7 @@ export const Variants: Story = {
         Button
       </ButtonLink>
       <ButtonLink
-        iconStart={<Icon name="cloud" />}
+        iconStart={<RiCloudLine />}
         variant="secondary"
         href="https://ui.backstage.io"
         target="_blank"
@@ -64,7 +69,7 @@ export const Variants: Story = {
         Button
       </ButtonLink>
       <ButtonLink
-        iconStart={<Icon name="cloud" />}
+        iconStart={<RiCloudLine />}
         variant="tertiary"
         href="https://ui.backstage.io"
         target="_blank"
@@ -73,59 +78,59 @@ export const Variants: Story = {
       </ButtonLink>
     </Flex>
   ),
-};
+});
 
-export const Sizes: Story = {
+export const Sizes = meta.story({
   args: {
     children: 'Button',
   },
   render: () => (
     <Flex align="center">
-      <ButtonLink size="small" iconStart={<Icon name="cloud" />}>
+      <ButtonLink size="small" iconStart={<RiCloudLine />}>
         Small
       </ButtonLink>
-      <ButtonLink size="medium" iconStart={<Icon name="cloud" />}>
+      <ButtonLink size="medium" iconStart={<RiCloudLine />}>
         Medium
       </ButtonLink>
     </Flex>
   ),
-};
+});
 
-export const WithIcons: Story = {
+export const WithIcons = meta.story({
   args: {
     children: 'Button',
   },
   render: args => (
     <Flex align="center">
-      <ButtonLink {...args} iconStart={<Icon name="cloud" />} />
-      <ButtonLink {...args} iconEnd={<Icon name="chevron-right" />} />
+      <ButtonLink {...args} iconStart={<RiCloudLine />} />
+      <ButtonLink {...args} iconEnd={<RiArrowRightSLine />} />
       <ButtonLink
         {...args}
-        iconStart={<Icon name="cloud" />}
-        iconEnd={<Icon name="chevron-right" />}
+        iconStart={<RiCloudLine />}
+        iconEnd={<RiArrowRightSLine />}
       />
     </Flex>
   ),
-};
+});
 
-export const FullWidth: Story = {
+export const FullWidth = meta.story({
   args: {
     children: 'Button',
   },
   render: args => (
     <Flex direction="column" gap="4" style={{ width: '300px' }}>
-      <ButtonLink {...args} iconStart={<Icon name="cloud" />} />
-      <ButtonLink {...args} iconEnd={<Icon name="chevron-right" />} />
+      <ButtonLink {...args} iconStart={<RiCloudLine />} />
+      <ButtonLink {...args} iconEnd={<RiArrowRightSLine />} />
       <ButtonLink
         {...args}
-        iconStart={<Icon name="cloud" />}
-        iconEnd={<Icon name="chevron-right" />}
+        iconStart={<RiCloudLine />}
+        iconEnd={<RiArrowRightSLine />}
       />
     </Flex>
   ),
-};
+});
 
-export const Disabled: Story = {
+export const Disabled = meta.story({
   render: () => (
     <Flex direction="row" gap="4">
       <ButtonLink variant="primary" isDisabled>
@@ -139,9 +144,9 @@ export const Disabled: Story = {
       </ButtonLink>
     </Flex>
   ),
-};
+});
 
-export const Responsive: Story = {
+export const Responsive = meta.story({
   args: {
     children: 'Button',
     variant: {
@@ -153,71 +158,4 @@ export const Responsive: Story = {
       sm: 'medium',
     },
   },
-};
-
-const variants = ['primary', 'secondary'] as const;
-const sizes = ['small', 'medium'] as const;
-
-export const Playground: Story = {
-  args: {
-    children: 'Button',
-  },
-  render: () => (
-    <Flex direction="column">
-      {variants.map(variant => (
-        <Flex direction="column" key={variant}>
-          <Text>{variant}</Text>
-          {sizes.map(size => (
-            <Flex align="center" key={size}>
-              <ButtonLink variant={variant} size={size}>
-                Button
-              </ButtonLink>
-              <ButtonLink
-                iconStart={<Icon name="cloud" />}
-                variant={variant}
-                size={size}
-              >
-                Button
-              </ButtonLink>
-              <ButtonLink
-                iconEnd={<Icon name="chevron-right" />}
-                variant={variant}
-                size={size}
-              >
-                Button
-              </ButtonLink>
-              <ButtonLink
-                iconStart={<Icon name="cloud" />}
-                iconEnd={<Icon name="chevron-right" />}
-                style={{ width: '200px' }}
-                variant={variant}
-                size={size}
-              >
-                Button
-              </ButtonLink>
-              <ButtonLink variant={variant} size={size} isDisabled>
-                Button
-              </ButtonLink>
-              <ButtonLink
-                iconStart={<Icon name="cloud" />}
-                variant={variant}
-                size={size}
-                isDisabled
-              >
-                Button
-              </ButtonLink>
-              <ButtonLink
-                iconEnd={<Icon name="chevron-right" />}
-                variant={variant}
-                size={size}
-                isDisabled
-              >
-                Button
-              </ButtonLink>
-            </Flex>
-          ))}
-        </Flex>
-      ))}
-    </Flex>
-  ),
-};
+});

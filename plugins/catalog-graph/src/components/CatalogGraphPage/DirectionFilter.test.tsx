@@ -16,7 +16,7 @@
 
 import { waitFor, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import { Direction } from '../EntityRelationsGraph';
+import { Direction } from '../../lib/types';
 import { DirectionFilter } from './DirectionFilter';
 import { renderInTestApp } from '@backstage/test-utils';
 

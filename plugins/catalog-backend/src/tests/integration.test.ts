@@ -129,8 +129,10 @@ class WaitingProgressTracker implements ProgressTrackerWithErrorReports {
   #counts = new Map<string, number>();
   #errors = new Map<string, Error[]>();
   #inFlight = new Array<Promise<void>>();
+  private readonly entityRefs?: Set<string>;
 
-  constructor(private readonly entityRefs?: Set<string>) {
+  constructor(entityRefs?: Set<string>) {
+    this.entityRefs = entityRefs;
     let resolve: (errors: Record<string, Error[]>) => void;
     this.#promise = new Promise<Record<string, Error[]>>(_resolve => {
       resolve = _resolve;
@@ -244,6 +246,7 @@ class TestHarness {
     const processingDatabase = new DefaultProcessingDatabase({
       database: options.db,
       logger,
+      events: mockServices.events.mock(),
       refreshInterval: () => 0.05,
     });
 
@@ -273,7 +276,6 @@ class TestHarness {
       logger,
       parser: defaultEntityDataParser,
       policy: EntityPolicies.allOf([]),
-      legacySingleProcessorValidation: false,
     });
     const stitcher = DefaultStitcher.fromConfig(config, {
       knex: options.db,
@@ -296,12 +298,14 @@ class TestHarness {
       knex: options.db,
       orchestrator,
       stitcher,
+      scheduler: mockServices.scheduler(),
       createHash: () => createHash('sha1'),
       pollingIntervalMs: 50,
       onProcessingError: event => {
         proxyProgressTracker.reportError(event.unprocessedEntity, event.errors);
       },
       tracker: proxyProgressTracker,
+      events: mockServices.events.mock(),
     });
 
     const refresh = new DefaultRefreshService({ database: catalogDatabase });

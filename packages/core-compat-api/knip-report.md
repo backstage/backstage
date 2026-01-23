@@ -4,7 +4,7 @@
 
 | Name                        | Location     | Severity |
 | :-------------------------- | :----------- | :------- |
-| @backstage/frontend-app-api | package.json | error    |
-| @backstage/types            | package.json | error    |
-| zod                         | package.json | error    |
+| @backstage/frontend-app-api | packages/core-compat-api/package.json | error    |
+| @backstage/types            | packages/core-compat-api/package.json | error    |
+| zod                         | packages/core-compat-api/package.json | error    |
 

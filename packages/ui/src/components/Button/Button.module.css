@@ -1,0 +1,235 @@
+/*
+ * Copyright 2024 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@layer tokens, base, components, utilities;
+
+@layer components {
+  .bui-Button {
+    --loading-duration: 200ms;
+    --bg: transparent;
+    --bg-hover: transparent;
+    --bg-active: transparent;
+    --fg: inherit;
+
+    position: relative;
+    display: inline-flex;
+    border: none;
+    user-select: none;
+    font-family: var(--bui-font-regular);
+    font-weight: var(--bui-font-weight-bold);
+    padding: 0;
+    cursor: pointer;
+    border-radius: var(--bui-radius-2);
+    flex-shrink: 0;
+    transition: background-color var(--loading-duration) ease-out,
+      box-shadow var(--loading-duration) ease-out;
+
+    /* Apply variables */
+    color: var(--fg);
+    background-color: var(--bg);
+
+    &:hover {
+      background-color: var(--bg-hover);
+      transition: background-color 150ms ease;
+    }
+
+    &:active {
+      background-color: var(--bg-active);
+    }
+
+    &[data-disabled='true'] {
+      cursor: not-allowed;
+    }
+
+    &[data-loading='true'] {
+      cursor: wait;
+    }
+  }
+
+  .bui-Button[data-variant='primary'] {
+    --bg: var(--bui-bg-solid);
+    --bg-hover: var(--bui-bg-solid-hover);
+    --bg-active: var(--bui-bg-solid-pressed);
+    --fg: var(--bui-fg-solid);
+
+    &[data-disabled='true'],
+    &[data-loading='true'] {
+      --bg: var(--bui-bg-solid-disabled);
+      --bg-hover: var(--bui-bg-solid-disabled);
+      --bg-active: var(--bui-bg-solid-disabled);
+      --fg: var(--bui-fg-solid-disabled);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--bui-ring);
+      outline-offset: 2px;
+    }
+  }
+
+  .bui-Button[data-variant='secondary'] {
+    --bg: var(--bui-bg-neutral-on-surface-0);
+    --bg-hover: var(--bui-bg-neutral-on-surface-0-hover);
+    --bg-active: var(--bui-bg-neutral-on-surface-0-pressed);
+    --fg: var(--bui-fg-primary);
+
+    &[data-on-surface='1'] {
+      --bg: var(--bui-bg-neutral-on-surface-1);
+      --bg-hover: var(--bui-bg-neutral-on-surface-1-hover);
+      --bg-active: var(--bui-bg-neutral-on-surface-1-pressed);
+    }
+
+    &[data-on-surface='2'] {
+      --bg: var(--bui-bg-neutral-on-surface-2);
+      --bg-hover: var(--bui-bg-neutral-on-surface-2-hover);
+      --bg-active: var(--bui-bg-neutral-on-surface-2-pressed);
+    }
+
+    &[data-on-surface='3'] {
+      --bg: var(--bui-bg-neutral-on-surface-3);
+      --bg-hover: var(--bui-bg-neutral-on-surface-3-hover);
+      --bg-active: var(--bui-bg-neutral-on-surface-3-pressed);
+    }
+
+    &[data-disabled='true'],
+    &[data-loading='true'] {
+      --bg-hover: var(--bg);
+      --bg-active: var(--bg);
+      --fg: var(--bui-fg-disabled);
+    }
+
+    &:focus-visible {
+      outline: none;
+      transition: none;
+      box-shadow: inset 0 0 0 2px var(--bui-ring);
+    }
+  }
+
+  .bui-Button[data-variant='tertiary'] {
+    --bg-hover: var(--bui-bg-neutral-on-surface-0-hover);
+    --bg-active: var(--bui-bg-neutral-on-surface-0-pressed);
+    --fg: var(--bui-fg-primary);
+
+    &[data-on-surface='1'] {
+      --bg-hover: var(--bui-bg-neutral-on-surface-1-hover);
+      --bg-active: var(--bui-bg-neutral-on-surface-1-pressed);
+    }
+
+    &[data-on-surface='2'] {
+      --bg-hover: var(--bui-bg-neutral-on-surface-2-hover);
+      --bg-active: var(--bui-bg-neutral-on-surface-2-pressed);
+    }
+
+    &[data-on-surface='3'] {
+      --bg-hover: var(--bui-bg-neutral-on-surface-3-hover);
+      --bg-active: var(--bui-bg-neutral-on-surface-3-pressed);
+    }
+
+    &[data-disabled='true'],
+    &[data-loading='true'] {
+      --bg-hover: var(--bg);
+      --bg-active: var(--bg);
+      --fg: var(--bui-fg-disabled);
+    }
+
+    &:focus-visible {
+      outline: none;
+      transition: none;
+      box-shadow: inset 0 0 0 2px var(--bui-ring);
+    }
+  }
+
+  .bui-Button[data-size='small'] {
+    font-size: var(--bui-font-size-3);
+    padding: 0 var(--bui-space-2);
+    height: 2rem;
+
+    svg {
+      width: 1rem;
+      height: 1rem;
+    }
+  }
+
+  .bui-Button[data-size='medium'] {
+    font-size: var(--bui-font-size-4);
+    padding: 0 var(--bui-space-3);
+    height: 2.5rem;
+
+    svg {
+      width: 1.25rem;
+      height: 1.25rem;
+    }
+  }
+
+  .bui-ButtonContent {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--bui-space-1_5);
+    height: 100%;
+    width: 100%;
+    transition: opacity var(--loading-duration) ease-out;
+
+    .bui-Button[data-loading='true'] & {
+      opacity: 0;
+    }
+  }
+
+  .bui-ButtonSpinner {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    opacity: 0;
+    transition: opacity var(--loading-duration) ease-in;
+
+    .bui-Button[data-loading='true'] & {
+      opacity: 1;
+    }
+
+    & svg {
+      animation: bui-spin 1s linear infinite;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .bui-Button {
+      transition-duration: 50ms;
+    }
+
+    .bui-ButtonContent {
+      transition-duration: 50ms;
+    }
+
+    .bui-ButtonSpinner {
+      transition-duration: 50ms;
+    }
+
+    .bui-ButtonSpinner svg {
+      animation: none;
+    }
+  }
+
+  @keyframes bui-spin {
+    from {
+      transform: rotate(0deg);
+    }
+
+    to {
+      transform: rotate(360deg);
+    }
+  }
+}

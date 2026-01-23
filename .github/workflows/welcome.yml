@@ -1,0 +1,42 @@
+name: Add a welcome comment
+
+on:
+  pull_request_target:
+    types: [opened]
+
+permissions:
+  issues: write
+  pull-requests: write
+  contents: read
+
+jobs:
+  welcome:
+    runs-on: ubuntu-latest
+    if: github.event.pull_request.author_association == 'FIRST_TIME_CONTRIBUTOR'
+    steps:
+      - name: Add a welcome comment
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const pr = context.payload.pull_request
+            const login = pr.user.login
+
+            const message = `
+            Hi @${login}, thanks for opening your first pull request in Backstage! 👋
+
+            A couple of useful links to help you get started:
+
+            * [Contributing Guide](https://github.com/backstage/backstage/blob/master/CONTRIBUTING.md)
+            * [DCO Sign-off Instructions](https://github.com/backstage/backstage/blob/master/DCO)
+            * [Style Guide](https://github.com/backstage/backstage/blob/master/STYLE.md)
+
+            We really appreciate your contribution and look forward to reviewing your work. Welcome aboard!
+            `
+
+            await github.rest.issues.createComment({
+              issue_number: pr.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: message
+            })

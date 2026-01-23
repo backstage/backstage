@@ -107,10 +107,13 @@ export class MicrosoftGraphClient {
    * @param tokenCredential - instance of `TokenCredential` that is used to acquire token for Graph API calls
    *
    */
-  constructor(
-    private readonly baseUrl: string,
-    private readonly tokenCredential: TokenCredential,
-  ) {}
+  private readonly baseUrl: string;
+  private readonly tokenCredential: TokenCredential;
+
+  constructor(baseUrl: string, tokenCredential: TokenCredential) {
+    this.baseUrl = baseUrl;
+    this.tokenCredential = tokenCredential;
+  }
 
   /**
    * Get a collection of resource from Graph API and
@@ -195,8 +198,7 @@ export class MicrosoftGraphClient {
       },
       {
         addQueryPrefix: true,
-        // Microsoft Graph doesn't like an encoded query string
-        encode: false,
+        encode: true,
       },
     );
 

@@ -1,6 +1,6 @@
 {
   "name": "@backstage/backend-dev-utils",
-  "version": "0.1.5",
+  "version": "0.1.6",
   "backstage": {
     "role": "node-library"
   },

@@ -64,7 +64,7 @@ export function getEntityRootTechDocsPath(entity: Entity): string {
 
 /**
  * Build the TechDocs URL for the given entity. This helper should be used anywhere there
- * is a link to an entities TechDocs.
+ * is a link to an entity's TechDocs.
  *
  * @public
  */
@@ -104,7 +104,7 @@ export const buildTechDocsURL = (
   });
 
   // Add on the external entity path to the url if one exists. This allows deep linking into another
-  // entities TechDocs.
+  // entity's TechDocs.
   const path = getEntityRootTechDocsPath(entity);
 
   return `${url}${path}`;

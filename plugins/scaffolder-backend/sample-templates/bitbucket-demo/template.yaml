@@ -69,7 +69,7 @@ spec:
         url: https://github.com/backstage/community/tree/main/backstage-community-sessions
     - id: publish
       name: Publish
-      action: publish:bitbucket
+      action: publish:bitbucketCloud
       input:
         description: This is ${{ parameters.name }}
         repoUrl: ${{ parameters.repoUrl }}
@@ -81,10 +81,28 @@ spec:
         repoContentsUrl: ${{ steps['publish'].output.repoContentsUrl }}
         catalogInfoPath: '/catalog-info.yaml'
 
+    - id: create-pr-file
+      name: Create PR File
+      action: fetch:plain
+      input:
+        targetPath: ./pr-demo
+        url: https://github.com/backstage/community/blob/main/README.md
+    - id: create-pr
+      name: Create Pull Request
+      action: publish:bitbucketCloud:pull-request
+      input:
+        repoUrl: ${{ parameters.repoUrl }}
+        title: Test PR for ${{ parameters.name }}
+        description: This is a test pull request created by the scaffolder template to test OAuth support
+        sourceBranch: scaffolder-pr-${{ parameters.name }}
+        targetBranch: master
+
   output:
     links:
       - title: Repository
         url: ${{ steps['publish'].output.remoteUrl }}
+      - title: Pull Request
+        url: ${{ steps['create-pr'].output.pullRequestUrl }}
       - title: Open in catalog
         icon: catalog
         entityRef: ${{ steps['register'].output.entityRef }}

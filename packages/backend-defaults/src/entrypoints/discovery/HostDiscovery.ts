@@ -23,6 +23,7 @@ import {
 import { readHttpServerOptions } from '../rootHttpRouter/http/config';
 import { SrvResolvers } from './SrvResolvers';
 import { trimEnd } from 'lodash';
+import { getEndpoints } from './parsing';
 
 type Resolver = (pluginId: string) => Promise<string>;
 
@@ -238,25 +239,7 @@ export class HostDiscovery implements DiscoveryService {
     const endpoints = defaultEndpoints?.slice() ?? [];
 
     // Allow config to override the default endpoints
-    const endpointConfigs = config.getOptionalConfigArray(
-      'discovery.endpoints',
-    );
-    for (const endpointConfig of endpointConfigs ?? []) {
-      if (typeof endpointConfig.get('target') === 'string') {
-        endpoints.push({
-          target: endpointConfig.getString('target'),
-          plugins: endpointConfig.getStringArray('plugins'),
-        });
-      } else {
-        endpoints.push({
-          target: {
-            internal: endpointConfig.getOptionalString('target.internal'),
-            external: endpointConfig.getOptionalString('target.external'),
-          },
-          plugins: endpointConfig.getStringArray('plugins'),
-        });
-      }
-    }
+    endpoints.push(...getEndpoints(config));
 
     // Build up a new set of resolvers
     const internalResolvers: Map<string, Resolver> = new Map();

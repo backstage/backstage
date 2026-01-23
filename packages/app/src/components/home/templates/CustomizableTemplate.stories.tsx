@@ -78,6 +78,7 @@ starredEntitiesApi.toggleStarred('component:default/example-starred-entity-4');
 
 export default {
   title: 'Plugins/Home/Templates',
+  tags: ['!manifest'],
   decorators: [
     (Story: ComponentType<{}>) =>
       wrapInTestApp(

@@ -16,7 +16,7 @@
 
 import { renderHook } from '@testing-library/react';
 import { useAnalytics } from './useAnalytics';
-import { analyticsApiRef } from '@backstage/core-plugin-api';
+import { analyticsApiRef } from '../apis/definitions/AnalyticsApi';
 import { TestApiProvider } from '@backstage/test-utils';
 
 describe('useAnalytics', () => {

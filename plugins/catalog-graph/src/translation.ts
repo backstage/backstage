@@ -31,7 +31,7 @@ export const catalogGraphTranslationRef = createTranslationRef({
       simplifiedSwitchLabel: 'Simplified',
       mergeRelationsSwitchLabel: 'Merge relations',
       zoomOutDescription:
-        'Use pinch &amp; zoom to move around the diagram. Click to change active node, shift click to navigate to entity.',
+        'Use pinch & zoom to move around the diagram. Click to change active node, shift click to navigate to entity.',
       curveFilter: {
         title: 'Curve',
         curveMonotoneX: 'Monotone X',

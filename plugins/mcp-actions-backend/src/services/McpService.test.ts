@@ -178,14 +178,21 @@ describe('McpService', () => {
       server.connect(serverTransport),
     ]);
 
-    await expect(
-      client.request(
+    const result = await client.request(
+      {
+        method: 'tools/call',
+        params: { name: 'mock-action', arguments: { input: 'test' } },
+      },
+      CallToolResultSchema,
+    );
+    await expect(result).toEqual({
+      content: [
         {
-          method: 'tools/call',
-          params: { name: 'mock-action', arguments: { input: 'test' } },
+          text: expect.stringMatching('Action "mock-action" not found'),
+          type: 'text',
         },
-        CallToolResultSchema,
-      ),
-    ).rejects.toThrow('Action "mock-action" not found');
+      ],
+      isError: true,
+    });
   });
 });

@@ -1,5 +1,94 @@
 # e2e-test
 
+## 0.2.36
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.17
+  - @backstage/create-app@0.7.8
+
+## 0.2.36-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/create-app@0.7.8-next.0
+  - @backstage/cli-common@0.1.16
+  - @backstage/errors@1.2.7
+
+## 0.2.35
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/create-app@0.7.7
+  - @backstage/cli-common@0.1.16
+
+## 0.2.35-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.16-next.0
+  - @backstage/create-app@0.7.7-next.0
+  - @backstage/errors@1.2.7
+
+## 0.2.34
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/create-app@0.7.6
+
+## 0.2.34-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/create-app@0.7.6-next.0
+  - @backstage/cli-common@0.1.15
+  - @backstage/errors@1.2.7
+
+## 0.2.33
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/create-app@0.7.5
+
+## 0.2.33-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/create-app@0.7.5-next.0
+  - @backstage/cli-common@0.1.15
+  - @backstage/errors@1.2.7
+
+## 0.2.32
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/create-app@0.7.4
+
+## 0.2.32-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/create-app@0.7.4-next.0
+  - @backstage/cli-common@0.1.15
+  - @backstage/errors@1.2.7
+
+## 0.2.31
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/create-app@0.7.2
+
 ## 0.2.31-next.0
 
 ### Patch Changes

@@ -21,7 +21,9 @@
  */
 
 export { scaffolderPlugin as default } from './ScaffolderPlugin';
-export * from './scaffolder';
+
+export * from './scaffolder/actions/builtin';
+
 export {
   type TemplatePermissionRuleInput,
   type ActionPermissionRuleInput,

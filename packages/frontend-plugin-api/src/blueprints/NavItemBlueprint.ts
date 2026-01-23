@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { IconComponent } from '@backstage/core-plugin-api';
+import { IconComponent } from '../icons/types';
 import { RouteRef } from '../routing';
 import { createExtensionBlueprint, createExtensionDataRef } from '../wiring';
 

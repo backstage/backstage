@@ -36,6 +36,8 @@ import {
 } from '../../hooks';
 import { StatusError, StatusOK } from '@backstage/core-components';
 import { READY_COLUMNS, RESOURCE_COLUMNS } from '../Pods/PodsTable';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { kubernetesReactTranslationRef } from '../../translation';
 
 type StatefulSetsAccordionsProps = {
   children?: ReactNode;
@@ -62,6 +64,7 @@ const StatefulSetSummary = ({
   numberOfPodsWithErrors,
   hpa,
 }: StatefulSetSummaryProps) => {
+  const { t } = useTranslationRef(kubernetesReactTranslationRef);
   const specCpuUtil = hpa?.spec?.metrics?.find(
     metric => metric.type === 'Resource' && metric.resource?.name === 'cpu',
   )?.resource?.target.averageUtilization;
@@ -94,18 +97,18 @@ const StatefulSetSummary = ({
             >
               <Grid item>
                 <Typography variant="subtitle2">
-                  min replicas {hpa.spec?.minReplicas ?? '?'} / max replicas{' '}
-                  {hpa.spec?.maxReplicas ?? '?'}
+                  {t('hpa.minReplicas')} {hpa.spec?.minReplicas ?? '?'} /{' '}
+                  {t('hpa.maxReplicas')} {hpa.spec?.maxReplicas ?? '?'}
                 </Typography>
               </Grid>
               <Grid item>
                 <Typography variant="subtitle2">
-                  current CPU usage: {cpuUtil ?? '?'}%
+                  {t('hpa.currentCpuUsage')} {cpuUtil ?? '?'}%
                 </Typography>
               </Grid>
               <Grid item>
                 <Typography variant="subtitle2">
-                  target CPU usage: {specCpuUtil ?? '?'}%
+                  {t('hpa.targetCpuUsage')} {specCpuUtil ?? '?'}%
                 </Typography>
               </Grid>
             </Grid>
@@ -122,16 +125,15 @@ const StatefulSetSummary = ({
         spacing={0}
       >
         <Grid item>
-          <StatusOK>{numberOfCurrentPods} pods</StatusOK>
+          <StatusOK>{t('pods.pods', { count: numberOfCurrentPods })}</StatusOK>
         </Grid>
         <Grid item>
           {numberOfPodsWithErrors > 0 ? (
             <StatusError>
-              {numberOfPodsWithErrors} pod
-              {numberOfPodsWithErrors > 1 ? 's' : ''} with errors
+              {t('cluster.podsWithErrors', { count: numberOfPodsWithErrors })}
             </StatusError>
           ) : (
-            <StatusOK>No pods with errors</StatusOK>
+            <StatusOK>{t('cluster.noPodsWithErrors')}</StatusOK>
           )}
         </Grid>
       </Grid>

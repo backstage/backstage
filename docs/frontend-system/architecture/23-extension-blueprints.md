@@ -5,8 +5,6 @@ sidebar_label: Extensions Blueprints
 description: Frontend extensions
 ---
 
-> **NOTE: The new frontend system is in alpha and is only supported by a small number of plugins.**
-
 The `createExtension` function and related APIs is considered a low-level building and fairly advanced building block, and is not typically what you would use when building plugins and features. Instead, the core APIs and plugins provide extension blueprints that makes it easier to create extensions for specific usages. These blueprints accept a number of parameters that is up to each blueprint to define, and then creates a new extension using the provided parameters. New blueprints are created using the `createExtensionBlueprint` function, and are by convention exported with the symbol `<Kind>Blueprint`. If you are curious about what blueprints are available from a plugin or package, look for `*Blueprint` exports in the package's API, for plugins these are typically found in the `*-react` package.
 
 ## Creating an extension from a blueprint

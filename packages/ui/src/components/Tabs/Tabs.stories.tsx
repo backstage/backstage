@@ -14,19 +14,17 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryFn, StoryObj } from '@storybook/react';
+import preview from '../../../../../.storybook/preview';
+import type { StoryFn } from '@storybook/react-vite';
 import { Tabs, TabList, Tab, TabPanel } from './Tabs';
 import { MemoryRouter } from 'react-router-dom';
 import { Box } from '../Box';
 import { Text } from '../Text';
 
-const meta = {
-  title: 'Components/Tabs',
+const meta = preview.meta({
+  title: 'Backstage UI/Tabs',
   component: Tabs,
-} satisfies Meta<typeof Tabs>;
-
-export default meta;
-type Story = StoryObj<typeof meta>;
+});
 
 const withRouter = (Story: StoryFn) => (
   <MemoryRouter>
@@ -34,7 +32,7 @@ const withRouter = (Story: StoryFn) => (
   </MemoryRouter>
 );
 
-export const Default: Story = {
+export const Default = meta.story({
   args: {
     children: '',
   },
@@ -48,9 +46,9 @@ export const Default: Story = {
       </TabList>
     </Tabs>
   ),
-};
+});
 
-export const WithTabPanels: Story = {
+export const WithTabPanels = meta.story({
   args: {
     children: '',
   },
@@ -73,9 +71,9 @@ export const WithTabPanels: Story = {
       </TabPanel>
     </Tabs>
   ),
-};
+});
 
-export const WithMockedURLTab2: Story = {
+export const WithMockedURLTab2 = meta.story({
   args: {
     children: '',
   },
@@ -105,9 +103,9 @@ export const WithMockedURLTab2: Story = {
       </Box>
     </MemoryRouter>
   ),
-};
+});
 
-export const WithMockedURLTab3: Story = {
+export const WithMockedURLTab3 = meta.story({
   args: {
     children: '',
   },
@@ -137,9 +135,9 @@ export const WithMockedURLTab3: Story = {
       </Box>
     </MemoryRouter>
   ),
-};
+});
 
-export const WithMockedURLNoMatch: Story = {
+export const WithMockedURLNoMatch = meta.story({
   args: {
     children: '',
   },
@@ -173,11 +171,11 @@ export const WithMockedURLNoMatch: Story = {
       </Box>
     </MemoryRouter>
   ),
-};
+});
 
 // New stories for testing match strategies
 
-export const ExactMatchingDefault: Story = {
+export const ExactMatchingDefault = meta.story({
   args: {
     children: '',
   },
@@ -211,9 +209,9 @@ export const ExactMatchingDefault: Story = {
       </Box>
     </MemoryRouter>
   ),
-};
+});
 
-export const PrefixMatchingForNestedRoutes: Story = {
+export const PrefixMatchingForNestedRoutes = meta.story({
   args: {
     children: '',
   },
@@ -251,9 +249,9 @@ export const PrefixMatchingForNestedRoutes: Story = {
       </Box>
     </MemoryRouter>
   ),
-};
+});
 
-export const PrefixMatchingDeepNesting: Story = {
+export const PrefixMatchingDeepNesting = meta.story({
   args: {
     children: '',
   },
@@ -286,9 +284,9 @@ export const PrefixMatchingDeepNesting: Story = {
       </Box>
     </MemoryRouter>
   ),
-};
+});
 
-export const MixedMatchingStrategies: Story = {
+export const MixedMatchingStrategies = meta.story({
   args: {
     children: '',
   },
@@ -337,9 +335,9 @@ export const MixedMatchingStrategies: Story = {
       </Box>
     </MemoryRouter>
   ),
-};
+});
 
-export const PrefixMatchingEdgeCases: Story = {
+export const PrefixMatchingEdgeCases = meta.story({
   args: {
     children: '',
   },
@@ -379,9 +377,9 @@ export const PrefixMatchingEdgeCases: Story = {
       </Box>
     </MemoryRouter>
   ),
-};
+});
 
-export const PrefixMatchingWithSlash: Story = {
+export const PrefixMatchingWithSlash = meta.story({
   args: {
     children: '',
   },
@@ -420,9 +418,9 @@ export const PrefixMatchingWithSlash: Story = {
       </Box>
     </MemoryRouter>
   ),
-};
+});
 
-export const RootPathMatching: Story = {
+export const RootPathMatching = meta.story({
   args: {
     children: '',
   },
@@ -454,4 +452,61 @@ export const RootPathMatching: Story = {
       </Box>
     </MemoryRouter>
   ),
-};
+});
+
+export const AutoSelectionOfTabs = meta.story({
+  args: {
+    children: '',
+  },
+  render: () => (
+    <MemoryRouter initialEntries={['/random-page']}>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
+        <Text style={{ fontSize: '16px', color: '#666' }}>
+          Current URL: <strong>/random-page</strong>
+        </Text>
+
+        {/* Without hrefs */}
+        <Text>
+          {' '}
+          <strong>Case 1: Without hrefs</strong>
+        </Text>
+        <Tabs>
+          <TabList>
+            <Tab id="settings">Settings</Tab>
+            <Tab id="preferences">Preferences</Tab>
+            <Tab id="advanced">Advanced</Tab>
+          </TabList>
+          <TabPanel id="settings">
+            <Text>Settings content - React Aria manages this selection</Text>
+          </TabPanel>
+          <TabPanel id="preferences">
+            <Text>Preferences content - works normally</Text>
+          </TabPanel>
+          <TabPanel id="advanced">
+            <Text>Advanced content - local state only</Text>
+          </TabPanel>
+        </Tabs>
+
+        {/* With hrefs */}
+        <Text>
+          {' '}
+          <strong>Case 2: With hrefs</strong> By default no selection is shown
+          because the URL doesn't match any tab's href.{' '}
+        </Text>
+        <Tabs>
+          <TabList>
+            <Tab id="catalog" href="/catalog">
+              Catalog
+            </Tab>
+            <Tab id="create" href="/create">
+              Create
+            </Tab>
+            <Tab id="docs" href="/docs">
+              Docs
+            </Tab>
+          </TabList>
+        </Tabs>
+      </div>
+    </MemoryRouter>
+  ),
+});

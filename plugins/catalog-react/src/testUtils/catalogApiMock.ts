@@ -102,5 +102,7 @@ export namespace catalogApiMock {
     getLocationByEntity: jest.fn(),
     validateEntity: jest.fn(),
     analyzeLocation: jest.fn(),
+    streamEntities: jest.fn(),
+    streamEntityPages: jest.fn(),
   }));
 }

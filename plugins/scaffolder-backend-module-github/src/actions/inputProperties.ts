@@ -348,6 +348,14 @@ const requiredLinearHistory = (z: typeof zod) =>
     })
     .optional();
 
+const blockCreations = (z: typeof zod) =>
+  z
+    .boolean({
+      description: `Prevents creation of new branches during push, unless the push is initiated by a user, team, or app (defined in restrictions) which has the ability to push.`,
+    })
+    .default(false)
+    .optional();
+
 const repoVariables = (z: typeof zod) =>
   z
     .record(z.string(), {
@@ -385,9 +393,9 @@ const oidcCustomization = (z: typeof zod) =>
 
 const customProperties = (z: typeof zod) =>
   z
-    .record(z.string(), {
+    .record(z.union([z.string(), z.array(z.string())]), {
       description:
-        'Custom properties to be added to the repository (note, this only works for organization repositories)',
+        'Custom properties to be added to the repository (note, this only works for organization repositories). All values must be strings',
     })
     .optional();
 
@@ -405,48 +413,67 @@ const branch = (z: typeof zod) =>
     })
     .optional();
 
+const autoInit = (z: typeof zod) =>
+  z
+    .boolean({
+      description: `Create an initial commit with empty README. Default is 'false'`,
+    })
+    .default(false)
+    .optional();
+
+const workflowAccess = (z: typeof zod) =>
+  z
+    .enum(['none', 'organization', 'user'], {
+      description:
+        'Level of access for workflows outside of the repository. Default is "none".',
+    })
+    .optional();
+
 export {
-  repoUrl,
-  description,
-  homepage,
   access,
-  requireCodeOwnerReviews,
-  dismissStaleReviews,
-  requiredStatusCheckContexts,
-  requireBranchesToBeUpToDate,
-  requiredConversationResolution,
-  requireLastPushApproval,
-  repoVisibility,
-  deleteBranchOnMerge,
-  gitAuthorName,
-  gitAuthorEmail,
+  allowAutoMerge,
   allowMergeCommit,
+  allowRebaseMerge,
   allowSquashMerge,
   allowUpdateBranch,
-  squashMergeCommitTitle,
-  squashMergeCommitMessage,
-  allowRebaseMerge,
-  allowAutoMerge,
+  autoInit,
+  blockCreations,
+  branch,
+  bypassPullRequestAllowances,
   collaborators,
+  customProperties,
+  defaultBranch,
+  deleteBranchOnMerge,
+  description,
+  dismissStaleReviews,
+  gitAuthorEmail,
+  gitAuthorName,
+  gitCommitMessage,
+  hasIssues,
   hasProjects,
   hasWiki,
-  hasIssues,
-  token,
-  topics,
-  defaultBranch,
-  gitCommitMessage,
-  sourcePath,
-  repoVariables,
-  secrets,
+  homepage,
   oidcCustomization,
-  customProperties,
-  subscribe,
-  requiredApprovingReviewCount,
-  restrictions,
-  requiredCommitSigning,
-  requiredLinearHistory,
   protectDefaultBranch,
   protectEnforceAdmins,
-  bypassPullRequestAllowances,
-  branch,
+  repoUrl,
+  repoVariables,
+  repoVisibility,
+  requireBranchesToBeUpToDate,
+  requireCodeOwnerReviews,
+  requiredApprovingReviewCount,
+  requiredCommitSigning,
+  requiredConversationResolution,
+  requiredLinearHistory,
+  requiredStatusCheckContexts,
+  requireLastPushApproval,
+  restrictions,
+  secrets,
+  sourcePath,
+  squashMergeCommitMessage,
+  squashMergeCommitTitle,
+  subscribe,
+  token,
+  topics,
+  workflowAccess,
 };

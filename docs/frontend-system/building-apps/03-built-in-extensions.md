@@ -37,14 +37,14 @@ This extension is the first extension attached to the extension tree. It is resp
 
 #### Inputs
 
-| Name         | Description                | Type                                                                                                                                                   | Optional | Default                                                   | Extension creator                                                                                                |
-| ------------ | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------ | -------- | --------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| root         | The app root element.      | [coreExtensionData.reactElement](https://backstage.io/docs/reference/frontend-plugin-api.coreextensiondata)                                            | false    | The [`App/Root`](#app-root) extension output.             | No creator available, configure or override the [`App/Root`](#app-root) extension.                               |
-| apis         | The app apis factories.    | [createApiExtension.factoryDataRef](https://backstage.io/docs/reference/frontend-plugin-api.createapiextension.factorydataref)                         | false    | See [default apis](#default-apis-extensions).             | [createApiExtension](https://backstage.io/docs/reference/frontend-plugin-api.createapiextension)                 |
-| themes       | The app themes list.       | [createThemeExtension.themeDataRef](https://backstage.io/docs/reference/frontend-plugin-api.createthemeextension.themedataref)                         | false    | See [default themes](#default-theme-extensions).          | [createThemeExtension](https://backstage.io/docs/reference/frontend-plugin-api.createthemeextension)             |
-| components   | The app components list.   | [createComponentExtension.componentDataRef](https://backstage.io/docs/reference/frontend-plugin-api.createcomponentextension.componentdataref)         | false    | See [default components](#default-components-extensions). | [createComponentExtension](https://backstage.io/docs/reference/frontend-plugin-api.createcomponentextension)     |
-| translations | The app translations list. | [createTranslationExtension.translationDataRef](https://backstage.io/docs/reference/frontend-plugin-api.createtranslationextension.translationdataref) | false    | -                                                         | [createTranslationExtension](https://backstage.io/docs/reference/frontend-plugin-api.createtranslationextension) |
-| icons        | The app icons list.        | [IconBundleBlueprint.dataRefs.icons](https://backstage.io/docs/reference/frontend-plugin-api.iconbundleblueprint.dataRefs.icons)                       | true     | -                                                         | [IconBundleBlueprint](https://backstage.io/docs/reference/frontend-plugin-api.iconbundleblueprint)               |
+| Name         | Description                | Type                                                                                                                                                     | Optional | Default                                                   | Extension creator                                                                                                  |
+| ------------ | -------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- | --------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------ |
+| root         | The app root element.      | [coreExtensionData.reactElement](https://backstage.io/docs/reference/frontend-plugin-api.coreextensiondata)                                              | false    | The [`App/Root`](#app-root) extension output.             | No creator available, configure or override the [`App/Root`](#app-root) extension.                                 |
+| apis         | The app apis factories.    | [createApiExtension.factoryDataRef](https://backstage.io/docs/reference/frontend-plugin-api.createapiextension.factorydataref)                           | false    | See [default apis](#default-apis-extensions).             | [createApiExtension](https://backstage.io/docs/reference/frontend-plugin-api.createapiextension)                   |
+| themes       | The app themes list.       | [createThemeExtension.themeDataRef](https://backstage.io/docs/reference/frontend-plugin-api.createthemeextension.themedataref)                           | false    | See [default themes](#default-theme-extensions).          | [createThemeExtension](https://backstage.io/docs/reference/frontend-plugin-api.createthemeextension)               |
+| components   | The app components list.   | [SwappableComponentBlueprint.dataRefs.component](https://backstage.io/docs/reference/frontend-plugin-api.swappablecomponentblueprint.dataRefs.component) | false    | See [default components](#default-components-extensions). | [SwappableComponentBlueprint](https://backstage.io/docs/reference/frontend-plugin-api.swappablecomponentblueprint) |
+| translations | The app translations list. | [createTranslationExtension.translationDataRef](https://backstage.io/docs/reference/frontend-plugin-api.createtranslationextension.translationdataref)   | false    | -                                                         | [createTranslationExtension](https://backstage.io/docs/reference/frontend-plugin-api.createtranslationextension)   |
+| icons        | The app icons list.        | [IconBundleBlueprint.dataRefs.icons](https://backstage.io/docs/reference/frontend-plugin-api.iconbundleblueprint.dataRefs.icons)                         | true     | -                                                         | [IconBundleBlueprint](https://backstage.io/docs/reference/frontend-plugin-api.iconbundleblueprint)                 |
 
 #### Default theme extensions
 
@@ -59,11 +59,11 @@ Extensions that provides default theme inputs for the `App` extension.
 
 Extensions that provides default components inputs for the `App` extension.
 
-|    kind    | namespace |                 name                  |                           id                           |
-| :--------: | :-------: | :-----------------------------------: | :----------------------------------------------------: |
-| components |    app    |       core.components.progress        |       `components:app/core.components.progress`        |
-| components |    app    |   core.components.notFoundErrorPage   |   `components:app/core.components.notFoundErrorPage`   |
-| components |    app    | core.components.errorBoundaryFallback | `components:app/core.components.errorBoundaryFallback` |
+|    kind    | namespace |           name            |                     id                     |
+| :--------: | :-------: | :-----------------------: | :----------------------------------------: |
+| components |    app    |       core-progress       |       `components:app/core-progress`       |
+| components |    app    | core-not-found-error-page | `components:app/core-not-found-error-page` |
+| components |    app    |    core-error-display     |    `components:app/core-error-display`     |
 
 #### Default apis extensions
 

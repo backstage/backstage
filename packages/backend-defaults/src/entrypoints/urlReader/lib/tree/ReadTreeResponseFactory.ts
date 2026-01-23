@@ -36,7 +36,11 @@ export class DefaultReadTreeResponseFactory implements ReadTreeResponseFactory {
     );
   }
 
-  constructor(private readonly workDir: string) {}
+  private readonly workDir: string;
+
+  constructor(workDir: string) {
+    this.workDir = workDir;
+  }
 
   async fromTarArchive(
     options: ReadTreeResponseFactoryOptions & {

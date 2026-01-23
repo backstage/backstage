@@ -133,7 +133,7 @@ describe('PgSearchEngine', () => {
     it('should sanitize query term', async () => {
       const actualTranslatedQuery = searchEngine.translator(
         {
-          term: 'H&e|l!l*o W\0o(r)l:d',
+          term: 'H&e|l!l*o < W\0o(r)l:d',
           pageCursor: '',
         },
         { highlightOptions },

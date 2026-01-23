@@ -19,6 +19,7 @@ import { graphql } from '@octokit/graphql';
 import {
   ANNOTATION_GITHUB_TEAM_SLUG,
   ANNOTATION_GITHUB_USER_LOGIN,
+  ANNOTATION_GITHUB_USER_ID,
 } from './annotation';
 import { GithubTeam, GithubUser } from './github';
 
@@ -69,6 +70,7 @@ export const defaultUserTransformer = async (
       name: item.login,
       annotations: {
         [ANNOTATION_GITHUB_USER_LOGIN]: item.login,
+        ...(item.id && { [ANNOTATION_GITHUB_USER_ID]: item.id }),
       },
     },
     spec: {

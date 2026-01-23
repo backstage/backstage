@@ -33,6 +33,7 @@ export {
 export * from './auth';
 
 export * from './AlertApi';
+export * from './AppLanguageApi';
 export * from './AppThemeApi';
 export * from './SwappableComponentsApi';
 export * from './ConfigApi';
@@ -47,3 +48,4 @@ export * from './OAuthRequestApi';
 export * from './RouteResolutionApi';
 export * from './StorageApi';
 export * from './AnalyticsApi';
+export * from './TranslationApi';

@@ -31,11 +31,6 @@
       matchSourceUrls: ['https://github.com/microsoft/rushstack{/,}**'],
     },
     {
-      groupName: 'SVGR monorepo packages',
-      rangeStrategy: 'replace',
-      matchSourceUrls: ['https://github.com/gregberge/svgr{/,}**'],
-    },
-    {
       groupName: 'Module-federation monorepo packages',
       rangeStrategy: 'replace',
       matchSourceUrls: ['https://github.com/module-federation/core{/,}**'],

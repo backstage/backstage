@@ -46,14 +46,25 @@ export class TaskWorker {
   #workerState: TaskApiTasksResponse['workerState'] = {
     status: 'idle',
   };
+  private readonly taskId: string;
+  private readonly fn: SchedulerServiceTaskFunction;
+  private readonly knex: Knex;
+  private readonly logger: LoggerService;
+  private readonly workCheckFrequency: Duration;
 
   constructor(
-    private readonly taskId: string,
-    private readonly fn: SchedulerServiceTaskFunction,
-    private readonly knex: Knex,
-    private readonly logger: LoggerService,
-    private readonly workCheckFrequency: Duration = DEFAULT_WORK_CHECK_FREQUENCY,
-  ) {}
+    taskId: string,
+    fn: SchedulerServiceTaskFunction,
+    knex: Knex,
+    logger: LoggerService,
+    workCheckFrequency: Duration = DEFAULT_WORK_CHECK_FREQUENCY,
+  ) {
+    this.taskId = taskId;
+    this.fn = fn;
+    this.knex = knex;
+    this.logger = logger;
+    this.workCheckFrequency = workCheckFrequency;
+  }
 
   async start(settings: TaskSettingsV2, options: { signal: AbortSignal }) {
     try {
@@ -63,7 +74,7 @@ export class TaskWorker {
     }
 
     this.logger.info(
-      `Task worker starting: ${this.taskId}, ${JSON.stringify(settings)}`,
+      `Registered scheduled task: ${this.taskId}, ${JSON.stringify(settings)}`,
     );
 
     let workCheckFrequency = this.workCheckFrequency;
@@ -269,8 +280,10 @@ export class TaskWorker {
         .sendAt()
         .minus({ seconds: 1 }) // immediately, if "* * * * * *"
         .toUTC();
+      // We make a conversion here to make typescript happy, because the luxon versions of the cron library and here may not be the same
+      const timeConverted = DateTime.fromJSDate(time.toJSDate());
 
-      nextStartAt = this.nextRunAtRaw(time);
+      nextStartAt = this.nextRunAtRaw(timeConverted);
       startAt ||= nextStartAt;
     } else if (isManual) {
       nextStartAt = this.knex.raw('null');
@@ -407,8 +420,10 @@ export class TaskWorker {
     if (isCron) {
       const time = new CronTime(settings.cadence).sendAt().toUTC();
       this.logger.debug(`task: ${this.taskId} will next occur around ${time}`);
+      // We make a conversion here to make typescript happy, because the luxon versions of the cron library and here may not be the same
+      const timeConverted = DateTime.fromJSDate(time.toJSDate());
 
-      nextRun = this.nextRunAtRaw(time);
+      nextRun = this.nextRunAtRaw(timeConverted);
     } else if (isManual) {
       nextRun = this.knex.raw('null');
     } else {

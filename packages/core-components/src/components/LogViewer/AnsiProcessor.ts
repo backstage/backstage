@@ -78,11 +78,12 @@ export interface AnsiChunk {
 
 export class AnsiLine {
   text: string;
+  readonly lineNumber: number;
+  readonly chunks: AnsiChunk[];
 
-  constructor(
-    readonly lineNumber: number = 1,
-    readonly chunks: AnsiChunk[] = [],
-  ) {
+  constructor(lineNumber: number = 1, chunks: AnsiChunk[] = []) {
+    this.lineNumber = lineNumber;
+    this.chunks = chunks;
     this.text = chunks
       .map(c => c.text)
       .join('')

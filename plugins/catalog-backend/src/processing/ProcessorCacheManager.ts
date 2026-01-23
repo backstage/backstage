@@ -24,7 +24,11 @@ import { isObject } from './util';
 class SingleProcessorSubCache implements CatalogProcessorCache {
   private newState?: JsonObject;
 
-  constructor(private readonly existingState?: JsonObject) {}
+  private readonly existingState?: JsonObject;
+
+  constructor(existingState?: JsonObject) {
+    this.existingState = existingState;
+  }
 
   async get<ItemType extends JsonValue>(
     key: string,
@@ -52,7 +56,11 @@ class SingleProcessorCache implements CatalogProcessorCache {
   private newState?: JsonObject;
   private subCaches: Map<string, SingleProcessorSubCache> = new Map();
 
-  constructor(private readonly existingState?: JsonObject) {}
+  private readonly existingState?: JsonObject;
+
+  constructor(existingState?: JsonObject) {
+    this.existingState = existingState;
+  }
 
   async get<ItemType extends JsonValue>(
     key: string,
@@ -99,7 +107,11 @@ class SingleProcessorCache implements CatalogProcessorCache {
 export class ProcessorCacheManager {
   private caches = new Map<string, SingleProcessorCache>();
 
-  constructor(private readonly existingState: JsonObject) {}
+  private readonly existingState: JsonObject;
+
+  constructor(existingState: JsonObject) {
+    this.existingState = existingState;
+  }
 
   forProcessor(
     processor: CatalogProcessor,

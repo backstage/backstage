@@ -146,7 +146,7 @@ export class PermissionClient implements PermissionEvaluator {
     options?: PermissionClientRequestOptions,
   ): Promise<AuthorizePermissionResponse[]> {
     if (!this.enabled) {
-      return requests.map(_ => ({ result: AuthorizeResult.ALLOW as const }));
+      return requests.map(_ => ({ result: AuthorizeResult.ALLOW }));
     }
 
     if (this.enableBatchedRequests) {
@@ -168,7 +168,7 @@ export class PermissionClient implements PermissionEvaluator {
     options?: PermissionClientRequestOptions,
   ): Promise<QueryPermissionResponse[]> {
     if (!this.enabled) {
-      return queries.map(_ => ({ result: AuthorizeResult.ALLOW as const }));
+      return queries.map(_ => ({ result: AuthorizeResult.ALLOW }));
     }
 
     return this.makeRequest(queries, queryPermissionResponseSchema, options);

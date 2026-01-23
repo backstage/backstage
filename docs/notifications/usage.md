@@ -210,3 +210,68 @@ notificationsApi.getNotification(yourId);
 // or with connection to signals:
 notificationsApi.getNotification(lastSignal.notification_id);
 ```
+
+## Metadata Field
+
+The metadata field is a freeform object that is designed to be used by processors.
+
+### Well-known Notification Metadata Fields
+
+Below are metadata fields that will be commonly used between processors and have defined schematics.
+
+#### backstage.io/body.markdown
+
+```ts
+# Example:
+const payload = {
+  title: 'Entities Require Attention',
+  description: 'Entities: Service A, Service B'
+  metadata: {
+     'backstage.io/body.markdown': `
+        # Entities
+        - Service A
+        - System B
+     `
+  }
+}
+```
+
+This value of this metadata field should be the notification message in markdown format. This allows additional formatting options for processors that support markdown.
+
+### Usage
+
+Below is an example of using the `backstage.io/body.markdown` metadata field in a custom processor.
+
+When sending a notification:
+
+```ts
+notificationService.send({
+  recipients: { type: 'entity', entityRef: 'group/default:team-a' },
+  payload: {
+    title: 'Notification',
+    description: 'Description'
+    metadata: {
+      'backstage.io/body.markdown': `
+        ### Notification
+        Description
+      `,
+    },
+  },
+});
+```
+
+In the processor, you can then use the metadata field accordingly:
+
+```ts
+async postProcess(notification: Notification): Promise<void> {
+  // We suggest you parse the metadata field with a schema, i.e. Zod
+  const parseResult = CustomProcessorMetadataSchema.safeParse(notification.payload.metadata ?? {});
+  const metadata = parseResult.success ? parseResult.data : {};
+
+  customNotificationSender.send({
+    to: getUsers(notification.recipients),
+    subject: notification.payload.title,
+    markdownText: metadata['backstage.io/body.markdown'] ?? notification.payload.description,
+  });
+}
+```

@@ -14,15 +14,20 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryObj } from '@storybook/react';
+import preview from '../../../../../.storybook/preview';
+import { useState } from 'react';
 import { SearchField } from './SearchField';
 import { Form } from 'react-aria-components';
-import { Icon } from '../Icon';
 import { Flex } from '../Flex';
 import { FieldLabel } from '../FieldLabel';
+import { ButtonIcon } from '../ButtonIcon';
+import { RiCactusLine, RiEBike2Line } from '@remixicon/react';
+import { Button } from '../Button';
+import { Header } from '../Header';
+import { MemoryRouter } from 'react-router-dom';
 
-const meta = {
-  title: 'Forms/SearchField',
+const meta = preview.meta({
+  title: 'Backstage UI/SearchField',
   component: SearchField,
   argTypes: {
     isRequired: {
@@ -35,23 +40,21 @@ const meta = {
       control: 'text',
     },
   },
-} satisfies Meta<typeof SearchField>;
+});
 
-export default meta;
-type Story = StoryObj<typeof meta>;
-
-export const Default: Story = {
+export const Default = meta.story({
   args: {
     name: 'url',
     style: {
       maxWidth: '300px',
     },
+    'aria-label': 'Search',
   },
-};
+});
 
-export const Sizes: Story = {
+export const Sizes = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
   },
   render: args => (
     <Flex direction="row" gap="4" style={{ width: '100%', maxWidth: '600px' }}>
@@ -59,83 +62,83 @@ export const Sizes: Story = {
       <SearchField {...args} size="medium" />
     </Flex>
   ),
-};
+});
 
-export const DefaultValue: Story = {
+export const DefaultValue = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
     defaultValue: 'https://example.com',
   },
-};
+});
 
-export const WithLabel: Story = {
+export const WithLabel = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
     label: 'Label',
   },
-};
+});
 
-export const WithDescription: Story = {
+export const WithDescription = meta.story({
   args: {
-    ...WithLabel.args,
+    ...WithLabel.input.args,
     description: 'Description',
   },
-};
+});
 
-export const Required: Story = {
+export const Required = meta.story({
   args: {
-    ...WithLabel.args,
+    ...WithLabel.input.args,
     isRequired: true,
   },
-};
+});
 
-export const Disabled: Story = {
+export const Disabled = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
     isDisabled: true,
   },
-};
+});
 
-export const WithIcon: Story = {
+export const WithIcon = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
   },
   render: args => (
     <SearchField
       {...args}
       placeholder="Enter a URL"
       size="small"
-      icon={<Icon name="eye" />}
+      icon={<RiEBike2Line />}
     />
   ),
-};
+});
 
-export const DisabledWithIcon: Story = {
+export const DisabledWithIcon = meta.story({
   args: {
-    ...WithIcon.args,
+    ...WithIcon.input.args,
     isDisabled: true,
   },
-};
+});
 
-export const ShowError: Story = {
+export const ShowError = meta.story({
   args: {
-    ...WithLabel.args,
+    ...WithLabel.input.args,
   },
   render: args => (
     <Form validationErrors={{ url: 'Invalid URL' }}>
       <SearchField {...args} />
     </Form>
   ),
-};
+});
 
-export const Validation: Story = {
+export const Validation = meta.story({
   args: {
-    ...WithLabel.args,
+    ...WithLabel.input.args,
     validate: value => (value === 'admin' ? 'Nice try!' : null),
   },
-};
+});
 
-export const CustomField: Story = {
+export const CustomField = meta.story({
   render: () => (
     <>
       <FieldLabel
@@ -151,4 +154,190 @@ export const CustomField: Story = {
       />
     </>
   ),
-};
+});
+
+export const StartCollapsed = meta.story({
+  args: {
+    ...Default.input.args,
+    startCollapsed: true,
+  },
+
+  render: args => (
+    <Flex direction="column" gap="4">
+      <Flex direction="row" gap="4">
+        <SearchField {...args} size="small" />
+        <SearchField {...args} size="medium" />
+      </Flex>
+      <SearchField {...args} size="small" />
+    </Flex>
+  ),
+});
+
+export const StartCollapsedWithValue = meta.story({
+  args: {
+    ...StartCollapsed.input.args,
+    defaultValue: 'https://example.com',
+  },
+
+  render: args => <SearchField {...args} size="small" />,
+});
+
+export const InHeader = meta.story({
+  decorators: [
+    Story => (
+      <MemoryRouter>
+        <Story />
+      </MemoryRouter>
+    ),
+  ],
+  render: args => (
+    <>
+      <Header
+        title="Title"
+        customActions={
+          <>
+            <ButtonIcon
+              aria-label="Cactus icon button"
+              icon={<RiCactusLine />}
+              size="small"
+              variant="secondary"
+            />
+            <SearchField aria-label="Search" {...args} size="small" />
+            <ButtonIcon
+              aria-label="Cactus icon button"
+              icon={<RiCactusLine />}
+              size="small"
+              variant="secondary"
+            />
+          </>
+        }
+      />
+    </>
+  ),
+});
+
+export const StartCollapsedInHeader = meta.story({
+  args: {
+    ...StartCollapsed.input.args,
+  },
+  decorators: [
+    Story => (
+      <MemoryRouter>
+        <Story />
+      </MemoryRouter>
+    ),
+  ],
+  render: args => (
+    <>
+      <Header
+        title="Title"
+        customActions={
+          <>
+            <ButtonIcon
+              aria-label="Cactus icon button"
+              icon={<RiCactusLine />}
+              size="small"
+              variant="secondary"
+            />
+            <SearchField {...args} size="small" />
+            <ButtonIcon
+              aria-label="Cactus icon button"
+              icon={<RiCactusLine />}
+              size="small"
+              variant="secondary"
+            />
+          </>
+        }
+      />
+    </>
+  ),
+});
+
+export const StartCollapsedWithButtons = meta.story({
+  args: {
+    ...StartCollapsed.input.args,
+  },
+  render: args => (
+    <Flex direction="row" gap="2" style={{ width: '100%', maxWidth: '600px' }}>
+      <SearchField {...args} size="small" />
+      <ButtonIcon
+        aria-label="Cactus icon button"
+        icon={<RiCactusLine />}
+        size="small"
+        variant="secondary"
+      />
+      <Button size="small" variant="secondary">
+        Hello world
+      </Button>
+      <SearchField {...args} size="medium" />
+      <ButtonIcon
+        aria-label="Cactus icon button"
+        icon={<RiCactusLine />}
+        size="medium"
+        variant="secondary"
+      />
+      <Button size="medium" variant="secondary">
+        Hello world
+      </Button>
+    </Flex>
+  ),
+});
+
+export const StartCollapsedWithOnChange = meta.story({
+  args: {
+    ...StartCollapsed.input.args,
+  },
+  render: args => {
+    const handleChange = (value: string) => {
+      console.log('Search value:', value);
+    };
+
+    return (
+      <Flex
+        direction="row"
+        gap="2"
+        style={{ width: '100%', maxWidth: '600px' }}
+      >
+        <SearchField {...args} onChange={handleChange} size="small" />
+      </Flex>
+    );
+  },
+});
+
+export const StartCollapsedControlledEmpty = meta.story({
+  args: {
+    ...StartCollapsed.input.args,
+  },
+  render: function Render(args) {
+    const [value, setValue] = useState('');
+
+    return (
+      <Flex
+        direction="row"
+        gap="2"
+        style={{ width: '100%', maxWidth: '600px' }}
+      >
+        <SearchField {...args} size="small" value={value} onChange={setValue} />
+      </Flex>
+    );
+  },
+});
+
+export const StartCollapsedControlledWithValue = meta.story({
+  args: {
+    ...StartCollapsed.input.args,
+  },
+  render: function Render(args) {
+    const [value, setValue] = useState('Component');
+
+    return (
+      <Flex
+        direction="row"
+        gap="2"
+        style={{ width: '100%', maxWidth: '600px' }}
+      >
+        <SearchField {...args} size="small" value={value} onChange={setValue} />
+      </Flex>
+    );
+  },
+});

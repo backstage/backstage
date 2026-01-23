@@ -1,0 +1,160 @@
+name: Cleanup Patch Files
+on:
+  push:
+    branches:
+      - 'patch/v*'
+
+concurrency:
+  group: cleanup-patch-files
+  cancel-in-progress: false
+
+jobs:
+  cleanup:
+    name: Cleanup Patch Files
+    runs-on: ubuntu-latest
+    if: github.repository == 'backstage/backstage'
+    permissions:
+      contents: write
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@df199fb7be9f65074067a9eb93f12bb4c5547cf2 # v2.13.3
+        with:
+          egress-policy: audit
+
+      - name: Checkout
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
+
+      - name: Configure Git
+        run: |
+          git config --global user.email noreply@backstage.io
+          git config --global user.name 'Github patch cleanup workflow'
+
+      - name: Extract PR numbers from commit messages
+        id: extract-pr-numbers
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
+        with:
+          github-token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
+          script: |
+            const { execSync } = require('child_process');
+
+            // Extract PR numbers from commits pushed to the patch branch
+            // Commits have messages in format: "Patch from PR #123"
+            const beforeSha = context.payload.before;
+            const afterSha = context.payload.after;
+
+            let commitRange;
+            if (beforeSha && beforeSha !== '0000000000000000000000000000000000000000') {
+              commitRange = `${beforeSha}..${afterSha}`;
+            } else {
+              // First push to branch, check recent commits
+              commitRange = `-n 20 ${afterSha}`;
+            }
+
+            // Get commit messages from git log
+            let commitMessages;
+            try {
+              commitMessages = execSync(
+                `git log --format=%B ${commitRange}`,
+                { encoding: 'utf-8', stdio: ['ignore', 'pipe', 'ignore'] }
+              );
+            } catch (error) {
+              console.log('No commits found in range');
+              commitMessages = '';
+            }
+
+            // Extract PR numbers from commit messages matching "Patch from PR #123"
+            const prNumbers = new Set();
+            const prPattern = /Patch from PR #(\d+)/g;
+            let match;
+
+            while ((match = prPattern.exec(commitMessages)) !== null) {
+              prNumbers.add(parseInt(match[1], 10));
+            }
+
+            // Convert to sorted array
+            const prNumbersArray = Array.from(prNumbers).sort((a, b) => a - b);
+
+            if (prNumbersArray.length > 0) {
+              console.log(`Found PR numbers: ${prNumbersArray.join(', ')}`);
+              core.setOutput('pr_numbers', JSON.stringify(prNumbersArray));
+              core.setOutput('has_pr_numbers', 'true');
+            } else {
+              console.log('No PR numbers found in commit messages');
+              core.setOutput('pr_numbers', '[]');
+              core.setOutput('has_pr_numbers', 'false');
+            }
+
+      - name: Checkout master
+        if: steps.extract-pr-numbers.outputs.has_pr_numbers == 'true'
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: master
+          token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
+
+      - name: Delete patch files
+        if: steps.extract-pr-numbers.outputs.has_pr_numbers == 'true'
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
+        env:
+          PR_NUMBERS: ${{ steps.extract-pr-numbers.outputs.pr_numbers }}
+          REF_NAME: ${{ github.ref_name }}
+        with:
+          github-token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
+          script: |
+            const { execSync } = require('child_process');
+            const fs = require('fs');
+            const path = require('path');
+
+            const prNumbers = JSON.parse(process.env.PR_NUMBERS);
+            const patchesDir = path.join(process.cwd(), '.patches');
+
+            if (!fs.existsSync(patchesDir)) {
+              console.log('No .patches directory found, nothing to clean up');
+              return;
+            }
+
+            const deletedFiles = [];
+
+            // Delete patch files for each PR number
+            for (const prNum of prNumbers) {
+              const patchFile = path.join(patchesDir, `pr-${prNum}.txt`);
+              if (fs.existsSync(patchFile)) {
+                fs.unlinkSync(patchFile);
+                deletedFiles.push(patchFile);
+                console.log(`Deleted ${patchFile}`);
+              } else {
+                console.log(`Patch file ${patchFile} not found, skipping`);
+              }
+            }
+
+            if (deletedFiles.length === 0) {
+              console.log('No patch files to delete');
+              return;
+            }
+
+      - name: Commit and push changes
+        if: steps.extract-pr-numbers.outputs.has_pr_numbers == 'true'
+        run: |
+          # Check if there are any changes to commit
+          if git diff --quiet && git diff --cached --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+
+          git add .patches/
+          git commit -m "chore: remove applied patch files after patch release merge
+
+          Removed patch files for PRs included in patch release to ${{ github.ref_name }}"
+
+          git push origin master
+
+      - name: Summary
+        if: steps.extract-pr-numbers.outputs.has_pr_numbers == 'true'
+        run: |
+          echo "## Patch Files Cleanup Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Patch release to ${{ github.ref_name }} has been merged." >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "Patch files have been removed from the master branch." >> $GITHUB_STEP_SUMMARY

@@ -60,6 +60,7 @@ const componentDataRef = createExtensionDataRef<NavContentComponent>().with({
  * Creates an extension that replaces the entire nav bar with your own component.
  *
  * @public
+ * @deprecated Use {@link @backstage/plugin-app-react#NavContentBlueprint} instead.
  */
 export const NavContentBlueprint = createExtensionBlueprint({
   kind: 'nav-content',

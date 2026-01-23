@@ -520,7 +520,7 @@ describe('LunrSearchEngine', () => {
               fields: {
                 title: `${highlightTags.pre}testTitle${highlightTags.post}`,
                 text: `${highlightTags.pre}testText${highlightTags.post}`,
-                location: `${highlightTags.pre}test/location${highlightTags.post}`,
+                location: `${highlightTags.pre}test${highlightTags.post}/location`,
               },
             },
             rank: 1,

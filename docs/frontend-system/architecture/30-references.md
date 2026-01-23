@@ -5,8 +5,6 @@ sidebar_label: Value References
 description: Value References
 ---
 
-> **NOTE: The new frontend system is in alpha and is only supported by a small number of plugins.**
-
 <!--
 
 Describe the generic concept of references as used for ApiRef, ExtensionDataRef, RouteRef, ComponentRef, etc.

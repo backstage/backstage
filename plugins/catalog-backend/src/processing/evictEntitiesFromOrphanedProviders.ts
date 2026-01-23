@@ -18,12 +18,14 @@ import { EntityProvider } from '@backstage/plugin-catalog-node';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { ProviderDatabase } from '../database/types';
 
-async function getOrphanedEntityProviderNames({
+export async function getOrphanedEntityProviderNames({
   db,
   providers,
+  logger,
 }: {
   db: ProviderDatabase;
   providers: EntityProvider[];
+  logger: LoggerService;
 }): Promise<string[]> {
   const dbProviderNames = await db.transaction(async tx =>
     db.listReferenceSourceKeys(tx),
@@ -31,9 +33,21 @@ async function getOrphanedEntityProviderNames({
 
   const providerNames = providers.map(p => p.getProviderName());
 
-  return dbProviderNames.filter(
+  const orphaned = dbProviderNames.filter(
     dbProviderName => !providerNames.includes(dbProviderName),
   );
+
+  if (orphaned.length) {
+    const dbProviderNamesString = dbProviderNames.map(p => `'${p}'`).join(', ');
+    const providerNamesString = providerNames.map(p => `'${p}'`).join(', ');
+    const orphanedString = orphaned.map(p => `'${p}'`).join(', ');
+    logger.warn(`Found ${orphaned.length} orphaned entity provider(s)`);
+    logger.warn(`Database contained providers: ${dbProviderNamesString}`);
+    logger.warn(`Installed providers were: ${providerNamesString}`);
+    logger.warn(`Orphaned providers were thus: ${orphanedString}`);
+  }
+
+  return orphaned;
 }
 
 async function removeEntitiesForProvider({

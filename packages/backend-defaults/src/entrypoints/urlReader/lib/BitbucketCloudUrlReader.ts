@@ -59,15 +59,28 @@ export class BitbucketCloudUrlReader implements UrlReaderService {
     });
   };
 
-  constructor(
-    private readonly integration: BitbucketCloudIntegration,
-    private readonly deps: { treeResponseFactory: ReadTreeResponseFactory },
-  ) {
-    const { host, username, appPassword } = integration.config;
+  private readonly integration: BitbucketCloudIntegration;
+  private readonly deps: { treeResponseFactory: ReadTreeResponseFactory };
 
-    if (username && !appPassword) {
+  constructor(
+    integration: BitbucketCloudIntegration,
+    deps: { treeResponseFactory: ReadTreeResponseFactory },
+  ) {
+    this.integration = integration;
+    this.deps = deps;
+    const { host, username, appPassword, token, clientId, clientSecret } =
+      integration.config;
+
+    // Validate: OAuth requires both clientId and clientSecret
+    if ((clientId && !clientSecret) || (clientSecret && !clientId)) {
       throw new Error(
-        `Bitbucket Cloud integration for '${host}' has configured a username but is missing a required appPassword.`,
+        `Bitbucket Cloud integration has incomplete OAuth configuration. Both clientId and clientSecret are required.`,
+      );
+    }
+
+    if (username && !token && !appPassword) {
+      throw new Error(
+        `Bitbucket Cloud integration for '${host}' has configured a username but is missing a required token or appPassword.`,
       );
     }
   }
@@ -86,7 +99,7 @@ export class BitbucketCloudUrlReader implements UrlReaderService {
       url,
       this.integration.config,
     );
-    const requestOptions = getBitbucketCloudRequestOptions(
+    const requestOptions = await getBitbucketCloudRequestOptions(
       this.integration.config,
     );
 
@@ -144,7 +157,7 @@ export class BitbucketCloudUrlReader implements UrlReaderService {
     );
     const archiveResponse = await fetch(
       downloadUrl,
-      getBitbucketCloudRequestOptions(this.integration.config),
+      await getBitbucketCloudRequestOptions(this.integration.config),
     );
     if (!archiveResponse.ok) {
       const message = `Failed to read tree from ${url}, ${archiveResponse.status} ${archiveResponse.statusText}`;
@@ -223,8 +236,10 @@ export class BitbucketCloudUrlReader implements UrlReaderService {
   }
 
   toString() {
-    const { host, username, appPassword } = this.integration.config;
-    const authed = Boolean(username && appPassword);
+    // TODO: appPassword can be removed once fully
+    // deprecated by BitBucket on 9th June 2026.
+    const { host, username, appPassword, token } = this.integration.config;
+    const authed = Boolean(username && (token ?? appPassword));
     return `bitbucketCloud{host=${host},authed=${authed}}`;
   }
 
@@ -243,7 +258,7 @@ export class BitbucketCloudUrlReader implements UrlReaderService {
 
     const commitsResponse = await fetch(
       commitsApiUrl,
-      getBitbucketCloudRequestOptions(this.integration.config),
+      await getBitbucketCloudRequestOptions(this.integration.config),
     );
     if (!commitsResponse.ok) {
       const message = `Failed to retrieve commits from ${commitsApiUrl}, ${commitsResponse.status} ${commitsResponse.statusText}`;

@@ -21,7 +21,10 @@ const iconsDataRef = createExtensionDataRef<{
   [key in string]: IconComponent;
 }>().with({ id: 'core.icons' });
 
-/** @public */
+/**
+ * @public
+ * @deprecated Use {@link @backstage/plugin-app-react#IconBundleBlueprint} instead.
+ */
 export const IconBundleBlueprint = createExtensionBlueprint({
   kind: 'icon-bundle',
   attachTo: { id: 'api:app/icons', input: 'icons' },

@@ -1,0 +1,232 @@
+import { PropsTable } from '@/components/PropsTable';
+import { Snippet } from '@/components/Snippet';
+import { CodeBlock } from '@/components/CodeBlock';
+import {
+  Preview,
+  PreviewSubmenu,
+  PreviewIcons,
+  PreviewLinks,
+  PreviewSections,
+  PreviewSeparators,
+  PreviewAutocompleteMenu,
+  PreviewAutocompleteListbox,
+  PreviewAutocompleteListboxMultiple,
+} from './components';
+import {
+  menuTriggerPropDefs,
+  submenuTriggerPropDefs,
+  menuPropDefs,
+  menuListBoxPropDefs,
+  menuAutocompletePropDefs,
+  menuAutocompleteListboxPropDefs,
+  menuItemPropDefs,
+  menuListBoxItemPropDefs,
+  menuSectionPropDefs,
+  menuSeparatorPropDefs,
+} from './props-definition';
+import {
+  usage,
+  preview,
+  submenu,
+  icons,
+  sections,
+  separators,
+  links,
+  autocomplete,
+  autocompleteListbox,
+  autocompleteListboxMultiple,
+} from './snippets';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+import { MenuDefinition } from '../../../utils/definitions';
+
+<PageTitle
+  title="Menu"
+  description="A list of actions in a dropdown, enhanced with keyboard navigation."
+/>
+
+<Snippet align="center" py={4} preview={<Preview />} code={preview} />
+
+## Usage
+
+<CodeBlock code={usage} />
+
+### Triggers
+
+- `MenuTrigger` is a wrapper component that combines a button or other trigger element with a menu displayed in a popover.
+- `SubmenuTrigger` is a wrapper component that combines a `MenuItem` with a menu displayed in a popover.
+
+### Containers
+
+- `Menu` is a container component that contains a list of menu items or sections.
+- `MenuListBox` is a container component that contains a list of menu items or sections.
+- `MenuAutocomplete` is a container component that contains a list of menu items or sections.
+- `MenuAutocompleteListbox` is a container component that contains a list of menu items or sections.
+
+### Items
+
+- `MenuItem` is an individual interactive item in the menu.
+- `MenuListBoxItem` is an individual interactive item in the menu list box.
+
+### Separators
+
+- `MenuSeparator` is a component that renders a horizontal line to separate menu items.
+- `MenuSection` is a component that renders a section in the menu.
+
+## API reference
+
+### MenuTrigger
+
+`MenuTrigger` accepts exactly two children: the first child should be the trigger element, and second child should be
+one of the menu containers containing the menu.
+
+<PropsTable data={menuTriggerPropDefs} />
+
+### SubmenuTrigger
+
+The `SubmenuTrigger` accepts exactly two children: the first child should be the `MenuItem` which triggers opening
+of the submenu, and second child should be one of the menu containers containing the submenu.
+
+<PropsTable data={submenuTriggerPropDefs} />
+
+### Menu
+
+`Menu` is a container component that contains a list of menu items or sections.
+
+<PropsTable data={menuPropDefs} />
+
+### MenuListBox
+
+`MenuListBox` is a container component that contains a list of menu items or sections.
+
+<PropsTable data={menuListBoxPropDefs} />
+
+### MenuAutocomplete
+
+`MenuAutocomplete` is a container component that contains a list of menu items or sections.
+
+<PropsTable data={menuAutocompletePropDefs} />
+
+### MenuAutocompleteListbox
+
+`MenuAutocompleteListbox` is a container component that contains a list of menu items or sections.
+
+<PropsTable data={menuAutocompleteListboxPropDefs} />
+
+### MenuItem
+
+`MenuItem` is an individual interactive item in the menu.
+
+<PropsTable data={menuItemPropDefs} />
+
+### MenuListBoxItem
+
+`MenuListBoxItem` is an individual interactive item in the menu list box.
+
+<PropsTable data={menuListBoxItemPropDefs} />
+
+### MenuSection
+
+`MenuSection` is a component that renders a section in the menu.
+
+<PropsTable data={menuSectionPropDefs} />
+
+### MenuSeparator
+
+`MenuSeparator` is a component that renders a horizontal line to separate menu items.
+
+<PropsTable data={menuSeparatorPropDefs} />
+
+## Examples
+
+### Nested navigation
+
+You can nest menus to create a more complex navigation structure. It is important to use the `placement` prop to ensure
+the submenu is displayed in the correct position. The best practice is to use the `right top` placement for the submenu.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<PreviewSubmenu />}
+  code={submenu}
+/>
+
+### With icons
+
+You can use the `iconStart` prop to add an icon to the menu item.
+
+<Snippet align="center" py={4} open preview={<PreviewIcons />} code={icons} />
+
+### With links
+
+You can use the `href` prop to add a link to the menu item. This is using our router provider under the hood
+to work for both internal and external links.
+
+<Snippet align="center" py={4} open preview={<PreviewLinks />} code={links} />
+
+### With sections
+
+You can use the `MenuSection` component to add a section to the menu.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<PreviewSections />}
+  code={sections}
+/>
+
+### With separators
+
+You can use the `MenuSeparator` component to add a separator to the menu.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<PreviewSeparators />}
+  code={separators}
+/>
+
+### With autocomplete
+
+You can use the `MenuAutocomplete` component to add a autocomplete to the menu.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<PreviewAutocompleteMenu />}
+  code={autocomplete}
+/>
+
+### With list box
+
+You can use the `MenuListBox` component to add a list box to the menu.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<PreviewAutocompleteListbox />}
+  code={autocompleteListbox}
+/>
+
+### With list box with multiple selection
+
+You can use the `MenuListBox` component to add a list box to the menu. You can also use the `selectionMode` prop to
+allow multiple selection.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<PreviewAutocompleteListboxMultiple />}
+  code={autocompleteListboxMultiple}
+/>
+
+<Theming definition={MenuDefinition} />
+
+<ChangelogComponent component="menu" />

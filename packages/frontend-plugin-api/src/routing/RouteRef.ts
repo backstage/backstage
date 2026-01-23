@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { OpaqueRouteRef } from '@internal/frontend';
 import { describeParentCallSite } from './describeParentCallSite';
 import { AnyRouteRefParams } from './types';
 
@@ -31,93 +32,6 @@ export interface RouteRef<
 > {
   readonly $$type: '@backstage/RouteRef';
   readonly T: TParams;
-}
-
-/** @internal */
-export interface InternalRouteRef<
-  TParams extends AnyRouteRefParams = AnyRouteRefParams,
-> extends RouteRef<TParams> {
-  readonly version: 'v1';
-  getParams(): string[];
-  getDescription(): string;
-
-  alias: string | undefined;
-
-  setId(id: string): void;
-}
-
-/** @internal */
-export function toInternalRouteRef<
-  TParams extends AnyRouteRefParams = AnyRouteRefParams,
->(resource: RouteRef<TParams>): InternalRouteRef<TParams> {
-  const r = resource as InternalRouteRef<TParams>;
-  if (r.$$type !== '@backstage/RouteRef') {
-    throw new Error(`Invalid RouteRef, bad type '${r.$$type}'`);
-  }
-
-  return r;
-}
-
-/** @internal */
-export function isRouteRef(opaque: { $$type: string }): opaque is RouteRef {
-  return opaque.$$type === '@backstage/RouteRef';
-}
-
-/** @internal */
-export class RouteRefImpl implements InternalRouteRef {
-  readonly $$type = '@backstage/RouteRef';
-  readonly version = 'v1';
-  declare readonly T: never;
-
-  #id?: string;
-  readonly #params: string[];
-  readonly #creationSite: string;
-  readonly #alias?: string;
-
-  constructor(
-    readonly params: string[] = [],
-    creationSite: string,
-    alias?: string,
-  ) {
-    this.#params = params;
-    this.#creationSite = creationSite;
-    this.#alias = alias;
-  }
-
-  getParams(): string[] {
-    return this.#params;
-  }
-
-  get alias(): string | undefined {
-    return this.#alias;
-  }
-
-  getDescription(): string {
-    if (this.#id) {
-      return this.#id;
-    }
-    return `created at '${this.#creationSite}'`;
-  }
-
-  get #name() {
-    return this.$$type.slice('@backstage/'.length);
-  }
-
-  setId(id: string): void {
-    if (!id) {
-      throw new Error(`${this.#name} id must be a non-empty string`);
-    }
-    if (this.#id && this.#id !== id) {
-      throw new Error(
-        `${this.#name} was referenced twice as both '${this.#id}' and '${id}'`,
-      );
-    }
-    this.#id = id;
-  }
-
-  toString(): string {
-    return `${this.#name}{${this.getDescription()}}`;
-  }
 }
 
 /**
@@ -145,9 +59,36 @@ export function createRouteRef<
     ? TParams
     : { [param in TParamKeys]: string }
 > {
-  return new RouteRefImpl(
-    config?.params as string[] | undefined,
-    describeParentCallSite(),
-    config?.aliasFor,
-  ) as RouteRef<any>;
+  const params = (config?.params ?? []) as string[];
+  const creationSite = describeParentCallSite();
+
+  let id: string | undefined = undefined;
+
+  return OpaqueRouteRef.createInstance('v1', {
+    T: undefined as unknown as TParams,
+    getParams() {
+      return params;
+    },
+    getDescription() {
+      if (id) {
+        return id;
+      }
+      return `created at '${creationSite}'`;
+    },
+    alias: config?.aliasFor,
+    setId(newId: string) {
+      if (!newId) {
+        throw new Error(`RouteRef id must be a non-empty string`);
+      }
+      if (id && id !== newId) {
+        throw new Error(
+          `RouteRef was referenced twice as both '${id}' and '${newId}'`,
+        );
+      }
+      id = newId;
+    },
+    toString(): string {
+      return `routeRef{id=${id},at='${creationSite}'}`;
+    },
+  });
 }

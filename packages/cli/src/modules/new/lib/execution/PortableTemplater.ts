@@ -27,6 +27,7 @@ import lowerFirst from 'lodash/lowerFirst';
 import { Lockfile } from '../../../../lib/versioning';
 import { paths } from '../../../../lib/paths';
 import { createPackageVersionProvider } from '../../../../lib/version';
+import { getHasYarnPlugin } from '../../../../lib/yarnPlugin';
 
 const builtInHelpers = {
   camelCase,
@@ -53,7 +54,10 @@ export class PortableTemplater {
       /* ignored */
     }
 
-    const versionProvider = createPackageVersionProvider(lockfile);
+    const hasYarnPlugin = await getHasYarnPlugin();
+    const versionProvider = createPackageVersionProvider(lockfile, {
+      preferBackstageProtocol: hasYarnPlugin,
+    });
 
     const templater = new PortableTemplater(
       {

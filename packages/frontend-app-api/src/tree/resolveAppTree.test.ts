@@ -18,11 +18,24 @@ import {
   coreExtensionData,
   createExtension,
   createExtensionInput,
+  createFrontendPlugin,
   Extension,
 } from '@backstage/frontend-plugin-api';
 import { resolveAppTree } from './resolveAppTree';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { resolveExtensionDefinition } from '../../../frontend-plugin-api/src/wiring/resolveExtensionDefinition';
+import { createErrorCollector } from '../wiring/createErrorCollector';
+
+const collector = createErrorCollector();
+
+afterEach(() => {
+  const errors = collector.collectErrors();
+  if (errors) {
+    throw new Error(
+      `Unexpected errors: ${errors.map(e => e.message).join(', ')}`,
+    );
+  }
+});
 
 const extension = resolveExtensionDefinition(
   createExtension({
@@ -37,17 +50,18 @@ const baseSpec = {
   extension,
   attachTo: { id: 'nonexistent', input: 'nonexistent' },
   disabled: false,
+  plugin: createFrontendPlugin({ pluginId: 'app' }),
 };
 
 describe('buildAppTree', () => {
   it('should fail to create an empty tree', () => {
-    expect(() => resolveAppTree('app', [])).toThrow(
+    expect(() => resolveAppTree('app', [], collector)).toThrow(
       "No root node with id 'app' found in app tree",
     );
   });
 
   it('should create a tree with only one node', () => {
-    const tree = resolveAppTree('app', [{ ...baseSpec, id: 'app' }]);
+    const tree = resolveAppTree('app', [{ ...baseSpec, id: 'app' }], collector);
     expect(tree.root).toEqual({
       spec: { ...baseSpec, id: 'app' },
       edges: { attachments: new Map() },
@@ -57,15 +71,19 @@ describe('buildAppTree', () => {
   });
 
   it('should create a tree', () => {
-    const tree = resolveAppTree('b', [
-      { ...baseSpec, id: 'a' },
-      { ...baseSpec, id: 'b' },
-      { ...baseSpec, id: 'c' },
-      { ...baseSpec, attachTo: { id: 'b', input: 'x' }, id: 'bx1' },
-      { ...baseSpec, attachTo: { id: 'b', input: 'x' }, id: 'bx2' },
-      { ...baseSpec, attachTo: { id: 'b', input: 'y' }, id: 'by1' },
-      { ...baseSpec, attachTo: { id: 'd', input: 'x' }, id: 'dx1' },
-    ]);
+    const tree = resolveAppTree(
+      'b',
+      [
+        { ...baseSpec, id: 'a' },
+        { ...baseSpec, id: 'b' },
+        { ...baseSpec, id: 'c' },
+        { ...baseSpec, attachTo: { id: 'b', input: 'x' }, id: 'bx1' },
+        { ...baseSpec, attachTo: { id: 'b', input: 'x' }, id: 'bx2' },
+        { ...baseSpec, attachTo: { id: 'b', input: 'y' }, id: 'by1' },
+        { ...baseSpec, attachTo: { id: 'd', input: 'x' }, id: 'dx1' },
+      ],
+      collector,
+    );
 
     expect(Array.from(tree.nodes.keys())).toEqual([
       'a',
@@ -120,26 +138,30 @@ describe('buildAppTree', () => {
   });
 
   it('should create a tree with clones', () => {
-    const tree = resolveAppTree('a', [
-      { ...baseSpec, id: 'a' },
-      { ...baseSpec, id: 'b', attachTo: { id: 'a', input: 'x' } },
-      {
-        ...baseSpec,
-        id: 'c',
-        attachTo: [
-          { id: 'a', input: 'x' },
-          { id: 'b', input: 'x' },
-        ],
-      },
-      {
-        ...baseSpec,
-        id: 'd',
-        attachTo: [
-          { id: 'b', input: 'x' },
-          { id: 'c', input: 'x' },
-        ],
-      },
-    ]);
+    const tree = resolveAppTree(
+      'a',
+      [
+        { ...baseSpec, id: 'a' },
+        { ...baseSpec, id: 'b', attachTo: { id: 'a', input: 'x' } },
+        {
+          ...baseSpec,
+          id: 'c',
+          attachTo: [
+            { id: 'a', input: 'x' },
+            { id: 'b', input: 'x' },
+          ],
+        },
+        {
+          ...baseSpec,
+          id: 'd',
+          attachTo: [
+            { id: 'b', input: 'x' },
+            { id: 'c', input: 'x' },
+          ],
+        },
+      ],
+      collector,
+    );
 
     expect(Array.from(tree.nodes.keys())).toEqual(['a', 'b', 'c', 'd']);
 
@@ -170,15 +192,19 @@ describe('buildAppTree', () => {
   });
 
   it('should create a tree out of order', () => {
-    const tree = resolveAppTree('b', [
-      { ...baseSpec, attachTo: { id: 'b', input: 'x' }, id: 'bx2' },
-      { ...baseSpec, id: 'a' },
-      { ...baseSpec, attachTo: { id: 'b', input: 'y' }, id: 'by1' },
-      { ...baseSpec, id: 'b' },
-      { ...baseSpec, attachTo: { id: 'b', input: 'x' }, id: 'bx1' },
-      { ...baseSpec, id: 'c' },
-      { ...baseSpec, attachTo: { id: 'd', input: 'x' }, id: 'dx1' },
-    ]);
+    const tree = resolveAppTree(
+      'b',
+      [
+        { ...baseSpec, attachTo: { id: 'b', input: 'x' }, id: 'bx2' },
+        { ...baseSpec, id: 'a' },
+        { ...baseSpec, attachTo: { id: 'b', input: 'y' }, id: 'by1' },
+        { ...baseSpec, id: 'b' },
+        { ...baseSpec, attachTo: { id: 'b', input: 'x' }, id: 'bx1' },
+        { ...baseSpec, id: 'c' },
+        { ...baseSpec, attachTo: { id: 'd', input: 'x' }, id: 'dx1' },
+      ],
+      collector,
+    );
 
     expect(Array.from(tree.nodes.keys())).toEqual([
       'bx2',
@@ -212,13 +238,16 @@ describe('buildAppTree', () => {
     `);
   });
 
-  it('throws an error when duplicated extensions are detected', () => {
-    expect(() =>
-      resolveAppTree('app', [
+  it('ignores duplicate extensions', () => {
+    const tree = resolveAppTree(
+      'a',
+      [
         { ...baseSpec, id: 'a' },
         { ...baseSpec, id: 'a' },
-      ]),
-    ).toThrow("Unexpected duplicate extension id 'a'");
+      ],
+      collector,
+    );
+    expect(Array.from(tree.nodes.keys())).toEqual(['a']);
   });
 
   describe('redirects', () => {
@@ -251,12 +280,30 @@ describe('buildAppTree', () => {
         }),
       ) as Extension<unknown, unknown>;
 
-      expect(() =>
-        resolveAppTree('a', [
+      const tree = resolveAppTree(
+        'a',
+        [
           { ...baseSpec, id: 'a', extension: e1 },
           { ...baseSpec, id: 'b', extension: e2 },
-        ]),
-      ).toThrow("Duplicate redirect target for input 'test' in extension 'b'");
+        ],
+        collector,
+      );
+
+      expect(Array.from(tree.nodes.keys())).toEqual(['a', 'b']);
+
+      expect(collector.collectErrors()).toEqual([
+        {
+          code: 'EXTENSION_INPUT_REDIRECT_CONFLICT',
+          message:
+            "Duplicate redirect target for input 'test' in extension 'b'",
+          context: {
+            node: expect.objectContaining({
+              spec: { ...baseSpec, id: 'b', extension: e2 },
+            }),
+            inputName: 'test',
+          },
+        },
+      ]);
     });
 
     it('should set the correct attachment point for a redirect', () => {
@@ -283,10 +330,26 @@ describe('buildAppTree', () => {
         }),
       ) as Extension<unknown, unknown>;
 
-      const tree = resolveAppTree('a', [
-        { attachTo: e1.attachTo, id: 'a', extension: e1, disabled: false },
-        { attachTo: e2.attachTo, id: 'b', extension: e2, disabled: false },
-      ]);
+      const tree = resolveAppTree(
+        'a',
+        [
+          {
+            attachTo: e1.attachTo,
+            id: 'a',
+            extension: e1,
+            disabled: false,
+            plugin: baseSpec.plugin,
+          },
+          {
+            attachTo: e2.attachTo,
+            id: 'b',
+            extension: e2,
+            disabled: false,
+            plugin: baseSpec.plugin,
+          },
+        ],
+        collector,
+      );
 
       expect(tree.root).toMatchInlineSnapshot(`
               {
@@ -351,11 +414,33 @@ describe('buildAppTree', () => {
         }),
       ) as Extension<unknown, unknown>;
 
-      const tree = resolveAppTree('test-2', [
-        { attachTo: e1.attachTo, id: e1.id, extension: e1, disabled: false },
-        { attachTo: e2.attachTo, id: e2.id, extension: e2, disabled: false },
-        { attachTo: e3.attachTo, id: e3.id, extension: e3, disabled: false },
-      ]);
+      const tree = resolveAppTree(
+        'test-2',
+        [
+          {
+            attachTo: e1.attachTo,
+            id: e1.id,
+            extension: e1,
+            disabled: false,
+            plugin: baseSpec.plugin,
+          },
+          {
+            attachTo: e2.attachTo,
+            id: e2.id,
+            extension: e2,
+            disabled: false,
+            plugin: baseSpec.plugin,
+          },
+          {
+            attachTo: e3.attachTo,
+            id: e3.id,
+            extension: e3,
+            disabled: false,
+            plugin: baseSpec.plugin,
+          },
+        ],
+        collector,
+      );
 
       expect(tree.nodes.get('test-3')?.edges.attachedTo?.node).toBe(
         tree.nodes.get('test-2'),

@@ -17,12 +17,14 @@
 import os from 'os';
 import crypto from 'node:crypto';
 import yargs from 'yargs';
+// 'jest-cli' is included with jest and should be kept in sync with the installed jest version
+// eslint-disable-next-line @backstage/no-undeclared-imports
 import { run as runJest, yargsOptions as jestYargsOptions } from 'jest-cli';
 import { relative as relativePath } from 'path';
 import { Command, OptionValues } from 'commander';
 import { Lockfile, PackageGraph } from '@backstage/cli-node';
 import { paths } from '../../../../lib/paths';
-import { runCheck, runPlain } from '../../../../lib/run';
+import { runCheck, runOutput } from '@backstage/cli-common';
 import { isChildPath } from '@backstage/cli-common';
 import { SuccessCache } from '../../../../lib/cache/SuccessCache';
 
@@ -63,14 +65,14 @@ async function readPackageTreeHashes(graph: PackageGraph) {
     ...pkg,
     path: relativePath(paths.targetRoot, pkg.dir),
   }));
-  const output = await runPlain(
+  const output = await runOutput([
     'git',
     'ls-tree',
-    '--format="%(objectname)=%(path)"',
+    '--format=%(objectname)=%(path)',
     'HEAD',
     '--',
     ...pkgs.map(pkg => pkg.path),
-  );
+  ]);
 
   const map = new Map(
     output
@@ -175,8 +177,8 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
     !hasFlags('--coverage', '--watch', '--watchAll')
   ) {
     const isGitRepo = () =>
-      runCheck('git', 'rev-parse', '--is-inside-work-tree');
-    const isMercurialRepo = () => runCheck('hg', '--cwd', '.', 'root');
+      runCheck(['git', 'rev-parse', '--is-inside-work-tree']);
+    const isMercurialRepo = () => runCheck(['hg', '--cwd', '.', 'root']);
 
     if ((await isGitRepo()) || (await isMercurialRepo())) {
       isSingleWatchMode = true;
@@ -287,6 +289,14 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
   // https://stackoverflow.com/questions/56261381/how-do-i-set-a-timezone-in-my-jest-config
   if (!process.env.TZ) {
     process.env.TZ = 'UTC';
+  }
+
+  // Unless the user explicitly toggles node-snapshot, default to provide --no-node-snapshot to reduce number of steps to run scaffolder
+  //  on Node LTS.
+  if (!process.env.NODE_OPTIONS?.includes('--node-snapshot')) {
+    process.env.NODE_OPTIONS = `${
+      process.env.NODE_OPTIONS ? `${process.env.NODE_OPTIONS} ` : ''
+    }--no-node-snapshot`;
   }
 
   // This ensures that the process doesn't exit too early before stdout is flushed

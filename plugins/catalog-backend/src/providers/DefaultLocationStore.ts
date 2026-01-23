@@ -39,8 +39,11 @@ import {
 
 export class DefaultLocationStore implements LocationStore, EntityProvider {
   private _connection: EntityProviderConnection | undefined;
+  private readonly db: Knex;
 
-  constructor(private readonly db: Knex) {}
+  constructor(db: Knex) {
+    this.db = db;
+  }
 
   getProviderName(): string {
     return 'DefaultLocationStore';
@@ -137,15 +140,15 @@ export class DefaultLocationStore implements LocationStore, EntityProvider {
         entity_id: entityRow.entity_id,
         key: `metadata.annotations.${ANNOTATION_ORIGIN_LOCATION}`,
       })
-      .select('value')
+      .select('original_value')
       .limit(1);
-    if (!searchRow?.value) {
+    if (!searchRow?.original_value) {
       throw new NotFoundError(
         `found no origin annotation for ref ${entityRefString}`,
       );
     }
 
-    const { type, target } = parseLocationRef(searchRow.value);
+    const { type, target } = parseLocationRef(searchRow.original_value);
     const [locationRow] = await this.db<DbLocationsRow>('locations')
       .where({ type, target })
       .select()

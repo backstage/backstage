@@ -17,7 +17,7 @@
 import os from 'os';
 import fs from 'fs-extra';
 import { resolve as resolvePath } from 'path';
-import tar, { CreateOptions } from 'tar';
+import * as tar from 'tar';
 import { createDistWorkspace } from './packager';
 import { getEnvironmentParallelism } from '../../../lib/parallel';
 import { buildPackage, Output } from './builder';
@@ -78,7 +78,7 @@ export async function buildBackend(options: BuildBackendOptions) {
         portable: true,
         noMtime: true,
         gzip: true,
-      } as CreateOptions & { noMtime: boolean },
+      },
       [''],
     );
   } finally {

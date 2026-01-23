@@ -15,7 +15,7 @@
  */
 
 import { LifecycleService, LoggerService } from '@backstage/backend-plugin-api';
-import { Config, ConfigReader } from '@backstage/config';
+import { Config } from '@backstage/config';
 import { ForwardedError } from '@backstage/errors';
 import { JsonObject } from '@backstage/types';
 import knexFactory, { Knex } from 'knex';
@@ -23,8 +23,6 @@ import { merge, omit } from 'lodash';
 import limiterFactory from 'p-limit';
 import { Client } from 'pg';
 import { Connector } from '../types';
-import defaultNameOverride from './defaultNameOverride';
-import defaultSchemaOverride from './defaultSchemaOverride';
 import { mergeDatabaseConfig } from './mergeDatabaseConfig';
 import format from 'pg-format';
 
@@ -293,11 +291,167 @@ function normalizeConnection(
     : connection;
 }
 
+/**
+ * The computed configuration for a plugin's postgres database connection.
+ */
+export interface PgPluginDatabaseConfig {
+  /** The database client type (e.g. 'pg') */
+  client: string;
+  /** Whether the client type was overridden at the plugin level */
+  clientOverridden: boolean;
+  /** The optional role to set on connections */
+  role: string | undefined;
+  /** Additional knex configuration merged from base and plugin config */
+  additionalKnexConfig: JsonObject | undefined;
+  /** Whether to ensure the database exists */
+  ensureExists: boolean;
+  /** Whether to ensure the schema exists */
+  ensureSchemaExists: boolean;
+  /** The plugin division mode ('database' or 'schema') */
+  pluginDivisionMode: string;
+  /** The connection configuration */
+  connection: Knex.PgConnectionConfig;
+  /** The database name, if any */
+  databaseName: string | undefined;
+  /** Database client overrides including schema overrides if applicable */
+  databaseClientOverrides: Knex.Config;
+  /** The full knex config for the plugin */
+  knexConfig: Knex.Config;
+}
+
+/**
+ * Computes all postgres database configuration for a plugin from the provided config.
+ *
+ * @param config - The database config object
+ * @param pluginId - The plugin ID to compute config for
+ * @param prefix - The database name prefix (e.g. 'backstage_plugin_')
+ * @returns All computed configuration values for the plugin
+ */
+export function computePgPluginConfig(
+  config: Config,
+  pluginId: string,
+  prefix: string,
+): PgPluginDatabaseConfig {
+  // Client type
+  const pluginClient = config.getOptionalString(
+    `${pluginPath(pluginId)}.client`,
+  );
+  const baseClient = config.getString('client');
+  const client = pluginClient ?? baseClient;
+  const clientOverridden = client !== baseClient;
+
+  // Role
+  const role =
+    config.getOptionalString(`${pluginPath(pluginId)}.role`) ??
+    config.getOptionalString('role');
+
+  // Additional knex config
+  const pluginKnexConfig = config
+    .getOptionalConfig(`${pluginPath(pluginId)}.knexConfig`)
+    ?.get<JsonObject>();
+  const baseKnexConfig = config
+    .getOptionalConfig('knexConfig')
+    ?.get<JsonObject>();
+  const additionalKnexConfig = merge(baseKnexConfig, pluginKnexConfig);
+
+  // Ensure exists flags
+  const baseEnsureExists = config.getOptionalBoolean('ensureExists') ?? true;
+  const ensureExists =
+    config.getOptionalBoolean(`${pluginPath(pluginId)}.ensureExists`) ??
+    baseEnsureExists;
+
+  const baseEnsureSchemaExists =
+    config.getOptionalBoolean('ensureSchemaExists') ?? false;
+  const ensureSchemaExists =
+    config.getOptionalBoolean(
+      `${pluginPath(pluginId)}.getEnsureSchemaExistsConfig`,
+    ) ?? baseEnsureSchemaExists;
+
+  // Plugin division mode
+  const pluginDivisionMode =
+    config.getOptionalString('pluginDivisionMode') ?? 'database';
+
+  // Connection config
+  let baseConnection = normalizeConnection(config.get('connection'));
+
+  // Databases cannot be shared unless the `pluginDivisionMode` is set to `schema`.
+  // The `database` property from the base connection is omitted unless
+  // `pluginDivisionMode` is set to `schema`.
+  if (pluginDivisionMode !== 'schema') {
+    baseConnection = omit(baseConnection, 'database');
+  }
+
+  // Get and normalize optional plugin specific database connection
+  const pluginConnection = normalizeConnection(
+    config.getOptional(`${pluginPath(pluginId)}.connection`),
+  );
+
+  (
+    baseConnection as Knex.PgConnectionConfig
+  ).application_name ||= `backstage_plugin_${pluginId}`;
+
+  const connection = {
+    // Include base connection if client type has not been overridden
+    ...(clientOverridden ? {} : baseConnection),
+    ...pluginConnection,
+  } as Knex.PgConnectionConfig;
+
+  // Database name
+  const connectionDatabaseName = (connection as Knex.ConnectionConfig)
+    ?.database;
+  let databaseName: string | undefined;
+
+  if (pluginDivisionMode === 'schema') {
+    // `pluginDivisionMode` as `schema` should use overridden databaseName if supplied
+    // or fallback to default knex database
+    databaseName = connectionDatabaseName;
+  } else {
+    // All other supported databases should fallback to an auto-prefixed name
+    databaseName = connectionDatabaseName ?? `${prefix}${pluginId}`;
+  }
+
+  // Database client overrides
+  let databaseClientOverrides: Knex.Config = {};
+  if (databaseName) {
+    databaseClientOverrides = { connection: { database: databaseName } };
+  }
+  if (pluginDivisionMode === 'schema') {
+    databaseClientOverrides = mergeDatabaseConfig({}, databaseClientOverrides, {
+      searchPath: [pluginId],
+    });
+  }
+
+  // Full knex config for plugin
+  const knexConfig: Knex.Config = {
+    ...additionalKnexConfig,
+    client,
+    connection,
+    ...(role && { role }),
+  };
+
+  return {
+    client,
+    clientOverridden,
+    role,
+    additionalKnexConfig,
+    ensureExists,
+    ensureSchemaExists,
+    pluginDivisionMode,
+    connection,
+    databaseName,
+    databaseClientOverrides,
+    knexConfig,
+  };
+}
+
 export class PgConnector implements Connector {
-  constructor(
-    private readonly config: Config,
-    private readonly prefix: string,
-  ) {}
+  private readonly config: Config;
+  private readonly prefix: string;
+
+  constructor(config: Config, prefix: string) {
+    this.config = config;
+    this.prefix = prefix;
+  }
 
   async getClient(
     pluginId: string,
@@ -306,30 +460,26 @@ export class PgConnector implements Connector {
       lifecycle: LifecycleService;
     },
   ): Promise<Knex> {
-    const pluginConfig = new ConfigReader(
-      this.getConfigForPlugin(pluginId) as JsonObject,
+    const pluginDbConfig = computePgPluginConfig(
+      this.config,
+      pluginId,
+      this.prefix,
     );
 
-    const databaseName = this.getDatabaseName(pluginId);
-    if (databaseName && this.getEnsureExistsConfig(pluginId)) {
+    if (pluginDbConfig.databaseName && pluginDbConfig.ensureExists) {
       try {
-        await ensurePgDatabaseExists(pluginConfig, databaseName);
+        await ensurePgDatabaseExists(this.config, pluginDbConfig.databaseName);
       } catch (error) {
         throw new Error(
-          `Failed to connect to the database to make sure that '${databaseName}' exists, ${error}`,
+          `Failed to connect to the database to make sure that '${pluginDbConfig.databaseName}' exists, ${error}`,
         );
       }
     }
 
-    let schemaOverrides;
-    if (this.getPluginDivisionModeConfig() === 'schema') {
-      schemaOverrides = defaultSchemaOverride(pluginId);
-      if (
-        this.getEnsureSchemaExistsConfig(pluginId) ||
-        this.getEnsureExistsConfig(pluginId)
-      ) {
+    if (pluginDbConfig.pluginDivisionMode === 'schema') {
+      if (pluginDbConfig.ensureSchemaExists || pluginDbConfig.ensureExists) {
         try {
-          await ensurePgSchemaExists(pluginConfig, pluginId);
+          await ensurePgSchemaExists(this.config, pluginId);
         } catch (error) {
           throw new Error(
             `Failed to connect to the database to make sure that schema for plugin '${pluginId}' exists, ${error}`,
@@ -338,186 +488,14 @@ export class PgConnector implements Connector {
       }
     }
 
-    const databaseClientOverrides = mergeDatabaseConfig(
-      {},
-      this.getDatabaseOverrides(pluginId),
-      schemaOverrides,
-    );
-
     const client = createPgDatabaseClient(
-      pluginConfig,
-      databaseClientOverrides,
+      this.config,
+      mergeDatabaseConfig(
+        pluginDbConfig.knexConfig,
+        pluginDbConfig.databaseClientOverrides,
+      ),
     );
 
     return client;
-  }
-
-  /**
-   * Provides the canonical database name for a given plugin.
-   *
-   * This method provides the effective database name which is determined using global
-   * and plugin specific database config. If no explicit database name is configured
-   * and `pluginDivisionMode` is not `schema`, this method will provide a generated name
-   * which is the pluginId prefixed with 'backstage_plugin_'. If `pluginDivisionMode` is
-   * `schema`, it will fallback to using the default database for the knex instance.
-   *
-   * @param pluginId - Lookup the database name for given plugin
-   * @returns String representing the plugin's database name
-   */
-  private getDatabaseName(pluginId: string): string | undefined {
-    const connection = this.getConnectionConfig(pluginId);
-
-    const databaseName = (connection as Knex.ConnectionConfig)?.database;
-
-    // `pluginDivisionMode` as `schema` should use overridden databaseName if supplied or fallback to default knex database
-    if (this.getPluginDivisionModeConfig() === 'schema') {
-      return databaseName;
-    }
-
-    // all other supported databases should fallback to an auto-prefixed name
-    return databaseName ?? `${this.prefix}${pluginId}`;
-  }
-
-  /**
-   * Provides the client type which should be used for a given plugin.
-   *
-   * The client type is determined by plugin specific config if present.
-   * Otherwise the base client is used as the fallback.
-   *
-   * @param pluginId - Plugin to get the client type for
-   * @returns Object with client type returned as `client` and boolean
-   *          representing whether or not the client was overridden as
-   *          `overridden`
-   */
-  private getClientType(pluginId: string): {
-    client: string;
-    overridden: boolean;
-  } {
-    const pluginClient = this.config.getOptionalString(
-      `${pluginPath(pluginId)}.client`,
-    );
-
-    const baseClient = this.config.getString('client');
-    const client = pluginClient ?? baseClient;
-    return {
-      client,
-      overridden: client !== baseClient,
-    };
-  }
-
-  private getRoleConfig(pluginId: string): string | undefined {
-    return (
-      this.config.getOptionalString(`${pluginPath(pluginId)}.role`) ??
-      this.config.getOptionalString('role')
-    );
-  }
-
-  /**
-   * Provides the knexConfig which should be used for a given plugin.
-   *
-   * @param pluginId - Plugin to get the knexConfig for
-   * @returns The merged knexConfig value or undefined if it isn't specified
-   */
-  private getAdditionalKnexConfig(pluginId: string): JsonObject | undefined {
-    const pluginConfig = this.config
-      .getOptionalConfig(`${pluginPath(pluginId)}.knexConfig`)
-      ?.get<JsonObject>();
-
-    const baseConfig = this.config
-      .getOptionalConfig('knexConfig')
-      ?.get<JsonObject>();
-
-    return merge(baseConfig, pluginConfig);
-  }
-
-  private getEnsureExistsConfig(pluginId: string): boolean {
-    const baseConfig = this.config.getOptionalBoolean('ensureExists') ?? true;
-    return (
-      this.config.getOptionalBoolean(`${pluginPath(pluginId)}.ensureExists`) ??
-      baseConfig
-    );
-  }
-
-  private getEnsureSchemaExistsConfig(pluginId: string): boolean {
-    const baseConfig =
-      this.config.getOptionalBoolean('ensureSchemaExists') ?? false;
-    return (
-      this.config.getOptionalBoolean(
-        `${pluginPath(pluginId)}.getEnsureSchemaExistsConfig`,
-      ) ?? baseConfig
-    );
-  }
-
-  private getPluginDivisionModeConfig(): string {
-    return this.config.getOptionalString('pluginDivisionMode') ?? 'database';
-  }
-
-  /**
-   * Provides a Knex connection plugin config by combining base and plugin
-   * config.
-   *
-   * This method provides a baseConfig for a plugin database connector. If the
-   * client type has not been overridden, the global connection config will be
-   * included with plugin specific config as the base. Values from the plugin
-   * connection take precedence over the base. Base database name is omitted
-   * unless `pluginDivisionMode` is set to `schema`.
-   */
-  private getConnectionConfig(pluginId: string): Knex.StaticConnectionConfig {
-    const { overridden } = this.getClientType(pluginId);
-
-    let baseConnection = normalizeConnection(this.config.get('connection'));
-
-    // Databases cannot be shared unless the `pluginDivisionMode` is set to `schema`. The
-    // `database` property from the base connection is omitted unless `pluginDivisionMode`
-    // is set to `schema`.
-    if (this.getPluginDivisionModeConfig() !== 'schema') {
-      baseConnection = omit(baseConnection, 'database');
-    }
-
-    // get and normalize optional plugin specific database connection
-    const connection = normalizeConnection(
-      this.config.getOptional(`${pluginPath(pluginId)}.connection`),
-    );
-
-    (
-      baseConnection as Knex.PgConnectionConfig
-    ).application_name ||= `backstage_plugin_${pluginId}`;
-
-    return {
-      // include base connection if client type has not been overridden
-      ...(overridden ? {} : baseConnection),
-      ...connection,
-    } as Knex.StaticConnectionConfig;
-  }
-
-  /**
-   * Provides a Knex database config for a given plugin.
-   *
-   * This method provides a Knex configuration object along with the plugin's
-   * client type.
-   *
-   * @param pluginId - The plugin that the database config should correspond with
-   */
-  private getConfigForPlugin(pluginId: string): Knex.Config {
-    const { client } = this.getClientType(pluginId);
-    const role = this.getRoleConfig(pluginId);
-
-    return {
-      ...this.getAdditionalKnexConfig(pluginId),
-      client,
-      connection: this.getConnectionConfig(pluginId),
-      ...(role && { role }),
-    };
-  }
-
-  /**
-   * Provides a partial `Knex.Config`• database name override for a given plugin.
-   *
-   * @param pluginId - Target plugin to get database name override
-   * @returns Partial `Knex.Config` with database name override
-   */
-  private getDatabaseOverrides(pluginId: string): Knex.Config {
-    const databaseName = this.getDatabaseName(pluginId);
-    return databaseName ? defaultNameOverride(databaseName) : {};
   }
 }

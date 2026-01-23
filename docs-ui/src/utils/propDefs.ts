@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import type { Breakpoint } from '@backstage/ui/src/types';
 
 const breakpoints = ['initial', 'xs', 'sm', 'md', 'lg', 'xl'] as Breakpoint[];
@@ -28,6 +29,7 @@ export type PropDef = {
   default?: string;
   required?: boolean;
   responsive?: boolean;
+  description?: ReactNode;
 };
 
 export { breakpoints };

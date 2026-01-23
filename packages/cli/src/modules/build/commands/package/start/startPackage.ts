@@ -17,9 +17,24 @@
 import { PackageRole } from '@backstage/cli-node';
 import { startBackend, startBackendPlugin } from './startBackend';
 import { startFrontend } from './startFrontend';
+import { parse, resolve, join } from 'path';
+import { glob } from 'glob';
+
+export function resolveEntryPath(
+  entrypoint: string = 'dev',
+  targetDir: string,
+): string {
+  const { dir: entryDir, name: entryName } = parse(entrypoint);
+  const [entryFile] = glob.sync(`${resolve(targetDir, entryDir, entryName)}.*`);
+  if (entryFile) {
+    return join(entryDir, entryName);
+  }
+  return join(entryDir, entryName, 'index');
+}
 
 export async function startPackage(options: {
   role: PackageRole;
+  entrypoint?: string;
   targetDir: string;
   configPaths: string[];
   checksEnabled: boolean;
@@ -45,8 +60,8 @@ export async function startPackage(options: {
     case 'frontend-plugin':
     case 'frontend-plugin-module':
       return startFrontend({
-        entry: 'dev/index',
         ...options,
+        entry: resolveEntryPath(options.entrypoint, options.targetDir),
       });
     case 'frontend-dynamic-container' as PackageRole: // experimental
       return startFrontend({

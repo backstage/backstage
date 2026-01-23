@@ -157,18 +157,28 @@ describe('SearchType.Accordion', () => {
       </Wrapper>,
     );
 
-    expect(searchApiMock.query).toHaveBeenCalledWith({
-      term: 'abc',
-      types: [],
-      filters: { foo: 'bar' },
-      pageLimit: 0,
-    });
-    expect(searchApiMock.query).toHaveBeenCalledWith({
-      term: 'abc',
-      types: [expectedType.value],
-      filters: {},
-      pageLimit: 0,
-    });
+    expect(searchApiMock.query).toHaveBeenCalledWith(
+      {
+        term: 'abc',
+        types: [],
+        filters: { foo: 'bar' },
+        pageLimit: 0,
+      },
+      {
+        signal: expect.any(AbortSignal),
+      },
+    );
+    expect(searchApiMock.query).toHaveBeenCalledWith(
+      {
+        term: 'abc',
+        types: [expectedType.value],
+        filters: {},
+        pageLimit: 0,
+      },
+      {
+        signal: expect.any(AbortSignal),
+      },
+    );
     await waitFor(() => {
       const countLabels = getAllByText('1234 results');
       expect(countLabels.length).toEqual(2);

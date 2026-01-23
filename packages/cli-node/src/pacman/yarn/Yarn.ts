@@ -23,7 +23,8 @@ import { PackageInfo, PackageManager } from '../PackageManager';
 import { Lockfile } from '../Lockfile';
 import { YarnVersion } from './types';
 import fs from 'fs-extra';
-import { paths, run, execFile, SpawnOptionsPartialEnv } from '../../util';
+import { paths } from '../../paths';
+import { run, runOutput, RunOptions } from '@backstage/cli-common';
 
 export class Yarn implements PackageManager {
   constructor(private readonly yarnVersion: YarnVersion) {}
@@ -63,8 +64,8 @@ export class Yarn implements PackageManager {
     });
   }
 
-  async run(args: string[], options?: SpawnOptionsPartialEnv) {
-    await run('yarn', args, options);
+  async run(args: string[], options?: RunOptions) {
+    await run(['yarn', ...args], options).waitForExit();
   }
 
   async fetchPackageInfo(): Promise<PackageInfo> {
@@ -98,8 +99,7 @@ function detectYarnVersion(dir?: string): Promise<YarnVersion> {
 
   const promise = Promise.resolve().then(async () => {
     try {
-      const { stdout } = await execFile('yarn', ['--version'], {
-        shell: true,
+      const stdout = await runOutput(['yarn', '--version'], {
         cwd,
       });
       const versionString = stdout.trim();
@@ -109,9 +109,6 @@ function detectYarnVersion(dir?: string): Promise<YarnVersion> {
       return { version: versionString, codename };
     } catch (error) {
       assertError(error);
-      if ('stderr' in error) {
-        process.stderr.write(error.stderr as Buffer);
-      }
       throw new ForwardedError('Failed to determine yarn version', error);
     }
   });

@@ -38,8 +38,11 @@ export interface Config {
        * Allow entities of these particular kinds.
        *
        * E.g. ["Component", "API", "Template", "Location"]
+       *
+       * You can also specify the type of the entity by using an object with `kind` and optional `spec.type` properties.
+       * E.g. [{ kind: "Component", 'spec.type': "service" }]
        */
-      allow: Array<string>;
+      allow: Array<string | { kind: string; 'spec.type'?: string }>;
       /**
        * Limit this rule to a specific location
        *
@@ -218,5 +221,41 @@ export interface Config {
      * housing catalog-info files.
      */
     processingInterval?: HumanDuration | false;
+
+    /**
+     * Provider-specific additional configuration options.
+     */
+    providerOptions?: {
+      /**
+       * Key is the provider name, value is an object with additional configuration
+       */
+      [name: string]: {
+        /**
+         * Determines whether this provider is disabled or not. If not specified,
+         * defaults to false.
+         */
+        disabled?: boolean;
+      };
+    };
+
+    /**
+     * Processor-specific additional configuration options.
+     */
+    processorOptions?: {
+      /**
+       * Key is the processor name, value is an object with additional configuration
+       */
+      [name: string]: {
+        /**
+         * Determines whether this processor is disabled or not. If not specified,
+         * defaults to false.
+         */
+        disabled?: boolean;
+        /**
+         * The default priority is 20, and lower value means that the processor runs earlier.
+         */
+        priority?: number;
+      };
+    };
   };
 }

@@ -19,7 +19,11 @@ import { KubernetesAuthProvider } from './types';
 
 /** @public */
 export class AksKubernetesAuthProvider implements KubernetesAuthProvider {
-  constructor(private readonly microsoftAuthApi: OAuthApi) {}
+  private readonly microsoftAuthApi: OAuthApi;
+
+  constructor(microsoftAuthApi: OAuthApi) {
+    this.microsoftAuthApi = microsoftAuthApi;
+  }
 
   async decorateRequestBodyForAuth(
     requestBody: KubernetesRequestBody,

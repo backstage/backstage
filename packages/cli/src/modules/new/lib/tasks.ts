@@ -16,11 +16,6 @@
 
 import chalk from 'chalk';
 import ora from 'ora';
-import { promisify } from 'util';
-import { exec as execCb } from 'child_process';
-import { assertError } from '@backstage/errors';
-
-const exec = promisify(execCb);
 
 const TASK_NAME_MAX_LENGTH = 14;
 
@@ -62,32 +57,6 @@ export class Task {
     } catch (error) {
       spinner.fail();
       throw error;
-    }
-  }
-
-  static async forCommand(
-    command: string,
-    options?: { cwd?: string; optional?: boolean },
-  ) {
-    try {
-      await Task.forItem('executing', command, async () => {
-        await exec(command, { cwd: options?.cwd });
-      });
-    } catch (error) {
-      assertError(error);
-      if (error.stderr) {
-        process.stderr.write(error.stderr as Buffer);
-      }
-      if (error.stdout) {
-        process.stdout.write(error.stdout as Buffer);
-      }
-      if (options?.optional) {
-        Task.error(`Warning: Failed to execute command ${chalk.cyan(command)}`);
-      } else {
-        throw new Error(
-          `Failed to execute command '${chalk.cyan(command)}', ${error}`,
-        );
-      }
     }
   }
 }

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { useState, useCallback, useMemo, useEffect } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import throttle from 'lodash/throttle';
 // @ts-ignore
 import RelativeTime from 'react-relative-time';
@@ -32,19 +32,18 @@ import {
   TableColumn,
   TableProps,
 } from '@backstage/core-components';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { notificationsTranslationRef } from '../../translation';
 
 import { notificationsApiRef } from '../../api';
 import { SelectAll } from './SelectAll';
 import { BulkActions } from './BulkActions';
 import { NotificationIcon } from './NotificationIcon';
+import { NotificationDescription } from './NotificationDescription';
 
 const ThrottleDelayMs = 1000;
 
 const useStyles = makeStyles(theme => ({
-  description: {
-    maxHeight: '5rem',
-    overflow: 'auto',
-  },
   severityItem: {
     alignContent: 'center',
   },
@@ -53,8 +52,10 @@ const useStyles = makeStyles(theme => ({
     verticalAlign: 'text-bottom',
   },
   notificationInfoRow: {
-    marginLeft: theme.spacing(0.5),
     marginRight: theme.spacing(0.5),
+    '&:not(:first-child)': {
+      marginLeft: theme.spacing(0.5),
+    },
   },
 }));
 
@@ -87,6 +88,7 @@ export const NotificationsTable = ({
   pageSize,
   totalCount,
 }: NotificationsTableProps) => {
+  const { t } = useTranslationRef(notificationsTranslationRef);
   const classes = useStyles();
   const notificationsApi = useApi(notificationsApiRef);
   const alertApi = useApi(alertApiRef);
@@ -240,9 +242,9 @@ export const NotificationsTable = ({
                     )}
                   </Typography>
                   {notification.payload.description ? (
-                    <Typography variant="body2" className={classes.description}>
-                      {notification.payload.description}
-                    </Typography>
+                    <NotificationDescription
+                      description={notification.payload.description}
+                    />
                   ) : null}
 
                   <Typography variant="caption">
@@ -318,7 +320,6 @@ export const NotificationsTable = ({
     onMarkAllRead,
     onNotificationsSelectChange,
     classes.severityItem,
-    classes.description,
     classes.broadcastIcon,
     classes.notificationInfoRow,
     markAsReadOnLinkOpen,
@@ -343,6 +344,19 @@ export const NotificationsTable = ({
       onSearchChange={throttledContainsTextHandler}
       data={notifications}
       columns={compactColumns}
+      localization={{
+        body: {
+          emptyDataSourceMessage: t('table.emptyMessage'),
+        },
+        pagination: {
+          firstTooltip: t('table.pagination.firstTooltip'),
+          labelDisplayedRows: t('table.pagination.labelDisplayedRows'),
+          labelRowsSelect: t('table.pagination.labelRowsSelect'),
+          lastTooltip: t('table.pagination.lastTooltip'),
+          nextTooltip: t('table.pagination.nextTooltip'),
+          previousTooltip: t('table.pagination.previousTooltip'),
+        },
+      }}
     />
   );
 };

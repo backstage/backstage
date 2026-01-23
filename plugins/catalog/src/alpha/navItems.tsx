@@ -15,13 +15,12 @@
  */
 
 import HomeIcon from '@material-ui/icons/Home';
-import { convertLegacyRouteRef } from '@backstage/core-compat-api';
 import { NavItemBlueprint } from '@backstage/frontend-plugin-api';
 import { rootRouteRef } from '../routes';
 
 export const catalogNavItem = NavItemBlueprint.make({
   params: {
-    routeRef: convertLegacyRouteRef(rootRouteRef),
+    routeRef: rootRouteRef,
     title: 'Catalog',
     icon: HomeIcon,
   },

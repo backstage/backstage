@@ -14,84 +14,77 @@
  * limitations under the License.
  */
 
-import { forwardRef } from 'react';
-import { Link as AriaLink, RouterProvider } from 'react-aria-components';
+import { forwardRef, useRef } from 'react';
+import { useLink } from 'react-aria';
 import clsx from 'clsx';
 import { useStyles } from '../../hooks/useStyles';
+import { LinkDefinition } from './definition';
 import type { LinkProps } from './types';
-import { useNavigate, useHref } from 'react-router-dom';
+import { InternalLinkProvider } from '../InternalLinkProvider';
+import styles from './Link.module.css';
 
-// Helper function to determine if a link is external
-function isExternalLink(href?: string): boolean {
-  if (!href) return false;
+const LinkInternal = forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
+  const { classNames, dataAttributes, cleanedProps } = useStyles(
+    LinkDefinition,
+    {
+      variant: 'body',
+      weight: 'regular',
+      color: 'primary',
+      ...props,
+    },
+  );
 
-  // Check if it's an absolute URL with protocol
-  if (href.startsWith('http://') || href.startsWith('https://')) {
-    return true;
-  }
+  const {
+    className,
+    href,
+    title,
+    children,
+    onPress,
+    variant,
+    weight,
+    color,
+    truncate,
+    slot,
+    ...restProps
+  } = cleanedProps;
 
-  // Check if it's a protocol-relative URL
-  if (href.startsWith('//')) {
-    return true;
-  }
+  const internalRef = useRef<HTMLAnchorElement>(null);
+  const linkRef = (ref || internalRef) as React.RefObject<HTMLAnchorElement>;
 
-  // Check if it's a mailto: or tel: link
-  if (href.startsWith('mailto:') || href.startsWith('tel:')) {
-    return true;
-  }
+  // Use useLink hook to get link props
+  // For internal links, this will use the RouterProvider's navigate function
+  const { linkProps } = useLink(
+    {
+      href,
+      onPress,
+      ...restProps,
+    },
+    linkRef,
+  );
 
-  return false;
-}
+  return (
+    <a
+      {...linkProps}
+      {...dataAttributes}
+      {...(restProps as React.AnchorHTMLAttributes<HTMLAnchorElement>)}
+      ref={linkRef}
+      href={href}
+      title={title}
+      className={clsx(classNames.root, styles[classNames.root], className)}
+    >
+      {children}
+    </a>
+  );
+});
+
+LinkInternal.displayName = 'LinkInternal';
 
 /** @public */
 export const Link = forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
-  const navigate = useNavigate();
-  const {
-    className,
-    variant = 'body',
-    weight = 'regular',
-    color = 'primary',
-    truncate,
-    href,
-    ...restProps
-  } = props;
-
-  const { classNames: linkClassNames } = useStyles('Link');
-  const { classNames: textClassNames, dataAttributes: textDataAttributes } =
-    useStyles('Text', {
-      variant,
-      weight,
-      color,
-    });
-
-  const isExternal = isExternalLink(href);
-
-  // If it's an external link, render AriaLink without RouterProvider
-  if (isExternal) {
-    return (
-      <AriaLink
-        ref={ref}
-        className={clsx(textClassNames.root, linkClassNames.root, className)}
-        data-truncate={truncate}
-        href={href}
-        {...textDataAttributes}
-        {...restProps}
-      />
-    );
-  }
-
-  // For internal links, use RouterProvider
   return (
-    <RouterProvider navigate={navigate} useHref={useHref}>
-      <AriaLink
-        ref={ref}
-        className={clsx(textClassNames.root, linkClassNames.root, className)}
-        data-truncate={truncate}
-        {...textDataAttributes}
-        href={href}
-        {...restProps}
-      />
-    </RouterProvider>
+    <InternalLinkProvider href={props.href}>
+      <LinkInternal {...props} ref={ref} />
+    </InternalLinkProvider>
   );
 });
 

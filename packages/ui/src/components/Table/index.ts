@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,49 @@
  * limitations under the License.
  */
 
-export * from './Table';
-export * from './TableCellText/types';
-export * from './TableCellLink/types';
-export * from './TableCellProfile/types';
+export { Table } from './components/Table';
+export { TableRoot } from './components/TableRoot';
+export { TableHeader } from './components/TableHeader';
+export { TableBody } from './components/TableBody';
+export { Column } from './components/Column';
+export { Row } from './components/Row';
+export { Cell } from './components/Cell';
+export { CellText } from './components/CellText';
+export { CellProfile } from './components/CellProfile';
+export { useTable } from './hooks/useTable';
+
+export type {
+  CellProps,
+  CellTextProps,
+  CellProfileProps,
+  ColumnProps,
+  TableProps,
+  TableRootProps,
+  TableItem,
+  ColumnConfig,
+  RowConfig,
+  RowRenderFn,
+  TableSelection,
+  SortState,
+  SortDescriptor,
+  NoPagination,
+  PagePagination,
+  TablePaginationType,
+} from './types';
+export type {
+  UseTableOptions,
+  UseTableResult,
+  UseTableCompleteOptions,
+  UseTableOffsetOptions,
+  UseTableCursorOptions,
+  OffsetParams,
+  OffsetResponse,
+  CursorParams,
+  CursorResponse,
+  FilterState,
+  SearchState,
+  QueryOptions,
+  PaginationOptions,
+} from './hooks/types';
+
+export { TableDefinition } from './definition';

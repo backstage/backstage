@@ -23,6 +23,8 @@ describe.each([
   [undefined, undefined, undefined],
   ['internal', '@internal/', 'backstage-plugin-'],
   ['internal/', '@internal/', 'backstage-plugin-'],
+  ['@internal', '@internal/', 'backstage-plugin-'],
+  ['@internal/', '@internal/', 'backstage-plugin-'],
   ['acme-backstage', '@acme-backstage/', 'plugin-'],
   ['acme-backstage/', '@acme-backstage/', 'plugin-'],
   ['acme-backstage-plugins', '@acme-backstage-plugins/', 'plugin-'],

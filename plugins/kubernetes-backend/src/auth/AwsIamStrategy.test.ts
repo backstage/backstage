@@ -43,7 +43,7 @@ const signer = {
   }),
 };
 
-jest.mock('@aws-sdk/signature-v4', () => ({
+jest.mock('@smithy/signature-v4', () => ({
   SignatureV4: jest.fn().mockImplementation(() => signer),
 }));
 

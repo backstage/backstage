@@ -65,6 +65,20 @@ backend:
     # - A standard ISO formatted duration string, e.g. 'P2DT6H' or 'PT1M'.
     # - An object with individual units (in plural) as keys, e.g. `{ days: 2, hours: 6 }`.
     serverShutdownDelay: { seconds: 20 }
+  server:
+    # (Optional) HTTP server configuration, Node.js defaults apply otherwise
+    # Timeout values support multiple formats:
+    # - Numbers (milliseconds): 30000
+    # - Duration strings: '30s', '1 minute', '2 hours'
+    # - ISO duration strings: 'PT30S', 'PT1M', 'PT2H'
+    # - Duration objects: { seconds: 30 }, { minutes: 1 }, { hours: 2 }
+    headersTimeout: 60000
+    requestTimeout: '30s'
+    keepAliveTimeout: { seconds: 5 }
+    timeout: 'PT30S'
+    # Numeric-only settings
+    maxHeadersCount: 2000
+    maxRequestsPerSocket: 100
 ```
 
 ### Via Code
@@ -148,7 +162,7 @@ backend.add(
 
 Note that requests towards `/api/*` will never be handled by the `routes` handler unless a matching plugin exists, and will instead typically falling through to the `middleware.notFound()` handler. That is the case regardless of whether there is a configured `indexPath` or not.
 
-The root HTTP Router service also allows for configuration of the underlying Node.js HTTP server object. This is useful for modifying settings on the HTTP server itself, such as server [timeout](https://nodejs.org/api/http.html#servertimeout), [keepAliveTimeout](https://nodejs.org/api/http.html#serverkeepalivetimeout), and [headersTimeout](https://nodejs.org/api/http.html#serverheaderstimeout).
+The root HTTP Router service also allows for configuration of the underlying Node.js HTTP server object. This is useful for modifying settings on the HTTP server itself, such as server [`timeout`](https://nodejs.org/api/http.html#servertimeout), [`keepAliveTimeout`](https://nodejs.org/api/http.html#serverkeepalivetimeout), and [`headersTimeout`](https://nodejs.org/api/http.html#serverheaderstimeout).
 
 A `applyDefaults` helper is also made available to use the default app/router configuration while still enabling custom server configuration
 

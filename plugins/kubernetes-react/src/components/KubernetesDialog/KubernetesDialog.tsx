@@ -22,6 +22,8 @@ import IconButton from '@material-ui/core/IconButton';
 import { Theme, createStyles, makeStyles } from '@material-ui/core/styles';
 import CloseIcon from '@material-ui/icons/Close';
 import { ReactNode, useState } from 'react';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { kubernetesReactTranslationRef } from '../../translation';
 
 const useStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -59,6 +61,7 @@ export const KubernetesDialog = ({
   title,
 }: KubernetesDialogProps) => {
   const classes = useStyles();
+  const { t } = useTranslationRef(kubernetesReactTranslationRef);
 
   const [open, setOpen] = useState(false);
   const openDialog = () => {
@@ -80,7 +83,7 @@ export const KubernetesDialog = ({
         <DialogTitle id="dialog-title">
           {title}
           <IconButton
-            aria-label="close"
+            aria-label={t('kubernetesDialog.closeAriaLabel')}
             className={classes.closeButton}
             onClick={closeDialog}
           >

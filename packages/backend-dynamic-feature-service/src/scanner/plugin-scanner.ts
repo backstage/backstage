@@ -42,13 +42,22 @@ export class PluginScanner {
   private configUnsubscribe?: () => void;
   private rootDirectoryWatcher?: chokidar.FSWatcher;
   private subscribers: (() => void)[] = [];
+  private readonly config: Config;
+  private readonly logger: LoggerService;
+  private readonly backstageRoot: string;
+  private readonly preferAlpha: boolean;
 
   private constructor(
-    private readonly config: Config,
-    private readonly logger: LoggerService,
-    private readonly backstageRoot: string,
-    private readonly preferAlpha: boolean,
-  ) {}
+    config: Config,
+    logger: LoggerService,
+    backstageRoot: string,
+    preferAlpha: boolean,
+  ) {
+    this.config = config;
+    this.logger = logger;
+    this.backstageRoot = backstageRoot;
+    this.preferAlpha = preferAlpha;
+  }
 
   static create(options: DynamicPluginScannerOptions): PluginScanner {
     const scanner = new PluginScanner(

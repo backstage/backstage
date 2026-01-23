@@ -41,7 +41,7 @@ Pour commencer à utiliser Backstage, consultez [Getting Started documentation](
 
 ## Documentation
 
-La documentation de Backstage inclus:
+La documentation de Backstage inclut:
 
 - [Main documentation](https://backstage.io/docs)
 - [Software Catalog](https://backstage.io/docs/features/software-catalog/)

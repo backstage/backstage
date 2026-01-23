@@ -17,6 +17,7 @@
 import { AnyParams, SubRouteRef } from './types';
 import { createSubRouteRef } from './SubRouteRef';
 import { createRouteRef } from './RouteRef';
+import { RouteResolutionApi, RouteFunc } from '@backstage/frontend-plugin-api';
 
 const parent = createRouteRef({ id: 'parent' });
 const parentX = createRouteRef({ id: 'parent-x', params: ['x'] });
@@ -31,7 +32,7 @@ describe('SubRouteRef', () => {
     expect(routeRef.path).toBe('/foo');
     expect(routeRef.parent).toBe(parent);
     expect(routeRef.params).toEqual([]);
-    expect(String(routeRef)).toBe('routeRef{type=sub,id=my-route-ref}');
+    expect(String(routeRef)).toMatch(/^routeRef\{type=sub,id=my-route-ref\}$/);
   });
 
   it('should be created with params', () => {
@@ -124,5 +125,52 @@ describe('SubRouteRef', () => {
 
     // To avoid complains about missing expectations and unused vars
     expect([_1, _2, _3, _4].join('')).toEqual(expect.any(String));
+  });
+
+  describe('with new frontend system', () => {
+    const routeResolutionApi = { resolve: jest.fn() } as RouteResolutionApi;
+
+    function expectType<T>(): <U>(
+      v: U,
+    ) => [T, U] extends [U, T] ? { ok(): void } : { invalid: U } {
+      return () => ({ ok() {} } as any);
+    }
+
+    it('should resolve routes correctly', () => {
+      expectType<RouteFunc<undefined> | undefined>()(
+        routeResolutionApi.resolve(
+          createSubRouteRef({ id: '1', parent, path: '/foo' }),
+        ),
+      ).ok();
+      expectType<RouteFunc<{ x: string }> | undefined>()(
+        routeResolutionApi.resolve(
+          createSubRouteRef({ id: '1', parent: parentX, path: '/foo' }),
+        ),
+      ).ok();
+
+      expectType<RouteFunc<{ y: string }> | undefined>()(
+        routeResolutionApi.resolve(
+          createSubRouteRef({ id: '1', parent, path: '/:y' }),
+        ),
+      ).ok();
+      expectType<RouteFunc<{ x: string; y: string }> | undefined>()(
+        routeResolutionApi.resolve(
+          createSubRouteRef({ id: '1', parent: parentX, path: '/:y' }),
+        ),
+      ).ok();
+
+      expectType<RouteFunc<{ y: string; z: string }> | undefined>()(
+        routeResolutionApi.resolve(
+          createSubRouteRef({ id: '1', parent, path: '/:y/:z' }),
+        ),
+      ).ok();
+      expectType<RouteFunc<{ x: string; y: string; z: string }> | undefined>()(
+        routeResolutionApi.resolve(
+          createSubRouteRef({ id: '1', parent: parentX, path: '/:y/:z' }),
+        ),
+      ).ok();
+
+      expect(1).toBe(1);
+    });
   });
 });

@@ -14,30 +14,49 @@
  * limitations under the License.
  */
 
-import { createElement, forwardRef } from 'react';
+import { forwardRef } from 'react';
 import { FlexProps } from './types';
 import clsx from 'clsx';
-import { flexPropDefs } from './Flex.props';
-import { extractProps } from '../../utils/extractProps';
-import { gapPropDefs } from '../../props/gap-props';
-import { spacingPropDefs } from '../../props/spacing.props';
 import { useStyles } from '../../hooks/useStyles';
+import { FlexDefinition } from './definition';
+import styles from './Flex.module.css';
+import { SurfaceProvider, useSurface } from '../../hooks/useSurface';
 
 /** @public */
 export const Flex = forwardRef<HTMLDivElement, FlexProps>((props, ref) => {
-  const propDefs = {
-    ...gapPropDefs,
-    ...flexPropDefs,
-    ...spacingPropDefs,
-  };
-
-  const { classNames } = useStyles('Flex');
-  const { className, style } = extractProps(props, propDefs);
-
-  return createElement('div', {
-    ref,
-    className: clsx(classNames.root, className),
-    style,
-    children: props.children,
+  // Resolve the surface this Flex creates for its children
+  // Using 'surface' parameter = container behavior (auto increments)
+  const { surface: resolvedSurface } = useSurface({
+    surface: props.surface,
   });
+
+  const { classNames, dataAttributes, utilityClasses, style, cleanedProps } =
+    useStyles(FlexDefinition, {
+      gap: '4',
+      ...props,
+      surface: resolvedSurface, // Use resolved surface for data attribute
+    });
+
+  const { className, surface, ...rest } = cleanedProps;
+
+  const content = (
+    <div
+      ref={ref}
+      className={clsx(
+        classNames.root,
+        utilityClasses,
+        styles[classNames.root],
+        className,
+      )}
+      style={style}
+      {...dataAttributes}
+      {...rest}
+    />
+  );
+
+  return resolvedSurface ? (
+    <SurfaceProvider surface={resolvedSurface}>{content}</SurfaceProvider>
+  ) : (
+    content
+  );
 });

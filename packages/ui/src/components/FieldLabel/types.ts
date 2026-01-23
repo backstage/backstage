@@ -15,7 +15,8 @@
  */
 
 /** @public */
-export interface FieldLabelProps {
+export interface FieldLabelProps
+  extends Pick<React.HTMLAttributes<HTMLDivElement>, 'className'> {
   /**
    * The label of the text field
    */

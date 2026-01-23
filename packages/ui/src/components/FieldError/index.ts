@@ -15,3 +15,4 @@
  */
 
 export * from './FieldError';
+export { FieldErrorDefinition } from './definition';

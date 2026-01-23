@@ -1,0 +1,80 @@
+import { PropsTable } from '@/components/PropsTable';
+import { Snippet } from '@/components/Snippet';
+import { CodeBlock } from '@/components/CodeBlock';
+import {
+  tabsPropDefs,
+  tabListPropDefs,
+  tabPropDefs,
+  tabPanelPropDefs,
+} from './props-definition';
+import {
+  tabsUsageSnippet,
+  defaultSnippet,
+  defaultSelectedKeySnippet,
+  disabledTabsSnippet,
+  orientationSnippet,
+} from './snippets';
+import {
+  Default,
+  DefaultSelectedKey,
+  DisabledTabs,
+  Orientation,
+} from './components';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { TabsDefinition } from '../../../utils/definitions';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+
+<PageTitle
+  title="Tabs"
+  description="A component for toggling between related panels on the same page."
+/>
+
+<Snippet py={4} preview={<Default />} code={defaultSnippet} />
+
+## Usage
+
+<CodeBlock code={tabsUsageSnippet} />
+
+## API reference
+
+### Tabs
+
+Groups the tabs and the corresponding panels. Renders a `<div>` element.
+
+<PropsTable data={tabsPropDefs} />
+
+### Tab
+
+An individual interactive tab button that toggles the corresponding panel. Renders a `<button>` element.
+
+<PropsTable data={tabPropDefs} />
+
+## Examples
+
+### Default Selected Key
+
+Here's how to set which tab is selected by default.
+
+<Snippet
+  py={4}
+  preview={<DefaultSelectedKey />}
+  code={defaultSelectedKeySnippet}
+  open
+/>
+
+### Disabled Tabs
+
+Here's how to disable specific tabs.
+
+<Snippet py={4} preview={<DisabledTabs />} code={disabledTabsSnippet} open />
+
+### Orientation
+
+Here's how to display tabs vertically.
+
+<Snippet py={4} preview={<Orientation />} code={orientationSnippet} open />
+
+<Theming definition={TabsDefinition} />
+
+<ChangelogComponent component="tabs" />

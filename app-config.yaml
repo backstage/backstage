@@ -65,7 +65,9 @@ backend:
       - host: example.com
       - host: '*.mozilla.org'
   # workingDirectory: /tmp # Use this to configure a working directory for the scaffolder, defaults to the OS temp-dir
-
+  actions:
+    pluginSources:
+      - catalog
 # See README.md in the proxy-backend plugin for information on the configuration format
 proxy:
   endpoints:
@@ -107,8 +109,12 @@ integrations:
       token: ${GITLAB_TOKEN}
   ### Example for how to add a bitbucket cloud integration
   # bitbucketCloud:
+  #   # Using API token
   #   - username: ${BITBUCKET_USERNAME}
-  #     appPassword: ${BITBUCKET_APP_PASSWORD}
+  #     token: ${BITBUCKET_API_TOKEN}
+  #   # Using OAuth
+  #   - clientId: ${BITBUCKET_CLIENT_ID}
+  #     clientSecret: ${BITBUCKET_CLIENT_SECRET}
   ### Example for how to add your bitbucket server instance using the API:
   # - host: server.bitbucket.com
   #   apiBaseUrl: server.bitbucket.com
@@ -183,15 +189,9 @@ catalog:
       target: ../catalog-model/examples/acme-corp.yaml
       rules:
         - allow: [User, Group]
-    # Example component for github-actions and TechDocs
-    - type: file
-      target: ../../plugins/github-actions/examples/sample.yaml
     # Example component for TechDocs
     - type: file
       target: ../../plugins/techdocs-backend/examples/documented-component/catalog-info.yaml
-    # Example component for ADRs
-    - type: file
-      target: ../../plugins/adr/examples/component/catalog-info.yaml
     # Backstage example templates
     - type: file
       target: ../../plugins/scaffolder-backend/sample-templates/all-templates.yaml
@@ -199,14 +199,26 @@ catalog:
         - allow: [Template]
 
 scaffolder:
+  auditor:
+    taskParameterMaxLength: 256
   # Use to customize default commit author info used when new components are created
   defaultAuthor:
     name: Scaffolder
     email: scaffolder@backstage.io
   # Use to customize the default commit message when new components are created
   defaultCommitMessage: 'Initial commit'
+  defaultEnvironment:
+    parameters:
+      region: eu-west-1
+    secrets:
+      environment: ${NODE_ENV}
 
 auth:
+  experimentalDynamicClientRegistration:
+    enabled: true
+    allowedRedirectUriPatterns:
+      - cursor://*
+
   ### Add auth.keyStore.provider to more granularly control how to store JWK data when running
   # the auth-backend.
   #
@@ -297,3 +309,8 @@ auth:
 
 permission:
   enabled: true
+
+devTools:
+  scheduledTasks:
+    plugins:
+      - catalog

@@ -26,7 +26,6 @@ import { permissionsRegistryServiceFactory } from '@backstage/backend-defaults/p
 import { rootHealthServiceFactory } from '@backstage/backend-defaults/rootHealth';
 import { rootHttpRouterServiceFactory } from '@backstage/backend-defaults/rootHttpRouter';
 import { rootLifecycleServiceFactory } from '@backstage/backend-defaults/rootLifecycle';
-import { schedulerServiceFactory } from '@backstage/backend-defaults/scheduler';
 import { urlReaderServiceFactory } from '@backstage/backend-defaults/urlReader';
 import {
   AuthService,
@@ -35,14 +34,16 @@ import {
   DatabaseService,
   DiscoveryService,
   HttpAuthService,
-  LoggerService,
+  RootInstanceMetadataService,
   PermissionsService,
   RootConfigService,
+  SchedulerService,
   ServiceFactory,
   ServiceRef,
   UserInfoService,
   coreServices,
   createServiceFactory,
+  RootLoggerService,
 } from '@backstage/backend-plugin-api';
 import { ConfigReader } from '@backstage/config';
 import { EventsService, eventsServiceRef } from '@backstage/plugin-events-node';
@@ -57,6 +58,9 @@ import { mockCredentials } from './mockCredentials';
 import { MockEventsService } from './MockEventsService';
 import { MockPermissionsService } from './MockPermissionsService';
 import { simpleMock } from './simpleMock';
+import { MockSchedulerService } from './MockSchedulerService';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { ObservableConfigProxy } from '../../../config-loader/src/sources/ObservableConfigProxy';
 
 /** @internal */
 function createLoggerMock() {
@@ -73,14 +77,15 @@ function createLoggerMock() {
 function simpleFactoryWithOptions<
   TService,
   TScope extends 'root' | 'plugin',
+  TInstances extends 'singleton' | 'multiton',
   TOptions extends [options?: object] = [],
 >(
-  ref: ServiceRef<TService, TScope>,
+  ref: ServiceRef<TService, TScope, TInstances>,
   factory: (...options: TOptions) => TService,
-): (...options: TOptions) => ServiceFactory<TService, TScope> {
+): (...options: TOptions) => ServiceFactory<TService, TScope, TInstances> {
   const factoryWithOptions = (...options: TOptions) =>
     createServiceFactory({
-      service: ref as ServiceRef<TService, any>,
+      service: ref as ServiceRef<TService, any, any>,
       deps: {},
       async factory() {
         return factory(...options);
@@ -89,8 +94,8 @@ function simpleFactoryWithOptions<
   return Object.assign(
     factoryWithOptions,
     factoryWithOptions(...([undefined] as unknown as TOptions)),
-  ) as ServiceFactory<TService, TScope> &
-    ((...options: TOptions) => ServiceFactory<TService, TScope>);
+  ) as ServiceFactory<TService, TScope, TInstances> &
+    ((...options: TOptions) => ServiceFactory<TService, TScope, TInstances>);
 }
 
 /**
@@ -136,8 +141,16 @@ function simpleFactoryWithOptions<
  * ```
  */
 export namespace mockServices {
-  export function rootConfig(options?: rootConfig.Options): RootConfigService {
-    return new ConfigReader(options?.data, 'mock-config');
+  export function rootConfig(
+    options?: rootConfig.Options,
+  ): RootConfigService & { update(options: { data: JsonObject }): void } {
+    const config = ObservableConfigProxy.create(new AbortController());
+    config.setConfig(new ConfigReader(options?.data ?? {}, 'mock-config'));
+    return Object.assign(config, {
+      update({ data }: { data: JsonObject }): void {
+        config.setConfig(new ConfigReader(data, 'mock-config'));
+      },
+    });
   }
   export namespace rootConfig {
     export type Options = { data?: JsonObject };
@@ -166,7 +179,7 @@ export namespace mockServices {
     }));
   }
 
-  export function rootLogger(options?: rootLogger.Options): LoggerService {
+  export function rootLogger(options?: rootLogger.Options): RootLoggerService {
     return MockRootLoggerService.create(options);
   }
   export namespace rootLogger {
@@ -496,8 +509,15 @@ export namespace mockServices {
     }));
   }
 
+  export function scheduler(): SchedulerService {
+    return new MockSchedulerService();
+  }
   export namespace scheduler {
-    export const factory = () => schedulerServiceFactory;
+    export const factory = (options?: {
+      skipTaskRunOnStartup?: boolean;
+      includeManualTasksOnStartup?: boolean;
+      includeInitialDelayedTasksOnStartup?: boolean;
+    }) => new MockSchedulerService().factory(options);
     export const mock = simpleMock(coreServices.scheduler, () => ({
       createScheduledTaskRunner: jest.fn(),
       getScheduledTasks: jest.fn(),
@@ -537,5 +557,20 @@ export namespace mockServices {
       publish: jest.fn(),
       subscribe: jest.fn(),
     }));
+  }
+
+  export function rootInstanceMetadata(): RootInstanceMetadataService {
+    return {
+      getInstalledPlugins: () => Promise.resolve([]),
+    };
+  }
+  export namespace rootInstanceMetadata {
+    export const mock = simpleMock(coreServices.rootInstanceMetadata, () => ({
+      getInstalledPlugins: jest.fn(),
+    }));
+    export const factory = simpleFactoryWithOptions(
+      coreServices.rootInstanceMetadata,
+      rootInstanceMetadata,
+    );
   }
 }

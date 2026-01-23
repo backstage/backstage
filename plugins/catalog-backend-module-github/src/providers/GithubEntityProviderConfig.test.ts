@@ -111,13 +111,20 @@ describe('readProviderConfigs', () => {
                 },
               },
             },
+            providerAppOnly: {
+              app: '1234',
+            },
+            providerAppAndOrganization: {
+              app: '1234',
+              organization: 'test-org1',
+            },
           },
         },
       },
     });
     const providerConfigs = readProviderConfigs(config);
 
-    expect(providerConfigs).toHaveLength(10);
+    expect(providerConfigs).toHaveLength(12);
     expect(providerConfigs[0]).toEqual({
       id: 'providerOrganizationOnly',
       organization: 'test-org1',
@@ -313,6 +320,45 @@ describe('readProviderConfigs', () => {
       },
       validateLocationsExist: false,
     });
+    expect(providerConfigs[10]).toEqual({
+      id: 'providerAppOnly',
+      app: 1234,
+      catalogPath: '/catalog-info.yaml',
+      host: 'github.com',
+      filters: {
+        repository: undefined,
+        branch: undefined,
+        allowForks: true,
+        topic: {
+          include: undefined,
+          exclude: undefined,
+        },
+        visibility: undefined,
+        allowArchived: false,
+      },
+      schedule: DEFAULT_GITHUB_ENTITY_PROVIDER_CONFIG_SCHEDULE,
+      validateLocationsExist: false,
+    });
+    expect(providerConfigs[11]).toEqual({
+      id: 'providerAppAndOrganization',
+      app: 1234,
+      organization: 'test-org1',
+      catalogPath: '/catalog-info.yaml',
+      host: 'github.com',
+      filters: {
+        repository: undefined,
+        branch: undefined,
+        allowForks: true,
+        topic: {
+          include: undefined,
+          exclude: undefined,
+        },
+        visibility: undefined,
+        allowArchived: false,
+      },
+      schedule: DEFAULT_GITHUB_ENTITY_PROVIDER_CONFIG_SCHEDULE,
+      validateLocationsExist: false,
+    });
   });
 
   it('defaults validateLocationsExist to false', () => {
@@ -364,5 +410,83 @@ describe('readProviderConfigs', () => {
     });
 
     expect(() => readProviderConfigs(config)).toThrow();
+  });
+
+  it('throws an error when no organization or app is configured', () => {
+    const config = new ConfigReader({
+      catalog: {
+        providers: {
+          github: {
+            catalogPath: '/*/catalog-info.yaml',
+          },
+        },
+      },
+    });
+
+    expect(() => readProviderConfigs(config)).toThrow();
+  });
+
+  it('reads page sizes configuration', () => {
+    const config = new ConfigReader({
+      catalog: {
+        providers: {
+          github: {
+            organization: 'test-org',
+            pageSizes: {
+              repositories: 10,
+            },
+          },
+        },
+      },
+    });
+    const providerConfigs = readProviderConfigs(config);
+
+    expect(providerConfigs).toHaveLength(1);
+    expect(providerConfigs[0].pageSizes).toEqual({
+      repositories: 10,
+    });
+  });
+
+  it('handles missing page sizes configuration', () => {
+    const config = new ConfigReader({
+      catalog: {
+        providers: {
+          github: {
+            organization: 'test-org',
+          },
+        },
+      },
+    });
+    const providerConfigs = readProviderConfigs(config);
+
+    expect(providerConfigs).toHaveLength(1);
+    expect(providerConfigs[0].pageSizes).toBeUndefined();
+  });
+
+  it('reads multiple providers with different page sizes', () => {
+    const config = new ConfigReader({
+      catalog: {
+        providers: {
+          github: {
+            providerWithPageSizes: {
+              organization: 'test-org1',
+              pageSizes: {
+                repositories: 15,
+              },
+            },
+            providerWithoutPageSizes: {
+              organization: 'test-org2',
+            },
+          },
+        },
+      },
+    });
+    const providerConfigs = readProviderConfigs(config);
+
+    expect(providerConfigs).toHaveLength(2);
+    expect(providerConfigs[0].pageSizes).toEqual({
+      repositories: 15,
+    });
+    expect(providerConfigs[1].pageSizes).toBeUndefined();
   });
 });

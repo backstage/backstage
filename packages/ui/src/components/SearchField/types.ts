@@ -22,7 +22,7 @@ import type { FieldLabelProps } from '../FieldLabel/types';
 /** @public */
 export interface SearchFieldProps
   extends AriaSearchFieldProps,
-    Omit<FieldLabelProps, 'htmlFor' | 'id'> {
+    Omit<FieldLabelProps, 'htmlFor' | 'id' | 'className'> {
   /**
    * An icon to render before the input
    */
@@ -38,4 +38,9 @@ export interface SearchFieldProps
    * The placeholder text for the input
    */
   placeholder?: string;
+
+  /**
+   * Controls whether the SearchField starts in a collapsed state.
+   */
+  startCollapsed?: boolean;
 }

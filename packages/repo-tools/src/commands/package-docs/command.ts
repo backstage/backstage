@@ -23,6 +23,7 @@ import { mkdirp } from 'fs-extra';
 import { PackageDocsCache } from './Cache';
 import { Lockfile } from '@backstage/cli-node';
 import { glob } from 'glob';
+import { existsSync } from 'fs';
 
 const limit = pLimit(8);
 
@@ -220,6 +221,9 @@ export default async function packageDocs(paths: string[] = [], opts: any) {
       ...HIGHLIGHT_LANGUAGES.flatMap(e => ['--highlightLanguages', e]),
       '--out',
       cliPaths.resolveTargetRoot('type-docs'),
+      ...(existsSync(cliPaths.resolveTargetRoot('typedoc.json'))
+        ? ['--options', cliPaths.resolveTargetRoot('typedoc.json')]
+        : []),
     ].join(' '),
     {
       cwd: cliPaths.targetRoot,

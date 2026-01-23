@@ -4,7 +4,7 @@
 
 ```ts
 import { ApiHolder } from '@backstage/core-plugin-api';
-import { ApiRef } from '@backstage/core-plugin-api';
+import { ApiRef } from '@backstage/frontend-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { ComponentType } from 'react';
 import { createScaffolderFieldExtension as createScaffolderFieldExtension_2 } from '@backstage/plugin-scaffolder-react';
@@ -392,6 +392,30 @@ export const RepoBranchPickerFieldExtension: FieldExtensionComponent_2<
 >;
 
 // @public
+export const RepoOwnerPickerFieldExtension: FieldExtensionComponent_2<
+  string,
+  {
+    host?: string | undefined;
+    requestUserCredentials?:
+      | {
+          secretsKey: string;
+          additionalScopes?:
+            | {
+                azure?: string[] | undefined;
+                github?: string[] | undefined;
+                gitlab?: string[] | undefined;
+                bitbucket?: string[] | undefined;
+                gerrit?: string[] | undefined;
+                gitea?: string[] | undefined;
+              }
+            | undefined;
+        }
+      | undefined;
+    excludedOwners?: string[] | undefined;
+  }
+>;
+
+// @public
 export const repoPickerValidation: (
   value: string,
   validation: FieldValidation,
@@ -404,11 +428,11 @@ export const repoPickerValidation: (
 export const RepoUrlPickerFieldExtension: FieldExtensionComponent_2<
   string,
   {
-    allowedHosts?: string[] | undefined;
     allowedOrganizations?: string[] | undefined;
     allowedOwners?: string[] | undefined;
     allowedProjects?: string[] | undefined;
     allowedRepos?: string[] | undefined;
+    allowedHosts?: string[] | undefined;
     requestUserCredentials?:
       | {
           secretsKey: string;
@@ -431,11 +455,11 @@ export const RepoUrlPickerFieldExtension: FieldExtensionComponent_2<
 export const RepoUrlPickerFieldSchema: FieldSchema_2<
   string,
   {
-    allowedHosts?: string[] | undefined;
     allowedOrganizations?: string[] | undefined;
     allowedOwners?: string[] | undefined;
     allowedProjects?: string[] | undefined;
     allowedRepos?: string[] | undefined;
+    allowedHosts?: string[] | undefined;
     requestUserCredentials?:
       | {
           secretsKey: string;
@@ -492,6 +516,7 @@ export type RouterProps = {
     actions?: boolean;
     tasks?: boolean;
     create?: boolean;
+    templatingExtensions?: boolean;
   };
 };
 

@@ -14,43 +14,37 @@
  * limitations under the License.
  */
 
-import clsx from 'clsx';
 import { forwardRef, Ref } from 'react';
 import { Link as RALink } from 'react-aria-components';
 import type { ButtonLinkProps } from './types';
-import { useStyles } from '../../hooks/useStyles';
+import { useDefinition } from '../../hooks/useDefinition';
+import { ButtonLinkDefinition } from './definition';
+import { InternalLinkProvider } from '../InternalLinkProvider';
 
 /** @public */
 export const ButtonLink = forwardRef(
   (props: ButtonLinkProps, ref: Ref<HTMLAnchorElement>) => {
-    const {
-      size = 'small',
-      variant = 'primary',
-      iconStart,
-      iconEnd,
-      children,
-      className,
-      ...rest
-    } = props;
-
-    const { classNames, dataAttributes } = useStyles('Button', {
-      size,
-      variant,
-    });
-
-    const { classNames: classNamesButtonLink } = useStyles('ButtonLink');
+    const { ownProps, restProps, dataAttributes } = useDefinition(
+      ButtonLinkDefinition,
+      props,
+    );
+    const { classes, iconStart, iconEnd, children } = ownProps;
 
     return (
-      <RALink
-        className={clsx(classNames.root, classNamesButtonLink.root, className)}
-        ref={ref}
-        {...dataAttributes}
-        {...rest}
-      >
-        {iconStart}
-        {children}
-        {iconEnd}
-      </RALink>
+      <InternalLinkProvider href={restProps.href}>
+        <RALink
+          className={classes.root}
+          ref={ref}
+          {...dataAttributes}
+          {...restProps}
+        >
+          <span className={classes.content}>
+            {iconStart}
+            {children}
+            {iconEnd}
+          </span>
+        </RALink>
+      </InternalLinkProvider>
     );
   },
 );

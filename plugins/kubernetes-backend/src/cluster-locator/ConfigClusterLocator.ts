@@ -21,8 +21,11 @@ import {
   ANNOTATION_KUBERNETES_AWS_EXTERNAL_ID,
   ANNOTATION_KUBERNETES_OIDC_TOKEN_PROVIDER,
 } from '@backstage/plugin-kubernetes-common';
-import { ClusterDetails, KubernetesClustersSupplier } from '../types/types';
-import { AuthenticationStrategy } from '../auth';
+import {
+  ClusterDetails,
+  KubernetesClustersSupplier,
+  AuthenticationStrategy,
+} from '@backstage/plugin-kubernetes-node';
 
 export class ConfigClusterLocator implements KubernetesClustersSupplier {
   private readonly clusterDetails: ClusterDetails[];

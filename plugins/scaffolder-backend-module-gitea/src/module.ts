@@ -17,7 +17,7 @@ import {
   createBackendModule,
   coreServices,
 } from '@backstage/backend-plugin-api';
-import { scaffolderActionsExtensionPoint } from '@backstage/plugin-scaffolder-node/alpha';
+import { scaffolderActionsExtensionPoint } from '@backstage/plugin-scaffolder-node';
 import { createPublishGiteaAction } from './actions';
 import { ScmIntegrations } from '@backstage/integration';
 

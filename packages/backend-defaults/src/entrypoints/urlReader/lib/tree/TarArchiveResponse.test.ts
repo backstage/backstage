@@ -15,9 +15,10 @@
  */
 
 import fs from 'fs-extra';
-import { resolve as resolvePath } from 'path';
+import { resolve as resolvePath, join as joinPath } from 'path';
 import { TarArchiveResponse } from './TarArchiveResponse';
 import { createMockDirectory } from '@backstage/backend-test-utils';
+import * as tar from 'tar';
 
 const archiveData = fs.readFileSync(
   resolvePath(__filename, '../../__fixtures__/mock-main.tar.gz'),
@@ -222,5 +223,85 @@ describe('TarArchiveResponse', () => {
     await expect(fs.pathExists(sub)).resolves.toBe(true);
     await expect(res.dir({ targetDir: sub })).rejects.toThrow('NOPE');
     await expect(fs.pathExists(sub)).resolves.toBe(true);
+  });
+
+  describe('symlink handling', () => {
+    const tempDir = createMockDirectory();
+
+    it('should not extract symlinks with absolute targets', async () => {
+      const archiveSourceDir = tempDir.resolve('source');
+      await fs.ensureDir(joinPath(archiveSourceDir, 'repo'));
+      await fs.writeFile(
+        joinPath(archiveSourceDir, 'repo', 'file.txt'),
+        'file content',
+      );
+
+      // Create a symlink with an absolute path target
+      const absoluteTarget = tempDir.resolve('other.txt');
+      await fs.writeFile(absoluteTarget, 'other content');
+      await fs.symlink(
+        absoluteTarget,
+        joinPath(archiveSourceDir, 'repo', 'abs-link'),
+      );
+
+      const tarballPath = tempDir.resolve('archive.tar.gz');
+      await tar.create(
+        { gzip: true, file: tarballPath, cwd: archiveSourceDir },
+        ['repo'],
+      );
+
+      const stream = fs.createReadStream(tarballPath);
+      const res = new TarArchiveResponse(stream, '', targetDir.path, 'etag');
+
+      targetDir.addContent({ out: {} });
+      const dir = await res.dir({ targetDir: targetDir.resolve('out') });
+
+      // Regular file should be extracted
+      await expect(
+        fs.readFile(joinPath(dir, 'file.txt'), 'utf8'),
+      ).resolves.toBe('file content');
+
+      // Symlink with absolute target should not be extracted
+      await expect(fs.lstat(joinPath(dir, 'abs-link'))).rejects.toThrow(
+        'ENOENT',
+      );
+    });
+
+    it('should extract symlinks with relative targets within archive', async () => {
+      const archiveSourceDir = tempDir.resolve('source2');
+      await fs.ensureDir(joinPath(archiveSourceDir, 'repo', 'subdir'));
+      await fs.writeFile(
+        joinPath(archiveSourceDir, 'repo', 'target.txt'),
+        'target content',
+      );
+
+      // Create a relative symlink pointing to a file within the archive
+      await fs.symlink(
+        '../target.txt',
+        joinPath(archiveSourceDir, 'repo', 'subdir', 'rel-link'),
+      );
+
+      const tarballPath = tempDir.resolve('archive2.tar.gz');
+      await tar.create(
+        { gzip: true, file: tarballPath, cwd: archiveSourceDir },
+        ['repo'],
+      );
+
+      const stream = fs.createReadStream(tarballPath);
+      const res = new TarArchiveResponse(stream, '', targetDir.path, 'etag');
+
+      targetDir.addContent({ out2: {} });
+      const dir = await res.dir({ targetDir: targetDir.resolve('out2') });
+
+      // The symlink should be extracted and point to the correct file
+      const linkPath = joinPath(dir, 'subdir', 'rel-link');
+      const stats = await fs.lstat(linkPath);
+      expect(stats.isSymbolicLink()).toBe(true);
+
+      // Following the symlink should give us the target content
+      await expect(fs.readFile(linkPath, 'utf8')).resolves.toBe(
+        'target content',
+      );
+    });
   });
 });

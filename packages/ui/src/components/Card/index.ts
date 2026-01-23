@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-export { Card } from './Card';
+export { Card, CardHeader, CardBody, CardFooter } from './Card';
+export { CardDefinition } from './definition';
+
 export type {
   CardProps,
   CardHeaderProps,

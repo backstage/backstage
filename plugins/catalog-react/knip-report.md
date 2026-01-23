@@ -4,5 +4,5 @@
 
 | Name                | Location     | Severity |
 | :------------------ | :----------- | :------- |
-| react-test-renderer | package.json | error    |
+| react-test-renderer | plugins/catalog-react/package.json | error    |
 

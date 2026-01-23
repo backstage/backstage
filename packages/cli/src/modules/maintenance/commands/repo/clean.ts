@@ -14,14 +14,11 @@
  * limitations under the License.
  */
 
-import { execFile as execFileCb } from 'child_process';
 import fs from 'fs-extra';
 import { resolve as resolvePath } from 'path';
-import { promisify } from 'util';
 import { PackageGraph } from '@backstage/cli-node';
 import { paths } from '../../../../lib/paths';
-
-const execFile = promisify(execFileCb);
+import { run } from '@backstage/cli-common';
 
 export async function command(): Promise<void> {
   const packages = await PackageGraph.listTargetPackages();
@@ -44,12 +41,9 @@ export async function command(): Promise<void> {
           await fs.remove(resolvePath(pkg.dir, 'dist-types'));
           await fs.remove(resolvePath(pkg.dir, 'coverage'));
         } else if (cleanScript) {
-          const result = await execFile('yarn', ['run', 'clean'], {
+          await run(['yarn', 'run', 'clean'], {
             cwd: pkg.dir,
-            shell: true,
-          });
-          process.stdout.write(result.stdout);
-          process.stderr.write(result.stderr);
+          }).waitForExit();
         }
       }
     }),

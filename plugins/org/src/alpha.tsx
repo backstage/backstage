@@ -14,10 +14,6 @@
  * limitations under the License.
  */
 
-import {
-  compatWrapper,
-  convertLegacyRouteRefs,
-} from '@backstage/core-compat-api';
 import { createFrontendPlugin } from '@backstage/frontend-plugin-api';
 import { catalogIndexRouteRef } from './routes';
 import { EntityCardBlueprint } from '@backstage/plugin-catalog-react/alpha';
@@ -29,33 +25,67 @@ const EntityGroupProfileCard = EntityCardBlueprint.make({
     type: 'info',
     filter: { kind: 'group' },
     loader: async () =>
-      import('./components/Cards/Group/GroupProfile/GroupProfileCard').then(m =>
-        compatWrapper(<m.GroupProfileCard />),
+      import('./components/Cards/Group/GroupProfile/GroupProfileCard').then(
+        m => <m.GroupProfileCard />,
       ),
   },
 });
 
 /** @alpha */
-const EntityMembersListCard = EntityCardBlueprint.make({
+const EntityMembersListCard = EntityCardBlueprint.makeWithOverrides({
   name: 'members-list',
-  params: {
-    filter: { kind: 'group' },
-    loader: async () =>
-      import('./components/Cards/Group/MembersList/MembersListCard').then(m =>
-        compatWrapper(<m.MembersListCard />),
-      ),
+  config: {
+    schema: {
+      initialRelationAggregation: z =>
+        z.enum(['direct', 'aggregated']).optional(),
+      showAggregateMembersToggle: z => z.boolean().optional(),
+    },
+  },
+  factory(originalFactory, { config }) {
+    return originalFactory({
+      filter: { kind: 'group' },
+      loader: async () =>
+        import('./components/Cards/Group/MembersList/MembersListCard').then(
+          m => (
+            <m.MembersListCard
+              relationAggregation={config.initialRelationAggregation}
+              showAggregateMembersToggle={config.showAggregateMembersToggle}
+            />
+          ),
+        ),
+    });
   },
 });
 
 /** @alpha */
-const EntityOwnershipCard = EntityCardBlueprint.make({
+const EntityOwnershipCard = EntityCardBlueprint.makeWithOverrides({
   name: 'ownership',
-  params: {
-    filter: { kind: { $in: ['group', 'user'] } },
-    loader: async () =>
-      import('./components/Cards/OwnershipCard/OwnershipCard').then(m =>
-        compatWrapper(<m.OwnershipCard />),
-      ),
+  config: {
+    schema: {
+      initialRelationAggregation: z =>
+        z.enum(['direct', 'aggregated']).optional(),
+      showAggregateMembersToggle: z => z.boolean().optional(),
+      ownedKinds: z => z.array(z.string()).optional(),
+    },
+  },
+  factory(originalFactory, { config }) {
+    return originalFactory({
+      filter: { kind: { $in: ['group', 'user'] } },
+      loader: async () =>
+        import('./components/Cards/OwnershipCard/OwnershipCard').then(m => (
+          <m.OwnershipCard
+            relationAggregation={config.initialRelationAggregation}
+            hideRelationsToggle={
+              config.showAggregateMembersToggle === undefined
+                ? undefined
+                : !config.showAggregateMembersToggle
+            }
+            entityFilterKind={
+              config.ownedKinds ?? ['Component', 'API', 'System', 'Resource']
+            }
+          />
+        )),
+    });
   },
 });
 
@@ -74,13 +104,12 @@ const EntityUserProfileCard = EntityCardBlueprint.makeWithOverrides({
       filter: { kind: 'user' },
       loader: async () =>
         import('./components/Cards/User/UserProfileCard/UserProfileCard').then(
-          m =>
-            compatWrapper(
-              <m.UserProfileCard
-                maxRelations={config.maxRelations}
-                hideIcons={config.hideIcons}
-              />,
-            ),
+          m => (
+            <m.UserProfileCard
+              maxRelations={config.maxRelations}
+              hideIcons={config.hideIcons}
+            />
+          ),
         ),
     });
   },
@@ -96,9 +125,9 @@ export default createFrontendPlugin({
     EntityOwnershipCard,
     EntityUserProfileCard,
   ],
-  externalRoutes: convertLegacyRouteRefs({
+  externalRoutes: {
     catalogIndex: catalogIndexRouteRef,
-  }),
+  },
 });
 
 export { orgTranslationRef } from './translation';

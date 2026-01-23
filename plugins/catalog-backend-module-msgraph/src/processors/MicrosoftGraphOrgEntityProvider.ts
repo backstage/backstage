@@ -289,17 +289,27 @@ export class MicrosoftGraphOrgEntityProvider implements EntityProvider {
     return result;
   }
 
-  constructor(
-    private options: {
-      id: string;
-      provider: MicrosoftGraphProviderConfig;
-      logger: LoggerService;
-      userTransformer?: UserTransformer;
-      groupTransformer?: GroupTransformer;
-      organizationTransformer?: OrganizationTransformer;
-      providerConfigTransformer?: ProviderConfigTransformer;
-    },
-  ) {}
+  private options: {
+    id: string;
+    provider: MicrosoftGraphProviderConfig;
+    logger: LoggerService;
+    userTransformer?: UserTransformer;
+    groupTransformer?: GroupTransformer;
+    organizationTransformer?: OrganizationTransformer;
+    providerConfigTransformer?: ProviderConfigTransformer;
+  };
+
+  constructor(options: {
+    id: string;
+    provider: MicrosoftGraphProviderConfig;
+    logger: LoggerService;
+    userTransformer?: UserTransformer;
+    groupTransformer?: GroupTransformer;
+    organizationTransformer?: OrganizationTransformer;
+    providerConfigTransformer?: ProviderConfigTransformer;
+  }) {
+    this.options = options;
+  }
 
   /** {@inheritdoc @backstage/plugin-catalog-node#EntityProvider.getProviderName} */
   getProviderName() {

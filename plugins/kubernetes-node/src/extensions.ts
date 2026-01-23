@@ -16,11 +16,29 @@
 import { createExtensionPoint } from '@backstage/backend-plugin-api';
 import {
   AuthenticationStrategy,
+  CustomResource,
+  ObjectToFetch,
   KubernetesClustersSupplier,
   KubernetesFetcher,
   KubernetesObjectsProvider,
   KubernetesServiceLocator,
 } from '@backstage/plugin-kubernetes-node';
+import type express from 'express';
+
+/**
+ * A factory function for creating a KubernetesObjectsProvider.
+ *
+ * @public
+ */
+export type KubernetesObjectsProviderFactory = (opts: {
+  getDefault: () => Promise<KubernetesObjectsProvider>;
+  clusterSupplier: KubernetesClustersSupplier;
+  serviceLocator: KubernetesServiceLocator;
+  fetcher: KubernetesFetcher;
+  customResources: CustomResource[];
+  objectTypesToFetch?: ObjectToFetch[];
+  authStrategy: AuthenticationStrategy;
+}) => Promise<KubernetesObjectsProvider>;
 
 /**
  * The interface for {@link kubernetesObjectsProviderExtensionPoint}.
@@ -28,7 +46,9 @@ import {
  * @public
  */
 export interface KubernetesObjectsProviderExtensionPoint {
-  addObjectsProvider(provider: KubernetesObjectsProvider): void;
+  addObjectsProvider(
+    provider: KubernetesObjectsProvider | KubernetesObjectsProviderFactory,
+  ): void;
 }
 
 /**
@@ -42,12 +62,25 @@ export const kubernetesObjectsProviderExtensionPoint =
   });
 
 /**
+ * A factory function for creating a KubernetesClustersSupplier.
+ *
+ * @public
+ */
+export type KubernetesClusterSupplierFactory = (opts: {
+  getDefault: () => Promise<KubernetesClustersSupplier>;
+}) => Promise<KubernetesClustersSupplier>;
+
+/**
  * The interface for {@link kubernetesClusterSupplierExtensionPoint}.
  *
  * @public
  */
 export interface KubernetesClusterSupplierExtensionPoint {
-  addClusterSupplier(clusterSupplier: KubernetesClustersSupplier): void;
+  addClusterSupplier(
+    clusterSupplier:
+      | KubernetesClustersSupplier
+      | KubernetesClusterSupplierFactory,
+  ): void;
 }
 
 /**
@@ -80,12 +113,21 @@ export const kubernetesAuthStrategyExtensionPoint =
   });
 
 /**
+ * A factory function for creating a KubernetesFetcher.
+ *
+ * @public
+ */
+export type KubernetesFetcherFactory = (opts: {
+  getDefault: () => Promise<KubernetesFetcher>;
+}) => Promise<KubernetesFetcher>;
+
+/**
  * The interface for {@link kubernetesFetcherExtensionPoint}.
  *
  * @public
  */
 export interface KubernetesFetcherExtensionPoint {
-  addFetcher(fetcher: KubernetesFetcher): void;
+  addFetcher(fetcher: KubernetesFetcher | KubernetesFetcherFactory): void;
 }
 
 /**
@@ -99,12 +141,24 @@ export const kubernetesFetcherExtensionPoint =
   });
 
 /**
+ * A factory function for creating a KubernetesServiceLocator.
+ *
+ * @public
+ */
+export type KubernetesServiceLocatorFactory = (opts: {
+  getDefault: () => Promise<KubernetesServiceLocator>;
+  clusterSupplier: KubernetesClustersSupplier;
+}) => Promise<KubernetesServiceLocator>;
+
+/**
  * The interface for {@link kubernetesServiceLocatorExtensionPoint}.
  *
  * @public
  */
 export interface KubernetesServiceLocatorExtensionPoint {
-  addServiceLocator(serviceLocator: KubernetesServiceLocator): void;
+  addServiceLocator(
+    serviceLocator: KubernetesServiceLocator | KubernetesServiceLocatorFactory,
+  ): void;
 }
 
 /**
@@ -115,4 +169,35 @@ export interface KubernetesServiceLocatorExtensionPoint {
 export const kubernetesServiceLocatorExtensionPoint =
   createExtensionPoint<KubernetesServiceLocatorExtensionPoint>({
     id: 'kubernetes.service-locator',
+  });
+
+/**
+ * A factory function for creating a kubernetes router.
+ *
+ * @public
+ */
+export type KubernetesRouterFactory = (opts: {
+  getDefault: () => express.Router;
+  objectsProvider: KubernetesObjectsProvider;
+  clusterSupplier: KubernetesClustersSupplier;
+  authStrategyMap: { [key: string]: AuthenticationStrategy };
+}) => express.Router;
+
+/**
+ * The interface for {@link kubernetesRouterExtensionPoint}.
+ *
+ * @public
+ */
+export interface KubernetesRouterExtensionPoint {
+  addRouter(router: KubernetesRouterFactory): void;
+}
+
+/**
+ * An extension point the exposes the ability to configure a kubernetes service locator.
+ *
+ * @public
+ */
+export const kubernetesRouterExtensionPoint =
+  createExtensionPoint<KubernetesRouterExtensionPoint>({
+    id: 'kubernetes.router',
   });

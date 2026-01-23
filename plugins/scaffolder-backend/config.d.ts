@@ -93,5 +93,41 @@ export interface Config {
      * Default value is 24 hours.
      */
     taskTimeout?: HumanDuration | string;
+
+    /**
+     * Sets the maximum length for task parameters recorded by the auditor.
+     *
+     * If set to -1, the limit is disabled and parameters are not truncated.
+     * Defaults to 256 character length.
+     *
+     * @example
+     * scaffolder:
+     *   auditor:
+     *     taskParameterMaxLength: 512
+     */
+    auditor?: {
+      taskParameterMaxLength?: number;
+    };
+
+    /**
+     * Default environment variables and secrets available to all templates.
+     */
+    defaultEnvironment?: {
+      /**
+       * Default parameters accessible via ${{ environment.parameters.* }} in templates.
+       */
+      parameters?: {
+        [key: string]: string;
+      };
+
+      /**
+       * Secret values from environment variables accessible via ${{ environment.secrets.* }} in templates.
+       * Values should reference environment variables like ${SECRET_NAME}.
+       * @visibility secret
+       */
+      secrets?: {
+        [key: string]: string;
+      };
+    };
   };
 }

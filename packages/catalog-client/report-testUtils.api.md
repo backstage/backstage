@@ -22,6 +22,7 @@ import { GetLocationsResponse } from '@backstage/catalog-client';
 import { Location as Location_2 } from '@backstage/catalog-client';
 import { QueryEntitiesRequest } from '@backstage/catalog-client';
 import { QueryEntitiesResponse } from '@backstage/catalog-client';
+import { StreamEntitiesRequest } from '@backstage/catalog-client';
 import { ValidateEntityResponse } from '@backstage/catalog-client';
 
 // @public
@@ -69,6 +70,8 @@ export class InMemoryCatalogClient implements CatalogApi {
   removeEntityByUid(uid: string): Promise<void>;
   // (undocumented)
   removeLocationById(_id: string): Promise<void>;
+  // (undocumented)
+  streamEntities(request?: StreamEntitiesRequest): AsyncIterable<Entity[]>;
   // (undocumented)
   validateEntity(
     _entity: Entity,

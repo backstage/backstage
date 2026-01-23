@@ -22,7 +22,7 @@ const errorMessage = 'Network requests are not allowed in tests';
 const origHttpAgent = http.globalAgent;
 const origHttpsAgent = https.globalAgent;
 const origFetch = global.fetch;
-const origXMLHttpRequest = global.fetch;
+const origXMLHttpRequest = global.XMLHttpRequest;
 
 http.globalAgent = new http.Agent({
   lookup() {
@@ -36,10 +36,21 @@ https.globalAgent = new https.Agent({
   },
 });
 
+const BLOCKING_FETCH_SYMBOL = Symbol.for(
+  'backstage.jestRejectNetworkRequests.blockingFetch',
+);
+
 if (global.fetch) {
-  global.fetch = async () => {
-    throw new Error(errorMessage);
+  const blockingFetch = async (input, init) => {
+    // If global.fetch still has our marker, block the request
+    if (global.fetch[BLOCKING_FETCH_SYMBOL]) {
+      throw new Error(errorMessage);
+    }
+    // MSW (or something else) wrapped us - pass through
+    return origFetch(input, init);
   };
+  blockingFetch[BLOCKING_FETCH_SYMBOL] = true;
+  global.fetch = blockingFetch;
 }
 
 if (global.XMLHttpRequest) {

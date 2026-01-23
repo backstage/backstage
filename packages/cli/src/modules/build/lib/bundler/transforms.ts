@@ -14,27 +14,30 @@
  * limitations under the License.
  */
 
-import { RuleSetRule, WebpackPluginInstance } from 'webpack';
-import MiniCssExtractPlugin from 'mini-css-extract-plugin';
-import { svgrTemplate } from '../../../../lib/svgrTemplate';
+import {
+  RuleSetRule,
+  RspackPluginInstance,
+  CssExtractRspackPlugin,
+  WebpackPluginInstance,
+} from '@rspack/core';
 
 type Transforms = {
   loaders: RuleSetRule[];
-  plugins: WebpackPluginInstance[];
+  plugins: Array<RspackPluginInstance | WebpackPluginInstance>;
 };
 
 type TransformOptions = {
   isDev: boolean;
   isBackend?: boolean;
-  rspack?: typeof import('@rspack/core').rspack;
+  webpack?: typeof import('webpack').webpack;
 };
 
 export const transforms = (options: TransformOptions): Transforms => {
-  const { isDev, isBackend, rspack } = options;
+  const { isDev, isBackend, webpack } = options;
 
-  const CssExtractRspackPlugin: typeof MiniCssExtractPlugin = rspack
-    ? (rspack.CssExtractRspackPlugin as unknown as typeof MiniCssExtractPlugin)
-    : MiniCssExtractPlugin;
+  const CssExtractPlugin: typeof CssExtractRspackPlugin = webpack
+    ? (require('mini-css-extract-plugin') as unknown as typeof CssExtractRspackPlugin)
+    : CssExtractRspackPlugin;
 
   // This ensures that styles inserted from the style-loader and any
   // async style chunks are always given lower priority than JSS styles.
@@ -59,10 +62,12 @@ export const transforms = (options: TransformOptions): Transforms => {
       exclude: /node_modules/,
       use: [
         {
-          loader: rspack ? 'builtin:swc-loader' : require.resolve('swc-loader'),
+          loader: webpack
+            ? require.resolve('swc-loader')
+            : 'builtin:swc-loader',
           options: {
             jsc: {
-              target: 'es2022',
+              target: 'es2023',
               externalHelpers: !isBackend,
               parser: {
                 syntax: 'typescript',
@@ -87,10 +92,12 @@ export const transforms = (options: TransformOptions): Transforms => {
       exclude: /node_modules/,
       use: [
         {
-          loader: rspack ? 'builtin:swc-loader' : require.resolve('swc-loader'),
+          loader: webpack
+            ? require.resolve('swc-loader')
+            : 'builtin:swc-loader',
           options: {
             jsc: {
-              target: 'es2022',
+              target: 'es2023',
               externalHelpers: !isBackend,
               parser: {
                 syntax: 'ecmascript',
@@ -115,29 +122,6 @@ export const transforms = (options: TransformOptions): Transforms => {
       resolve: {
         fullySpecified: false,
       },
-    },
-    {
-      test: [/\.icon\.svg$/],
-      use: [
-        {
-          loader: rspack ? 'builtin:swc-loader' : require.resolve('swc-loader'),
-          options: {
-            jsc: {
-              target: 'es2022',
-              externalHelpers: !isBackend,
-              parser: {
-                syntax: 'ecmascript',
-                jsx: !isBackend,
-                dynamicImport: true,
-              },
-            },
-          },
-        },
-        {
-          loader: require.resolve('@svgr/webpack'),
-          options: { babel: false, template: svgrTemplate },
-        },
-      ],
     },
     {
       test: [
@@ -185,7 +169,7 @@ export const transforms = (options: TransformOptions): Transforms => {
                 insert: insertBeforeJssStyles,
               },
             }
-          : CssExtractRspackPlugin.loader,
+          : CssExtractPlugin.loader,
         {
           loader: require.resolve('css-loader'),
           options: {
@@ -196,11 +180,11 @@ export const transforms = (options: TransformOptions): Transforms => {
     },
   ];
 
-  const plugins = new Array<WebpackPluginInstance>();
+  const plugins = new Array<RspackPluginInstance | WebpackPluginInstance>();
 
   if (!isDev) {
     plugins.push(
-      new CssExtractRspackPlugin({
+      new CssExtractPlugin({
         filename: 'static/[name].[contenthash:8].css',
         chunkFilename: 'static/[name].[id].[contenthash:8].css',
         insert: insertBeforeJssStyles, // Only applies to async chunks

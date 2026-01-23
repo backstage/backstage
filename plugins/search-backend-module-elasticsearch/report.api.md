@@ -18,7 +18,7 @@ import { LoggerService } from '@backstage/backend-plugin-api';
 import { Readable } from 'stream';
 import { SearchEngine } from '@backstage/plugin-search-backend-node';
 import { SearchQuery } from '@backstage/plugin-search-common';
-import { TransportRequestPromise } from '@opensearch-project/opensearch/lib/Transport';
+import { TransportRequestPromise } from '@opensearch-project/opensearch/lib/Transport.js';
 import { TransportRequestPromise as TransportRequestPromise_2 } from '@elastic/elasticsearch/lib/Transport';
 
 // @public
@@ -137,7 +137,7 @@ export class ElasticSearchClientWrapper {
   // (undocumented)
   bulk(bulkOptions: {
     datasource: Readable;
-    onDocument: () => ElasticSearchIndexAction;
+    onDocument: (doc: any) => ElasticSearchIndexAction;
     refreshOnCompletion?: string | boolean;
   }): BulkHelper<BulkStats>;
   // (undocumented)
@@ -348,6 +348,7 @@ export class ElasticSearchSearchEngine implements SearchEngine {
     indexPrefix: string,
     logger: LoggerService,
     batchSize: number,
+    batchKeyField?: string,
     highlightOptions?: ElasticSearchHighlightOptions,
     queryOptions?: ElasticSearchQueryConfig,
   );
@@ -393,6 +394,7 @@ export type ElasticSearchSearchEngineIndexerOptions = {
   logger: LoggerService;
   elasticSearchClientWrapper: ElasticSearchClientWrapper;
   batchSize: number;
+  batchKeyField?: string;
   skipRefresh?: boolean;
 };
 

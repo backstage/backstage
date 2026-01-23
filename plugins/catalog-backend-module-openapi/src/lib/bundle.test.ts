@@ -119,7 +119,7 @@ describe('bundleFileWithRefs', () => {
 
     expect(result).toEqual(expectedResult.trimStart());
   });
-  it('should return the bundled asyncapi specification', async () => {
+  it('should return the bundled asyncapi 2.5.0 specification', async () => {
     const spec = `
       asyncapi: 2.5.0
       info:
@@ -178,6 +178,202 @@ channels:
     );
 
     expect(result).toEqual(expectedSchema.trimStart());
+  });
+
+  it('should return the bundled asyncapi 3.0.0 specification with preserved references', async () => {
+    const spec = `
+asyncapi: 3.0.0
+info:
+  version: 1.0.0
+  title: AsyncAPI 3.0 Sample
+  description: Sample AsyncAPI 3.0 with operations and replies
+servers:
+  test:
+    host: api.example.com:5672
+    protocol: kafka
+channels:
+  userSignup:
+    address: user/signedup
+    servers:
+      - $ref: "#/servers/test"
+    messages:
+      UserSignedUp:
+        $ref: "#/components/messages/UserSignedUp"
+      ServiceUserSignup:
+        $ref: "#/components/messages/ServiceUserSignup"
+  userSignupReply:
+    - $ref: "#/components/channels/userSignupReply"
+operations:
+  sendUserSignup:
+    action: send
+    channel:
+      $ref: "#/channels/userSignup"
+    messages:
+      - $ref: "#/channels/userSignup/messages/UserSignedUp"
+    reply:
+      channel:
+        $ref: "#/channels/userSignupReply"
+      messages:
+        - $ref: "#/channels/userSignupReply/messages/UserSignedUpReply"
+  sendServiceUserSignup:
+    $ref: "#/components/operations/sendServiceUserSignup"
+components:
+  channels:
+    userSignupReply:
+      servers:
+        - $ref: "#/servers/test"
+      address: user/signedup/reply
+      messages:
+        UserSignedUpReply:
+          $ref: "#/components/messages/UserSignedUpReply"
+        ServiceUserSignupReply:
+          $ref: "#/components/messages/ServiceUserSignupReply"
+  operations:
+    sendServiceUserSignup:
+      action: send
+      channel:
+        $ref: "#/channels/userSignup"
+      messages:
+        - $ref: "#/channels/userSignup/messages/ServiceUserSignup"
+      reply:
+        channel:
+          $ref: "#/channels/userSignupReply"
+        messages:
+          - $ref: "#/channels/userSignupReply/messages/ServiceUserSignupReply"
+  messages:
+    UserSignedUp:
+      $ref: "./messages/UserSignedUp.yaml"
+    ServiceUserSignup:
+      payload:
+        type: object
+        properties:
+          serviceId:
+            type: string
+    UserSignedUpReply:
+      $ref: "./messages/UserSignedUpReply.yaml"
+    ServiceUserSignupReply:
+      payload:
+        type: object
+        properties:
+          success:
+            type: boolean
+    `;
+
+    const userSignedUpMessage = `
+payload:
+  type: object
+  properties:
+    userId:
+      type: string
+`;
+
+    const userSignedUpReplyMessage = `
+payload:
+  type: object
+  properties:
+    success:
+      type: boolean
+`;
+
+    const expectedBundledSpec = `
+asyncapi: 3.0.0
+info:
+  version: 1.0.0
+  title: AsyncAPI 3.0 Sample
+  description: Sample AsyncAPI 3.0 with operations and replies
+servers:
+  test:
+    host: api.example.com:5672
+    protocol: kafka
+channels:
+  userSignup:
+    address: user/signedup
+    servers:
+      - $ref: "#/servers/test"
+    messages:
+      UserSignedUp:
+        $ref: "#/components/messages/UserSignedUp"
+      ServiceUserSignup:
+        $ref: "#/components/messages/ServiceUserSignup"
+  userSignupReply:
+    - $ref: "#/components/channels/userSignupReply"
+operations:
+  sendUserSignup:
+    action: send
+    channel:
+      $ref: "#/channels/userSignup"
+    messages:
+      - $ref: "#/channels/userSignup/messages/UserSignedUp"
+    reply:
+      channel:
+        $ref: "#/channels/userSignupReply"
+      messages:
+        - $ref: "#/channels/userSignupReply/messages/UserSignedUpReply"
+  sendServiceUserSignup:
+    $ref: "#/components/operations/sendServiceUserSignup"
+components:
+  channels:
+    userSignupReply:
+      servers:
+        - $ref: "#/servers/test"
+      address: user/signedup/reply
+      messages:
+        UserSignedUpReply:
+          $ref: "#/components/messages/UserSignedUpReply"
+        ServiceUserSignupReply:
+          $ref: "#/components/messages/ServiceUserSignupReply"
+  operations:
+    sendServiceUserSignup:
+      action: send
+      channel:
+        $ref: "#/channels/userSignup"
+      messages:
+        - $ref: "#/channels/userSignup/messages/ServiceUserSignup"
+      reply:
+        channel:
+          $ref: "#/channels/userSignupReply"
+        messages:
+          - $ref: "#/channels/userSignupReply/messages/ServiceUserSignupReply"
+  messages:
+    UserSignedUp:
+      payload:
+        type: object
+        properties:
+          userId:
+            type: string
+    ServiceUserSignup:
+      payload:
+        type: object
+        properties:
+          serviceId:
+            type: string
+    UserSignedUpReply:
+      payload:
+        type: object
+        properties:
+          success:
+            type: boolean
+    ServiceUserSignupReply:
+      payload:
+        type: object
+        properties:
+          success:
+            type: boolean
+`;
+
+    read
+      .mockResolvedValueOnce(userSignedUpMessage)
+      .mockResolvedValueOnce(userSignedUpReplyMessage);
+
+    const result = await bundleFileWithRefs(
+      spec,
+      'https://github.com/owner/repo/blob/main/catalog-info.yaml',
+      read,
+      resolveUrl,
+    );
+
+    expect(read).toHaveBeenCalledTimes(2);
+    expect(result).toEqual(expectedBundledSpec.trimStart());
   });
 });
 

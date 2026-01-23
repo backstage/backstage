@@ -20,6 +20,10 @@ const crypto = require('crypto');
 const glob = require('util').promisify(require('glob'));
 const { version } = require('../package.json');
 const paths = require('@backstage/cli-common').findPaths(process.cwd());
+const {
+  getJestEnvironment,
+  getJestMajorVersion,
+} = require('./getJestEnvironment');
 
 const SRC_EXTS = ['ts', 'js', 'tsx', 'jsx', 'mts', 'cts', 'mjs', 'cjs'];
 
@@ -211,7 +215,7 @@ function getRoleConfig(role, pkgJson) {
   };
   if (FRONTEND_ROLES.includes(role)) {
     return {
-      testEnvironment: require.resolve('jest-environment-jsdom'),
+      testEnvironment: getJestEnvironment(),
       // The caching module loader is only used to speed up frontend tests,
       // as it breaks real dynamic imports of ESM modules.
       runtime: envOptions.oldTests
@@ -279,7 +283,10 @@ async function getProjectConfig(targetPath, extraConfig, extraOptions) {
     );
   }
 
-  if (options.testEnvironment === require.resolve('jest-environment-jsdom')) {
+  if (
+    options.testEnvironment === getJestEnvironment() &&
+    getJestMajorVersion() < 30 // Only needed when not running the custom env for Jest 30+
+  ) {
     // FIXME https://github.com/jsdom/jsdom/issues/1724
     options.setupFilesAfterEnv.unshift(require.resolve('cross-fetch/polyfill'));
   }

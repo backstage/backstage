@@ -4,6 +4,6 @@
 
 | Name             | Location     | Severity |
 | :--------------- | :----------- | :------- |
-| react-router-dom | package.json | error    |
-| react-dom        | package.json | error    |
+| react-router-dom | plugins/api-docs-module-protoc-gen-doc/package.json | error    |
+| react-dom        | plugins/api-docs-module-protoc-gen-doc/package.json | error    |
 

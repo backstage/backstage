@@ -103,6 +103,8 @@ export type RouterProps = {
     tasks?: boolean;
     /** Whether to show a link to the create page (on /create subroutes) */
     create?: boolean;
+    /** Whether to show a link to the templating extensions page */
+    templatingExtensions?: boolean;
   };
 };
 
@@ -244,7 +246,7 @@ export const InternalRouter = (
       />
       <Route
         path={templatingExtensionsRouteRef.path}
-        element={<TemplatingExtensionsPage />}
+        element={<TemplatingExtensionsPage contextMenu={props.contextMenu} />}
       />
       <Route path="*" element={<NotFoundErrorPage />} />
     </Routes>

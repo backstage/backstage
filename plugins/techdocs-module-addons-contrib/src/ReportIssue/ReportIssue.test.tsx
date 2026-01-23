@@ -17,6 +17,7 @@
 import { TechDocsAddonTester } from '@backstage/plugin-techdocs-addons-test-utils';
 
 import { fireEvent, waitFor } from '@testing-library/react';
+import { screen } from 'shadow-dom-testing-library';
 
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
 import { ReportIssue } from '../plugin';
@@ -67,58 +68,57 @@ describe('ReportIssue', () => {
 
   it('renders github link without exploding', async () => {
     byUrl.mockReturnValue({ type: 'github' });
-    const { shadowRoot, getByText } =
-      await TechDocsAddonTester.buildAddonsInTechDocs([
-        <ReportIssue debounceTime={0} />,
-      ])
-        .withDom(
-          <html lang="en">
-            <head />
-            <body>
-              <div data-md-component="content">
-                <div data-md-component="navigation" />
-                <div data-md-component="toc" />
-                <div data-md-component="sidebar" />
+    const { shadowRoot } = await TechDocsAddonTester.buildAddonsInTechDocs([
+      <ReportIssue debounceTime={0} />,
+    ])
+      .withDom(
+        <html lang="en">
+          <head />
+          <body>
+            <div data-md-component="content">
+              <div data-md-component="navigation" />
+              <div data-md-component="toc" />
+              <div data-md-component="sidebar" />
 
-                <div data-md-component="main">
-                  <div className="md-content">
-                    <article>
-                      <a
-                        title="Leave feedback for this page"
-                        href="https://github.com/backstage/backstage/issues/new"
-                      >
-                        Leave feedback
-                      </a>
-                      <a
-                        title="Edit this page"
-                        href="https://github.com/backstage/backstage/edit/master/docs/README.md"
-                      >
-                        Edit page
-                      </a>
-                    </article>
-                  </div>
+              <div data-md-component="main">
+                <div className="md-content">
+                  <article>
+                    <a
+                      title="Leave feedback for this page"
+                      href="https://github.com/backstage/backstage/issues/new"
+                    >
+                      Leave feedback
+                    </a>
+                    <a
+                      title="Edit this page"
+                      href="https://github.com/backstage/backstage/edit/master/docs/README.md"
+                    >
+                      Edit page
+                    </a>
+                  </article>
                 </div>
               </div>
-            </body>
-          </html>,
-        )
-        .withApis([
-          [scmIntegrationsApiRef, { byUrl }],
-          [entityPresentationApiRef, entityPresentationApiMock],
-        ])
-        .renderWithEffects();
+            </div>
+          </body>
+        </html>,
+      )
+      .withApis([
+        [scmIntegrationsApiRef, { byUrl }],
+        [entityPresentationApiRef, entityPresentationApiMock],
+      ])
+      .renderWithEffects();
 
     (shadowRoot as ShadowRoot & Pick<Document, 'getSelection'>).getSelection =
       () => selection;
 
     await waitFor(() => {
-      expect(getByText('Edit page')).toBeInTheDocument();
+      expect(screen.getByShadowText('Edit page')).toBeInTheDocument();
     });
 
     fireSelectionChangeEvent(window);
 
     await waitFor(() => {
-      const link = getByText('Open new Github issue');
+      const link = screen.getByShadowText('Open new Github issue');
       expect(link).toHaveAttribute(
         'href',
         'https://github.com/backstage/backstage/issues/new?title=Documentation%20feedback%3A%20his%20&body=%23%23%20Documentation%20Feedback%20%F0%9F%93%9D%0A%0A%20%23%23%23%23%20The%20highlighted%20text%3A%20%0A%0A%20%3E%20his%0A%0A%20%23%23%23%23%20The%20comment%20on%20the%20text%3A%20%0A%20_%3Ereplace%20this%20line%20with%20your%20comment%3C_%0A%0A%20___%0ABackstage%20URL%3A%20%3Chttp%3A%2F%2Flocalhost%2F%3E%20%0AMarkdown%20URL%3A%20%3Chttps%3A%2F%2Fgithub.com%2Fbackstage%2Fbackstage%2Fblob%2Fmaster%2Fdocs%2FREADME.md%3E',
@@ -128,60 +128,61 @@ describe('ReportIssue', () => {
 
   it('renders gitlab link without exploding', async () => {
     byUrl.mockReturnValue({ type: 'gitlab' });
-    const { shadowRoot, getByText, queryByTestId } =
-      await TechDocsAddonTester.buildAddonsInTechDocs([
-        <ReportIssue debounceTime={0} />,
-      ])
-        .withDom(
-          <html lang="en">
-            <head />
-            <body>
-              <div data-md-component="content">
-                <div data-md-component="navigation" />
-                <div data-md-component="toc" />
-                <div data-md-component="sidebar" />
+    const { shadowRoot } = await TechDocsAddonTester.buildAddonsInTechDocs([
+      <ReportIssue debounceTime={0} />,
+    ])
+      .withDom(
+        <html lang="en">
+          <head />
+          <body>
+            <div data-md-component="content">
+              <div data-md-component="navigation" />
+              <div data-md-component="toc" />
+              <div data-md-component="sidebar" />
 
-                <div data-md-component="main">
-                  <div className="md-content">
-                    <article>
-                      <a
-                        title="Leave feedback for this page"
-                        href="https://gitlab.com/backstage/backstage/issues/new"
-                      >
-                        Leave feedback
-                      </a>
-                      <a
-                        title="Edit this page"
-                        href="https://gitlab.com/backstage/backstage/-/edit/master/docs/README.md"
-                      >
-                        Edit page
-                      </a>
-                    </article>
-                  </div>
+              <div data-md-component="main">
+                <div className="md-content">
+                  <article>
+                    <a
+                      title="Leave feedback for this page"
+                      href="https://gitlab.com/backstage/backstage/issues/new"
+                    >
+                      Leave feedback
+                    </a>
+                    <a
+                      title="Edit this page"
+                      href="https://gitlab.com/backstage/backstage/-/edit/master/docs/README.md"
+                    >
+                      Edit page
+                    </a>
+                  </article>
                 </div>
               </div>
-            </body>
-          </html>,
-        )
-        .withApis([
-          [scmIntegrationsApiRef, { byUrl }],
-          [entityPresentationApiRef, entityPresentationApiMock],
-        ])
-        .renderWithEffects();
+            </div>
+          </body>
+        </html>,
+      )
+      .withApis([
+        [scmIntegrationsApiRef, { byUrl }],
+        [entityPresentationApiRef, entityPresentationApiMock],
+      ])
+      .renderWithEffects();
 
     (shadowRoot as ShadowRoot & Pick<Document, 'getSelection'>).getSelection =
       () => selection;
 
     await waitFor(() => {
-      expect(getByText('Edit page')).toBeInTheDocument();
+      expect(screen.getByShadowText('Edit page')).toBeInTheDocument();
     });
 
     fireSelectionChangeEvent(window);
 
     await waitFor(() => {
-      expect(queryByTestId('report-issue-addon')).toBeInTheDocument();
+      expect(
+        screen.getByShadowTestId('report-issue-addon'),
+      ).toBeInTheDocument();
 
-      const link = getByText('Open new Gitlab issue');
+      const link = screen.getByShadowText('Open new Gitlab issue');
       expect(link).toHaveAttribute(
         'href',
         'https://gitlab.com/backstage/backstage/issues/new?issue[title]=Documentation%20feedback%3A%20his%20&issue[description]=%23%23%20Documentation%20Feedback%20%F0%9F%93%9D%0A%0A%20%23%23%23%23%20The%20highlighted%20text%3A%20%0A%0A%20%3E%20his%0A%0A%20%23%23%23%23%20The%20comment%20on%20the%20text%3A%20%0A%20_%3Ereplace%20this%20line%20with%20your%20comment%3C_%0A%0A%20___%0ABackstage%20URL%3A%20%3Chttp%3A%2F%2Flocalhost%2F%3E%20%0AMarkdown%20URL%3A%20%3Chttps%3A%2F%2Fgitlab.com%2Fbackstage%2Fbackstage%2F-%2Fblob%2Fmaster%2Fdocs%2FREADME.md%3E',
@@ -197,60 +198,61 @@ describe('ReportIssue', () => {
       body: options.selection.toString().trim(),
     });
 
-    const { shadowRoot, getByText, queryByTestId } =
-      await TechDocsAddonTester.buildAddonsInTechDocs([
-        <ReportIssue debounceTime={0} templateBuilder={templateBuilder} />,
-      ])
-        .withDom(
-          <html lang="en">
-            <head />
-            <body>
-              <div data-md-component="content">
-                <div data-md-component="navigation" />
-                <div data-md-component="toc" />
-                <div data-md-component="sidebar" />
+    const { shadowRoot } = await TechDocsAddonTester.buildAddonsInTechDocs([
+      <ReportIssue debounceTime={0} templateBuilder={templateBuilder} />,
+    ])
+      .withDom(
+        <html lang="en">
+          <head />
+          <body>
+            <div data-md-component="content">
+              <div data-md-component="navigation" />
+              <div data-md-component="toc" />
+              <div data-md-component="sidebar" />
 
-                <div data-md-component="main">
-                  <div className="md-content">
-                    <article>
-                      <a
-                        title="Leave feedback for this page"
-                        href="https://gitlab.com/backstage/backstage/issues/new"
-                      >
-                        Leave feedback
-                      </a>
-                      <a
-                        title="Edit this page"
-                        href="https://gitlab.com/backstage/backstage/-/edit/master/docs/README.md"
-                      >
-                        Edit page
-                      </a>
-                    </article>
-                  </div>
+              <div data-md-component="main">
+                <div className="md-content">
+                  <article>
+                    <a
+                      title="Leave feedback for this page"
+                      href="https://gitlab.com/backstage/backstage/issues/new"
+                    >
+                      Leave feedback
+                    </a>
+                    <a
+                      title="Edit this page"
+                      href="https://gitlab.com/backstage/backstage/-/edit/master/docs/README.md"
+                    >
+                      Edit page
+                    </a>
+                  </article>
                 </div>
               </div>
-            </body>
-          </html>,
-        )
-        .withApis([
-          [scmIntegrationsApiRef, { byUrl }],
-          [entityPresentationApiRef, entityPresentationApiMock],
-        ])
-        .renderWithEffects();
+            </div>
+          </body>
+        </html>,
+      )
+      .withApis([
+        [scmIntegrationsApiRef, { byUrl }],
+        [entityPresentationApiRef, entityPresentationApiMock],
+      ])
+      .renderWithEffects();
 
     (shadowRoot as ShadowRoot & Pick<Document, 'getSelection'>).getSelection =
       () => selection;
 
     await waitFor(() => {
-      expect(getByText('Edit page')).toBeInTheDocument();
+      expect(screen.getByShadowText('Edit page')).toBeInTheDocument();
     });
 
     fireSelectionChangeEvent(window);
 
     await waitFor(() => {
-      expect(queryByTestId('report-issue-addon')).toBeInTheDocument();
+      expect(
+        screen.getByShadowTestId('report-issue-addon'),
+      ).toBeInTheDocument();
 
-      const link = getByText('Open new Gitlab issue');
+      const link = screen.getByShadowText('Open new Gitlab issue');
       expect(link).toHaveAttribute(
         'href',
         'https://gitlab.com/backstage/backstage/issues/new?issue[title]=Custom&issue[description]=his',
@@ -261,45 +263,46 @@ describe('ReportIssue', () => {
   it('does not render report issue link for unsupported repository type', async () => {
     byUrl.mockReturnValue({ type: 'gerrit', resource: 'gerrit.example.com' });
 
-    const { shadowRoot, getByText, queryByTestId } =
-      await TechDocsAddonTester.buildAddonsInTechDocs([
-        <ReportIssue debounceTime={0} />,
-      ])
-        .withDom(
-          <html lang="en">
-            <head />
-            <body>
-              <div data-md-component="content">
-                <div data-md-component="main">
-                  <div className="md-content">
-                    <article>
-                      <a
-                        title="Edit this page"
-                        href="https://gerrit.example.com/admin/repos/edit/repo/my/repo/branch/refs/heads/master/file/docs/README.md"
-                      >
-                        Edit page
-                      </a>
-                    </article>
-                  </div>
+    const { shadowRoot } = await TechDocsAddonTester.buildAddonsInTechDocs([
+      <ReportIssue debounceTime={0} />,
+    ])
+      .withDom(
+        <html lang="en">
+          <head />
+          <body>
+            <div data-md-component="content">
+              <div data-md-component="main">
+                <div className="md-content">
+                  <article>
+                    <a
+                      title="Edit this page"
+                      href="https://gerrit.example.com/admin/repos/edit/repo/my/repo/branch/refs/heads/master/file/docs/README.md"
+                    >
+                      Edit page
+                    </a>
+                  </article>
                 </div>
               </div>
-            </body>
-          </html>,
-        )
-        .withApis([[scmIntegrationsApiRef, { byUrl }]])
-        .renderWithEffects();
+            </div>
+          </body>
+        </html>,
+      )
+      .withApis([[scmIntegrationsApiRef, { byUrl }]])
+      .renderWithEffects();
 
     (shadowRoot as ShadowRoot & Pick<Document, 'getSelection'>).getSelection =
       () => selection;
 
     await waitFor(() => {
-      expect(getByText('Edit page')).toBeInTheDocument();
+      expect(screen.getByShadowText('Edit page')).toBeInTheDocument();
     });
 
     fireSelectionChangeEvent(window);
 
     await waitFor(() => {
-      expect(queryByTestId('report-issue-addon')).not.toBeInTheDocument();
+      expect(
+        screen.queryByShadowTestId('report-issue-addon'),
+      ).not.toBeInTheDocument();
     });
   });
 });

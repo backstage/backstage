@@ -14,5 +14,12 @@
  * limitations under the License.
  */
 
-export type { Backend, CreateSpecializedBackendOptions } from './types';
+export type {
+  Backend,
+  CreateSpecializedBackendOptions,
+  BackendStartupResult,
+  PluginStartupResult,
+  ModuleStartupResult,
+} from './types';
 export { createSpecializedBackend } from './createSpecializedBackend';
+export { BackendStartupError } from './BackendStartupError';

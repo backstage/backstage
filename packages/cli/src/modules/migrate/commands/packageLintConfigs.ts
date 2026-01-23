@@ -17,7 +17,7 @@
 import fs from 'fs-extra';
 import { resolve as resolvePath } from 'path';
 import { PackageGraph } from '@backstage/cli-node';
-import { runPlain } from '../../../lib/run';
+import { runOutput } from '@backstage/cli-common';
 
 const PREFIX = `module.exports = require('@backstage/cli/config/eslint-factory')`;
 
@@ -84,6 +84,6 @@ export async function command() {
   }
 
   if (hasPrettier) {
-    await runPlain('prettier', '--write', ...configPaths);
+    await runOutput(['prettier', '--write', ...configPaths]);
   }
 }

@@ -17,7 +17,7 @@
 import { AppRouter, FlatRoutes } from '@backstage/core-app-api';
 import { ReactNode } from 'react';
 import { Route } from 'react-router-dom';
-import { convertLegacyApp } from './convertLegacyApp';
+import { convertLegacyAppRoot } from './convertLegacyApp';
 import {
   createApiFactory,
   createApiRef,
@@ -27,7 +27,7 @@ import {
   createRouteRef,
 } from '@backstage/core-plugin-api';
 import { EntityLayout, EntitySwitch, isKind } from '@backstage/plugin-catalog';
-import { renderInTestApp } from '@backstage/frontend-test-utils';
+import { renderTestApp } from '@backstage/frontend-test-utils';
 import { default as catalogPlugin } from '@backstage/plugin-catalog/alpha';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
@@ -62,7 +62,7 @@ const ExamplePage2 = examplePlugin2.provide(
 
 describe('convertLegacyApp', () => {
   it('should find and extract root and routes', () => {
-    const collected = convertLegacyApp(
+    const collected = convertLegacyAppRoot(
       <>
         <div />
         <span />
@@ -142,7 +142,7 @@ describe('convertLegacyApp', () => {
   });
 
   it('should find and extract just routes', () => {
-    const collected = convertLegacyApp(
+    const collected = convertLegacyAppRoot(
       <FlatRoutes>
         <Route path="/example-1" element={<ExamplePage1 />} />
         <Route path="/example-2" element={<ExamplePage2 />} />
@@ -222,7 +222,7 @@ describe('convertLegacyApp', () => {
       </EntitySwitch>
     );
 
-    const converted = convertLegacyApp(
+    const converted = convertLegacyAppRoot(
       <FlatRoutes>
         <Route path="/test" element={<div>test</div>} />
       </FlatRoutes>,
@@ -262,60 +262,63 @@ describe('convertLegacyApp', () => {
       ],
     });
 
+    // Increase timeout for async rendering of complex catalog entity pages
+    const findOptions = { timeout: 5000 };
+
     // Overview
-    const renderOverviewTest = await renderInTestApp(<div />, {
+    const renderOverviewTest = await renderTestApp({
       features: [catalogOverride, ...converted],
       initialRouteEntries: ['/catalog/default/test/x'],
     });
     await expect(
-      renderOverviewTest.findByText('overview content'),
+      renderOverviewTest.findByText('overview content', {}, findOptions),
     ).resolves.toBeInTheDocument();
     renderOverviewTest.unmount();
 
-    const renderOverviewOther = await renderInTestApp(<div />, {
+    const renderOverviewOther = await renderTestApp({
       features: [catalogOverride, ...converted],
       initialRouteEntries: ['/catalog/default/other/x'],
     });
     await expect(
-      renderOverviewOther.findByText('other overview content'),
+      renderOverviewOther.findByText('other overview content', {}, findOptions),
     ).resolves.toBeInTheDocument();
     renderOverviewOther.unmount();
 
     // Foo tab
-    const renderFooTest = await renderInTestApp(<div />, {
+    const renderFooTest = await renderTestApp({
       features: [catalogOverride, ...converted],
       initialRouteEntries: ['/catalog/default/test/x/foo'],
     });
     await expect(
-      renderFooTest.findByText('foo content'),
+      renderFooTest.findByText('foo content', {}, findOptions),
     ).resolves.toBeInTheDocument();
     renderFooTest.unmount();
 
-    const renderFooOther = await renderInTestApp(<div />, {
+    const renderFooOther = await renderTestApp({
       features: [catalogOverride, ...converted],
       initialRouteEntries: ['/catalog/default/other/x/foo'],
     });
     await expect(
-      renderFooOther.findByText('other foo content'),
+      renderFooOther.findByText('other foo content', {}, findOptions),
     ).resolves.toBeInTheDocument();
     renderFooOther.unmount();
 
     // Bar tab
-    const renderBarTest = await renderInTestApp(<div />, {
+    const renderBarTest = await renderTestApp({
       features: [catalogOverride, ...converted],
       initialRouteEntries: ['/catalog/default/test/x/bar'],
     });
     await expect(
-      renderBarTest.findByText('bar content'),
+      renderBarTest.findByText('bar content', {}, findOptions),
     ).resolves.toBeInTheDocument();
     renderBarTest.unmount();
 
-    const renderBarOther = await renderInTestApp(<div />, {
+    const renderBarOther = await renderTestApp({
       features: [catalogOverride, ...converted],
       initialRouteEntries: ['/catalog/default/other/x/bar'],
     });
     await expect(
-      renderBarOther.findByText('other overview content'),
+      renderBarOther.findByText('other overview content', {}, findOptions),
     ).resolves.toBeInTheDocument(); // /bar does not exist, fall back to rendering overview
     renderBarOther.unmount();
   });

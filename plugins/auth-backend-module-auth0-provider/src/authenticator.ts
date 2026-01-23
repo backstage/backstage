@@ -35,6 +35,7 @@ export const auth0Authenticator = createOAuthAuthenticator({
     const connection = config.getOptionalString('connection');
     const connectionScope = config.getOptionalString('connectionScope');
     const callbackURL = config.getOptionalString('callbackUrl') ?? callbackUrl;
+    const organization = config.getOptionalString('organization');
     // Due to passport-auth0 forcing options.state = true,
     // passport-oauth2 requires express-session to be installed
     // so that the 'state' parameter of the oauth2 flow can be stored.
@@ -58,6 +59,7 @@ export const auth0Authenticator = createOAuthAuthenticator({
           callbackURL,
           domain,
           store,
+          organization,
           // We need passReqToCallback set to false to get params, but there's
           // no matching type signature for that, so instead behold this beauty
           passReqToCallback: false as true,

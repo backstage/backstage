@@ -1,4 +1,9 @@
 import {
+  coreServices,
+  createBackendModule,
+  LoggerService,
+} from '@backstage/backend-plugin-api';
+import {
   ANNOTATION_LOCATION,
   ANNOTATION_ORIGIN_LOCATION,
   Entity,
@@ -10,50 +15,18 @@ import {
   EntityProvider,
   EntityProviderConnection,
 } from '@backstage/plugin-catalog-node';
-import { parseEntityYaml } from '@backstage/plugin-catalog-backend';
+import { parseEntityYaml } from '@backstage/plugin-catalog-node';
+import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
 import bodyParser from 'body-parser';
 import express from 'express';
 import Router from 'express-promise-router';
 import lodash from 'lodash';
-import { Logger } from 'winston';
 
 /**
  * An entity provider attached to a router, that lets users perform direct
  * manipulation of a set of entities using REST requests.
- *
- * @remarks
- *
- * Installation:
- *
- * Add it to the catalog builder in your
- * `packages/backend/src/plugins/catalog.ts`. Note that it BOTH adds a provider
- * and amends the catalog router:
- *
- * ```
- * const immediate = new ImmediateEntityProvider({
- *   logger: env.logger,
- *   handleEntity: (deferred) => {
- *     // Optionally modify the incoming entity
- *   },
- * });
- * builder.addEntityProvider(immediate);
- *
- * // ...
- *
- * return router.use('/immediate', immediate.getRouter());
- * ```
- *
- * API (assume a catalog prefix, e.g. `/api/catalog`):
- *
- * - `POST /immediate/entities`: Accepts a YAML document of entities, and
- *   inserts or updates the entities that match that document. Returns 201 OK on
- *   success.
- *
- * - `PUT /immediate/entities`: Accepts a YAML document of entities, and
- *   replaces the entire set of entities managed by the provider with those
- *   entities. Returns 201 OK on success.
  */
-export class ImmediateEntityProvider implements EntityProvider {
+class ImmediateEntityProvider implements EntityProvider {
   private connection?: EntityProviderConnection;
   private readonly entityValidator: (data: unknown) => Entity;
 
@@ -76,7 +49,7 @@ export class ImmediateEntityProvider implements EntityProvider {
 
     router.use(bodyParser.raw({ type: '*/*' }));
 
-    router.post('/entities', async (req, res) => {
+    router.post('/immediate/entities', async (req, res) => {
       if (!this.connection) {
         throw new Error(`Service is not yet initialized`);
       }
@@ -89,7 +62,7 @@ export class ImmediateEntityProvider implements EntityProvider {
       res.status(201).end();
     });
 
-    router.put('/entities', async (req, res) => {
+    router.put('/immediate/entities', async (req, res) => {
       if (!this.connection) {
         throw new Error(`Service is not yet initialized`);
       }
@@ -151,19 +124,59 @@ export class ImmediateEntityProvider implements EntityProvider {
 /**
  * Options for {@link ImmediateEntityProvider}.
  */
-export interface ImmediateEntityProviderOptions {
+interface ImmediateEntityProviderOptions {
   /**
-   * The logger to use.
+   * The logger.
    */
-  logger: Logger;
+  logger: LoggerService;
 
   /**
-   * An optional function to perform adjustments to, or validate, an incoming
-   * entity before being stored. It is permitted to modify the deferred entity,
-   * but the request is static and has had its body consumed.
+   * An optional callback function to perform adjustments to, or validate, an
+   * incoming entity before being stored. It is permitted to modify the deferred
+   * entity, but the request is static and has had its body consumed.
    */
   handleEntity?: (
     request: express.Request,
     deferred: DeferredEntity,
   ) => void | Promise<void>;
 }
+
+/**
+ * Backend module that installs an immediate entity provider.
+ *
+ * @remarks
+ *
+ * Install it by doing `backend.add(immediateEntityProviderModule)` in your `packages/backend/src/index.ts` file.
+ *
+ * API:
+ *
+ * - `POST /api/catalog/immediate/entities`: Accepts a YAML document of entities, and
+ *   inserts or updates the entities that match that document. Returns 201 OK on
+ *   success.
+ *
+ * - `PUT /api/catalog/immediate/entities`: Accepts a YAML document of entities, and
+ *   replaces the entire set of entities managed by the provider with those
+ *   entities. Returns 201 OK on success.
+ */
+export const immediateEntityProviderModule = createBackendModule({
+  pluginId: 'catalog',
+  moduleId: 'immediate-entity-provider',
+  register(env) {
+    env.registerInit({
+      deps: {
+        logger: coreServices.logger,
+        router: coreServices.httpRouter,
+        catalogProcessing: catalogProcessingExtensionPoint,
+      },
+      async init({ logger, router, catalogProcessing }) {
+        const provider = new ImmediateEntityProvider({
+          logger,
+          // add handleEntity here if you need to modify incoming entities before they are stored
+        });
+
+        catalogProcessing.addEntityProvider(provider);
+        router.use(provider.getRouter());
+      },
+    });
+  },
+});

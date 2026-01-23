@@ -1,0 +1,61 @@
+import { PropsTable } from '@/components/PropsTable';
+import { Snippet } from '@/components/Snippet';
+import { CodeBlock } from '@/components/CodeBlock';
+import { avatarPropDefs } from './props-definition';
+import {
+  avatarUsageSnippet,
+  defaultSnippet,
+  sizesSnippet,
+  fallbackSnippet,
+  purposeSnippet,
+} from './snippets';
+import { Default, Sizes, Fallback, Purpose } from './components';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { AvatarDefinition } from '../../../utils/definitions';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+
+<PageTitle
+  title="Avatar"
+  description="An avatar component with a fallback for initials."
+/>
+
+<Snippet align="center" py={4} preview={<Default />} code={defaultSnippet} />
+
+## Usage
+
+<CodeBlock code={avatarUsageSnippet} />
+
+## API reference
+
+<PropsTable data={avatarPropDefs} />
+
+## Examples
+
+### Sizes
+
+Avatar sizes can be set using the `size` prop.
+
+<Snippet align="center" py={4} open preview={<Sizes />} code={sizesSnippet} />
+
+### Fallback
+
+If the image is not available, the avatar will show the initials of the name.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<Fallback />}
+  code={fallbackSnippet}
+/>
+
+### The `purpose` prop
+
+Control how the avatar is announced to screen readers using the `purpose` prop.
+
+<Snippet align="center" py={4} preview={<Purpose />} code={purposeSnippet} />
+
+<Theming definition={AvatarDefinition} />
+
+<ChangelogComponent component="avatar" />

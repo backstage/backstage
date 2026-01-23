@@ -1577,10 +1577,11 @@ describe('DefaultEntitiesCatalog', () => {
           totalItems: 0,
           items: {
             type: 'raw',
-            entities: expect.objectContaining({ length: 10 }),
+            entities: expect.any(Array),
           },
           pageInfo: { nextCursor: expect.anything() },
         });
+        expect(response.items.entities).toHaveLength(10);
         response = await catalog.queryEntities({
           ...request,
           cursor: response.pageInfo.nextCursor!,
@@ -1589,10 +1590,11 @@ describe('DefaultEntitiesCatalog', () => {
           totalItems: 0,
           items: {
             type: 'raw',
-            entities: expect.objectContaining({ length: 5 }),
+            entities: expect.any(Array),
           },
           pageInfo: { prevCursor: expect.anything() },
         });
+        expect(response.items.entities).toHaveLength(5);
       },
     );
 
@@ -2355,6 +2357,52 @@ describe('DefaultEntitiesCatalog', () => {
               { value: 'two', count: 1 },
             ]),
             missing: [],
+          },
+        });
+      },
+    );
+
+    it.each(databases.eachSupportedId())(
+      'works when the entity is duplicated in search results, %p',
+      async databaseId => {
+        await createDatabase(databaseId);
+
+        await addEntityToSearch({
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: {
+            name: 'one',
+            uid: 'uid-a',
+          },
+          spec: {},
+        });
+
+        // Manually insert a duplicate search entry, this shouldn't happen but does in reality
+        await knex<DbSearchRow>('search').insert([
+          {
+            entity_id: 'uid-a',
+            key: 'metadata.name',
+            value: 'one',
+            original_value: 'one',
+          },
+        ]);
+
+        const catalog = new DefaultEntitiesCatalog({
+          database: knex,
+          logger: mockServices.logger.mock(),
+          stitcher,
+        });
+
+        await expect(
+          catalog.facets({
+            facets: ['metadata.name'],
+            credentials: mockCredentials.none(),
+          }),
+        ).resolves.toEqual({
+          facets: {
+            'metadata.name': expect.arrayContaining([
+              { value: 'one', count: 1 },
+            ]),
           },
         });
       },

@@ -12,6 +12,7 @@ import { AzureIntegration } from '@backstage/integration';
 import { BitbucketCloudIntegration } from '@backstage/integration';
 import { BitbucketIntegration } from '@backstage/integration';
 import { BitbucketServerIntegration } from '@backstage/integration';
+import { Config } from '@backstage/config';
 import { GerritIntegration } from '@backstage/integration';
 import { GiteaIntegration } from '@backstage/integration';
 import { GithubCredentialsProvider } from '@backstage/integration';
@@ -87,7 +88,10 @@ export class AzureBlobStorageUrlReader implements UrlReaderService {
     options?: UrlReaderServiceReadUrlOptions,
   ): Promise<UrlReaderServiceReadUrlResponse>;
   // (undocumented)
-  search(): Promise<UrlReaderServiceSearchResponse>;
+  search(
+    url: string,
+    options?: UrlReaderServiceSearchOptions,
+  ): Promise<UrlReaderServiceSearchResponse>;
   // (undocumented)
   toString(): string;
 }
@@ -221,6 +225,8 @@ export class BitbucketUrlReader implements UrlReaderService {
 // @public
 export class FetchUrlReader implements UrlReaderService {
   static factory: ReaderFactory;
+  // (undocumented)
+  static fromConfig(config: Config): FetchUrlReader;
   // (undocumented)
   read(url: string): Promise<Buffer>;
   // (undocumented)

@@ -55,6 +55,7 @@ export interface MyTaskPageProps {
     editor?: boolean;
     actions?: boolean;
     create?: boolean;
+    templatingExtensions?: boolean;
   };
 }
 
@@ -193,7 +194,10 @@ export const ListTasksPage = (props: MyTaskPageProps) => {
       props?.contextMenu?.create !== false
         ? () => navigate(createLink())
         : undefined,
-    onTemplatingExtensionsClicked: () => navigate(templatingExtensionsLink()),
+    onTemplatingExtensionsClicked:
+      props?.contextMenu?.templatingExtensions !== false
+        ? () => navigate(templatingExtensionsLink())
+        : undefined,
   };
   return (
     <Page themeId="home">

@@ -15,19 +15,19 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@6c439dc8bdf85cadbbce9ed30d1c7b959517bc49 # v2.12.2
+        uses: step-security/harden-runner@df199fb7be9f65074067a9eb93f12bb4c5547cf2 # v2.13.3
         with:
           egress-policy: audit
 
       - name: Stale check - base
-        uses: actions/stale@5bef64f19d7facfb25b37b414482c7164d639639 # v9.1.0
+        uses: actions/stale@997185467fa4f803885201cee163a9f38240193d # v10.1.1
         with:
           stale-issue-message: >
             This issue has been automatically marked as stale because it has not had
             recent activity. It will be closed if no further activity occurs. Thank you
             for your contributions.
           days-before-issue-stale: 60
-          days-before-issue-close: 7
+          days-before-issue-close: 14
           exempt-issue-labels: after vacations,no stale
           stale-issue-label: stale
           stale-pr-message: >
@@ -35,14 +35,14 @@ jobs:
             recent activity from the author. It will be closed if no further activity occurs.
             If the PR was closed and you want it re-opened, let us know
             and we'll re-open the PR so that you can continue the contribution!
-          days-before-pr-stale: 14
-          days-before-pr-close: 7
+          days-before-pr-stale: 30
+          days-before-pr-close: 14
           exempt-pr-labels: after vacations,no stale
           stale-pr-label: stale
           operations-per-run: 100
 
       - name: Stale check - bugs without repro
-        uses: actions/stale@5bef64f19d7facfb25b37b414482c7164d639639 # v9.1.0
+        uses: actions/stale@997185467fa4f803885201cee163a9f38240193d # v10.1.1
         with:
           stale-issue-message: >
             This bug report has been automatically marked as stale because it has not had

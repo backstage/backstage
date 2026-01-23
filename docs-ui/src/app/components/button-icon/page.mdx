@@ -1,0 +1,79 @@
+import { PropsTable } from '@/components/PropsTable';
+import { Snippet } from '@/components/Snippet';
+import { CodeBlock } from '@/components/CodeBlock';
+import { buttonIconPropDefs } from './props-definition';
+import {
+  buttonIconUsageSnippet,
+  variantsSnippet,
+  sizesSnippet,
+  disabledSnippet,
+  loadingSnippet,
+} from './snippets';
+import { Variants, Sizes, Disabled, Loading } from './components';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { ButtonIconDefinition } from '../../../utils/definitions';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+
+<PageTitle
+  title="ButtonIcon"
+  description="A button component with a single icon that can be used to trigger actions."
+/>
+
+<Snippet align="center" py={4} preview={<Variants />} code={variantsSnippet} />
+
+## Usage
+
+<CodeBlock code={buttonIconUsageSnippet} />
+
+## API reference
+
+<PropsTable data={buttonIconPropDefs} />
+
+## Examples
+
+### Variants
+
+Here's a view when buttons have different variants.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<Variants />}
+  code={variantsSnippet}
+/>
+
+### Sizes
+
+Here's a view when buttons have different sizes.
+
+<Snippet align="center" py={4} open preview={<Sizes />} code={sizesSnippet} />
+
+### Disabled
+
+Here's a view when buttons are disabled.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<Disabled />}
+  code={disabledSnippet}
+/>
+
+### Loading
+
+Here's a view when buttons are in a loading state.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<Loading />}
+  code={loadingSnippet}
+/>
+
+<Theming definition={ButtonIconDefinition} />
+
+<ChangelogComponent component="button-icon" />

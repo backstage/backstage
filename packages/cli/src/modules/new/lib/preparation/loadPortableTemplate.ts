@@ -28,7 +28,7 @@ import {
 } from '../types';
 import { PortableTemplate } from '../types';
 import { ForwardedError } from '@backstage/errors';
-import { fromZodError } from 'zod-validation-error';
+import { fromZodError } from 'zod-validation-error/v3';
 
 const templateDefinitionSchema = z
   .object({

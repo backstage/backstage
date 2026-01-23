@@ -5,8 +5,6 @@ sidebar_label: Creating APIs
 description: Creating new utility APIs in your plugins and app
 ---
 
-> **NOTE: The new frontend system is in alpha and is only supported by a small number of plugins.**
-
 This section describes how to make a Utility API from scratch, or to add configurability and inputs to an existing one. If you are instead interested in migrating an existing Utility API from the old frontend system, check out the [Migrating APIs section](../building-plugins/05-migrating.md#migrating-apis).
 
 ## Creating the Utility API contract
@@ -37,6 +35,9 @@ export const workApiRef = createApiRef<WorkApi>({
 ```
 
 Both of these are properly exported publicly from the package, so that consumers can reach them.
+
+The frontend system infers the owning plugin for an API from the `ApiRef` id, so
+use the pattern `plugin.<plugin-id>.*` to make ownership explicit. This ensures that other plugins can't mistakenly override your API.
 
 ## Providing an extension through your plugin
 

@@ -57,6 +57,7 @@ export function createGithubBranchProtectionAction(options: {
         requireLastPushApproval: inputProps.requireLastPushApproval,
         requiredCommitSigning: inputProps.requiredCommitSigning,
         requiredLinearHistory: inputProps.requiredLinearHistory,
+        blockCreations: inputProps.blockCreations,
         token: inputProps.token,
       },
     },
@@ -76,6 +77,7 @@ export function createGithubBranchProtectionAction(options: {
         requireLastPushApproval = false,
         requiredCommitSigning = false,
         requiredLinearHistory = false,
+        blockCreations,
         token: providedToken,
       } = ctx.input;
 
@@ -129,6 +131,7 @@ export function createGithubBranchProtectionAction(options: {
             dismissStaleReviews,
             requiredCommitSigning,
             requiredLinearHistory,
+            blockCreations,
           });
         },
       });

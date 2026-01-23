@@ -86,6 +86,7 @@ describe('fetchContents helper', () => {
       expect(fs.copy).toHaveBeenCalledWith(
         resolvePath('/some/foo'),
         'somepath',
+        expect.objectContaining({ filter: expect.any(Function) }),
       );
     });
 

@@ -137,13 +137,19 @@ function Contents(props: { entity: Entity }) {
       {atLocation.length > 0 && (
         <EntityList
           entities={atLocation}
-          header={['At the same location', location!]}
+          header={[
+            t('inspectEntityDialog.colocatedPage.locationHeader'),
+            location!,
+          ]}
         />
       )}
       {atOrigin.length > 0 && (
         <EntityList
           entities={atOrigin}
-          header={['At the same origin', originLocation!]}
+          header={[
+            t('inspectEntityDialog.colocatedPage.originHeader'),
+            originLocation!,
+          ]}
         />
       )}
     </>

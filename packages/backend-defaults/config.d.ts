@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { HumanDuration } from '@backstage/types';
+import { HumanDuration, JsonObject } from '@backstage/types';
 
 export interface Config {
   app: {
@@ -96,6 +96,31 @@ export interface Config {
         };
 
     /**
+     * Server-level HTTP options configuration for the backend.
+     * These options are passed directly to the underlying Node.js HTTP server.
+     *
+     * Timeout values support multiple formats:
+     * - A number in milliseconds
+     * - A string in the format of '1d', '2 seconds' etc. as supported by the `ms` library
+     * - A standard ISO formatted duration string, e.g. 'P2DT6H' or 'PT1M'
+     * - An object with individual units (in plural) as keys, e.g. `{ days: 2, hours: 6 }`
+     */
+    server?: {
+      /** Sets the timeout value for receiving the complete HTTP headers from the client. */
+      headersTimeout?: number | string | HumanDuration;
+      /** Sets the timeout value for receiving the entire request (headers and body) from the client. */
+      requestTimeout?: number | string | HumanDuration;
+      /** Sets the timeout value for inactivity on a socket during keep-alive. */
+      keepAliveTimeout?: number | string | HumanDuration;
+      /** Sets the timeout value for sockets. */
+      timeout?: number | string | HumanDuration;
+      /** Limits maximum incoming headers count. */
+      maxHeadersCount?: number;
+      /** Sets the maximum number of requests socket can handle before closing keep alive connection. */
+      maxRequestsPerSocket?: number;
+    };
+
+    /**
      * Options used by the default auditor service.
      */
     auditor?: {
@@ -129,6 +154,104 @@ export interface Config {
        * List of plugin sources to load actions from.
        */
       pluginSources?: string[];
+
+      /**
+       * Filter configuration for actions. Allows controlling which actions
+       * are exposed to consumers based on patterns and attributes.
+       */
+      filter?: {
+        /**
+         * Rules for actions to include. An action must match at least one rule to be included.
+         * Each rule can specify an id pattern and/or attribute constraints.
+         * If no include rules are specified, all actions are included by default.
+         *
+         * @example
+         * ```yaml
+         * include:
+         *   - id: 'catalog:*'
+         *     attributes:
+         *       destructive: false
+         *   - id: 'scaffolder:*'
+         * ```
+         */
+        include?: Array<{
+          /**
+           * Glob pattern for action IDs to match.
+           * Action IDs have the format `{pluginId}:{actionName}`.
+           * @example 'catalog:*'
+           */
+          id?: string;
+
+          /**
+           * Attribute constraints. All specified attributes must match.
+           * Actions are compared against their resolved attributes (with defaults applied).
+           */
+          attributes?: {
+            /**
+             * If specified, only match actions where destructive matches this value.
+             * Actions default to destructive: true if not explicitly set.
+             */
+            destructive?: boolean;
+
+            /**
+             * If specified, only match actions where readOnly matches this value.
+             * Actions default to readOnly: false if not explicitly set.
+             */
+            readOnly?: boolean;
+
+            /**
+             * If specified, only match actions where idempotent matches this value.
+             * Actions default to idempotent: false if not explicitly set.
+             */
+            idempotent?: boolean;
+          };
+        }>;
+
+        /**
+         * Rules for actions to exclude. Exclusions take precedence over inclusions.
+         * Each rule can specify an id pattern and/or attribute constraints.
+         *
+         * @example
+         * ```yaml
+         * exclude:
+         *   - id: '*:delete-*'
+         *   - attributes:
+         *       readOnly: false
+         * ```
+         */
+        exclude?: Array<{
+          /**
+           * Glob pattern for action IDs to match.
+           * Action IDs have the format `{pluginId}:{actionName}`.
+           * @example '*:delete-*'
+           */
+          id?: string;
+
+          /**
+           * Attribute constraints. All specified attributes must match.
+           * Actions are compared against their resolved attributes (with defaults applied).
+           */
+          attributes?: {
+            /**
+             * If specified, only match actions where destructive matches this value.
+             * Actions default to destructive: true if not explicitly set.
+             */
+            destructive?: boolean;
+
+            /**
+             * If specified, only match actions where readOnly matches this value.
+             * Actions default to readOnly: false if not explicitly set.
+             */
+            readOnly?: boolean;
+
+            /**
+             * If specified, only match actions where idempotent matches this value.
+             * Actions default to idempotent: false if not explicitly set.
+             */
+            idempotent?: boolean;
+          };
+        }>;
+      };
     };
 
     /**
@@ -685,27 +808,9 @@ export interface Config {
              */
             client?: {
               /**
-               * Namespace for the current instance.
+               * Namespace and separator used for prefixing keys.
                */
-              namespace?: string;
-              /**
-               * Separator to use between namespace and key.
-               */
-              keyPrefixSeparator?: string;
-              /**
-               * Number of keys to delete in a single batch.
-               */
-              clearBatchSize?: number;
-              /**
-               * Enable Unlink instead of using Del for clearing keys. This is more performant but may not be supported by all Redis versions.
-               */
-              useUnlink?: boolean;
-              /**
-               * Whether to allow clearing all keys when no namespace is set.
-               * If set to true and no namespace is set, iterate() will return all keys.
-               * Defaults to `false`.
-               */
-              noNamespaceAffectsAll?: boolean;
+              keyPrefix?: string;
             };
             /**
              * An optional Valkey cluster (redis cluster under the hood) configuration.
@@ -750,6 +855,201 @@ export interface Config {
           connection: string;
           /** An optional default TTL (in milliseconds). */
           defaultTtl?: number | HumanDuration | string;
+        }
+      | {
+          /**
+           * Infinispan cache store configuration.
+           * @see https://docs.jboss.org/infinispan/hotrod-clients/javascript/1.0/apidocs/module-infinispan.html
+           */
+          store: 'infinispan';
+
+          /**
+           * An optional default TTL (in milliseconds).
+           */
+          defaultTtl?: number | HumanDuration | string;
+
+          /**
+           * Configuration for the Infinispan cache store.
+           */
+          infinispan?: {
+            /**
+             * Version of client/server protocol.
+             * @default '2.9' is the latest version.
+             */
+            version?: '2.9' | '2.5' | '2.2';
+
+            /**
+             * Infinispan Cache Name if not provided default is `cache` recommended to set this.
+             */
+            cacheName?: string;
+
+            /**
+             * Optional number of retries for operation.
+             * Defaults to 3.
+             */
+            maxRetries?: number;
+
+            /**
+             * Optional flag to controls whether the client deals with topology updates or not.
+             * @default true
+             */
+            topologyUpdates?: boolean;
+
+            /**
+             * Media type of the cache contents.
+             * @default 'text/plain'
+             */
+            mediaType?: 'text/plain' | 'application/json';
+
+            /**
+             * Optional data format configuration.
+             * If not provided, defaults to text/plain for both key and value.
+             */
+            dataFormat?: {
+              /**
+               * Type of the key in the cache.
+               * @default 'text/plain'
+               */
+              keyType?: 'text/plain' | 'application/json';
+              /**
+               * Type of the value in the cache.
+               * @default 'text/plain'
+               */
+              valueType?: 'text/plain' | 'application/json';
+            };
+            /**
+             * Infinispan server host and port configuration.
+             * If this is an array, the client will connect to all servers in the list based on TOPOLOGY_AWARE routing.
+             * If this is a single object, it will be used as the default server.
+             */
+            servers?:
+              | Array<{
+                  /**
+                   * Infinispan server host.
+                   */
+                  host: string;
+                  /**
+                   * Infinispan server port (Hot Rod protocol). Defaults to `11222`.
+                   */
+                  port?: number;
+                }>
+              | {
+                  /**
+                   * Infinispan server host. Defaults to `127.0.0.1`.
+                   */
+                  host?: string;
+                  /**
+                   * Infinispan server port (Hot Rod protocol). Defaults to `11222`.
+                   */
+                  port?: number;
+                };
+            authentication?: {
+              /**
+               * Enable authentication. Defaults to `false`.
+               */
+              enabled?: boolean;
+              /**
+               * Select the SASL mechanism to use. Can be one of PLAIN, DIGEST-MD5, SCRAM-SHA-1, SCRAM-SHA-256, SCRAM-SHA-384, SCRAM-SHA-512, EXTERNAL, OAUTHBEARER
+               */
+              saslMechanism?: string;
+              /**
+               * userName for authentication.
+               */
+              userName?: string;
+              /**
+               * Password for authentication.
+               * @visibility secret
+               */
+              password?: string;
+              /**
+               * The OAuth token. Required by the OAUTHBEARER mechanism.
+               * @visibility secret
+               */
+              token?: string;
+              /**
+               * The SASL authorization ID.
+               */
+              authzid?: string;
+            };
+
+            /**
+             * TLS/SSL configuration.
+             */
+            ssl?: {
+              /**
+               * Enable ssl connection. Defaults to `false`.
+               * @default false
+               */
+              enabled?: boolean;
+
+              /**
+               * Optional field with secure protocol in use.
+               * @default TLSv1_2_method
+               */
+              secureProtocol?: string;
+
+              /**
+               * Optional paths of trusted SSL certificates.
+               */
+              trustCerts?: Array<string>;
+
+              clientAuth?: {
+                /**
+                 * Optional path to client authentication key
+                 */
+                key?: string;
+                /**
+                 * Optional password for client key
+                 */
+                passphrase?: string;
+                /**
+                 * Optional client certificate
+                 */
+                cert?: string;
+              };
+
+              /**
+               * Optional SNI host name.
+               */
+              sniHostName?: string;
+
+              /**
+               * Optional crypto store configuration.
+               */
+              cryptoStore?: {
+                /** Optional crypto store path. */
+                path?: string;
+                /** Optional password for crypto store. */
+                passphrase?: string;
+              };
+            };
+
+            /**
+             * Optional additional clusters for cross-site failovers.
+             * Array.<Cluster>
+             */
+            clusters?: Array<{
+              /**
+               * Optional Cluster name
+               */
+              name?: string;
+
+              /**
+               * Cluster servers details.
+               * Array.<ServerAddress>
+               */
+              servers: Array<{
+                /**
+                 * Infinispan cluster server host.
+                 */
+                host: string;
+                /**
+                 * Infinispan server port (Hot Rod protocol). Defaults to `11222`.
+                 */
+                port?: number;
+              }>;
+            }>;
+          };
         };
 
     cors?: {
@@ -774,6 +1074,13 @@ export interface Config {
     csp?: { [policyId: string]: string[] | false };
 
     /**
+     * Referrer Policy options
+     */
+    referrer?: {
+      policy: string[];
+    };
+
+    /**
      * Options for the health check service and endpoint.
      */
     health?: {
@@ -788,6 +1095,66 @@ export interface Config {
        * and set the `x-envoy-upstream-healthchecked-cluster` header to a matching value.
        */
       headers?: { [name: string]: string };
+    };
+
+    /**
+     * Options to configure the default RootLoggerService.
+     */
+    logger?: {
+      /**
+       * Configures the global log level for messages.
+       *
+       * This can also be configured using the LOG_LEVEL environment variable, which
+       * takes precedence over this configuration.
+       *
+       * Defaults to 'info'.
+       */
+      level?: 'debug' | 'info' | 'warn' | 'error';
+
+      /**
+       * Additional metadata to include with every log entry.
+       */
+      meta?: JsonObject;
+
+      /**
+       * List of logger overrides.
+       *
+       * Can be used to configure a different level for logs matching certain criterias.
+       * For example, it can be used to ignore 'info' logs of given plugins.
+       *
+       * @example
+       *
+       * ```yaml
+       * logger:
+       *   level: info
+       *   overrides:
+       *     # For catalog and auth plugins, messages less important than 'warn' will be ignored.
+       *     - matchers:
+       *         plugin: [catalog, auth]
+       *       level: warn
+       *     # Ignore all messages that starts with 'Forget'
+       *     - matchers:
+       *         message: '/^Forget/'
+       *       level: warn
+       * ```
+       */
+      overrides?: Array<{
+        /**
+         * Conditions that must be met to override the log level.
+         *
+         * A matcher can be:
+         *
+         * - A string (exact match or regex pattern delimited by slashes, e.g. `/pattern/`)
+         * - A non-string value (compared by strict equality)
+         * - An array of matchers (returns true if any matcher matches)
+         */
+        matchers: JsonObject;
+
+        /**
+         * Log level to use for matched entries.
+         */
+        level: 'debug' | 'info' | 'warn' | 'error';
+      }>;
     };
 
     /**

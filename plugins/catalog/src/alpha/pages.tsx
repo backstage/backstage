@@ -14,10 +14,7 @@
  * limitations under the License.
  */
 
-import {
-  compatWrapper,
-  convertLegacyRouteRef,
-} from '@backstage/core-compat-api';
+import { convertLegacyRouteRef } from '@backstage/core-compat-api';
 import {
   coreExtensionData,
   createExtensionInput,
@@ -59,17 +56,17 @@ export const catalogPage = PageBlueprint.makeWithOverrides({
   factory(originalFactory, { inputs, config }) {
     return originalFactory({
       path: '/catalog',
-      routeRef: convertLegacyRouteRef(rootRouteRef),
+      routeRef: rootRouteRef,
       loader: async () => {
         const { BaseCatalogPage } = await import('../components/CatalogPage');
         const filters = inputs.filters.map(filter =>
           filter.get(coreExtensionData.reactElement),
         );
-        return compatWrapper(
+        return (
           <BaseCatalogPage
             filters={<>{filters}</>}
             pagination={config.pagination}
-          />,
+          />
         );
       },
     });
@@ -108,7 +105,13 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
   factory(originalFactory, { config, inputs }) {
     return originalFactory({
       path: '/catalog/:namespace/:kind/:name',
-      routeRef: convertLegacyRouteRef(entityRouteRef),
+      // NOTE: The `convertLegacyRouteRef` call here ensures that this route ref
+      // is mutated to support the new frontend system. Removing this conversion
+      // is a potentially breaking change since this is a singleton and the
+      // route refs from `core-plugin-api` used to not support the new format.
+      // This shouldn't be removed until we completely deprecate the
+      // `core-compat-api` package.
+      routeRef: convertLegacyRouteRef(entityRouteRef), // READ THE ABOVE
       loader: async () => {
         const { EntityLayout } = await import('./components/EntityLayout');
 
@@ -214,7 +217,7 @@ export const catalogEntityPage = PageBlueprint.makeWithOverrides({
           );
         };
 
-        return compatWrapper(<Component />);
+        return <Component />;
       },
     });
   },

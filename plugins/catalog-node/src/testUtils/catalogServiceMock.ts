@@ -15,9 +15,9 @@
  */
 
 import {
+  createServiceFactory,
   ServiceFactory,
   ServiceRef,
-  createServiceFactory,
 } from '@backstage/backend-plugin-api';
 import { InMemoryCatalogClient } from '@backstage/catalog-client/testUtils';
 import { Entity } from '@backstage/catalog-model';
@@ -103,5 +103,6 @@ export namespace catalogServiceMock {
     getLocationByEntity: jest.fn(),
     validateEntity: jest.fn(),
     analyzeLocation: jest.fn(),
+    streamEntities: jest.fn(),
   }));
 }

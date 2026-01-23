@@ -4,11 +4,11 @@
 
 | Name    | Location     | Severity |
 | :------ | :----------- | :------- |
-| winston | package.json | error    |
+| winston | plugins/kubernetes-node/package.json | error    |
 
 ## Unused devDependencies (1)
 
 | Name                       | Location     | Severity |
 | :------------------------- | :----------- | :------- |
-| @backstage/backend-app-api | package.json | error    |
+| @backstage/backend-app-api | plugins/kubernetes-node/package.json | error    |
 

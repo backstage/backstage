@@ -45,7 +45,7 @@ When an action is executed, it receives a context object (`ActionsRegistryAction
 Here's an example of how to register an action with the Actions Registry Service:
 
 ```typescript
-import { ActionsRegistryService } from '@backstage/backend-plugin-api';
+import { ActionsRegistryService } from '@backstage/backend-plugin-api/alpha';
 
 export function registerMyActions(actionsRegistry: ActionsRegistryService) {
   // Register a simple read-only action

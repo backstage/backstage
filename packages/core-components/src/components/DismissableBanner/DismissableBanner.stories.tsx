@@ -30,6 +30,7 @@ export default {
       control: { type: 'select' },
     },
   },
+  tags: ['!manifest'],
 };
 
 const containerStyle = { width: '70%' };

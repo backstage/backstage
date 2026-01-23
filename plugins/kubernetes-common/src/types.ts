@@ -129,6 +129,7 @@ export type FetchResponse =
   | PodFetchResponse
   | ServiceFetchResponse
   | ConfigMapFetchResponse
+  | SecretFetchResponse
   | DeploymentFetchResponse
   | LimitRangeFetchResponse
   | ResourceQuotaFetchResponse
@@ -159,6 +160,12 @@ export interface ServiceFetchResponse {
 export interface ConfigMapFetchResponse {
   type: 'configmaps';
   resources: Array<V1ConfigMap>;
+}
+
+/** @public */
+export interface SecretFetchResponse {
+  type: 'secrets';
+  resources: Array<V1Secret>;
 }
 
 /** @public */
@@ -297,6 +304,7 @@ export interface DeploymentResources {
 export interface GroupedResponses extends DeploymentResources {
   services: V1Service[];
   configMaps: V1ConfigMap[];
+  secrets: V1Secret[];
   ingresses: V1Ingress[];
   jobs: V1Job[];
   cronJobs: V1CronJob[];

@@ -21,7 +21,11 @@ import {
 import { ScmIntegrations } from '@backstage/integration';
 import { catalogServiceRef } from '@backstage/plugin-catalog-node';
 import { eventsServiceRef } from '@backstage/plugin-events-node';
-import { TaskBroker, TemplateAction } from '@backstage/plugin-scaffolder-node';
+import {
+  scaffolderActionsExtensionPoint,
+  TaskBroker,
+  TemplateAction,
+} from '@backstage/plugin-scaffolder-node';
 import {
   AutocompleteHandler,
   CreatedTemplateFilter,
@@ -29,7 +33,6 @@ import {
   createTemplateFilter,
   createTemplateGlobalFunction,
   createTemplateGlobalValue,
-  scaffolderActionsExtensionPoint,
   scaffolderAutocompleteExtensionPoint,
   scaffolderTaskBrokerExtensionPoint,
   scaffolderTemplatingExtensionPoint,
@@ -56,6 +59,7 @@ import {
   convertFiltersToRecord,
   convertGlobalsToRecord,
 } from './util/templating';
+import { actionsServiceRef } from '@backstage/backend-plugin-api/alpha';
 
 /**
  * Scaffolder plugin
@@ -139,6 +143,7 @@ export const scaffolderPlugin = createBackendPlugin({
         auditor: coreServices.auditor,
         catalog: catalogServiceRef,
         events: eventsServiceRef,
+        actionsRegistry: actionsServiceRef,
       },
       async init({
         logger,
@@ -153,6 +158,7 @@ export const scaffolderPlugin = createBackendPlugin({
         permissions,
         events,
         auditor,
+        actionsRegistry,
       }) {
         const log = loggerToWinstonLogger(logger);
         const integrations = ScmIntegrations.fromConfig(config);
@@ -222,6 +228,7 @@ export const scaffolderPlugin = createBackendPlugin({
           additionalWorkspaceProviders,
           events,
           auditor,
+          actionsRegistry,
         });
         httpRouter.use(router);
       },

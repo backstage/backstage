@@ -90,6 +90,7 @@ When defining the `templates` array it will override the default set of template
           "@backstage/cli/templates/plugin-common-library",
           "@backstage/cli/templates/web-library",
           "@backstage/cli/templates/node-library",
+          "@backstage/cli/templates/catalog-provider-module",
           "@backstage/cli/templates/scaffolder-backend-module"
         ]
       }
@@ -147,3 +148,13 @@ The `role` property in the template yaml file is used to determine what input wi
 | `plugin-web-library`     | `pluginId`             | `plugins`        | none                                                                              |
 | `plugin-node-library`    | `pluginId`             | `plugins`        | none                                                                              |
 | `plugin-common-library`  | `pluginId`             | `plugins`        | none                                                                              |
+
+## Dependency Versioning
+
+The `yarn new` command automatically detects if the [Backstage Yarn plugin](https://github.com/backstage/backstage/tree/master/packages/yarn-plugin) is installed in your repository and adjusts dependency versioning accordingly.
+
+When the Backstage Yarn plugin is installed (detected via `.yarnrc.yml`), `yarn new` will generate `backstage:^` ranges for all `@backstage/*` dependencies. This ensures that new packages use the same Backstage version as defined in your `backstage.json` file.
+
+When the plugin is not installed, `yarn new` uses the standard npm version ranges (e.g., `^1.0.0`) for all dependencies, maintaining backward compatibility.
+
+Regardless of plugin installation, `workspace:` ranges found in your `yarn.lock` file will always take precedence over both `backstage:^` and npm ranges. This ensures that packages within monorepos continue to use workspace linking when available.
