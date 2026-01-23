@@ -20,6 +20,7 @@ import {
   coreExtensionData,
   createExtension,
   createExtensionInput,
+  createFrontendModule,
 } from '@backstage/frontend-plugin-api';
 import { renderTestApp } from '@backstage/frontend-test-utils';
 
@@ -63,7 +64,11 @@ describe('AppRootWrapperBlueprint', () => {
       },
     });
 
-    renderTestApp({ extensions: [extension] });
+    renderTestApp({
+      features: [
+        createFrontendModule({ pluginId: 'app', extensions: [extension] }),
+      ],
+    });
 
     await waitFor(() => expect(screen.getByText('Hello')).toBeInTheDocument());
   });
@@ -95,20 +100,28 @@ describe('AppRootWrapperBlueprint', () => {
     });
 
     renderTestApp({
-      extensions: [
-        extension,
-        createExtension({
-          name: 'test-child',
-          attachTo: { id: 'app-root-wrapper:test', input: 'children' },
-          output: [coreExtensionData.reactElement],
-          factory: () => [coreExtensionData.reactElement(<div>Its Me</div>)],
+      extensions: [],
+      features: [
+        createFrontendModule({
+          pluginId: 'app',
+          extensions: [
+            extension,
+            createExtension({
+              name: 'test-child',
+              attachTo: extension.inputs.children,
+              output: [coreExtensionData.reactElement],
+              factory: () => [
+                coreExtensionData.reactElement(<div>Its Me</div>),
+              ],
+            }),
+          ],
         }),
       ],
       config: {
         app: {
           extensions: [
             {
-              'app-root-wrapper:test': { config: { name: 'Robin' } },
+              'app-root-wrapper:app': { config: { name: 'Robin' } },
             },
           ],
         },

@@ -60,11 +60,11 @@ export interface ExtensionInput<
  * plugin. The following options are available:
  *
  * - `singleton`: If set to `true`, only one extension can be attached to the
- *   input at a time. Additional extension will trigger an app error and be
+ *   input at a time. Additional extensions will trigger an app error and be
  *   ignored.
  * - `optional`: If set to `true`, the input is optional and can be omitted,
  *   this only has an effect if the `singleton` is set to `true`.
- * - `internal`: If set to `true`, only extensions from the same plugins will be
+ * - `internal`: If set to `true`, only extensions from the same plugin will be
  *   allowed to attach to this input. Other extensions will trigger an app error
  *   and be ignored.
  *

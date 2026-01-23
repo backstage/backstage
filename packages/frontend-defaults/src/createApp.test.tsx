@@ -60,8 +60,8 @@ describe('createApp', () => {
         }),
       },
       features: [
-        createFrontendPlugin({
-          pluginId: 'test',
+        createFrontendModule({
+          pluginId: 'app',
           extensions: [
             ThemeBlueprint.make({
               name: 'derp',
