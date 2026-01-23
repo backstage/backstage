@@ -13,9 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import { PropsWithChildren } from 'react';
-
 import { makeStyles } from '@material-ui/core/styles';
 import LibraryBooks from '@material-ui/icons/LibraryBooks';
 import LogoFull from './LogoFull';
@@ -30,6 +27,7 @@ import {
   useSidebarOpenState,
   Link,
 } from '@backstage/core-components';
+import { NavContentBlueprint } from '@backstage/plugin-app-react';
 
 const useSidebarLogoStyles = makeStyles({
   root: {
@@ -63,7 +61,7 @@ const SidebarLogo = () => {
   );
 };
 
-export const Root = ({ children }: PropsWithChildren<{}>) => (
+export const SidebarNav = (): React.ReactElement => (
   <SidebarPage>
     <Sidebar>
       <SidebarLogo />
@@ -76,6 +74,11 @@ export const Root = ({ children }: PropsWithChildren<{}>) => (
       />
       {/* End global nav */}
     </Sidebar>
-    {children}
   </SidebarPage>
 );
+
+export const SidebarContent = NavContentBlueprint.make({
+  params: {
+    component: () => <SidebarNav />,
+  },
+});

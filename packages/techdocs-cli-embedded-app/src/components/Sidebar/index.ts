@@ -14,4 +14,4 @@
  * limitations under the License.
  */
 
-export { plugin as TechDocsPlugin } from '@backstage/plugin-techdocs';
+export { SidebarContent } from './Sidebar';

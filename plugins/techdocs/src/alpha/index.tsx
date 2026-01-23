@@ -152,7 +152,13 @@ const techDocsReaderPage = PageBlueprint.makeWithOverrides({
   inputs: {
     addons: createExtensionInput([AddonBlueprint.dataRefs.addon]),
   },
-  factory(originalFactory, { inputs }) {
+  config: {
+    schema: {
+      withSearch: z => z.boolean().default(true),
+      withHeader: z => z.boolean().default(true),
+    },
+  },
+  factory(originalFactory, { inputs, config }) {
     const addons = inputs.addons.map(output => {
       const options = output.get(AddonBlueprint.dataRefs.addon);
       const Addon = options.component;
@@ -166,7 +172,10 @@ const techDocsReaderPage = PageBlueprint.makeWithOverrides({
       loader: async () =>
         await import('../Router').then(({ TechDocsReaderRouter }) => (
           <TechDocsReaderRouter>
-            <TechDocsReaderLayout />
+            <TechDocsReaderLayout
+              withSearch={config.withSearch}
+              withHeader={config.withHeader}
+            />
             <TechDocsAddons>{addons}</TechDocsAddons>
           </TechDocsReaderRouter>
         )),
