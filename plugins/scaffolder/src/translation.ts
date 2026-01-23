@@ -354,7 +354,7 @@ export const scaffolderTranslationRef = createTranslationRef({
       subtitle:
         'Create new software components using standard templates in your organization',
       pageTitle: 'Create a new component',
-      templateWithTitle: '{{templateTitle}}',
+      templateWithTitle: 'Create new {{templateTitle}}',
       pageContextMenu: {
         editConfigurationTitle: 'Edit Configuration',
       },
