@@ -45,7 +45,7 @@ export function Changelog() {
   const toTitleCase = (kebabCase: string) => {
     return kebabCase
       .split('-')
-      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .map(word => word.charAt(0).toLocaleUpperCase('en-US') + word.slice(1))
       .join(' ');
   };
 
@@ -127,7 +127,7 @@ export function Changelog() {
               const breakingBadge = e.breaking ? '<BreakingBadge /> ' : '';
 
               // Remove **BREAKING**: text from description since we show it as a badge
-              let description = e.description.replace(
+              const description = e.description.replace(
                 /\*\*BREAKING\*\*:?\s*/,
                 '',
               );
