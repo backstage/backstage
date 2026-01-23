@@ -187,8 +187,15 @@ async function parseChangelogMd(changelogPath, sinceVersion, validComponents) {
       // Validate that this is actually a version number (X.Y.Z or X.Y.Z-pre.N)
       // Skip headings that are just markdown content within changelog entries
       if (/^\d+\.\d+\.\d+/.test(versionText)) {
-        currentVersion = versionText;
-        currentSection = null;
+        // Skip pre-release versions (e.g., 0.11.0-next.1, 0.9.0-alpha.2) to avoid duplicates
+        // Pre-release commits are included in the final release version
+        if (/^\d+\.\d+\.\d+-/.test(versionText)) {
+          currentVersion = null;
+          currentSection = null;
+        } else {
+          currentVersion = versionText;
+          currentSection = null;
+        }
       }
       return;
     }

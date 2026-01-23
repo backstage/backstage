@@ -89,28 +89,4 @@ export const changelog_0_2_0: ChangelogProps[] = [
 
     commitSha: '05e9d41',
   },
-  {
-    components: [],
-    version: '0.2.0',
-    prs: ['29002'],
-    description: `We are renaming CanonProvider to IconProvider to improve clarity on how to override icons.`,
-    breaking: true,
-    commitSha: '8689010',
-  },
-  {
-    components: [],
-    version: '0.2.0',
-    prs: ['28972'],
-    description: `To avoid conflicts with Backstage, we removed global styles and set font-family and font-weight for each components.`,
-
-    commitSha: '89e8686',
-  },
-  {
-    components: [],
-    version: '0.2.0',
-    prs: ['28961'],
-    description: `Fix CSS imports and move CSS outputs out of the dist folder.`,
-    breaking: true,
-    commitSha: '5a5db29',
-  },
 ];
