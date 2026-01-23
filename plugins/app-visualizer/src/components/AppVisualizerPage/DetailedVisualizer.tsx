@@ -31,7 +31,7 @@ import {
   RiCloseCircleLine as DisabledIcon,
 } from '@remixicon/react';
 import { Focusable } from 'react-aria-components';
-import { memo, useMemo, useState, useEffect, useRef } from 'react';
+import { memo, useMemo, useState, useEffect, useRef, Fragment } from 'react';
 
 function getContrastColor(bgColor: string): string {
   const hex = bgColor.replace('#', '');
@@ -106,73 +106,48 @@ function getFullPath(node?: AppNode): string {
   return getFullPath(parent) + part;
 }
 
-function collectAllNodes(node: AppNode): AppNode[] {
-  const nodes: AppNode[] = [node];
-  for (const children of node.edges.attachments.values()) {
-    for (const child of children) {
-      nodes.push(...collectAllNodes(child));
-    }
-  }
-  return nodes;
-}
-
-function useProgressiveRender(rootNode: AppNode) {
-  const [renderedNodes, setRenderedNodes] = useState<Set<string>>(new Set());
-  const [isComplete, setIsComplete] = useState(false);
-  const processingRef = useRef(false);
+function ProgressiveCollection({
+  items,
+  batchSize = 10,
+}: {
+  items: Array<() => React.ReactElement>;
+  batchSize?: number;
+}) {
+  const [maxIndex, setMaxIndex] = useState(0);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   useEffect(() => {
-    if (processingRef.current) {
+    if (maxIndex >= items.length) {
       return undefined;
     }
 
-    processingRef.current = true;
-    const allNodes = collectAllNodes(rootNode);
-
-    const batchSize = 10;
-    let currentIndex = 0;
-    const rendered = new Set<string>();
-
     const processBatch = () => {
-      const endIndex = Math.min(currentIndex + batchSize, allNodes.length);
-      for (let i = currentIndex; i < endIndex; i++) {
-        rendered.add(allNodes[i].spec.id);
-      }
-      currentIndex = endIndex;
+      const nextIndex = Math.min(maxIndex + batchSize, items.length);
+      setMaxIndex(nextIndex);
 
-      setRenderedNodes(new Set(rendered));
-
-      if (currentIndex < allNodes.length) {
+      if (nextIndex < items.length) {
         timeoutRef.current = setTimeout(processBatch, 0);
-      } else {
-        setIsComplete(true);
-        processingRef.current = false;
-        timeoutRef.current = null;
       }
     };
 
-    rendered.add(rootNode.spec.id);
-    setRenderedNodes(new Set(rendered));
-    currentIndex = 1;
+    timeoutRef.current = setTimeout(processBatch, 0);
 
-    if (allNodes.length > 1) {
-      timeoutRef.current = setTimeout(processBatch, 0);
-    } else {
-      setIsComplete(true);
-      processingRef.current = false;
-    }
-
+    // eslint-disable-next-line consistent-return
     return () => {
-      processingRef.current = false;
       if (timeoutRef.current !== null) {
         clearTimeout(timeoutRef.current);
         timeoutRef.current = null;
       }
     };
-  }, [rootNode]);
+  }, [maxIndex, items.length, batchSize]);
 
-  return { renderedNodes, isComplete };
+  return (
+    <>
+      {items.slice(0, maxIndex).map((item, index) => (
+        <Fragment key={index}>{item()}</Fragment>
+      ))}
+    </>
+  );
 }
 
 const Output = memo(
@@ -245,66 +220,7 @@ const Output = memo(
   },
 );
 
-function AttachmentsComponent(props: {
-  node: AppNode;
-  enabled: boolean;
-  depth: number;
-  renderedNodes: Set<string>;
-}) {
-  const { node, depth, renderedNodes } = props;
-  const { attachments } = node.edges;
-
-  const sortedAttachments = useMemo(() => {
-    return [...attachments.entries()].sort(([a], [b]) => a.localeCompare(b));
-  }, [attachments]);
-
-  if (attachments.size === 0) {
-    return null;
-  }
-
-  return (
-    <Flex direction="column" gap="4">
-      {sortedAttachments.map(([key, children], idx) => {
-        return (
-          <Box key={key}>
-            <Flex
-              p="2"
-              align="center"
-              style={{
-                borderTopWidth: 'var(--bui-space-1_5)',
-                borderTopStyle: 'solid',
-                borderTopColor: getBorderColor(depth),
-                borderTop: idx === 0 ? 'none' : undefined,
-                width: 'fit-content',
-              }}
-            >
-              <InputIcon size={16} />
-              <div style={{ marginLeft: 'var(--bui-space-2)' }}>{key}</div>
-            </Flex>
-            <Flex ml="2" mb="2" direction="column" align="start" gap="1">
-              {children.map(childNode => (
-                <ExtensionComponent
-                  key={childNode.spec.id}
-                  node={childNode}
-                  depth={depth + 1}
-                  renderedNodes={renderedNodes}
-                />
-              ))}
-            </Flex>
-          </Box>
-        );
-      })}
-    </Flex>
-  );
-}
-
-function ExtensionComponent(props: {
-  node: AppNode;
-  depth: number;
-  renderedNodes: Set<string>;
-}) {
-  const { node, depth, renderedNodes } = props;
-
+function Extension({ node, depth }: { node: AppNode; depth: number }) {
   const enabled = Boolean(node.instance);
 
   const tooltipText = useMemo(() => {
@@ -328,11 +244,11 @@ function ExtensionComponent(props: {
     return dataRefs.sort((a, b) => a.id.localeCompare(b.id));
   }, [node.instance]);
 
-  const shouldRender = renderedNodes.has(node.spec.id);
-
-  if (!shouldRender) {
-    return null;
-  }
+  const sortedAttachments = useMemo(() => {
+    return [...node.edges.attachments.entries()].sort(([a], [b]) =>
+      a.localeCompare(b),
+    );
+  }, [node.edges.attachments]);
 
   return (
     <Box
@@ -371,48 +287,42 @@ function ExtensionComponent(props: {
           {!enabled && <DisabledIcon size={16} />}
         </Flex>
       </Flex>
-      <AttachmentsComponent
-        node={node}
-        enabled={enabled}
-        depth={depth}
-        renderedNodes={renderedNodes}
-      />
+      {sortedAttachments.length > 0 && (
+        <Flex direction="column" gap="4">
+          {sortedAttachments.map(([key, children], idx) => (
+            <Box key={key}>
+              <Flex
+                p="2"
+                align="center"
+                style={{
+                  borderTopWidth: 'var(--bui-space-1_5)',
+                  borderTopStyle: 'solid',
+                  borderTopColor: getBorderColor(depth),
+                  borderTop: idx === 0 ? 'none' : undefined,
+                  width: 'fit-content',
+                }}
+              >
+                <InputIcon size={16} />
+                <div style={{ marginLeft: 'var(--bui-space-2)' }}>{key}</div>
+              </Flex>
+              <Flex ml="2" mb="2" direction="column" align="start" gap="1">
+                <ProgressiveCollection
+                  items={children.map(childNode => () => (
+                    <Extension
+                      key={childNode.spec.id}
+                      node={childNode}
+                      depth={depth + 1}
+                    />
+                  ))}
+                />
+              </Flex>
+            </Box>
+          ))}
+        </Flex>
+      )}
     </Box>
   );
 }
-
-const Extension = memo(ExtensionComponent, (prevProps, nextProps) => {
-  if (
-    prevProps.node.spec.id !== nextProps.node.spec.id ||
-    prevProps.depth !== nextProps.depth
-  ) {
-    return false;
-  }
-
-  const nodeId = prevProps.node.spec.id;
-  const wasRendered = prevProps.renderedNodes.has(nodeId);
-  const isRendered = nextProps.renderedNodes.has(nodeId);
-
-  if (wasRendered !== isRendered) {
-    return false;
-  }
-
-  if (prevProps.renderedNodes.size !== nextProps.renderedNodes.size) {
-    return false;
-  }
-
-  for (const children of prevProps.node.edges.attachments.values()) {
-    for (const child of children) {
-      const wasChildRendered = prevProps.renderedNodes.has(child.spec.id);
-      const isChildRendered = nextProps.renderedNodes.has(child.spec.id);
-      if (wasChildRendered !== isChildRendered) {
-        return false;
-      }
-    }
-  }
-
-  return true;
-});
 
 const legendMap = {
   'React Element': coreExtensionData.reactElement,
@@ -445,12 +355,10 @@ function Legend() {
 }
 
 export function DetailedVisualizer({ tree }: { tree: AppTree }) {
-  const { renderedNodes } = useProgressiveRender(tree.root);
-
   return (
     <Flex direction="column" style={{ height: '100%', flex: '1 1 100%' }}>
       <Box ml="4" mt="4" style={{ flex: '1 1 0', overflow: 'auto' }}>
-        <Extension node={tree.root} depth={0} renderedNodes={renderedNodes} />
+        <Extension node={tree.root} depth={0} />
       </Box>
 
       <Box
