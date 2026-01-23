@@ -30,6 +30,44 @@ import { GithubProfile } from './authenticator';
  */
 export namespace githubSignInResolvers {
   /**
+   * Looks up the user by matching their email to the entity email.
+   */
+  export const emailMatchingUserEntityProfileEmail =
+    createSignInResolverFactory({
+      optionsSchema: z
+        .object({
+          dangerouslyAllowSignInWithoutUserInCatalog: z.boolean().optional(),
+        })
+        .optional(),
+      create(options = {}) {
+        return async (
+          info: SignInInfo<OAuthAuthenticatorResult<GithubProfile>>,
+          ctx,
+        ) => {
+          const email = info.result.fullProfile.email;
+
+          if (!email) {
+            throw new Error('GitHub sign-in result is missing email');
+          }
+
+          return ctx.signInWithCatalogUser(
+            {
+              filter: {
+                'spec.profile.email': email,
+              },
+            },
+            {
+              dangerousEntityRefFallback:
+                options?.dangerouslyAllowSignInWithoutUserInCatalog
+                  ? { entityRef: { name: email } }
+                  : undefined,
+            },
+          );
+        };
+      },
+    });
+
+  /**
    * Looks up the user by matching their GitHub username to the entity name.
    */
   export const usernameMatchingUserEntityName = createSignInResolverFactory({
