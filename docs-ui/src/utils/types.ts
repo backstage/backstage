@@ -43,4 +43,5 @@ export interface ChangelogProps {
   prs: string[];
   type?: 'breaking' | 'new' | 'fix';
   commitSha?: string;
+  migration?: string;
 }

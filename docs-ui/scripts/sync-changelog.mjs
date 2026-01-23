@@ -301,9 +301,11 @@ async function parseListItem(
   // Remove the commit SHA prefix from markdown
   let description = fullMarkdown.replace(/^-?\s*[a-f0-9]+:\s*/, '').trim();
 
-  // Auto-detect components from "Affected components:" line
+  // Extract components using bold marker (standard format)
   let components = [];
-  const componentMatch = description.match(/Affected components?:\s*([^\n]+)/i);
+  const componentMatch = description.match(
+    /\*\*Affected components:\*\*\s*([^\n]+)/,
+  );
   if (componentMatch) {
     const componentNames = componentMatch[1]
       .split(',')
@@ -314,9 +316,42 @@ async function parseListItem(
       .map(name => mapComponentName(name, validComponents))
       .filter(Boolean);
 
-    // Optionally strip "Affected components:" line from description
+    // Strip "**Affected components:**" line from description
     description = description
-      .replace(/\n*Affected components?:[ \t]*[^\n]+/i, '')
+      .replace(/\n*\*\*Affected components:\*\*[ \t]*[^\n]+/g, '')
+      .trim();
+  } else {
+    // Fallback: try old format without bold markers
+    const oldFormatMatch = description.match(
+      /Affected components?:\s*([^\n]+)/i,
+    );
+    if (oldFormatMatch) {
+      const componentNames = oldFormatMatch[1]
+        .split(',')
+        .map(name => name.trim())
+        .filter(Boolean);
+
+      components = componentNames
+        .map(name => mapComponentName(name, validComponents))
+        .filter(Boolean);
+
+      // Strip old format line from description
+      description = description
+        .replace(/\n*Affected components?:[ \t]*[^\n]+/i, '')
+        .trim();
+    }
+  }
+
+  // Extract migration notes using bold marker (standard format)
+  let migration = null;
+  const migrationMatch = description.match(
+    /\*\*Migration:\*\*\s*\n([\s\S]+?)(?=\n\s*$|$)/,
+  );
+  if (migrationMatch) {
+    migration = migrationMatch[1].trim();
+    // Strip migration section from description
+    description = description
+      .replace(/\n*\*\*Migration:\*\*[\s\S]+$/, '')
       .trim();
   }
 
@@ -333,6 +368,7 @@ async function parseListItem(
     components,
     prs,
     type,
+    migration,
   };
 }
 
@@ -467,12 +503,20 @@ async function generateVersionFiles(entries, changelogsDir, dryRun = false) {
           .replace(/`/g, '\\`')
           .replace(/\${/g, '\\${');
 
+        // Escape migration notes if present
+        const migrationStr = entry.migration
+          ? `migration: \`${entry.migration
+              .replace(/\\/g, '\\\\')
+              .replace(/`/g, '\\`')
+              .replace(/\${/g, '\\${')}\`,\n    `
+          : '';
+
         return `  {
     components: ${componentsStr},
     version: '${entry.version}',
     prs: ${prsStr},
     description: \`${descEscaped}\`,
-    ${typeStr}
+    ${migrationStr}${typeStr}
     ${shaStr}
   }`;
       })

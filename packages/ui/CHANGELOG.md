@@ -13,7 +13,7 @@
 
   New features include unified pagination modes, debounced query changes, stale data preservation during reloads, and row selection with toggle/replace behaviors.
 
-  **Migration guide:**
+  **Migration:**
 
   1. Update imports and use the new `useTable` hook:
 
@@ -43,11 +43,11 @@
   +<Table columnConfig={columns} {...tableProps} />
   ```
 
-  Affected components: Table, TableRoot, TablePagination
+  **Affected components:** Table, TableRoot, TablePagination
 
 - 95246eb: **Breaking** Updating color tokens to match the new neutral style on different surfaces.
 
-  ## Migration notes
+  **Migration:**
 
   There's no direct replacement for the old tint tokens but you can use the new neutral set of color tokens on surface 0 or 1 as a replacement.
 
@@ -64,11 +64,11 @@
 - 1880402: Fixes app background color on dark mode.
 - d2fdded: Added indeterminate state support to the Checkbox component for handling partial selection scenarios like table header checkboxes.
 
-  Affected components: Checkbox
+  **Affected components:** Checkbox
 
 - 4fb15d2: Added missing `aria-label` attributes to `SearchField` components in `Select`, `MenuAutocomplete`, and `MenuAutocompleteListbox` to fix accessibility warnings.
 
-  Affected components: Select, MenuAutocomplete, MenuAutocompleteListbox
+  **Affected components:** Select, MenuAutocomplete, MenuAutocompleteListbox
 
 - 21c87cc: Fixes disabled state in primary and secondary buttons in Backstage UI.
 - 9c76682: build(deps-dev): bump `storybook` from 10.1.9 to 10.1.10
@@ -76,29 +76,29 @@
 - 133d5c6: Added new Popover component for Backstage UI with automatic overflow handling, and full placement support. Also introduced `--bui-shadow` token for consistent elevation styling across overlay components (Popover, Tooltip, Menu).
 - 973c839: Fixed Table sorting indicator not being visible when a column is actively sorted.
 
-  Affected components: Table, Column
+  **Affected components:** Table, Column
 
 - df40cfc: Fixed Menu component trigger button not toggling correctly. Removed custom click-outside handler that was interfering with React Aria's built-in state management, allowing the menu to properly open and close when clicking the trigger button.
 - b01ab96: Added support for column width configuration in Table component. Columns now accept `width`, `defaultWidth`, `minWidth`, and `maxWidth` props for responsive layout control.
 
-  Affected components: Table, Column
+  **Affected components:** Table, Column
 
 - b4a4911: Fixed SearchField `startCollapsed` prop not working correctly in Backstage UI. The field now properly starts in a collapsed state, expands when clicked and focused, and collapses back when unfocused with no input. Also fixed CSS logic to work correctly in all layout contexts (flex row, flex column, and regular containers).
 
-  Affected components: SearchField
+  **Affected components:** SearchField
 
 - b3253b6: Fixed `Link` component causing hard page refreshes for internal routes. The component now properly uses React Router's navigation instead of full page reloads.
 - fe7fe69: Added support for custom pagination options in `useTable` hook and `Table` component. You can now configure `pageSizeOptions` to customize the page size dropdown, and hook into pagination events via `onPageSizeChange`, `onNextPage`, and `onPreviousPage` callbacks. When `pageSize` doesn't match any option, the first option is used and a warning is logged.
 
-  Affected components: Table, TablePagination
+  **Affected components:** Table, TablePagination
 
 - cfac8a4: Fixed missing border styles on table selection cells in multi-select mode.
 
-  Affected components: Table
+  **Affected components:** Table
 
 - 2532d2a: Added `className` and `style` props to the `Table` component.
 
-  Affected components: Table
+  **Affected components:** Table
 
 ## 0.11.0-next.1
 
@@ -113,7 +113,7 @@
 
   New features include unified pagination modes, debounced query changes, stale data preservation during reloads, and row selection with toggle/replace behaviors.
 
-  **Migration guide:**
+  **Migration:**
 
   1. Update imports and use the new `useTable` hook:
 
@@ -143,11 +143,11 @@
   +<Table columnConfig={columns} {...tableProps} />
   ```
 
-  Affected components: Table, TableRoot, TablePagination
+  **Affected components:** Table, TableRoot, TablePagination
 
 - 95246eb: **Breaking** Updating color tokens to match the new neutral style on different surfaces.
 
-  ## Migration notes
+  **Migration:**
 
   There's no direct replacement for the old tint tokens but you can use the new neutral set of color tokens on surface 0 or 1 as a replacement.
 
@@ -175,7 +175,7 @@
 - 9c76682: build(deps-dev): bump `storybook` from 10.1.9 to 10.1.10
 - b4a4911: Fixed SearchField `startCollapsed` prop not working correctly in Backstage UI. The field now properly starts in a collapsed state, expands when clicked and focused, and collapses back when unfocused with no input. Also fixed CSS logic to work correctly in all layout contexts (flex row, flex column, and regular containers).
 
-  Affected components: SearchField
+  **Affected components:** SearchField
 
 ## 0.10.0
 
@@ -183,7 +183,7 @@
 
 - 16543fa: **Breaking change** The `Cell` component has been refactored to be a generic wrapper component that accepts `children` for custom cell content. The text-specific functionality (previously part of `Cell`) has been moved to a new `CellText` component.
 
-  ### Migration Guide
+  **Migration:**
 
   If you were using `Cell` with text-specific props (`title`, `description`, `leadingIcon`, `href`), you need to update your code to use `CellText` instead:
 
@@ -219,24 +219,24 @@
 
 - 50b7927: Fixed Checkbox indicator showing checkmark color when unchecked.
 
-  Affected components: Checkbox
+  **Affected components:** Checkbox
 
 - 5bacf55: Fixed `ButtonIcon` incorrectly applying `className` to inner elements instead of only the root element.
 
-  Affected components: ButtonIcon
+  **Affected components:** ButtonIcon
 
 - b3ad928: Fixed Table Row component to correctly handle cases where no `href` is provided, preventing unnecessary router provider wrapping and fixing the cursor incorrectly showing as a pointer despite the element not being a link.
 
-  Affected components: Row
+  **Affected components:** Row
 
 - a20d317: Added row selection support with visual state styling for hover, selected, and pressed states. Fixed checkbox rendering to only show for multi-select toggle mode.
 
-  Affected components: Table, TableHeader, Row, Column
+  **Affected components:** Table, TableHeader, Row, Column
 
 - fe7c751: Fixed `useTable` hook to prioritize `providedRowCount` over data length for accurate row count in server-side pagination scenarios.
 - c145031: Fixed Table column sorting indicator to show up arrow when no sort is active, correctly indicating that clicking will sort ascending.
 
-  Affected components: Column
+  **Affected components:** Column
 
 ## 0.10.0-next.1
 
@@ -244,7 +244,7 @@
 
 - 16543fa: **Breaking change** The `Cell` component has been refactored to be a generic wrapper component that accepts `children` for custom cell content. The text-specific functionality (previously part of `Cell`) has been moved to a new `CellText` component.
 
-  ### Migration Guide
+  **Migration:**
 
   If you were using `Cell` with text-specific props (`title`, `description`, `leadingIcon`, `href`), you need to update your code to use `CellText` instead:
 
@@ -280,15 +280,15 @@
 
 - 50b7927: Fixed Checkbox indicator showing checkmark color when unchecked.
 
-  Affected components: Checkbox
+  **Affected components:** Checkbox
 
 - 5bacf55: Fixed `ButtonIcon` incorrectly applying `className` to inner elements instead of only the root element.
 
-  Affected components: ButtonIcon
+  **Affected components:** ButtonIcon
 
 - a20d317: Added row selection support with visual state styling for hover, selected, and pressed states. Fixed checkbox rendering to only show for multi-select toggle mode.
 
-  Affected components: Table, TableHeader, Row, Column
+  **Affected components:** Table, TableHeader, Row, Column
 
 ## 0.9.1-next.0
 
@@ -296,12 +296,12 @@
 
 - b3ad928: Fixed Table Row component to correctly handle cases where no `href` is provided, preventing unnecessary router provider wrapping and fixing the cursor incorrectly showing as a pointer despite the element not being a link.
 
-  Affected components: Row
+  **Affected components:** Row
 
 - fe7c751: Fixed `useTable` hook to prioritize `providedRowCount` over data length for accurate row count in server-side pagination scenarios.
 - c145031: Fixed Table column sorting indicator to show up arrow when no sort is active, correctly indicating that clicking will sort ascending.
 
-  Affected components: Column
+  **Affected components:** Column
 
 ## 0.9.0
 
@@ -317,7 +317,7 @@
     - `large` size **changed from 3rem to 2.5rem** (40px)
     - New `x-large` size added (3rem / 48px)
 
-  Migration:
+  **Migration:**
 
   ```diff
   # Remove Base UI-specific props
@@ -344,7 +344,7 @@
   - Data attribute: `data-checked` → `data-selected`
   - Use without label is no longer supported
 
-  Migration examples:
+  **Migration:**
 
   Before:
 
@@ -400,21 +400,15 @@
 
 - b78fc45: **BREAKING**: Changed className prop behavior to augment default styles instead of being ignored or overriding them.
 
-  Affected components:
-
-  - Menu, MenuListBox, MenuAutocomplete, MenuAutocompleteListbox, MenuItem, MenuListBoxItem, MenuSection, MenuSeparator
-  - Switch
-  - Skeleton
-  - FieldLabel
-  - Header, HeaderToolbar
-  - HeaderPage
-  - Tabs, TabList, Tab, TabPanel
-
   If you were passing custom className values to any of these components that relied on the previous behavior, you may need to adjust your styles to account for the default classes now being applied alongside your custom classes.
+
+  **Affected components:** Menu, MenuListBox, MenuAutocomplete, MenuAutocompleteListbox, MenuItem, MenuListBoxItem, MenuSection, MenuSeparator, Switch, Skeleton, FieldLabel, Header, HeaderToolbar, HeaderPage, Tabs, TabList, Tab, TabPanel
 
 - 83c100e: **BREAKING**: Removed `Collapsible` component. Migrate to `Accordion` or use React Aria `Disclosure`.
 
-  ## Migration Path 1: Accordion (Opinionated Styled Component)
+  **Migration:**
+
+  **Path 1: Accordion (Opinionated Styled Component)**
 
   Accordion provides preset styling with a similar component structure.
 
@@ -435,7 +429,7 @@
 
   CSS classes: `.bui-CollapsibleRoot` → `.bui-Accordion`, `.bui-CollapsibleTrigger` → `.bui-AccordionTrigger` (now on heading element), `.bui-CollapsiblePanel` → `.bui-AccordionPanel`
 
-  ## Migration Path 2: React Aria Disclosure (Full Customization)
+  **Path 2: React Aria Disclosure (Full Customization)**
 
   For custom styling without preset styles:
 
@@ -452,7 +446,9 @@
 
   Added searchable and multiple selection support to Select component. The component now accepts `searchable`, `selectionMode`, and `searchPlaceholder` props to enable filtering and multi-selection modes.
 
-  Migration: If you're using `SelectProps` type directly, update from `SelectProps` to `SelectProps<'single' | 'multiple'>`. Component usage remains backward compatible.
+  **Migration:**
+
+  If you're using `SelectProps` type directly, update from `SelectProps` to `SelectProps<'single' | 'multiple'>`. Component usage remains backward compatible.
 
 ### Patch Changes
 
@@ -483,7 +479,9 @@
 
 - 83c100e: **BREAKING**: Removed `Collapsible` component. Migrate to `Accordion` or use React Aria `Disclosure`.
 
-  ## Migration Path 1: Accordion (Opinionated Styled Component)
+  **Migration:**
+
+  **Path 1: Accordion (Opinionated Styled Component)**
 
   Accordion provides preset styling with a similar component structure.
 
@@ -504,7 +502,7 @@
 
   CSS classes: `.bui-CollapsibleRoot` → `.bui-Accordion`, `.bui-CollapsibleTrigger` → `.bui-AccordionTrigger` (now on heading element), `.bui-CollapsiblePanel` → `.bui-AccordionPanel`
 
-  ## Migration Path 2: React Aria Disclosure (Full Customization)
+  **Path 2: React Aria Disclosure (Full Customization)**
 
   For custom styling without preset styles:
 
@@ -521,7 +519,9 @@
 
   Added searchable and multiple selection support to Select component. The component now accepts `searchable`, `selectionMode`, and `searchPlaceholder` props to enable filtering and multi-selection modes.
 
-  Migration: If you're using `SelectProps` type directly, update from `SelectProps` to `SelectProps<'single' | 'multiple'>`. Component usage remains backward compatible.
+  **Migration:**
+
+  If you're using `SelectProps` type directly, update from `SelectProps` to `SelectProps<'single' | 'multiple'>`. Component usage remains backward compatible.
 
 ### Patch Changes
 
@@ -546,7 +546,7 @@
     - `large` size **changed from 3rem to 2.5rem** (40px)
     - New `x-large` size added (3rem / 48px)
 
-  Migration:
+  **Migration:**
 
   ```diff
   # Remove Base UI-specific props
@@ -589,7 +589,7 @@
   - Data attribute: `data-checked` → `data-selected`
   - Use without label is no longer supported
 
-  Migration examples:
+  **Migration:**
 
   Before:
 
@@ -633,17 +633,9 @@
 
 - b78fc45: **BREAKING**: Changed className prop behavior to augment default styles instead of being ignored or overriding them.
 
-  Affected components:
-
-  - Menu, MenuListBox, MenuAutocomplete, MenuAutocompleteListbox, MenuItem, MenuListBoxItem, MenuSection, MenuSeparator
-  - Switch
-  - Skeleton
-  - FieldLabel
-  - Header, HeaderToolbar
-  - HeaderPage
-  - Tabs, TabList, Tab, TabPanel
-
   If you were passing custom className values to any of these components that relied on the previous behavior, you may need to adjust your styles to account for the default classes now being applied alongside your custom classes.
+
+  **Affected components:** Menu, MenuListBox, MenuAutocomplete, MenuAutocompleteListbox, MenuItem, MenuListBoxItem, MenuSection, MenuSeparator, Switch, Skeleton, FieldLabel, Header, HeaderToolbar, HeaderPage, Tabs, TabList, Tab, TabPanel
 
 ### Patch Changes
 
