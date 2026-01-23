@@ -127,14 +127,14 @@ describe('createSpecializedApp', () => {
                   api: featureFlagsApiRef,
                   deps: {},
                   factory: () =>
-                  ({
-                    registerFlag(flag) {
-                      flags.push(flag);
-                    },
-                    getRegisteredFlags() {
-                      return flags;
-                    },
-                  } as typeof featureFlagsApiRef.T),
+                    ({
+                      registerFlag(flag) {
+                        flags.push(flag);
+                      },
+                      getRegisteredFlags() {
+                        return flags;
+                      },
+                    } as typeof featureFlagsApiRef.T),
                 }),
             }),
           ],
@@ -1014,7 +1014,7 @@ describe('createSpecializedApp', () => {
         ],
       });
 
-      await app.completeInitialization()
+      await app.completeInitialization();
 
       // Extension should be disabled due to error
       const node = app.tree.nodes.get('test/failing');

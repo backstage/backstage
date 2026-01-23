@@ -85,8 +85,8 @@ export interface CreateAppOptions {
      * it gets emitted by extensions being instantiated.
      */
     extensionFactoryMiddleware?:
-    | ExtensionFactoryMiddleware
-    | ExtensionFactoryMiddleware[];
+      | ExtensionFactoryMiddleware
+      | ExtensionFactoryMiddleware[];
 
     /**
      * The element to render while loading the app (waiting for config, features, etc).

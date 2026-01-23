@@ -33,7 +33,7 @@ export interface EnabledConditionsGateProps {
  * 1. Renders immediately with core extensions
  * 2. Evaluates enabled conditions for user extensions in background
  * 3. Re-renders with full app once user extensions are ready
- * 
+ *
  * @public
  */
 export function EnabledConditionsGate({
@@ -42,12 +42,14 @@ export function EnabledConditionsGate({
   fallback = null,
 }: EnabledConditionsGateProps): JSX.Element | undefined {
   // Start with core extensions (already instantiated)
-  const [rootElement, setRootElement] = useState<JSX.Element | undefined>(() => {
-    const initialEl = tree.root.instance!.getData(
-      coreExtensionData.reactElement,
-    );
-    return initialEl;
-  });
+  const [rootElement, setRootElement] = useState<JSX.Element | undefined>(
+    () => {
+      const initialEl = tree.root.instance!.getData(
+        coreExtensionData.reactElement,
+      );
+      return initialEl;
+    },
+  );
 
   useEffect(() => {
     let cancelled = false;
@@ -60,6 +62,7 @@ export function EnabledConditionsGate({
         }
       })
       .catch(err => {
+        // eslint-disable-next-line no-console
         console.error(
           '[EnabledConditionsGate] Failed to complete app initialization:',
           err,

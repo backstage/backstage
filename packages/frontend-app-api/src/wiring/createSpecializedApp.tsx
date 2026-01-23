@@ -275,8 +275,8 @@ export type CreateSpecializedAppOptions = {
      * it gets emitted by extensions being instantiated.
      */
     extensionFactoryMiddleware?:
-    | ExtensionFactoryMiddleware
-    | ExtensionFactoryMiddleware[];
+      | ExtensionFactoryMiddleware
+      | ExtensionFactoryMiddleware[];
 
     /**
      * Allows for customizing how plugin info is retrieved.
@@ -292,9 +292,7 @@ export type CreateSpecializedAppOptions = {
  *
  * @public
  */
-export function createSpecializedApp(
-  options?: CreateSpecializedAppOptions,
-): {
+export function createSpecializedApp(options?: CreateSpecializedAppOptions): {
   apis: ApiHolder;
   tree: AppTree;
   errors?: AppError[];
