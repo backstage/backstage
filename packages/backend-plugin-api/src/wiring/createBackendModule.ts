@@ -17,8 +17,9 @@
 import { BackendFeature } from '../types';
 import {
   BackendModuleRegistrationPoints,
-  InternalBackendModuleRegistration,
-  InternalBackendPluginRegistration,
+  ExtensionPoint,
+  ExtensionPointFactoryContext,
+  InternalBackendModuleRegistrationV1_1,
   InternalBackendRegistrations,
 } from './types';
 
@@ -55,16 +56,43 @@ export function createBackendModule(
   options: CreateBackendModuleOptions,
 ): BackendFeature {
   function getRegistrations() {
-    const extensionPoints: InternalBackendPluginRegistration['extensionPoints'] =
+    const extensionPoints: InternalBackendModuleRegistrationV1_1['extensionPoints'] =
       [];
-    let init: InternalBackendModuleRegistration['init'] | undefined = undefined;
+    let init: InternalBackendModuleRegistrationV1_1['init'] | undefined =
+      undefined;
 
     options.register({
-      registerExtensionPoint(ext, impl) {
+      registerExtensionPoint<TExtensionPoint>(
+        extOrOpts:
+          | ExtensionPoint<TExtensionPoint>
+          | {
+              extensionPoint: ExtensionPoint<TExtensionPoint>;
+              factory: (
+                context: ExtensionPointFactoryContext,
+              ) => TExtensionPoint;
+            },
+        impl?: TExtensionPoint,
+      ) {
         if (init) {
           throw new Error('registerExtensionPoint called after registerInit');
         }
-        extensionPoints.push([ext, impl]);
+        if (
+          typeof extOrOpts === 'object' &&
+          extOrOpts !== null &&
+          'extensionPoint' in extOrOpts
+        ) {
+          extensionPoints.push({
+            extensionPoint: extOrOpts.extensionPoint,
+            factory: extOrOpts.factory as (
+              context: ExtensionPointFactoryContext,
+            ) => unknown,
+          });
+        } else {
+          extensionPoints.push({
+            extensionPoint: extOrOpts,
+            factory: () => impl,
+          });
+        }
       },
       registerInit(regInit) {
         if (init) {
@@ -85,7 +113,7 @@ export function createBackendModule(
 
     return [
       {
-        type: 'module',
+        type: 'module-v1.1',
         pluginId: options.pluginId,
         moduleId: options.moduleId,
         extensionPoints,

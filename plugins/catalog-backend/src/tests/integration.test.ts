@@ -317,7 +317,13 @@ class TestHarness {
       providers.push(...options.additionalProviders);
     }
 
-    await connectEntityProviders(providerDatabase, providers);
+    await connectEntityProviders(
+      providerDatabase,
+      providers.map(p => ({
+        provider: p,
+        context: { reportModuleStartupFailure: jest.fn() },
+      })),
+    );
 
     return new TestHarness(
       catalog,
@@ -523,6 +529,35 @@ describe('Catalog Backend Integration', () => {
         },
       },
     });
+  });
+
+  it('should report module failures when provider connect throws', async () => {
+    const db = await databases.init('SQLITE_3');
+    await applyDatabaseMigrations(db);
+    const providerDatabase = new DefaultProviderDatabase({
+      database: db,
+      logger: mockServices.logger.mock(),
+    });
+    const error = new Error('NOPE');
+    const reportFailure = jest.fn();
+    const provider: EntityProvider = {
+      getProviderName: () => 'failing',
+      async connect() {
+        throw error;
+      },
+    };
+
+    await expect(
+      connectEntityProviders(providerDatabase, [
+        {
+          provider,
+          context: {
+            reportModuleStartupFailure: reportFailure,
+          },
+        },
+      ]),
+    ).resolves.toBeUndefined();
+    expect(reportFailure).toHaveBeenCalledWith({ error });
   });
 
   it('should orphan entities', async () => {

@@ -26,6 +26,13 @@ import {
   EntityProviderRefreshOptions,
   EntityProviderMutation,
 } from '@backstage/plugin-catalog-node';
+import type { ExtensionPointFactoryContext } from '@backstage/backend-plugin-api';
+import { assertError } from '@backstage/errors';
+
+export type EntityProviderEntry = {
+  provider: EntityProvider;
+  context?: ExtensionPointFactoryContext;
+};
 
 class Connection implements EntityProviderConnection {
   readonly validateEntityEnvelope = entityEnvelopeSchemaValidator();
@@ -98,15 +105,25 @@ class Connection implements EntityProviderConnection {
 
 export async function connectEntityProviders(
   db: ProviderDatabase,
-  providers: EntityProvider[],
+  providers: EntityProviderEntry[],
 ) {
   await Promise.all(
-    providers.map(async provider => {
+    providers.map(async entry => {
+      const { provider, context } = entry;
       const connection = new Connection({
         id: provider.getProviderName(),
         providerDatabase: db,
       });
-      return provider.connect(connection);
+      try {
+        await provider.connect(connection);
+      } catch (error: unknown) {
+        if (context) {
+          assertError(error);
+          context.reportModuleStartupFailure({ error });
+          return;
+        }
+        throw error;
+      }
     }),
   );
 }
