@@ -49,11 +49,15 @@ export class FirestoreKeyStore implements KeyStore {
     );
   }
 
-  private constructor(
-    private readonly database: Firestore,
-    private readonly path: string,
-    private readonly timeout: number,
-  ) {}
+  private readonly database: Firestore;
+  private readonly path: string;
+  private readonly timeout: number;
+
+  private constructor(database: Firestore, path: string, timeout: number) {
+    this.database = database;
+    this.path = path;
+    this.timeout = timeout;
+  }
 
   static async verifyConnection(
     keyStore: FirestoreKeyStore,

@@ -88,6 +88,7 @@ describe('DefaultTechDocsCollatorFactory', () => {
   const options = {
     logger,
     discovery: mockDiscoveryApi,
+    auth: mockServices.auth(),
   };
 
   it('has expected type', () => {
@@ -182,6 +183,7 @@ describe('DefaultTechDocsCollatorFactory', () => {
       factory = DefaultTechDocsCollatorFactory.fromConfig(_config, {
         discovery: mockDiscoveryApi,
         logger,
+        auth: mockServices.auth(),
       });
       collator = await factory.getCollator();
 
@@ -191,6 +193,18 @@ describe('DefaultTechDocsCollatorFactory', () => {
       expect(documents[0]).toMatchObject({
         location: '/software/test-entity-with-docs',
       });
+    });
+
+    it('should filter catalog entities when a custom filter is set', async () => {
+      factory = DefaultTechDocsCollatorFactory.fromConfig(config, {
+        ...options,
+        entityFilterFunction: entities =>
+          entities.filter(entity => entity.kind !== 'Component'),
+      });
+      collator = await factory.getCollator();
+      const pipeline = TestPipeline.fromCollator(collator);
+      const { documents } = await pipeline.execute();
+      expect(documents).toHaveLength(0);
     });
 
     it('paginates through catalog entities using batchSize', async () => {

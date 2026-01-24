@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { ReactNode } from 'react';
 import Accordion from '@material-ui/core/Accordion';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
@@ -30,6 +30,7 @@ import { DeploymentsAccordions } from '../DeploymentsAccordions';
 import { StatefulSetsAccordions } from '../StatefulSetsAccordions';
 import { IngressesAccordions } from '../IngressesAccordions';
 import { ServicesAccordions } from '../ServicesAccordions';
+import { ConfigmapsAccordions } from '../ConfigmapsAccordions';
 import { CronJobsAccordions } from '../CronJobsAccordions';
 import { CustomResources } from '../CustomResources';
 import { DaemonSetsAccordions } from '../DaemonSetsAccordions';
@@ -41,12 +42,15 @@ import {
 
 import { StatusError, StatusOK } from '@backstage/core-components';
 import { PodMetricsContext } from '../../hooks/usePodMetrics';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { kubernetesReactTranslationRef } from '../../translation';
+import { SecretsAccordions } from '../SecretsAccordions';
 
 type ClusterSummaryProps = {
   clusterName: string;
   totalNumberOfPods: number;
   numberOfPodsWithErrors: number;
-  children?: React.ReactNode;
+  children?: ReactNode;
 };
 
 const ClusterSummary = ({
@@ -54,6 +58,7 @@ const ClusterSummary = ({
   totalNumberOfPods,
   numberOfPodsWithErrors,
 }: ClusterSummaryProps) => {
+  const { t } = useTranslationRef(kubernetesReactTranslationRef);
   return (
     <Grid
       container
@@ -74,7 +79,7 @@ const ClusterSummary = ({
         <Grid item xs>
           <Typography variant="body1">{clusterName}</Typography>
           <Typography color="textSecondary" variant="subtitle1">
-            Cluster
+            {t('cluster.label')}
           </Typography>
         </Grid>
       </Grid>
@@ -88,13 +93,15 @@ const ClusterSummary = ({
         spacing={0}
       >
         <Grid item>
-          <StatusOK>{totalNumberOfPods} pods</StatusOK>
+          <StatusOK>{t('cluster.pods', { count: totalNumberOfPods })}</StatusOK>
         </Grid>
         <Grid item>
           {numberOfPodsWithErrors > 0 ? (
-            <StatusError>{numberOfPodsWithErrors} pods with errors</StatusError>
+            <StatusError>
+              {t('cluster.podsWithErrors', { count: numberOfPodsWithErrors })}
+            </StatusError>
           ) : (
-            <StatusOK>No pods with errors</StatusOK>
+            <StatusOK>{t('cluster.noPodsWithErrors')}</StatusOK>
           )}
         </Grid>
       </Grid>
@@ -110,7 +117,7 @@ const ClusterSummary = ({
 export type ClusterProps = {
   clusterObjects: ClusterObjects;
   podsWithErrors: Set<string>;
-  children?: React.ReactNode;
+  children?: ReactNode;
 };
 
 /**
@@ -168,6 +175,16 @@ export const Cluster = ({ clusterObjects, podsWithErrors }: ClusterProps) => {
                   {groupedResponses.services.length > 0 ? (
                     <Grid item>
                       <ServicesAccordions />
+                    </Grid>
+                  ) : undefined}
+                  {groupedResponses.configMaps.length > 0 ? (
+                    <Grid item>
+                      <ConfigmapsAccordions />
+                    </Grid>
+                  ) : undefined}
+                  {groupedResponses.secrets.length > 0 ? (
+                    <Grid item>
+                      <SecretsAccordions />
                     </Grid>
                   ) : undefined}
                   {groupedResponses.cronJobs.length > 0 ? (

@@ -15,137 +15,146 @@
  */
 
 import { ConfigReader } from '@backstage/config';
-import { StaticTokenHandler } from './static';
+import { staticTokenHandler } from './static';
 
 describe('StaticTokenHandler', () => {
   it('accepts any of the added list of tokens', async () => {
-    const handler = new StaticTokenHandler();
-    handler.add(
-      new ConfigReader({
-        options: { token: 'abcabcabc', subject: 'one' },
-        accessRestrictions: [{ plugin: 'scaffolder' }],
+    const context1 = staticTokenHandler.initialize({
+      options: new ConfigReader({
+        token: 'abcabcabc',
+        subject: 'one',
       }),
-    );
-    handler.add(
-      new ConfigReader({
-        options: { token: 'defdefdef', subject: 'two' },
-        accessRestrictions: [
-          { plugin: 'catalog', permission: 'catalog.entity.read' },
-        ],
+    });
+    const context2 = staticTokenHandler.initialize({
+      options: new ConfigReader({
+        token: 'defdefdef',
+        subject: 'two',
       }),
-    );
-    const accessRestrictionsOne = new Map(Object.entries({ scaffolder: {} }));
-    const accessRestrictionsTwo = new Map(
-      Object.entries({
-        catalog: {
-          permissionNames: ['catalog.entity.read'],
-        },
-      }),
-    );
+    });
 
-    await expect(handler.verifyToken('abcabcabc')).resolves.toEqual({
+    await expect(
+      staticTokenHandler.verifyToken('abcabcabc', context1),
+    ).resolves.toEqual({
       subject: 'one',
-      allAccessRestrictions: accessRestrictionsOne,
     });
-    await expect(handler.verifyToken('defdefdef')).resolves.toEqual({
+    await expect(
+      staticTokenHandler.verifyToken('defdefdef', context2),
+    ).resolves.toEqual({
       subject: 'two',
-      allAccessRestrictions: accessRestrictionsTwo,
     });
-    await expect(handler.verifyToken('ghighighi')).resolves.toBeUndefined();
+    await expect(
+      staticTokenHandler.verifyToken('ghighighi', context1),
+    ).resolves.toBeUndefined();
   });
 
   it('gracefully handles no added tokens', async () => {
-    const handler = new StaticTokenHandler();
-    await expect(handler.verifyToken('ghi')).resolves.toBeUndefined();
+    await expect(
+      staticTokenHandler.verifyToken('ghi', {} as any),
+    ).resolves.toBeUndefined();
   });
 
   it('rejects bad config', () => {
-    const handler = new StaticTokenHandler();
-
     expect(() =>
-      handler.add(
-        new ConfigReader({ options: { _missingtoken: true, subject: 'ok' } }),
-      ),
+      staticTokenHandler.initialize({
+        options: new ConfigReader({ _missingtoken: true, subject: 'ok' }),
+      }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Missing required config value at 'options.token' in 'mock-config'"`,
+      `"Missing required config value at 'token' in 'mock-config'"`,
     );
     expect(() =>
-      handler.add(new ConfigReader({ options: { token: '', subject: 'ok' } })),
+      staticTokenHandler.initialize({
+        options: new ConfigReader({ token: '', subject: 'ok' }),
+      }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid type in config for key 'options.token' in 'mock-config', got empty-string, wanted string"`,
+      `"Invalid type in config for key 'token' in 'mock-config', got empty-string, wanted string"`,
     );
     expect(() =>
-      handler.add(
-        new ConfigReader({ options: { token: 'has spaces', subject: 'ok' } }),
-      ),
-    ).toThrowErrorMatchingInlineSnapshot(
-      `"Illegal token, must be a set of non-space characters"`,
-    );
-    expect(() =>
-      handler.add(
-        new ConfigReader({
-          options: {
-            token: 'hasnewlinebutislongenough\n',
-            subject: 'ok',
-          },
+      staticTokenHandler.initialize({
+        options: new ConfigReader({
+          token: 'has spaces',
+          subject: 'ok',
         }),
-      ),
+      }),
     ).toThrowErrorMatchingInlineSnapshot(
       `"Illegal token, must be a set of non-space characters"`,
     );
     expect(() =>
-      handler.add(
-        new ConfigReader({ options: { token: 'short', subject: 'ok' } }),
-      ),
+      staticTokenHandler.initialize({
+        options: new ConfigReader({
+          token: 'hasnewlinebutislongenough\n',
+          subject: 'ok',
+        }),
+      }),
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"Illegal token, must be a set of non-space characters"`,
+    );
+    expect(() =>
+      staticTokenHandler.initialize({
+        options: new ConfigReader({
+          token: 'short',
+          subject: 'ok',
+        }),
+      }),
     ).toThrowErrorMatchingInlineSnapshot(
       `"Illegal token, must be at least 8 characters length"`,
     );
     expect(() =>
-      handler.add(new ConfigReader({ options: { token: 3, subject: 'ok' } })),
+      staticTokenHandler.initialize({
+        options: new ConfigReader({ token: 3, subject: 'ok' }),
+      }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid type in config for key 'options.token' in 'mock-config', got number, wanted string"`,
+      `"Invalid type in config for key 'token' in 'mock-config', got number, wanted string"`,
     );
 
     expect(() =>
-      handler.add(
-        new ConfigReader({
-          options: { token: 'validtoken', _missingsubject: true },
+      staticTokenHandler.initialize({
+        options: new ConfigReader({
+          token: 'validtoken',
+          _missingsubject: true,
         }),
-      ),
+      }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Missing required config value at 'options.subject' in 'mock-config'"`,
+      `"Missing required config value at 'subject' in 'mock-config'"`,
     );
     expect(() =>
-      handler.add(
-        new ConfigReader({ options: { token: 'validtoken', subject: '' } }),
-      ),
+      staticTokenHandler.initialize({
+        options: new ConfigReader({
+          token: 'validtoken',
+          subject: '',
+        }),
+      }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid type in config for key 'options.subject' in 'mock-config', got empty-string, wanted string"`,
+      `"Invalid type in config for key 'subject' in 'mock-config', got empty-string, wanted string"`,
     );
     expect(() =>
-      handler.add(
-        new ConfigReader({
-          options: { token: 'validtoken', subject: 'has spaces' },
+      staticTokenHandler.initialize({
+        options: new ConfigReader({
+          token: 'validtoken',
+          subject: 'has spaces',
         }),
-      ),
+      }),
     ).toThrowErrorMatchingInlineSnapshot(
       `"Illegal subject, must be a set of non-space characters"`,
     );
     expect(() =>
-      handler.add(
-        new ConfigReader({
-          options: { token: 'validtoken', subject: 'hasnewline\n' },
+      staticTokenHandler.initialize({
+        options: new ConfigReader({
+          token: 'validtoken',
+          subject: 'hasnewline\n',
         }),
-      ),
+      }),
     ).toThrowErrorMatchingInlineSnapshot(
       `"Illegal subject, must be a set of non-space characters"`,
     );
     expect(() =>
-      handler.add(
-        new ConfigReader({ options: { token: 'validtoken', subject: 3 } }),
-      ),
+      staticTokenHandler.initialize({
+        options: new ConfigReader({
+          token: 'validtoken',
+          subject: 3,
+        }),
+      }),
     ).toThrowErrorMatchingInlineSnapshot(
-      `"Invalid type in config for key 'options.subject' in 'mock-config', got number, wanted string"`,
+      `"Invalid type in config for key 'subject' in 'mock-config', got number, wanted string"`,
     );
   });
 });

@@ -93,7 +93,7 @@ To evaluate the catalog and have a greater amount of functionality available,
 run the entire Backstage example application from the root folder:
 
 ```bash
-yarn dev
+yarn start
 ```
 
 This will launch both frontend and backend in the same window, populated with

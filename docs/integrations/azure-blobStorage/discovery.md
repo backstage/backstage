@@ -2,7 +2,6 @@
 id: discovery
 title: Azure Blob Storage Discovery
 sidebar_label: Discovery
-# prettier-ignore
 description: Automatically discovering catalog entities from an Azure Blob Storage account
 ---
 

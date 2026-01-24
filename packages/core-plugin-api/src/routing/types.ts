@@ -98,6 +98,11 @@ export type RouteRef<Params extends AnyParams = any> = {
 
   /** @deprecated access to this property will be removed in the future */
   params: ParamKeys<Params>;
+
+  /** Compatibility field for new frontend system */
+  readonly $$type: '@backstage/RouteRef';
+  /** Compatibility field for new frontend system */
+  readonly T: Params;
 };
 
 /**
@@ -120,6 +125,11 @@ export type SubRouteRef<Params extends AnyParams = any> = {
 
   /** @deprecated access to this property will be removed in the future */
   params: ParamKeys<Params>;
+
+  /** Compatibility field for new frontend system */
+  readonly $$type: '@backstage/SubRouteRef';
+  /** Compatibility field for new frontend system */
+  readonly T: Params;
 };
 
 /**
@@ -142,6 +152,11 @@ export type ExternalRouteRef<
   params: ParamKeys<Params>;
 
   optional?: Optional;
+
+  /** Compatibility field for new frontend system */
+  readonly $$type: '@backstage/ExternalRouteRef';
+  /** Compatibility field for new frontend system */
+  readonly T: Params;
 };
 
 /**

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 import { useApi } from '@backstage/core-plugin-api';
-import React from 'react';
 import { scaffolderApiRef } from '@backstage/plugin-scaffolder-react';
 import useAsync from 'react-use/esm/useAsync';
 import { parseEntityRef } from '@backstage/catalog-model';

@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ReactNode } from 'react';
-import CssBaseline from '@material-ui/core/CssBaseline';
+import { ReactNode } from 'react';
 import {
   ThemeProvider,
   StylesProvider,
@@ -38,7 +37,8 @@ import { unstable_ClassNameGenerator as ClassNameGenerator } from '@mui/material
 export interface UnifiedThemeProviderProps {
   children: ReactNode;
   theme: UnifiedTheme;
-  noCssBaseline?: boolean;
+  /** Optional override for the value written to the `data-theme-name` attribute. */
+  themeName?: string;
 }
 
 /**
@@ -58,6 +58,8 @@ const generateV4ClassName = createGenerateClassName({
   productionPrefix: 'jss4-',
 });
 
+import { useApplyThemeAttributes } from './useApplyThemeAttributes';
+
 /**
  * Provides themes for all Material UI versions supported by the provided unified theme.
  *
@@ -66,22 +68,16 @@ const generateV4ClassName = createGenerateClassName({
 export function UnifiedThemeProvider(
   props: UnifiedThemeProviderProps,
 ): JSX.Element {
-  const { children, theme, noCssBaseline = false } = props;
+  const { children, theme, themeName } = props;
 
   const v4Theme = theme.getTheme('v4') as Mui4Theme;
   const v5Theme = theme.getTheme('v5') as Mui5Theme;
 
-  let cssBaseline: JSX.Element | undefined = undefined;
-  if (!noCssBaseline) {
-    cssBaseline = <CssBaseline />;
-  }
+  const themeMode = v4Theme ? v4Theme.palette.type : v5Theme?.palette.mode;
 
-  let result = (
-    <>
-      {cssBaseline}
-      {children}
-    </>
-  );
+  useApplyThemeAttributes(themeMode, themeName ?? 'backstage');
+
+  let result = children as JSX.Element;
 
   if (v4Theme) {
     result = (

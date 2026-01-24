@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
+import { ReactElement } from 'react';
 import { Router } from './Router';
 import {
   renderInTestApp,
@@ -37,10 +37,7 @@ jest.mock('../../alpha/components', () => ({
   TemplateListPage: jest.fn(() => null),
 }));
 
-const wrapInApisAndRender = (
-  element: React.ReactElement,
-  opts?: TestAppOptions,
-) =>
+const wrapInApisAndRender = (element: ReactElement, opts?: TestAppOptions) =>
   renderInTestApp(
     <TestApiProvider
       apis={[[formFieldsApiRef, { getFormFields: async () => [] }]]}

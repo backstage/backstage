@@ -1,7 +1,6 @@
 ---
 id: index
 title: Contributors
-# prettier-ignore
 description: Documentation on how to get set up for doing development on the Backstage repository
 ---
 

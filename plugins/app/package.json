@@ -1,19 +1,18 @@
 {
   "name": "@backstage/plugin-app",
-  "version": "0.1.7-next.2",
+  "version": "0.3.4",
   "backstage": {
     "role": "frontend-plugin",
     "pluginId": "app",
     "pluginPackages": [
       "@backstage/plugin-app",
       "@backstage/plugin-app-backend",
-      "@backstage/plugin-app-node"
+      "@backstage/plugin-app-node",
+      "@backstage/plugin-app-react"
     ]
   },
   "publishConfig": {
-    "access": "public",
-    "main": "dist/index.esm.js",
-    "types": "dist/index.d.ts"
+    "access": "public"
   },
   "repository": {
     "type": "git",
@@ -22,8 +21,23 @@
   },
   "license": "Apache-2.0",
   "sideEffects": false,
+  "exports": {
+    ".": "./src/index.ts",
+    "./alpha": "./src/alpha/index.ts",
+    "./package.json": "./package.json"
+  },
   "main": "src/index.ts",
   "types": "src/index.ts",
+  "typesVersions": {
+    "*": {
+      "alpha": [
+        "src/alpha/index.ts"
+      ],
+      "package.json": [
+        "package.json"
+      ]
+    }
+  },
   "files": [
     "dist"
   ],
@@ -41,18 +55,24 @@
     "@backstage/core-plugin-api": "workspace:^",
     "@backstage/frontend-plugin-api": "workspace:^",
     "@backstage/integration-react": "workspace:^",
+    "@backstage/plugin-app-react": "workspace:^",
     "@backstage/plugin-permission-react": "workspace:^",
     "@backstage/theme": "workspace:^",
     "@backstage/types": "workspace:^",
+    "@backstage/version-bridge": "workspace:^",
     "@material-ui/core": "^4.9.13",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "^4.0.0-alpha.61",
-    "react-use": "^17.2.4"
+    "@react-hookz/web": "^24.0.0",
+    "react-use": "^17.2.4",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@backstage/dev-utils": "workspace:^",
+    "@backstage/frontend-defaults": "workspace:^",
     "@backstage/frontend-test-utils": "workspace:^",
+    "@backstage/test-utils": "workspace:^",
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^16.0.0",
     "@testing-library/user-event": "^14.0.0",

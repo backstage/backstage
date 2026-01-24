@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
-
 export const ComponentTab = (props: {
   title: string;
   Content: () => JSX.Element;

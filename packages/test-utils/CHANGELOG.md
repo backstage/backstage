@@ -1,5 +1,264 @@
 # @backstage/test-utils
 
+## 1.7.14
+
+### Patch Changes
+
+- 97cd16f: Internal update of translation imports.
+- Updated dependencies
+  - @backstage/core-app-api@1.19.3
+  - @backstage/core-plugin-api@1.12.1
+  - @backstage/theme@0.7.1
+  - @backstage/plugin-permission-react@0.4.39
+
+## 1.7.14-next.0
+
+### Patch Changes
+
+- 97cd16f: Internal update of translation imports.
+- Updated dependencies
+  - @backstage/core-app-api@1.19.3-next.0
+  - @backstage/core-plugin-api@1.12.1-next.0
+  - @backstage/theme@0.7.1-next.0
+  - @backstage/config@1.3.6
+  - @backstage/plugin-permission-react@0.4.39-next.0
+  - @backstage/types@1.2.2
+  - @backstage/plugin-permission-common@0.9.3
+
+## 1.7.13
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.0
+  - @backstage/plugin-permission-common@0.9.3
+  - @backstage/core-app-api@1.19.2
+  - @backstage/plugin-permission-react@0.4.38
+  - @backstage/config@1.3.6
+
+## 1.7.13-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-react@0.4.38-next.0
+  - @backstage/core-app-api@1.19.2-next.0
+  - @backstage/core-plugin-api@1.11.2-next.0
+  - @backstage/config@1.3.6-next.0
+  - @backstage/theme@0.7.0
+  - @backstage/types@1.2.2
+  - @backstage/plugin-permission-common@0.9.3-next.0
+
+## 1.7.12
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.5
+  - @backstage/theme@0.7.0
+  - @backstage/core-app-api@1.19.1
+  - @backstage/core-plugin-api@1.11.1
+  - @backstage/plugin-permission-common@0.9.2
+  - @backstage/plugin-permission-react@0.4.37
+
+## 1.7.12-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.6.9-next.0
+
+## 1.7.12-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.4-next.0
+  - @backstage/core-app-api@1.19.1-next.0
+  - @backstage/core-plugin-api@1.11.1-next.0
+  - @backstage/plugin-permission-common@0.9.2-next.0
+  - @backstage/plugin-permission-react@0.4.37-next.0
+
+## 1.7.11
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.6.8
+
+## 1.7.11-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.6.8-next.0
+  - @backstage/config@1.3.3
+  - @backstage/core-app-api@1.18.0
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/types@1.2.1
+  - @backstage/plugin-permission-common@0.9.1
+  - @backstage/plugin-permission-react@0.4.36
+
+## 1.7.10
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3
+  - @backstage/plugin-permission-common@0.9.1
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/theme@0.6.7
+  - @backstage/core-app-api@1.18.0
+  - @backstage/plugin-permission-react@0.4.36
+
+## 1.7.10-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.6.7-next.1
+  - @backstage/core-app-api@1.18.0-next.1
+  - @backstage/core-plugin-api@1.10.9-next.0
+
+## 1.7.10-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3-next.0
+  - @backstage/plugin-permission-common@0.9.1-next.0
+  - @backstage/core-app-api@1.17.2-next.0
+  - @backstage/core-plugin-api@1.10.9-next.0
+  - @backstage/plugin-permission-react@0.4.36-next.0
+
+## 1.7.10-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.6.7-next.0
+  - @backstage/config@1.3.2
+  - @backstage/core-app-api@1.17.1
+  - @backstage/core-plugin-api@1.10.8
+  - @backstage/types@1.2.1
+  - @backstage/plugin-permission-common@0.9.0
+  - @backstage/plugin-permission-react@0.4.35
+
+## 1.7.9
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.8
+  - @backstage/config@1.3.2
+  - @backstage/core-app-api@1.17.1
+  - @backstage/theme@0.6.6
+  - @backstage/types@1.2.1
+  - @backstage/plugin-permission-common@0.9.0
+  - @backstage/plugin-permission-react@0.4.35
+
+## 1.7.8
+
+### Patch Changes
+
+- b573341: Added support for interpolating JSX elements with the `MockTranslationApi`.
+- Updated dependencies
+  - @backstage/theme@0.6.6
+  - @backstage/core-app-api@1.17.0
+  - @backstage/plugin-permission-common@0.9.0
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/config@1.3.2
+  - @backstage/plugin-permission-react@0.4.34
+  - @backstage/types@1.2.1
+
+## 1.7.8-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-app-api@1.17.0-next.1
+  - @backstage/core-plugin-api@1.10.7-next.0
+  - @backstage/config@1.3.2
+  - @backstage/theme@0.6.6-next.0
+  - @backstage/types@1.2.1
+  - @backstage/plugin-permission-common@0.9.0-next.0
+  - @backstage/plugin-permission-react@0.4.34-next.1
+
+## 1.7.8-next.1
+
+### Patch Changes
+
+- b573341: Added support for interpolating JSX elements with the `MockTranslationApi`.
+- Updated dependencies
+  - @backstage/core-app-api@1.16.2-next.0
+  - @backstage/core-plugin-api@1.10.7-next.0
+  - @backstage/config@1.3.2
+  - @backstage/plugin-permission-react@0.4.34-next.1
+  - @backstage/theme@0.6.6-next.0
+  - @backstage/types@1.2.1
+  - @backstage/plugin-permission-common@0.9.0-next.0
+
+## 1.7.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.6.6-next.0
+  - @backstage/plugin-permission-common@0.9.0-next.0
+  - @backstage/config@1.3.2
+  - @backstage/core-app-api@1.16.1
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/types@1.2.1
+  - @backstage/plugin-permission-react@0.4.34-next.0
+
+## 1.7.7
+
+### Patch Changes
+
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/plugin-permission-react@0.4.33
+  - @backstage/core-app-api@1.16.1
+  - @backstage/theme@0.6.5
+  - @backstage/config@1.3.2
+  - @backstage/types@1.2.1
+  - @backstage/plugin-permission-common@0.8.4
+
+## 1.7.7-next.0
+
+### Patch Changes
+
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.6-next.0
+  - @backstage/plugin-permission-react@0.4.33-next.0
+  - @backstage/core-app-api@1.16.1-next.0
+  - @backstage/theme@0.6.5-next.0
+  - @backstage/config@1.3.2
+  - @backstage/types@1.2.1
+  - @backstage/plugin-permission-common@0.8.4
+
+## 1.7.6
+
+### Patch Changes
+
+- 37c6510: Moved `@types/jest` to `devDependencies`.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.5
+  - @backstage/core-app-api@1.16.0
+  - @backstage/plugin-permission-react@0.4.32
+  - @backstage/config@1.3.2
+  - @backstage/theme@0.6.4
+  - @backstage/types@1.2.1
+  - @backstage/plugin-permission-common@0.8.4
+
 ## 1.7.6-next.0
 
 ### Patch Changes

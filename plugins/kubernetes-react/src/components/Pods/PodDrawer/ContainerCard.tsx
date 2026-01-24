@@ -23,13 +23,15 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { IContainer, IContainerStatus } from 'kubernetes-models/v1';
 import { DateTime } from 'luxon';
-import React from 'react';
+import { FC } from 'react';
 
 import { useIsPodExecTerminalEnabled } from '../../../hooks';
 import { bytesToMiB, formatMillicores } from '../../../utils/resources';
 import { PodExecTerminalDialog } from '../../PodExecTerminal/PodExecTerminalDialog';
 import { ResourceUtilization } from '../../ResourceUtilization';
 import { PodLogsDialog, PodScope } from '../PodLogs';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { kubernetesReactTranslationRef } from '../../../translation';
 
 const getContainerHealthChecks = (
   containerSpec: IContainer,
@@ -106,12 +108,13 @@ export interface ContainerCardProps {
  *
  * @public
  */
-export const ContainerCard: React.FC<ContainerCardProps> = ({
+export const ContainerCard: FC<ContainerCardProps> = ({
   podScope,
   containerSpec,
   containerStatus,
   containerMetrics,
 }: ContainerCardProps) => {
+  const { t } = useTranslationRef(kubernetesReactTranslationRef);
   const isPodExecTerminalEnabled = useIsPodExecTerminalEnabled();
 
   // This should never be undefined
@@ -183,13 +186,13 @@ export const ContainerCard: React.FC<ContainerCardProps> = ({
             <Grid container item xs={12} spacing={0}>
               <Grid item xs={12}>
                 <Typography variant="subtitle1">
-                  Resource utilization
+                  {t('podDrawer.resourceUtilization')}
                 </Typography>
               </Grid>
               <Grid item xs={12} style={{ minHeight: '5rem' }}>
                 <ResourceUtilization
                   compressed
-                  title="CPU requests"
+                  title={t('podDrawer.cpuRequests')}
                   usage={containerMetrics.cpuUsage.currentUsage}
                   total={containerMetrics.cpuUsage.requestTotal}
                   totalFormatted={formatMillicores(
@@ -198,7 +201,7 @@ export const ContainerCard: React.FC<ContainerCardProps> = ({
                 />
                 <ResourceUtilization
                   compressed
-                  title="CPU limits"
+                  title={t('podDrawer.cpuLimits')}
                   usage={containerMetrics.cpuUsage.currentUsage}
                   total={containerMetrics.cpuUsage.limitTotal}
                   totalFormatted={formatMillicores(
@@ -207,7 +210,7 @@ export const ContainerCard: React.FC<ContainerCardProps> = ({
                 />
                 <ResourceUtilization
                   compressed
-                  title="Memory requests"
+                  title={t('podDrawer.memoryRequests')}
                   usage={containerMetrics.memoryUsage.currentUsage}
                   total={containerMetrics.memoryUsage.requestTotal}
                   totalFormatted={bytesToMiB(
@@ -216,7 +219,7 @@ export const ContainerCard: React.FC<ContainerCardProps> = ({
                 />
                 <ResourceUtilization
                   compressed
-                  title="Memory limits"
+                  title={t('podDrawer.memoryLimits')}
                   usage={containerMetrics.memoryUsage.currentUsage}
                   total={containerMetrics.memoryUsage.limitTotal}
                   totalFormatted={bytesToMiB(

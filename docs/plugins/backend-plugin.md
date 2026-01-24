@@ -48,11 +48,20 @@ This will think for a bit, and then say `Listening on :7007`. In a different
 terminal window, now run
 
 ```sh
-curl localhost:7007/api/carmen/health
+curl localhost:7007/api/carmen/todos
 ```
 
-This should return `{"status":"ok"}`. Success! Press `Ctrl + c` to stop it
-again.
+You should see the following response:
+
+```json
+{
+  "items": []
+}
+```
+
+:::note Note: The route shown here matches the default in the current backend plugin template. If you want a `/health` endpoint for health checks, you can add it to your router yourself.
+
+:::
 
 ## Developing your Backend Plugin
 

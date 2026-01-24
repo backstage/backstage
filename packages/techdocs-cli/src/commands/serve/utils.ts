@@ -14,25 +14,22 @@
  * limitations under the License.
  */
 
-import { promisify } from 'util';
 import * as winston from 'winston';
-import { execFile } from 'child_process';
+import { runCheck } from '@backstage/cli-common';
 
 export async function checkIfDockerIsOperational(
   logger: winston.Logger,
 ): Promise<boolean> {
   logger.info('Checking Docker status...');
-  try {
-    const runCheck = promisify(execFile);
-    await runCheck('docker', ['info'], { shell: true });
+  const isOperational = await runCheck(['docker', 'info']);
+  if (isOperational) {
     logger.info(
       'Docker is up and running. Proceed to starting up mkdocs server',
     );
     return true;
-  } catch {
-    logger.error(
-      'Docker is not running. Exiting. Please check status of Docker daemon with `docker info` before re-running',
-    );
-    return false;
   }
+  logger.error(
+    'Docker is not running. Exiting. Please check status of Docker daemon with `docker info` before re-running',
+  );
+  return false;
 }

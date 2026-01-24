@@ -6,7 +6,7 @@ Development is ongoing. You can follow the progress and contribute at the Backst
 
 ## Getting started
 
-Run `yarn dev` in the root directory, and then navigate to [/search](http://localhost:3000/search) to check out the plugin.
+Run `yarn start` in the root directory, and then navigate to [/search](http://localhost:3000/search) to check out the plugin.
 
 ### Optional Settings
 

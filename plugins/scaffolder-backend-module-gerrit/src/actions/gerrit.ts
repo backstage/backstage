@@ -91,16 +91,7 @@ export function createPublishGerritAction(options: {
 }) {
   const { integrations, config } = options;
 
-  return createTemplateAction<{
-    repoUrl: string;
-    description: string;
-    defaultBranch?: string;
-    gitCommitMessage?: string;
-    gitAuthorName?: string;
-    gitAuthorEmail?: string;
-    sourcePath?: string;
-    signCommit?: boolean;
-  }>({
+  return createTemplateAction({
     id: 'publish:gerrit',
     supportsDryRun: true,
     description:
@@ -108,65 +99,70 @@ export function createPublishGerritAction(options: {
     examples,
     schema: {
       input: {
-        type: 'object',
-        required: ['repoUrl'],
-        properties: {
-          repoUrl: {
-            title: 'Repository Location',
-            type: 'string',
-          },
-          description: {
-            title: 'Repository Description',
-            type: 'string',
-          },
-          defaultBranch: {
-            title: 'Default Branch',
-            type: 'string',
-            description: `Sets the default branch on the repository. The default value is 'master'`,
-          },
-          gitCommitMessage: {
-            title: 'Git Commit Message',
-            type: 'string',
-            description: `Sets the commit message on the repository. The default value is 'initial commit'`,
-          },
-          gitAuthorName: {
-            title: 'Default Author Name',
-            type: 'string',
-            description: `Sets the default author name for the commit. The default value is 'Scaffolder'`,
-          },
-          gitAuthorEmail: {
-            title: 'Default Author Email',
-            type: 'string',
-            description: `Sets the default author email for the commit.`,
-          },
-          sourcePath: {
-            title: 'Source Path',
-            type: 'string',
-            description: `Path within the workspace that will be used as the repository root. If omitted, the entire workspace will be published as the repository.`,
-          },
-          signCommit: {
-            title: 'Sign commit',
-            type: 'boolean',
-            description: 'Sign commit with configured PGP private key',
-          },
-        },
+        repoUrl: z =>
+          z.string({
+            description: 'Repository Location',
+          }),
+        description: z =>
+          z.string({
+            description: 'Repository Description',
+          }),
+        defaultBranch: z =>
+          z
+            .string({
+              description: `Sets the default branch on the repository. The default value is 'master'`,
+            })
+            .optional(),
+        gitCommitMessage: z =>
+          z
+            .string({
+              description: `Sets the commit message on the repository. The default value is 'initial commit'`,
+            })
+            .optional(),
+        gitAuthorName: z =>
+          z
+            .string({
+              description: `Sets the default author name for the commit. The default value is 'Scaffolder'`,
+            })
+            .optional(),
+        gitAuthorEmail: z =>
+          z
+            .string({
+              description: `Sets the default author email for the commit.`,
+            })
+            .optional(),
+        sourcePath: z =>
+          z
+            .string({
+              description: `Path within the workspace that will be used as the repository root. If omitted, the entire workspace will be published as the repository.`,
+            })
+            .optional(),
+        signCommit: z =>
+          z
+            .boolean({
+              description: 'Sign commit with configured PGP private key',
+            })
+            .optional(),
       },
       output: {
-        type: 'object',
-        properties: {
-          remoteUrl: {
-            title: 'A URL to the repository with the provider',
-            type: 'string',
-          },
-          repoContentsUrl: {
-            title: 'A URL to the root of the repository',
-            type: 'string',
-          },
-          commitHash: {
-            title: 'The git commit hash of the initial commit',
-            type: 'string',
-          },
-        },
+        remoteUrl: z =>
+          z
+            .string({
+              description: 'A URL to the repository with the provider',
+            })
+            .optional(),
+        repoContentsUrl: z =>
+          z
+            .string({
+              description: 'A URL to the root of the repository',
+            })
+            .optional(),
+        commitHash: z =>
+          z
+            .string({
+              description: 'The git commit hash of the initial commit',
+            })
+            .optional(),
       },
     },
     async handler(ctx) {

@@ -48,7 +48,9 @@ export const catalogReactTranslationRef = createTranslationRef({
       emailCardAction: {
         title: 'Email {{email}}',
         subTitle: 'mailto {{email}}',
+        ariaLabel: 'Email',
       },
+      entityCardActionsAriaLabel: 'Show',
       entityCardActionsTitle: 'Show details',
     },
     entitySearchBar: {
@@ -68,6 +70,9 @@ export const catalogReactTranslationRef = createTranslationRef({
       closeButtonTitle: 'Close',
       ancestryPage: {
         title: 'Ancestry',
+        description:
+          'This is the ancestry of entities above the current one - as in, the chain(s) of entities down to the current one, where {{processorsLink}} child entities that ultimately led to the current one existing. Note that this is a completely different mechanism from relations.',
+        processorsLink: 'processors emitted',
       },
       colocatedPage: {
         title: 'Colocated',
@@ -75,6 +80,8 @@ export const catalogReactTranslationRef = createTranslationRef({
           'These are the entities that are colocated with this entity - as in, they originated from the same data source (e.g. came from the same YAML file), or from the same origin (e.g. the originally registered URL).',
         alertNoLocation: 'Entity had no location information.',
         alertNoEntity: 'There were no other entities on this location.',
+        locationHeader: 'At the same location',
+        originHeader: 'At the same origin',
       },
       jsonPage: {
         title: 'Entity as JSON',
@@ -83,12 +90,35 @@ export const catalogReactTranslationRef = createTranslationRef({
       },
       overviewPage: {
         title: 'Overview',
+        relation: {
+          title: 'Relations',
+        },
+        status: {
+          title: 'Status',
+        },
+        identity: {
+          title: 'Identity',
+        },
+        metadata: {
+          title: 'Metadata',
+        },
+        annotations: 'Annotations',
+        labels: 'Labels',
+        tags: 'Tags',
       },
       yamlPage: {
         title: 'Entity as YAML',
         description:
           'This is the raw entity data as received from the catalog, on YAML form.',
       },
+      tabNames: {
+        overview: 'Overview',
+        ancestry: 'Ancestry',
+        colocated: 'Colocated',
+        json: 'Raw JSON',
+        yaml: 'Raw YAML',
+      },
+      tabsAriaLabel: 'Inspector options',
     },
     unregisterEntityDialog: {
       title: 'Are you sure you want to unregister this entity?',
@@ -123,6 +153,30 @@ export const catalogReactTranslationRef = createTranslationRef({
         starredLabel: 'Starred',
       },
       orgFilterAllLabel: 'All',
+    },
+    entityTableColumnTitle: {
+      name: 'Name',
+      system: 'System',
+      owner: 'Owner',
+      type: 'Type',
+      lifecycle: 'Lifecycle',
+      namespace: 'Namespace',
+      description: 'Description',
+      tags: 'Tags',
+      targets: 'Targets',
+      title: 'Title',
+      label: 'Label',
+      domain: 'Domain',
+    },
+    missingAnnotationEmptyState: {
+      title: 'Missing Annotation',
+      readMore: 'Read more',
+      annotationYaml:
+        'Add the annotation to your {{entityKind}} YAML as shown in the highlighted example below:',
+      generateDescription_one:
+        'The annotation {{annotations}} is missing. You need to add the annotation to your {{entityKind}} if you want to enable this tool.',
+      generateDescription_other:
+        'The annotations {{annotations}} are missing. You need to add the annotations to your {{entityKind}} if you want to enable this tool.',
     },
   },
 });

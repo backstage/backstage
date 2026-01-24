@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { ReviewState } from './ReviewState';
 import { render } from '@testing-library/react';
 import { ParsedTemplateSchema } from '../../hooks/useTemplateSchema';
@@ -467,6 +466,7 @@ describe('ReviewState', () => {
   it('should allow custom review name', async () => {
     const formState = {
       foo: 'test',
+      providedAPIs: 'api1,api2',
     };
 
     const schemas: ParsedTemplateSchema[] = [
@@ -478,7 +478,15 @@ describe('ReviewState', () => {
               type: 'string',
               'ui:backstage': {
                 review: {
-                  name: 'bar',
+                  name: 'Bar',
+                },
+              },
+            },
+            providedAPIs: {
+              type: 'string',
+              'ui:backstage': {
+                review: {
+                  name: 'Provided APIs',
                 },
               },
             },
@@ -496,6 +504,9 @@ describe('ReviewState', () => {
 
     expect(queryByRole('row', { name: 'Bar test' })).toBeInTheDocument();
     expect(queryByRole('row', { name: 'Foo test' })).not.toBeInTheDocument();
+    expect(
+      queryByRole('row', { name: 'Provided APIs api1,api2' }),
+    ).toBeInTheDocument();
   });
 
   it('should handle options in multiple schemas', async () => {

@@ -20,7 +20,7 @@ import Snackbar from '@material-ui/core/Snackbar';
 import Typography from '@material-ui/core/Typography';
 import CloseIcon from '@material-ui/icons/Close';
 import Alert from '@material-ui/lab/Alert';
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { coreComponentsTranslationRef } from '../../translation';
 
 /**
@@ -124,6 +124,7 @@ export function AlertDisplay(props: AlertDisplayProps) {
           {String(firstMessage.message)}
           {messages.length > 1 && (
             <em>
+              {' '}
               {t('alertDisplay.message', {
                 count: messages.length - 1,
               })}

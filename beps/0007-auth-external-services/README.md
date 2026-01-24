@@ -1,6 +1,6 @@
 ---
 title: Authentication of External Services
-status: provisional
+status: implemented
 authors:
   - '@mareklibra'
 owners:

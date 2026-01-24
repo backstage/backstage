@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
 import { HeaderLabel } from './HeaderLabel';
 
 export default {
   title: 'Layout/HeaderLabel',
   component: HeaderLabel,
+  tags: ['!manifest'],
 };
 
 type HeaderLabelProps = {

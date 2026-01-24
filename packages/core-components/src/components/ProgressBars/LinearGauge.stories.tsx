@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { LinearGauge } from './LinearGauge';
 
 const containerStyle = { width: 300 };
@@ -22,6 +21,7 @@ const containerStyle = { width: 300 };
 export default {
   title: 'Data Display/LinearGauge',
   component: LinearGauge,
+  tags: ['!manifest'],
 };
 
 export const Default = () => (

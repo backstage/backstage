@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { createContext } from 'react';
+import { SetStateAction, Dispatch, createContext } from 'react';
 
 /**
  * Type of `MobileSidebarContext`
@@ -23,7 +23,7 @@ import React, { createContext } from 'react';
  */
 export type MobileSidebarContextType = {
   selectedMenuItemIndex: number;
-  setSelectedMenuItemIndex: React.Dispatch<React.SetStateAction<number>>;
+  setSelectedMenuItemIndex: Dispatch<SetStateAction<number>>;
 };
 
 /**

@@ -4,5 +4,5 @@
 
 | Name                        | Location     | Severity |
 | :-------------------------- | :----------- | :------- |
-| @backstage/frontend-app-api | package.json | error    |
+| @backstage/frontend-app-api | plugins/search-react/package.json | error    |
 

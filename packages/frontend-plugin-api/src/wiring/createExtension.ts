@@ -17,19 +17,25 @@
 import { ApiHolder, AppNode } from '../apis';
 import { Expand } from '@backstage/types';
 import {
-  ResolveInputValueOverrides,
+  ResolvedInputValueOverrides,
   resolveInputOverrides,
 } from './resolveInputOverrides';
-import { createExtensionDataContainer } from '@internal/frontend';
 import {
-  AnyExtensionDataRef,
-  ExtensionDataValue,
-} from './createExtensionDataRef';
+  createExtensionDataContainer,
+  OpaqueExtensionInput,
+} from '@internal/frontend';
+import { ExtensionDataRef, ExtensionDataValue } from './createExtensionDataRef';
 import { ExtensionInput } from './createExtensionInput';
-import { z } from 'zod';
+import type { z } from 'zod';
 import { createSchemaFromZod } from '../schema/createSchemaFromZod';
 import { OpaqueExtensionDefinition } from '@internal/frontend';
 import { ExtensionDataContainer } from './types';
+import {
+  ExtensionBlueprint,
+  ExtensionBlueprintDefineParams,
+} from './createExtensionBlueprint';
+import { FrontendPlugin } from './createFrontendPlugin';
+import { FrontendModule } from './createFrontendModule';
 
 /**
  * This symbol is used to pass parameter overrides from the extension override to the blueprint factory
@@ -41,13 +47,12 @@ export const ctxParamsSymbol = Symbol('params');
  * Convert a single extension input into a matching resolved input.
  * @public
  */
-export type ResolvedExtensionInput<
-  TExtensionInput extends ExtensionInput<any, any>,
-> = TExtensionInput['extensionData'] extends Array<AnyExtensionDataRef>
-  ? {
-      node: AppNode;
-    } & ExtensionDataContainer<TExtensionInput['extensionData'][number]>
-  : never;
+export type ResolvedExtensionInput<TExtensionInput extends ExtensionInput> =
+  TExtensionInput['extensionData'] extends Array<ExtensionDataRef>
+    ? {
+        node: AppNode;
+      } & ExtensionDataContainer<TExtensionInput['extensionData'][number]>
+    : never;
 
 /**
  * Converts an extension input map into a matching collection of resolved inputs.
@@ -55,7 +60,7 @@ export type ResolvedExtensionInput<
  */
 export type ResolvedExtensionInputs<
   TInputs extends {
-    [name in string]: ExtensionInput<any, any>;
+    [name in string]: ExtensionInput;
   },
 > = {
   [InputName in keyof TInputs]: false extends TInputs[InputName]['config']['singleton']
@@ -89,49 +94,103 @@ type JoinStringUnion<
   : TResult;
 
 /** @ignore */
-export type VerifyExtensionFactoryOutput<
-  UDeclaredOutput extends AnyExtensionDataRef,
-  UFactoryOutput extends ExtensionDataValue<any, any>,
-> = (
-  UDeclaredOutput extends any
-    ? UDeclaredOutput['config']['optional'] extends true
+export type RequiredExtensionIds<UExtensionData extends ExtensionDataRef> =
+  UExtensionData extends any
+    ? UExtensionData['config']['optional'] extends true
       ? never
-      : UDeclaredOutput['id']
-    : never
-) extends infer IRequiredOutputIds
-  ? [IRequiredOutputIds] extends [UFactoryOutput['id']]
-    ? [UFactoryOutput['id']] extends [UDeclaredOutput['id']]
-      ? {}
-      : `Error: The extension factory has undeclared output(s): ${JoinStringUnion<
-          Exclude<UFactoryOutput['id'], UDeclaredOutput['id']>
-        >}`
-    : `Error: The extension factory is missing the following output(s): ${JoinStringUnion<
-        Exclude<IRequiredOutputIds, UFactoryOutput['id']>
-      >}`
-  : never;
+      : UExtensionData['id']
+    : never;
 
-/** @public */
-export type ExtensionAttachToSpec =
-  | { id: string; input: string }
-  | Array<{ id: string; input: string }>;
+/** @ignore */
+export type VerifyExtensionFactoryOutput<
+  UDeclaredOutput extends ExtensionDataRef,
+  UFactoryOutput extends ExtensionDataValue<any, any>,
+> = [RequiredExtensionIds<UDeclaredOutput>] extends [UFactoryOutput['id']]
+  ? [UFactoryOutput['id']] extends [UDeclaredOutput['id']]
+    ? {}
+    : `Error: The extension factory has undeclared output(s): ${JoinStringUnion<
+        Exclude<UFactoryOutput['id'], UDeclaredOutput['id']>
+      >}`
+  : `Error: The extension factory is missing the following output(s): ${JoinStringUnion<
+      Exclude<RequiredExtensionIds<UDeclaredOutput>, UFactoryOutput['id']>
+    >}`;
+
+/** @ignore */
+export type VerifyExtensionAttachTo<
+  UOutput extends ExtensionDataRef,
+  UParentInput extends ExtensionDataRef,
+> = ExtensionDataRef extends UParentInput
+  ? {}
+  : [RequiredExtensionIds<UParentInput>] extends [RequiredExtensionIds<UOutput>]
+  ? {}
+  : `Error: This parent extension input requires the following extension data, but it is not declared as guaranteed output of this extension: ${JoinStringUnion<
+      Exclude<RequiredExtensionIds<UParentInput>, RequiredExtensionIds<UOutput>>
+    >}`;
+
+/**
+ * Specifies where an extension should attach in the extension tree.
+ *
+ * @remarks
+ *
+ * A standard attachment point declaration will specify the ID of the parent extension, as well as the name of the input to attach to.
+ *
+ * There are three more advanced forms that are available for more complex use-cases:
+ *
+ * 1. Relative attachment points: using the `relative` property instead of `id`, the attachment point is resolved relative to the current plugin.
+ * 2. Extension input references: using a reference in code to another extension's input in the same plugin. These references are always relative.
+ * 3. Array of attachment points: an array of attachment points can be used to clone and attach to multiple extensions at once.
+ *
+ * @example
+ * ```ts
+ * // Attach to a specific extension by full ID
+ * { id: 'app/routes', input: 'routes' }
+ *
+ * // Attach to an extension in the same plugin by kind
+ * { relative: { kind: 'page' }, input: 'actions' }
+ *
+ * // Attach to a specific input of another extension
+ * const page = ParentBlueprint.make({ ... });
+ * const child = ChildBlueprint.make({ attachTo: page.inputs.children });
+ *
+ * // Attach to multiple parents at once
+ * [
+ *   { id: 'page/home', input: 'widgets' },
+ *   { relative: { kind: 'page' }, input: 'widgets' },
+ * ]
+ * ```
+ *
+ * @public
+ */
+export type ExtensionDefinitionAttachTo<
+  UParentInputs extends ExtensionDataRef = ExtensionDataRef,
+> =
+  | { id: string; input: string; relative?: never }
+  | { relative: { kind?: string; name?: string }; input: string; id?: never }
+  | ExtensionInput<UParentInputs>
+  | Array<
+      | { id: string; input: string; relative?: never }
+      | {
+          relative: { kind?: string; name?: string };
+          input: string;
+          id?: never;
+        }
+      | ExtensionInput<UParentInputs>
+    >;
 
 /** @public */
 export type CreateExtensionOptions<
   TKind extends string | undefined,
   TName extends string | undefined,
-  UOutput extends AnyExtensionDataRef,
-  TInputs extends {
-    [inputName in string]: ExtensionInput<
-      AnyExtensionDataRef,
-      { optional: boolean; singleton: boolean }
-    >;
-  },
+  UOutput extends ExtensionDataRef,
+  TInputs extends { [inputName in string]: ExtensionInput },
   TConfigSchema extends { [key: string]: (zImpl: typeof z) => z.ZodType },
   UFactoryOutput extends ExtensionDataValue<any, any>,
+  UParentInputs extends ExtensionDataRef,
 > = {
   kind?: TKind;
   name?: TName;
-  attachTo: ExtensionAttachToSpec;
+  attachTo: ExtensionDefinitionAttachTo<UParentInputs> &
+    VerifyExtensionAttachTo<UOutput, UParentInputs>;
   disabled?: boolean;
   inputs?: TInputs;
   output: Array<UOutput>;
@@ -154,39 +213,65 @@ export type ExtensionDefinitionParameters = {
   name?: string;
   configInput?: { [K in string]: any };
   config?: { [K in string]: any };
-  output?: AnyExtensionDataRef;
-  inputs?: {
-    [KName in string]: ExtensionInput<
-      AnyExtensionDataRef,
-      { optional: boolean; singleton: boolean }
-    >;
-  };
-  params?: object;
+  output?: ExtensionDataRef;
+  inputs?: { [KName in string]: ExtensionInput };
+  params?: object | ExtensionBlueprintDefineParams;
 };
 
+/**
+ * Same as the one in `createExtensionBlueprint`, but with `ParamsFactory` inlined.
+ * It can't be exported because it breaks API reports.
+ * @ignore
+ */
+type AnyParamsInput<TParams extends object | ExtensionBlueprintDefineParams> =
+  TParams extends ExtensionBlueprintDefineParams<infer IParams>
+    ? IParams | ((define: TParams) => ReturnType<TParams>)
+    :
+        | TParams
+        | ((
+            define: ExtensionBlueprintDefineParams<TParams, TParams>,
+          ) => ReturnType<ExtensionBlueprintDefineParams<TParams, TParams>>);
+
 /** @public */
-export type ExtensionDefinition<
-  T extends ExtensionDefinitionParameters = ExtensionDefinitionParameters,
-> = {
+export interface ExtensionDefinition<
+  TParams extends ExtensionDefinitionParameters = ExtensionDefinitionParameters,
+> {
   $$type: '@backstage/ExtensionDefinition';
-  readonly T: T;
+  readonly T: TParams;
+}
+
+/** @public */
+export interface OverridableExtensionDefinition<
+  T extends ExtensionDefinitionParameters = ExtensionDefinitionParameters,
+> extends ExtensionDefinition<T> {
+  /**
+   * References to the inputs of this extension, which can be used to attach child extensions.
+   */
+  readonly inputs: {
+    [K in keyof T['inputs']]: ExtensionInput<
+      T['inputs'][K] extends ExtensionInput<infer IData> ? IData : never
+    >;
+  };
 
   override<
     TExtensionConfigSchema extends {
       [key in string]: (zImpl: typeof z) => z.ZodType;
     },
     UFactoryOutput extends ExtensionDataValue<any, any>,
-    UNewOutput extends AnyExtensionDataRef,
-    TExtraInputs extends {
-      [inputName in string]: ExtensionInput<
-        AnyExtensionDataRef,
-        { optional: boolean; singleton: boolean }
-      >;
-    },
+    UNewOutput extends ExtensionDataRef,
+    TExtraInputs extends { [inputName in string]: ExtensionInput },
+    TParamsInput extends AnyParamsInput<NonNullable<T['params']>>,
+    UParentInputs extends ExtensionDataRef,
   >(
     args: Expand<
       {
-        attachTo?: ExtensionAttachToSpec;
+        attachTo?: ExtensionDefinitionAttachTo<UParentInputs> &
+          VerifyExtensionAttachTo<
+            ExtensionDataRef extends UNewOutput
+              ? NonNullable<T['output']>
+              : UNewOutput,
+            UParentInputs
+          >;
         disabled?: boolean;
         inputs?: TExtraInputs & {
           [KName in keyof T['inputs']]?: `Error: Input '${KName &
@@ -200,14 +285,24 @@ export type ExtensionDefinition<
           };
         };
         factory?(
-          originalFactory: (
+          originalFactory: <
+            TFactoryParamsReturn extends AnyParamsInput<
+              NonNullable<T['params']>
+            >,
+          >(
             context?: Expand<
               {
                 config?: T['config'];
-                inputs?: ResolveInputValueOverrides<NonNullable<T['inputs']>>;
+                inputs?: ResolvedInputValueOverrides<NonNullable<T['inputs']>>;
               } & ([T['params']] extends [never]
                 ? {}
-                : { params?: Partial<T['params']> })
+                : {
+                    params?: TFactoryParamsReturn extends ExtensionBlueprintDefineParams
+                      ? TFactoryParamsReturn
+                      : T['params'] extends ExtensionBlueprintDefineParams
+                      ? 'Error: This blueprint uses advanced parameter types and requires you to pass parameters as using the following callback syntax: `originalFactory(defineParams => defineParams(<params>))`'
+                      : Partial<T['params']>;
+                  })
             >,
           ) => ExtensionDataContainer<NonNullable<T['output']>>,
           context: {
@@ -223,18 +318,24 @@ export type ExtensionDefinition<
         ): Iterable<UFactoryOutput>;
       } & ([T['params']] extends [never]
         ? {}
-        : { params?: Partial<T['params']> })
+        : {
+            params?: TParamsInput extends ExtensionBlueprintDefineParams
+              ? TParamsInput
+              : T['params'] extends ExtensionBlueprintDefineParams
+              ? 'Error: This blueprint uses advanced parameter types and requires you to pass parameters as using the following callback syntax: `originalFactory(defineParams => defineParams(<params>))`'
+              : Partial<T['params']>;
+          })
     > &
       VerifyExtensionFactoryOutput<
-        AnyExtensionDataRef extends UNewOutput
+        ExtensionDataRef extends UNewOutput
           ? NonNullable<T['output']>
           : UNewOutput,
         UFactoryOutput
       >,
-  ): ExtensionDefinition<{
+  ): OverridableExtensionDefinition<{
     kind: T['kind'];
     name: T['name'];
-    output: AnyExtensionDataRef extends UNewOutput ? T['output'] : UNewOutput;
+    output: ExtensionDataRef extends UNewOutput ? T['output'] : UNewOutput;
     inputs: T['inputs'] & TExtraInputs;
     config: T['config'] & {
       [key in keyof TExtensionConfigSchema]: z.infer<
@@ -250,21 +351,75 @@ export type ExtensionDefinition<
         }>
       >;
   }>;
-};
+}
 
-/** @public */
+/**
+ * @internal
+ */
+function bindInputs(
+  inputs: { [inputName in string]: ExtensionInput } | undefined,
+  kind?: string,
+  name?: string,
+) {
+  if (!inputs) {
+    return {};
+  }
+
+  return Object.fromEntries(
+    Object.entries(inputs).map(([inputName, input]) => [
+      inputName,
+      OpaqueExtensionInput.toInternal(input).withContext?.({
+        kind,
+        name,
+        input: inputName,
+      }) ?? input,
+    ]),
+  );
+}
+
+/**
+ * Creates a new extension definition for installation in a Backstage app.
+ *
+ * @remarks
+ *
+ * This is a low-level function for creation of extensions with arbitrary inputs
+ * and outputs and is typically only intended to be used for advanced overrides
+ * or framework-level extensions. For most extension creation needs, it is
+ * recommended to use existing {@link ExtensionBlueprint}s instead. You can find
+ * blueprints both in the `@backstage/frontend-plugin-api` package as well as
+ * other plugin libraries. There is also a list of
+ * {@link https://backstage.io/docs/frontend-system/building-plugins/common-extension-blueprints | commonly used blueprints}
+ * in the frontend system documentation.
+ *
+ * Extension definitions that are created with this function can be installed in
+ * a Backstage app via a {@link FrontendPlugin} or {@link FrontendModule}.
+ *
+ * For more details on how extensions work, see the
+ * {@link https://backstage.io/docs/frontend-system/architecture/extensions | documentation for extensions}.
+ *
+ * @example
+ *
+ * ```ts
+ * const myExtension = createExtension({
+ *   name: 'example',
+ *   attachTo: { id: 'app', input: 'root' },
+ *   output: [coreExtensionData.reactElement],
+ *   factory() {
+ *     return [coreExtensionData.reactElement(<h1>Hello, world!</h1>)];
+ *   },
+ * });
+ * ```
+ *
+ * @public
+ */
 export function createExtension<
-  UOutput extends AnyExtensionDataRef,
-  TInputs extends {
-    [inputName in string]: ExtensionInput<
-      AnyExtensionDataRef,
-      { optional: boolean; singleton: boolean }
-    >;
-  },
+  UOutput extends ExtensionDataRef,
+  TInputs extends { [inputName in string]: ExtensionInput },
   TConfigSchema extends { [key: string]: (zImpl: typeof z) => z.ZodType },
   UFactoryOutput extends ExtensionDataValue<any, any>,
   const TKind extends string | undefined = undefined,
   const TName extends string | undefined = undefined,
+  UParentInputs extends ExtensionDataRef = ExtensionDataRef,
 >(
   options: CreateExtensionOptions<
     TKind,
@@ -272,9 +427,10 @@ export function createExtension<
     UOutput,
     TInputs,
     TConfigSchema,
-    UFactoryOutput
+    UFactoryOutput,
+    UParentInputs
   >,
-): ExtensionDefinition<{
+): OverridableExtensionDefinition<{
   config: string extends keyof TConfigSchema
     ? {}
     : {
@@ -287,7 +443,14 @@ export function createExtension<
           [key in keyof TConfigSchema]: ReturnType<TConfigSchema[key]>;
         }>
       >;
-  output: UOutput;
+  // This inference and remapping back to ExtensionDataRef eliminates any occurrences ConfigurationExtensionDataRef
+  output: UOutput extends ExtensionDataRef<
+    infer IData,
+    infer IId,
+    infer IConfig
+  >
+    ? ExtensionDataRef<IData, IId, IConfig>
+    : never;
   inputs: TInputs;
   params: never;
   kind: string | undefined extends TKind ? undefined : TKind;
@@ -329,7 +492,7 @@ export function createExtension<
     name: options.name,
     attachTo: options.attachTo,
     disabled: options.disabled ?? false,
-    inputs: options.inputs ?? {},
+    inputs: bindInputs(options.inputs, options.kind, options.name),
     output: options.output,
     configSchema,
     factory: options.factory,
@@ -341,12 +504,41 @@ export function createExtension<
       if (options.name) {
         parts.push(`name=${options.name}`);
       }
-      parts.push(
-        `attachTo=${[options.attachTo]
-          .flat()
-          .map(a => `${a.id}@${a.input}`)
-          .join('+')}`,
-      );
+      const attachTo = [options.attachTo]
+        .flat()
+        .map(aAny => {
+          const a = aAny as ExtensionDefinitionAttachTo;
+          if (OpaqueExtensionInput.isType(a)) {
+            const { context } = OpaqueExtensionInput.toInternal(a);
+            if (!context) {
+              return '<detached-input>';
+            }
+            let id = '<plugin>';
+            if (context?.kind) {
+              id = `${context?.kind}:${id}`;
+            }
+            if (context?.name) {
+              id = `${id}/${context?.name}`;
+            }
+            return `${id}@${context.input}`;
+          }
+          if ('relative' in a && a.relative) {
+            let id = '<plugin>';
+            if (a.relative.kind) {
+              id = `${a.relative.kind}:${id}`;
+            }
+            if (a.relative.name) {
+              id = `${id}/${a.relative.name}`;
+            }
+            return `${id}@${a.input}`;
+          }
+          if ('id' in a) {
+            return `${a.id}@${a.input}`;
+          }
+          throw new Error('Invalid attachment point specification');
+        })
+        .join('+');
+      parts.push(`attachTo=${attachTo}`);
       return `ExtensionDefinition{${parts.join(',')}}`;
     },
     override(overrideOptions) {
@@ -374,11 +566,19 @@ export function createExtension<
       return createExtension({
         kind: options.kind,
         name: options.name,
-        attachTo: overrideOptions.attachTo ?? options.attachTo,
+        attachTo: (overrideOptions.attachTo ??
+          options.attachTo) as ExtensionDefinitionAttachTo,
         disabled: overrideOptions.disabled ?? options.disabled,
-        inputs: { ...overrideOptions.inputs, ...options.inputs },
+        inputs: bindInputs(
+          {
+            ...(options.inputs ?? {}),
+            ...(overrideOptions.inputs ?? {}),
+          },
+          options.kind,
+          options.name,
+        ),
         output: (overrideOptions.output ??
-          options.output) as AnyExtensionDataRef[],
+          options.output) as ExtensionDataRef[],
         config:
           options.config || overrideOptions.config
             ? {
@@ -412,6 +612,7 @@ export function createExtension<
                   ) as any,
                   [ctxParamsSymbol as any]: innerContext?.params,
                 }) as Iterable<any>,
+                'original extension factory',
                 options.output,
               );
             },
@@ -423,6 +624,15 @@ export function createExtension<
             },
           );
 
+          if (
+            typeof parentResult !== 'object' ||
+            !parentResult?.[Symbol.iterator]
+          ) {
+            throw new Error(
+              'extension factory override did not provide an iterable object',
+            );
+          }
+
           const deduplicatedResult = new Map<
             string,
             ExtensionDataValue<any, any>
@@ -433,7 +643,7 @@ export function createExtension<
 
           return deduplicatedResult.values();
         },
-      }) as ExtensionDefinition<any>;
+      }) as OverridableExtensionDefinition<any>;
     },
   });
 }

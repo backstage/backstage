@@ -16,7 +16,6 @@
 
 import { renderInTestApp } from '@backstage/test-utils';
 
-import React from 'react';
 import { TaskStatusColumn } from './TaskStatusColumn';
 
 describe('<TaskStatusColumn />', () => {

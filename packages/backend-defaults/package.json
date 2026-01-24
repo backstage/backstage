@@ -1,6 +1,6 @@
 {
   "name": "@backstage/backend-defaults",
-  "version": "0.8.2-next.2",
+  "version": "0.15.0",
   "description": "Backend defaults used by Backstage backend apps",
   "backstage": {
     "role": "node-library"
@@ -39,6 +39,7 @@
     "./scheduler": "./src/entrypoints/scheduler/index.ts",
     "./urlReader": "./src/entrypoints/urlReader/index.ts",
     "./userInfo": "./src/entrypoints/userInfo/index.ts",
+    "./alpha": "./src/alpha/index.ts",
     "./package.json": "./package.json"
   },
   "main": "src/index.ts",
@@ -102,6 +103,9 @@
       "userInfo": [
         "src/entrypoints/userInfo/index.ts"
       ],
+      "alpha": [
+        "src/alpha/index.ts"
+      ],
       "package.json": [
         "package.json"
       ]
@@ -127,12 +131,10 @@
     "@aws-sdk/client-s3": "^3.350.0",
     "@aws-sdk/credential-providers": "^3.350.0",
     "@aws-sdk/types": "^3.347.0",
-    "@azure/identity": "^4.0.0",
     "@azure/storage-blob": "^12.5.0",
     "@backstage/backend-app-api": "workspace:^",
     "@backstage/backend-dev-utils": "workspace:^",
     "@backstage/backend-plugin-api": "workspace:^",
-    "@backstage/cli-common": "workspace:^",
     "@backstage/cli-node": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/config-loader": "workspace:^",
@@ -146,6 +148,7 @@
     "@google-cloud/storage": "^7.0.0",
     "@keyv/memcache": "^2.0.1",
     "@keyv/redis": "^4.0.1",
+    "@keyv/valkey": "^1.0.1",
     "@manypkg/get-packages": "^1.1.3",
     "@octokit/rest": "^19.0.3",
     "@opentelemetry/api": "^1.9.0",
@@ -153,18 +156,19 @@
     "@types/express": "^4.17.6",
     "archiver": "^7.0.0",
     "base64-stream": "^1.0.0",
-    "better-sqlite3": "^11.0.0",
     "compression": "^1.7.4",
     "concat-stream": "^2.0.0",
     "cookie": "^0.7.0",
     "cors": "^2.8.5",
     "cron": "^3.0.0",
-    "express": "^4.17.1",
+    "express": "^4.22.0",
     "express-promise-router": "^4.1.0",
+    "express-rate-limit": "^7.5.0",
     "fs-extra": "^11.2.0",
     "git-url-parse": "^15.0.0",
     "helmet": "^6.0.0",
-    "isomorphic-git": "^1.23.0",
+    "infinispan": "^0.12.0",
+    "is-glob": "^4.0.3",
     "jose": "^5.0.0",
     "keyv": "^5.2.1",
     "knex": "^3.0.0",
@@ -172,26 +176,26 @@
     "logform": "^2.3.2",
     "luxon": "^3.0.0",
     "minimatch": "^9.0.0",
-    "minimist": "^1.2.5",
     "mysql2": "^3.0.0",
     "node-fetch": "^2.7.0",
-    "node-forge": "^1.3.1",
+    "node-forge": "^1.3.2",
     "p-limit": "^3.1.0",
-    "p-throttle": "^4.1.1",
     "path-to-regexp": "^8.0.0",
     "pg": "^8.11.3",
     "pg-connection-string": "^2.3.0",
     "pg-format": "^1.0.4",
+    "rate-limit-redis": "^4.2.0",
     "raw-body": "^2.4.1",
     "selfsigned": "^2.0.0",
-    "tar": "^6.1.12",
+    "tar": "^7.5.6",
     "triple-beam": "^1.4.1",
     "uuid": "^11.0.0",
     "winston": "^3.2.1",
     "winston-transport": "^4.5.0",
     "yauzl": "^3.0.0",
     "yn": "^4.0.0",
-    "zod": "^3.22.4"
+    "zod": "^3.22.4",
+    "zod-to-json-schema": "^3.25.1"
   },
   "devDependencies": {
     "@aws-sdk/util-stream-node": "^3.350.0",
@@ -199,15 +203,18 @@
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@google-cloud/cloud-sql-connector": "^1.4.0",
-    "@types/archiver": "^6.0.0",
+    "@types/archiver": "^7.0.0",
     "@types/base64-stream": "^1.0.2",
+    "@types/compression": "^1.7.5",
     "@types/concat-stream": "^2.0.0",
     "@types/http-errors": "^2.0.0",
+    "@types/is-glob": "^4.0.2",
     "@types/node-forge": "^1.3.0",
     "@types/pg-format": "^1.0.5",
-    "@types/stoppable": "^1.1.0",
     "@types/yauzl": "^2.10.0",
     "aws-sdk-client-mock": "^4.0.0",
+    "better-sqlite3": "^12.0.0",
+    "get-port": "^5.1.1",
     "http-errors": "^2.0.0",
     "msw": "^1.0.0",
     "node-mocks-http": "^1.0.0",
@@ -215,10 +222,14 @@
     "wait-for-expect": "^3.0.2"
   },
   "peerDependencies": {
-    "@google-cloud/cloud-sql-connector": "^1.4.0"
+    "@google-cloud/cloud-sql-connector": "^1.4.0",
+    "better-sqlite3": "^12.0.0"
   },
   "peerDependenciesMeta": {
     "@google-cloud/cloud-sql-connector": {
+      "optional": true
+    },
+    "better-sqlite3": {
       "optional": true
     }
   },

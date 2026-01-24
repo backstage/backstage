@@ -14,4 +14,11 @@
  * limitations under the License.
  */
 
-export { VisitList } from './VisitList';
+// Public API exports
+export { VisitDisplayProvider, useVisitDisplay } from './Context';
+export type {
+  GetChipColorFunction,
+  GetLabelFunction,
+  VisitDisplayContextValue,
+  VisitDisplayProviderProps,
+} from './Context';

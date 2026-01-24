@@ -105,19 +105,19 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
   private readonly database: Knex;
   private readonly logger: LoggerService;
   private readonly stitcher: Stitcher;
-  private readonly disableRelationsCompatibility: boolean;
+  private readonly enableRelationsCompatibility: boolean;
 
   constructor(options: {
     database: Knex;
     logger: LoggerService;
     stitcher: Stitcher;
-    disableRelationsCompatibility?: boolean;
+    enableRelationsCompatibility?: boolean;
   }) {
     this.database = options.database;
     this.logger = options.logger;
     this.stitcher = options.stitcher;
-    this.disableRelationsCompatibility = Boolean(
-      options.disableRelationsCompatibility,
+    this.enableRelationsCompatibility = Boolean(
+      options.enableRelationsCompatibility,
     );
   }
 
@@ -199,15 +199,15 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
     return {
       entities: processRawEntitiesResult(
         rows.map(r => r.final_entity!),
-        this.disableRelationsCompatibility
-          ? request?.fields
-          : e => {
+        this.enableRelationsCompatibility
+          ? e => {
               expandLegacyCompoundRelationsInEntity(e);
               if (request?.fields) {
                 return request.fields(e);
               }
               return e;
-            },
+            }
+          : request?.fields,
       ),
       pageInfo,
     };
@@ -285,6 +285,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
 
         if (sortField) {
           inner
+            .distinct()
             .leftOuterJoin('search', qb =>
               qb
                 .on('search.entity_id', 'final_entities.entity_id')
@@ -682,7 +683,7 @@ export class DefaultEntitiesCatalog implements EntitiesCatalog {
       .select({
         facet: 'search.key',
         value: 'search.original_value',
-        count: this.database.raw('count(*)'),
+        count: this.database.raw('count(DISTINCT search.entity_id)'),
       })
       .groupBy(['search.key', 'search.original_value']);
 

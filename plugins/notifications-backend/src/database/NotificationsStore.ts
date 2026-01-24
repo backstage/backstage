@@ -20,6 +20,7 @@ import {
   NotificationSeverity,
   NotificationStatus,
 } from '@backstage/plugin-notifications-common';
+import { HumanDuration } from '@backstage/types';
 
 /** @internal */
 export type EntityOrder = {
@@ -99,6 +100,10 @@ export interface NotificationsStore {
     user: string;
   }): Promise<{ origins: string[] }>;
 
+  getUserNotificationTopics(options: {
+    user: string;
+  }): Promise<{ topics: { origin: string; topic: string }[] }>;
+
   getNotificationSettings(options: {
     user: string;
   }): Promise<NotificationSettings>;
@@ -109,4 +114,8 @@ export interface NotificationsStore {
   }): Promise<void>;
 
   getTopics(options: TopicGetOptions): Promise<{ topics: string[] }>;
+
+  clearNotifications(options: {
+    maxAge: HumanDuration;
+  }): Promise<{ deletedCount: number }>;
 }

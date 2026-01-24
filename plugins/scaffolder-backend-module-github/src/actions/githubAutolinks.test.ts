@@ -25,6 +25,9 @@ import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 import { createGithubAutolinksAction } from './githubAutolinks';
 
+import { Octokit } from 'octokit';
+
+const octokitMock = Octokit as unknown as jest.Mock;
 const mockOctokit = {
   rest: {
     repos: {
@@ -33,11 +36,7 @@ const mockOctokit = {
   },
 };
 jest.mock('octokit', () => ({
-  Octokit: class {
-    constructor() {
-      return mockOctokit;
-    }
-  },
+  Octokit: jest.fn(),
 }));
 
 describe('github:autolinks:create', () => {
@@ -52,8 +51,32 @@ describe('github:autolinks:create', () => {
 
   const integrations = ScmIntegrations.fromConfig(config);
   let githubCredentialsProvider: GithubCredentialsProvider;
-  let action: TemplateAction<any, any>;
+  let action: TemplateAction<any, any, any>;
   const workspacePath = createMockDirectory().resolve('workspace');
+
+  it('should pass context logger to Octokit client', async () => {
+    githubCredentialsProvider =
+      DefaultGithubCredentialsProvider.fromIntegrations(integrations);
+    action = createGithubAutolinksAction({
+      integrations,
+      githubCredentialsProvider,
+    });
+
+    octokitMock.mockImplementation(() => mockOctokit);
+
+    const mockContext = createMockActionContext({
+      input: {
+        repoUrl: 'github.com?repo=repo&owner=owner',
+      },
+      workspacePath,
+    });
+
+    await action.handler(mockContext);
+
+    expect(octokitMock).toHaveBeenCalledWith(
+      expect.objectContaining({ log: mockContext.logger }),
+    );
+  });
 
   it('should call the githubApis for creating alphanumeric autolink reference', async () => {
     githubCredentialsProvider =

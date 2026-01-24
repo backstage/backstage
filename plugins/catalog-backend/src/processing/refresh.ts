@@ -16,14 +16,12 @@
 
 /**
  * Function that returns the catalog processing interval in seconds.
- * @public
  */
 export type ProcessingIntervalFunction = () => number;
 
 /**
  * Creates a function that returns a random processing interval between minSeconds and maxSeconds.
  * @returns A {@link ProcessingIntervalFunction} that provides the next processing interval
- * @public
  */
 export function createRandomProcessingInterval(options: {
   minSeconds: number;

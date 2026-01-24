@@ -100,6 +100,14 @@ export type CatalogProcessor = {
     emit: CatalogProcessorEmit,
     cache: CatalogProcessorCache,
   ): Promise<Entity>;
+
+  /**
+   * Returns a processor priority, which is used to determine the order in which
+   * processors are run. The default priority is 20, and lower value means
+   * that the processor runs earlier.
+   * @returns A number representing the priority of the processor.
+   */
+  getPriority?(): number;
 };
 
 /**

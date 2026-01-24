@@ -67,5 +67,9 @@ describe('catalogPlugin', () => {
       paramsSchema: expect.any(Object),
       description: 'Test permission rule',
     });
+
+    // For some reason the test running breaks if this test exits too soon.
+    // This is an ugly workaround for now since it is blocking the 1.41 release.
+    await new Promise(resolve => setTimeout(resolve, 1000));
   });
 });

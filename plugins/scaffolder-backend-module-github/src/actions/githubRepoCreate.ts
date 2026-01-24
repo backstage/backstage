@@ -41,116 +41,17 @@ export function createGithubRepoCreateAction(options: {
 }) {
   const { integrations, githubCredentialsProvider } = options;
 
-  return createTemplateAction<{
-    repoUrl: string;
-    description?: string;
-    homepage?: string;
-    access?: string;
-    deleteBranchOnMerge?: boolean;
-    gitAuthorName?: string;
-    gitAuthorEmail?: string;
-    allowRebaseMerge?: boolean;
-    allowSquashMerge?: boolean;
-    squashMergeCommitTitle?: 'PR_TITLE' | 'COMMIT_OR_PR_TITLE';
-    squashMergeCommitMessage?: 'PR_BODY' | 'COMMIT_MESSAGES' | 'BLANK';
-    allowMergeCommit?: boolean;
-    allowAutoMerge?: boolean;
-    requireCodeOwnerReviews?: boolean;
-    bypassPullRequestAllowances?: {
-      users?: string[];
-      teams?: string[];
-      apps?: string[];
-    };
-    requiredApprovingReviewCount?: number;
-    restrictions?: {
-      users: string[];
-      teams: string[];
-      apps?: string[];
-    };
-    requiredStatusCheckContexts?: string[];
-    requireBranchesToBeUpToDate?: boolean;
-    requiredConversationResolution?: boolean;
-    repoVisibility?: 'private' | 'internal' | 'public';
-    collaborators?: Array<
-      | {
-          user: string;
-          access: string;
-        }
-      | {
-          team: string;
-          access: string;
-        }
-      | {
-          /** @deprecated This field is deprecated in favor of team */
-          username: string;
-          access: 'pull' | 'push' | 'admin' | 'maintain' | 'triage';
-        }
-    >;
-    hasProjects?: boolean;
-    hasWiki?: boolean;
-    hasIssues?: boolean;
-    token?: string;
-    topics?: string[];
-    repoVariables?: { [key: string]: string };
-    secrets?: { [key: string]: string };
-    oidcCustomization?: {
-      useDefault: boolean;
-      includeClaimKeys?: string[];
-    };
-    requireCommitSigning?: boolean;
-    requiredLinearHistory?: boolean;
-    customProperties?: { [key: string]: string };
-    subscribe?: boolean;
-  }>({
+  return createTemplateAction({
     id: 'github:repo:create',
     description: 'Creates a GitHub repository.',
     examples,
     schema: {
       input: {
-        type: 'object',
-        required: ['repoUrl'],
-        properties: {
-          repoUrl: inputProps.repoUrl,
-          description: inputProps.description,
-          homepage: inputProps.homepage,
-          access: inputProps.access,
-          requireCodeOwnerReviews: inputProps.requireCodeOwnerReviews,
-          bypassPullRequestAllowances: inputProps.bypassPullRequestAllowances,
-          requiredApprovingReviewCount: inputProps.requiredApprovingReviewCount,
-          restrictions: inputProps.restrictions,
-          requiredStatusCheckContexts: inputProps.requiredStatusCheckContexts,
-          requireBranchesToBeUpToDate: inputProps.requireBranchesToBeUpToDate,
-          requiredConversationResolution:
-            inputProps.requiredConversationResolution,
-          repoVisibility: inputProps.repoVisibility,
-          deleteBranchOnMerge: inputProps.deleteBranchOnMerge,
-          allowMergeCommit: inputProps.allowMergeCommit,
-          allowSquashMerge: inputProps.allowSquashMerge,
-          squashMergeCommitTitle: inputProps.squashMergeCommitTitle,
-          squashMergeCommitMessage: inputProps.squashMergeCommitMessage,
-          allowRebaseMerge: inputProps.allowRebaseMerge,
-          allowAutoMerge: inputProps.allowAutoMerge,
-          collaborators: inputProps.collaborators,
-          hasProjects: inputProps.hasProjects,
-          hasWiki: inputProps.hasWiki,
-          hasIssues: inputProps.hasIssues,
-          token: inputProps.token,
-          topics: inputProps.topics,
-          repoVariables: inputProps.repoVariables,
-          secrets: inputProps.secrets,
-          oidcCustomization: inputProps.oidcCustomization,
-          requiredCommitSigning: inputProps.requiredCommitSigning,
-          requiredLinearHistory: inputProps.requiredLinearHistory,
-          customProperties: inputProps.customProperties,
-          subscribe: inputProps.subscribe,
-        },
+        ...inputProps,
       },
       output: {
-        type: 'object',
-        properties: {
-          remoteUrl: outputProps.remoteUrl,
-          repoContentsUrl: outputProps.repoContentsUrl,
-        },
+        remoteUrl: outputProps.remoteUrl,
+        repoContentsUrl: outputProps.repoContentsUrl,
       },
     },
     async handler(ctx) {
@@ -167,6 +68,7 @@ export function createGithubRepoCreateAction(options: {
         squashMergeCommitMessage = 'COMMIT_MESSAGES',
         allowRebaseMerge = true,
         allowAutoMerge = false,
+        allowUpdateBranch = false,
         collaborators,
         hasProjects = undefined,
         hasWiki = undefined,
@@ -178,6 +80,8 @@ export function createGithubRepoCreateAction(options: {
         customProperties,
         subscribe,
         token: providedToken,
+        autoInit = undefined,
+        workflowAccess,
       } = ctx.input;
 
       const { host, owner, repo } = parseRepoUrl(repoUrl, integrations);
@@ -194,37 +98,49 @@ export function createGithubRepoCreateAction(options: {
         owner,
         repo,
       });
-      const client = new Octokit(octokitOptions);
+      const client = new Octokit({
+        ...octokitOptions,
+        log: ctx.logger,
+      });
 
-      const newRepo = await createGithubRepoWithCollaboratorsAndTopics(
-        client,
-        repo,
-        owner,
-        repoVisibility,
-        description,
-        homepage,
-        deleteBranchOnMerge,
-        allowMergeCommit,
-        allowSquashMerge,
-        squashMergeCommitTitle,
-        squashMergeCommitMessage,
-        allowRebaseMerge,
-        allowAutoMerge,
-        access,
-        collaborators,
-        hasProjects,
-        hasWiki,
-        hasIssues,
-        topics,
-        repoVariables,
-        secrets,
-        oidcCustomization,
-        customProperties,
-        subscribe,
-        ctx.logger,
-      );
+      const remoteUrl = await ctx.checkpoint({
+        key: `create.repo.and.topics.${owner}.${repo}`,
+        fn: async () => {
+          const newRepo = await createGithubRepoWithCollaboratorsAndTopics(
+            client,
+            repo,
+            owner,
+            repoVisibility,
+            description,
+            homepage,
+            deleteBranchOnMerge,
+            allowMergeCommit,
+            allowSquashMerge,
+            squashMergeCommitTitle,
+            squashMergeCommitMessage,
+            allowRebaseMerge,
+            allowAutoMerge,
+            allowUpdateBranch,
+            access,
+            collaborators,
+            hasProjects,
+            hasWiki,
+            hasIssues,
+            topics,
+            repoVariables,
+            secrets,
+            oidcCustomization,
+            customProperties,
+            subscribe,
+            ctx.logger,
+            autoInit,
+            workflowAccess,
+          );
+          return newRepo.clone_url;
+        },
+      });
 
-      ctx.output('remoteUrl', newRepo.clone_url);
+      ctx.output('remoteUrl', remoteUrl);
     },
   });
 }

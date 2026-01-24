@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { screen, fireEvent } from '@testing-library/react';
 import { UserSettingsLanguageToggle } from './UserSettingsLanguageToggle';
 import { TestApiProvider, renderInTestApp } from '@backstage/test-utils';

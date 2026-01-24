@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-kubernetes-cluster",
-  "version": "0.0.23-next.2",
+  "version": "0.0.33",
   "description": "A Backstage plugin that shows details of Kubernetes clusters",
   "backstage": {
     "role": "frontend-plugin",
@@ -62,23 +62,17 @@
     "@backstage/plugin-kubernetes-react": "workspace:^",
     "@backstage/plugin-permission-react": "workspace:^",
     "@kubernetes-models/apimachinery": "^2.0.0",
-    "@kubernetes-models/base": "^5.0.0",
     "@material-ui/core": "^4.12.2",
     "@material-ui/lab": "4.0.0-alpha.61",
-    "cronstrue": "^2.2.0",
-    "js-yaml": "^4.0.0",
     "kubernetes-models": "^4.1.0",
-    "lodash": "^4.17.21",
-    "luxon": "^3.0.0",
     "react-use": "^17.2.4"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@backstage/test-utils": "workspace:^",
-    "@testing-library/dom": "^10.0.0",
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^16.0.0",
-    "@types/node": "^20.16.0",
+    "@types/node": "^22.13.14",
     "@types/react": "^18.0.0",
     "react": "^18.0.2",
     "react-dom": "^18.0.2",

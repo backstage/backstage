@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-auth-backend-module-azure-easyauth-provider",
-  "version": "0.2.6-next.1",
+  "version": "0.2.15",
   "description": "The azure-easyauth-provider backend module for the auth plugin.",
   "backstage": {
     "role": "backend-plugin-module",
@@ -38,9 +38,10 @@
     "@backstage/errors": "workspace:^",
     "@backstage/plugin-auth-node": "workspace:^",
     "@types/passport": "^1.0.16",
-    "express": "^4.19.2",
+    "express": "^4.22.0",
     "jose": "^5.0.0",
-    "passport": "^0.7.0"
+    "passport": "^0.7.0",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@backstage/backend-test-utils": "workspace:^",

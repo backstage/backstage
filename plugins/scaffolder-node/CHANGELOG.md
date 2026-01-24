@@ -1,5 +1,638 @@
 # @backstage/plugin-scaffolder-node
 
+## 0.12.3
+
+### Patch Changes
+
+- c641c14: Wrap some of the action logic with `resolveSafeChildPath` and improve symlink handling when fetching remote and local files
+- 27f9061: REwrite]
+- 872eb91: Upgrade `zod-to-json-schema` to latest version
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.1
+  - @backstage/integration@1.19.2
+  - @backstage/plugin-permission-common@0.9.4
+  - @backstage/plugin-scaffolder-common@1.7.5
+
+## 0.12.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.19.2-next.0
+  - @backstage/plugin-scaffolder-common@1.7.5-next.0
+
+## 0.12.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.19.0
+  - @backstage/backend-plugin-api@1.6.0
+  - @backstage/plugin-scaffolder-common@1.7.4
+
+## 0.12.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.18.3-next.1
+  - @backstage/backend-plugin-api@1.6.0-next.1
+  - @backstage/catalog-model@1.7.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-permission-common@0.9.3
+  - @backstage/plugin-scaffolder-common@1.7.4-next.0
+
+## 0.12.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.1-next.0
+  - @backstage/integration@1.18.3-next.0
+  - @backstage/plugin-scaffolder-common@1.7.4-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-permission-common@0.9.3
+
+## 0.12.1
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/integration@1.18.2
+  - @backstage/backend-plugin-api@1.5.0
+  - @backstage/plugin-permission-common@0.9.3
+  - @backstage/catalog-model@1.7.6
+  - @backstage/plugin-scaffolder-common@1.7.3
+
+## 0.12.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.0-next.1
+  - @backstage/plugin-permission-common@0.9.3-next.1
+
+## 0.12.1-next.0
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/catalog-model@1.7.6-next.0
+  - @backstage/integration@1.18.2-next.0
+  - @backstage/backend-plugin-api@1.4.5-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-permission-common@0.9.3-next.0
+  - @backstage/plugin-scaffolder-common@1.7.3-next.0
+
+## 0.12.0
+
+### Minor Changes
+
+- 9b81a90: **BREAKING** - Marking optional fields as required in the `TaskBroker`, these can be fixed with a no-op `() => void` if you don't want to implement the functions.
+
+  - `cancel`, `recoverTasks` and `retry` are the required methods on the `TaskBroker` interface.
+
+  **NOTE**: If you're affected by this breaking change, please reach out to us in an issue as we're thinking about completely removing the `TaskBroker` extension point soon and would like to hear your use cases for the upcoming re-architecture of the `scaffolder-backend` plugin.
+
+### Patch Changes
+
+- c8aa210: **BREAKING ALPHA**: We've moved the `scaffolderActionsExtensionPoint` from `/alpha` to the main export.
+
+  ```tsx
+  // before
+  import { scaffolderActionsExtensionPoint } from '@backstage/plugin-scaffolder-node/alpha';
+
+  // after
+  import { scaffolderActionsExtensionPoint } from '@backstage/plugin-scaffolder-node';
+  ```
+
+- 6e2bda7: **DEPRECATION**: We're going to be working on refactoring a lot of the internals of the Scaffolder backend plugin, and with that comes a lot of deprecations and removals for public types that are making these things hard.
+
+  If you're using these types, please reach out to us either on Discord or a GitHub issue with your use cases.
+
+  - `SerializedTask`, `SerializedTaskEvent`, `TaskBroker`, `TaskContext`, `TaskBrokerDispatchOptions`, `TaskBrokerDispatchResult`, `TaskCompletionState`, `TaskEventType`, `TaskFilter`, `TaskFilters`, `TaskStatus` are the types that have now been marked as deprecated, and will be removed in a future release.
+
+- Updated dependencies
+  - @backstage/integration@1.18.1
+  - @backstage/backend-plugin-api@1.4.4
+  - @backstage/plugin-permission-common@0.9.2
+  - @backstage/plugin-scaffolder-common@1.7.2
+
+## 0.12.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.18.1-next.1
+  - @backstage/backend-plugin-api@1.4.4-next.0
+  - @backstage/plugin-permission-common@0.9.2-next.0
+  - @backstage/plugin-scaffolder-common@1.7.2-next.1
+
+## 0.12.0-next.0
+
+### Minor Changes
+
+- 9b81a90: **BREAKING** - Marking optional fields as required in the `TaskBroker`, these can be fixed with a no-op `() => void` if you don't want to implement the functions.
+
+  - `cancel`, `recoverTasks` and `retry` are the required methods on the `TaskBroker` interface.
+
+  **NOTE**: If you're affected by this breaking change, please reach out to us in an issue as we're thinking about completely removing the `TaskBroker` extension point soon and would like to hear your use cases for the upcoming re-architecture of the `scaffolder-backend` plugin.
+
+### Patch Changes
+
+- c8aa210: **BREAKING ALPHA**: We've moved the `scaffolderActionsExtensionPoint` from `/alpha` to the main export.
+
+  ```tsx
+  // before
+  import { scaffolderActionsExtensionPoint } from '@backstage/plugin-scaffolder-node/alpha';
+
+  // after
+  import { scaffolderActionsExtensionPoint } from '@backstage/plugin-scaffolder-node';
+  ```
+
+- 6e2bda7: **DEPRECATION**: We're going to be working on refactoring a lot of the internals of the Scaffolder backend plugin, and with that comes a lot of deprecations and removals for public types that are making these things hard.
+
+  If you're using these types, please reach out to us either on Discord or a GitHub issue with your use cases.
+
+  - `SerializedTask`, `SerializedTaskEvent`, `TaskBroker`, `TaskContext`, `TaskBrokerDispatchOptions`, `TaskBrokerDispatchResult`, `TaskCompletionState`, `TaskEventType`, `TaskFilter`, `TaskFilters`, `TaskStatus` are the types that have now been marked as deprecated, and will be removed in a future release.
+
+- Updated dependencies
+  - @backstage/integration@1.18.1-next.0
+  - @backstage/plugin-scaffolder-common@1.7.2-next.0
+  - @backstage/backend-plugin-api@1.4.3
+  - @backstage/catalog-model@1.7.5
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-permission-common@0.9.1
+
+## 0.11.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.18.0
+  - @backstage/types@1.2.2
+  - @backstage/backend-plugin-api@1.4.3
+  - @backstage/plugin-scaffolder-common@1.7.1
+
+## 0.11.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.18.0-next.0
+  - @backstage/plugin-scaffolder-common@1.7.1-next.0
+  - @backstage/backend-plugin-api@1.4.3-next.0
+
+## 0.11.0
+
+### Minor Changes
+
+- c08cbc4: Move Scaffolder API to OpenAPI
+
+### Patch Changes
+
+- 812485c: Add step info to scaffolder action context to access the step id and name.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-common@1.7.0
+  - @backstage/backend-plugin-api@1.4.2
+
+## 0.11.0-next.0
+
+### Minor Changes
+
+- c08cbc4: Move Scaffolder API to OpenAPI
+
+### Patch Changes
+
+- 812485c: Add step info to scaffolder action context to access the step id and name.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-common@1.7.0-next.0
+  - @backstage/backend-plugin-api@1.4.2-next.0
+  - @backstage/catalog-model@1.7.5
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.17.1
+  - @backstage/types@1.2.1
+  - @backstage/plugin-permission-common@0.9.1
+
+## 0.10.0
+
+### Minor Changes
+
+- c1ce316: BREAKING `/alpha`: Converted `scaffolder.task.read` and `scaffolder.task.cancel` into Resource Permissions.
+
+  BREAKING `/alpha`: Added a new scaffolder rule `isTaskOwner` for `scaffolder.task.read` and `scaffolder.task.cancel` to allow for conditional permission policies such as restricting access to tasks and task events based on task creators.
+
+  BREAKING `/alpha`: Retrying a task now requires both `scaffolder.task.read` and `scaffolder.task.create` permissions, replacing the previous requirement of `scaffolder.task.read` and `scaffolder.task.cancel`.
+
+### Patch Changes
+
+- dbde180: An internal refactor which adds additional types to experimental checkpoints
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.1
+  - @backstage/catalog-model@1.7.5
+  - @backstage/integration@1.17.1
+  - @backstage/plugin-scaffolder-common@1.6.0
+  - @backstage/backend-plugin-api@1.4.1
+
+## 0.10.0-next.2
+
+### Minor Changes
+
+- c1ce316: BREAKING `/alpha`: Converted `scaffolder.task.read` and `scaffolder.task.cancel` into Resource Permissions.
+
+  BREAKING `/alpha`: Added a new scaffolder rule `isTaskOwner` for `scaffolder.task.read` and `scaffolder.task.cancel` to allow for conditional permission policies such as restricting access to tasks and task events based on task creators.
+
+  BREAKING `/alpha`: Retrying a task now requires both `scaffolder.task.read` and `scaffolder.task.create` permissions, replacing the previous requirement of `scaffolder.task.read` and `scaffolder.task.cancel`.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-common@1.6.0-next.1
+
+## 0.9.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.7.5-next.0
+  - @backstage/integration@1.17.1-next.1
+  - @backstage/backend-plugin-api@1.4.1-next.0
+  - @backstage/plugin-scaffolder-common@1.5.12-next.0
+
+## 0.9.1-next.0
+
+### Patch Changes
+
+- dbde180: An internal refactor which adds additional types to experimental checkpoints
+- Updated dependencies
+  - @backstage/integration@1.17.1-next.0
+  - @backstage/backend-plugin-api@1.4.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-scaffolder-common@1.5.11
+
+## 0.9.0
+
+### Minor Changes
+
+- 5863b04: **BREAKING CHANGES**
+
+  The legacy methods to define `createTemplateActions` have been replaced with the new native `zod` approaches for defining input and output schemas.
+
+  You can migrate actions that look like the following with the below examples:
+
+  ```ts
+  // really old legacy json schema
+  createTemplateAction<{ repoUrl: string }, { repoOutput: string }>({
+    id: 'test',
+    schema: {
+      input: {
+        type: 'object'
+        required: ['repoUrl']
+        properties: {
+          repoUrl: {
+            type: 'string',
+            description: 'repository url description'
+          }
+        }
+      }
+    }
+  });
+
+  // old zod method
+  createTemplateAction({
+    id: 'test'
+    schema: {
+      input: {
+        repoUrl: z.string({ description: 'repository url description' })
+      }
+    }
+  })
+
+  // new method:
+  createTemplateAction({
+    id: 'test',
+    schema: {
+      input: {
+        repoUrl: z => z.string({ description: 'repository url description' })
+      }
+    }
+  })
+
+  // or for more complex zod types like unions
+  createTemplateAction({
+    id: 'test',
+    schema: {
+      input: z => z.object({
+        repoUrl: z.string({ description: 'repository url description' })
+      })
+    }
+  })
+  ```
+
+  This breaking change also means that `logStream` has been removed entirely from `ActionsContext`, and that the `logger` is now just a `LoggerService` implementation instead. There is no replacement for the `logStream`, if you wish to still keep using a `logStream` we recommend that you create your own stream that writes to `ctx.logger` instead.
+
+### Patch Changes
+
+- e89d7b6: Use `LoggerService` instead of `Logger`. This is a non-breaking change, as the `LoggerService` is a subset of the `Logger` interface.
+- 9c8ff0c: Update pull request creation filter to include .gitignore files in the created pull request
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.17.0
+  - @backstage/types@1.2.1
+  - @backstage/plugin-scaffolder-common@1.5.11
+
+## 0.9.0-next.2
+
+### Minor Changes
+
+- 5863b04: **BREAKING CHANGES**
+
+  The legacy methods to define `createTemplateActions` have been replaced with the new native `zod` approaches for defining input and output schemas.
+
+  You can migrate actions that look like the following with the below examples:
+
+  ```ts
+  // really old legacy json schema
+  createTemplateAction<{ repoUrl: string }, { repoOutput: string }>({
+    id: 'test',
+    schema: {
+      input: {
+        type: 'object'
+        required: ['repoUrl']
+        properties: {
+          repoUrl: {
+            type: 'string',
+            description: 'repository url description'
+          }
+        }
+      }
+    }
+  });
+
+  // old zod method
+  createTemplateAction({
+    id: 'test'
+    schema: {
+      input: {
+        repoUrl: z.string({ description: 'repository url description' })
+      }
+    }
+  })
+
+  // new method:
+  createTemplateAction({
+    id: 'test',
+    schema: {
+      input: {
+        repoUrl: z => z.string({ description: 'repository url description' })
+      }
+    }
+  })
+
+  // or for more complex zod types like unions
+  createTemplateAction({
+    id: 'test',
+    schema: {
+      input: z => z.object({
+        repoUrl: z.string({ description: 'repository url description' })
+      })
+    }
+  })
+  ```
+
+  This breaking change also means that `logStream` has been removed entirely from `ActionsContext`, and that the `logger` is now just a `LoggerService` implementation instead. There is no replacement for the `logStream`, if you wish to still keep using a `logStream` we recommend that you create your own stream that writes to `ctx.logger` instead.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.0-next.1
+  - @backstage/catalog-model@1.7.4
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.17.0
+  - @backstage/types@1.2.1
+  - @backstage/plugin-scaffolder-common@1.5.11
+
+## 0.8.3-next.1
+
+### Patch Changes
+
+- e89d7b6: Use `LoggerService` instead of `Logger`. This is a non-breaking change, as the `LoggerService` is a subset of the `Logger` interface.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.0-next.1
+  - @backstage/catalog-model@1.7.4
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.17.0
+  - @backstage/types@1.2.1
+  - @backstage/plugin-scaffolder-common@1.5.11
+
+## 0.8.3-next.0
+
+### Patch Changes
+
+- 9c8ff0c: Update pull request creation filter to include .gitignore files in the created pull request
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.0-next.0
+
+## 0.8.2
+
+### Patch Changes
+
+- 16e2e9c: trim leading and trailing slashes from parseRepoUrl query parameters
+- 72d019d: Removed various typos
+- ec42f8e: Generating new tokens on each Scaffolder Task Retry
+- Updated dependencies
+  - @backstage/integration@1.17.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/backend-plugin-api@1.3.1
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-scaffolder-common@1.5.11
+
+## 0.8.2-next.3
+
+### Patch Changes
+
+- 16e2e9c: trim leading and trailing slashes from parseRepoUrl query parameters
+- ec42f8e: Generating new tokens on each Scaffolder Task Retry
+- Updated dependencies
+  - @backstage/integration@1.17.0-next.3
+  - @backstage/backend-plugin-api@1.3.1-next.2
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-scaffolder-common@1.5.11-next.0
+
+## 0.8.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.17.0-next.2
+  - @backstage/backend-plugin-api@1.3.1-next.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-scaffolder-common@1.5.11-next.0
+
+## 0.8.2-next.1
+
+### Patch Changes
+
+- 72d019d: Removed various typos
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.3.1-next.1
+  - @backstage/integration@1.16.4-next.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-scaffolder-common@1.5.11-next.0
+
+## 0.8.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.16.4-next.0
+  - @backstage/backend-plugin-api@1.3.1-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-scaffolder-common@1.5.10
+
+## 0.8.1
+
+### Patch Changes
+
+- 497d47a: Document the internal built-in filters, and ensure that the types are validated when using `createTemplateFilter` and `createTemplateGlobalFunction` from the `zod` schema.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.3.0
+  - @backstage/integration@1.16.3
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-scaffolder-common@1.5.10
+
+## 0.8.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.16.3-next.0
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-scaffolder-common@1.5.10
+
+## 0.8.1-next.0
+
+### Patch Changes
+
+- 497d47a: Document the internal built-in filters, and ensure that the types are validated when using `createTemplateFilter` and `createTemplateGlobalFunction` from the `zod` schema.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.16.2
+  - @backstage/types@1.2.1
+  - @backstage/plugin-scaffolder-common@1.5.10
+
+## 0.8.0
+
+### Minor Changes
+
+- 1a58846: **DEPRECATION**: We've deprecated the old way of defining actions using `createTemplateAction` with raw `JSONSchema` and type parameters, as well as using `zod` through an import. You can now use the new format to define `createTemplateActions` with `zod` provided by the framework. This change also removes support for `logStream` in the `context` as well as moving the `logger` to an instance of `LoggerService`.
+
+  Before:
+
+  ```ts
+  createTemplateAction<{ repoUrl: string }, { test: string }>({
+    id: 'test',
+    schema: {
+      input: {
+        type: 'object',
+        required: ['repoUrl'],
+        properties: {
+          repoUrl: { type: 'string' },
+        },
+      },
+      output: {
+        type: 'object',
+        required: ['test'],
+        properties: {
+          test: { type: 'string' },
+        },
+      },
+    },
+    handler: async ctx => {
+      ctx.logStream.write('blob');
+    },
+  });
+
+  // or
+
+  createTemplateAction({
+    id: 'test',
+    schema: {
+      input: z.object({
+        repoUrl: z.string(),
+      }),
+      output: z.object({
+        test: z.string(),
+      }),
+    },
+    handler: async ctx => {
+      ctx.logStream.write('something');
+    },
+  });
+  ```
+
+  After:
+
+  ```ts
+  createTemplateAction({
+    id: 'test',
+    schema: {
+      input: {
+        repoUrl: d => d.string(),
+      },
+      output: {
+        test: d => d.string(),
+      },
+    },
+    handler: async ctx => {
+      // you can just use ctx.logger.log('...'), or if you really need a log stream you can do this:
+      const logStream = new PassThrough();
+      logStream.on('data', chunk => {
+        ctx.logger.info(chunk.toString());
+      });
+    },
+  });
+  ```
+
+### Patch Changes
+
+- 09cf038: Got rid of most `@backstage/backend-common` usages
+- 4f8b5b6: Allow signing git commits using configured private PGP key in scaffolder
+- Updated dependencies
+  - @backstage/integration@1.16.2
+  - @backstage/plugin-scaffolder-common@1.5.10
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
 ## 0.8.0-next.2
 
 ### Minor Changes

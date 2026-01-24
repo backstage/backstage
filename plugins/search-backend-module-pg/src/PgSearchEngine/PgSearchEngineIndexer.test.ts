@@ -65,9 +65,48 @@ describe('PgSearchEngineIndexer', () => {
       'my-type',
       documents,
     );
-    expect(database.completeInsert).toHaveBeenCalledWith(tx, 'my-type');
+    expect(database.completeInsert).toHaveBeenCalledWith(tx, 'my-type', false);
     expect(tx.commit).toHaveBeenCalled();
     expect(tx.rollback).not.toHaveBeenCalled();
+  });
+
+  it('should insert documents that are too long for tsvector', async () => {
+    const documents = [
+      { title: 'Hello World', text: 'Lorem Ipsum', location: 'location-1' },
+      {
+        location: 'location-2',
+        text: 'Hello World',
+        title: 'Dolor sit amet',
+      },
+    ];
+
+    const tsvectorError = new Error('string is too long for tsvector');
+    database.completeInsert.mockRejectedValueOnce(tsvectorError);
+
+    await TestPipeline.fromIndexer(indexer).withDocuments(documents).execute();
+
+    expect(database.getTransaction).toHaveBeenCalledTimes(1);
+    expect(database.prepareInsert).toHaveBeenCalledTimes(1);
+    expect(database.insertDocuments).toHaveBeenCalledWith(
+      tx,
+      'my-type',
+      documents,
+    );
+    expect(database.completeInsert).toHaveBeenCalledTimes(2);
+    expect(database.completeInsert).toHaveBeenNthCalledWith(
+      1,
+      tx,
+      'my-type',
+      false,
+    );
+    expect(database.completeInsert).toHaveBeenNthCalledWith(
+      2,
+      tx,
+      'my-type',
+      true,
+    );
+    expect(tx.commit).toHaveBeenCalled();
+    expect(tx.rollback).toHaveBeenCalledTimes(1);
   });
 
   it('should batch insert documents', async () => {
@@ -82,7 +121,7 @@ describe('PgSearchEngineIndexer', () => {
     expect(database.getTransaction).toHaveBeenCalledTimes(1);
     expect(database.prepareInsert).toHaveBeenCalledTimes(1);
     expect(database.insertDocuments).toHaveBeenCalledTimes(4);
-    expect(database.completeInsert).toHaveBeenCalledWith(tx, 'my-type');
+    expect(database.completeInsert).toHaveBeenCalledWith(tx, 'my-type', false);
   });
 
   it('should rollback transaction if no documents indexed', async () => {

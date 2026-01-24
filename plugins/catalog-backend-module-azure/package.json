@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-catalog-backend-module-azure",
-  "version": "0.3.3-next.2",
+  "version": "0.3.13",
   "description": "A Backstage catalog backend module that helps integrate towards Azure",
   "backstage": {
     "role": "backend-plugin-module",
@@ -63,7 +63,6 @@
   "devDependencies": {
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
-    "luxon": "^3.0.0",
     "msw": "^1.0.0"
   },
   "configSchema": "config.d.ts"

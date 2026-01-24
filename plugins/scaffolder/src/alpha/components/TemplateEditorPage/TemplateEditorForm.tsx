@@ -18,7 +18,7 @@ import { JsonObject, JsonValue } from '@backstage/types';
 import { makeStyles } from '@material-ui/core/styles';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
-import React, { Component, ReactNode, useMemo, useState } from 'react';
+import { Component, ReactNode, useMemo, useState } from 'react';
 import useDebounce from 'react-use/esm/useDebounce';
 import yaml from 'yaml';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';

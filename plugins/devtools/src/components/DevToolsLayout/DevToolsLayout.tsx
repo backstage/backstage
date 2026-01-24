@@ -20,14 +20,14 @@ import {
   useElementFilter,
 } from '@backstage/core-plugin-api';
 import { TabProps } from '@material-ui/core/Tab';
-import { default as React } from 'react';
+import { ElementType, ReactNode } from 'react';
 
 /** @public */
 export type SubRoute = {
   path: string;
   title: string;
   children: JSX.Element;
-  tabProps?: TabProps<React.ElementType, { component?: React.ElementType }>;
+  tabProps?: TabProps<ElementType, { component?: ElementType }>;
 };
 
 const dataKey = 'plugin.devtools.devtoolsLayoutRoute';
@@ -42,7 +42,7 @@ attachComponentData(Route, 'core.gatherMountPoints', true);
 export type DevToolsLayoutProps = {
   title?: string;
   subtitle?: string;
-  children?: React.ReactNode;
+  children?: ReactNode;
 };
 
 /**

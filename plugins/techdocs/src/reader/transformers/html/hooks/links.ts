@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { isElement } from '../utils';
+
 const MKDOCS_CSS = /main\.[A-Fa-f0-9]{8}\.min\.css$/;
 const GOOGLE_FONTS = /^https:\/\/fonts\.googleapis\.com/;
 const GSTATIC_FONTS = /^https:\/\/fonts\.gstatic\.com/;
@@ -41,11 +43,11 @@ const isSafe = (node: Element) => {
 /**
  * Function that removes unsafe link nodes.
  * @param node - can be any element.
- * @param hosts - list of allowed hosts.
  */
-export const removeUnsafeLinks = (node: Element) => {
+export const removeUnsafeLinks = (node: Node) => {
+  if (!isElement(node)) return;
+
   if (isLink(node) && !isSafe(node)) {
     node.remove();
   }
-  return node;
 };

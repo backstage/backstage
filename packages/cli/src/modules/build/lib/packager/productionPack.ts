@@ -166,8 +166,11 @@ async function rewriteEntryPoints(
       if (!pkg.typesVersions) {
         pkg.typesVersions = { '*': {} };
       }
-      const mount = entryPoint.name === 'index' ? '*' : entryPoint.name;
-      pkg.typesVersions['*'][mount] = [`dist/${entryPoint.name}.d.ts`];
+      if (entryPoint.name !== 'index') {
+        pkg.typesVersions['*'][entryPoint.name] = [
+          `dist/${entryPoint.name}.d.ts`,
+        ];
+      }
     }
 
     exp.default = exp.require ?? exp.import;
@@ -217,12 +220,9 @@ async function rewriteEntryPoints(
     }
   }
 
-  // Clean up the typesVersions field if it only contains a wildcard
+  // Make sure package.json is also available in typesVersions if present
   if (pkg.typesVersions?.['*']) {
-    const keys = Object.keys(pkg.typesVersions['*']);
-    if (keys.length === 1 && keys[0] === '*') {
-      delete pkg.typesVersions;
-    }
+    pkg.typesVersions['*']['package.json'] = ['package.json'];
   }
 
   if (pkg.exports) {

@@ -1,0 +1,887 @@
+openapi: 3.0.3
+info:
+  title: scaffolder
+  version: '1'
+  description: The Backstage backend plugin that helps you create new things
+  license:
+    name: Apache-2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  contact: {}
+servers:
+  - url: /
+components:
+  examples: {}
+  headers: {}
+  parameters:
+    createdBy:
+      name: createdBy
+      in: query
+      description: Created by
+      required: false
+      allowReserved: true
+      schema:
+        type: array
+        items:
+          type: string
+    eventsAfter:
+      name: after
+      in: query
+      description: Offset event ID to stream events after.
+      required: false
+      allowReserved: true
+      schema:
+        type: integer
+    kind:
+      name: kind
+      in: path
+      required: true
+      allowReserved: true
+      schema:
+        type: string
+    limit:
+      name: limit
+      in: query
+      description: Number of records to return in the response.
+      required: false
+      allowReserved: true
+      schema:
+        type: integer
+        minimum: 0
+    namespace:
+      name: namespace
+      in: path
+      required: true
+      allowReserved: true
+      schema:
+        type: string
+    name:
+      name: name
+      in: path
+      required: true
+      allowReserved: true
+      schema:
+        type: string
+    offset:
+      name: offset
+      in: query
+      description: Number of records to skip in the query page.
+      required: false
+      allowReserved: true
+      schema:
+        type: integer
+        minimum: 0
+    order:
+      name: order
+      in: query
+      description: Order
+      required: false
+      allowReserved: true
+      schema:
+        type: array
+        items:
+          type: string
+    status:
+      name: status
+      in: query
+      description: Status
+      required: false
+      allowReserved: true
+      schema:
+        type: array
+        items:
+          type: string
+    taskId:
+      name: taskId
+      in: path
+      required: true
+      allowReserved: true
+      schema:
+        type: string
+  requestBodies: {}
+  responses:
+    ErrorResponse:
+      description: An error response from the backend.
+      content:
+        application/json; charset=utf-8:
+          schema:
+            $ref: '#/components/schemas/Error'
+  schemas:
+    Action:
+      type: object
+      properties:
+        id:
+          type: string
+        description:
+          type: string
+        examples:
+          type: array
+          items:
+            $ref: '#/components/schemas/ActionExample'
+        schema:
+          type: object
+          properties:
+            input:
+              $ref: '#/components/schemas/JsonObject'
+            output:
+              $ref: '#/components/schemas/JsonObject'
+      required:
+        - id
+      description: The response shape for a single action in the `listActions` call to the `scaffolder-backend`
+    ActionExample:
+      type: object
+      properties:
+        description:
+          type: string
+        example:
+          type: string
+      required:
+        - description
+        - example
+      description: A single action example
+    DryRunResult:
+      type: object
+      properties:
+        log:
+          type: array
+          items:
+            type: object
+            properties:
+              body:
+                allOf:
+                  - $ref: '#/components/schemas/JsonObject'
+                  - type: object
+                    properties:
+                      message:
+                        type: string
+                      status:
+                        $ref: '#/components/schemas/TaskStatus'
+                      stepId:
+                        type: string
+                    required:
+                      - message
+            required:
+              - body
+        directoryContents:
+          type: array
+          items:
+            $ref: '#/components/schemas/SerializedFile'
+        output:
+          $ref: '#/components/schemas/JsonObject'
+      required:
+        - log
+        - directoryContents
+        - output
+    Error:
+      type: object
+      properties:
+        error:
+          type: object
+          properties:
+            name:
+              type: string
+            message:
+              type: string
+            stack:
+              type: string
+            code:
+              type: string
+          required:
+            - name
+            - message
+        request:
+          type: object
+          properties:
+            method:
+              type: string
+            url:
+              type: string
+          required:
+            - method
+            - url
+        response:
+          type: object
+          properties:
+            statusCode:
+              type: number
+          required:
+            - statusCode
+      required:
+        - error
+        - response
+      additionalProperties: {}
+    JsonArray:
+      type: array
+      items:
+        $ref: '#/components/schemas/JsonValue'
+      description: A type representing all allowed JSON array values.
+    JsonObject:
+      type: object
+      properties: {}
+      description: A type representing all allowed JSON object values.
+      additionalProperties: {}
+    JsonPrimitive:
+      oneOf:
+        - type: boolean
+        - type: number
+        - type: string
+        - type: object
+          nullable: true
+      description: A type representing all allowed JSON primitive values.
+    JsonValue:
+      oneOf:
+        - $ref: '#/components/schemas/JsonObject'
+        - $ref: '#/components/schemas/JsonArray'
+        - $ref: '#/components/schemas/JsonPrimitive'
+      description: A type representing all allowed JSON values.
+    ListActionsResponse:
+      type: array
+      items:
+        $ref: '#/components/schemas/Action'
+      description: The response shape for the `listActions` call to the `scaffolder-backend`
+    ListTasksResponse:
+      type: object
+      properties:
+        tasks:
+          type: array
+          items:
+            $ref: '#/components/schemas/SerializedTask'
+        totalTasks:
+          type: number
+      required:
+        - tasks
+      description: The response shape for the `listTasks` call to the `scaffolder-backend`
+    ListTemplatingExtensionsResponse:
+      type: object
+      properties:
+        filters:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/TemplateFilter'
+        globals:
+          type: object
+          properties:
+            functions:
+              type: object
+              additionalProperties:
+                $ref: '#/components/schemas/TemplateGlobalFunction'
+            values:
+              type: object
+              additionalProperties:
+                $ref: '#/components/schemas/TemplateGlobalValue'
+          required:
+            - functions
+            - values
+      required:
+        - filters
+        - globals
+      description: The response shape for the `listTemplatingExtensions` call to the `scaffolder-backend`
+    ScaffolderScaffoldOptions:
+      type: object
+      properties:
+        templateRef:
+          type: string
+        values:
+          type: object
+          additionalProperties: {}
+        secrets:
+          type: object
+          additionalProperties:
+            type: string
+      required:
+        - templateRef
+        - values
+      description: The input options to the `scaffold` method of the `ScaffolderClient`.
+    ScaffolderUsageExample:
+      type: object
+      properties:
+        description:
+          type: string
+        example:
+          type: string
+        notes:
+          type: string
+      required:
+        - example
+      description: A single scaffolder usage example
+    SerializedFile:
+      type: object
+      properties:
+        path:
+          type: string
+        content:
+          type: string
+        executable:
+          type: boolean
+        symlink:
+          type: boolean
+      required:
+        - path
+        - content
+    SerializedTaskEvent:
+      type: object
+      properties:
+        id:
+          type: integer
+        isTaskRecoverable:
+          type: boolean
+        taskId:
+          type: string
+        body:
+          allOf:
+            - $ref: '#/components/schemas/JsonObject'
+            - type: object
+              properties:
+                message:
+                  type: string
+                status:
+                  $ref: '#/components/schemas/TaskStatus'
+                stepId:
+                  type: string
+              required:
+                - message
+        type:
+          $ref: '#/components/schemas/TaskEventType'
+        createdAt:
+          type: string
+      required:
+        - id
+        - taskId
+        - body
+        - type
+        - createdAt
+      description: SerializedTaskEvent
+    SerializedTask:
+      type: object
+      properties:
+        id:
+          type: string
+        spec:
+          type: object
+        status:
+          $ref: '#/components/schemas/TaskStatus'
+        createdAt:
+          type: string
+        lastHeartbeatAt:
+          type: string
+        createdBy:
+          type: string
+        secrets:
+          $ref: '#/components/schemas/TaskSecrets'
+        state:
+          $ref: '#/components/schemas/JsonObject'
+      required:
+        - id
+        - spec
+        - status
+        - createdAt
+      description: SerializedTask
+    TaskEventType:
+      type: string
+      description: TaskEventType
+      enum:
+        - cancelled
+        - completion
+        - log
+        - recovered
+    TaskSecrets:
+      allOf:
+        - type: object
+          additionalProperties:
+            type: string
+        - type: object
+          properties:
+            backstageToken:
+              type: string
+      description: TaskSecrets
+    TaskStatus:
+      type: string
+      enum:
+        - cancelled
+        - completed
+        - failed
+        - open
+        - processing
+        - skipped
+      description: The status of each step of the Task
+    TemplateGlobalFunction:
+      type: object
+      properties:
+        description:
+          type: string
+        schema:
+          type: object
+          properties:
+            arguments:
+              type: array
+              items:
+                $ref: '#/components/schemas/JsonObject'
+            output:
+              $ref: '#/components/schemas/JsonObject'
+        examples:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScaffolderUsageExample'
+      description: The response shape for a single global function in the `listTemplatingExtensions` call to the `scaffolder-backend`
+    TemplateGlobalValue:
+      type: object
+      properties:
+        description:
+          type: string
+        value:
+          type: object
+          nullable: true
+      required:
+        - value
+      description: The response shape for a single global value in the `listTemplatingExtensions` call to the `scaffolder-backend`
+    TemplateFilter:
+      type: object
+      properties:
+        description:
+          type: string
+        schema:
+          type: object
+          properties:
+            input:
+              $ref: '#/components/schemas/JsonObject'
+            arguments:
+              type: array
+              items:
+                $ref: '#/components/schemas/JsonObject'
+            output:
+              $ref: '#/components/schemas/JsonObject'
+        examples:
+          type: array
+          items:
+            $ref: '#/components/schemas/ScaffolderUsageExample'
+      description: The response shape for a single filter in the `listTemplatingExtensions` call to the `scaffolder-backend`
+    TemplateParameterSchema:
+      type: object
+      properties:
+        title:
+          type: string
+        description:
+          type: string
+        steps:
+          type: array
+          items:
+            type: object
+            properties:
+              title:
+                type: string
+              description:
+                type: string
+              schema:
+                type: object
+            required:
+              - title
+              - schema
+      required:
+        - title
+        - steps
+      description: |-
+        The shape of each entry of parameters which gets rendered
+        as a separate step in the wizard input
+      additionalProperties: {}
+    ValidationError:
+      type: object
+      properties:
+        path:
+          type: array
+          items:
+            oneOf:
+              - type: string
+              - type: integer
+        property:
+          type: string
+        message:
+          type: string
+        instance:
+          type: object
+        name:
+          type: string
+        argument:
+          oneOf:
+            - type: boolean
+            - type: number
+            - type: object
+            - type: string
+        stack:
+          type: string
+      required:
+        - path
+        - property
+        - message
+        - schema
+        - instance
+        - name
+        - argument
+        - stack
+      additionalProperties: {}
+  securitySchemes:
+    JWT:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+paths:
+  /v2/templates/{namespace}/{kind}/{name}/parameter-schema:
+    get:
+      operationId: GetTemplateParameterSchema
+      description: Get template parameter schema.
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TemplateParameterSchema'
+        '400':
+          $ref: '#/components/responses/ErrorResponse'
+        default:
+          $ref: '#/components/responses/ErrorResponse'
+      security:
+        - {}
+        - JWT: []
+      parameters:
+        - $ref: '#/components/parameters/namespace'
+        - $ref: '#/components/parameters/kind'
+        - $ref: '#/components/parameters/name'
+
+  /v2/actions:
+    get:
+      operationId: ListActions
+      description: Returns a list of all installed actions.
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListActionsResponse'
+      security:
+        - {}
+        - JWT: []
+      parameters: []
+
+  /v2/tasks:
+    get:
+      operationId: ListTasks
+      description: Returns a list of tasks, filtering by ownership and/or status if given.
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListTasksResponse'
+      security:
+        - {}
+        - JWT: []
+      parameters:
+        - $ref: '#/components/parameters/createdBy'
+        - $ref: '#/components/parameters/limit'
+        - $ref: '#/components/parameters/offset'
+        - $ref: '#/components/parameters/order'
+        - $ref: '#/components/parameters/status'
+    post:
+      operationId: Scaffold
+      description: |-
+        Executes the scaffolding of a component, given a template and its
+        parameter values.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ScaffolderScaffoldOptions'
+      responses:
+        '201':
+          description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                required:
+                  - id
+        '400':
+          description: Validation errors.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ValidationError'
+                required:
+                  - errors
+      security:
+        - {}
+        - JWT: []
+      parameters: []
+
+  /v2/tasks/{taskId}:
+    get:
+      operationId: GetTask
+      description: Get a task by ID.
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SerializedTask'
+        '403':
+          $ref: '#/components/responses/ErrorResponse'
+      security:
+        - {}
+        - JWT: []
+      parameters:
+        - $ref: '#/components/parameters/taskId'
+
+  /v2/tasks/{taskId}/cancel:
+    post:
+      operationId: CancelTask
+      description: Sends a signal to a task broker to cancel the running task by taskId.
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    $ref: '#/components/schemas/TaskStatus'
+      security:
+        - {}
+        - JWT: []
+      parameters:
+        - $ref: '#/components/parameters/taskId'
+
+  /v2/tasks/{taskId}/retry:
+    post:
+      operationId: Retry
+      description: Starts the task again from the point where it failed.
+      requestBody:
+        # this should probably be marked as required, but for legacy reasons we're not.
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                secrets:
+                  type: object
+                  additionalProperties:
+                    type: string
+      responses:
+        '201':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                required:
+                  - id
+      security:
+        - {}
+        - JWT: []
+      parameters:
+        - $ref: '#/components/parameters/taskId'
+
+  /v2/tasks/{taskId}/events:
+    get:
+      operationId: StreamLogsPolling
+      description: Get events for a task by ID.
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SerializedTaskEvent'
+        '403':
+          $ref: '#/components/responses/ErrorResponse'
+      parameters:
+        - $ref: '#/components/parameters/eventsAfter'
+        - $ref: '#/components/parameters/taskId'
+
+  /v2/dry-run:
+    post:
+      operationId: DryRun
+      description: Perform a dry-run of a template
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                template:
+                  type: object
+                values:
+                  $ref: '#/components/schemas/JsonObject'
+                secrets:
+                  type: object
+                  additionalProperties:
+                    type: string
+                directoryContents:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      path:
+                        type: string
+                      base64Content:
+                        type: string
+              required:
+                - template
+                - values
+                - directoryContents
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                allOf:
+                  - $ref: '#/components/schemas/DryRunResult'
+                  - type: object
+                    properties:
+                      steps:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            id:
+                              type: string
+                            name:
+                              type: string
+                            action:
+                              type: string
+                          required:
+                            - id
+                            - name
+                            - action
+                          additionalProperties: {}
+                      directoryContents:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            path:
+                              type: string
+                            executable:
+                              type: boolean
+                            base64Content:
+                              type: string
+                          required:
+                            - path
+                            - base64Content
+                    required:
+                      - steps
+        '400':
+          description: Validation errors.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  errors:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/ValidationError'
+                required:
+                  - errors
+      parameters: []
+
+  /v2/autocomplete/{provider}/{resource}:
+    post:
+      operationId: Autocomplete
+      description: Perform an autocomplete for the given provider and resource.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                context:
+                  type: object
+                  additionalProperties:
+                    type: string
+                token:
+                  type: string
+              required:
+                - context
+                - token
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  results:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        title:
+                          type: string
+                        id:
+                          type: string
+                      required:
+                        - id
+                required:
+                  - results
+        '400':
+          description: Unsupported provider.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  name:
+                    type: string
+      parameters:
+        - in: path
+          name: provider
+          required: true
+          allowReserved: true
+          schema:
+            type: string
+        - in: path
+          name: resource
+          required: true
+          allowReserved: true
+          schema:
+            type: string
+
+  /v2/templating-extensions:
+    get:
+      operationId: ListTemplatingExtensions
+      description: Returns a structure describing the available templating extensions.
+      responses:
+        '200':
+          description: Ok
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ListTemplatingExtensionsResponse'
+      security:
+        - {}
+        - JWT: []
+      parameters: []

@@ -2,7 +2,6 @@
 id: configuration
 title: Configuring Kubernetes integration
 sidebar_label: Configuration
-# prettier-ignore
 description: Configuring the Kubernetes integration for Backstage expose your entity's objects
 ---
 
@@ -203,6 +202,28 @@ or the
 [`AwsEKSClusterProcessor`](https://backstage.io/docs/reference/plugin-catalog-backend-module-aws.awseksclusterprocessor/)
 to automatically update the set of clusters tracked by Backstage.
 
+For this method to work any entity that would be using this `Resource` to help drive the Kubernetes details in the Catalog's Entity pages needs to have a `dependsOn` relationship setup. Here's a quick example:
+
+```yaml
+apiVersion: backstage.io/v1alpha1
+kind: Component
+metadata:
+  annotations:
+    backstage.io/kubernetes-id: dice-roller
+    backstage.io/kubernetes-namespace: default
+  name: dice-roller
+  description: It rolls dice
+  tags:
+    - go
+spec:
+  type: service
+  lifecycle: production
+  owner: guest
+  dependsOn: ['resource:my-cluster']
+```
+
+This example assumes it's using the default namespace, if that's not the case for you then make sure to include it like this: `resource:my-namespace/my-cluster`.
+
 #### `config`
 
 This cluster locator method will read cluster information from your app-config
@@ -355,8 +376,7 @@ Specifies the app that provides the Kubernetes dashboard.
 This will be used for formatting links to kubernetes objects inside the
 dashboard.
 
-The supported dashboards are: `standard`, `rancher`, `openshift`, `gke`, `aks`,
-`eks`. However, not all of them are implemented yet, so please contribute!
+The supported dashboards are: `aks`, `eks`, `gke`, `headlamp`, `openshift`, `rancher`, `standard`. However, not all of them are implemented yet, so please contribute!
 
 Note that it will default to the regular dashboard provided by the Kubernetes
 project (`standard`), that can run in any Kubernetes cluster.
@@ -421,7 +441,7 @@ Base64-encoded certificate authority bundle in PEM format. The Kubernetes client
 will verify that the TLS certificate presented by the API server is signed by
 this CA.
 
-This value could be obtained via inspecting the kubeconfig file (usually
+This value could be obtained via inspecting the `kubeconfig` file (usually
 at `~/.kube/config`) under `clusters[*].cluster.certificate-authority-data`. For
 GKE, execute the following command to obtain the value
 
@@ -447,6 +467,41 @@ cluster locator method can be configured in this way.
 
 Configures which [custom resources][3] to look for when returning an entity's
 Kubernetes resources belonging to the cluster. Same specification as [`customResources`](#customresources-optional)
+
+#### `headlamp`
+
+When using `headlamp` as your dashboard, you have two configuration options:
+
+1. External Headlamp instance:
+
+```yaml
+kubernetes:
+  clusterLocatorMethods:
+    - type: 'config'
+      clusters:
+        - url: http://127.0.0.1:9999
+          name: my-cluster
+          dashboardUrl: http://headlamp.example.com # Your Headlamp instance URL
+          dashboardApp: 'headlamp'
+          dashboardParameters:
+            clusterName: 'my-cluster' # Optional, defaults to 'default'
+```
+
+2. Internal Headlamp (When using the Headlamp plugin for Backstage):
+
+```yaml
+kubernetes:
+  clusterLocatorMethods:
+    - type: 'config'
+      clusters:
+        - url: http://127.0.0.1:9999
+          name: my-cluster
+          dashboardApp: 'headlamp'
+          dashboardParameters:
+            internal: true
+            headlampRoute: '/headlamp' # Optional, defaults to '/headlamp'
+            clusterName: 'my-cluster' # Optional, defaults to 'default'
+```
 
 #### `gke`
 
@@ -564,7 +619,7 @@ The custom resource's group.
 
 #### `customResources.\*.apiVersion`
 
-The custom resource's apiVersion.
+The custom resource's `apiVersion`.
 
 #### `customResources.\*.plural`
 
@@ -643,6 +698,7 @@ rules:
       - '*'
     resources:
       - pods
+      - pods/log
       - configmaps
       - services
       - deployments

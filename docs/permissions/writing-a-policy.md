@@ -5,7 +5,7 @@ description: How to write your own permission policy as a Backstage integrator
 ---
 
 :::info
-This documentation is written for [the new backend system](../backend-system/index.md) which is the default since Backstage [version 1.24](../releases/v1.24.0.md). If you are still on the old backend system, you may want to read [its own article](./writing-a-policy--old.md) instead, and [consider migrating](../backend-system/building-backends/08-migrating.md)!
+This documentation is written for [the new backend system](../backend-system/index.md) which is the default since Backstage [version 1.24](../releases/v1.24.0.md). If you are still on the old backend system, you may want to read [its own article](https://github.com/backstage/backstage/blob/v1.37.0/docs/permissions/writing-a-policy--old.md) instead, and [consider migrating](../backend-system/building-backends/08-migrating.md)!
 :::
 
 In the [previous section](./getting-started.md), we were able to set up the permission framework and make a simple change to our `TestPermissionPolicy` to confirm that policy is indeed wired up correctly.
@@ -92,6 +92,13 @@ import {
   catalogEntityDeletePermission,
 } from '@backstage/plugin-catalog-common/alpha';
 /* highlight-add-end */
+import {
+  PermissionPolicy,
+  PolicyQuery,
+  /* highlight-add-next-line */
+  PolicyQueryUser,
+} from '@backstage/plugin-permission-node';
+
 
 class CustomPermissionPolicy implements PermissionPolicy {
   /* highlight-remove-next-line */
@@ -143,8 +150,8 @@ import {
   PolicyDecision,
   /* highlight-remove-next-line */
   isPermission,
-  isResourcePermission,
   /* highlight-add-next-line */
+  isResourcePermission,
 } from '@backstage/plugin-permission-common';
 import {
   catalogConditions,
@@ -155,6 +162,11 @@ import {
   catalogEntityDeletePermission,
 } from '@backstage/plugin-catalog-common/alpha';
 /* highlight-remove-end */
+import {
+  PermissionPolicy,
+  PolicyQuery,
+  PolicyQueryUser,
+} from '@backstage/plugin-permission-node';
 
 class CustomPermissionPolicy implements PermissionPolicy {
   async handle(

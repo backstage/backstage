@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import Typography from '@material-ui/core/Typography';
 import { Visit } from '../../api/VisitsApi';
 import { DateTime } from 'luxon';
@@ -40,6 +39,9 @@ const ItemDetailTimeAgo = ({ visit }: { visit: Visit }) => {
   );
 };
 
+/**
+ * @internal
+ */
 export type ItemDetailType = 'time-ago' | 'hits';
 
 export const ItemDetail = ({

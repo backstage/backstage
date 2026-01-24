@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useCallback } from 'react';
+import { PropsWithChildren, ComponentType, useCallback } from 'react';
 import { useOutlet } from 'react-router-dom';
 
 import {
@@ -43,9 +43,7 @@ export const TECHDOCS_ADDONS_WRAPPER_KEY = 'techdocs.addons.wrapper.v1';
  * TechDocs Addon registry.
  * @public
  */
-export const TechDocsAddons: React.ComponentType<
-  React.PropsWithChildren<{}>
-> = () => null;
+export const TechDocsAddons: ComponentType<PropsWithChildren<{}>> = () => null;
 
 attachComponentData(TechDocsAddons, TECHDOCS_ADDONS_WRAPPER_KEY, true);
 
@@ -74,7 +72,7 @@ export function createTechDocsAddonExtension<TComponentProps>(
  * @public
  */
 export function createTechDocsAddonExtension<
-  TComponentProps extends React.PropsWithChildren<{}>,
+  TComponentProps extends PropsWithChildren<{}>,
 >(
   options: TechDocsAddonOptions<TComponentProps>,
 ): Extension<(props: TComponentProps) => JSX.Element | null> {

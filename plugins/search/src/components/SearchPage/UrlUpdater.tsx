@@ -43,7 +43,7 @@ export const UrlUpdater = () => {
     }
 
     const query =
-      qs.parse(location.search.substring(1), { arrayLimit: 0 }) || {};
+      qs.parse(location.search.substring(1), { arrayLimit: 10000 }) || {};
 
     if (query.filters) {
       setFilters(query.filters as JsonObject);

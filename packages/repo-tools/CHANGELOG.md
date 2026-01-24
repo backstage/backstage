@@ -1,5 +1,387 @@
 # @backstage/repo-tools
 
+## 0.16.2
+
+### Patch Changes
+
+- 498f9dd: Fixed help text for `backstage-repo-tools package schema openapi generate` command.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.1
+  - @backstage/cli-common@0.1.17
+
+## 0.16.1
+
+### Patch Changes
+
+- 688f070: Updated to use new utilities from `@backstage/cli-common`.
+- 85895f9: Updates OpenAPI generator templates to preserve original property names (like 'group-name', 'user-id') from OpenAPI specs when propertyNaming=original is specified. Previously, these were always converted to camelCase regardless of the propertyNaming setting.
+
+  - Updates modelGeneric.mustache templates in both client and server generators
+  - Updates modelTaggedUnion.mustache templates in both client and server generators
+  - Uses {{baseName}} when available, falls back to {{name}} for backward compatibility
+  - Maintains backward compatibility - no changes when propertyNaming=original is not used
+
+- 2bae83a: Bump `@microsoft/api-documenter` and `@microsoft/api-extractor` to latest versions.
+- d1e38a7: Properly create workspace in OS temporary directory for `generate-patch` command
+- 2bae83a: Bumped dev dependencies `@types/node`
+- Updated dependencies
+  - @backstage/cli-node@0.2.16
+  - @backstage/backend-plugin-api@1.6.0
+  - @backstage/cli-common@0.1.16
+  - @backstage/config-loader@1.10.7
+
+## 0.16.1-next.2
+
+### Patch Changes
+
+- 2bae83a: Bump `@microsoft/api-documenter` and `@microsoft/api-extractor` to latest versions.
+- 2bae83a: Bumped dev dependencies `@types/node`
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.0-next.1
+  - @backstage/config-loader@1.10.7-next.1
+  - @backstage/cli-common@0.1.16-next.2
+  - @backstage/catalog-model@1.7.6
+  - @backstage/cli-node@0.2.16-next.1
+  - @backstage/errors@1.2.7
+
+## 0.16.1-next.1
+
+### Patch Changes
+
+- 688f070: Updated to use new utilities from `@backstage/cli-common`.
+- d1e38a7: Properly create workspace in OS temporary directory for `generate-patch` command
+- Updated dependencies
+  - @backstage/cli-node@0.2.16-next.1
+  - @backstage/cli-common@0.1.16-next.1
+
+## 0.16.1-next.0
+
+### Patch Changes
+
+- 85895f9: Updates OpenAPI generator templates to preserve original property names (like 'group-name', 'user-id') from OpenAPI specs when propertyNaming=original is specified. Previously, these were always converted to camelCase regardless of the propertyNaming setting.
+
+  - Updates modelGeneric.mustache templates in both client and server generators
+  - Updates modelTaggedUnion.mustache templates in both client and server generators
+  - Uses {{baseName}} when available, falls back to {{name}} for backward compatibility
+  - Maintains backward compatibility - no changes when propertyNaming=original is not used
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.1-next.0
+  - @backstage/cli-common@0.1.16-next.0
+  - @backstage/cli-node@0.2.16-next.0
+  - @backstage/config-loader@1.10.7-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/errors@1.2.7
+
+## 0.16.0
+
+### Minor Changes
+
+- 11c61f2: The `package-docs` command will now automatically use a `typedoc.json` file if one exists at the root of your project.
+
+### Patch Changes
+
+- 8f56eae: Updated knip-reports to detect dependencies in dev/alpha pattern
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.0
+  - @backstage/config-loader@1.10.6
+  - @backstage/cli-node@0.2.15
+  - @backstage/catalog-model@1.7.6
+
+## 0.16.0-next.2
+
+### Minor Changes
+
+- 11c61f2: The `package-docs` command will now automatically use a `typedoc.json` file if one exists at the root of your project.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.0-next.2
+
+## 0.15.4-next.1
+
+### Patch Changes
+
+- 8f56eae: Updated knip-reports to detect dependencies in dev/alpha pattern
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.0-next.1
+
+## 0.15.4-next.0
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/config-loader@1.10.6-next.0
+  - @backstage/cli-node@0.2.15-next.0
+  - @backstage/catalog-model@1.7.6-next.0
+  - @backstage/backend-plugin-api@1.4.5-next.0
+  - @backstage/cli-common@0.1.15
+  - @backstage/errors@1.2.7
+
+## 0.15.3
+
+### Patch Changes
+
+- 1359279: Fixed an issue with the OpenAPI generated client and server where import/export statements were duplicated.
+- Updated dependencies
+  - @backstage/config-loader@1.10.5
+  - @backstage/backend-plugin-api@1.4.4
+
+## 0.15.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config-loader@1.10.4-next.0
+  - @backstage/backend-plugin-api@1.4.4-next.0
+  - @backstage/cli-node@0.2.14
+
+## 0.15.2
+
+### Patch Changes
+
+- 133ac7a: Fixed knip-reports command failing when workspace path contains spaces and process termination issues by replacing `execFile` with `spawn` and removing `shell` option.
+- Updated dependencies
+  - @backstage/config-loader@1.10.3
+  - @backstage/backend-plugin-api@1.4.3
+
+## 0.15.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config-loader@1.10.3-next.0
+
+## 0.15.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.3-next.0
+
+## 0.15.1
+
+### Patch Changes
+
+- 33060b5: Removed build-in ignore of the `packages/canon` package for knip reports.
+- 225d7c2: Added `stringEnums` to `mustache` templates
+- Updated dependencies
+  - @backstage/cli-node@0.2.14
+  - @backstage/backend-plugin-api@1.4.2
+
+## 0.15.1-next.1
+
+### Patch Changes
+
+- 33060b5: Removed build-in ignore of the `packages/canon` package for knip reports.
+
+## 0.15.1-next.0
+
+### Patch Changes
+
+- 225d7c2: Added `stringEnums` to `mustache` templates
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.2-next.0
+  - @backstage/cli-node@0.2.13
+  - @backstage/config-loader@1.10.2
+  - @backstage/catalog-model@1.7.5
+  - @backstage/cli-common@0.1.15
+  - @backstage/errors@1.2.7
+
+## 0.15.0
+
+### Minor Changes
+
+- 1e7082e: Clear output directory before running `package-docs` and skip all internal packages.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config-loader@1.10.2
+  - @backstage/catalog-model@1.7.5
+  - @backstage/backend-plugin-api@1.4.1
+
+## 0.15.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config-loader@1.10.2-next.0
+  - @backstage/catalog-model@1.7.5-next.0
+  - @backstage/backend-plugin-api@1.4.1-next.0
+
+## 0.15.0-next.0
+
+### Minor Changes
+
+- 1e7082e: Clear output directory before running `package-docs` and skip all internal packages.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.0
+  - @backstage/cli-node@0.2.13
+  - @backstage/config-loader@1.10.1
+  - @backstage/catalog-model@1.7.4
+  - @backstage/cli-common@0.1.15
+  - @backstage/errors@1.2.7
+
+## 0.14.0
+
+### Minor Changes
+
+- bf9a173: Add support for caching the per-package output from the `package-docs` command.
+
+### Patch Changes
+
+- 4bff5d0: Fixed a bug where linting would fail with the generated clients when defining top-level `enum` schema values.
+- 2d20024: Fix an issue where errors were not printed to console when running `backstage-repo-tools schema openapi generate` without the `--watch` flag.
+- e643ee4: Add missing highlight language for the `package-docs` command.
+- c83cd8b: Fixed some circular or otherwise unclear imports
+- a372bf1: Updated dependency `@electric-sql/pglite` to `^0.3.0`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/cli-common@0.1.15
+  - @backstage/cli-node@0.2.13
+  - @backstage/config-loader@1.10.1
+  - @backstage/errors@1.2.7
+
+## 0.14.0-next.2
+
+### Patch Changes
+
+- 4bff5d0: Fixed a bug where linting would fail with the generated clients when defining top-level `enum` schema values.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.0-next.1
+  - @backstage/catalog-model@1.7.4
+  - @backstage/cli-common@0.1.15
+  - @backstage/cli-node@0.2.13
+  - @backstage/config-loader@1.10.1
+  - @backstage/errors@1.2.7
+
+## 0.14.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.0-next.1
+  - @backstage/catalog-model@1.7.4
+  - @backstage/cli-common@0.1.15
+  - @backstage/cli-node@0.2.13
+  - @backstage/config-loader@1.10.1
+  - @backstage/errors@1.2.7
+
+## 0.14.0-next.0
+
+### Minor Changes
+
+- bf9a173: Add support for caching the per-package output from the `package-docs` command.
+
+### Patch Changes
+
+- 2d20024: Fix an issue where errors were not printed to console when running `backstage-repo-tools schema openapi generate` without the `--watch` flag.
+- e643ee4: Add missing highlight language for the `package-docs` command.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.0-next.0
+  - @backstage/cli-node@0.2.13
+  - @backstage/config-loader@1.10.1
+
+## 0.13.3
+
+### Patch Changes
+
+- b229476: Support passing additional properties to OpenAPI server generator
+- 659f2ce: Updated dependency `typedoc` to `^0.28.0`.
+- 72d019d: Removed various typos
+- Updated dependencies
+  - @backstage/catalog-model@1.7.4
+  - @backstage/backend-plugin-api@1.3.1
+  - @backstage/config-loader@1.10.1
+  - @backstage/cli-node@0.2.13
+  - @backstage/cli-common@0.1.15
+  - @backstage/errors@1.2.7
+
+## 0.13.3-next.3
+
+### Patch Changes
+
+- 659f2ce: Updated dependency `typedoc` to `^0.28.0`.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.3.1-next.2
+  - @backstage/catalog-model@1.7.3
+  - @backstage/cli-common@0.1.15
+  - @backstage/cli-node@0.2.13
+  - @backstage/config-loader@1.10.1-next.0
+  - @backstage/errors@1.2.7
+
+## 0.13.3-next.2
+
+### Patch Changes
+
+- b229476: Support passing additional properties to OpenAPI server generator
+- Updated dependencies
+  - @backstage/cli-node@0.2.13
+  - @backstage/backend-plugin-api@1.3.1-next.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/cli-common@0.1.15
+  - @backstage/config-loader@1.10.1-next.0
+  - @backstage/errors@1.2.7
+
+## 0.13.3-next.1
+
+### Patch Changes
+
+- 72d019d: Removed various typos
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.3.1-next.1
+  - @backstage/config-loader@1.10.1-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/cli-common@0.1.15
+  - @backstage/cli-node@0.2.13
+  - @backstage/errors@1.2.7
+
+## 0.13.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.3.1-next.0
+  - @backstage/cli-node@0.2.13
+  - @backstage/config-loader@1.10.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/cli-common@0.1.15
+  - @backstage/errors@1.2.7
+
+## 0.13.2
+
+### Patch Changes
+
+- 18ce51c: Checking up the files where `createRouter` has been declared and check if `@deprecated` tag exists. If it does not exist then only the message will appear.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.3.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/cli-common@0.1.15
+  - @backstage/cli-node@0.2.13
+  - @backstage/config-loader@1.10.0
+  - @backstage/errors@1.2.7
+
+## 0.13.1
+
+### Patch Changes
+
+- c7a58b2: Fix issue where generate-patch incorrectly encodes the locator not aligning with result of yarn patch
+- Updated dependencies
+  - @backstage/config-loader@1.10.0
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/cli-common@0.1.15
+  - @backstage/cli-node@0.2.13
+  - @backstage/errors@1.2.7
+
 ## 0.13.1-next.2
 
 ### Patch Changes

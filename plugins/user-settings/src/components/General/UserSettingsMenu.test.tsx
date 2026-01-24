@@ -22,7 +22,6 @@ import {
 } from '@backstage/test-utils';
 import { errorApiRef, identityApiRef } from '@backstage/core-plugin-api';
 import { fireEvent, waitFor, screen } from '@testing-library/react';
-import React from 'react';
 import { UserSettingsMenu } from './UserSettingsMenu';
 
 describe('<UserSettingsMenu />', () => {

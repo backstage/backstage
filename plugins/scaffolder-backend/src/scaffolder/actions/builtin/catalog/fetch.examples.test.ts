@@ -19,7 +19,7 @@ import { Entity } from '@backstage/catalog-model';
 import { createFetchCatalogEntityAction } from './fetch';
 import { examples } from './fetch.examples';
 import yaml from 'yaml';
-import { mockCredentials, mockServices } from '@backstage/backend-test-utils';
+import { mockCredentials } from '@backstage/backend-test-utils';
 import { catalogServiceMock } from '@backstage/plugin-catalog-node/testUtils';
 
 describe('catalog:fetch examples', () => {
@@ -31,27 +31,19 @@ describe('catalog:fetch examples', () => {
     },
   } as Entity;
 
-  const catalogClient = catalogServiceMock({ entities: [entity] });
+  const catalogMock = catalogServiceMock({ entities: [entity] });
 
   const action = createFetchCatalogEntityAction({
-    catalogClient,
-    auth: mockServices.auth(),
+    catalog: catalogMock,
   });
 
   const credentials = mockCredentials.user();
 
-  const token = mockCredentials.service.token({
-    onBehalfOf: credentials,
-    targetPluginId: 'catalog',
-  });
-
-  const mockContext = createMockActionContext({
-    secrets: { backstageToken: token },
-  });
+  const mockContext = createMockActionContext();
 
   beforeEach(() => {
     jest.resetAllMocks();
-    jest.spyOn(catalogClient, 'getEntityByRef');
+    jest.spyOn(catalogMock, 'getEntityByRef');
   });
 
   describe('fetch single entity', () => {
@@ -61,9 +53,9 @@ describe('catalog:fetch examples', () => {
         input: yaml.parse(examples[0].example).steps[0].input,
       });
 
-      expect(catalogClient.getEntityByRef).toHaveBeenCalledWith(
+      expect(catalogMock.getEntityByRef).toHaveBeenCalledWith(
         'component:default/name',
-        { token },
+        { credentials },
       );
       expect(mockContext.output).toHaveBeenCalledWith('entity', entity);
     });

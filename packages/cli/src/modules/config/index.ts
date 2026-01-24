@@ -13,7 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+import { createCliPlugin } from '../../wiring/factory';
+import yargs from 'yargs';
 import { Command } from 'commander';
 import { lazy } from '../../lib/lazy';
 
@@ -24,64 +25,114 @@ export const configOption = [
   Array<string>(),
 ] as const;
 
-export function registerCommands(program: Command) {
-  program
-    .command('config:docs')
-    .option(
-      '--package <name>',
-      'Only include the schema that applies to the given package',
-    )
-    .description('Browse the configuration reference documentation')
-    .action(lazy(() => import('./commands/docs'), 'default'));
+export default createCliPlugin({
+  pluginId: 'config',
+  init: async reg => {
+    reg.addCommand({
+      path: ['config:docs'],
+      description: 'Browse the configuration reference documentation',
+      execute: async ({ args }) => {
+        const command = new Command();
+        const defaultCommand = command
+          .option(
+            '--package <name>',
+            'Only include the schema that applies to the given package',
+          )
+          .description('Browse the configuration reference documentation')
+          .action(lazy(() => import('./commands/docs'), 'default'));
 
-  program
-    .command('config:print')
-    .option(
-      '--package <name>',
-      'Only load config schema that applies to the given package',
-    )
-    .option('--lax', 'Do not require environment variables to be set')
-    .option('--frontend', 'Print only the frontend configuration')
-    .option('--with-secrets', 'Include secrets in the printed configuration')
-    .option(
-      '--format <format>',
-      'Format to print the configuration in, either json or yaml [yaml]',
-    )
-    .option(...configOption)
-    .description('Print the app configuration for the current package')
-    .action(lazy(() => import('./commands/print'), 'default'));
+        await defaultCommand.parseAsync(args, { from: 'user' });
+      },
+    });
+    reg.addCommand({
+      path: ['config', 'docs'],
+      description: 'Browse the configuration reference documentation',
+      execute: async ({ args, info }) => {
+        await new Command(info.usage)
+          .option(
+            '--package <name>',
+            'Only include the schema that applies to the given package',
+          )
+          .description(info.description)
+          .action(lazy(() => import('./commands/docs'), 'default'))
+          .parseAsync(args, { from: 'user' });
+      },
+    });
+    reg.addCommand({
+      path: ['config:print'],
+      description: 'Print the app configuration for the current package',
+      execute: async ({ args, info }) => {
+        const argv = await yargs()
+          .options({
+            package: { type: 'string' },
+            lax: { type: 'boolean' },
+            frontend: { type: 'boolean' },
+            'with-secrets': { type: 'boolean' },
+            format: { type: 'string' },
+            config: { type: 'string', array: true, default: [] },
+          })
+          .usage('$0', info.description)
+          .help()
+          .parse(args);
+        await lazy(() => import('./commands/print'), 'default')(argv);
+      },
+    });
+    reg.addCommand({
+      path: ['config:check'],
+      description:
+        'Validate that the given configuration loads and matches schema',
+      execute: async ({ args }) => {
+        const argv = await yargs()
+          .options({
+            package: { type: 'string' },
+            lax: { type: 'boolean' },
+            frontend: { type: 'boolean' },
+            deprecated: { type: 'boolean' },
+            strict: { type: 'boolean' },
+            config: {
+              type: 'string',
+              array: true,
+              default: [],
+            },
+          })
+          .help()
+          .parse(args);
+        await lazy(() => import('./commands/validate'), 'default')(argv);
+      },
+    });
 
-  program
-    .command('config:check')
-    .option(
-      '--package <name>',
-      'Only load config schema that applies to the given package',
-    )
-    .option('--lax', 'Do not require environment variables to be set')
-    .option('--frontend', 'Only validate the frontend configuration')
-    .option('--deprecated', 'Output deprecated configuration settings')
-    .option(
-      '--strict',
-      'Enable strict config validation, forbidding errors and unknown keys',
-    )
-    .option(...configOption)
-    .description(
-      'Validate that the given configuration loads and matches schema',
-    )
-    .action(lazy(() => import('./commands/validate'), 'default'));
+    reg.addCommand({
+      path: ['config:schema'],
+      description: 'Print the JSON schema for the given configuration',
+      execute: async ({ args }) => {
+        const argv = await yargs()
+          .options({
+            package: { type: 'string' },
+            format: { type: 'string' },
+            merge: { type: 'boolean' },
+            'no-merge': { type: 'boolean' },
+          })
+          .help()
+          .parse(args);
+        await lazy(() => import('./commands/schema'), 'default')(argv);
+      },
+    });
 
-  program
-    .command('config:schema')
-    .option(
-      '--package <name>',
-      'Only output config schema that applies to the given package',
-    )
-    .option(
-      '--format <format>',
-      'Format to print the schema in, either json or yaml [yaml]',
-    )
-    .option('--merge', 'Print the config schemas merged', true)
-    .option('--no-merge', 'Print the config schemas not merged')
-    .description('Print configuration schema')
-    .action(lazy(() => import('./commands/schema'), 'default'));
-}
+    reg.addCommand({
+      path: ['config', 'schema'],
+      description: 'Print the JSON schema for the given configuration',
+      execute: async ({ args }) => {
+        const argv = await yargs()
+          .options({
+            package: { type: 'string' },
+            format: { type: 'string' },
+            merge: { type: 'boolean' },
+            'no-merge': { type: 'boolean' },
+          })
+          .help()
+          .parse(args);
+        await lazy(() => import('./commands/schema'), 'default')(argv);
+      },
+    });
+  },
+});

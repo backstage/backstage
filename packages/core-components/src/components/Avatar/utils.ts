@@ -28,7 +28,13 @@ export function stringToColor(str: string) {
 }
 
 export function extractInitials(name: string) {
-  const names = name.trim().split(' ');
+  const names = name
+    .replace(/\([^)]{0,1000}\)/g, '')
+    .replace(/\[[^\]]{0,1000}\]/g, '')
+    .trim()
+    .split(/\s+/)
+    .map(word => word.replace(/[^A-Za-z\u00C0-\u017F]/g, ''))
+    .filter(Boolean);
   const firstName = names[0] ?? '';
   const lastName = names.length > 1 ? names[names.length - 1] : '';
   return firstName && lastName

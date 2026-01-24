@@ -18,7 +18,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import TextField from '@material-ui/core/TextField';
 import { TextFieldProps } from '@material-ui/core/TextField/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import React from 'react';
+import { ComponentProps, ReactNode, ChangeEvent, Fragment } from 'react';
 import { Controller, FieldErrors } from 'react-hook-form';
 
 /**
@@ -32,12 +32,12 @@ export interface AutocompleteTextFieldProps<TFieldValue extends string> {
   required?: boolean;
 
   errors?: FieldErrors;
-  rules?: React.ComponentProps<typeof Controller>['rules'];
+  rules?: ComponentProps<typeof Controller>['rules'];
 
   loading?: boolean;
   loadingText?: string;
 
-  helperText?: React.ReactNode;
+  helperText?: ReactNode;
   errorHelperText?: string;
 
   textFieldProps?: Omit<TextFieldProps, 'required' | 'fullWidth'>;
@@ -75,7 +75,7 @@ export const AutocompleteTextField = <TFieldValue extends string>(
           options={options || []}
           autoSelect
           freeSolo
-          onChange={(_event: React.ChangeEvent<{}>, value: string | null) =>
+          onChange={(_event: ChangeEvent<{}>, value: string | null) =>
             onChange(value)
           }
           renderInput={params => (
@@ -89,12 +89,12 @@ export const AutocompleteTextField = <TFieldValue extends string>(
               InputProps={{
                 ...params.InputProps,
                 endAdornment: (
-                  <React.Fragment>
+                  <Fragment>
                     {loading ? (
                       <CircularProgress color="inherit" size="1em" />
                     ) : null}
                     {params.InputProps.endAdornment}
-                  </React.Fragment>
+                  </Fragment>
                 ),
               }}
               {...textFieldProps}

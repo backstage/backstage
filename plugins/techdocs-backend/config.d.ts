@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
+import { HumanDuration } from '@backstage/types';
+
 export interface Config {
   /**
    * Configuration options for the techdocs-backend plugin
    * @see http://backstage.io/docs/features/techdocs/configuration
    */
-  techdocs: {
+  techdocs?: {
     /**
      * Documentation building process depends on the builder attr
      * @visibility frontend
@@ -98,7 +100,6 @@ export interface Config {
              * If account ID is not set and no credentials are set, environment variables or aws config file will be used to authenticate.
              * @see https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/loading-node-credentials-environment.html
              * @see https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/loading-node-credentials-shared.html
-             * @visibility secret
              */
             accountId?: string;
             /**
@@ -139,14 +140,12 @@ export interface Config {
              * (Optional) AWS Region.
              * If not set, AWS_REGION environment variable or aws config file will be used.
              * @see https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/setting-region.html
-             * @visibility secret
              */
             region?: string;
             /**
              * (Optional) AWS Endpoint.
              * The endpoint URI to send requests to. The default endpoint is built from the configured region.
              * @see https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#constructor-property
-             * @visibility secret
              */
             endpoint?: string;
             /**
@@ -277,7 +276,7 @@ export interface Config {
      */
     cache?: {
       /**
-       * The cache time-to-live for TechDocs sites (in milliseconds). Set this
+       * The cache time-to-live for TechDocs sites, in milliseconds for a number or a human duration. Set this
        * to a non-zero value to cache TechDocs sites and assets as they are
        * read from storage.
        *
@@ -285,16 +284,16 @@ export interface Config {
        * and to pass a PluginCacheManager instance to TechDocs Backend's
        * createRouter method in your backend.
        */
-      ttl: number;
+      ttl: number | HumanDuration | string;
 
       /**
-       * The time (in milliseconds) that the TechDocs backend will wait for
+       * The time (in milliseconds for a number or a human duration) that the TechDocs backend will wait for
        * a cache service to respond before continuing on as though the cached
        * object was not found (e.g. when the cache sercice is unavailable).
        *
        * Defaults to 1000 milliseconds.
        */
-      readTimeout?: number;
+      readTimeout?: number | HumanDuration | string;
     };
 
     /**

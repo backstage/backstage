@@ -4,6 +4,14 @@
 
 ```ts
 import { Config } from '@backstage/config';
+import { JsonValue } from '@backstage/types';
+
+// @public (undocumented)
+export type ChannelSetting = {
+  id: string;
+  enabled?: boolean;
+  origins: OriginSetting[];
+};
 
 // @public (undocumented)
 export const getProcessorFiltersFromConfig: (
@@ -15,6 +23,7 @@ export const isNotificationsEnabledFor: (
   settings: NotificationSettings,
   channelId: string,
   originId: string,
+  topicId: string | null,
 ) => boolean;
 
 // @public (undocumented)
@@ -45,6 +54,9 @@ export type NotificationPayload = {
   topic?: string;
   scope?: string;
   icon?: string;
+  metadata?: {
+    [KMetadataKey in string]?: JsonValue;
+  };
 };
 
 // @public (undocumented)
@@ -62,13 +74,7 @@ export type NotificationReadSignal = {
 
 // @public (undocumented)
 export type NotificationSettings = {
-  channels: {
-    id: string;
-    origins: {
-      id: string;
-      enabled: boolean;
-    }[];
-  }[];
+  channels: ChannelSetting[];
 };
 
 // @public
@@ -84,5 +90,18 @@ export type NotificationSignal = NewNotificationSignal | NotificationReadSignal;
 export type NotificationStatus = {
   unread: number;
   read: number;
+};
+
+// @public (undocumented)
+export type OriginSetting = {
+  id: string;
+  enabled: boolean;
+  topics?: TopicSetting[];
+};
+
+// @public (undocumented)
+export type TopicSetting = {
+  id: string;
+  enabled: boolean;
 };
 ```

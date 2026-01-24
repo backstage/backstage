@@ -15,7 +15,7 @@
  */
 import { createBackendModule } from '@backstage/backend-plugin-api';
 import { notificationService } from '@backstage/plugin-notifications-node';
-import { scaffolderActionsExtensionPoint } from '@backstage/plugin-scaffolder-node/alpha';
+import { scaffolderActionsExtensionPoint } from '@backstage/plugin-scaffolder-node';
 import { createSendNotificationAction } from './actions';
 
 /**

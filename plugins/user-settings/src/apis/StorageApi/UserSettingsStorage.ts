@@ -52,15 +52,31 @@ export class UserSettingsStorage implements StorageApi {
     Observable<StorageValueSnapshot<JsonValue>>
   >();
 
+  private readonly namespace: string;
+  private readonly fetchApi: FetchApi;
+  private readonly discoveryApi: DiscoveryApi;
+  private readonly errorApi: ErrorApi;
+  private readonly identityApi: IdentityApi;
+  private readonly fallback: WebStorage;
+  private readonly signalApi?: SignalApi;
+
   private constructor(
-    private readonly namespace: string,
-    private readonly fetchApi: FetchApi,
-    private readonly discoveryApi: DiscoveryApi,
-    private readonly errorApi: ErrorApi,
-    private readonly identityApi: IdentityApi,
-    private readonly fallback: WebStorage,
-    private readonly signalApi?: SignalApi,
-  ) {}
+    namespace: string,
+    fetchApi: FetchApi,
+    discoveryApi: DiscoveryApi,
+    errorApi: ErrorApi,
+    identityApi: IdentityApi,
+    fallback: WebStorage,
+    signalApi?: SignalApi,
+  ) {
+    this.namespace = namespace;
+    this.fetchApi = fetchApi;
+    this.discoveryApi = discoveryApi;
+    this.errorApi = errorApi;
+    this.identityApi = identityApi;
+    this.fallback = fallback;
+    this.signalApi = signalApi;
+  }
 
   static create(options: {
     fetchApi: FetchApi;

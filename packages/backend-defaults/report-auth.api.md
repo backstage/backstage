@@ -4,6 +4,7 @@
 
 ```ts
 import { AuthService } from '@backstage/backend-plugin-api';
+import type { Config } from '@backstage/config';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 import { ServiceRef } from '@backstage/backend-plugin-api';
 
@@ -12,6 +13,36 @@ export const authServiceFactory: ServiceFactory<
   AuthService,
   'plugin',
   'singleton'
+>;
+
+// @public
+export function createExternalTokenHandler<TContext>(
+  handler: ExternalTokenHandler<TContext>,
+): ExternalTokenHandler<TContext>;
+
+// @public
+export interface ExternalTokenHandler<TContext> {
+  // (undocumented)
+  initialize(ctx: { options: Config }): TContext;
+  // (undocumented)
+  type: string;
+  // (undocumented)
+  verifyToken(
+    token: string,
+    ctx: TContext,
+  ): Promise<
+    | {
+        subject: string;
+      }
+    | undefined
+  >;
+}
+
+// @public
+export const externalTokenHandlersServiceRef: ServiceRef<
+  ExternalTokenHandler<unknown>,
+  'plugin',
+  'multiton'
 >;
 
 // @public

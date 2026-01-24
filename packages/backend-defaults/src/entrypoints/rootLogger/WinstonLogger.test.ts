@@ -110,4 +110,90 @@ describe('WinstonLogger', () => {
       `={"foo":{"bar":{"baz":"qux"}}}`,
     );
   });
+
+  it('should handle null and undefined values in redactions without crashing', () => {
+    const { add } = WinstonLogger.redacter();
+
+    expect(() => {
+      add([null as any, undefined as any, 'valid-secret']);
+    }).not.toThrow();
+  });
+
+  it('should filter logs below the default log level', () => {
+    const mockTransport = new Transport({
+      log: jest.fn(),
+      logv: jest.fn(),
+    });
+
+    const logger = WinstonLogger.create({
+      level: 'warn',
+      format: format.json(),
+      transports: [mockTransport],
+    });
+
+    logger.debug('debug log');
+
+    expect(mockTransport.log).not.toHaveBeenCalled();
+  });
+
+  it('should not filter logs below the default log level with an override', () => {
+    const mockTransport = new Transport({
+      log: jest.fn(),
+      logv: jest.fn(),
+    });
+
+    const logger = WinstonLogger.create({
+      level: 'warn',
+      format: format.json(),
+      transports: [mockTransport],
+    });
+
+    logger.setLevelOverrides([
+      {
+        matchers: {
+          plugin: 'catalog',
+        },
+        level: 'debug',
+      },
+    ]);
+
+    logger.debug('debug log', { plugin: 'catalog' });
+
+    expect(mockTransport.log).toHaveBeenCalledWith(
+      expect.objectContaining({
+        [MESSAGE]: JSON.stringify({
+          level: 'debug',
+          message: 'debug log',
+          plugin: 'catalog',
+        }),
+      }),
+      expect.any(Function),
+    );
+  });
+
+  it('should filter logs above the default log level with an override', () => {
+    const mockTransport = new Transport({
+      log: jest.fn(),
+      logv: jest.fn(),
+    });
+
+    const logger = WinstonLogger.create({
+      level: 'debug',
+      format: format.json(),
+      transports: [mockTransport],
+    });
+
+    logger.setLevelOverrides([
+      {
+        matchers: {
+          plugin: 'catalog',
+        },
+        level: 'error',
+      },
+    ]);
+
+    logger.info('info log', { plugin: 'catalog' });
+
+    expect(mockTransport.log).not.toHaveBeenCalled();
+  });
 });

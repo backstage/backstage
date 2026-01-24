@@ -14,9 +14,13 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { mockApis, TestApiProvider } from '@backstage/test-utils';
-import { act, render, waitFor } from '@testing-library/react';
+import { ReactNode } from 'react';
+import {
+  mockApis,
+  renderInTestApp,
+  TestApiProvider,
+} from '@backstage/test-utils';
+import { act, waitFor } from '@testing-library/react';
 import user from '@testing-library/user-event';
 import {
   searchApiRef,
@@ -67,7 +71,7 @@ describe('SearchType.Accordion', () => {
     });
   });
 
-  const Wrapper = ({ children }: { children: React.ReactNode }) => {
+  const Wrapper = ({ children }: { children: ReactNode }) => {
     return (
       <TestApiProvider
         apis={[
@@ -81,7 +85,7 @@ describe('SearchType.Accordion', () => {
   };
 
   it('should render as expected', async () => {
-    const { getByText } = render(
+    const { getByText } = await renderInTestApp(
       <Wrapper>
         <SearchType.Accordion name={expectedLabel} types={[expectedType]} />
       </Wrapper>,
@@ -103,7 +107,7 @@ describe('SearchType.Accordion', () => {
   });
 
   it('should set entire types array when a type is selected', async () => {
-    const { getByText } = render(
+    const { getByText } = await renderInTestApp(
       <Wrapper>
         <SearchType.Accordion name={expectedLabel} types={[expectedType]} />
       </Wrapper>,
@@ -115,7 +119,7 @@ describe('SearchType.Accordion', () => {
   });
 
   it('should reset types array when all is selected', async () => {
-    const { getByText } = render(
+    const { getByText } = await renderInTestApp(
       <Wrapper>
         <SearchType.Accordion
           name={expectedLabel}
@@ -131,7 +135,7 @@ describe('SearchType.Accordion', () => {
   });
 
   it('should reset page cursor when a new type is selected', async () => {
-    const { getByText } = render(
+    const { getByText } = await renderInTestApp(
       <Wrapper>
         <SearchType.Accordion name={expectedLabel} types={[expectedType]} />
       </Wrapper>,
@@ -143,7 +147,7 @@ describe('SearchType.Accordion', () => {
   });
 
   it('should show result counts if enabled', async () => {
-    const { getAllByText } = render(
+    const { getAllByText } = await renderInTestApp(
       <Wrapper>
         <SearchType.Accordion
           name={expectedLabel}
@@ -153,18 +157,28 @@ describe('SearchType.Accordion', () => {
       </Wrapper>,
     );
 
-    expect(searchApiMock.query).toHaveBeenCalledWith({
-      term: 'abc',
-      types: [],
-      filters: { foo: 'bar' },
-      pageLimit: 0,
-    });
-    expect(searchApiMock.query).toHaveBeenCalledWith({
-      term: 'abc',
-      types: [expectedType.value],
-      filters: {},
-      pageLimit: 0,
-    });
+    expect(searchApiMock.query).toHaveBeenCalledWith(
+      {
+        term: 'abc',
+        types: [],
+        filters: { foo: 'bar' },
+        pageLimit: 0,
+      },
+      {
+        signal: expect.any(AbortSignal),
+      },
+    );
+    expect(searchApiMock.query).toHaveBeenCalledWith(
+      {
+        term: 'abc',
+        types: [expectedType.value],
+        filters: {},
+        pageLimit: 0,
+      },
+      {
+        signal: expect.any(AbortSignal),
+      },
+    );
     await waitFor(() => {
       const countLabels = getAllByText('1234 results');
       expect(countLabels.length).toEqual(2);

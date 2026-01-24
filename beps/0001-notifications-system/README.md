@@ -1,6 +1,6 @@
 ---
 title: Backstage Notifications System
-status: implementable
+status: implemented
 authors:
   - '@Rugvip'
   - '@drodil'
@@ -105,7 +105,6 @@ The notification backend stores notification using the [database service](https:
   - Description (optional)
   - Origin
   - Link (optional)
-  - Additional links (optional)
   - Severity (optional, default normal)
   - Topic (optional)
   - Scope (optional)
@@ -193,8 +192,6 @@ The following backend service interfaces are added as part of this proposal.
 #### `NotificationService`
 
 ```ts
-// TODO - We may want to add an additional wrapping here with interfaces for Notification and NotificationParameters
-
 export type NotificationRecipients =
   | {
       type: 'entity';
@@ -210,15 +207,11 @@ export type NotificationPayload = {
   title: string;
   description?: string;
   link?: string;
-  additionalLinks?: string[];
   severity?: NotificationSeverity;
   topic?: string;
   scope?: string;
   icon?: string;
-  metadata?: Array<{
-    type: string;
-    value: JsonValue;
-  }>;
+  metadata?: { [KMetadataKey in string]?: JsonValue };
 };
 
 export type Notification = {
@@ -233,20 +226,20 @@ export type Notification = {
   payload: NotificationPayload;
 };
 
-interface SendNotificationRequest {
+interface NotificationSendOptions {
   recipients: NotificationRecipients;
   payload: NotificationPayload;
 }
 
 interface NotificationService {
-  sendNotification(request: SendNotificationRequest): Promise<void>;
+  send(request: NotificationSendOptions): Promise<void>;
 }
 ```
 
 Each notification contains a human-readable `title`, `origin` and optionally `link` for additional details. The `created`, `id`, `read` and `saved` properties are handled by the backend based and cannot be passed during the notification creation.
 Any optional additional details could be stored in `metadata`. We advise to provide the name to the type which contains the information about the context and the version, for example: 'core.icon.v1'.
 
-Calling `sendNotification` should never throw an error so that it doesn't block the current processing. Notifications should be considered as second-level citizens that are not critical if not delivered.
+Calling `send` should never throw an error so that it doesn't block the current processing. Notifications should be considered as second-level citizens that are not critical if not delivered.
 
 Each notification is always routed to individual users unless its type is `broadcast`.
 
@@ -300,8 +293,6 @@ Example signal payload for a new notification:
 
 - OpenAPI tooling is taken into use for the notification router and client
 - Allow using dynamic values in notification payload, for example entity references `{{ user:default/john.doe }}` should be rendered by the frontend with `EntityRefLink` component. Defining the dynamic data values should be done before implementation.
-- Add configurable automatic clean-up of old notifications to save storage space
-- Support for saving user notification settings
 
 ### Frontend API
 
@@ -309,7 +300,7 @@ Notification frontend shows users their own notifications in its own page and th
 
 Notifications are set to `read` when the `Mark as read` action is triggered by the user (bulk or single).
 
-Notifications can be saved for better visibility in the future.
+Notifications can be saved for better visibility.
 
 Notifications can be filtered by `read`, `saved`, `content` (text search in title or description), `created` (since multiple predefined options) and `severity`.
 
@@ -322,41 +313,63 @@ The following frontend API is added as part of this proposal.
 ```ts
 export type NotificationSeverity = 'critical' | 'high' | 'normal' | 'low';
 
-export type GetNotificationsOptions = {
-  offset?: number;
-  limit?: number;
+export type GetNotificationsCommonOptions = {
   search?: string;
-  createdSince?: Date;
-  severity?: NotificationSeverity;
+  read?: boolean;
+  saved?: boolean;
+  createdAfter?: Date;
+  minimumSeverity?: NotificationSeverity;
 };
 
-export type NotificationUpdateOptions = {
+export type GetNotificationsOptions = GetNotificationsCommonOptions & {
+  offset?: number;
+  limit?: number;
+  sort?: 'created' | 'topic' | 'origin';
+  sortOrder?: 'asc' | 'desc';
+  topic?: string;
+};
+
+export type GetTopicsOptions = GetNotificationsCommonOptions;
+
+export type UpdateNotificationsOptions = {
   ids: string[];
   read?: boolean;
   saved?: boolean;
 };
 
-export type NotificationStatus = {
-  unread: number;
-  read: number;
+export type GetNotificationsResponse = {
+  notifications: Notification[];
+  totalCount: number;
 };
 
-interface NotificationsApi {
-  getNotifications(options?: GetNotificationsOptions): Promise<Notification[]>;
+export type GetTopicsResponse = {
+  topics: string[];
+};
+
+export interface NotificationsApi {
+  getNotifications(
+    options?: GetNotificationsOptions,
+  ): Promise<GetNotificationsResponse>;
+
+  getNotification(id: string): Promise<Notification>;
 
   getStatus(): Promise<NotificationStatus>;
 
   updateNotifications(
     options: UpdateNotificationsOptions,
   ): Promise<Notification[]>;
+
+  getNotificationSettings(): Promise<NotificationSettings>;
+
+  updateNotificationSettings(
+    settings: NotificationSettings,
+  ): Promise<NotificationSettings>;
+
+  getTopics(options?: GetTopicsOptions): Promise<GetTopicsResponse>;
 }
 ```
 
 #### `SignalApi`
-
-> TODO - we likely need a slightly different approach here, since APIs are lazy loaded.
-
-> TODO - signal typing in https://github.com/backstage/backstage/pull/22656
 
 ```ts
 export type NotificationSignal = {
@@ -427,14 +440,14 @@ The notification and signal plugins are released as two new plugins in the Backs
 
 For the notification plugin to reach a stable release we much reach the following:
 
-- [ ] A stable notifications payload format.
-- [ ] A stable notifications recipient filter format.
+- [x] A stable notifications payload format.
+- [x] A stable notifications recipient filter format.
 - [x] The events service must have at least one implementation that supports scaled deployments. Done in #24916.
 
 For the signal plugin to reach a stable release we much reach the following:
 
-- [ ] A stable signal recipient filter format.
-- [ ] A stable signal channel API in the frontend.
+- [x] A stable signal recipient filter format.
+- [x] A stable signal channel API in the frontend.
 
 If any changes are required to the frontend framework to facilitate the implementation of notifications or signals, these will be released as experimental alpha features. They will stay in alpha until they are deemed stable enough, which must happen before a stable release of the notifications system.
 

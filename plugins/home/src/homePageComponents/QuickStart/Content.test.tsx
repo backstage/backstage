@@ -15,7 +15,6 @@
  */
 
 import { Content } from './Content';
-import React from 'react';
 import userEvent from '@testing-library/user-event';
 import { renderInTestApp } from '@backstage/test-utils';
 import ContentImage from './static/backstageSystemModel.png';

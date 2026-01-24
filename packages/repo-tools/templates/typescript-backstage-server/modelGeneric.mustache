@@ -18,7 +18,7 @@ export {{#isNullable}}type{{/isNullable}}{{^isNullable}}interface{{/isNullable}}
     * {{{.}}}
     */
 {{/description}}
-    '{{name}}'{{^required}}?{{/required}}: {{#isEnum}}{{{datatypeWithEnum}}}{{/isEnum}}{{^isEnum}}{{{dataType}}}{{/isEnum}}{{#isNullable}} | null{{/isNullable}};
+    '{{#baseName}}{{baseName}}{{/baseName}}{{^baseName}}{{name}}{{/baseName}}'{{^required}}?{{/required}}: {{#isEnum}}{{{datatypeWithEnum}}}{{/isEnum}}{{^isEnum}}{{{dataType}}}{{/isEnum}}{{#isNullable}} | null{{/isNullable}};
 {{/vars}}
 }{{#isNullable}} | null{{/isNullable}}
 

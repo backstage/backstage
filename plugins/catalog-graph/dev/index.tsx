@@ -45,7 +45,6 @@ import {
 import { JsonObject } from '@backstage/types';
 import Grid from '@material-ui/core/Grid';
 import _ from 'lodash';
-import React from 'react';
 import {
   CatalogGraphPage,
   catalogGraphPlugin,

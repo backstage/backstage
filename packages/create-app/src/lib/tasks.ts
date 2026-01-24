@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { bootstrapEnvProxyAgents } from '@backstage/cli-common';
+
+bootstrapEnvProxyAgents();
 
 import chalk from 'chalk';
 import fs from 'fs-extra';
@@ -85,6 +88,7 @@ export class Task {
  * @param templateDir - location containing template files
  * @param destinationDir - location to save templated project
  * @param context - template parameters
+ * @param excludedDirs - template files to exclude
  */
 export async function templatingTask(
   templateDir: string,
@@ -96,10 +100,9 @@ export async function templatingTask(
   });
 
   for (const file of files) {
-    const destinationFile = resolvePath(
-      destinationDir,
-      relativePath(templateDir, file),
-    );
+    const filePath = relativePath(templateDir, file);
+
+    const destinationFile = resolvePath(destinationDir, filePath);
     await fs.ensureDir(dirname(destinationFile));
 
     if (file.endsWith('.hbs')) {

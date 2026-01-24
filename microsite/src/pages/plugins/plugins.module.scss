@@ -76,6 +76,20 @@
     height: 1rem;
   }
 
+  :global(.search) {
+    float: right;
+    margin-bottom: 1rem;
+    margin-right: 1rem;
+    font-size: calc(0.875rem * var(--ifm-button-size-multiplier));
+    font-weight: var(--ifm-button-font-weight);
+    background-color: transparent;
+    border: var(--ifm-button-border-width) solid var(--ifm-color-primary);
+    border-radius: var(--ifm-button-border-radius);
+    color: var(--ifm-color-primary);
+    width: 220px;
+    height: 2.2rem;
+  }
+
   :global(.dropdown) {
     float: right;
     margin-bottom: 1rem;

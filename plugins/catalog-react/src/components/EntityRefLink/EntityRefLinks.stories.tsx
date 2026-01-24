@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ComponentType, PropsWithChildren } from 'react';
+import { ComponentType, PropsWithChildren } from 'react';
 import { EntityRefLinks, EntityRefLinksProps } from './EntityRefLinks';
 import { wrapInTestApp } from '@backstage/test-utils';
 import { CompoundEntityRef } from '@backstage/catalog-model';
@@ -34,6 +34,7 @@ export default {
         },
       }),
   ],
+  tags: ['!manifest'],
 };
 
 export const Default = (

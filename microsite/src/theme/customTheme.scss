@@ -7,6 +7,61 @@
   --ifm-color-primary-darker: #2e9e8a;
   --ifm-color-primary-darkest: #268271;
 }
+
+html[data-theme='dark'] {
+  --ifm-grey-background: linear-gradient(
+    90.49deg,
+    #121212 15.36%,
+    #282828 70.44%
+  );
+  --ifm-green-gradient-background: linear-gradient(
+    70.44deg,
+    #121212 55%,
+    #5d817b
+  );
+  --bullet-line-color: linear-gradient(
+    89.75deg,
+    #9bf0e1 -1.5%,
+    rgba(155, 240, 225, 0) 111.48%
+  );
+  --ifm-button-border-color: var(--ifm-color-primary-darker);
+
+  /* Logo */
+  --backstage-logo: url(/img/logo.svg);
+}
+
+html[data-theme='light'] {
+  --ifm-color-primary: var(--ifm-color-primary-darkest);
+  --ifm-grey-background: linear-gradient(
+    90.49deg,
+    #e0e0e0 15.36%,
+    #f5f5f5 70.44%
+  );
+  --ifm-green-gradient-background: linear-gradient(
+    70.44deg,
+    #e0f7f4 55%,
+    #a3d9d2
+  );
+  --ifm-breadcrumb-item-background-active: #f8f8f8;
+  --bullet-line-color: linear-gradient(
+    89.75deg,
+    var(--ifm-color-primary-dark) -1.5%,
+    rgba(155, 240, 225, 0) 111.48%
+  );
+  --ifm-font-color-base: #000000;
+  --ifm-menu-color: #6E;
+  --feedback-button-dark-text-color: #f8f8f8;
+
+  /* Active Colors */
+  --ifm-breadcrumb-color-active: var(--ifm-color-primary-darkest);
+  --ifm-menu-color-active: var(--ifm-color-primary-darkest);
+  --ifm-link-color: var(--ifm-color-primary-darkest);
+  --ifm-link-color-hover: var(--ifm-color-primary-darkest);
+
+  /* Logo */
+  --backstage-logo: url(/img/logo-black.svg);
+}
+
 // for docs and releases
 #__docusaurus {
   .theme-doc-markdown {
@@ -46,7 +101,7 @@
   }
 }
 .footerLogo {
-  background-image: url(/img/logo.svg);
+  background-image: var(--backstage-logo);
   background-repeat: no-repeat;
   height: 40px;
   width: 180px;
@@ -86,11 +141,7 @@
 /* #region Utility component styles */
 .bulletLine {
   height: 3px;
-  background: linear-gradient(
-    89.75deg,
-    #9bf0e1 -1.5%,
-    rgba(155, 240, 225, 0) 111.48%
-  );
+  background: var(--bullet-line-color);
 }
 /* #endregion */
 
@@ -118,6 +169,11 @@
   margin: 0 calc(-1 * var(--ifm-pre-padding));
   padding: 0 var(--ifm-pre-padding);
   border-left: 3px solid rgb(255, 255, 255, 0.5);
+}
+
+table {
+  width: 100%;
+  display: table;
 }
 
 /* #endregion */

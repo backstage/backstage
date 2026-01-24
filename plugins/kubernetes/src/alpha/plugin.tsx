@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { convertLegacyRouteRefs } from '@backstage/core-compat-api';
 import { createFrontendPlugin } from '@backstage/frontend-plugin-api';
 import { kubernetesPage } from './pages';
 import { entityKubernetesContent } from './entityContents';
@@ -27,7 +26,8 @@ import {
 } from './apis';
 
 export default createFrontendPlugin({
-  id: 'kubernetes',
+  pluginId: 'kubernetes',
+  info: { packageJson: () => import('../../package.json') },
   extensions: [
     kubernetesPage,
     entityKubernetesContent,
@@ -36,5 +36,5 @@ export default createFrontendPlugin({
     kubernetesAuthProvidersApi,
     kubernetesClusterLinkFormatterApi,
   ],
-  routes: convertLegacyRouteRefs({ kubernetes: rootCatalogKubernetesRouteRef }),
+  routes: { kubernetes: rootCatalogKubernetesRouteRef },
 });

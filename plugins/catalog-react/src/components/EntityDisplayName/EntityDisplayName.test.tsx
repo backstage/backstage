@@ -17,7 +17,6 @@
 import { TestApiProvider, renderInTestApp } from '@backstage/test-utils';
 import { createDeferred } from '@backstage/types';
 import { screen } from '@testing-library/react';
-import React from 'react';
 import ObservableImpl from 'zen-observable';
 import {
   EntityRefPresentation,

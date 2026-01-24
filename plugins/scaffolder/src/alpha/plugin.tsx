@@ -14,48 +14,81 @@
  * limitations under the License.
  */
 
-import { convertLegacyRouteRefs } from '@backstage/core-compat-api';
 import { createFrontendPlugin } from '@backstage/frontend-plugin-api';
 import {
-  rootRouteRef,
   actionsRouteRef,
   editRouteRef,
   registerComponentRouteRef,
+  rootRouteRef,
   scaffolderListTaskRouteRef,
   scaffolderTaskRouteRef,
   selectedTemplateRouteRef,
+  templatingExtensionsRouteRef,
   viewTechDocRouteRef,
 } from '../routes';
 import {
+  entityNamePickerFormField,
+  entityPickerFormField,
+  entityTagsPickerFormField,
+  multiEntityPickerFormField,
+  myGroupsPickerFormField,
+  ownedEntityPickerFormField,
+  ownerPickerFormField,
+  repoBranchPickerFormField,
+  repoOwnerPickerFormField,
   repoUrlPickerFormField,
+  scaffolderApi,
   scaffolderNavItem,
   scaffolderPage,
-  scaffolderApi,
 } from './extensions';
+import { isTemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { formFieldsApi } from '@backstage/plugin-scaffolder-react/alpha';
 import { formDecoratorsApi } from './api';
+import { EntityIconLinkBlueprint } from '@backstage/plugin-catalog-react/alpha';
+import { useScaffolderTemplateIconLinkProps } from './hooks/useScaffolderTemplateIconLinkProps';
+
+/** @alpha */
+const scaffolderEntityIconLink = EntityIconLinkBlueprint.make({
+  name: 'launch-template',
+  params: {
+    filter: isTemplateEntityV1beta3,
+    useProps: useScaffolderTemplateIconLinkProps,
+  },
+});
 
 /** @alpha */
 export default createFrontendPlugin({
-  id: 'scaffolder',
-  routes: convertLegacyRouteRefs({
+  pluginId: 'scaffolder',
+  info: { packageJson: () => import('../../package.json') },
+  routes: {
     root: rootRouteRef,
     selectedTemplate: selectedTemplateRouteRef,
     ongoingTask: scaffolderTaskRouteRef,
     actions: actionsRouteRef,
     listTasks: scaffolderListTaskRouteRef,
     edit: editRouteRef,
-  }),
-  externalRoutes: convertLegacyRouteRefs({
+    templatingExtensions: templatingExtensionsRouteRef,
+  },
+  externalRoutes: {
     registerComponent: registerComponentRouteRef,
     viewTechDoc: viewTechDocRouteRef,
-  }),
+  },
   extensions: [
     scaffolderApi,
     scaffolderPage,
     scaffolderNavItem,
+    scaffolderEntityIconLink,
     formDecoratorsApi,
     formFieldsApi,
     repoUrlPickerFormField,
+    entityNamePickerFormField,
+    entityPickerFormField,
+    ownerPickerFormField,
+    entityTagsPickerFormField,
+    multiEntityPickerFormField,
+    myGroupsPickerFormField,
+    ownedEntityPickerFormField,
+    repoBranchPickerFormField,
+    repoOwnerPickerFormField,
   ],
 });

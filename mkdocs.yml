@@ -28,7 +28,7 @@ nav:
           - Database: 'getting-started/config/database.md'
           - Authentication: 'getting-started/config/authentication.md'
           - Configuring App with plugins: 'getting-started/configure-app-with-plugins.md'
-          - Customize the look-and-feel of your App: 'getting-started/app-custom-theme.md'
+          - Customize the look-and-feel of your App: 'conf/user-interface/index.md'
           - Customizing your Homepage: 'getting-started/homepage.md'
       - Deployment:
           - Deploying Backstage: 'deployment/index.md'
@@ -71,7 +71,7 @@ nav:
           - Builtin Actions: 'features/software-templates/builtin-actions.md'
           - Writing Custom Actions: 'features/software-templates/writing-custom-actions.md'
           - Writing Custom Step Layouts: 'features/software-templates/writing-custom-step-layouts.md'
-          - Template Extensions: 'features/software-templates/template-extensions.md'
+          - Templating Extensions: 'features/software-templates/templating-extensions.md'
           - Migrating from v1beta2 to v1beta3 templates: 'features/software-templates/migrating-from-v1beta2-to-v1beta3.md'
           - Dry Run Testing: 'features/software-templates/dry-run-testing.md'
       - Backstage Search:
@@ -126,13 +126,15 @@ nav:
       - GitLab:
           - Locations: 'integrations/gitlab/locations.md'
           - Discovery: 'integrations/gitlab/discovery.md'
+      - Gitea:
+          - Locations: 'integrations/gitea/locations.md'
+          - Discovery: 'integrations/gitea/discovery.md'
       - Google GCS:
           - Locations: 'integrations/google-cloud-storage/locations.md'
       - LDAP:
           - Org Data: 'integrations/ldap/org.md'
   - Plugins:
       - Intro to plugins: 'plugins/index.md'
-      - Existing plugins: 'plugins/existing-plugins.md'
       - Create a Backstage Plugin: 'plugins/create-a-plugin.md'
       - Plugin Development: 'plugins/plugin-development.md'
       - Structure of a plugin: 'plugins/structure-of-a-plugin.md'

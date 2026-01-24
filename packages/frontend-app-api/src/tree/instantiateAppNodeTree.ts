@@ -15,7 +15,6 @@
  */
 
 import {
-  AnyExtensionDataRef,
   ApiHolder,
   ExtensionDataContainer,
   ExtensionDataRef,
@@ -28,6 +27,37 @@ import { AppNode, AppNodeInstance } from '@backstage/frontend-plugin-api';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { toInternalExtension } from '../../../frontend-plugin-api/src/wiring/resolveExtensionDefinition';
 import { createExtensionDataContainer } from '@internal/frontend';
+import { ErrorCollector } from '../wiring/createErrorCollector';
+
+const INSTANTIATION_FAILED = new Error('Instantiation failed');
+
+/**
+ * Like `array.map`, but if `INSTANTIATION_FAILED` is thrown, the iteration will continue but afterwards re-throw `INSTANTIATION_FAILED`
+ * @returns
+ */
+function mapWithFailures<T, U>(
+  iterable: Iterable<T>,
+  callback: (item: T) => U,
+  options?: { ignoreFailures?: boolean },
+): U[] {
+  let failed = false;
+  const results = [];
+  for (const item of iterable) {
+    try {
+      results.push(callback(item));
+    } catch (error) {
+      if (error === INSTANTIATION_FAILED) {
+        failed = true;
+      } else {
+        throw error;
+      }
+    }
+  }
+  if (failed && !options?.ignoreFailures) {
+    throw INSTANTIATION_FAILED;
+  }
+  return results;
+}
 
 type Mutable<T> = {
   -readonly [P in keyof T]: T[P];
@@ -35,42 +65,50 @@ type Mutable<T> = {
 
 function resolveV1InputDataMap(
   dataMap: {
-    [name in string]: AnyExtensionDataRef;
+    [name in string]: ExtensionDataRef;
   },
   attachment: AppNode,
   inputName: string,
 ) {
-  return mapValues(dataMap, ref => {
-    const value = attachment.instance?.getData(ref);
-    if (value === undefined && !ref.config.optional) {
-      const expected = Object.values(dataMap)
-        .filter(r => !r.config.optional)
-        .map(r => `'${r.id}'`)
-        .join(', ');
+  return Object.fromEntries(
+    mapWithFailures(Object.entries(dataMap), ([key, ref]) => {
+      const value = attachment.instance?.getData(ref);
+      if (value === undefined && !ref.config.optional) {
+        const expected = Object.values(dataMap)
+          .filter(r => !r.config.optional)
+          .map(r => `'${r.id}'`)
+          .join(', ');
 
-      const provided = [...(attachment.instance?.getDataRefs() ?? [])]
-        .map(r => `'${r.id}'`)
-        .join(', ');
+        const provided = [...(attachment.instance?.getDataRefs() ?? [])]
+          .map(r => `'${r.id}'`)
+          .join(', ');
 
-      throw new Error(
-        `extension '${attachment.spec.id}' could not be attached because its output data (${provided}) does not match what the input '${inputName}' requires (${expected})`,
-      );
-    }
-    return value;
-  });
+        throw new Error(
+          `extension '${attachment.spec.id}' could not be attached because its output data (${provided}) does not match what the input '${inputName}' requires (${expected})`,
+        );
+      }
+      return [key, value];
+    }),
+  );
 }
 
 function resolveInputDataContainer(
-  extensionData: Array<AnyExtensionDataRef>,
+  extensionData: Array<ExtensionDataRef>,
   attachment: AppNode,
   inputName: string,
-): { node: AppNode } & ExtensionDataContainer<AnyExtensionDataRef> {
+  collector: ErrorCollector<{ node: AppNode; inputName: string }>,
+): { node: AppNode } & ExtensionDataContainer<ExtensionDataRef> {
   const dataMap = new Map<string, unknown>();
 
-  for (const ref of extensionData) {
+  mapWithFailures(extensionData, ref => {
     if (dataMap.has(ref.id)) {
-      throw new Error(`Unexpected duplicate input data '${ref.id}'`);
+      collector.report({
+        code: 'EXTENSION_INPUT_DATA_IGNORED',
+        message: `Unexpected duplicate input data '${ref.id}'`,
+      });
+      return;
     }
+
     const value = attachment.instance?.getData(ref);
     if (value === undefined && !ref.config.optional) {
       const expected = extensionData
@@ -82,13 +120,15 @@ function resolveInputDataContainer(
         .map(r => `'${r.id}'`)
         .join(', ');
 
-      throw new Error(
-        `extension '${attachment.spec.id}' could not be attached because its output data (${provided}) does not match what the input '${inputName}' requires (${expected})`,
-      );
+      collector.child({ node: attachment }).report({
+        code: 'EXTENSION_INPUT_DATA_MISSING',
+        message: `extension '${attachment.spec.id}' could not be attached because its output data (${provided}) does not match what the input '${inputName}' requires (${expected})`,
+      });
+      throw INSTANTIATION_FAILED;
     }
 
     dataMap.set(ref.id, value);
-  }
+  });
 
   return {
     node: attachment,
@@ -105,7 +145,7 @@ function resolveInputDataContainer(
         };
       }
     },
-  } as { node: AppNode } & ExtensionDataContainer<AnyExtensionDataRef>;
+  } as { node: AppNode } & ExtensionDataContainer<ExtensionDataRef>;
 }
 
 function reportUndeclaredAttachments(
@@ -141,47 +181,59 @@ function resolveV1Inputs(
     [inputName in string]: {
       $$type: '@backstage/ExtensionInput';
       extensionData: {
-        [name in string]: AnyExtensionDataRef;
+        [name in string]: ExtensionDataRef;
       };
       config: { optional: boolean; singleton: boolean };
     };
   },
   attachments: ReadonlyMap<string, AppNode[]>,
 ) {
-  return mapValues(inputMap, (input, inputName) => {
-    const attachedNodes = attachments.get(inputName) ?? [];
+  return Object.fromEntries(
+    mapWithFailures(Object.entries(inputMap), ([inputName, input]) => {
+      const attachedNodes = attachments.get(inputName) ?? [];
 
-    if (input.config.singleton) {
-      if (attachedNodes.length > 1) {
-        const attachedNodeIds = attachedNodes.map(e => e.spec.id);
-        throw Error(
-          `expected ${
-            input.config.optional ? 'at most' : 'exactly'
-          } one '${inputName}' input but received multiple: '${attachedNodeIds.join(
-            "', '",
-          )}'`,
-        );
-      } else if (attachedNodes.length === 0) {
-        if (input.config.optional) {
-          return undefined;
+      if (input.config.singleton) {
+        if (attachedNodes.length > 1) {
+          const attachedNodeIds = attachedNodes.map(e => e.spec.id);
+          throw Error(
+            `expected ${
+              input.config.optional ? 'at most' : 'exactly'
+            } one '${inputName}' input but received multiple: '${attachedNodeIds.join(
+              "', '",
+            )}'`,
+          );
+        } else if (attachedNodes.length === 0) {
+          if (input.config.optional) {
+            return [inputName, undefined];
+          }
+          throw Error(`input '${inputName}' is required but was not received`);
         }
-        throw Error(`input '${inputName}' is required but was not received`);
-      }
-      return {
-        node: attachedNodes[0],
-        output: resolveV1InputDataMap(
-          input.extensionData,
-          attachedNodes[0],
+        return [
           inputName,
-        ),
-      };
-    }
+          {
+            node: attachedNodes[0],
+            output: resolveV1InputDataMap(
+              input.extensionData,
+              attachedNodes[0],
+              inputName,
+            ),
+          },
+        ];
+      }
 
-    return attachedNodes.map(attachment => ({
-      node: attachment,
-      output: resolveV1InputDataMap(input.extensionData, attachment, inputName),
-    }));
-  }) as {
+      return [
+        inputName,
+        attachedNodes.map(attachment => ({
+          node: attachment,
+          output: resolveV1InputDataMap(
+            input.extensionData,
+            attachment,
+            inputName,
+          ),
+        })),
+      ];
+    }),
+  ) as {
     [inputName in string]: {
       node: AppNode;
       output: {
@@ -192,54 +244,67 @@ function resolveV1Inputs(
 }
 
 function resolveV2Inputs(
-  inputMap: {
-    [inputName in string]: ExtensionInput<
-      AnyExtensionDataRef,
-      { optional: boolean; singleton: boolean }
-    >;
-  },
+  inputMap: { [inputName in string]: ExtensionInput },
   attachments: ReadonlyMap<string, AppNode[]>,
-): ResolvedExtensionInputs<{
-  [inputName in string]: ExtensionInput<
-    AnyExtensionDataRef,
-    { optional: boolean; singleton: boolean }
-  >;
-}> {
+  parentCollector: ErrorCollector<{ node: AppNode }>,
+): ResolvedExtensionInputs<{ [inputName in string]: ExtensionInput }> {
   return mapValues(inputMap, (input, inputName) => {
     const attachedNodes = attachments.get(inputName) ?? [];
+    const collector = parentCollector.child({ inputName });
 
     if (input.config.singleton) {
       if (attachedNodes.length > 1) {
-        const attachedNodeIds = attachedNodes.map(e => e.spec.id);
-        throw Error(
-          `expected ${
+        const attachedNodeIds = attachedNodes.map(e => e.spec.id).join("', '");
+        collector.report({
+          code: 'EXTENSION_ATTACHMENT_CONFLICT',
+          message: `expected ${
             input.config.optional ? 'at most' : 'exactly'
-          } one '${inputName}' input but received multiple: '${attachedNodeIds.join(
-            "', '",
-          )}'`,
-        );
+          } one '${inputName}' input but received multiple: '${attachedNodeIds}'`,
+        });
+        throw INSTANTIATION_FAILED;
       } else if (attachedNodes.length === 0) {
-        if (input.config.optional) {
-          return undefined;
+        if (!input.config.optional) {
+          collector.report({
+            code: 'EXTENSION_ATTACHMENT_MISSING',
+            message: `input '${inputName}' is required but was not received`,
+          });
+          throw INSTANTIATION_FAILED;
         }
-        throw Error(`input '${inputName}' is required but was not received`);
+        return undefined;
       }
-      return resolveInputDataContainer(
-        input.extensionData,
-        attachedNodes[0],
-        inputName,
-      );
+      try {
+        return resolveInputDataContainer(
+          input.extensionData,
+          attachedNodes[0],
+          inputName,
+          collector,
+        );
+      } catch (error) {
+        if (error === INSTANTIATION_FAILED) {
+          if (input.config.optional) {
+            return undefined;
+          }
+          collector.report({
+            code: 'EXTENSION_ATTACHMENT_MISSING',
+            message: `input '${inputName}' is required but it failed to be instantiated`,
+          });
+        }
+        throw error;
+      }
     }
 
-    return attachedNodes.map(attachment =>
-      resolveInputDataContainer(input.extensionData, attachment, inputName),
+    return mapWithFailures(
+      attachedNodes,
+      attachment =>
+        resolveInputDataContainer(
+          input.extensionData,
+          attachment,
+          inputName,
+          collector,
+        ),
+      { ignoreFailures: true },
     );
-  }) as ResolvedExtensionInputs<{
-    [inputName in string]: ExtensionInput<
-      AnyExtensionDataRef,
-      { optional: boolean; singleton: boolean }
-    >;
-  }>;
+  }) as ResolvedExtensionInputs<{ [inputName in string]: ExtensionInput }>;
 }
 
 /** @internal */
@@ -248,8 +313,10 @@ export function createAppNodeInstance(options: {
   node: AppNode;
   apis: ApiHolder;
   attachments: ReadonlyMap<string, AppNode[]>;
-}): AppNodeInstance {
+  collector: ErrorCollector;
+}): AppNodeInstance | undefined {
   const { node, apis, attachments } = options;
+  const collector = options.collector.child({ node });
   const { id, extension, config } = node.spec;
   const extensionData = new Map<string, unknown>();
   const extensionDataRefs = new Set<ExtensionDataRef<unknown>>();
@@ -260,9 +327,11 @@ export function createAppNodeInstance(options: {
       [x: string]: any;
     };
   } catch (e) {
-    throw new Error(
-      `Invalid configuration for extension '${id}'; caused by ${e}`,
-    );
+    collector.report({
+      code: 'EXTENSION_CONFIGURATION_INVALID',
+      message: `Invalid configuration for extension '${id}'; caused by ${e}`,
+    });
+    return undefined;
   }
 
   try {
@@ -298,7 +367,11 @@ export function createAppNodeInstance(options: {
         node,
         apis,
         config: parsedConfig,
-        inputs: resolveV2Inputs(internalExtension.inputs, attachments),
+        inputs: resolveV2Inputs(
+          internalExtension.inputs,
+          attachments,
+          collector,
+        ),
       };
       const outputDataValues = options.extensionFactoryMiddleware
         ? createExtensionDataContainer(
@@ -310,27 +383,49 @@ export function createAppNodeInstance(options: {
                   inputs: context.inputs,
                   config: overrideContext?.config ?? context.config,
                 }),
+                'extension factory',
               );
             }, context),
+            'extension factory middleware',
           )
         : internalExtension.factory(context);
 
-      const outputDataMap = new Map<string, unknown>();
-      for (const value of outputDataValues) {
-        if (outputDataMap.has(value.id)) {
-          throw new Error(`duplicate extension data output '${value.id}'`);
-        }
-        outputDataMap.set(value.id, value.value);
+      if (
+        typeof outputDataValues !== 'object' ||
+        !outputDataValues?.[Symbol.iterator]
+      ) {
+        throw new Error('extension factory did not provide an iterable object');
       }
+
+      const outputDataMap = new Map<string, unknown>();
+      mapWithFailures(outputDataValues, value => {
+        if (outputDataMap.has(value.id)) {
+          collector.report({
+            code: 'EXTENSION_OUTPUT_CONFLICT',
+            message: `extension factory output duplicate data '${value.id}'`,
+            context: {
+              dataRefId: value.id,
+            },
+          });
+          throw INSTANTIATION_FAILED;
+        } else {
+          outputDataMap.set(value.id, value.value);
+        }
+      });
 
       for (const ref of internalExtension.output) {
         const value = outputDataMap.get(ref.id);
         outputDataMap.delete(ref.id);
         if (value === undefined) {
           if (!ref.config.optional) {
-            throw new Error(
-              `missing required extension data output '${ref.id}'`,
-            );
+            collector.report({
+              code: 'EXTENSION_OUTPUT_MISSING',
+              message: `missing required extension data output '${ref.id}'`,
+              context: {
+                dataRefId: ref.id,
+              },
+            });
+            throw INSTANTIATION_FAILED;
           }
         } else {
           extensionData.set(ref.id, value);
@@ -339,23 +434,36 @@ export function createAppNodeInstance(options: {
       }
 
       if (outputDataMap.size > 0) {
-        throw new Error(
-          `unexpected output '${Array.from(outputDataMap.keys()).join(
-            "', '",
-          )}'`,
-        );
+        for (const dataRefId of outputDataMap.keys()) {
+          // TODO: Make this a warning
+          collector.report({
+            code: 'EXTENSION_OUTPUT_IGNORED',
+            message: `unexpected output '${dataRefId}'`,
+            context: {
+              dataRefId: dataRefId,
+            },
+          });
+        }
       }
     } else {
-      throw new Error(
-        `unexpected extension version '${(internalExtension as any).version}'`,
-      );
+      collector.report({
+        code: 'EXTENSION_INVALID',
+        message: `unexpected extension version '${
+          (internalExtension as any).version
+        }'`,
+      });
+      throw INSTANTIATION_FAILED;
     }
   } catch (e) {
-    throw new Error(
-      `Failed to instantiate extension '${id}'${
-        e.name === 'Error' ? `, ${e.message}` : `; caused by ${e.stack}`
-      }`,
-    );
+    if (e !== INSTANTIATION_FAILED) {
+      collector.report({
+        code: 'EXTENSION_FACTORY_ERROR',
+        message: `Failed to instantiate extension '${id}'${
+          e.name === 'Error' ? `, ${e.message}` : `; caused by ${e}`
+        }`,
+      });
+    }
+    return undefined;
   }
 
   return {
@@ -375,8 +483,9 @@ export function createAppNodeInstance(options: {
 export function instantiateAppNodeTree(
   rootNode: AppNode,
   apis: ApiHolder,
+  collector: ErrorCollector,
   extensionFactoryMiddleware?: ExtensionFactoryMiddleware,
-): void {
+): boolean {
   function createInstance(node: AppNode): AppNodeInstance | undefined {
     if (node.instance) {
       return node.instance;
@@ -405,10 +514,11 @@ export function instantiateAppNodeTree(
       node,
       apis,
       attachments: instantiatedAttachments,
+      collector,
     });
 
     return node.instance;
   }
 
-  createInstance(rootNode);
+  return createInstance(rootNode) !== undefined;
 }

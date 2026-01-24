@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-auth-backend-module-github-provider",
-  "version": "0.3.1-next.1",
+  "version": "0.4.0",
   "description": "The github-provider backend module for the auth plugin.",
   "backstage": {
     "role": "backend-plugin-module",
@@ -36,7 +36,8 @@
   "dependencies": {
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/plugin-auth-node": "workspace:^",
-    "passport-github2": "^0.1.12"
+    "passport-github2": "^0.1.12",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@backstage/backend-defaults": "workspace:^",
@@ -44,6 +45,7 @@
     "@backstage/cli": "workspace:^",
     "@backstage/plugin-auth-backend": "workspace:^",
     "@backstage/types": "workspace:^",
+    "@types/passport-github2": "^1.2.4",
     "supertest": "^7.0.0"
   },
   "configSchema": "config.d.ts"

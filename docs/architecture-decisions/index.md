@@ -2,13 +2,12 @@
 id: adrs-overview
 title: Architecture Decision Records (ADR)
 sidebar_label: Overview
-# prettier-ignore
 description: Overview of Architecture Decision Records (ADR)
 ---
 
 The substantial architecture decisions made in the Backstage project live here.
 For more information about ADRs, when to write them, and why, please see
-[this blog post](https://engineering.atspotify.com/2020/04/14/when-should-i-write-an-architecture-decision-record/).
+[this blog post](https://engineering.atspotify.com/2020/04/when-should-i-write-an-architecture-decision-record/).
 
 Records are never deleted but can be marked as superseded by new decisions or
 deprecated.

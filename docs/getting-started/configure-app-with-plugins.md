@@ -22,62 +22,44 @@ The following steps assume that you have
 [created a Backstage app](./index.md) and want to add an existing plugin
 to it.
 
-We are using the
-[CircleCI](https://github.com/CircleCI-Public/backstage-plugin/tree/main/plugins/circleci)
-plugin in this example, which is designed to show CI/CD pipeline information attached
-to an entity in the software catalog.
+You can find many wonderful plugins out there for Backstage, for example through the [Community Plugins Repository](https://github.com/backstage/community-plugins) and the [Backstage Plugin Directory](https://backstage.io/plugins).
+
+Adding plugins to your Backstage app is generally a simple process, and ideally each plugin will come with its own documentation on how to install and configure it. In this example we will add the [Tech Radar plugin](https://github.com/backstage/community-plugins/tree/main/workspaces/tech-radar/plugins/tech-radar) to our Backstage app.
 
 1. Add the plugin's npm package to the repo:
 
    ```bash title="From your Backstage root directory"
-   yarn --cwd packages/app add @circleci/backstage-plugin
+   yarn --cwd packages/app add @backstage-community/plugin-tech-radar
    ```
 
    Note the plugin is added to the `app` package, rather than the root
    `package.json`. Backstage Apps are set up as monorepos with
-   [Yarn workspaces](https://classic.yarnpkg.com/en/docs/workspaces/). Since
-   CircleCI is a frontend UI plugin, it goes in `app` rather than `backend`.
+   [Yarn workspaces](https://classic.yarnpkg.com/en/docs/workspaces/). Frontend UI Plugins are generally added to the `app` folder, while Backend Plugins are added to the `backend` folder. In the example above, the plugin is added to the `app` package because we are adding the frontend plugin.
 
-2. Add the `EntityCircleCIContent` extension to the entity pages in the app:
+2. Now, modify your app routes to include the Router component exported from the tech radar, for example:
 
-   ```tsx title="packages/app/src/components/catalog/EntityPage.tsx"
+   ```tsx title="packages/app/src/App.tsx"
    /* highlight-add-start */
-   import {
-     EntityCircleCIContent,
-     isCircleCIAvailable,
-   } from '@circleci/backstage-plugin';
+   import { TechRadarPage } from '@backstage-community/plugin-tech-radar';
    /* highlight-add-end */
 
-   const cicdContent = (
-     <EntitySwitch>
-       {/* ... */}
-       {/* highlight-add-next-line */}
-       <EntitySwitch.Case if={isCircleCIAvailable}>
-         <EntityCircleCIContent />
-       </EntitySwitch.Case>
-       ;{/* highlight-add-end */}
-     </EntitySwitch>
+   const routes = (
+     <FlatRoutes>
+       /* highlight-add-start */
+       <Route
+         path="/tech-radar"
+         element={<TechRadarPage width={1500} height={800} />}
+       />
+       /* highlight-add-end */
+     </FlatRoutes>
    );
    ```
 
-   This is just one example, but each Backstage instance may integrate content or
+   This is just one example, and if you'd like to continue adding the Tech Radar plugin you can do so by going [here](https://github.com/backstage/community-plugins/tree/main/workspaces/tech-radar/plugins/tech-radar), keep in mind each Backstage instance may integrate content or
    cards to suit their needs on different pages, tabs, etc. In addition, while some
-   plugins such as this example are designed to annotate or support specific software
-   catalog entities, others may be intended to be used in a stand-alone fashion and
-   would be added outside the `EntityPage`, such as being added to the main navigation.
-
-3. _[Optional]_ Add a proxy config:
-
-   Plugins that collect data off of external services may require the use of a proxy service.
-   This plugin accesses the CircleCI REST API, and thus requires a proxy definition.
-
-   ```yaml title="app-config.yaml"
-   proxy:
-     '/circleci/api':
-       target: https://circleci.com/api/v1.1
-       headers:
-         Circle-Token: ${CIRCLECI_AUTH_TOKEN}
-   ```
+   plugins such as this example are designed to be used in a stand-alone fashion,
+   others may be intended to annotate or support specific software catalog entities
+   and would be added elsewhere in the app.
 
 ### Adding a plugin page to the Sidebar
 
@@ -100,11 +82,20 @@ import ExtensionIcon from '@material-ui/icons/Extension';
 
 You can also use your own SVGs directly as icon components. Just make sure they
 are sized according to the Material UI's
-[SvgIcon](https://material-ui.com/api/svg-icon/) default of 24x24px, and set the
-extension to `.icon.svg`. For example:
+[SvgIcon](https://material-ui.com/api/svg-icon/) default of 24x24px, and wrap
+the SVG elements in a `SvgIcon` component like this:
 
 ```tsx
-import InternalToolIcon from './internal-tool.icon.svg';
+import SvgIcon, { SvgIconProps } from '@material-ui/core/SvgIcon';
+
+export const ExampleIcon = (props: SvgIconProps) => (
+  <SvgIcon {...props}>
+    <g>
+      <path ... />
+      <path ... />
+    </g>
+  </SvgIcon>
+);
 ```
 
 On mobile devices the `Sidebar` is displayed at the bottom of the screen. For

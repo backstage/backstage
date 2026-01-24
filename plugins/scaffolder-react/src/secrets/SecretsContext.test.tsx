@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
+import { PropsWithChildren } from 'react';
 import { useTemplateSecrets, SecretsContextProvider } from './SecretsContext';
 import { renderHook, act } from '@testing-library/react';
 
@@ -24,7 +24,7 @@ describe('SecretsContext', () => {
         hook: useTemplateSecrets(),
       }),
       {
-        wrapper: ({ children }: React.PropsWithChildren<{}>) => (
+        wrapper: ({ children }: PropsWithChildren<{}>) => (
           <SecretsContextProvider>{children}</SecretsContextProvider>
         ),
       },
@@ -42,7 +42,7 @@ describe('SecretsContext', () => {
         hook: useTemplateSecrets(),
       }),
       {
-        wrapper: ({ children }: React.PropsWithChildren<{}>) => (
+        wrapper: ({ children }: PropsWithChildren<{}>) => (
           <SecretsContextProvider initialSecrets={{ foo: 'bar' }}>
             {children}
           </SecretsContextProvider>

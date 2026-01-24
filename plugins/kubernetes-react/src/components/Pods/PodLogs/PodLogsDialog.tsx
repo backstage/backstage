@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-
 import SubjectIcon from '@material-ui/icons/Subject';
 
 import { KubernetesDialog } from '../../KubernetesDialog';
 import { PodLogs } from './PodLogs';
 import { ContainerScope } from './types';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { kubernetesReactTranslationRef } from '../../../translation';
 
 /**
  * Props for PodLogsDialog
@@ -36,17 +36,19 @@ export interface PodLogsDialogProps {
  * @public
  */
 export const PodLogsDialog = ({ containerScope }: PodLogsDialogProps) => {
+  const { t } = useTranslationRef(kubernetesReactTranslationRef);
   return (
     <KubernetesDialog
-      buttonAriaLabel="get logs"
+      buttonAriaLabel={t('podLogs.buttonAriaLabel')}
       buttonIcon={<SubjectIcon />}
-      buttonText="Logs"
+      buttonText={t('podLogs.buttonText')}
       disabled={false}
-      title={`${containerScope.podName} - ${
-        containerScope.containerName
-      } logs on cluster ${
-        containerScope.cluster.title || containerScope.cluster.name
-      }`}
+      title={t('podLogs.titleTemplate', {
+        podName: containerScope.podName,
+        containerName: containerScope.containerName,
+        clusterName:
+          containerScope.cluster.title || containerScope.cluster.name,
+      })}
     >
       <PodLogs containerScope={containerScope} />
     </KubernetesDialog>

@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-catalog-backend-module-puppetdb",
-  "version": "0.2.8-next.1",
+  "version": "0.2.18",
   "description": "A Backstage catalog backend module that helps integrate towards PuppetDB",
   "backstage": {
     "role": "backend-plugin-module",
@@ -24,16 +24,12 @@
   "license": "Apache-2.0",
   "exports": {
     ".": "./src/index.ts",
-    "./alpha": "./src/alpha.ts",
     "./package.json": "./package.json"
   },
   "main": "src/index.ts",
   "types": "src/index.ts",
   "typesVersions": {
     "*": {
-      "alpha": [
-        "src/alpha.ts"
-      ],
       "package.json": [
         "package.json"
       ]
@@ -60,7 +56,6 @@
     "@backstage/plugin-catalog-node": "workspace:^",
     "@backstage/types": "workspace:^",
     "lodash": "^4.17.21",
-    "luxon": "^3.0.0",
     "uuid": "^11.0.0"
   },
   "devDependencies": {

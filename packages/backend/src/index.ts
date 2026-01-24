@@ -15,24 +15,35 @@
  */
 
 import { createBackend } from '@backstage/backend-defaults';
-import { createBackendFeatureLoader } from '@backstage/backend-plugin-api';
+import { rootSystemMetadataServiceFactory } from '@backstage/backend-defaults/alpha';
+import {
+  coreServices,
+  createBackendFeatureLoader,
+} from '@backstage/backend-plugin-api';
 
 const backend = createBackend();
 
 // An example of how to group together and load multiple features. You can also
 // access root-scoped services by adding `deps`.
 const searchLoader = createBackendFeatureLoader({
-  *loader() {
+  deps: {
+    config: coreServices.rootConfig,
+  },
+  *loader({ config }) {
     yield import('@backstage/plugin-search-backend');
     yield import('@backstage/plugin-search-backend-module-catalog');
     yield import('@backstage/plugin-search-backend-module-explore');
     yield import('@backstage/plugin-search-backend-module-techdocs');
+    if (config.has('search.elasticsearch')) {
+      yield import('@backstage/plugin-search-backend-module-elasticsearch');
+    }
   },
 });
 
 backend.add(import('@backstage/plugin-auth-backend'));
 backend.add(import('./authModuleGithubProvider'));
 backend.add(import('@backstage/plugin-auth-backend-module-guest-provider'));
+backend.add(import('@backstage/plugin-auth-backend-module-openshift-provider'));
 backend.add(import('@backstage/plugin-app-backend'));
 backend.add(import('@backstage/plugin-catalog-backend-module-unprocessed'));
 backend.add(
@@ -59,6 +70,8 @@ backend.add(searchLoader);
 backend.add(import('@backstage/plugin-techdocs-backend'));
 backend.add(import('@backstage/plugin-signals-backend'));
 backend.add(import('@backstage/plugin-notifications-backend'));
-backend.add(import('./instanceMetadata'));
+backend.add(rootSystemMetadataServiceFactory);
 
+backend.add(import('@backstage/plugin-events-backend-module-google-pubsub'));
+backend.add(import('@backstage/plugin-mcp-actions-backend'));
 backend.start();

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { ComponentType, PropsWithChildren } from 'react';
+import { useState, ComponentType, PropsWithChildren } from 'react';
 import { FavoriteToggle } from './FavoriteToggle';
 import {
   UnifiedThemeProvider,
@@ -29,10 +29,11 @@ export default {
   decorators: [
     (Story: ComponentType<PropsWithChildren<{}>>) => wrapInTestApp(<Story />),
   ],
+  tags: ['!manifest'],
 };
 
 export const Default = () => {
-  const [isFavorite, setFavorite] = React.useState(false);
+  const [isFavorite, setFavorite] = useState(false);
   return (
     <FavoriteToggle
       id="favorite-toggle"
@@ -58,7 +59,7 @@ const theme = createUnifiedTheme({
 });
 
 export const WithThemeOverride = () => {
-  const [isFavorite, setFavorite] = React.useState(false);
+  const [isFavorite, setFavorite] = useState(false);
   return (
     <UnifiedThemeProvider theme={theme}>
       <FavoriteToggle

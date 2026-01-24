@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { GroupEntity, UserEntity } from '@backstage/catalog-model';
-import { SearchEntry } from 'ldapjs';
+import { Entry } from 'ldapts';
 import { LdapVendor } from './vendors';
 import { GroupConfig, UserConfig } from './config';
 
@@ -34,7 +34,7 @@ import { GroupConfig, UserConfig } from './config';
 export type UserTransformer = (
   vendor: LdapVendor,
   config: UserConfig,
-  user: SearchEntry,
+  user: Entry,
 ) => Promise<UserEntity | undefined>;
 
 /**
@@ -53,5 +53,5 @@ export type UserTransformer = (
 export type GroupTransformer = (
   vendor: LdapVendor,
   config: GroupConfig,
-  group: SearchEntry,
+  group: Entry,
 ) => Promise<GroupEntity | undefined>;

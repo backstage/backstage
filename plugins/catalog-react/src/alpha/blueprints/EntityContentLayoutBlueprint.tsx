@@ -24,8 +24,8 @@ import {
   entityFilterFunctionDataRef,
   EntityCardType,
 } from './extensionData';
-import React from 'react';
-import { EntityPredicate } from '../predicates';
+import { JSX } from 'react';
+import { EntityPredicate } from '../predicates/types';
 import { resolveEntityFilterData } from './resolveEntityFilterData';
 import { createEntityPredicateSchema } from '../predicates/createEntityPredicateSchema';
 import { Entity } from '@backstage/catalog-model';
@@ -34,7 +34,7 @@ import { Entity } from '@backstage/catalog-model';
 export interface EntityContentLayoutProps {
   cards: Array<{
     type?: EntityCardType;
-    element: React.JSX.Element;
+    element: JSX.Element;
   }>;
 }
 
@@ -71,9 +71,7 @@ export const EntityContentLayoutBlueprint = createExtensionBlueprint({
       filter,
     }: {
       filter?: string | EntityPredicate | ((entity: Entity) => boolean);
-      loader: () => Promise<
-        (props: EntityContentLayoutProps) => React.JSX.Element
-      >;
+      loader: () => Promise<(props: EntityContentLayoutProps) => JSX.Element>;
     },
     { node, config },
   ) {

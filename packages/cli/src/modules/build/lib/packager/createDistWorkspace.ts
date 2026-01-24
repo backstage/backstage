@@ -22,10 +22,10 @@ import {
   relative as relativePath,
 } from 'path';
 import { tmpdir } from 'os';
-import tar, { CreateOptions, FileOptions } from 'tar';
+import * as tar from 'tar';
 import partition from 'lodash/partition';
 import { paths } from '../../../../lib/paths';
-import { run } from '../../../../lib/run';
+import { run } from '@backstage/cli-common';
 import {
   dependencies as cliDependencies,
   devDependencies as cliDevDependencies,
@@ -228,11 +228,11 @@ export async function createDistWorkspace(
       await runParallelWorkers({
         items: customBuild,
         worker: async ({ name, dir, args }) => {
-          await run('yarn', ['run', 'build', ...(args || [])], {
+          await run(['yarn', 'run', 'build', ...(args || [])], {
             cwd: dir,
-            stdoutLogFunc: prefixLogFunc(`${name}: `, 'stdout'),
-            stderrLogFunc: prefixLogFunc(`${name}: `, 'stderr'),
-          });
+            onStdout: prefixLogFunc(`${name}: `, 'stdout'),
+            onStderr: prefixLogFunc(`${name}: `, 'stderr'),
+          }).waitForExit();
         },
       });
     }
@@ -268,7 +268,7 @@ export async function createDistWorkspace(
         portable: true,
         noMtime: true,
         gzip: options.skeleton.endsWith('.gz'),
-      } as CreateOptions & FileOptions & { noMtime: boolean },
+      },
       skeletonFiles,
     );
   }
@@ -321,9 +321,9 @@ async function moveToDistWorkspace(
     console.log(`Repacking ${target.name} into dist workspace`);
     const archivePath = resolvePath(workspaceDir, archive);
 
-    await run('yarn', ['pack', '--filename', archivePath], {
+    await run(['yarn', 'pack', '--filename', archivePath], {
       cwd: target.dir,
-    });
+    }).waitForExit();
 
     const outputDir = relativePath(paths.targetRoot, target.dir);
     const absoluteOutputPath = resolvePath(workspaceDir, outputDir);

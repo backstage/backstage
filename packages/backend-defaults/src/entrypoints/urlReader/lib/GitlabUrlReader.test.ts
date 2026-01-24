@@ -26,7 +26,7 @@ import { setupServer } from 'msw/node';
 import path from 'path';
 import { GitlabUrlReader } from './GitlabUrlReader';
 import { DefaultReadTreeResponseFactory } from './tree';
-import { NotModifiedError, NotFoundError } from '@backstage/errors';
+import { NotFoundError, NotModifiedError } from '@backstage/errors';
 import {
   GitLabIntegration,
   readGitLabIntegrationConfig,
@@ -108,9 +108,6 @@ describe('GitlabUrlReader', () => {
         config: createConfig(),
         response: expect.objectContaining({
           url: 'https://gitlab.com/api/v4/projects/12345/repository/files/my%2Fpath%2Fto%2Ffile.yaml/raw?ref=branch',
-          headers: expect.objectContaining({
-            'private-token': '',
-          }),
         }),
       },
       {
@@ -119,7 +116,7 @@ describe('GitlabUrlReader', () => {
         response: expect.objectContaining({
           url: 'https://gitlab.example.com/api/v4/projects/12345/repository/files/my%2Fpath%2Fto%2Ffile.yaml/raw?ref=branch',
           headers: expect.objectContaining({
-            'private-token': '0123456789',
+            authorization: 'Bearer 0123456789',
           }),
         }),
       },
@@ -248,6 +245,29 @@ describe('GitlabUrlReader', () => {
       const content = await result.buffer();
       expect(content.toString()).toBe('foo');
     });
+
+    it('should return the file when using a user token', async () => {
+      worker.use(
+        rest.get('*/api/v4/projects/user%2Fproject', (req, res, ctx) => {
+          if (req.headers.get('authorization') !== 'Bearer gl-user-token') {
+            return res(
+              ctx.status(401),
+              ctx.json({ message: '401 Unauthorized' }),
+            );
+          }
+          return res(ctx.status(200), ctx.json({ id: 12345 }));
+        }),
+        rest.get('*', (_req, res, ctx) => {
+          return res(ctx.status(200), ctx.body('foo'));
+        }),
+      );
+      const result = await reader.readUrl(
+        'https://gitlab.com/user/project/-/blob/branch/my/path/to/file.yaml',
+        { token: 'gl-user-token' },
+      );
+      const content = await result.buffer();
+      expect(content.toString()).toBe('foo');
+    });
   });
 
   describe('readTree', () => {
@@ -276,102 +296,103 @@ describe('GitlabUrlReader', () => {
           id: 'sha456def',
         },
       ];
-    });
 
-    beforeEach(() => {
-      worker.use(
-        rest.get(
-          'https://gitlab.com/api/v4/projects/backstage%2Fmock/repository/archive',
-          (_, res, ctx) =>
-            res(
-              ctx.status(200),
-              ctx.set('Content-Type', 'application/zip'),
-              ctx.set(
-                'content-disposition',
-                'attachment; filename="mock-main-sha123abc.zip"',
+      const projectNames = ['backstage%2Fmock', 'user%2Fproject'];
+      projectNames.forEach(projectName => {
+        worker.use(
+          rest.get(
+            `https://gitlab.com/api/v4/projects/${projectName}/repository/archive`,
+            (_, res, ctx) =>
+              res(
+                ctx.status(200),
+                ctx.set('Content-Type', 'application/zip'),
+                ctx.set(
+                  'content-disposition',
+                  'attachment; filename="mock-main-sha123abc.zip"',
+                ),
+                ctx.body(new Uint8Array(archiveBuffer)),
               ),
-              ctx.body(archiveBuffer),
-            ),
-        ),
-        rest.get(
-          'https://gitlab.com/api/v4/projects/backstage%2Fmock',
-          (_, res, ctx) =>
-            res(
-              ctx.status(200),
-              ctx.set('Content-Type', 'application/json'),
-              ctx.json(projectGitlabApiResponse),
-            ),
-        ),
-        rest.get(
-          'https://gitlab.com/api/v4/projects/backstage%2Fmock/repository/commits',
-          (req, res, ctx) => {
-            const refName = req.url.searchParams.get('ref_name');
-            if (refName === 'main') {
-              const filepath = req.url.searchParams.get('path');
-              if (filepath === 'testFilepath') {
+          ),
+          rest.get(
+            `https://gitlab.com/api/v4/projects/${projectName}`,
+            (_, res, ctx) =>
+              res(
+                ctx.status(200),
+                ctx.set('Content-Type', 'application/json'),
+                ctx.json(projectGitlabApiResponse),
+              ),
+          ),
+          rest.get(
+            `https://gitlab.com/api/v4/projects/${projectName}/repository/commits`,
+            (req, res, ctx) => {
+              const refName = req.url.searchParams.get('ref_name');
+              if (refName === 'main') {
+                const filepath = req.url.searchParams.get('path');
+                if (filepath === 'testFilepath') {
+                  return res(
+                    ctx.status(200),
+                    ctx.set('Content-Type', 'application/json'),
+                    ctx.json(specificPathCommitsGitlabApiResponse),
+                  );
+                }
                 return res(
                   ctx.status(200),
                   ctx.set('Content-Type', 'application/json'),
-                  ctx.json(specificPathCommitsGitlabApiResponse),
+                  ctx.json(commitsGitlabApiResponse),
                 );
               }
-              return res(
+              if (refName === 'branchDoesNotExist') {
+                return res(ctx.status(404));
+              }
+              return res();
+            },
+          ),
+          rest.get(
+            `https://gitlab.mycompany.com/api/v4/projects/${projectName}`,
+            (_, res, ctx) =>
+              res(
                 ctx.status(200),
                 ctx.set('Content-Type', 'application/json'),
-                ctx.json(commitsGitlabApiResponse),
-              );
-            }
-            if (refName === 'branchDoesNotExist') {
-              return res(ctx.status(404));
-            }
-            return res();
-          },
-        ),
-        rest.get(
-          'https://gitlab.mycompany.com/api/v4/projects/backstage%2Fmock',
-          (_, res, ctx) =>
-            res(
-              ctx.status(200),
-              ctx.set('Content-Type', 'application/json'),
-              ctx.json(projectGitlabApiResponse),
-            ),
-        ),
-        rest.get(
-          'https://gitlab.mycompany.com/api/v4/projects/backstage%2Fmock/repository/commits',
-          (req, res, ctx) => {
-            const refName = req.url.searchParams.get('ref_name');
-            if (refName === 'main') {
-              const filepath = req.url.searchParams.get('path');
-              if (filepath === 'testFilepath') {
+                ctx.json(projectGitlabApiResponse),
+              ),
+          ),
+          rest.get(
+            `https://gitlab.mycompany.com/api/v4/projects/${projectName}/repository/commits`,
+            (req, res, ctx) => {
+              const refName = req.url.searchParams.get('ref_name');
+              if (refName === 'main') {
+                const filepath = req.url.searchParams.get('path');
+                if (filepath === 'testFilepath') {
+                  return res(
+                    ctx.status(200),
+                    ctx.set('Content-Type', 'application/json'),
+                    ctx.json(specificPathCommitsGitlabApiResponse),
+                  );
+                }
                 return res(
                   ctx.status(200),
                   ctx.set('Content-Type', 'application/json'),
-                  ctx.json(specificPathCommitsGitlabApiResponse),
+                  ctx.json(commitsGitlabApiResponse),
                 );
               }
-              return res(
+              return res();
+            },
+          ),
+          rest.get(
+            `https://gitlab.mycompany.com/api/v4/projects/${projectName}/repository/archive`,
+            (_, res, ctx) =>
+              res(
                 ctx.status(200),
-                ctx.set('Content-Type', 'application/json'),
-                ctx.json(commitsGitlabApiResponse),
-              );
-            }
-            return res();
-          },
-        ),
-        rest.get(
-          'https://gitlab.mycompany.com/api/v4/projects/backstage%2Fmock/repository/archive',
-          (_, res, ctx) =>
-            res(
-              ctx.status(200),
-              ctx.set('Content-Type', 'application/zip'),
-              ctx.set(
-                'content-disposition',
-                'attachment; filename="mock-main-sha123abc.zip"',
+                ctx.set('Content-Type', 'application/zip'),
+                ctx.set(
+                  'content-disposition',
+                  'attachment; filename="mock-main-sha123abc.zip"',
+                ),
+                ctx.body(new Uint8Array(archiveBuffer)),
               ),
-              ctx.body(archiveBuffer),
-            ),
-        ),
-      );
+          ),
+        );
+      });
     });
 
     it('returns the wanted files from an archive', async () => {
@@ -416,7 +437,7 @@ describe('GitlabUrlReader', () => {
                 'content-disposition',
                 'attachment; filename="mock-main-sha123abc.zip"',
               ),
-              ctx.body(archiveBuffer),
+              ctx.body(new Uint8Array(archiveBuffer)),
             ),
         ),
       );
@@ -543,6 +564,28 @@ describe('GitlabUrlReader', () => {
       expect(mkDocsFile.toString()).toBe('site_name: Test\n');
       expect(indexMarkdownFile.toString()).toBe('# Test\n');
     });
+
+    it('should return the file when using a user token', async () => {
+      worker.use(
+        rest.get('*/api/v4/projects/user%2Fproject', (req, res, ctx) => {
+          if (req.headers.get('authorization') !== 'Bearer gl-user-token') {
+            return res(
+              ctx.status(401),
+              ctx.json({ message: '401 Unauthorized' }),
+            );
+          }
+          return res(ctx.status(200), ctx.json({ id: 12345 }));
+        }),
+      );
+
+      const response = await gitlabProcessor.readTree(
+        'https://gitlab.com/user/project/tree/main',
+        { token: 'gl-user-token' },
+      );
+
+      const files = await response.files();
+      expect(files.length).toBe(2);
+    });
   });
 
   describe('search', () => {
@@ -589,7 +632,7 @@ describe('GitlabUrlReader', () => {
                 'content-disposition',
                 `attachment; filename="${filename}"`,
               ),
-              ctx.body(body),
+              ctx.body(new Uint8Array(body)),
             );
           },
         ),
@@ -624,6 +667,17 @@ describe('GitlabUrlReader', () => {
             return res();
           },
         ),
+      );
+    });
+
+    it('works when there are multiple globs', async () => {
+      const result = await gitlabProcessor.search(
+        'https://gitlab.com/backstage/mock/tree/main/**/docs/**/index.*',
+      );
+      expect(result.etag).toBe('sha123abc');
+      expect(result.files.length).toBe(1);
+      expect(result.files[0].url).toBe(
+        'https://gitlab.com/backstage/mock/tree/main/docs/index.md',
       );
     });
 
@@ -690,6 +744,15 @@ describe('GitlabUrlReader', () => {
           '*/api/v4/projects/group%2Fsubgroup%2Fproject',
           (_, res, ctx) => res(ctx.status(200), ctx.json({ id: 12345 })),
         ),
+        rest.get('*/api/v4/projects/user%2Fproject', (req, res, ctx) => {
+          if (req.headers.get('authorization') !== 'Bearer gl-user-token') {
+            return res(
+              ctx.status(401),
+              ctx.json({ message: '401 Unauthorized' }),
+            );
+          }
+          return res(ctx.status(200), ctx.json({ id: 12345 }));
+        }),
       );
     });
     it('should fall back to getGitLabFileFetchUrl for blob urls', async () => {
@@ -719,6 +782,16 @@ describe('GitlabUrlReader', () => {
         'Failed converting /some/random/endpoint to a project id. Url path must include /blob/.',
       );
     });
+    it('should resolve the project path using a user token', async () => {
+      await expect(
+        (gitlabProcessor as any).getGitlabFetchUrl(
+          'https://gitlab.com/user/project/-/blob/branch/my/path/to/file.yaml',
+          'gl-user-token',
+        ),
+      ).resolves.toEqual(
+        'https://gitlab.com/api/v4/projects/12345/repository/files/my%2Fpath%2Fto%2Ffile.yaml/raw?ref=branch',
+      );
+    });
   });
 
   describe('getGitlabArtifactFetchUrl', () => {
@@ -728,12 +801,19 @@ describe('GitlabUrlReader', () => {
           '*/api/v4/projects/group%2Fsubgroup%2Fproject',
           (_, res, ctx) => res(ctx.status(200), ctx.json({ id: 12345 })),
         ),
-      );
-      worker.use(
         rest.get(
           '*/api/v4/projects/groupA%2Fsubgroup%2Fproject',
           (_, res, ctx) => res(ctx.status(404)),
         ),
+        rest.get('*/api/v4/projects/user%2Fproject', (req, res, ctx) => {
+          if (req.headers.get('authorization') !== 'Bearer gl-user-token') {
+            return res(
+              ctx.status(401),
+              ctx.json({ message: '401 Unauthorized' }),
+            );
+          }
+          return res(ctx.status(200), ctx.json({ id: 12345 }));
+        }),
       );
     });
     it('should reject urls that are not for the job artifacts API', async () => {
@@ -765,20 +845,59 @@ describe('GitlabUrlReader', () => {
         ),
       ).rejects.toThrow(/^Unable to translate GitLab artifact URL:/);
     });
+    it('should resolve the project path using a user token', async () => {
+      await expect(
+        (gitlabProcessor as any).getGitlabArtifactFetchUrl(
+          new URL(
+            'https://gitlab.com/user/project/-/jobs/artifacts/branch/raw/my/path/to/file.yaml?job=myJob',
+          ),
+          'gl-user-token',
+        ),
+      ).resolves.toEqual(
+        new URL(
+          'https://gitlab.com/api/v4/projects/12345/jobs/artifacts/branch/raw/my/path/to/file.yaml?job=myJob',
+        ),
+      );
+    });
   });
 
   describe('resolveProjectToId', () => {
-    it('should resolve the project path to a valid project id', async () => {
+    beforeEach(() => {
       worker.use(
-        rest.get('*/api/v4/projects/some%2Fproject', (req, res, ctx) => {
-          // the private-token header must be included on API calls
-          expect(req.headers.get('private-token')).toBe('gl-dummy-token');
+        rest.get('*/api/v4/projects/group%2Fproject', (req, res, ctx) => {
+          if (req.headers.get('authorization') !== 'Bearer gl-dummy-token') {
+            return res(
+              ctx.status(401),
+              ctx.json({ message: '401 Unauthorized' }),
+            );
+          }
+          return res(ctx.status(200), ctx.json({ id: 12345 }));
+        }),
+        rest.get('*/api/v4/projects/user%2Fproject', (req, res, ctx) => {
+          if (req.headers.get('authorization') !== 'Bearer gl-user-token') {
+            return res(
+              ctx.status(401),
+              ctx.json({ message: '401 Unauthorized' }),
+            );
+          }
           return res(ctx.status(200), ctx.json({ id: 12345 }));
         }),
       );
+    });
+
+    it('should resolve the project path to a valid project id', async () => {
       await expect(
         (gitlabProcessor as any).resolveProjectToId(
-          new URL('https://gitlab.com/some/project'),
+          new URL('https://gitlab.com/group/project'),
+        ),
+      ).resolves.toEqual(12345);
+    });
+
+    it('should resolve the project path to a valid project id using a user token', async () => {
+      await expect(
+        (gitlabProcessor as any).resolveProjectToId(
+          new URL('https://gitlab.com/user/project'),
+          'gl-user-token',
         ),
       ).resolves.toEqual(12345);
     });

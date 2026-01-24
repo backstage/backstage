@@ -27,9 +27,11 @@ import {
 import { Counter, Histogram, Gauge, metrics, trace } from '@opentelemetry/api';
 import { Knex } from 'knex';
 import { Duration } from 'luxon';
+import express from 'express';
+import Router from 'express-promise-router';
 import { LocalTaskWorker } from './LocalTaskWorker';
 import { TaskWorker } from './TaskWorker';
-import { TaskSettingsV2 } from './types';
+import { TaskSettingsV2, TaskApiTasksResponse } from './types';
 import { delegateAbortController, TRACER_ID, validateId } from './util';
 
 const tracer = trace.getTracer(TRACER_ID);
@@ -38,7 +40,8 @@ const tracer = trace.getTracer(TRACER_ID);
  * Implements the actual task management.
  */
 export class PluginTaskSchedulerImpl implements SchedulerService {
-  private readonly localTasksById = new Map<string, LocalTaskWorker>();
+  private readonly localWorkersById = new Map<string, LocalTaskWorker>();
+  private readonly globalWorkersById = new Map<string, TaskWorker>();
   private readonly allScheduledTasks: SchedulerServiceTaskDescriptor[] = [];
   private readonly shutdownInitiated: Promise<boolean>;
 
@@ -47,11 +50,19 @@ export class PluginTaskSchedulerImpl implements SchedulerService {
   private readonly lastStarted: Gauge;
   private readonly lastCompleted: Gauge;
 
+  private readonly pluginId: string;
+  private readonly databaseFactory: () => Promise<Knex>;
+  private readonly logger: LoggerService;
+
   constructor(
-    private readonly databaseFactory: () => Promise<Knex>,
-    private readonly logger: LoggerService,
-    rootLifecycle?: RootLifecycleService,
+    pluginId: string,
+    databaseFactory: () => Promise<Knex>,
+    logger: LoggerService,
+    rootLifecycle: RootLifecycleService,
   ) {
+    this.pluginId = pluginId;
+    this.databaseFactory = databaseFactory;
+    this.logger = logger;
     const meter = metrics.getMeter('default');
     this.counter = meter.createCounter('backend_tasks.task.runs.count', {
       description: 'Total number of times a task has been run',
@@ -72,12 +83,12 @@ export class PluginTaskSchedulerImpl implements SchedulerService {
       },
     );
     this.shutdownInitiated = new Promise(shutdownInitiated => {
-      rootLifecycle?.addShutdownHook(() => shutdownInitiated(true));
+      rootLifecycle.addShutdownHook(() => shutdownInitiated(true));
     });
   }
 
   async triggerTask(id: string): Promise<void> {
-    const localTask = this.localTasksById.get(id);
+    const localTask = this.localWorkersById.get(id);
     if (localTask) {
       localTask.trigger();
       return;
@@ -116,6 +127,7 @@ export class PluginTaskSchedulerImpl implements SchedulerService {
         this.logger.child({ task: task.id }),
       );
       await worker.start(settings, { signal: abortController.signal });
+      this.globalWorkersById.set(task.id, worker);
     } else {
       const worker = new LocalTaskWorker(
         task.id,
@@ -123,7 +135,7 @@ export class PluginTaskSchedulerImpl implements SchedulerService {
         this.logger.child({ task: task.id }),
       );
       worker.start(settings, { signal: abortController.signal });
-      this.localTasksById.set(task.id, worker);
+      this.localWorkersById.set(task.id, worker);
     }
 
     this.allScheduledTasks.push({
@@ -145,6 +157,47 @@ export class PluginTaskSchedulerImpl implements SchedulerService {
 
   async getScheduledTasks(): Promise<SchedulerServiceTaskDescriptor[]> {
     return this.allScheduledTasks;
+  }
+
+  getRouter(): express.Router {
+    const router = Router();
+
+    router.get('/.backstage/scheduler/v1/tasks', async (_, res) => {
+      const globalState = await TaskWorker.taskStates(
+        await this.databaseFactory(),
+      );
+
+      const tasks = new Array<TaskApiTasksResponse>();
+      for (const task of this.allScheduledTasks) {
+        tasks.push({
+          taskId: task.id,
+          pluginId: this.pluginId,
+          scope: task.scope,
+          settings: task.settings,
+          taskState:
+            this.localWorkersById.get(task.id)?.taskState() ??
+            globalState.get(task.id) ??
+            null,
+          workerState:
+            this.localWorkersById.get(task.id)?.workerState() ??
+            this.globalWorkersById.get(task.id)?.workerState() ??
+            null,
+        });
+      }
+
+      res.json({ tasks });
+    });
+
+    router.post(
+      '/.backstage/scheduler/v1/tasks/:id/trigger',
+      async (req, res) => {
+        const { id } = req.params;
+        await this.triggerTask(id);
+        res.status(200).end();
+      },
+    );
+
+    return router;
   }
 
   private instrumentedFunction(

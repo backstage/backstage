@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { screen } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
 import userEvent from '@testing-library/user-event';
 import { configApiRef } from '@backstage/core-plugin-api';
@@ -64,7 +63,6 @@ describe('SearchModal', () => {
     );
 
     expect(screen.getByRole('dialog')).toBeInTheDocument();
-    expect(searchApiMock.query).toHaveBeenCalledTimes(1);
   });
 
   it('Should use parent search context if defined', async () => {
@@ -89,7 +87,9 @@ describe('SearchModal', () => {
     );
 
     expect(screen.getByRole('dialog')).toBeInTheDocument();
-    expect(searchApiMock.query).toHaveBeenCalledWith(initialState);
+    expect(searchApiMock.query).toHaveBeenCalledWith(initialState, {
+      signal: expect.any(AbortSignal),
+    });
   });
 
   it('Should create a local search context if a parent is not defined', async () => {
@@ -105,11 +105,20 @@ describe('SearchModal', () => {
     );
 
     expect(screen.getByRole('dialog')).toBeInTheDocument();
-    expect(searchApiMock.query).toHaveBeenCalledWith({
-      term: '',
-      filters: {},
-      types: [],
-      pageCursor: undefined,
+
+    const input = screen.getByLabelText<HTMLInputElement>('Search');
+    await userEvent.type(input, 'text');
+
+    await waitFor(() => {
+      expect(searchApiMock.query).toHaveBeenCalledWith(
+        {
+          term: 'text',
+          filters: {},
+          types: [],
+          pageCursor: undefined,
+        },
+        { signal: expect.any(AbortSignal) },
+      );
     });
   });
 
@@ -142,7 +151,6 @@ describe('SearchModal', () => {
       },
     );
 
-    expect(searchApiMock.query).toHaveBeenCalledTimes(1);
     await userEvent.keyboard('{Escape}');
     expect(toggleModal).toHaveBeenCalledTimes(1);
   });
@@ -201,6 +209,7 @@ describe('SearchModal', () => {
 
     expect(searchApiMock.query).toHaveBeenCalledWith(
       expect.objectContaining({ term: 'term' }),
+      { signal: expect.any(AbortSignal) },
     );
 
     const input = screen.getByLabelText<HTMLInputElement>('Search');
@@ -233,6 +242,7 @@ describe('SearchModal', () => {
 
     expect(searchApiMock.query).toHaveBeenCalledWith(
       expect.objectContaining({ term: 'term' }),
+      { signal: expect.any(AbortSignal) },
     );
 
     const fullResultsBtn = screen.getByRole('button', {

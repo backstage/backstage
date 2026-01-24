@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ComponentProps, ReactNode } from 'react';
+import { ComponentProps, ReactNode } from 'react';
 
 import Alert from '@material-ui/lab/Alert';
 
@@ -62,6 +62,7 @@ export interface EntityLayoutProps {
   UNSTABLE_extraContextMenuItems?: ComponentProps<
     typeof EntityHeader
   >['UNSTABLE_extraContextMenuItems'];
+  contextMenuItems?: ComponentProps<typeof EntityHeader>['contextMenuItems'];
   children?: ReactNode;
   header?: JSX.Element;
   NotFoundComponent?: ReactNode;
@@ -99,6 +100,7 @@ export const EntityLayout = (props: EntityLayoutProps) => {
   const {
     UNSTABLE_extraContextMenuItems,
     UNSTABLE_contextMenuOptions,
+    contextMenuItems,
     children,
     header,
     NotFoundComponent,
@@ -145,6 +147,7 @@ export const EntityLayout = (props: EntityLayoutProps) => {
           parentEntityRelations={parentEntityRelations}
           UNSTABLE_contextMenuOptions={UNSTABLE_contextMenuOptions}
           UNSTABLE_extraContextMenuItems={UNSTABLE_extraContextMenuItems}
+          contextMenuItems={contextMenuItems}
         />
       )}
 

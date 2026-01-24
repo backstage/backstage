@@ -16,6 +16,10 @@
 
 import { CompoundEntityRef, Entity } from '@backstage/catalog-model';
 import { SerializedError } from '@backstage/errors';
+import type {
+  AnalyzeLocationRequest,
+  AnalyzeLocationResponse,
+} from '@backstage/plugin-catalog-common';
 
 /**
  * This symbol can be used in place of a value when passed to filters in e.g.
@@ -350,6 +354,15 @@ export type Location = {
 };
 
 /**
+ * The response type for {@link CatalogClient.getLocations}
+ *
+ * @public
+ */
+export interface GetLocationsResponse {
+  items: Location[];
+}
+
+/**
  * The request type for {@link CatalogClient.addLocation}.
  *
  * @public
@@ -450,6 +463,21 @@ export type QueryEntitiesResponse = {
     /* The cursor for the previous batch of entities */
     prevCursor?: string;
   };
+};
+
+/**
+ * Stream entities request for {@link CatalogClient.streamEntities}.
+ *
+ * @public
+ */
+export type StreamEntitiesRequest = Omit<
+  QueryEntitiesInitialRequest,
+  'limit' | 'offset'
+> & {
+  /**
+   * The number of entities to fetch in each page. Defaults to 500.
+   */
+  pageSize?: number;
 };
 
 /**
@@ -591,6 +619,17 @@ export interface CatalogApi {
   // Locations
 
   /**
+   * List locations
+   *
+   * @param request - Request parameters
+   * @param options - Additional options
+   */
+  getLocations(
+    request?: {},
+    options?: CatalogRequestOptions,
+  ): Promise<GetLocationsResponse>;
+
+  /**
    * Gets a registered location by its ID.
    *
    * @param id - A location ID
@@ -657,4 +696,29 @@ export interface CatalogApi {
     locationRef: string,
     options?: CatalogRequestOptions,
   ): Promise<ValidateEntityResponse>;
+
+  /**
+   * Validate a given location.
+   *
+   * @param location - Request parameters
+   * @param options - Additional options
+   */
+  analyzeLocation(
+    location: AnalyzeLocationRequest,
+    options?: CatalogRequestOptions,
+  ): Promise<AnalyzeLocationResponse>;
+
+  /**
+   * Asynchronously streams entities from the catalog. Uses `queryEntities`
+   * to fetch entities in batches, and yields them one page at a time.
+   *
+   * @public
+   *
+   * @param request - Request parameters
+   * @param options - Additional options
+   */
+  streamEntities(
+    request?: StreamEntitiesRequest,
+    options?: CatalogRequestOptions,
+  ): AsyncIterable<Entity[]>;
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ComponentType, PropsWithChildren } from 'react';
+import { ComponentType, PropsWithChildren } from 'react';
 import Grid from '@material-ui/core/Grid';
 
 import { TestApiProvider } from '@backstage/test-utils';
@@ -40,6 +40,7 @@ export default {
       </TestApiProvider>
     ),
   ],
+  tags: ['!manifest'],
 };
 
 export const Default = () => {

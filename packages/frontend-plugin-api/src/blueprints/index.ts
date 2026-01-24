@@ -14,14 +14,26 @@
  * limitations under the License.
  */
 
+export {
+  AnalyticsImplementationBlueprint,
+  type AnalyticsImplementationFactory,
+} from './AnalyticsImplementationBlueprint';
 export { ApiBlueprint } from './ApiBlueprint';
 export { AppRootElementBlueprint } from './AppRootElementBlueprint';
 export { AppRootWrapperBlueprint } from './AppRootWrapperBlueprint';
 export { IconBundleBlueprint } from './IconBundleBlueprint';
+export {
+  NavContentBlueprint,
+  type NavContentComponent,
+  type NavContentComponentProps,
+} from './NavContentBlueprint';
 export { NavItemBlueprint } from './NavItemBlueprint';
-export { NavLogoBlueprint } from './NavLogoBlueprint';
 export { PageBlueprint } from './PageBlueprint';
 export { RouterBlueprint } from './RouterBlueprint';
-export { SignInPageBlueprint } from './SignInPageBlueprint';
+export {
+  type SignInPageProps,
+  SignInPageBlueprint,
+} from './SignInPageBlueprint';
 export { ThemeBlueprint } from './ThemeBlueprint';
 export { TranslationBlueprint } from './TranslationBlueprint';
+export { SwappableComponentBlueprint } from './SwappableComponentBlueprint';

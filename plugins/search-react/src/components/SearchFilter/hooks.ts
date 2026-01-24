@@ -14,11 +14,16 @@
  * limitations under the License.
  */
 
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import useAsyncFn from 'react-use/esm/useAsyncFn';
 import useDebounce from 'react-use/esm/useDebounce';
 
 import { useSearch } from '../../context';
+import {
+  ensureFilterValueWithLabel,
+  FilterValue,
+  FilterValueWithLabel,
+} from './types';
 
 /**
  * Utility hook for either asynchronously loading filter values from a given
@@ -27,13 +32,22 @@ import { useSearch } from '../../context';
  * @public
  */
 export const useAsyncFilterValues = (
-  fn: ((partial: string) => Promise<string[]>) | undefined,
+  fn: ((partial: string) => Promise<FilterValue[]>) | undefined,
   inputValue: string,
-  defaultValues: string[] = [],
+  defaultValues: FilterValueWithLabel[] = [],
   debounce: number = 250,
 ) => {
-  const valuesMemo = useRef<Record<string, string[] | Promise<string[]>>>({});
-  const definiteFn = fn || (() => Promise.resolve([]));
+  const valuesMemo = useRef<
+    Record<string, FilterValueWithLabel[] | Promise<FilterValueWithLabel[]>>
+  >({});
+  const definiteFn = useCallback(
+    async (partial: string) => {
+      return (
+        (await fn?.(partial))?.map(v => ensureFilterValueWithLabel(v)) || []
+      );
+    },
+    [fn],
+  );
 
   const [state, callback] = useAsyncFn(definiteFn, [inputValue], {
     loading: true,

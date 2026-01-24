@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
+import { default as React } from 'react';
 import tlr, { render } from '@testing-library/react';
-import React from 'react';
 
 describe.each(['beta', 'stable'])('react-router %s', rrVersion => {
   beforeAll(() => {

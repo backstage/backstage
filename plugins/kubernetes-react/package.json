@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-kubernetes-react",
-  "version": "0.5.5-next.2",
+  "version": "0.5.15",
   "description": "Web library for the kubernetes-react plugin",
   "backstage": {
     "role": "web-library",
@@ -62,19 +62,19 @@
     "@backstage/types": "workspace:^",
     "@kubernetes-models/apimachinery": "^2.0.0",
     "@kubernetes-models/base": "^5.0.0",
-    "@kubernetes/client-node": "1.0.0-rc7",
+    "@kubernetes/client-node": "1.4.0",
     "@material-ui/core": "^4.9.13",
     "@material-ui/icons": "^4.11.3",
     "@material-ui/lab": "^4.0.0-alpha.61",
+    "@xterm/addon-attach": "^0.11.0",
+    "@xterm/addon-fit": "^0.10.0",
+    "@xterm/xterm": "^5.5.0",
     "cronstrue": "^2.32.0",
     "js-yaml": "^4.1.0",
     "kubernetes-models": "^4.3.1",
     "lodash": "^4.17.21",
     "luxon": "^3.0.0",
-    "react-use": "^17.4.0",
-    "xterm": "^5.3.0",
-    "xterm-addon-attach": "^0.9.0",
-    "xterm-addon-fit": "^0.8.0"
+    "react-use": "^17.4.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
@@ -84,7 +84,7 @@
     "@testing-library/react": "^16.0.0",
     "@types/react": "^18.0.0",
     "jest-websocket-mock": "^2.5.0",
-    "msw": "^1.3.1",
+    "msw": "^2.0.0",
     "react": "^18.0.2",
     "react-dom": "^18.0.2",
     "react-router-dom": "^6.3.0"

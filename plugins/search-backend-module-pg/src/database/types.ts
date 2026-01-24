@@ -38,7 +38,11 @@ export interface DatabaseStore {
     type: string,
     documents: IndexableDocument[],
   ): Promise<void>;
-  completeInsert(tx: Knex.Transaction, type: string): Promise<void>;
+  completeInsert(
+    tx: Knex.Transaction,
+    type: string,
+    truncate?: boolean,
+  ): Promise<void>;
   query(
     tx: Knex.Transaction,
     pgQuery: PgSearchQuery,

@@ -1,6 +1,6 @@
 {
   "name": "@backstage/integration",
-  "version": "1.16.2-next.0",
+  "version": "1.19.2",
   "description": "Helpers for managing integrations towards external systems",
   "backstage": {
     "role": "common-library"
@@ -51,7 +51,6 @@
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@backstage/config-loader": "workspace:^",
-    "@types/luxon": "^3.0.0",
     "msw": "^1.0.0"
   },
   "configSchema": "config.d.ts"

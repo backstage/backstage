@@ -28,32 +28,37 @@ import {
 } from '@backstage/plugin-catalog-react';
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import qs from 'qs';
-import React, { MouseEvent, ReactNode, useCallback, useMemo } from 'react';
+import { MouseEvent, ReactNode, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { catalogGraphRouteRef } from '../../routes';
 import {
-  ALL_RELATION_PAIRS,
-  Direction,
-  EntityNode,
   EntityRelationsGraph,
+  EntityRelationsGraphProps,
 } from '../EntityRelationsGraph';
-import { EntityRelationsGraphProps } from '../EntityRelationsGraph';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { catalogGraphTranslationRef } from '../../translation';
+import { Direction, EntityNode } from '../../lib/types';
+import classNames from 'classnames';
 
 /** @public */
 export type CatalogGraphCardClassKey = 'card' | 'graph';
 
-const useStyles = makeStyles<Theme, { height: number | undefined }>(
+const useStyles = makeStyles<Theme, { height?: number }>(
   {
     card: ({ height }) => ({
       display: 'flex',
       flexDirection: 'column',
-      maxHeight: height,
-      minHeight: height,
+      ...(height && {
+        height,
+        maxHeight: height,
+        minHeight: height,
+      }),
     }),
-    graph: {
-      flex: 1,
+    graph: ({ height }) => ({
+      flex: height ? '0 0 auto' : 1,
       minHeight: 0,
-    },
+      ...(height && { height }),
+    }),
   },
   { name: 'PluginCatalogGraphCatalogGraphCard' },
 );
@@ -66,9 +71,10 @@ export const CatalogGraphCard = (
     action?: ReactNode;
   },
 ) => {
+  const { t } = useTranslationRef(catalogGraphTranslationRef);
   const {
     variant = 'gridItem',
-    relationPairs = ALL_RELATION_PAIRS,
+    relationPairs,
     maxDepth = 1,
     unidirectional = true,
     mergeRelations = true,
@@ -81,7 +87,7 @@ export const CatalogGraphCard = (
     action,
     rootEntityNames,
     onNodeClick,
-    title = 'Relations',
+    title = t('catalogGraphCard.title'),
     zoom = 'enable-on-click',
   } = props;
 
@@ -133,7 +139,7 @@ export const CatalogGraphCard = (
       variant={variant}
       noPadding
       deepLink={{
-        title: 'View graph',
+        title: t('catalogGraphCard.deepLinkTitle'),
         link: catalogGraphUrl,
       }}
     >
@@ -141,7 +147,7 @@ export const CatalogGraphCard = (
         {...props}
         rootEntityNames={rootEntityNames || entityName}
         onNodeClick={onNodeClick || defaultOnNodeClick}
-        className={className || classes.graph}
+        className={classNames(classes.graph, className)}
         maxDepth={maxDepth}
         unidirectional={unidirectional}
         mergeRelations={mergeRelations}

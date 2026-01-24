@@ -25,12 +25,12 @@ import {
   readSchedulerServiceTaskScheduleDefinitionFromConfig,
 } from '@backstage/backend-plugin-api';
 import { searchIndexRegistryExtensionPoint } from '@backstage/plugin-search-backend-node/alpha';
-
-import { ToolDocumentCollatorFactory } from '@backstage/plugin-search-backend-module-explore';
+import { ToolDocumentCollatorFactory } from './collators/ToolDocumentCollatorFactory';
 
 /**
  * Search backend module for the Explore index.
  *
+ * @deprecated This entire package is deprecated and has been moved to the Backstage community repository; please use the `@backstage-community/plugin-search-backend-module-explore` package instead.
  * @public
  */
 export default createBackendModule({

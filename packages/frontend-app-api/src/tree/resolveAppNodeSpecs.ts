@@ -14,7 +14,12 @@
  * limitations under the License.
  */
 
-import { Extension } from '@backstage/frontend-plugin-api';
+import {
+  createFrontendPlugin,
+  Extension,
+  FrontendFeature,
+  FrontendPlugin,
+} from '@backstage/frontend-plugin-api';
 import { ExtensionParameters } from './readAppExtensionsConfig';
 import { AppNodeSpec } from '@backstage/frontend-plugin-api';
 import { OpaqueFrontendPlugin } from '@internal/frontend';
@@ -25,7 +30,7 @@ import {
 } from '../../../frontend-plugin-api/src/wiring/createFrontendModule';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { toInternalExtension } from '../../../frontend-plugin-api/src/wiring/resolveExtensionDefinition';
-import { FrontendFeature } from '../wiring';
+import { ErrorCollector } from '../wiring/createErrorCollector';
 
 /** @internal */
 export function resolveAppNodeSpecs(options: {
@@ -33,66 +38,72 @@ export function resolveAppNodeSpecs(options: {
   builtinExtensions?: Extension<any, any>[];
   parameters?: Array<ExtensionParameters>;
   forbidden?: Set<string>;
+  collector: ErrorCollector;
 }): AppNodeSpec[] {
   const {
     builtinExtensions = [],
     parameters = [],
     forbidden = new Set(),
     features = [],
+    collector,
   } = options;
 
   const plugins = features.filter(OpaqueFrontendPlugin.isType);
   const modules = features.filter(isInternalFrontendModule);
 
-  const pluginExtensions = plugins.flatMap(source => {
-    return OpaqueFrontendPlugin.toInternal(source).extensions.map(
-      extension => ({
+  const filterForbidden = (
+    extension: Extension<any, any> & { plugin: FrontendPlugin },
+  ) => {
+    if (forbidden.has(extension.id)) {
+      collector.report({
+        code: 'EXTENSION_IGNORED',
+        message: `It is forbidden to override the '${extension.id}' extension, attempted by the '${extension.plugin.id}' plugin`,
+        context: {
+          plugin: extension.plugin,
+          extensionId: extension.id,
+        },
+      });
+      return false;
+    }
+    return true;
+  };
+
+  const pluginExtensions = plugins.flatMap(plugin => {
+    return OpaqueFrontendPlugin.toInternal(plugin)
+      .extensions.map(extension => ({
         ...extension,
-        source,
-      }),
-    );
+        plugin,
+      }))
+      .filter(filterForbidden);
   });
   const moduleExtensions = modules.flatMap(mod =>
-    toInternalFrontendModule(mod).extensions.flatMap(extension => {
-      // Modules for plugins that are not installed are ignored
-      const source = plugins.find(p => p.id === mod.pluginId);
-      if (!source) {
-        return [];
-      }
+    toInternalFrontendModule(mod)
+      .extensions.flatMap(extension => {
+        // Modules for plugins that are not installed are ignored
+        const plugin = plugins.find(p => p.id === mod.pluginId);
+        if (!plugin) {
+          return [];
+        }
 
-      return [{ ...extension, source }];
-    }),
+        return [{ ...extension, plugin }];
+      })
+      .filter(filterForbidden),
   );
 
-  // Prevent core override
-  if (pluginExtensions.some(({ id }) => forbidden.has(id))) {
-    const pluginsStr = pluginExtensions
-      .filter(({ id }) => forbidden.has(id))
-      .map(({ source }) => `'${source.id}'`)
-      .join(', ');
-    const forbiddenStr = [...forbidden].map(id => `'${id}'`).join(', ');
-    throw new Error(
-      `It is forbidden to override the following extension(s): ${forbiddenStr}, which is done by the following plugin(s): ${pluginsStr}`,
-    );
-  }
-  if (moduleExtensions.some(({ id }) => forbidden.has(id))) {
-    const pluginsStr = moduleExtensions
-      .filter(({ id }) => forbidden.has(id))
-      .map(({ source }) => `'${source.id}'`)
-      .join(', ');
-    const forbiddenStr = [...forbidden].map(id => `'${id}'`).join(', ');
-    throw new Error(
-      `It is forbidden to override the following extension(s): ${forbiddenStr}, which is done by a module for the following plugin(s): ${pluginsStr}`,
-    );
-  }
+  const appPlugin =
+    plugins.find(plugin => plugin.id === 'app') ??
+    createFrontendPlugin({
+      pluginId: 'app',
+    });
 
   const configuredExtensions = [
-    ...pluginExtensions.map(({ source, ...extension }) => {
+    ...pluginExtensions.map(({ plugin, ...extension }) => {
       const internalExtension = toInternalExtension(extension);
       return {
         extension: internalExtension,
         params: {
-          source,
+          plugin,
+          source: plugin,
           attachTo: internalExtension.attachTo,
           disabled: internalExtension.disabled,
           config: undefined as unknown,
@@ -104,7 +115,8 @@ export function resolveAppNodeSpecs(options: {
       return {
         extension: internalExtension,
         params: {
-          source: undefined,
+          source: appPlugin,
+          plugin: appPlugin,
           attachTo: internalExtension.attachTo,
           disabled: internalExtension.disabled,
           config: undefined as unknown,
@@ -131,7 +143,8 @@ export function resolveAppNodeSpecs(options: {
       configuredExtensions.push({
         extension: internalExtension,
         params: {
-          source: extension.source,
+          plugin: extension.plugin,
+          source: extension.plugin,
           attachTo: internalExtension.attachTo,
           disabled: internalExtension.disabled,
           config: undefined,
@@ -140,52 +153,41 @@ export function resolveAppNodeSpecs(options: {
     }
   }
 
-  const duplicatedExtensionIds = new Set<string>();
-  const duplicatedExtensionData = configuredExtensions.reduce<
-    Record<string, Record<string, number>>
-  >((data, { extension, params }) => {
-    const extensionId = extension.id;
-    const extensionData = data?.[extensionId];
-    if (extensionData) duplicatedExtensionIds.add(extensionId);
-    const pluginId = params.source?.id ?? 'internal';
-    const pluginCount = extensionData?.[pluginId] ?? 0;
-    return {
-      ...data,
-      [extensionId]: { ...extensionData, [pluginId]: pluginCount + 1 },
-    };
-  }, {});
+  const seenExtensionIds = new Set<string>();
+  const deduplicatedExtensions = configuredExtensions.filter(
+    ({ extension, params }) => {
+      if (seenExtensionIds.has(extension.id)) {
+        collector.report({
+          code: 'EXTENSION_IGNORED',
+          message: `The '${extension.id}' extension from the '${params.plugin.id}' plugin is a duplicate and will be ignored`,
+          context: {
+            plugin: params.plugin,
+            extensionId: extension.id,
+          },
+        });
+        return false;
+      }
+      seenExtensionIds.add(extension.id);
+      return true;
+    },
+  );
 
-  if (duplicatedExtensionIds.size > 0) {
-    throw new Error(
-      `The following extensions are duplicated: ${Array.from(
-        duplicatedExtensionIds,
-      )
-        .map(
-          extensionId =>
-            `The extension '${extensionId}' was provided ${Object.keys(
-              duplicatedExtensionData[extensionId],
-            )
-              .map(
-                pluginId =>
-                  `${duplicatedExtensionData[extensionId][pluginId]} time(s) by the plugin '${pluginId}'`,
-              )
-              .join(' and ')}`,
-        )
-        .join(', ')}`,
-    );
-  }
-
-  const order = new Map<string, (typeof configuredExtensions)[number]>();
+  const order = new Map<string, (typeof deduplicatedExtensions)[number]>();
   for (const overrideParam of parameters) {
     const extensionId = overrideParam.id;
 
     if (forbidden.has(extensionId)) {
-      throw new Error(
-        `Configuration of the '${extensionId}' extension is forbidden`,
-      );
+      collector.report({
+        code: 'INVALID_EXTENSION_CONFIG_KEY',
+        message: `Configuration of the '${extensionId}' extension is forbidden`,
+        context: {
+          extensionId,
+        },
+      });
+      continue;
     }
 
-    const existing = configuredExtensions.find(
+    const existing = deduplicatedExtensions.find(
       e => e.extension.id === extensionId,
     );
     if (existing) {
@@ -203,13 +205,19 @@ export function resolveAppNodeSpecs(options: {
       }
       order.set(extensionId, existing);
     } else {
-      throw new Error(`Extension ${extensionId} does not exist`);
+      collector.report({
+        code: 'INVALID_EXTENSION_CONFIG_KEY',
+        message: `Extension ${extensionId} does not exist`,
+        context: {
+          extensionId,
+        },
+      });
     }
   }
 
   const orderedExtensions = [
     ...order.values(),
-    ...configuredExtensions.filter(e => !order.has(e.extension.id)),
+    ...deduplicatedExtensions.filter(e => !order.has(e.extension.id)),
   ];
 
   return orderedExtensions.map(param => ({
@@ -217,6 +225,7 @@ export function resolveAppNodeSpecs(options: {
     attachTo: param.params.attachTo,
     extension: param.extension,
     disabled: param.params.disabled,
+    plugin: param.params.plugin,
     source: param.params.source,
     config: param.params.config,
   }));

@@ -4,6 +4,6 @@
 
 | Name     | Location     | Severity |
 | :------- | :----------- | :------- |
-| passport | package.json | error    |
-| express  | package.json | error    |
+| passport | plugins/auth-backend-module-atlassian-provider/package.json | error    |
+| express  | plugins/auth-backend-module-atlassian-provider/package.json | error    |
 

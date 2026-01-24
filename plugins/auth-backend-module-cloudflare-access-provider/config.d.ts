@@ -34,8 +34,12 @@ export interface Config {
             | {
                 resolver: 'emailLocalPartMatchingUserEntityName';
                 allowedDomains?: string[];
+                dangerouslyAllowSignInWithoutUserInCatalog?: boolean;
               }
-            | { resolver: 'emailMatchingUserEntityProfileEmail' }
+            | {
+                resolver: 'emailMatchingUserEntityProfileEmail';
+                dangerouslyAllowSignInWithoutUserInCatalog?: boolean;
+              }
           >;
         };
       };

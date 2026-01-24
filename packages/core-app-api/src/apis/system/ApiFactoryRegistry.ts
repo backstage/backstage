@@ -31,11 +31,11 @@ export type ApiFactoryScope =
   | 'app' // Factories registered in the app, overriding default ones
   | 'static'; // APIs that can't be overridden, e.g. config
 
-enum ScopePriority {
-  default = 10,
-  app = 50,
-  static = 100,
-}
+const ScopePriority = {
+  default: 10,
+  app: 50,
+  static: 100,
+} as const;
 
 type FactoryTuple = {
   priority: number;

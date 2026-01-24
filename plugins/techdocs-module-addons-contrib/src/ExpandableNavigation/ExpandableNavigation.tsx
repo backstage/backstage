@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useEffect, useCallback, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useLocalStorageValue } from '@react-hookz/web';
 import { Button, withStyles } from '@material-ui/core';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
@@ -73,35 +73,33 @@ export const ExpandableNavigationAddon = () => {
     NESTED_LIST_TOGGLE,
   ]);
 
-  const shouldToggle = useCallback(
-    (item: HTMLInputElement) => {
-      const isExpanded = item.checked;
-      const shouldExpand = expanded?.expandAllNestedNavs;
-
-      // Is collapsed but should expand
-      if (shouldExpand && !isExpanded) {
-        return true;
-      }
-
-      // Is expanded but should collapse
-      if (!shouldExpand && isExpanded) {
-        return true;
-      }
-
-      return false;
-    },
-    [expanded],
-  );
+  // Define handleKeyPass as a named function
+  function handleKeyPass(
+    event: React.KeyboardEvent<HTMLElement>,
+    toggleAction: () => void,
+  ) {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      toggleAction();
+    }
+  }
 
   useEffect(() => {
-    // There is no nested navs
     if (!checkboxToggles?.length) return;
-
     setHasNavSubLevels(true);
-    checkboxToggles.forEach(item => {
-      if (shouldToggle(item)) item.click();
-    });
-  }, [expanded, shouldToggle, checkboxToggles]);
+  }, [checkboxToggles]);
+
+  useEffect(() => {
+    if (!checkboxToggles?.length) return;
+    function shouldToggle(item: HTMLInputElement) {
+      return expanded?.expandAllNestedNavs !== item.checked;
+    }
+    for (const item of checkboxToggles) {
+      if (shouldToggle(item)) {
+        item.click();
+      }
+    }
+  }, [expanded, checkboxToggles]);
 
   const handleState = () => {
     setExpanded(prevState => ({
@@ -109,12 +107,19 @@ export const ExpandableNavigationAddon = () => {
     }));
   };
 
+  function handleButtonKeyDown(event: React.KeyboardEvent<HTMLElement>) {
+    handleKeyPass(event, handleState);
+  }
+
   return (
     <>
       {hasNavSubLevels ? (
         <StyledButton
           size="small"
           onClick={handleState}
+          onKeyDown={handleButtonKeyDown}
+          tabIndex={0} // Ensuring keyboard focus
+          aria-expanded={expanded?.expandAllNestedNavs} // Accessibility
           aria-label={
             expanded?.expandAllNestedNavs ? 'collapse-nav' : 'expand-nav'
           }

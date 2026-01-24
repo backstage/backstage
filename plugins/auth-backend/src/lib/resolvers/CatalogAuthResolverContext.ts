@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import { TokenManager } from '@backstage/backend-common';
-import { CatalogApi } from '@backstage/catalog-client';
 import {
   DEFAULT_NAMESPACE,
   Entity,
@@ -24,12 +22,8 @@ import {
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { ConflictError, InputError, NotFoundError } from '@backstage/errors';
-import {
-  AuthService,
-  DiscoveryService,
-  HttpAuthService,
-  LoggerService,
-} from '@backstage/backend-plugin-api';
+import { AuthService, LoggerService } from '@backstage/backend-plugin-api';
+import { CatalogService } from '@backstage/plugin-catalog-node';
 import { TokenIssuer } from '../../identity/types';
 import {
   AuthOwnershipResolver,
@@ -37,18 +31,10 @@ import {
   AuthResolverContext,
   TokenParams,
 } from '@backstage/plugin-auth-node';
-import { CatalogIdentityClient } from '../catalog';
+import { CatalogIdentityClient } from '../catalog/CatalogIdentityClient';
+import { UserInfoDatabase } from '../../database/UserInfoDatabase';
 
-/**
- * Uses the default ownership resolution logic to return an array
- * of entity refs that the provided entity claims ownership through.
- *
- * A reference to the entity itself will also be included in the returned array.
- *
- * @public
- * @deprecated use `ctx.resolveOwnershipEntityRefs(entity)` from the provided `AuthResolverContext` instead.
- */
-export function getDefaultOwnershipEntityRefs(entity: Entity) {
+function getDefaultOwnershipEntityRefs(entity: Entity) {
   const membershipRefs =
     entity.relations
       ?.filter(
@@ -59,65 +45,89 @@ export function getDefaultOwnershipEntityRefs(entity: Entity) {
   return Array.from(new Set([stringifyEntityRef(entity), ...membershipRefs]));
 }
 
-/**
- * @internal
- */
 export class CatalogAuthResolverContext implements AuthResolverContext {
   static create(options: {
     logger: LoggerService;
-    catalogApi: CatalogApi;
+    catalog: CatalogService;
     tokenIssuer: TokenIssuer;
-    tokenManager?: TokenManager;
-    discovery: DiscoveryService;
     auth: AuthService;
-    httpAuth: HttpAuthService;
     ownershipResolver?: AuthOwnershipResolver;
+    userInfo: UserInfoDatabase;
   }): CatalogAuthResolverContext {
     const catalogIdentityClient = new CatalogIdentityClient({
-      catalogApi: options.catalogApi,
-      tokenManager: options.tokenManager,
-      discovery: options.discovery,
+      catalog: options.catalog,
       auth: options.auth,
-      httpAuth: options.httpAuth,
     });
 
     return new CatalogAuthResolverContext(
       options.logger,
       options.tokenIssuer,
       catalogIdentityClient,
-      options.catalogApi,
+      options.catalog,
       options.auth,
+      options.userInfo,
       options.ownershipResolver,
     );
   }
 
+  public readonly logger: LoggerService;
+  public readonly tokenIssuer: TokenIssuer;
+  public readonly catalogIdentityClient: CatalogIdentityClient;
+  private readonly catalog: CatalogService;
+  private readonly auth: AuthService;
+  private readonly userInfo: UserInfoDatabase;
+  private readonly ownershipResolver?: AuthOwnershipResolver;
+
   private constructor(
-    public readonly logger: LoggerService,
-    public readonly tokenIssuer: TokenIssuer,
-    public readonly catalogIdentityClient: CatalogIdentityClient,
-    private readonly catalogApi: CatalogApi,
-    private readonly auth: AuthService,
-    private readonly ownershipResolver?: AuthOwnershipResolver,
-  ) {}
+    logger: LoggerService,
+    tokenIssuer: TokenIssuer,
+    catalogIdentityClient: CatalogIdentityClient,
+    catalog: CatalogService,
+    auth: AuthService,
+    userInfo: UserInfoDatabase,
+    ownershipResolver?: AuthOwnershipResolver,
+  ) {
+    this.logger = logger;
+    this.tokenIssuer = tokenIssuer;
+    this.catalogIdentityClient = catalogIdentityClient;
+    this.catalog = catalog;
+    this.auth = auth;
+    this.userInfo = userInfo;
+    this.ownershipResolver = ownershipResolver;
+  }
 
   async issueToken(params: TokenParams) {
-    const token = await this.tokenIssuer.issueToken(params);
-    return { token };
+    const { sub, ent = [sub], ...additionalClaims } = params.claims;
+    const claims = {
+      sub,
+      ent,
+      ...additionalClaims,
+    };
+
+    const issuedToken = await this.tokenIssuer.issueToken({
+      claims,
+    });
+
+    // Store the user info in the database upon successful token
+    // issuance so that it can be retrieved later by limited user tokens
+    await this.userInfo.addUserInfo({
+      claims,
+    });
+
+    return issuedToken;
   }
 
   async findCatalogUser(query: AuthResolverCatalogUserQuery) {
     let result: Entity[] | Entity | undefined = undefined;
-    const { token } = await this.auth.getPluginRequestToken({
-      onBehalfOf: await this.auth.getOwnServiceCredentials(),
-      targetPluginId: 'catalog',
-    });
 
     if ('entityRef' in query) {
       const entityRef = parseEntityRef(query.entityRef, {
         defaultKind: 'User',
         defaultNamespace: DEFAULT_NAMESPACE,
       });
-      result = await this.catalogApi.getEntityByRef(entityRef, { token });
+      result = await this.catalog.getEntityByRef(entityRef, {
+        credentials: await this.auth.getOwnServiceCredentials(),
+      });
     } else if ('annotations' in query) {
       const filter: Record<string, string> = {
         kind: 'user',
@@ -125,7 +135,10 @@ export class CatalogAuthResolverContext implements AuthResolverContext {
       for (const [key, value] of Object.entries(query.annotations)) {
         filter[`metadata.annotations.${key}`] = value;
       }
-      const res = await this.catalogApi.getEntities({ filter }, { token });
+      const res = await this.catalog.getEntities(
+        { filter },
+        { credentials: await this.auth.getOwnServiceCredentials() },
+      );
       result = res.items;
     } else if ('filter' in query) {
       const filter = [query.filter].flat().map(value => {
@@ -141,9 +154,9 @@ export class CatalogAuthResolverContext implements AuthResolverContext {
         }
         return value;
       });
-      const res = await this.catalogApi.getEntities(
+      const res = await this.catalog.getEntities(
         { filter: filter },
-        { token },
+        { credentials: await this.auth.getOwnServiceCredentials() },
       );
       result = res.items;
     } else {
@@ -163,20 +176,54 @@ export class CatalogAuthResolverContext implements AuthResolverContext {
     return { entity: result };
   }
 
-  async signInWithCatalogUser(query: AuthResolverCatalogUserQuery) {
-    const { entity } = await this.findCatalogUser(query);
+  async signInWithCatalogUser(
+    query: AuthResolverCatalogUserQuery,
+    options?: {
+      dangerousEntityRefFallback?: {
+        entityRef:
+          | string
+          | {
+              kind?: string;
+              namespace?: string;
+              name: string;
+            };
+      };
+    },
+  ) {
+    try {
+      const { entity } = await this.findCatalogUser(query);
 
-    const { ownershipEntityRefs } = await this.resolveOwnershipEntityRefs(
-      entity,
-    );
+      const { ownershipEntityRefs } = await this.resolveOwnershipEntityRefs(
+        entity,
+      );
 
-    const token = await this.tokenIssuer.issueToken({
-      claims: {
-        sub: stringifyEntityRef(entity),
-        ent: ownershipEntityRefs,
-      },
-    });
-    return { token };
+      return await this.issueToken({
+        claims: {
+          sub: stringifyEntityRef(entity),
+          ent: ownershipEntityRefs,
+        },
+      });
+    } catch (error) {
+      if (
+        error?.name !== 'NotFoundError' ||
+        !options?.dangerousEntityRefFallback
+      ) {
+        throw error;
+      }
+      const userEntityRef = stringifyEntityRef(
+        parseEntityRef(options.dangerousEntityRefFallback.entityRef, {
+          defaultKind: 'User',
+          defaultNamespace: DEFAULT_NAMESPACE,
+        }),
+      );
+
+      return await this.issueToken({
+        claims: {
+          sub: userEntityRef,
+          ent: [userEntityRef],
+        },
+      });
+    }
   }
 
   async resolveOwnershipEntityRefs(

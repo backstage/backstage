@@ -32,7 +32,7 @@ import {
   DbRefreshStateRow,
   DbRelationsRow,
 } from './tables';
-import { createRandomProcessingInterval } from '../processing';
+import { createRandomProcessingInterval } from '../processing/refresh';
 import { timestampToDateTime } from './conversion';
 import { generateStableHash } from './util';
 import { LoggerService } from '@backstage/backend-plugin-api';
@@ -58,6 +58,7 @@ describe('DefaultProcessingDatabase', () => {
           minSeconds: 100,
           maxSeconds: 150,
         }),
+        events: mockServices.events.mock(),
       }),
     };
   }

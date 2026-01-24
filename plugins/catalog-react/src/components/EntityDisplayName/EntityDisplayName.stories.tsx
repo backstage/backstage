@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ComponentType } from 'react';
+import { ComponentType } from 'react';
 import { EntityDisplayName, EntityDisplayNameProps } from './EntityDisplayName';
 import { wrapInTestApp } from '@backstage/test-utils';
 
@@ -25,6 +25,7 @@ const defaultArgs = {
 export default {
   title: 'Catalog /EntityDisplayName',
   decorators: [(Story: ComponentType<{}>) => wrapInTestApp(<Story />)],
+  tags: ['!manifest'],
 };
 
 export const Default = (args: EntityDisplayNameProps) => (

@@ -22,6 +22,7 @@ import {
 } from '@backstage/backend-test-utils';
 import { JsonObject, JsonValue } from '@backstage/types';
 import { ActionContext } from '@backstage/plugin-scaffolder-node';
+import { CheckpointContext } from '@backstage/plugin-scaffolder-node/alpha';
 import { loggerToWinstonLogger } from './loggerToWinstonLogger';
 
 /**
@@ -30,28 +31,32 @@ import { loggerToWinstonLogger } from './loggerToWinstonLogger';
  * @public
  * @param options - optional parameters to override default mock context
  */
-export const createMockActionContext = <
+export function createMockActionContext<
   TActionInput extends JsonObject = JsonObject,
-  TActionOutput extends JsonObject = JsonObject,
+  TActionOutput extends JsonObject = any,
 >(
   options?: Partial<ActionContext<TActionInput, TActionOutput>>,
-): ActionContext<TActionInput, TActionOutput> => {
+): ActionContext<TActionInput, TActionOutput> {
   const credentials = mockCredentials.user();
+
   const defaultContext = {
     logger: loggerToWinstonLogger(mockServices.logger.mock()),
     logStream: new PassThrough(),
     output: jest.fn(),
     createTemporaryDirectory: jest.fn(),
     input: {} as TActionInput,
-    async checkpoint<T extends JsonValue | void>(opts: {
-      key: string;
-      fn: () => Promise<T> | T;
-    }): Promise<T> {
+    async checkpoint<T extends JsonValue | void>(
+      opts: CheckpointContext<T>,
+    ): Promise<T> {
       return opts.fn();
     },
     getInitiatorCredentials: () => Promise.resolve(credentials),
     task: {
       id: 'mock-task-id',
+    },
+    step: {
+      id: 'mock-step-id',
+      name: 'mock step name',
     },
   };
 
@@ -66,15 +71,8 @@ export const createMockActionContext = <
     };
   }
 
-  const {
-    input,
-    logger,
-    logStream,
-    secrets,
-    templateInfo,
-    workspacePath,
-    task,
-  } = options;
+  const { input, logger, secrets, templateInfo, workspacePath, task, user } =
+    options;
 
   return {
     ...defaultContext,
@@ -83,10 +81,10 @@ export const createMockActionContext = <
       createTemporaryDirectory: jest.fn().mockResolvedValue(workspacePath),
     }),
     ...(logger && { logger }),
-    ...(logStream && { logStream }),
     ...(input && { input }),
     ...(secrets && { secrets }),
     ...(task && { task }),
+    ...(user && { user }),
     templateInfo,
   };
-};
+}

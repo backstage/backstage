@@ -19,14 +19,16 @@ import {
   devToolsInfoReadPermission,
 } from '@backstage/plugin-devtools-common';
 
-import { ConfigContent } from '../Content/ConfigContent';
+import { ConfigContent } from '../Content';
+import { devToolsTaskSchedulerReadPermission } from '@backstage/plugin-devtools-common/alpha';
 import { DevToolsLayout } from '../DevToolsLayout';
-import { InfoContent } from '../Content/InfoContent';
-import React from 'react';
+import { InfoContent } from '../Content';
 import { RequirePermission } from '@backstage/plugin-permission-react';
+import { ScheduledTasksContent } from '../Content/ScheduledTasksContent';
+import { DevToolsPageProps } from '../DevToolsPage';
 
 /** @public */
-export const DefaultDevToolsPage = () => (
+export const DefaultDevToolsPage = ({ contents }: DevToolsPageProps) => (
   <DevToolsLayout>
     <DevToolsLayout.Route path="info" title="Info">
       <RequirePermission permission={devToolsInfoReadPermission}>
@@ -38,5 +40,19 @@ export const DefaultDevToolsPage = () => (
         <ConfigContent />
       </RequirePermission>
     </DevToolsLayout.Route>
+    <DevToolsLayout.Route path="scheduled-tasks" title="Scheduled Tasks">
+      <RequirePermission permission={devToolsTaskSchedulerReadPermission}>
+        <ScheduledTasksContent />
+      </RequirePermission>
+    </DevToolsLayout.Route>
+    {contents?.map((content, index) => (
+      <DevToolsLayout.Route
+        key={`extension-${index}`}
+        path={content.path}
+        title={content.title}
+      >
+        {content.children}
+      </DevToolsLayout.Route>
+    ))}
   </DevToolsLayout>
 );

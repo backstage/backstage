@@ -15,7 +15,6 @@
  */
 
 import { fireEvent, render, screen, waitFor } from '@testing-library/react';
-import React from 'react';
 import {
   catalogApiMock,
   MockEntityListContextProvider,
@@ -35,7 +34,11 @@ interface EntityFilters extends DefaultEntityFilters {
 const defaultOptions = ['option1', 'option2', 'option3', 'option4'];
 
 class EntityOptionFilter implements EntityFilter {
-  constructor(readonly values: string[]) {}
+  readonly values: string[];
+
+  constructor(values: string[]) {
+    this.values = values;
+  }
 
   filterEntity(entity: Entity): boolean {
     return this.values.every(v =>

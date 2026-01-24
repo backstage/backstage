@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-import React, { Suspense } from 'react';
+import { useState, Suspense } from 'react';
 import IconButton from '@material-ui/core/IconButton';
 import SettingsIcon from '@material-ui/icons/Settings';
 import { InfoCard } from '@backstage/core-components';
 import { SettingsModal } from './components';
 import { createReactExtension, useApp } from '@backstage/core-plugin-api';
 import { RJSFSchema, UiSchema } from '@rjsf/utils';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { homeReactTranslationRef } from './translation';
 
 /**
  * @public
@@ -132,7 +134,8 @@ function CardExtension<T>(props: CardExtensionComponentProps<T>) {
   } = props;
   const app = useApp();
   const { Progress } = app.getComponents();
-  const [settingsOpen, setSettingsOpen] = React.useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+  const { t } = useTranslationRef(homeReactTranslationRef);
 
   if (Renderer) {
     return (
@@ -152,12 +155,15 @@ function CardExtension<T>(props: CardExtensionComponentProps<T>) {
   }
 
   const cardProps = {
-    ...(title && { title, divider: !!title }),
+    divider: !!title,
+    ...(title && { title }),
     ...(Settings && !isCustomizable
       ? {
           action: (
             <IconButton onClick={() => setSettingsOpen(true)}>
-              <SettingsIcon>Settings</SettingsIcon>
+              <SettingsIcon>
+                {t('cardExtension.settingsButtonTitle')}
+              </SettingsIcon>
             </IconButton>
           ),
         }

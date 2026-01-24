@@ -13,6 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+/* We want to maintain the same information as an enum, so we disable the redeclaration warning */
+/* eslint-disable @typescript-eslint/no-redeclare */
 
 import { JsonPrimitive } from '@backstage/types';
 import { Permission, ResourcePermission } from './permission';
@@ -36,19 +38,34 @@ export type PermissionMessageBatch<T> = {
  * The result of an authorization request.
  * @public
  */
-export enum AuthorizeResult {
+export const AuthorizeResult = {
   /**
    * The authorization request is denied.
    */
-  DENY = 'DENY',
+  DENY: 'DENY',
   /**
    * The authorization request is allowed.
    */
-  ALLOW = 'ALLOW',
+  ALLOW: 'ALLOW',
   /**
    * The authorization request is allowed if the provided conditions are met.
    */
-  CONDITIONAL = 'CONDITIONAL',
+  CONDITIONAL: 'CONDITIONAL',
+} as const;
+
+/**
+ * @public
+ */
+export type AuthorizeResult =
+  (typeof AuthorizeResult)[keyof typeof AuthorizeResult];
+
+/**
+ * @public
+ */
+export namespace AuthorizeResult {
+  export type ALLOW = typeof AuthorizeResult.ALLOW;
+  export type DENY = typeof AuthorizeResult.DENY;
+  export type CONDITIONAL = typeof AuthorizeResult.CONDITIONAL;
 }
 
 /**
@@ -176,6 +193,7 @@ export type EvaluatePermissionRequest = {
 /**
  * A batch of requests sent to the permission backend.
  * @public
+ * @deprecated This type is not used and it will be removed in the future
  */
 export type EvaluatePermissionRequestBatch =
   PermissionMessageBatch<EvaluatePermissionRequest>;

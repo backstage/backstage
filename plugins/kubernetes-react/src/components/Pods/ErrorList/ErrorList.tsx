@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
+import { Fragment } from 'react';
 
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -60,7 +60,7 @@ export const ErrorList = ({ podAndErrors }: ErrorListProps) => {
           .flatMap(onlyPodWithErrors => {
             return onlyPodWithErrors.errors.map((error, i) => {
               return (
-                <React.Fragment
+                <Fragment
                   key={`${
                     onlyPodWithErrors.pod.metadata?.name ?? 'unknown'
                   }-eli-${i}`}
@@ -83,7 +83,7 @@ export const ErrorList = ({ podAndErrors }: ErrorListProps) => {
                       </Grid>
                     </Grid>
                   </ListItem>
-                </React.Fragment>
+                </Fragment>
               );
             });
           })}

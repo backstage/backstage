@@ -1,5 +1,17 @@
 # @backstage/backend-dev-utils
 
+## 0.1.6
+
+### Patch Changes
+
+- 2bae83a: Internal update for Node.js v24 support.
+
+## 0.1.6-next.0
+
+### Patch Changes
+
+- 2bae83a: Internal update for Node.js v24 support.
+
 ## 0.1.5
 
 ### Patch Changes

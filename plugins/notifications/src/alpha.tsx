@@ -14,26 +14,20 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import {
   ApiBlueprint,
   PageBlueprint,
-  createApiFactory,
   createFrontendPlugin,
   discoveryApiRef,
   fetchApiRef,
 } from '@backstage/frontend-plugin-api';
 import { rootRouteRef } from './routes';
-import {
-  convertLegacyRouteRef,
-  convertLegacyRouteRefs,
-} from '@backstage/core-compat-api';
 import { NotificationsClient, notificationsApiRef } from './api';
 
 const page = PageBlueprint.make({
   params: {
-    defaultPath: '/notifications',
-    routeRef: convertLegacyRouteRef(rootRouteRef),
+    path: '/notifications',
+    routeRef: rootRouteRef,
     loader: () =>
       import('./components/NotificationsPage').then(m => (
         <m.NotificationsPage />
@@ -42,22 +36,24 @@ const page = PageBlueprint.make({
 });
 
 const api = ApiBlueprint.make({
-  params: {
-    factory: createApiFactory({
+  params: defineParams =>
+    defineParams({
       api: notificationsApiRef,
       deps: { discoveryApi: discoveryApiRef, fetchApi: fetchApiRef },
       factory: ({ discoveryApi, fetchApi }) =>
         new NotificationsClient({ discoveryApi, fetchApi }),
     }),
-  },
 });
 
 /** @alpha */
 export default createFrontendPlugin({
-  id: 'notifications',
-  routes: convertLegacyRouteRefs({
+  pluginId: 'notifications',
+  info: { packageJson: () => import('../package.json') },
+  routes: {
     root: rootRouteRef,
-  }),
+  },
   // TODO(Rugvip): Nav item (i.e. NotificationsSidebarItem) currently needs to be installed manually
   extensions: [page, api],
 });
+
+export { notificationsTranslationRef } from './translation';

@@ -48,27 +48,30 @@ export function createWaitAction(options?: {
     return Duration.fromISOTime(MAX_WAIT_TIME_IN_ISO);
   };
 
-  return createTemplateAction<HumanDuration>({
+  return createTemplateAction({
     id,
     description: 'Waits for a certain period of time.',
     examples,
     schema: {
       input: {
-        type: 'object',
-        properties: {
-          minutes: {
-            title: 'Waiting period in minutes.',
-            type: 'number',
-          },
-          seconds: {
-            title: 'Waiting period in seconds.',
-            type: 'number',
-          },
-          milliseconds: {
-            title: 'Waiting period in milliseconds.',
-            type: 'number',
-          },
-        },
+        minutes: z =>
+          z
+            .number({
+              description: 'Waiting period in minutes.',
+            })
+            .optional(),
+        seconds: z =>
+          z
+            .number({
+              description: 'Waiting period in seconds.',
+            })
+            .optional(),
+        milliseconds: z =>
+          z
+            .number({
+              description: 'Waiting period in milliseconds.',
+            })
+            .optional(),
       },
     },
     async handler(ctx) {
@@ -81,16 +84,14 @@ export function createWaitAction(options?: {
         );
       }
 
-      await new Promise(resolve => {
-        const controller = new AbortController();
+      await new Promise<void>(resolve => {
         const timeoutHandle = setTimeout(abort, delayTime.toMillis());
         ctx.signal?.addEventListener('abort', abort);
 
         function abort() {
           ctx.signal?.removeEventListener('abort', abort);
-          clearTimeout(timeoutHandle!);
-          controller.abort();
-          resolve('finished');
+          clearTimeout(timeoutHandle);
+          resolve();
         }
       });
     },

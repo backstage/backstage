@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { ReactNode, FC } from 'react';
 import {
   Content,
   ContentHeader,
@@ -56,10 +56,10 @@ export const DefaultTechDocsHome = (props: TechDocsIndexPageProps) => {
     PageWrapper,
     CustomHeader,
   } = props;
-  const Wrapper: React.FC<{
-    children: React.ReactNode;
+  const Wrapper: FC<{
+    children: ReactNode;
   }> = PageWrapper ? PageWrapper : TechDocsPageWrapper;
-  const Header: React.FC =
+  const Header: FC =
     CustomHeader ||
     (() => (
       <ContentHeader title="">

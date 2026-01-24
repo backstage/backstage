@@ -19,6 +19,11 @@ import {
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
 import { createRouter } from './service/router';
+import { devToolsPermissions } from '@backstage/plugin-devtools-common';
+import {
+  devToolsTaskSchedulerReadPermission,
+  devToolsTaskSchedulerCreatePermission,
+} from '@backstage/plugin-devtools-common/alpha';
 
 /**
  * DevTools backend plugin
@@ -36,6 +41,7 @@ export const devtoolsPlugin = createBackendPlugin({
         httpRouter: coreServices.httpRouter,
         discovery: coreServices.discovery,
         httpAuth: coreServices.httpAuth,
+        permissionsRegistry: coreServices.permissionsRegistry,
       },
       async init({
         config,
@@ -44,6 +50,7 @@ export const devtoolsPlugin = createBackendPlugin({
         httpRouter,
         discovery,
         httpAuth,
+        permissionsRegistry,
       }) {
         httpRouter.use(
           await createRouter({
@@ -58,6 +65,11 @@ export const devtoolsPlugin = createBackendPlugin({
           path: '/health',
           allow: 'unauthenticated',
         });
+        permissionsRegistry.addPermissions([
+          ...devToolsPermissions,
+          devToolsTaskSchedulerReadPermission,
+          devToolsTaskSchedulerCreatePermission,
+        ]);
       },
     });
   },

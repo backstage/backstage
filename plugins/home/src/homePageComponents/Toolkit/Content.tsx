@@ -19,7 +19,6 @@ import List from '@material-ui/core/List';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import { makeStyles } from '@material-ui/core/styles';
-import React from 'react';
 import { useToolkit, Tool } from './Context';
 
 const useStyles = makeStyles(theme => ({

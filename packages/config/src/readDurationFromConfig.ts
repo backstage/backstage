@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import { Config } from '@backstage/config';
 import { InputError, stringifyError } from '@backstage/errors';
 import { HumanDuration } from '@backstage/types';
 import ms from 'ms';
+import { Config } from './types';
 
 export const propsOfHumanDuration = [
   'years',

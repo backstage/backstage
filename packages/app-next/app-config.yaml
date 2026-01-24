@@ -1,16 +1,48 @@
 app:
-  experimental:
-    packages: 'all' # ✨
+  packages: 'all' # ✨
 
   routes:
     bindings:
       catalog.viewTechDoc: techdocs.docRoot
-      catalog.createComponent: catalog-import.importPage
       org.catalogIndex: catalog.catalogIndex
 
+  pluginOverrides:
+    - match:
+        pluginId: pages
+      info:
+        description: 'This description was overridden in packages/app-next/app-config.yaml'
+    - match:
+        pluginId: /^catalog(-.*)?$/
+      info:
+        ownerEntityRefs: [cubic-belugas]
+    - match:
+        packageName: '@backstage/plugin-scaffolder'
+      info:
+        ownerEntityRefs: [cubic-belugas]
+
   extensions:
+    # set availableLanguages example
+    - api:app/app-language:
+        config:
+          availableLanguages: ['en', 'es', 'fr', 'de', 'ja']
+          defaultLanguage: 'en'
+    - entity-card:org/members-list:
+        config:
+          showAggregateMembersToggle: true
+          initialRelationAggregation: aggregated
+    - entity-card:org/ownership:
+        config:
+          ownedKinds: ['Component', 'API', 'System']
+
     # - apis.plugin.graphiql.browse.gitlab: true
     # - graphiql-endpoint:graphiql/gitlab: true
+
+    - nav-item:search: false
+    - nav-item:user-settings: false
+    - nav-item:catalog
+    - nav-item:api-docs
+    - nav-item:scaffolder
+    - nav-item:app-visualizer
 
     # Pages
     - page:catalog/entity:
@@ -56,7 +88,10 @@ app:
     - entity-card:org/group-profile
     - entity-card:org/members-list
     - entity-card:org/ownership
-    - entity-card:org/user-profile
+    - entity-card:org/user-profile:
+        config:
+          maxRelations: 5
+          hideIcons: true
     # - entity-card:azure-devops/readme
 
     # Entity page contents
@@ -78,6 +113,11 @@ app:
     # - entity-content:azure-devops/pipelines
     # - entity-content:azure-devops/pull-requests
     # - entity-content:azure-devops/git-tags
+
+    # Enable the catalog-unprocessed-entities tab in devtools
+    - devtools-content:catalog-unprocessed-entities: true
+    # Disable the catalog-unprocessed-entities element outside devtools
+    - page:catalog-unprocessed-entities: false
 
   # scmAuthExtension: >-
   #   createScmAuthExtension({

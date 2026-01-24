@@ -239,6 +239,26 @@ search:
 
 > You can also increase the batch size if you are using a large ES instance.
 
+### Elasticsearch batch key field
+
+By default, during bulk uploads with the Elasticsearch indexer, each document is assigned an auto-generated `_id` unless a `batchKeyField` is explicitly set. This configuration is optional and most users won’t need to customize it. However, if your use case involves frequent lookups or updates to existing documents, setting `batchKeyField` can be beneficial. It allows you to define a consistent identifier for each document, helping to streamline updates and prevent duplicate entries. Be aware that if the value provided for `batchKeyField` is not unique across documents, Elasticsearch will overwrite any existing document with the same `_id`.
+
+**Using `batchKeyField` (Custom `_id`)**
+
+```yaml
+search:
+  elasticsearch:
+    batchKeyField: document_id
+```
+
+**Default Behavior (Auto-generated `_id`)**
+
+```yaml
+search:
+  elasticsearch:
+    # No batchKeyField specified — Elasticsearch will autogenerate _id
+```
+
 ### Elasticsearch Index Name Customization
 
 By default, the Elasticsearch indexer creates index names based on their type, a separator, and the current date as a postfix. You can configure a custom prefix for all indices by adding the following section to your app configuration.
@@ -255,3 +275,19 @@ search:
 ```
 
 After applying this setting, an index name would look like this: `custom-prefix-software-catalog-index__20250219`
+
+### Elasticsearch query config
+
+By default the default settings for the Elasticsearch queries is used. If you need to tweak the fuzziness of the query results you can do this with 2 parameters, `fuzziness` and `prefixLength`.
+
+Fuzziness allows you to define the maximum Levenshtein distance, AUTO is the default and widely accepted standard.
+`prefixLength` allows you to control the minimum number of characters that must match exactly at the beginning of the query term. This defaults to 0
+[More info](https://www.elastic.co/guide/en/elasticsearch/reference/current/query-dsl-fuzzy-query.html)
+
+```yaml
+search:
+  elasticsearch:
+    queryOptions:
+      fuzziness: AUTO
+      prefixLength: 3;
+```

@@ -39,9 +39,21 @@ function readGitlabConfig(id: string, config: Config): GitlabProviderConfig {
   const userPattern = new RegExp(
     config.getOptionalString('userPattern') ?? /[\s\S]*/,
   );
-  const groupPattern = new RegExp(
-    config.getOptionalString('groupPattern') ?? /[\s\S]*/,
-  );
+
+  const configValue = config.getOptional('groupPattern');
+  let groupPattern;
+
+  if ((configValue && typeof configValue === 'string') || !configValue) {
+    groupPattern = new RegExp(
+      config.getOptionalString('groupPattern') ?? /[\s\S]*/,
+    );
+  } else if (configValue && Array.isArray(configValue)) {
+    const configPattern = config.getOptionalStringArray('groupPattern') ?? [];
+    groupPattern = configPattern.map(pattern => new RegExp(pattern));
+  } else {
+    groupPattern = new RegExp(/[\s\S]*/);
+  }
+
   const orgEnabled: boolean = config.getOptionalBoolean('orgEnabled') ?? false;
   const allowInherited: boolean =
     config.getOptionalBoolean('allowInherited') ?? false;
@@ -66,6 +78,11 @@ function readGitlabConfig(id: string, config: Config): GitlabProviderConfig {
   const includeUsersWithoutSeat =
     config.getOptionalBoolean('includeUsersWithoutSeat') ?? false;
 
+  const membership = config.getOptionalBoolean('membership');
+
+  const topicsArray = config.getOptionalStringArray('topics');
+  const topics = topicsArray?.length ? topicsArray.join(',') : undefined;
+
   return {
     id,
     group,
@@ -85,6 +102,8 @@ function readGitlabConfig(id: string, config: Config): GitlabProviderConfig {
     excludeRepos,
     restrictUsersToGroup,
     includeUsersWithoutSeat,
+    membership,
+    topics,
   };
 }
 

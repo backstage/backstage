@@ -10,15 +10,19 @@ git repository.
 
 ## Action Modules
 
-There are also several modules available for various SCM tools:
+There are several action modules that are available to be added:
 
-- Azure DevOps: `@backstage/plugin-scaffolder-backend-module-azure`
-- Bitbucket Cloud: `@backstage/plugin-scaffolder-backend-module-bitbucket-cloud`
-- Bitbucket Server: `@backstage/plugin-scaffolder-backend-module-bitbucket-server`
-- Gerrit: `@backstage/plugin-scaffolder-backend-module-gerrit`
-- Gitea: `@backstage/plugin-scaffolder-backend-module-gitea`
-- GitHub: `@backstage/plugin-scaffolder-backend-module-github`
-- GitLab: `@backstage/plugin-scaffolder-backend-module-gitlab`
+- [Azure DevOps](https://github.com/backstage/backstage/tree/master/plugins/scaffolder-backend-module-azure): `@backstage/plugin-scaffolder-backend-module-azure`
+- [Bitbucket Cloud](https://github.com/backstage/backstage/tree/master/plugins/scaffolder-backend-module-bitbucket-cloud): `@backstage/plugin-scaffolder-backend-module-bitbucket-cloud`
+- [Bitbucket Server](https://github.com/backstage/backstage/tree/master/plugins/scaffolder-backend-module-bitbucket-server): `@backstage/plugin-scaffolder-backend-module-bitbucket-server`
+- [Gerrit](https://github.com/backstage/backstage/tree/master/plugins/scaffolder-backend-module-gerrit): `@backstage/plugin-scaffolder-backend-module-gerrit`
+- [Gitea](https://github.com/backstage/backstage/tree/master/plugins/scaffolder-backend-module-gitea): `@backstage/plugin-scaffolder-backend-module-gitea`
+- [GitHub](https://github.com/backstage/backstage/tree/master/plugins/scaffolder-backend-module-github): `@backstage/plugin-scaffolder-backend-module-github`
+- [GitLab](https://github.com/backstage/backstage/tree/master/plugins/scaffolder-backend-module-gitlab): `@backstage/plugin-scaffolder-backend-module-gitlab`
+- [Rails](https://github.com/backstage/backstage/tree/master/plugins/scaffolder-backend-module-rails): `@backstage/plugin-scaffolder-backend-module-rails`
+- [Yeoman](https://github.com/backstage/backstage/tree/master/plugins/scaffolder-backend-module-yeoman): `@backstage/plugin-scaffolder-backend-module-yeoman`
+- [Sentry](https://github.com/backstage/backstage/tree/master/plugins/scaffolder-backend-module-sentry): `@backstage/plugin-scaffolder-backend-module-sentry`
+- [Cookiecutter](https://github.com/backstage/backstage/tree/master/plugins/scaffolder-backend-module-cookiecutter): `@backstage/plugin-scaffolder-backend-module-cookiecutter`
 
 ## Installing Action Modules
 
@@ -37,7 +41,6 @@ const backend = createBackend();
 
 backend.add(import('@backstage/plugin-app-backend'));
 
-// catalog plugin
 backend.add(import('@backstage/plugin-catalog-backend'));
 backend.add(
   import('@backstage/plugin-catalog-backend-module-scaffolder-entity-model'),
@@ -50,12 +53,6 @@ backend.add(import('@backstage/plugin-scaffolder-backend-module-github'));
 
 backend.start();
 ```
-
-:::note Note
-
-This is a simplified example of what your backend may look like, you may have more code in here then this.
-
-:::
 
 ## Listing Actions
 
@@ -81,7 +78,7 @@ allow most templates built for `fetch:cookiecutter` to work without any changes.
 
 ```yaml title="template.yaml"
 steps:
-   - id: fetch-base
+   - id: fetchBase
      name: Fetch Base
      # highlight-remove-next-line
      action: fetch:cookiecutter

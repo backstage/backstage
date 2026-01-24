@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { convertLegacyRouteRefs } from '@backstage/core-compat-api';
 import { createFrontendPlugin } from '@backstage/frontend-plugin-api';
 
 import { entityRouteRef } from '@backstage/plugin-catalog-react';
@@ -33,21 +32,24 @@ import filters from './filters';
 import navItems from './navItems';
 import entityCards from './entityCards';
 import entityContents from './entityContents';
+import entityIconLinks from './entityIconLinks';
 import searchResultItems from './searchResultItems';
+import contextMenuItems from './contextMenuItems';
 
 /** @alpha */
 export default createFrontendPlugin({
-  id: 'catalog',
-  routes: convertLegacyRouteRefs({
+  pluginId: 'catalog',
+  info: { packageJson: () => import('../../package.json') },
+  routes: {
     catalogIndex: rootRouteRef,
     catalogEntity: entityRouteRef,
-  }),
-  externalRoutes: convertLegacyRouteRefs({
+  },
+  externalRoutes: {
     viewTechDoc: viewTechDocRouteRef,
     createComponent: createComponentRouteRef,
     createFromTemplate: createFromTemplateRouteRef,
     unregisterRedirect: unregisterRedirectRouteRef,
-  }),
+  },
   extensions: [
     ...apis,
     ...pages,
@@ -55,6 +57,8 @@ export default createFrontendPlugin({
     ...navItems,
     ...entityCards,
     ...entityContents,
+    ...entityIconLinks,
+    ...contextMenuItems,
     ...searchResultItems,
   ],
 });

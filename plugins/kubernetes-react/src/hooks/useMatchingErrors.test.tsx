@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
+import { ReactNode } from 'react';
 import { renderHook } from '@testing-library/react';
 import { DetectedErrorsContext, useMatchingErrors } from './useMatchingErrors';
 import {
@@ -40,7 +40,7 @@ const genericErrorWithRef = (resourceRef: ResourceRef): DetectedError => {
 
 describe('useMatchingErrors', () => {
   it('should filter non-matching resources', () => {
-    const wrapper = ({ children }: { children: React.ReactNode }) => (
+    const wrapper = ({ children }: { children: ReactNode }) => (
       <DetectedErrorsContext.Provider
         value={[
           genericErrorWithRef({

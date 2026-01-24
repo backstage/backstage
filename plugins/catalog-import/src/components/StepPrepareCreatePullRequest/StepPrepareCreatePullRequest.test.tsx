@@ -16,18 +16,22 @@
 
 import { configApiRef, errorApiRef } from '@backstage/core-plugin-api';
 import { catalogApiRef } from '@backstage/plugin-catalog-react';
-import { TestApiProvider, mockApis } from '@backstage/test-utils';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
+import {
+  mockApis,
+  renderInTestApp,
+  TestApiProvider,
+} from '@backstage/test-utils';
 import TextField from '@material-ui/core/TextField';
-import { render, screen, waitFor } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import React from 'react';
+import { ReactNode } from 'react';
 import { AnalyzeResult, catalogImportApiRef } from '../../api';
 import { asInputRef } from '../helpers';
 import {
   generateEntities,
   StepPrepareCreatePullRequest,
 } from './StepPrepareCreatePullRequest';
-import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 
 describe('<StepPrepareCreatePullRequest />', () => {
   const catalogImportApi: jest.Mocked<typeof catalogImportApiRef.T> = {
@@ -45,7 +49,7 @@ describe('<StepPrepareCreatePullRequest />', () => {
 
   const configApi = mockApis.config();
 
-  const Wrapper = ({ children }: { children?: React.ReactNode }) => (
+  const Wrapper = ({ children }: { children?: ReactNode }) => (
     <TestApiProvider
       apis={[
         [catalogImportApiRef, catalogImportApi],
@@ -90,24 +94,23 @@ describe('<StepPrepareCreatePullRequest />', () => {
   it('renders without exploding', async () => {
     catalogApi.getEntities.mockReturnValue(Promise.resolve({ items: [] }));
 
-    render(
-      <StepPrepareCreatePullRequest
-        analyzeResult={analyzeResult}
-        onPrepare={onPrepareFn}
-        renderFormFields={({ register }) => {
-          return (
-            <>
-              <TextField {...asInputRef(register('title'))} />
-              <TextField {...asInputRef(register('body'))} />
-              <TextField {...asInputRef(register('componentName'))} />
-              <TextField {...asInputRef(register('owner'))} />
-            </>
-          );
-        }}
-      />,
-      {
-        wrapper: Wrapper,
-      },
+    await renderInTestApp(
+      <Wrapper>
+        <StepPrepareCreatePullRequest
+          analyzeResult={analyzeResult}
+          onPrepare={onPrepareFn}
+          renderFormFields={({ register }) => {
+            return (
+              <>
+                <TextField {...asInputRef(register('title'))} />
+                <TextField {...asInputRef(register('body'))} />
+                <TextField {...asInputRef(register('componentName'))} />
+                <TextField {...asInputRef(register('owner'))} />
+              </>
+            );
+          }}
+        />
+      </Wrapper>,
     );
 
     const title = await screen.findByText('My title');
@@ -129,32 +132,31 @@ describe('<StepPrepareCreatePullRequest />', () => {
       }),
     );
 
-    render(
-      <StepPrepareCreatePullRequest
-        analyzeResult={analyzeResult}
-        onPrepare={onPrepareFn}
-        renderFormFields={({ register }) => {
-          return (
-            <>
-              <TextField {...asInputRef(register('title'))} />
-              <TextField {...asInputRef(register('body'))} />
-              <TextField
-                {...asInputRef(register('componentName'))}
-                id="name"
-                label="name"
-              />
-              <TextField
-                {...asInputRef(register('owner'))}
-                id="owner"
-                label="owner"
-              />
-            </>
-          );
-        }}
-      />,
-      {
-        wrapper: Wrapper,
-      },
+    await renderInTestApp(
+      <Wrapper>
+        <StepPrepareCreatePullRequest
+          analyzeResult={analyzeResult}
+          onPrepare={onPrepareFn}
+          renderFormFields={({ register }) => {
+            return (
+              <>
+                <TextField {...asInputRef(register('title'))} />
+                <TextField {...asInputRef(register('body'))} />
+                <TextField
+                  {...asInputRef(register('componentName'))}
+                  id="name"
+                  label="name"
+                />
+                <TextField
+                  {...asInputRef(register('owner'))}
+                  id="owner"
+                  label="owner"
+                />
+              </>
+            );
+          }}
+        />
+      </Wrapper>,
     );
 
     await userEvent.type(await screen.findByLabelText('name'), '-changed');
@@ -211,24 +213,23 @@ spec:
       new Error('some error'),
     );
 
-    render(
-      <StepPrepareCreatePullRequest
-        analyzeResult={analyzeResult}
-        onPrepare={onPrepareFn}
-        renderFormFields={({ register }) => {
-          return (
-            <>
-              <TextField {...asInputRef(register('title'))} />
-              <TextField {...asInputRef(register('body'))} />
-              <TextField {...asInputRef(register('componentName'))} />
-              <TextField {...asInputRef(register('owner'))} />
-            </>
-          );
-        }}
-      />,
-      {
-        wrapper: Wrapper,
-      },
+    await renderInTestApp(
+      <Wrapper>
+        <StepPrepareCreatePullRequest
+          analyzeResult={analyzeResult}
+          onPrepare={onPrepareFn}
+          renderFormFields={({ register }) => {
+            return (
+              <>
+                <TextField {...asInputRef(register('title'))} />
+                <TextField {...asInputRef(register('body'))} />
+                <TextField {...asInputRef(register('componentName'))} />
+                <TextField {...asInputRef(register('owner'))} />
+              </>
+            );
+          }}
+        />
+      </Wrapper>,
     );
 
     await userEvent.click(
@@ -256,15 +257,14 @@ spec:
       }),
     );
 
-    render(
-      <StepPrepareCreatePullRequest
-        analyzeResult={analyzeResult}
-        onPrepare={onPrepareFn}
-        renderFormFields={renderFormFieldsFn}
-      />,
-      {
-        wrapper: Wrapper,
-      },
+    await renderInTestApp(
+      <Wrapper>
+        <StepPrepareCreatePullRequest
+          analyzeResult={analyzeResult}
+          onPrepare={onPrepareFn}
+          renderFormFields={renderFormFieldsFn}
+        />
+      </Wrapper>,
     );
 
     await waitFor(() => {

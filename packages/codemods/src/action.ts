@@ -15,11 +15,9 @@
  */
 
 import { relative as relativePath } from 'path';
-import { spawn } from 'child_process';
 import { OptionValues } from 'commander';
-import { findPaths } from '@backstage/cli-common';
+import { findPaths, run } from '@backstage/cli-common';
 import { platform } from 'os';
-import { ExitCodeError } from './errors';
 
 // eslint-disable-next-line no-restricted-syntax
 const paths = findPaths(__dirname);
@@ -51,42 +49,25 @@ export function createCodemodAction(name: string) {
 
     console.log(`Running jscodeshift with these arguments: ${args.join(' ')}`);
 
-    let command;
+    let commandArgs: string[];
     if (platform() === 'win32') {
-      command = 'jscodeshift';
+      commandArgs = ['jscodeshift', ...args];
     } else {
       // jscodeshift ships a slightly broken bin script with windows
       // line endings so we need to execute it using node rather than
       // letting the `#!/usr/bin/env node` take care of it
-      command = process.argv0;
-      args.unshift(require.resolve('.bin/jscodeshift'));
+      commandArgs = [
+        process.argv0,
+        require.resolve('.bin/jscodeshift'),
+        ...args,
+      ];
     }
 
-    const child = spawn(command, args, {
-      stdio: 'inherit',
-      shell: true,
+    await run(commandArgs, {
       env: {
         ...process.env,
         FORCE_COLOR: 'true',
       },
-    });
-
-    if (typeof child.exitCode === 'number') {
-      if (child.exitCode) {
-        throw new ExitCodeError(child.exitCode, name);
-      }
-      return;
-    }
-
-    await new Promise<void>((resolve, reject) => {
-      child.once('error', error => reject(error));
-      child.once('exit', code => {
-        if (code) {
-          reject(new ExitCodeError(code, name));
-        } else {
-          resolve();
-        }
-      });
-    });
+    }).waitForExit();
   };
 }

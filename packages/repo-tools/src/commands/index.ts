@@ -44,20 +44,26 @@ function registerPackageCommand(program: Command) {
 
   openApiCommand
     .command('generate')
+    .description(
+      'Command to generate a client and/or a server stub from an OpenAPI spec.',
+    )
     .option(
       '--client-package [package]',
       'Top-level path to where the client should be generated, ie packages/catalog-client.',
     )
-    .option('--server')
-    .description(
-      'Command to generate a client and/or a server stub from an OpenAPI spec.',
-    )
-    .option('--client-additional-properties [properties]')
-    .description(
+    .option('--server', 'Generate server stub')
+    .option(
+      '--client-additional-properties [properties]',
       'Additional properties that can be passed to @openapitools/openapi-generator-cli',
     )
-    .option('--watch')
-    .description('Watch the OpenAPI spec for changes and regenerate on save.')
+    .option(
+      '--server-additional-properties [properties]',
+      'Additional properties that can be passed to @openapitools/openapi-generator-cli',
+    )
+    .option(
+      '--watch',
+      'Watch the OpenAPI spec for changes and regenerate on save.',
+    )
     .action(lazy(() => import('./package/schema/openapi/generate'), 'command'));
 
   openApiCommand
@@ -187,7 +193,7 @@ export function registerCommands(program: Command) {
     )
     .option(
       '-o, --omit-messages <messageCodes>',
-      'select some message code to be omited on the API Extractor (comma separated values i.e ae-cyclic-inherit-doc,ae-missing-getter )',
+      'select some message code to be omitted on the API Extractor (comma separated values i.e ae-cyclic-inherit-doc,ae-missing-getter )',
     )
     .option(
       '--validate-release-tags',

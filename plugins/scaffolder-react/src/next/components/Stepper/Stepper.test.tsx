@@ -17,7 +17,7 @@ import { renderInTestApp } from '@backstage/test-utils';
 import { JsonValue } from '@backstage/types';
 import type { RJSFValidationError } from '@rjsf/utils';
 import { act, fireEvent, waitFor } from '@testing-library/react';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 
 import { FieldExtensionComponentProps } from '../../../extensions';
 import { LayoutTemplate } from '../../../layouts';
@@ -514,11 +514,12 @@ describe('Stepper', () => {
 
     const mockFormData = { firstName: 'John' };
 
-    Object.defineProperty(window, 'location', {
-      value: {
-        search: `?formData=${JSON.stringify(mockFormData)}`,
-      },
-    });
+    // Use history.replaceState to set the query string (jsdom 27 doesn't allow redefining window.location)
+    window.history.replaceState(
+      {},
+      '',
+      `?formData=${JSON.stringify(mockFormData)}`,
+    );
 
     const { getByRole } = await renderInTestApp(
       <SecretsContextProvider>
@@ -670,6 +671,40 @@ describe('Stepper', () => {
       'placeholder',
       'Enter your age',
     );
+  });
+
+  it('should scroll the first main element to top when activeStep changes', async () => {
+    const manifest: TemplateParameterSchema = {
+      steps: [
+        { title: 'Step 1', schema: { properties: {} } },
+        { title: 'Step 2', schema: { properties: {} } },
+      ],
+      title: 'Scroll Test',
+    };
+
+    // Render a main element in the document for the Stepper to find
+    const main = document.createElement('main');
+    document.body.appendChild(main);
+    const scrollToMock = jest.fn();
+    main.scrollTo = scrollToMock;
+
+    // Render Stepper as usual (do not pass container)
+    const { getByRole, unmount } = await renderInTestApp(
+      <SecretsContextProvider>
+        <Stepper manifest={manifest} extensions={[]} onCreate={jest.fn()} />
+      </SecretsContextProvider>,
+    );
+
+    // Click next to change the activeStep
+    await act(async () => {
+      fireEvent.click(getByRole('button', { name: 'Next' }));
+    });
+
+    expect(scrollToMock).toHaveBeenCalledWith({ top: 0, behavior: 'auto' });
+
+    // Clean up
+    document.body.removeChild(main);
+    unmount();
   });
 
   describe('Scaffolder Layouts', () => {

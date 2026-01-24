@@ -17,10 +17,8 @@
 import { InputError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
-import { DeployTokenScope, Gitlab } from '@gitbeaker/rest';
-import { z } from 'zod';
-import commonGitlabConfig from '../commonGitlabConfig';
-import { getToken } from '../util';
+import { DeployTokenScope } from '@gitbeaker/rest';
+import { getClient, parseRepoUrl } from '../util';
 import { examples } from './gitlabProjectDeployTokenCreate.examples';
 
 /**
@@ -37,27 +35,50 @@ export const createGitlabProjectDeployTokenAction = (options: {
     id: 'gitlab:projectDeployToken:create',
     examples,
     schema: {
-      input: commonGitlabConfig.merge(
-        z.object({
-          projectId: z.union([z.number(), z.string()], {
+      input: {
+        repoUrl: z =>
+          z.string({
+            description: `Accepts the format 'gitlab.com?repo=project_name&owner=group_name' where 'project_name' is the repository name and 'group_name' is a group or username`,
+          }),
+        token: z =>
+          z
+            .string({
+              description: 'The token to use for authorization to GitLab',
+            })
+            .optional(),
+        projectId: z =>
+          z.union([z.number(), z.string()], {
             description: 'Project ID',
           }),
-          name: z.string({ description: 'Deploy Token Name' }),
-          username: z
-            .string({ description: 'Deploy Token Username' })
+        name: z =>
+          z.string({
+            description: 'Deploy Token Name',
+          }),
+        username: z =>
+          z
+            .string({
+              description: 'Deploy Token Username',
+            })
             .optional(),
-          scopes: z.array(z.string(), { description: 'Scopes' }),
-        }),
-      ),
-      output: z.object({
-        deploy_token: z.string({ description: 'Deploy Token' }),
-        user: z.string({ description: 'User' }),
-      }),
+        scopes: z =>
+          z.array(z.string(), {
+            description: 'Scopes',
+          }),
+      },
+      output: {
+        deploy_token: z =>
+          z.string({
+            description: 'Deploy Token',
+          }),
+        user: z =>
+          z.string({
+            description: 'User',
+          }),
+      },
     },
     async handler(ctx) {
       ctx.logger.info(`Creating Token for Project "${ctx.input.projectId}"`);
-      const { projectId, name, username, scopes } = ctx.input;
-      const { token, integrationConfig } = getToken(ctx.input, integrations);
+      const { projectId, name, username, scopes, repoUrl, token } = ctx.input;
 
       if (scopes.length === 0) {
         throw new InputError(
@@ -65,26 +86,34 @@ export const createGitlabProjectDeployTokenAction = (options: {
         );
       }
 
-      const api = new Gitlab({
-        host: integrationConfig.config.baseUrl,
-        token: token,
+      const { host } = parseRepoUrl(repoUrl, integrations);
+      const api = getClient({ host, integrations, token });
+
+      const { deployToken, deployUsername } = await ctx.checkpoint({
+        key: `create.deploy.token.${projectId}.${name}`,
+        fn: async () => {
+          const res = await api.DeployTokens.create(
+            name,
+            scopes as DeployTokenScope[],
+            {
+              projectId,
+              username,
+            },
+          );
+
+          if (!res.hasOwnProperty('token')) {
+            throw new InputError(`No deploy_token given from gitlab instance`);
+          }
+
+          return {
+            deployToken: res.token as string,
+            deployUsername: res.username,
+          };
+        },
       });
 
-      const deployToken = await api.DeployTokens.create(
-        name,
-        scopes as DeployTokenScope[],
-        {
-          projectId,
-          username,
-        },
-      );
-
-      if (!deployToken.hasOwnProperty('token')) {
-        throw new InputError(`No deploy_token given from gitlab instance`);
-      }
-
-      ctx.output('deploy_token', deployToken.token as string);
-      ctx.output('user', deployToken.username);
+      ctx.output('deploy_token', deployToken);
+      ctx.output('user', deployUsername);
     },
   });
 };

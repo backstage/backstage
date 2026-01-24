@@ -2,7 +2,6 @@
 id: gcp-iap-auth
 title: Google Identity-Aware Proxy Provider
 sidebar_label: Google IAP
-# prettier-ignore
 description: Adding Google Identity-Aware Proxy as an authentication provider in Backstage
 ---
 

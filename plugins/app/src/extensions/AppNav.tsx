@@ -14,98 +14,105 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import {
   createExtension,
   coreExtensionData,
   createExtensionInput,
-  useRouteRef,
   NavItemBlueprint,
-  NavLogoBlueprint,
+  NavContentBlueprint,
+  NavContentComponentProps,
+  routeResolutionApiRef,
+  IconComponent,
+  RouteRef,
+  useApi,
+  NavContentComponent,
 } from '@backstage/frontend-plugin-api';
-import { makeStyles } from '@material-ui/core/styles';
-import {
-  Sidebar,
-  useSidebarOpenState,
-  Link,
-  sidebarConfig,
-  SidebarDivider,
-  SidebarItem,
-} from '@backstage/core-components';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import LogoIcon from '../../../../packages/app/src/components/Root/LogoIcon';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import LogoFull from '../../../../packages/app/src/components/Root/LogoFull';
+import { Sidebar, SidebarItem } from '@backstage/core-components';
+import { useMemo } from 'react';
 
-const useSidebarLogoStyles = makeStyles({
-  root: {
-    width: sidebarConfig.drawerWidthClosed,
-    height: 3 * sidebarConfig.logoHeight,
-    display: 'flex',
-    flexFlow: 'row nowrap',
-    alignItems: 'center',
-    marginBottom: -14,
-  },
-  link: {
-    width: sidebarConfig.drawerWidthClosed,
-    marginLeft: 24,
-  },
-});
-
-const SidebarLogo = (
-  props: (typeof NavLogoBlueprint.dataRefs.logoElements)['T'],
-) => {
-  const classes = useSidebarLogoStyles();
-  const { isOpen } = useSidebarOpenState();
-
+function DefaultNavContent(props: NavContentComponentProps) {
   return (
-    <div className={classes.root}>
-      <Link to="/" underline="none" className={classes.link} aria-label="Home">
-        {isOpen
-          ? props?.logoFull ?? <LogoFull />
-          : props?.logoIcon ?? <LogoIcon />}
-      </Link>
-    </div>
+    <Sidebar>
+      {props.items.map((item, index) => (
+        <SidebarItem
+          to={item.to}
+          icon={item.icon}
+          text={item.text}
+          key={index}
+        />
+      ))}
+    </Sidebar>
   );
-};
+}
 
-const SidebarNavItem = (
-  props: (typeof NavItemBlueprint.dataRefs.target)['T'],
-) => {
-  const { icon: Icon, title, routeRef } = props;
-  const link = useRouteRef(routeRef);
-  if (!link) {
-    return null;
-  }
-  // TODO: Support opening modal, for example, the search one
-  return <SidebarItem to={link()} icon={Icon} text={title} />;
-};
+// This helps defer rendering until the app is being rendered, which is needed
+// because the RouteResolutionApi can't be called until the app has been fully initialized.
+function NavContentRenderer(props: {
+  Content: NavContentComponent;
+  items: Array<{
+    title: string;
+    icon: IconComponent;
+    routeRef: RouteRef<undefined>;
+  }>;
+}) {
+  const routeResolutionApi = useApi(routeResolutionApiRef);
+
+  const items = useMemo(() => {
+    return props.items.flatMap(item => {
+      const link = routeResolutionApi.resolve(item.routeRef);
+      if (!link) {
+        // eslint-disable-next-line no-console
+        console.warn(
+          `NavItemBlueprint: unable to resolve route ref ${item.routeRef}`,
+        );
+        return [];
+      }
+      return [
+        {
+          to: link(),
+          text: item.title,
+          icon: item.icon,
+          title: item.title,
+          routeRef: item.routeRef,
+        },
+      ];
+    });
+  }, [props.items, routeResolutionApi]);
+
+  return <props.Content items={items} />;
+}
 
 export const AppNav = createExtension({
   name: 'nav',
   attachTo: { id: 'app/layout', input: 'nav' },
   inputs: {
     items: createExtensionInput([NavItemBlueprint.dataRefs.target]),
-    logos: createExtensionInput([NavLogoBlueprint.dataRefs.logoElements], {
+    content: createExtensionInput([NavContentBlueprint.dataRefs.component], {
       singleton: true,
       optional: true,
     }),
   },
   output: [coreExtensionData.reactElement],
-  factory: ({ inputs }) => [
-    coreExtensionData.reactElement(
-      <Sidebar>
-        <SidebarLogo
-          {...inputs.logos?.get(NavLogoBlueprint.dataRefs.logoElements)}
-        />
-        <SidebarDivider />
-        {inputs.items.map((item, index) => (
-          <SidebarNavItem
-            {...item.get(NavItemBlueprint.dataRefs.target)}
-            key={index}
-          />
-        ))}
-      </Sidebar>,
-    ),
-  ],
+  *factory({ inputs }) {
+    if (inputs.content && inputs.content.node.spec.plugin?.id !== 'app') {
+      // eslint-disable-next-line no-console
+      console.warn(
+        `DEPRECATION WARNING: NavContent should only be installed as an extension in the app plugin. ` +
+          `You can either use appPlugin.override(), or a module for the app plugin. The following extension will be ignored in the future: ${inputs.content.node.spec.id}`,
+      );
+    }
+
+    const Content =
+      inputs.content?.get(NavContentBlueprint.dataRefs.component) ??
+      DefaultNavContent;
+
+    yield coreExtensionData.reactElement(
+      <NavContentRenderer
+        items={inputs.items.map(item =>
+          item.get(NavItemBlueprint.dataRefs.target),
+        )}
+        Content={Content}
+      />,
+    );
+  },
 });

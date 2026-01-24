@@ -17,7 +17,7 @@
 import { BackendFeature, ServiceFactory } from '@backstage/backend-plugin-api';
 import { BackendInitializer } from './BackendInitializer';
 import { unwrapFeature } from './helpers';
-import { Backend } from './types';
+import { Backend, BackendStartupResult } from './types';
 
 export class BackstageBackend implements Backend {
   #initializer: BackendInitializer;
@@ -34,8 +34,8 @@ export class BackstageBackend implements Backend {
     }
   }
 
-  async start(): Promise<void> {
-    await this.#initializer.start();
+  async start(): Promise<{ result: BackendStartupResult }> {
+    return await this.#initializer.start();
   }
 
   async stop(): Promise<void> {

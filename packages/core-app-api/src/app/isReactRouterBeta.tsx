@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { createRoutesFromChildren, Route } from 'react-router-dom';
 
 export function isReactRouterBeta(): boolean {

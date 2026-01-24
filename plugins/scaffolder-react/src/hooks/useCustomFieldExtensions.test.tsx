@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { PropsWithChildren } from 'react';
+import { PropsWithChildren } from 'react';
 import { createPlugin } from '@backstage/core-plugin-api';
 import { TestApiProvider, wrapInTestApp } from '@backstage/test-utils';
 import { renderHook, waitFor } from '@testing-library/react';

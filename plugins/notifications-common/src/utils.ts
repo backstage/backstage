@@ -20,6 +20,7 @@ export const isNotificationsEnabledFor = (
   settings: NotificationSettings,
   channelId: string,
   originId: string,
+  topicId: string | null,
 ) => {
   const channel = settings.channels.find(c => c.id === channelId);
   if (!channel) {
@@ -28,7 +29,20 @@ export const isNotificationsEnabledFor = (
 
   const origin = channel.origins.find(o => o.id === originId);
   if (!origin) {
-    return true;
+    // If no origin is found, use channel's enabled flag (defaults to true if not set)
+    return channel.enabled ?? true;
   }
+
+  // If topic is specified, check topic-level setting
+  if (topicId !== null) {
+    const topic = origin.topics?.find(t => t.id === topicId);
+    if (topic) {
+      return topic.enabled;
+    }
+    // No explicit topic setting, check origin
+    return origin.enabled;
+  }
+
+  // No topic specified, check origin-level setting
   return origin.enabled;
 };

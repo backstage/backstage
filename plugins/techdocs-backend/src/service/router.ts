@@ -14,13 +14,9 @@
  * limitations under the License.
  */
 
-import {
-  createLegacyAuthAdapters,
-  PluginCacheManager,
-} from '@backstage/backend-common';
 import { CatalogApi, CatalogClient } from '@backstage/catalog-client';
 import { stringifyEntityRef } from '@backstage/catalog-model';
-import { Config } from '@backstage/config';
+import { Config, readDurationFromConfig } from '@backstage/config';
 import { NotFoundError } from '@backstage/errors';
 import {
   DocsBuildStrategy,
@@ -40,57 +36,58 @@ import { DefaultDocsBuildStrategy } from './DefaultDocsBuildStrategy';
 import * as winston from 'winston';
 import {
   AuthService,
+  CacheService,
   DiscoveryService,
   HttpAuthService,
+  LoggerService,
 } from '@backstage/backend-plugin-api';
+import { durationToMilliseconds } from '@backstage/types';
 
 /**
  * Required dependencies for running TechDocs in the "out-of-the-box"
  * deployment configuration (prepare/generate/publish all in the Backend).
  *
- * @public
+ * @internal
  */
 export type OutOfTheBoxDeploymentOptions = {
   preparers: PreparerBuilder;
   generators: GeneratorBuilder;
   publisher: PublisherBase;
-  logger: winston.Logger;
+  logger: LoggerService;
   discovery: DiscoveryService;
   database?: Knex; // TODO: Make database required when we're implementing database stuff.
   config: Config;
-  cache: PluginCacheManager;
+  cache: CacheService;
   docsBuildStrategy?: DocsBuildStrategy;
   buildLogTransport?: winston.transport;
   catalogClient?: CatalogApi;
-  httpAuth?: HttpAuthService;
-  auth?: AuthService;
+  httpAuth: HttpAuthService;
+  auth: AuthService;
 };
 
 /**
  * Required dependencies for running TechDocs in the "recommended" deployment
  * configuration (prepare/generate handled externally in CI/CD).
  *
- * @public
- * @deprecated This type is only exported for legacy reasons and will be removed in the future.
+ * @internal
  */
 export type RecommendedDeploymentOptions = {
   publisher: PublisherBase;
-  logger: winston.Logger;
+  logger: LoggerService;
   discovery: DiscoveryService;
   config: Config;
-  cache: PluginCacheManager;
+  cache: CacheService;
   docsBuildStrategy?: DocsBuildStrategy;
   buildLogTransport?: winston.transport;
   catalogClient?: CatalogApi;
-  httpAuth?: HttpAuthService;
-  auth?: AuthService;
+  httpAuth: HttpAuthService;
+  auth: AuthService;
 };
 
 /**
  * One of the two deployment configurations must be provided.
  *
- * @public
- * @deprecated This type is only exported for legacy reasons and will be removed in the future.
+ * @internal
  */
 export type RouterOptions =
   | RecommendedDeploymentOptions
@@ -100,7 +97,7 @@ export type RouterOptions =
  * Typeguard to help createRouter() understand when we are in a "recommended"
  * deployment vs. when we are in an out-of-the-box deployment configuration.
  *
- * @public
+ * @internal
  */
 function isOutOfTheBoxOption(
   opt: RouterOptions,
@@ -111,17 +108,13 @@ function isOutOfTheBoxOption(
 /**
  * Creates a techdocs router.
  *
- * @public
- * @deprecated This function is only exported for legacy reasons and will be removed in the future.
- * Please {@link https://backstage.io/docs/backend-system/building-backends/migrating | migrate } to use the new backend system and follow these {@link https://backstage.io/docs/features/techdocs/getting-started#new-backend-system | instructions } to install the user settings backend plugin.
+ * @internal
  */
 export async function createRouter(
   options: RouterOptions,
 ): Promise<express.Router> {
   const router = Router();
-  const { publisher, config, logger, discovery } = options;
-
-  const { auth, httpAuth } = createLegacyAuthAdapters(options);
+  const { publisher, config, logger, discovery, httpAuth, auth } = options;
 
   const catalogClient =
     options.catalogClient ?? new CatalogClient({ discoveryApi: discovery });
@@ -132,15 +125,25 @@ export async function createRouter(
   // Entities are cached to optimize the /static/docs request path, which can be called many times
   // when loading a single techdocs page.
   const entityLoader = new CachedEntityLoader({
+    auth,
     catalog: catalogClient,
-    cache: options.cache.getClient(),
+    cache: options.cache,
   });
 
   // Set up a cache client if configured.
   let cache: TechDocsCache | undefined;
-  const defaultTtl = config.getOptionalNumber('techdocs.cache.ttl');
-  if (defaultTtl) {
-    const cacheClient = options.cache.getClient({ defaultTtl });
+  if (config.has('techdocs.cache.ttl')) {
+    let ttlMs: number;
+    if (typeof config.get('techdocs.cache.ttl') === 'number') {
+      ttlMs = config.getNumber('techdocs.cache.ttl');
+    } else {
+      ttlMs = durationToMilliseconds(
+        readDurationFromConfig(config, {
+          key: 'techdocs.cache.ttl',
+        }),
+      );
+    }
+    const cacheClient = options.cache.withOptions({ defaultTtl: ttlMs });
     cache = TechDocsCache.fromConfig(config, { cache: cacheClient, logger });
   }
 
@@ -166,7 +169,7 @@ export async function createRouter(
     });
 
     // Verify that the related entity exists and the current user has permission to view it.
-    const entity = await entityLoader.load(entityName, token);
+    const entity = await entityLoader.load(credentials, entityName, token);
 
     if (!entity) {
       throw new NotFoundError(
@@ -204,7 +207,7 @@ export async function createRouter(
       targetPluginId: 'catalog',
     });
 
-    const entity = await entityLoader.load(entityName, token);
+    const entity = await entityLoader.load(credentials, entityName, token);
 
     if (!entity) {
       throw new NotFoundError(
@@ -242,7 +245,11 @@ export async function createRouter(
       targetPluginId: 'catalog',
     });
 
-    const entity = await entityLoader.load({ kind, namespace, name }, token);
+    const entity = await entityLoader.load(
+      credentials,
+      { kind, namespace, name },
+      token,
+    );
 
     if (!entity?.metadata?.uid) {
       throw new NotFoundError('Entity metadata UID missing');
@@ -313,7 +320,7 @@ export async function createRouter(
           targetPluginId: 'catalog',
         });
 
-        const entity = await entityLoader.load(entityName, token);
+        const entity = await entityLoader.load(credentials, entityName, token);
 
         if (!entity) {
           throw new NotFoundError(

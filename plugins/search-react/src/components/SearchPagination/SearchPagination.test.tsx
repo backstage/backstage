@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import {
   mockApis,
-  renderWithEffects,
+  renderInTestApp,
   TestApiProvider,
 } from '@backstage/test-utils';
 
@@ -54,7 +53,7 @@ describe('SearchPagination', () => {
   });
 
   it('Renders without exploding', async () => {
-    await renderWithEffects(
+    await renderInTestApp(
       <TestApiProvider
         apis={[
           [searchApiRef, searchApiMock],
@@ -70,12 +69,12 @@ describe('SearchPagination', () => {
     expect(screen.getByText('Results per page:')).toBeInTheDocument();
     expect(screen.getByText('25')).toBeInTheDocument();
     expect(screen.getByText('1-25')).toBeInTheDocument();
-    expect(screen.getByLabelText('Next page')).toBeEnabled();
+    expect(screen.getByLabelText('Next page')).toBeDisabled();
     expect(screen.getByLabelText('Previous page')).toBeDisabled();
   });
 
   it('Define default page limit options', async () => {
-    await renderWithEffects(
+    await renderInTestApp(
       <TestApiProvider
         apis={[
           [searchApiRef, searchApiMock],
@@ -100,7 +99,7 @@ describe('SearchPagination', () => {
 
   it('Accept custom page limit label', async () => {
     const label = 'Page limit:';
-    await renderWithEffects(
+    await renderInTestApp(
       <TestApiProvider
         apis={[
           [searchApiRef, searchApiMock],
@@ -117,7 +116,7 @@ describe('SearchPagination', () => {
   });
 
   it('Show the total in text', async () => {
-    await renderWithEffects(
+    await renderInTestApp(
       <TestApiProvider
         apis={[
           [searchApiRef, searchApiMock],
@@ -134,7 +133,7 @@ describe('SearchPagination', () => {
   });
 
   it('Accept custom page limit text', async () => {
-    await renderWithEffects(
+    await renderInTestApp(
       <TestApiProvider
         apis={[
           [searchApiRef, searchApiMock],
@@ -153,7 +152,7 @@ describe('SearchPagination', () => {
   });
 
   it('Accept custom page limit options', async () => {
-    await renderWithEffects(
+    await renderInTestApp(
       <TestApiProvider
         apis={[
           [searchApiRef, searchApiMock],
@@ -177,14 +176,20 @@ describe('SearchPagination', () => {
   });
 
   it('Set page limit in the context', async () => {
-    await renderWithEffects(
+    const initialState = {
+      term: 'a',
+      types: [],
+      filters: {},
+    };
+
+    await renderInTestApp(
       <TestApiProvider
         apis={[
           [searchApiRef, searchApiMock],
           [configApiRef, configApiMock],
         ]}
       >
-        <SearchContextProvider>
+        <SearchContextProvider initialState={initialState}>
           <SearchPagination />
         </SearchContextProvider>
       </TestApiProvider>,
@@ -198,18 +203,21 @@ describe('SearchPagination', () => {
       expect.objectContaining({
         pageLimit: 10,
       }),
+      {
+        signal: expect.any(AbortSignal),
+      },
     );
   });
 
   it('Set page cursor in the context', async () => {
     const initialState = {
-      term: '',
+      term: 'a',
       types: [],
       filters: {},
       pageCursor: 'MQ==', // page: 1
     };
 
-    await renderWithEffects(
+    await renderInTestApp(
       <TestApiProvider
         apis={[
           [searchApiRef, searchApiMock],
@@ -230,6 +238,9 @@ describe('SearchPagination', () => {
       expect.objectContaining({
         pageCursor: 'Mg==', // page: 2
       }),
+      {
+        signal: expect.any(AbortSignal),
+      },
     );
 
     await userEvent.click(screen.getByLabelText('Previous page'));
@@ -240,18 +251,21 @@ describe('SearchPagination', () => {
       expect.objectContaining({
         pageCursor: 'MQ==', // page: 1
       }),
+      {
+        signal: expect.any(AbortSignal),
+      },
     );
   });
 
   it('Resets page cursor when page limit changes', async () => {
     const initialState = {
-      term: '',
+      term: 'a',
       types: [],
       filters: {},
       pageCursor: 'Mg==', // page: 2
     };
 
-    await renderWithEffects(
+    await renderInTestApp(
       <TestApiProvider
         apis={[
           [searchApiRef, searchApiMock],
@@ -272,6 +286,7 @@ describe('SearchPagination', () => {
         pageCursor: undefined,
         pageLimit: 10,
       }),
+      { signal: expect.any(AbortSignal) },
     );
   });
 });

@@ -15,13 +15,11 @@
  */
 import { Select, SelectedItems } from '@backstage/core-components';
 import Box from '@material-ui/core/Box';
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
+import { catalogGraphTranslationRef } from '../../translation';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
 
 type Curve = 'curveStepBefore' | 'curveMonotoneX';
-const CURVE_DISPLAY_NAMES: Record<Curve, string> = {
-  curveMonotoneX: 'Monotone X',
-  curveStepBefore: 'Step Before',
-};
 
 export type Props = {
   value: Curve;
@@ -31,6 +29,12 @@ export type Props = {
 const curves: Array<Curve> = ['curveMonotoneX', 'curveStepBefore'];
 
 export const CurveFilter = ({ value, onChange }: Props) => {
+  const { t } = useTranslationRef(catalogGraphTranslationRef);
+  const CURVE_DISPLAY_NAMES: Record<Curve, string> = {
+    curveMonotoneX: t('catalogGraphPage.curveFilter.curveMonotoneX'),
+    curveStepBefore: t('catalogGraphPage.curveFilter.curveStepBefore'),
+  };
+
   const handleChange = useCallback(
     (v: SelectedItems) => onChange(v as Curve),
     [onChange],
@@ -39,7 +43,7 @@ export const CurveFilter = ({ value, onChange }: Props) => {
   return (
     <Box pb={1} pt={1}>
       <Select
-        label="Curve"
+        label={t('catalogGraphPage.curveFilter.title')}
         selected={value}
         items={curves.map(v => ({
           label: CURVE_DISPLAY_NAMES[v],

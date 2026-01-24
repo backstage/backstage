@@ -16,7 +16,6 @@
 
 import IconButton from '@material-ui/core/IconButton';
 import EmailIcon from '@material-ui/icons/Email';
-import React from 'react';
 import { Link } from '@backstage/core-components';
 import { catalogReactTranslationRef } from '../../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
@@ -31,7 +30,7 @@ export const EmailCardAction = (props: { email: string }) => {
   return (
     <IconButton
       component={Link}
-      aria-label="Email"
+      aria-label={t('entityPeekAheadPopover.emailCardAction.ariaLabel')}
       title={t('entityPeekAheadPopover.emailCardAction.title', {
         email: props.email,
       })}

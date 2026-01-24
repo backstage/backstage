@@ -17,7 +17,7 @@ import {
   MockDirectory,
   createMockDirectory,
 } from '@backstage/backend-test-utils';
-import * as run from '../../../../lib/run';
+import * as runObj from '@backstage/cli-common';
 import migrate from './migrate';
 import { withLogCollector } from '@backstage/test-utils';
 import fs from 'fs-extra';
@@ -33,33 +33,41 @@ jest.mock('chalk', () => ({
 }));
 
 let mockDir: MockDirectory;
-jest.mock('@backstage/cli-common', () => ({
-  ...jest.requireActual('@backstage/cli-common'),
-  findPaths: () => ({
-    resolveTargetRoot(filename: string) {
-      return mockDir.resolve(filename);
-    },
-    get targetDir() {
-      return mockDir.path;
-    },
-  }),
-}));
-
-jest.mock('../../../../lib/run', () => {
+jest.mock('@backstage/cli-common', () => {
+  const actual = jest.requireActual('@backstage/cli-common');
   return {
-    run: jest.fn(),
+    ...actual,
+    findPaths: () => ({
+      resolveTargetRoot(filename: string) {
+        return mockDir.resolve(filename);
+      },
+      get targetDir() {
+        return mockDir.path;
+      },
+    }),
+    run: jest.fn().mockReturnValue({
+      exitCode: null,
+      waitForExit: jest.fn().mockResolvedValue(undefined),
+    }),
   };
 });
 
-function expectLogsToMatch(recievedLogs: String[], expected: String[]): void {
-  expect(recievedLogs.filter(Boolean).sort()).toEqual(expected.sort());
+function expectLogsToMatch(receivedLogs: String[], expected: String[]): void {
+  expect(receivedLogs.filter(Boolean).sort()).toEqual(expected.sort());
 }
 
 describe('versions:migrate', () => {
   mockDir = createMockDirectory();
 
+  beforeEach(() => {
+    (runObj.run as jest.Mock).mockReturnValue({
+      exitCode: null,
+      waitForExit: jest.fn().mockResolvedValue(undefined),
+    });
+  });
+
   afterEach(() => {
-    jest.resetAllMocks();
+    (runObj.run as jest.Mock).mockClear();
   });
 
   it('should bump to the moved version when the package is moved', async () => {
@@ -116,8 +124,6 @@ describe('versions:migrate', () => {
       },
     });
 
-    jest.spyOn(run, 'run').mockResolvedValue(undefined);
-
     const { warn, log: logs } = await withLogCollector(async () => {
       await migrate({});
     });
@@ -136,10 +142,9 @@ describe('versions:migrate', () => {
       'Could not find package.json for @backstage/theme@^1.0.0 in b (dependencies)',
     ]);
 
-    expect(run.run).toHaveBeenCalledTimes(1);
-    expect(run.run).toHaveBeenCalledWith(
-      'yarn',
-      ['install'],
+    expect(runObj.run).toHaveBeenCalledTimes(1);
+    expect(runObj.run).toHaveBeenCalledWith(
+      ['yarn', 'install'],
       expect.any(Object),
     );
 
@@ -169,7 +174,7 @@ describe('versions:migrate', () => {
     });
   });
 
-  it('should replace the occurences of the moved package in files inside the correct package', async () => {
+  it('should replace the occurrences of the moved package in files inside the correct package', async () => {
     mockDir.setContent({
       'package.json': JSON.stringify({
         workspaces: {
@@ -227,16 +232,13 @@ describe('versions:migrate', () => {
       },
     });
 
-    jest.spyOn(run, 'run').mockResolvedValue(undefined);
-
     await withLogCollector(async () => {
       await migrate({});
     });
 
-    expect(run.run).toHaveBeenCalledTimes(1);
-    expect(run.run).toHaveBeenCalledWith(
-      'yarn',
-      ['install'],
+    expect(runObj.run).toHaveBeenCalledTimes(1);
+    expect(runObj.run).toHaveBeenCalledWith(
+      ['yarn', 'install'],
       expect.any(Object),
     );
 
@@ -259,7 +261,7 @@ describe('versions:migrate', () => {
     );
   });
 
-  it('should replaces the occurences of changed packages, and is careful', async () => {
+  it('should replace occurrences of changed packages, and is careful', async () => {
     mockDir.setContent({
       'package.json': JSON.stringify({
         workspaces: {
@@ -314,16 +316,13 @@ describe('versions:migrate', () => {
       },
     });
 
-    jest.spyOn(run, 'run').mockResolvedValue(undefined);
-
     await withLogCollector(async () => {
       await migrate({});
     });
 
-    expect(run.run).toHaveBeenCalledTimes(1);
-    expect(run.run).toHaveBeenCalledWith(
-      'yarn',
-      ['install'],
+    expect(runObj.run).toHaveBeenCalledTimes(1);
+    expect(runObj.run).toHaveBeenCalledWith(
+      ['yarn', 'install'],
       expect.any(Object),
     );
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
-import React from 'react';
+import { ReactNode, ComponentType } from 'react';
 import {
   Content,
   ContentHeader,
@@ -22,7 +22,7 @@ import {
 } from '@backstage/core-components';
 import { stringifyEntityRef } from '@backstage/catalog-model';
 import { TemplateCardProps, TemplateCard } from '../TemplateCard';
-import { IconComponent } from '@backstage/core-plugin-api';
+import { AnalyticsContext, IconComponent } from '@backstage/core-plugin-api';
 
 /**
  * The props for the {@link TemplateGroup} component.
@@ -38,9 +38,9 @@ export interface TemplateGroupProps {
     }[];
   }[];
   onSelected: (template: TemplateEntityV1beta3) => void;
-  title: React.ReactNode;
+  title: ReactNode;
   components?: {
-    CardComponent?: React.ComponentType<TemplateCardProps>;
+    CardComponent?: ComponentType<TemplateCardProps>;
   };
 }
 
@@ -69,12 +69,18 @@ export const TemplateGroup = (props: TemplateGroupProps) => {
       {titleComponent}
       <ItemCardGrid>
         {templates.map(({ template, additionalLinks }) => (
-          <Card
+          <AnalyticsContext
+            attributes={{
+              entityRef: stringifyEntityRef(template),
+            }}
             key={stringifyEntityRef(template)}
-            additionalLinks={additionalLinks}
-            template={template}
-            onSelected={onSelected}
-          />
+          >
+            <Card
+              additionalLinks={additionalLinks}
+              template={template}
+              onSelected={onSelected}
+            />
+          </AnalyticsContext>
         ))}
       </ItemCardGrid>
     </Content>

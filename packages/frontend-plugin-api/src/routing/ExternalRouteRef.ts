@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { RouteRefImpl } from './RouteRef';
+import { OpaqueExternalRouteRef } from '@internal/frontend';
 import { describeParentCallSite } from './describeParentCallSite';
 import { AnyRouteRefParams } from './types';
 
@@ -58,33 +58,6 @@ export function toInternalExternalRouteRef<
   return r;
 }
 
-/** @internal */
-export function isExternalRouteRef(opaque: {
-  $$type: string;
-}): opaque is ExternalRouteRef {
-  return opaque.$$type === '@backstage/ExternalRouteRef';
-}
-
-/** @internal */
-class ExternalRouteRefImpl
-  extends RouteRefImpl
-  implements InternalExternalRouteRef
-{
-  readonly $$type = '@backstage/ExternalRouteRef' as any;
-
-  constructor(
-    readonly params: string[] = [],
-    readonly defaultTarget: string | undefined,
-    creationSite: string,
-  ) {
-    super(params, creationSite);
-  }
-
-  getDefaultTarget() {
-    return this.defaultTarget;
-  }
-}
-
 /**
  * Creates a route descriptor, to be later bound to a concrete route by the app. Used to implement cross-plugin route references.
  *
@@ -98,7 +71,7 @@ class ExternalRouteRefImpl
 export function createExternalRouteRef<
   TParams extends { [param in TParamKeys]: string } | undefined = undefined,
   TParamKeys extends string = string,
->(options?: {
+>(config?: {
   /**
    * The parameters that will be provided to the external route reference.
    */
@@ -120,9 +93,38 @@ export function createExternalRouteRef<
     ? TParams
     : { [param in TParamKeys]: string }
 > {
-  return new ExternalRouteRefImpl(
-    options?.params as string[] | undefined,
-    options?.defaultTarget,
-    describeParentCallSite(),
-  );
+  const params = (config?.params ?? []) as string[];
+  const creationSite = describeParentCallSite();
+
+  let id: string | undefined = undefined;
+
+  return OpaqueExternalRouteRef.createInstance('v1', {
+    T: undefined as unknown as TParams,
+    getParams() {
+      return params;
+    },
+    getDescription() {
+      if (id) {
+        return id;
+      }
+      return `created at '${creationSite}'`;
+    },
+    getDefaultTarget() {
+      return config?.defaultTarget;
+    },
+    setId(newId: string) {
+      if (!newId) {
+        throw new Error(`ExternalRouteRef id must be a non-empty string`);
+      }
+      if (id && id !== newId) {
+        throw new Error(
+          `ExternalRouteRef was referenced twice as both '${id}' and '${newId}'`,
+        );
+      }
+      id = newId;
+    },
+    toString(): string {
+      return `externalRouteRef{id=${id},at='${creationSite}'}`;
+    },
+  });
 }

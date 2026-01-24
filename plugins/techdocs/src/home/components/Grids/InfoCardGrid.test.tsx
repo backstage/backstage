@@ -20,17 +20,17 @@ import { entityPresentationApiRef } from '@backstage/plugin-catalog-react';
 import { DefaultEntityPresentationApi } from '@backstage/plugin-catalog';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 
-import React from 'react';
+import { PropsWithChildren, ComponentType, ReactNode } from 'react';
 import { rootDocsRouteRef } from '../../../routes';
 import { InfoCardGrid } from './InfoCardGrid';
 
 describe('Entity Info Card Grid', () => {
   const catalogApi = catalogApiMock();
-  let Wrapper: React.ComponentType<React.PropsWithChildren<{}>>;
+  let Wrapper: ComponentType<PropsWithChildren<{}>>;
 
   beforeEach(() => {
     jest.resetAllMocks();
-    Wrapper = ({ children }: { children?: React.ReactNode }) => (
+    Wrapper = ({ children }: { children?: ReactNode }) => (
       <TestApiProvider
         apis={[
           [

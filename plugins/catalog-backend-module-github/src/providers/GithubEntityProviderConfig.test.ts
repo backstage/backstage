@@ -92,6 +92,12 @@ describe('readProviderConfigs', () => {
                 visibility: ['public', 'internal'],
               },
             },
+            providerWithArchiveFilter: {
+              organization: 'test-org6',
+              filters: {
+                allowArchived: true,
+              },
+            },
             providerWithHost: {
               organization: 'test-org1',
               host: 'ghe.internal.com',
@@ -105,13 +111,20 @@ describe('readProviderConfigs', () => {
                 },
               },
             },
+            providerAppOnly: {
+              app: '1234',
+            },
+            providerAppAndOrganization: {
+              app: '1234',
+              organization: 'test-org1',
+            },
           },
         },
       },
     });
     const providerConfigs = readProviderConfigs(config);
 
-    expect(providerConfigs).toHaveLength(9);
+    expect(providerConfigs).toHaveLength(12);
     expect(providerConfigs[0]).toEqual({
       id: 'providerOrganizationOnly',
       organization: 'test-org1',
@@ -126,6 +139,7 @@ describe('readProviderConfigs', () => {
           exclude: undefined,
         },
         visibility: undefined,
+        allowArchived: false,
       },
       schedule: DEFAULT_GITHUB_ENTITY_PROVIDER_CONFIG_SCHEDULE,
       validateLocationsExist: false,
@@ -144,6 +158,7 @@ describe('readProviderConfigs', () => {
           exclude: undefined,
         },
         visibility: undefined,
+        allowArchived: false,
       },
       schedule: DEFAULT_GITHUB_ENTITY_PROVIDER_CONFIG_SCHEDULE,
       validateLocationsExist: false,
@@ -162,6 +177,7 @@ describe('readProviderConfigs', () => {
           exclude: undefined,
         },
         visibility: undefined,
+        allowArchived: false,
       },
       schedule: DEFAULT_GITHUB_ENTITY_PROVIDER_CONFIG_SCHEDULE,
       validateLocationsExist: false,
@@ -180,6 +196,7 @@ describe('readProviderConfigs', () => {
           exclude: undefined,
         },
         visibility: undefined,
+        allowArchived: false,
       },
       schedule: DEFAULT_GITHUB_ENTITY_PROVIDER_CONFIG_SCHEDULE,
       validateLocationsExist: false,
@@ -198,6 +215,7 @@ describe('readProviderConfigs', () => {
           exclude: ['backstage-exclude'],
         },
         visibility: undefined,
+        allowArchived: false,
       },
       schedule: DEFAULT_GITHUB_ENTITY_PROVIDER_CONFIG_SCHEDULE,
       validateLocationsExist: false,
@@ -216,6 +234,7 @@ describe('readProviderConfigs', () => {
           exclude: undefined,
         },
         visibility: undefined,
+        allowArchived: false,
       },
       schedule: DEFAULT_GITHUB_ENTITY_PROVIDER_CONFIG_SCHEDULE,
       validateLocationsExist: false,
@@ -234,11 +253,31 @@ describe('readProviderConfigs', () => {
           exclude: undefined,
         },
         visibility: ['public', 'internal'],
+        allowArchived: false,
       },
       schedule: DEFAULT_GITHUB_ENTITY_PROVIDER_CONFIG_SCHEDULE,
       validateLocationsExist: false,
     });
     expect(providerConfigs[7]).toEqual({
+      id: 'providerWithArchiveFilter',
+      organization: 'test-org6',
+      catalogPath: '/catalog-info.yaml',
+      host: 'github.com',
+      filters: {
+        repository: undefined,
+        branch: undefined,
+        allowForks: true,
+        topic: {
+          include: undefined,
+          exclude: undefined,
+        },
+        visibility: undefined,
+        allowArchived: true,
+      },
+      schedule: DEFAULT_GITHUB_ENTITY_PROVIDER_CONFIG_SCHEDULE,
+      validateLocationsExist: false,
+    });
+    expect(providerConfigs[8]).toEqual({
       id: 'providerWithHost',
       organization: 'test-org1',
       catalogPath: '/catalog-info.yaml',
@@ -252,11 +291,12 @@ describe('readProviderConfigs', () => {
           exclude: undefined,
         },
         visibility: undefined,
+        allowArchived: false,
       },
       validateLocationsExist: false,
       schedule: DEFAULT_GITHUB_ENTITY_PROVIDER_CONFIG_SCHEDULE,
     });
-    expect(providerConfigs[8]).toEqual({
+    expect(providerConfigs[9]).toEqual({
       id: 'providerWithSchedule',
       organization: 'test-org1',
       catalogPath: '/catalog-info.yaml',
@@ -270,6 +310,7 @@ describe('readProviderConfigs', () => {
           exclude: undefined,
         },
         visibility: undefined,
+        allowArchived: false,
       },
       schedule: {
         frequency: { minutes: 30 },
@@ -277,6 +318,45 @@ describe('readProviderConfigs', () => {
           minutes: 3,
         },
       },
+      validateLocationsExist: false,
+    });
+    expect(providerConfigs[10]).toEqual({
+      id: 'providerAppOnly',
+      app: 1234,
+      catalogPath: '/catalog-info.yaml',
+      host: 'github.com',
+      filters: {
+        repository: undefined,
+        branch: undefined,
+        allowForks: true,
+        topic: {
+          include: undefined,
+          exclude: undefined,
+        },
+        visibility: undefined,
+        allowArchived: false,
+      },
+      schedule: DEFAULT_GITHUB_ENTITY_PROVIDER_CONFIG_SCHEDULE,
+      validateLocationsExist: false,
+    });
+    expect(providerConfigs[11]).toEqual({
+      id: 'providerAppAndOrganization',
+      app: 1234,
+      organization: 'test-org1',
+      catalogPath: '/catalog-info.yaml',
+      host: 'github.com',
+      filters: {
+        repository: undefined,
+        branch: undefined,
+        allowForks: true,
+        topic: {
+          include: undefined,
+          exclude: undefined,
+        },
+        visibility: undefined,
+        allowArchived: false,
+      },
+      schedule: DEFAULT_GITHUB_ENTITY_PROVIDER_CONFIG_SCHEDULE,
       validateLocationsExist: false,
     });
   });
@@ -310,5 +390,103 @@ describe('readProviderConfigs', () => {
     });
 
     expect(() => readProviderConfigs(config)).toThrow();
+  });
+
+  it('throws an error when filters.branch contains a slash', () => {
+    const config = new ConfigReader({
+      catalog: {
+        providers: {
+          github: {
+            invalidBranchUser: {
+              organization: 'test-org',
+              catalogPath: '/*/catalog-info.yaml',
+              filters: {
+                branch: 'test/a',
+              },
+            },
+          },
+        },
+      },
+    });
+
+    expect(() => readProviderConfigs(config)).toThrow();
+  });
+
+  it('throws an error when no organization or app is configured', () => {
+    const config = new ConfigReader({
+      catalog: {
+        providers: {
+          github: {
+            catalogPath: '/*/catalog-info.yaml',
+          },
+        },
+      },
+    });
+
+    expect(() => readProviderConfigs(config)).toThrow();
+  });
+
+  it('reads page sizes configuration', () => {
+    const config = new ConfigReader({
+      catalog: {
+        providers: {
+          github: {
+            organization: 'test-org',
+            pageSizes: {
+              repositories: 10,
+            },
+          },
+        },
+      },
+    });
+    const providerConfigs = readProviderConfigs(config);
+
+    expect(providerConfigs).toHaveLength(1);
+    expect(providerConfigs[0].pageSizes).toEqual({
+      repositories: 10,
+    });
+  });
+
+  it('handles missing page sizes configuration', () => {
+    const config = new ConfigReader({
+      catalog: {
+        providers: {
+          github: {
+            organization: 'test-org',
+          },
+        },
+      },
+    });
+    const providerConfigs = readProviderConfigs(config);
+
+    expect(providerConfigs).toHaveLength(1);
+    expect(providerConfigs[0].pageSizes).toBeUndefined();
+  });
+
+  it('reads multiple providers with different page sizes', () => {
+    const config = new ConfigReader({
+      catalog: {
+        providers: {
+          github: {
+            providerWithPageSizes: {
+              organization: 'test-org1',
+              pageSizes: {
+                repositories: 15,
+              },
+            },
+            providerWithoutPageSizes: {
+              organization: 'test-org2',
+            },
+          },
+        },
+      },
+    });
+    const providerConfigs = readProviderConfigs(config);
+
+    expect(providerConfigs).toHaveLength(2);
+    expect(providerConfigs[0].pageSizes).toEqual({
+      repositories: 15,
+    });
+    expect(providerConfigs[1].pageSizes).toBeUndefined();
   });
 });

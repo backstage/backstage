@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ComponentType, useState, PropsWithChildren } from 'react';
+import { ComponentType, useState, PropsWithChildren } from 'react';
 
 import Grid from '@material-ui/core/Grid';
 import ListItem from '@material-ui/core/ListItem';
@@ -74,6 +74,7 @@ export default {
         { mountedRoutes: { '/': routeRef } },
       ),
   ],
+  tags: ['!manifest'],
 };
 
 export const Default = () => {

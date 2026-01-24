@@ -65,6 +65,10 @@ function parseHelpPage(helpPageContent: string) {
     }
   }
 
+  options.sort();
+  commands.sort();
+  commandArguments.sort();
+
   return {
     usage,
     options,
@@ -131,40 +135,45 @@ export async function runCliExtraction({
       }
     }
 
-    const report = generateCliReport({ packageName: pkgJson.name, models });
+    for (const model of models) {
+      const report = generateCliReport({ packageName: pkgJson.name, model });
 
-    const reportPath = resolvePath(fullDir, 'cli-report.md');
-    const existingReport = await fs
-      .readFile(reportPath, 'utf8')
-      .catch(error => {
-        if (error.code === 'ENOENT') {
-          return undefined;
-        }
-        throw error;
-      });
+      const reportPath = resolvePath(
+        fullDir,
+        `cli-report.${models.length === 1 ? '' : `${model.name}.`}md`,
+      );
+      const existingReport = await fs
+        .readFile(reportPath, 'utf8')
+        .catch(error => {
+          if (error.code === 'ENOENT') {
+            return undefined;
+          }
+          throw error;
+        });
 
-    if (existingReport !== report) {
-      if (isLocalBuild) {
-        console.warn(`CLI report changed for ${packageDir}`);
-        await fs.writeFile(reportPath, report);
-      } else {
-        logApiReportInstructions();
-
-        if (existingReport) {
-          console.log('');
-          console.log(
-            `The conflicting file is ${relativePath(
-              cliPaths.targetRoot,
-              reportPath,
-            )}, expecting the following content:`,
-          );
-          console.log('');
-
-          console.log(report);
-
+      if (existingReport !== report) {
+        if (isLocalBuild) {
+          console.warn(`CLI report changed for ${packageDir}`);
+          await fs.writeFile(reportPath, report);
+        } else {
           logApiReportInstructions();
+
+          if (existingReport) {
+            console.log('');
+            console.log(
+              `The conflicting file is ${relativePath(
+                cliPaths.targetRoot,
+                reportPath,
+              )}, expecting the following content:`,
+            );
+            console.log('');
+
+            console.log(report);
+
+            logApiReportInstructions();
+          }
+          throw new Error(`CLI report changed for ${packageDir}, `);
         }
-        throw new Error(`CLI report changed for ${packageDir}, `);
       }
     }
   }

@@ -34,7 +34,7 @@ export function useStarredEntitiesCount() {
   const request = useMemo(() => {
     const { user, ...allFilters } = filters;
     const compacted = compact(Object.values(allFilters));
-    const catalogFilters = reduceCatalogFilters(compacted);
+    const { orderFields, ...catalogFilters } = reduceCatalogFilters(compacted);
 
     const facet = 'metadata.name';
 

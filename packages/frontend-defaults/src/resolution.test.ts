@@ -20,7 +20,6 @@ import {
   FrontendFeatureLoader,
   PageBlueprint,
 } from '@backstage/frontend-plugin-api';
-import { CreateAppFeatureLoader } from './createApp';
 import { resolveAsyncFeatures } from './resolution';
 import { mockApis } from '@backstage/test-utils';
 
@@ -38,11 +37,11 @@ describe('resolveAsyncFeatures', () => {
       config: mockApis.config(),
       features: [
         createFrontendPlugin({
-          id: 'test-feature',
+          pluginId: 'test-feature',
           extensions: [
             PageBlueprint.make({
               params: {
-                defaultPath: '/',
+                path: '/',
                 loader: () => new Promise(() => {}),
               },
             }),
@@ -71,85 +70,16 @@ describe('resolveAsyncFeatures', () => {
     ]);
   });
 
-  it('supports deprecated feature loaders', async () => {
-    const loader: CreateAppFeatureLoader = {
-      getLoaderName() {
-        return 'test-loader';
-      },
-      async load() {
-        return {
-          features: [
-            createFrontendPlugin({
-              id: 'test',
-              extensions: [
-                PageBlueprint.make({
-                  params: {
-                    defaultPath: '/',
-                    loader: () => new Promise(() => {}),
-                  },
-                }),
-              ],
-            }),
-          ],
-        };
-      },
-    };
-
-    const { features } = await resolveAsyncFeatures({
-      config: mockApis.config(),
-      features: [loader],
-    });
-
-    expect(features).toMatchObject([
-      {
-        $$type: '@backstage/FrontendPlugin',
-        id: 'test',
-        version: 'v1',
-        extensions: [
-          {
-            $$type: '@backstage/Extension',
-            id: 'page:test',
-            version: 'v2',
-            attachTo: {
-              id: 'app/routes',
-              input: 'routes',
-            },
-          },
-        ],
-      },
-    ]);
-  });
-
-  it('should propagate errors thrown by deprecated feature loaders', async () => {
-    const loader: CreateAppFeatureLoader = {
-      getLoaderName() {
-        return 'test-loader';
-      },
-      async load() {
-        throw new TypeError('boom');
-      },
-    };
-
-    await expect(() =>
-      resolveAsyncFeatures({
-        config: mockApis.config(),
-        features: [loader],
-      }),
-    ).rejects.toThrowErrorMatchingInlineSnapshot(
-      `"Failed to read frontend features from loader 'test-loader', TypeError: boom"`,
-    );
-  });
-
   it('supports feature loaders', async () => {
     const loader: FrontendFeatureLoader = createFrontendFeatureLoader({
       async loader({ config: _ }) {
         return [
           createFrontendPlugin({
-            id: 'test',
+            pluginId: 'test',
             extensions: [
               PageBlueprint.make({
                 params: {
-                  defaultPath: '/',
+                  path: '/',
                   loader: () => new Promise(() => {}),
                 },
               }),

@@ -19,7 +19,11 @@ import { KubernetesRequestBody } from '@backstage/plugin-kubernetes-common';
 import { KubernetesAuthProviders } from './KubernetesAuthProviders';
 
 class MockAuthApi implements OAuthApi, OpenIdConnectApi {
-  constructor(private readonly token: string) {}
+  private readonly token: string;
+
+  constructor(token: string) {
+    this.token = token;
+  }
 
   getAccessToken = jest.fn(async () => {
     return this.token;
@@ -85,7 +89,7 @@ describe('KubernetesAuthProviders tests', () => {
     );
   });
 
-  it('returns error for missconfigured oidc authProvider', async () => {
+  it('returns error for misconfigured oidc authProvider', async () => {
     await expect(
       kap.decorateRequestBodyForAuth('oidc.random', requestBody),
     ).rejects.toThrow(

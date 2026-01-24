@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { Page } from '@backstage/core-components';
 import {
   TechDocsReaderPageHeader,

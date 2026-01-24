@@ -15,8 +15,10 @@
  */
 
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
+import { PermissionCriteria } from '@backstage/plugin-permission-common';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
-import { JsonObject, JsonValue, Observable } from '@backstage/types';
+import { JsonObject, Observable } from '@backstage/types';
+import { UpdateTaskCheckpointOptions } from '@backstage/plugin-scaffolder-node/alpha';
 
 /**
  * TaskSecrets
@@ -31,18 +33,23 @@ export type TaskSecrets = Record<string, string> & {
  * The status of each step of the Task
  *
  * @public
+ * @deprecated this type is planned to be removed.
+ * Please reach out to us in an issue if you're using this type and your use cases.
  */
 export type TaskStatus =
   | 'cancelled'
   | 'completed'
   | 'failed'
   | 'open'
-  | 'processing';
+  | 'processing'
+  | 'skipped';
 
 /**
  * The state of a completed task.
  *
  * @public
+ * @deprecated this interface is planned to be removed.
+ * Please reach out to us in an issue if you're using this interface and your use cases.
  */
 export type TaskCompletionState = 'failed' | 'completed';
 
@@ -50,6 +57,8 @@ export type TaskCompletionState = 'failed' | 'completed';
  * SerializedTask
  *
  * @public
+ * @deprecated this type is planned to be removed.
+ * Please reach out to us in an issue if you're using this type and your use cases.
  */
 export type SerializedTask = {
   id: string;
@@ -66,6 +75,8 @@ export type SerializedTask = {
  * TaskEventType
  *
  * @public
+ * @deprecated this type is planned to be removed.
+ * Please reach out to us in an issue if you're using this type and your use cases.
  */
 export type TaskEventType = 'completion' | 'log' | 'cancelled' | 'recovered';
 
@@ -73,12 +84,18 @@ export type TaskEventType = 'completion' | 'log' | 'cancelled' | 'recovered';
  * SerializedTaskEvent
  *
  * @public
+ * @deprecated this type is planned to be removed.
+ * Please reach out to us in an issue if you're using this type and your use cases.
  */
 export type SerializedTaskEvent = {
   id: number;
   isTaskRecoverable?: boolean;
   taskId: string;
-  body: JsonObject;
+  body: {
+    message: string;
+    stepId?: string;
+    status?: TaskStatus;
+  } & JsonObject;
   type: TaskEventType;
   createdAt: string;
 };
@@ -87,6 +104,8 @@ export type SerializedTaskEvent = {
  * The result of {@link TaskBroker.dispatch}
  *
  * @public
+ * @deprecated this interface is planned to be removed.
+ * Please reach out to us in an issue if you're using this interface and your use cases.
  */
 export type TaskBrokerDispatchResult = {
   taskId: string;
@@ -97,6 +116,8 @@ export type TaskBrokerDispatchResult = {
  * Currently a spec and optional secrets
  *
  * @public
+ * @deprecated this interface is planned to be removed.
+ * Please reach out to us in an issue if you're using this interface and your use cases.
  */
 export type TaskBrokerDispatchOptions = {
   spec: TaskSpec;
@@ -105,9 +126,35 @@ export type TaskBrokerDispatchOptions = {
 };
 
 /**
- * Task
+ * TaskFilter
+ * @public
+ * @deprecated this type is planned to be removed.
+ * Please reach out to us in an issue if you're using this type and your use cases.
+ */
+export type TaskFilter = {
+  key: string;
+  values?: string[];
+};
+
+/**
+ * TaskFilters
+ * @public
+ * @deprecated this type is planned to be removed.
+ * Please reach out to us in an issue if you're using this type and your use cases.
+ */
+export type TaskFilters =
+  | { anyOf: TaskFilter[] }
+  | { allOf: TaskFilter[] }
+  | { not: TaskFilter }
+  | TaskFilter;
+
+/**
+ * TaskContext
  *
  * @public
+ *
+ * @deprecated this interface is planned to be removed.
+ * Please reach out to us in an issue if you're using this interface and your use cases.
  */
 export interface TaskContext {
   taskId?: string;
@@ -129,19 +176,7 @@ export interface TaskContext {
     | undefined
   >;
 
-  updateCheckpoint?(
-    options:
-      | {
-          key: string;
-          status: 'success';
-          value: JsonValue;
-        }
-      | {
-          key: string;
-          status: 'failed';
-          reason: string;
-        },
-  ): Promise<void>;
+  updateCheckpoint?(options: UpdateTaskCheckpointOptions): Promise<void>;
 
   serializeWorkspace?(options: { path: string }): Promise<void>;
 
@@ -161,15 +196,17 @@ export interface TaskContext {
  * TaskBroker
  *
  * @public
+ * @deprecated this interface is planned to be removed.
+ * Please reach out to us in an issue if you're using this interface and your use cases.
  */
 export interface TaskBroker {
-  cancel?(taskId: string): Promise<void>;
+  cancel(taskId: string): Promise<void>;
 
-  retry?(taskId: string): Promise<void>;
+  retry(options: { secrets?: TaskSecrets; taskId: string }): Promise<void>;
 
   claim(): Promise<TaskContext>;
 
-  recoverTasks?(): Promise<void>;
+  recoverTasks(): Promise<void>;
 
   dispatch(
     options: TaskBrokerDispatchOptions,
@@ -184,7 +221,7 @@ export interface TaskBroker {
 
   get(taskId: string): Promise<SerializedTask>;
 
-  list?(options?: {
+  list(options?: {
     filters?: {
       createdBy?: string | string[];
       status?: TaskStatus | TaskStatus[];
@@ -194,13 +231,6 @@ export interface TaskBroker {
       offset?: number;
     };
     order?: { order: 'asc' | 'desc'; field: string }[];
-  }): Promise<{ tasks: SerializedTask[]; totalTasks?: number }>;
-
-  /**
-   * @deprecated Make sure to pass `createdBy` and `status` in the `filters` parameter instead
-   */
-  list?(options: {
-    createdBy?: string;
-    status?: TaskStatus;
+    permissionFilters?: PermissionCriteria<TaskFilters>;
   }): Promise<{ tasks: SerializedTask[]; totalTasks?: number }>;
 }

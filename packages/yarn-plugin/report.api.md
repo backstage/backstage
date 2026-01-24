@@ -4,10 +4,11 @@
 
 ```ts
 import { Hooks } from '@yarnpkg/core';
-import { Hooks as Hooks_2 } from '@yarnpkg/plugin-pack';
+import { Hooks as Hooks_2 } from '@yarnpkg/plugin-essentials';
+import { Hooks as Hooks_3 } from '@yarnpkg/plugin-pack';
 import { Plugin as Plugin_2 } from '@yarnpkg/core';
 
 // @public (undocumented)
-const plugin: Plugin_2<Hooks & Hooks_2>;
+const plugin: Plugin_2<Hooks & Hooks_2 & Hooks_3>;
 export default plugin;
 ```

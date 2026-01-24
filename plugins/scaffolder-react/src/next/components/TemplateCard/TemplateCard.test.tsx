@@ -25,13 +25,18 @@ import {
   TestApiProvider,
 } from '@backstage/test-utils';
 import { TemplateCard } from './TemplateCard';
-import React from 'react';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { RELATION_OWNED_BY } from '@backstage/catalog-model';
 import { fireEvent } from '@testing-library/react';
 import { permissionApiRef } from '@backstage/plugin-permission-react';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { SWRConfig } from 'swr';
+
+const mountedRoutes = {
+  mountedRoutes: {
+    '/catalog/:namespace/:kind/:name': entityRouteRef,
+  },
+};
 
 describe('TemplateCard', () => {
   it('should render the card title', async () => {
@@ -59,6 +64,7 @@ describe('TemplateCard', () => {
       >
         <TemplateCard template={mockTemplate} />
       </TestApiProvider>,
+      mountedRoutes,
     );
 
     expect(getByText('bob')).toBeInTheDocument();
@@ -89,6 +95,7 @@ describe('TemplateCard', () => {
       >
         <TemplateCard template={mockTemplate} />
       </TestApiProvider>,
+      mountedRoutes,
     );
 
     const description = getByText('hello');
@@ -121,6 +128,7 @@ describe('TemplateCard', () => {
       >
         <TemplateCard template={mockTemplate} />
       </TestApiProvider>,
+      mountedRoutes,
     );
 
     expect(getByText('No description')).toBeInTheDocument();
@@ -151,6 +159,7 @@ describe('TemplateCard', () => {
       >
         <TemplateCard template={mockTemplate} />
       </TestApiProvider>,
+      mountedRoutes,
     );
 
     expect(queryByTestId('template-card-separator')).toBeInTheDocument();
@@ -187,6 +196,7 @@ describe('TemplateCard', () => {
       >
         <TemplateCard template={mockTemplate} />
       </TestApiProvider>,
+      mountedRoutes,
     );
 
     for (const tag of mockTemplate.metadata.tags!) {
@@ -227,11 +237,7 @@ describe('TemplateCard', () => {
       >
         <TemplateCard template={mockTemplate} />
       </TestApiProvider>,
-      {
-        mountedRoutes: {
-          '/catalog/:kind/:namespace/:name': entityRouteRef,
-        },
-      },
+      mountedRoutes,
     );
 
     expect(queryByTestId('template-card-separator')).toBeInTheDocument();
@@ -272,11 +278,7 @@ describe('TemplateCard', () => {
       >
         <TemplateCard template={mockTemplate} additionalLinks={[]} />
       </TestApiProvider>,
-      {
-        mountedRoutes: {
-          '/catalog/:kind/:namespace/:name': entityRouteRef,
-        },
-      },
+      mountedRoutes,
     );
 
     expect(queryByTestId('template-card-separator')).toBeInTheDocument();
@@ -321,11 +323,7 @@ describe('TemplateCard', () => {
       >
         <TemplateCard template={mockTemplate} additionalLinks={[]} />
       </TestApiProvider>,
-      {
-        mountedRoutes: {
-          '/catalog/:kind/:namespace/:name': entityRouteRef,
-        },
-      },
+      mountedRoutes,
     );
 
     expect(queryByTestId('template-card-separator')).not.toBeInTheDocument();
@@ -364,17 +362,13 @@ describe('TemplateCard', () => {
       >
         <TemplateCard template={mockTemplate} />
       </TestApiProvider>,
-      {
-        mountedRoutes: {
-          '/catalog/:kind/:namespace/:name': entityRouteRef,
-        },
-      },
+      mountedRoutes,
     );
 
     expect(getByRole('link', { name: /.*my-test-user$/ })).toBeInTheDocument();
     expect(getByRole('link', { name: /.*my-test-user$/ })).toHaveAttribute(
       'href',
-      '/catalog/group/default/my-test-user',
+      '/catalog/default/group/my-test-user',
     );
   });
 
@@ -404,11 +398,7 @@ describe('TemplateCard', () => {
       >
         <TemplateCard template={mockTemplate} onSelected={mockOnSelected} />
       </TestApiProvider>,
-      {
-        mountedRoutes: {
-          '/catalog/:kind/:namespace/:name': entityRouteRef,
-        },
-      },
+      mountedRoutes,
     );
 
     expect(getByRole('button', { name: 'Choose' })).toBeInTheDocument();
@@ -448,11 +438,7 @@ describe('TemplateCard', () => {
           <TemplateCard template={mockTemplate} onSelected={mockOnSelected} />
         </TestApiProvider>
       </SWRConfig>,
-      {
-        mountedRoutes: {
-          '/catalog/:kind/:namespace/:name': entityRouteRef,
-        },
-      },
+      mountedRoutes,
     );
 
     expect(queryByText('Choose')).toBeNull();

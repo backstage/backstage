@@ -17,7 +17,9 @@
 import Box from '@material-ui/core/Box';
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
-import React, {
+import {
+  ReactNode,
+  MutableRefObject,
   createContext,
   useCallback,
   useContext,
@@ -72,12 +74,12 @@ const useStyles = makeStyles<Theme, StyleProps>(
  * @public
  */
 export type SidebarPageProps = {
-  children?: React.ReactNode;
+  children?: ReactNode;
 };
 
 type PageContextType = {
   content: {
-    contentRef?: React.MutableRefObject<HTMLElement | null>;
+    contentRef?: MutableRefObject<HTMLElement | null>;
   };
 };
 

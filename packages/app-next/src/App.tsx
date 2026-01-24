@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { createApp } from '@backstage/frontend-defaults';
 import { pagesPlugin } from './examples/pagesPlugin';
 import notFoundErrorPage from './examples/notFoundErrorPageExtension';
@@ -36,7 +35,7 @@ import {
 } from '@backstage/plugin-techdocs';
 import appVisualizerPlugin from '@backstage/plugin-app-visualizer';
 import { homePage } from './HomePage';
-import { convertLegacyApp } from '@backstage/core-compat-api';
+import { convertLegacyAppRoot } from '@backstage/core-compat-api';
 import { FlatRoutes } from '@backstage/core-app-api';
 import { Route } from 'react-router';
 import { CatalogImportPage } from '@backstage/plugin-catalog-import';
@@ -44,6 +43,10 @@ import kubernetesPlugin from '@backstage/plugin-kubernetes/alpha';
 import { convertLegacyPlugin } from '@backstage/core-compat-api';
 import { convertLegacyPageExtension } from '@backstage/core-compat-api';
 import { convertLegacyEntityContentExtension } from '@backstage/plugin-catalog-react/alpha';
+import { pluginInfoResolver } from './pluginInfoResolver';
+import { appModuleNav } from './modules/appModuleNav';
+import devtoolsPlugin from '@backstage/plugin-devtools/alpha';
+import { unprocessedEntitiesDevToolsContent } from '@backstage/plugin-catalog-unprocessed-entities/alpha';
 
 /*
 
@@ -84,10 +87,10 @@ const convertedTechdocsPlugin = convertLegacyPlugin(techdocsPlugin, {
     // TODO: We likely also need a way to convert an entire <Route> tree similar to collectLegacyRoutes
     convertLegacyPageExtension(TechDocsIndexPage, {
       name: 'index',
-      defaultPath: '/docs',
+      path: '/docs',
     }),
     convertLegacyPageExtension(TechDocsReaderPage, {
-      defaultPath: '/docs/:namespace/:kind/:name/*',
+      path: '/docs/:namespace/:kind/:name/*',
     }),
     convertLegacyEntityContentExtension(EntityTechdocsContent),
   ],
@@ -115,7 +118,12 @@ const notFoundErrorPageModule = createFrontendModule({
   extensions: [notFoundErrorPage],
 });
 
-const collectedLegacyPlugins = convertLegacyApp(
+const devtoolsPluginUnprocessed = createFrontendModule({
+  pluginId: 'catalog-unprocessed-entities',
+  extensions: [unprocessedEntitiesDevToolsContent],
+});
+
+const collectedLegacyPlugins = convertLegacyAppRoot(
   <FlatRoutes>
     <Route path="/catalog-import" element={<CatalogImportPage />} />
   </FlatRoutes>,
@@ -130,9 +138,15 @@ const app = createApp({
     appVisualizerPlugin,
     kubernetesPlugin,
     notFoundErrorPageModule,
+    appModuleNav,
     customHomePageModule,
+    devtoolsPlugin,
+    devtoolsPluginUnprocessed,
     ...collectedLegacyPlugins,
   ],
+  advanced: {
+    pluginInfoResolver,
+  },
   /* Handled through config instead */
   // bindRoutes({ bind }) {
   //   bind(pagesPlugin.externalRoutes, { pageX: pagesPlugin.routes.pageX });

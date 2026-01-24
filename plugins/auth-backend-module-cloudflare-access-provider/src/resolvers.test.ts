@@ -37,8 +37,13 @@ describe('resolvers', () => {
     } satisfies Partial<AuthResolverContext>;
 
     await resolver(info, context as any);
-    expect(context.signInWithCatalogUser).toHaveBeenCalledWith({
-      filter: { 'spec.profile.email': 'hello@example.com' },
-    });
+    expect(context.signInWithCatalogUser).toHaveBeenCalledWith(
+      {
+        filter: { 'spec.profile.email': 'hello@example.com' },
+      },
+      {
+        dangerousEntityRefFallback: undefined,
+      },
+    );
   });
 });

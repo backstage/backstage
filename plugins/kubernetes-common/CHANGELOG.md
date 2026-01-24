@@ -1,5 +1,114 @@
 # @backstage/plugin-kubernetes-common
 
+## 0.9.9
+
+### Patch Changes
+
+- 8fa8d87: Add Kubernetes Plugin Secrets Accordion with masked secret datas
+
+## 0.9.9-next.0
+
+### Patch Changes
+
+- 8fa8d87: Add Kubernetes Plugin Secrets Accordion with masked secret datas
+
+## 0.9.8
+
+### Patch Changes
+
+- 1906d37: Updated dependency `@kubernetes/client-node` to `1.4.0`.
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.3
+  - @backstage/catalog-model@1.7.6
+
+## 0.9.8-next.1
+
+### Patch Changes
+
+- 1906d37: Updated dependency `@kubernetes/client-node` to `1.4.0`.
+
+## 0.9.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.7.6-next.0
+  - @backstage/types@1.2.2
+  - @backstage/plugin-permission-common@0.9.3-next.0
+
+## 0.9.7
+
+### Patch Changes
+
+- bdd7f95: Make SERVICEACCOUNT_CA_PATH public so it can be imported by external modules.
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.2
+
+## 0.9.7-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.2-next.0
+
+## 0.9.7-next.0
+
+### Patch Changes
+
+- bdd7f95: Make SERVICEACCOUNT_CA_PATH public so it can be imported by external modules.
+- Updated dependencies
+  - @backstage/catalog-model@1.7.5
+  - @backstage/types@1.2.2
+  - @backstage/plugin-permission-common@0.9.1
+
+## 0.9.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.1
+  - @backstage/catalog-model@1.7.5
+
+## 0.9.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.1-next.0
+  - @backstage/catalog-model@1.7.5-next.0
+
+## 0.9.5
+
+### Patch Changes
+
+- 216c6b2: Updated dependency `@kubernetes/client-node` to `1.1.2`.
+- 72d019d: Removed various typos
+- Updated dependencies
+  - @backstage/catalog-model@1.7.4
+  - @backstage/plugin-permission-common@0.9.0
+  - @backstage/types@1.2.1
+
+## 0.9.5-next.0
+
+### Patch Changes
+
+- 216c6b2: Updated dependency `@kubernetes/client-node` to `1.1.2`.
+- 72d019d: Removed various typos
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.0-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/types@1.2.1
+
+## 0.9.4
+
+### Patch Changes
+
+- d517d13: Export `backstage.io/kubernetes-id` and `backstage.io/kubernetes-label-selector` annotations as constants
+- Updated dependencies
+  - @backstage/catalog-model@1.7.3
+  - @backstage/types@1.2.1
+  - @backstage/plugin-permission-common@0.8.4
+
 ## 0.9.4-next.0
 
 ### Patch Changes

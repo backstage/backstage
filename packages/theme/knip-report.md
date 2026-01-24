@@ -4,5 +4,5 @@
 
 | Name             | Location     | Severity |
 | :--------------- | :----------- | :------- |
-| react-router-dom | package.json | error    |
+| react-router-dom | packages/theme/package.json | error    |
 

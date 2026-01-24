@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
@@ -96,12 +95,17 @@ describe('SearchAutocomplete', () => {
     );
 
     await waitFor(() => {
-      expect(query).toHaveBeenCalledWith({
-        filters: {},
-        pageCursor: undefined,
-        term: options[0],
-        types: [],
-      });
+      expect(query).toHaveBeenCalledWith(
+        {
+          filters: {},
+          pageCursor: undefined,
+          term: options[0],
+          types: [],
+        },
+        {
+          signal: expect.any(AbortSignal),
+        },
+      );
     });
   });
 
@@ -118,23 +122,33 @@ describe('SearchAutocomplete', () => {
     );
 
     await waitFor(() => {
-      expect(query).toHaveBeenCalledWith({
-        filters: {},
-        pageCursor: undefined,
-        term: options[0],
-        types: [],
-      });
+      expect(query).toHaveBeenCalledWith(
+        {
+          filters: {},
+          pageCursor: undefined,
+          term: options[0],
+          types: [],
+        },
+        {
+          signal: expect.any(AbortSignal),
+        },
+      );
     });
 
     await userEvent.click(screen.getByLabelText('Clear'));
 
     await waitFor(() => {
-      expect(query).toHaveBeenCalledWith({
-        filters: {},
-        pageCursor: undefined,
-        term: '',
-        types: [],
-      });
+      expect(query).toHaveBeenCalledWith(
+        {
+          filters: {},
+          pageCursor: undefined,
+          term: '',
+          types: [],
+        },
+        {
+          signal: expect.any(AbortSignal),
+        },
+      );
     });
   });
 
@@ -155,12 +169,17 @@ describe('SearchAutocomplete', () => {
     await userEvent.click(screen.getByText(options[0]));
 
     await waitFor(() => {
-      expect(query).toHaveBeenCalledWith({
-        filters: {},
-        pageCursor: undefined,
-        term: options[0],
-        types: [],
-      });
+      expect(query).toHaveBeenCalledWith(
+        {
+          filters: {},
+          pageCursor: undefined,
+          term: options[0],
+          types: [],
+        },
+        {
+          signal: expect.any(AbortSignal),
+        },
+      );
     });
   });
 

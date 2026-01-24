@@ -55,10 +55,8 @@ describe('createGitlabTokenValidator', () => {
     } as Partial<RequestDetails> as unknown as RequestDetails;
   };
 
-  it('no secret configured, throw error', async () => {
-    expect(() => createGitlabTokenValidator(configWithoutSecret)).toThrow(
-      "Missing required config value at 'events.modules.gitlab.webhookSecret'",
-    );
+  it('should return undefined if no secret is configured', async () => {
+    expect(createGitlabTokenValidator(configWithoutSecret)).toEqual(undefined);
   });
 
   it('secret configured, reject request without token', async () => {
@@ -66,7 +64,7 @@ describe('createGitlabTokenValidator', () => {
     const context = new TestContext();
 
     const validator = createGitlabTokenValidator(configWithSecret);
-    await validator(request, context);
+    await validator!(request, context);
 
     expect(context.details).not.toBeUndefined();
     expect(context.details?.status).toBe(403);
@@ -78,7 +76,7 @@ describe('createGitlabTokenValidator', () => {
     const context = new TestContext();
 
     const validator = createGitlabTokenValidator(configWithSecret);
-    await validator(request, context);
+    await validator!(request, context);
 
     expect(context.details).not.toBeUndefined();
     expect(context.details?.status).toBe(403);
@@ -90,7 +88,7 @@ describe('createGitlabTokenValidator', () => {
     const context = new TestContext();
 
     const validator = createGitlabTokenValidator(configWithSecret);
-    await validator(request, context);
+    await validator!(request, context);
 
     expect(context.details).toBeUndefined();
   });

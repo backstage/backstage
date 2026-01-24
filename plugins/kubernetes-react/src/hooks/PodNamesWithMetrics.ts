@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
+import { createContext } from 'react';
 import { ClientPodStatus } from '@backstage/plugin-kubernetes-common';
 
 /**
  * @public
  */
-export const PodNamesWithMetricsContext = React.createContext<
+export const PodNamesWithMetricsContext = createContext<
   Map<string, ClientPodStatus>
 >(new Map<string, ClientPodStatus>());

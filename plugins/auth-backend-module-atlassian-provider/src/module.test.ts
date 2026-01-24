@@ -52,7 +52,7 @@ describe('authModuleAtlassianProvider', () => {
     expect(res.status).toEqual(302);
 
     const nonceCookie = agent.jar.getCookie('atlassian-nonce', {
-      domain: 'localhost',
+      domain: '127.0.0.1',
       path: '/api/auth/atlassian/handler',
       script: false,
       secure: false,
@@ -111,7 +111,7 @@ describe('authModuleAtlassianProvider', () => {
     expect(res.status).toEqual(302);
 
     const nonceCookie = agent.jar.getCookie('atlassian-nonce', {
-      domain: 'localhost',
+      domain: '127.0.0.1',
       path: '/api/auth/atlassian/handler',
       script: false,
       secure: false,

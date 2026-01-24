@@ -32,7 +32,7 @@ spec:
           title: Title
           type: string
           description: Notification title
-        description:
+        info:
           title: Description
           type: string
           description: Notification longer description
@@ -50,6 +50,10 @@ spec:
             - normal
             - high
             - critical
+        topic:
+          title: Topic
+          type: string
+          description: Notification topic
         scope:
           title: Scope
           type: string
@@ -63,7 +67,8 @@ spec:
         recipients: ${{ parameters.recipients }}
         entityRefs: ${{ parameters.entityRefs }}
         title: ${{ parameters.title }}
-        description: ${{ parameters.description }}
+        info: ${{ parameters.info }}
         link: ${{ parameters.link }}
         severity: ${{ parameters.severity }}
+        topic: ${{ parameters.topic }}
         scope: ${{ parameters.scope }}

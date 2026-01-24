@@ -4,11 +4,11 @@
 
 | Name                     | Location     | Severity |
 | :----------------------- | :----------- | :------- |
-| @backstage/catalog-model | package.json | error    |
+| @backstage/catalog-model | plugins/auth-backend-module-vmware-cloud-provider/package.json | error    |
 
 ## Unused devDependencies (1)
 
 | Name              | Location     | Severity |
 | :---------------- | :----------- | :------- |
-| @backstage/errors | package.json | error    |
+| @backstage/errors | plugins/auth-backend-module-vmware-cloud-provider/package.json | error    |
 

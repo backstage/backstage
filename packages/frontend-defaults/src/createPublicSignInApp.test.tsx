@@ -19,7 +19,7 @@ import {
   createFrontendModule,
 } from '@backstage/frontend-plugin-api';
 import { render, screen, waitFor } from '@testing-library/react';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { createPublicSignInApp } from './createPublicSignInApp';
 import { mockApis } from '@backstage/test-utils';
 
@@ -30,7 +30,9 @@ describe('createPublicSignInApp', () => {
 
   it('should render a sign-in page', async () => {
     const app = createPublicSignInApp({
-      configLoader: async () => ({ config: mockApis.config() }),
+      advanced: {
+        configLoader: async () => ({ config: mockApis.config() }),
+      },
       features: [
         createFrontendModule({
           pluginId: 'app',
@@ -58,7 +60,9 @@ describe('createPublicSignInApp', () => {
       .mockReturnValue();
 
     const app = createPublicSignInApp({
-      configLoader: async () => ({ config: mockApis.config() }),
+      advanced: {
+        configLoader: async () => ({ config: mockApis.config() }),
+      },
       features: [
         createFrontendModule({
           pluginId: 'app',
@@ -89,7 +93,11 @@ describe('createPublicSignInApp', () => {
     });
 
     expect(baseElement).toMatchInlineSnapshot(`
-      <body>
+      <body
+        data-theme-mode="light"
+        data-theme-name="backstage"
+        data-unified-theme-stack="[{"mode":"light","name":"backstage"}]"
+      >
         <div>
           <form
             action="http://localhost/"

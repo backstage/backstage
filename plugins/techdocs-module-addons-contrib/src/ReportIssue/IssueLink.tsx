@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
-
 import { makeStyles } from '@material-ui/core';
 import BugReportIcon from '@material-ui/icons/BugReport';
 
@@ -48,10 +46,7 @@ const getIcon = ({ type }: Repository) => {
 };
 
 const getName = ({ type }: Repository) => {
-  if (type === 'github') {
-    return 'Github';
-  }
-  return 'Gitlab';
+  return type.charAt(0).toLocaleUpperCase('en-US') + type.slice(1);
 };
 
 const getUrl = (repository: Repository, template: ReportIssueTemplate) => {

@@ -18,9 +18,7 @@ import {
   coreServices,
   createBackendPlugin,
 } from '@backstage/backend-plugin-api';
-import { catalogServiceRef } from '@backstage/plugin-catalog-node/alpha';
-
-import { KubernetesBuilder } from './service';
+import { catalogServiceRef } from '@backstage/plugin-catalog-node';
 
 import {
   type AuthenticationStrategy,
@@ -29,111 +27,154 @@ import {
   type KubernetesClustersSupplier,
   kubernetesClusterSupplierExtensionPoint,
   type KubernetesClusterSupplierExtensionPoint,
+  KubernetesClusterSupplierFactory,
   type KubernetesFetcher,
   kubernetesFetcherExtensionPoint,
   type KubernetesFetcherExtensionPoint,
+  KubernetesFetcherFactory,
   type KubernetesObjectsProvider,
   kubernetesObjectsProviderExtensionPoint,
   type KubernetesObjectsProviderExtensionPoint,
+  KubernetesObjectsProviderFactory,
+  KubernetesRouterExtensionPoint,
+  kubernetesRouterExtensionPoint,
+  KubernetesRouterFactory,
   type KubernetesServiceLocator,
   kubernetesServiceLocatorExtensionPoint,
   type KubernetesServiceLocatorExtensionPoint,
+  KubernetesServiceLocatorFactory,
 } from '@backstage/plugin-kubernetes-node';
+import { KubernetesRouter } from './service/KubernetesRouter';
+import { KubernetesInitializer } from './service/KubernetesInitializer';
 
 class ObjectsProvider implements KubernetesObjectsProviderExtensionPoint {
-  private objectsProvider: KubernetesObjectsProvider | undefined;
+  private objectsProvider: KubernetesObjectsProviderFactory | undefined;
 
   getObjectsProvider() {
     return this.objectsProvider;
   }
 
-  addObjectsProvider(provider: KubernetesObjectsProvider) {
+  addObjectsProvider(
+    provider: KubernetesObjectsProvider | KubernetesObjectsProviderFactory,
+  ) {
     if (this.objectsProvider) {
       throw new Error(
         'Multiple Kubernetes objects provider is not supported at this time',
       );
     }
-    this.objectsProvider = provider;
+    if (typeof provider !== 'function') {
+      this.objectsProvider = async () => provider;
+    } else {
+      this.objectsProvider = provider;
+    }
   }
 }
 
 class ClusterSuplier implements KubernetesClusterSupplierExtensionPoint {
-  private clusterSupplier: KubernetesClustersSupplier | undefined;
+  private clusterSupplier: KubernetesClusterSupplierFactory | undefined;
 
   getClusterSupplier() {
     return this.clusterSupplier;
   }
 
-  addClusterSupplier(clusterSupplier: KubernetesClustersSupplier) {
+  addClusterSupplier(
+    clusterSupplier:
+      | KubernetesClustersSupplier
+      | KubernetesClusterSupplierFactory,
+  ) {
     if (this.clusterSupplier) {
       throw new Error(
         'Multiple Kubernetes Cluster Suppliers is not supported at this time',
       );
     }
-    this.clusterSupplier = clusterSupplier;
+    if (typeof clusterSupplier !== 'function') {
+      this.clusterSupplier = async () => clusterSupplier;
+    } else {
+      this.clusterSupplier = clusterSupplier;
+    }
   }
 }
 
 class Fetcher implements KubernetesFetcherExtensionPoint {
-  private fetcher: KubernetesFetcher | undefined;
+  private fetcher: KubernetesFetcherFactory | undefined;
 
   getFetcher() {
     return this.fetcher;
   }
 
-  addFetcher(fetcher: KubernetesFetcher) {
+  addFetcher(fetcher: KubernetesFetcher | KubernetesFetcherFactory) {
     if (this.fetcher) {
       throw new Error(
         'Multiple Kubernetes Fetchers is not supported at this time',
       );
     }
-    this.fetcher = fetcher;
+    if (typeof fetcher !== 'function') {
+      this.fetcher = async () => fetcher;
+    } else {
+      this.fetcher = fetcher;
+    }
   }
 }
 
 class ServiceLocator implements KubernetesServiceLocatorExtensionPoint {
-  private serviceLocator: KubernetesServiceLocator | undefined;
+  private serviceLocator: KubernetesServiceLocatorFactory | undefined;
 
   getServiceLocator() {
     return this.serviceLocator;
   }
 
-  addServiceLocator(serviceLocator: KubernetesServiceLocator) {
+  addServiceLocator(
+    serviceLocator: KubernetesServiceLocator | KubernetesServiceLocatorFactory,
+  ) {
     if (this.serviceLocator) {
       throw new Error(
         'Multiple Kubernetes Service Locators is not supported at this time',
       );
     }
-    this.serviceLocator = serviceLocator;
+
+    if (typeof serviceLocator !== 'function') {
+      this.serviceLocator = async () => serviceLocator;
+    } else {
+      this.serviceLocator = serviceLocator;
+    }
   }
 }
 
 class AuthStrategy implements KubernetesAuthStrategyExtensionPoint {
-  private authStrategies: Array<{
-    key: string;
-    strategy: AuthenticationStrategy;
-  }>;
-
-  constructor() {
-    this.authStrategies = new Array<{
-      key: string;
-      strategy: AuthenticationStrategy;
-    }>();
-  }
-
-  static addAuthStrategiesFromArray(
-    authStrategies: Array<{ key: string; strategy: AuthenticationStrategy }>,
-    builder: KubernetesBuilder,
-  ) {
-    authStrategies.forEach(st => builder.addAuthStrategy(st.key, st.strategy));
-  }
+  private authStrategies: Map<string, AuthenticationStrategy> | undefined;
 
   getAuthenticationStrategies() {
     return this.authStrategies;
   }
 
   addAuthStrategy(key: string, authStrategy: AuthenticationStrategy) {
-    this.authStrategies.push({ key, strategy: authStrategy });
+    if (!this.authStrategies) {
+      this.authStrategies = new Map<string, AuthenticationStrategy>();
+    }
+
+    if (key.includes('-')) {
+      throw new Error('Strategy name can not include dashes');
+    }
+
+    this.authStrategies.set(key, authStrategy);
+  }
+}
+
+class CustomRouter implements KubernetesRouterExtensionPoint {
+  private router: KubernetesRouterFactory | undefined;
+
+  getRouter() {
+    return this.router;
+  }
+
+  addRouter(router: KubernetesRouterFactory) {
+    if (this.router) {
+      throw new Error(
+        'Multiple Kubernetes routers is not supported at this time',
+      );
+    }
+
+    this.router = router;
   }
 }
 
@@ -149,6 +190,7 @@ export const kubernetesPlugin = createBackendPlugin({
     const extPointAuthStrategy = new AuthStrategy();
     const extPointFetcher = new Fetcher();
     const extPointServiceLocator = new ServiceLocator();
+    const extPointRouter = new CustomRouter();
 
     env.registerExtensionPoint(
       kubernetesObjectsProviderExtensionPoint,
@@ -170,6 +212,7 @@ export const kubernetesPlugin = createBackendPlugin({
       kubernetesServiceLocatorExtensionPoint,
       extPointServiceLocator,
     );
+    env.registerExtensionPoint(kubernetesRouterExtensionPoint, extPointRouter);
 
     env.registerInit({
       deps: {
@@ -177,7 +220,7 @@ export const kubernetesPlugin = createBackendPlugin({
         logger: coreServices.logger,
         config: coreServices.rootConfig,
         discovery: coreServices.discovery,
-        catalogApi: catalogServiceRef,
+        catalog: catalogServiceRef,
         permissions: coreServices.permissions,
         auth: coreServices.auth,
         httpAuth: coreServices.httpAuth,
@@ -187,33 +230,50 @@ export const kubernetesPlugin = createBackendPlugin({
         logger,
         config,
         discovery,
-        catalogApi,
+        catalog,
         permissions,
         auth,
         httpAuth,
       }) {
+        // TODO: this could do with a cleanup and push some of this initalization somewhere else
         if (config.has('kubernetes')) {
-          // TODO: expose all of the customization & extension points of the builder here
-          const builder: KubernetesBuilder = KubernetesBuilder.createBuilder({
+          const initializer = KubernetesInitializer.create({
             logger,
             config,
-            catalogApi,
+            catalog,
+            auth,
+            fetcher: extPointFetcher.getFetcher(),
+            clusterSupplier: extPointClusterSuplier.getClusterSupplier(),
+            serviceLocator: extPointServiceLocator.getServiceLocator(),
+            objectsProvider: extPointObjectsProvider.getObjectsProvider(),
+            authStrategyMap: extPointAuthStrategy.getAuthenticationStrategies(),
+          });
+
+          const {
+            fetcher,
+            authStrategyMap,
+            clusterSupplier,
+            serviceLocator,
+            objectsProvider,
+          } = await initializer.init();
+
+          const router = KubernetesRouter.create({
+            logger,
+            config,
+            catalog,
             permissions,
             discovery,
             auth,
             httpAuth,
-          })
-            .setObjectsProvider(extPointObjectsProvider.getObjectsProvider())
-            .setClusterSupplier(extPointClusterSuplier.getClusterSupplier())
-            .setFetcher(extPointFetcher.getFetcher())
-            .setServiceLocator(extPointServiceLocator.getServiceLocator());
+            authStrategyMap: Object.fromEntries(authStrategyMap.entries()),
+            fetcher,
+            clusterSupplier,
+            serviceLocator,
+            objectsProvider,
+            customRouter: extPointRouter.getRouter(),
+          });
 
-          AuthStrategy.addAuthStrategiesFromArray(
-            extPointAuthStrategy.getAuthenticationStrategies(),
-            builder,
-          );
-          const { router } = await builder.build();
-          http.use(router);
+          http.use(await router.getRouter());
         } else {
           logger.warn(
             'Failed to initialize kubernetes backend: valid kubernetes config is missing',

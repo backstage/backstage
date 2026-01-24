@@ -79,7 +79,7 @@ describe('github:repo:push examples', () => {
 
   const integrations = ScmIntegrations.fromConfig(config);
   let githubCredentialsProvider: GithubCredentialsProvider;
-  let action: TemplateAction<any>;
+  let action: TemplateAction<any, any, any>;
 
   const mockContext = createMockActionContext();
 
@@ -114,7 +114,7 @@ describe('github:repo:push examples', () => {
     expect(initRepoAndPush).toHaveBeenCalledWith({
       dir: mockContext.workspacePath,
       remoteUrl: 'https://github.com/clone/url.git',
-      defaultBranch: 'master',
+      defaultBranch: 'main',
       auth: { username: 'x-access-token', password: 'tokenlols' },
       logger: mockContext.logger,
       commitMessage: 'initial commit',

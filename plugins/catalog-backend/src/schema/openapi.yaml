@@ -6,8 +6,9 @@ info:
     The API surface consists of a few distinct groups of functionality. Each has a
     dedicated section below.
 
-    > **Note:** This page only describes some of the most commonly used parts of the
-    > API, and is a work in progress.
+    :::note Note 
+      This page only describes some of the most commonly used parts of the API, and is a work in progress.
+    :::
 
     All of the URL paths in this article are assumed to be on top of some base URL
     pointing at your catalog installation. For example, if the path given in a

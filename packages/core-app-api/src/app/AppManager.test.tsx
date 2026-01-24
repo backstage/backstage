@@ -25,7 +25,7 @@ import { screen, act } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { setupServer } from 'msw/node';
 import { rest } from 'msw';
-import React, { PropsWithChildren, ReactNode } from 'react';
+import { PropsWithChildren, ReactNode } from 'react';
 import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom';
 import {
   configApiRef,
@@ -323,7 +323,7 @@ describe('Integration Test', () => {
         foo: 'Foo',
       },
       translations: {
-        de: () => Promise.resolve({ default: { foo: 'Bar' } }),
+        de: () => Promise.resolve({ default: { foo: 'Bar' } as any }),
       },
     });
 
@@ -670,14 +670,10 @@ describe('Integration Test', () => {
     });
 
     expect(errorLogs).toEqual([
-      expect.objectContaining({
-        detail: new Error(expectedMessage),
-        type: 'unhandled exception',
-      }),
-      expect.objectContaining({
-        detail: new Error(expectedMessage),
-        type: 'unhandled exception',
-      }),
+      expect.stringContaining(`Error: ${expectedMessage}`),
+      expect.objectContaining({ type: 'unhandled-exception' }),
+      expect.stringContaining(`Error: ${expectedMessage}`),
+      expect.objectContaining({ type: 'unhandled-exception' }),
       expect.stringContaining(
         'The above error occurred in the <Provider> component:',
       ),
@@ -714,14 +710,10 @@ describe('Integration Test', () => {
       ).rejects.toThrow(expectedMessage);
     });
     expect(errorLogs).toEqual([
-      expect.objectContaining({
-        detail: new Error(expectedMessage),
-        type: 'unhandled exception',
-      }),
-      expect.objectContaining({
-        detail: new Error(expectedMessage),
-        type: 'unhandled exception',
-      }),
+      expect.stringContaining(`Error: ${expectedMessage}`),
+      expect.objectContaining({ type: 'unhandled-exception' }),
+      expect.stringContaining(`Error: ${expectedMessage}`),
+      expect.objectContaining({ type: 'unhandled-exception' }),
       expect.stringContaining(
         'The above error occurred in the <Provider> component:',
       ),

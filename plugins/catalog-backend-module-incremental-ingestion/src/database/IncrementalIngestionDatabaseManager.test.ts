@@ -17,6 +17,7 @@
 import { TestDatabases } from '@backstage/backend-test-utils';
 import { IncrementalIngestionDatabaseManager } from './IncrementalIngestionDatabaseManager';
 import { v4 as uuid } from 'uuid';
+import { DeferredEntity } from '@backstage/plugin-catalog-node';
 
 const migrationsDir = `${__dirname}/../../migrations`;
 
@@ -24,7 +25,7 @@ jest.setTimeout(60_000);
 
 describe('IncrementalIngestionDatabaseManager', () => {
   const databases = TestDatabases.create({
-    ids: ['POSTGRES_13', 'POSTGRES_9', 'SQLITE_3'],
+    ids: ['POSTGRES_18', 'POSTGRES_14', 'SQLITE_3'],
   });
 
   it.each(databases.eachSupportedId())(
@@ -74,6 +75,50 @@ describe('IncrementalIngestionDatabaseManager', () => {
           sequence: 1,
         },
       ]);
+    },
+  );
+
+  it.each(databases.eachSupportedId())(
+    'computeRemoved correctly sums total count from count query, %p',
+    async databaseId => {
+      const knex = await databases.init(databaseId);
+      await knex.migrate.latest({ directory: migrationsDir });
+
+      const manager = new IncrementalIngestionDatabaseManager({ client: knex });
+      const { ingestionId } = (await manager.createProviderIngestionRecord(
+        'testProvider',
+      ))!;
+
+      const markId = uuid();
+      await manager.createMark({
+        record: {
+          id: markId,
+          ingestion_id: ingestionId,
+          sequence: 1,
+          cursor: { data: 1 },
+        },
+      });
+
+      const makeEntity = (name: string): DeferredEntity => ({
+        entity: {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Component',
+          metadata: { namespace: 'default', name },
+        },
+      });
+
+      // Create multiple mark entities
+      await manager.createMarkEntities(markId, [
+        makeEntity('comp1'),
+        makeEntity('comp2'),
+        makeEntity('comp3'),
+      ]);
+
+      const result = await manager.computeRemoved('testProvider', ingestionId);
+
+      // On PostgreSQL, count queries return strings, so total should be 3 not NaN or string concatenation
+      expect(result.total).toBe(3);
+      expect(typeof result.total).toBe('number');
     },
   );
 });

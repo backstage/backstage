@@ -13,20 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {
-  ANNOTATION_EDIT_URL,
-  ANNOTATION_LOCATION,
-  CompoundEntityRef,
-  DEFAULT_NAMESPACE,
-  stringifyEntityRef,
-  parseEntityRef,
-} from '@backstage/catalog-model';
+
+import { useCallback } from 'react';
+
+import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardContent from '@material-ui/core/CardContent';
 import CardHeader from '@material-ui/core/CardHeader';
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
-import { makeStyles } from '@material-ui/core/styles';
+import CachedIcon from '@material-ui/icons/Cached';
+import EditIcon from '@material-ui/icons/Edit';
+import DocsIcon from '@material-ui/icons/Description';
+import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
+
 import {
   AppIcon,
   HeaderIconLinkRow,
@@ -34,42 +34,123 @@ import {
   InfoCardVariants,
   Link,
 } from '@backstage/core-components';
-import React, { useCallback } from 'react';
+import {
+  alertApiRef,
+  errorApiRef,
+  useApp,
+  useApi,
+  useRouteRef,
+} from '@backstage/core-plugin-api';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+
 import {
   ScmIntegrationIcon,
   scmIntegrationsApiRef,
 } from '@backstage/integration-react';
+
 import {
-  alertApiRef,
-  errorApiRef,
-  useApi,
-  useApp,
-  useRouteRef,
-} from '@backstage/core-plugin-api';
+  DEFAULT_NAMESPACE,
+  ANNOTATION_EDIT_URL,
+  ANNOTATION_LOCATION,
+  stringifyEntityRef,
+} from '@backstage/catalog-model';
 import {
   catalogApiRef,
   getEntitySourceLocation,
   useEntity,
 } from '@backstage/plugin-catalog-react';
-import { createFromTemplateRouteRef, viewTechDocRouteRef } from '../../routes';
-
-import { AboutContent } from './AboutContent';
-import CachedIcon from '@material-ui/icons/Cached';
-import CreateComponentIcon from '@material-ui/icons/AddCircleOutline';
-import DocsIcon from '@material-ui/icons/Description';
-import EditIcon from '@material-ui/icons/Edit';
-import { isTemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { useEntityPermission } from '@backstage/plugin-catalog-react/alpha';
 import { catalogEntityRefreshPermission } from '@backstage/plugin-catalog-common/alpha';
-import { useSourceTemplateCompoundEntityRef } from './hooks';
+
+import {
+  TECHDOCS_ANNOTATION,
+  TECHDOCS_EXTERNAL_ANNOTATION,
+} from '@backstage/plugin-techdocs-common';
+import { buildTechDocsURL } from '@backstage/plugin-techdocs-react';
+
+import { isTemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { taskCreatePermission } from '@backstage/plugin-scaffolder-common/alpha';
+
 import { usePermission } from '@backstage/plugin-permission-react';
+
+import { createFromTemplateRouteRef, viewTechDocRouteRef } from '../../routes';
 import { catalogTranslationRef } from '../../alpha/translation';
-import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { useSourceTemplateCompoundEntityRef } from './hooks';
+import { AboutContent } from './AboutContent';
 
-const TECHDOCS_ANNOTATION = 'backstage.io/techdocs-ref';
+export function useCatalogSourceIconLinkProps() {
+  const { entity } = useEntity();
+  const scmIntegrationsApi = useApi(scmIntegrationsApiRef);
+  const { t } = useTranslationRef(catalogTranslationRef);
+  const entitySourceLocation = getEntitySourceLocation(
+    entity,
+    scmIntegrationsApi,
+  );
+  return {
+    label: t('aboutCard.viewSource'),
+    disabled: !entitySourceLocation,
+    icon: <ScmIntegrationIcon type={entitySourceLocation?.integrationType} />,
+    href: entitySourceLocation?.locationTargetUrl,
+  };
+}
 
-const TECHDOCS_EXTERNAL_ANNOTATION = 'backstage.io/techdocs-entity';
+// TODO: This hook is duplicated from the TechDocs plugin for backwards compatibility
+// Remove it when the the legacy frontend system support is dropped.
+function useTechdocsReaderIconLinkProps(): IconLinkVerticalProps {
+  const { entity } = useEntity();
+  const viewTechdocLink = useRouteRef(viewTechDocRouteRef);
+  const { t } = useTranslationRef(catalogTranslationRef);
+
+  return {
+    label: t('aboutCard.viewTechdocs'),
+    disabled:
+      !(
+        entity.metadata.annotations?.[TECHDOCS_ANNOTATION] ||
+        entity.metadata.annotations?.[TECHDOCS_EXTERNAL_ANNOTATION]
+      ) || !viewTechdocLink,
+    icon: <DocsIcon />,
+    href: buildTechDocsURL(entity, viewTechdocLink),
+  };
+}
+
+// TODO: This hook is duplicated from the Scaffolder plugin for backwards compatibility
+// Remove it when the the legacy frontend system support is dropped.
+function useScaffolderTemplateIconLinkProps(): IconLinkVerticalProps {
+  const app = useApp();
+  const { entity } = useEntity();
+  const templateRoute = useRouteRef(createFromTemplateRouteRef);
+  const { t } = useTranslationRef(catalogTranslationRef);
+  const Icon = app.getSystemIcon('scaffolder') ?? CreateComponentIcon;
+  const { allowed: canCreateTemplateTask } = usePermission({
+    permission: taskCreatePermission,
+  });
+
+  return {
+    label: t('aboutCard.launchTemplate'),
+    icon: <Icon />,
+    disabled: !templateRoute || !canCreateTemplateTask,
+    href:
+      templateRoute &&
+      templateRoute({
+        templateName: entity.metadata.name,
+        namespace: entity.metadata.namespace || DEFAULT_NAMESPACE,
+      }),
+  };
+}
+
+function DefaultAboutCardSubheader() {
+  const { entity } = useEntity();
+  const catalogSourceIconLink = useCatalogSourceIconLinkProps();
+  const techdocsreaderIconLink = useTechdocsReaderIconLinkProps();
+  const scaffolderTemplateIconLink = useScaffolderTemplateIconLinkProps();
+
+  const links = [catalogSourceIconLink, techdocsreaderIconLink];
+  if (isTemplateEntityV1beta3(entity)) {
+    links.push(scaffolderTemplateIconLink);
+  }
+
+  return <HeaderIconLinkRow links={links} />;
+}
 
 const useStyles = makeStyles({
   gridItemCard: {
@@ -96,27 +177,21 @@ const useStyles = makeStyles({
  *
  * @public
  */
-export interface AboutCardProps {
+export type AboutCardProps = {
   variant?: InfoCardVariants;
+};
+
+export interface InternalAboutCardProps extends AboutCardProps {
+  subheader?: JSX.Element;
 }
 
-/**
- * Exported publicly via the EntityAboutCard
- *
- * NOTE: We generally do not accept pull requests to extend this class with more
- * props and customizability. If you need to tweak it, consider making a bespoke
- * card in your own repository instead, that is perfect for your own needs.
- */
-export function AboutCard(props: AboutCardProps) {
-  const { variant } = props;
-  const app = useApp();
+export function InternalAboutCard(props: InternalAboutCardProps) {
+  const { variant, subheader } = props;
   const classes = useStyles();
   const { entity } = useEntity();
-  const scmIntegrationsApi = useApi(scmIntegrationsApiRef);
   const catalogApi = useApi(catalogApiRef);
   const alertApi = useApi(alertApiRef);
   const errorApi = useApi(errorApiRef);
-  const viewTechdocLink = useRouteRef(viewTechDocRouteRef);
   const templateRoute = useRouteRef(createFromTemplateRouteRef);
   const sourceTemplateRef = useSourceTemplateCompoundEntityRef(entity);
   const { allowed: canRefresh } = useEntityPermission(
@@ -124,78 +199,8 @@ export function AboutCard(props: AboutCardProps) {
   );
   const { t } = useTranslationRef(catalogTranslationRef);
 
-  const { allowed: canCreateTemplateTask } = usePermission({
-    permission: taskCreatePermission,
-  });
-
-  const entitySourceLocation = getEntitySourceLocation(
-    entity,
-    scmIntegrationsApi,
-  );
   const entityMetadataEditUrl =
     entity.metadata.annotations?.[ANNOTATION_EDIT_URL];
-
-  let techdocsRef: CompoundEntityRef | undefined;
-
-  if (entity.metadata.annotations?.[TECHDOCS_EXTERNAL_ANNOTATION]) {
-    try {
-      techdocsRef = parseEntityRef(
-        entity.metadata.annotations?.[TECHDOCS_EXTERNAL_ANNOTATION],
-      );
-      // not a fan of this but we don't care if the parseEntityRef fails
-    } catch {
-      techdocsRef = undefined;
-    }
-  }
-
-  const viewInSource: IconLinkVerticalProps = {
-    label: t('aboutCard.viewSource'),
-    disabled: !entitySourceLocation,
-    icon: <ScmIntegrationIcon type={entitySourceLocation?.integrationType} />,
-    href: entitySourceLocation?.locationTargetUrl,
-  };
-  const viewInTechDocs: IconLinkVerticalProps = {
-    label: t('aboutCard.viewTechdocs'),
-    disabled:
-      !(
-        entity.metadata.annotations?.[TECHDOCS_ANNOTATION] ||
-        entity.metadata.annotations?.[TECHDOCS_EXTERNAL_ANNOTATION]
-      ) || !viewTechdocLink,
-    icon: <DocsIcon />,
-    href:
-      viewTechdocLink &&
-      (techdocsRef
-        ? viewTechdocLink({
-            namespace: techdocsRef.namespace || DEFAULT_NAMESPACE,
-            kind: techdocsRef.kind,
-            name: techdocsRef.name,
-          })
-        : viewTechdocLink({
-            namespace: entity.metadata.namespace || DEFAULT_NAMESPACE,
-            kind: entity.kind,
-            name: entity.metadata.name,
-          })),
-  };
-
-  const subHeaderLinks = [viewInSource, viewInTechDocs];
-
-  if (isTemplateEntityV1beta3(entity)) {
-    const Icon = app.getSystemIcon('scaffolder') ?? CreateComponentIcon;
-
-    const launchTemplate: IconLinkVerticalProps = {
-      label: t('aboutCard.launchTemplate'),
-      icon: <Icon />,
-      disabled: !templateRoute || !canCreateTemplateTask,
-      href:
-        templateRoute &&
-        templateRoute({
-          templateName: entity.metadata.name,
-          namespace: entity.metadata.namespace || DEFAULT_NAMESPACE,
-        }),
-    };
-
-    subHeaderLinks.push(launchTemplate);
-  }
 
   let cardClass = '';
   if (variant === 'gridItem') {
@@ -266,7 +271,7 @@ export function AboutCard(props: AboutCardProps) {
             )}
           </>
         }
-        subheader={<HeaderIconLinkRow links={subHeaderLinks} />}
+        subheader={subheader ?? <DefaultAboutCardSubheader />}
       />
       <Divider />
       <CardContent className={cardContentClass}>
@@ -274,4 +279,15 @@ export function AboutCard(props: AboutCardProps) {
       </CardContent>
     </Card>
   );
+}
+
+/**
+ * Exported publicly via the EntityAboutCard
+ *
+ * NOTE: We generally do not accept pull requests to extend this class with more
+ * props and customizability. If you need to tweak it, consider making a bespoke
+ * card in your own repository instead, that is perfect for your own needs.
+ */
+export function AboutCard(props: AboutCardProps) {
+  return <InternalAboutCard {...props} />;
 }

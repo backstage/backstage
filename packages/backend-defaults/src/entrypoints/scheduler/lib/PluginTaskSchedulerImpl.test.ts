@@ -33,7 +33,7 @@ jest.setTimeout(60_000);
 describe('PluginTaskManagerImpl', () => {
   const addShutdownHook = jest.fn();
   const databases = TestDatabases.create({
-    ids: ['POSTGRES_16', 'POSTGRES_12', 'SQLITE_3'],
+    ids: ['POSTGRES_18', 'POSTGRES_14', 'SQLITE_3'],
   });
 
   beforeAll(async () => {
@@ -53,6 +53,7 @@ describe('PluginTaskManagerImpl', () => {
     const knex = await databases.init(databaseId);
     await migrateBackendTasks(knex);
     const manager = new PluginTaskSchedulerImpl(
+      'myplugin',
       async () => knex,
       mockServices.logger.mock(),
       {

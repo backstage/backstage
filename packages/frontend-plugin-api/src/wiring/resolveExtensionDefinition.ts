@@ -16,18 +16,29 @@
 
 import { ApiHolder, AppNode } from '../apis';
 import {
-  ExtensionAttachToSpec,
+  ExtensionDefinitionAttachTo,
   ExtensionDefinition,
   ExtensionDefinitionParameters,
   ResolvedExtensionInputs,
 } from './createExtension';
 import { PortableSchema } from '../schema';
 import { ExtensionInput } from './createExtensionInput';
+import { ExtensionDataRef, ExtensionDataValue } from './createExtensionDataRef';
 import {
-  AnyExtensionDataRef,
-  ExtensionDataValue,
-} from './createExtensionDataRef';
-import { OpaqueExtensionDefinition } from '@internal/frontend';
+  OpaqueExtensionDefinition,
+  OpaqueExtensionInput,
+} from '@internal/frontend';
+
+/** @public */
+export type ExtensionAttachTo =
+  | { id: string; input: string }
+  | Array<{ id: string; input: string }>;
+
+/**
+ * @deprecated Use {@link ExtensionAttachTo} instead.
+ * @public
+ */
+export type ExtensionAttachToSpec = ExtensionAttachTo;
 
 /** @public */
 export interface Extension<TConfig, TConfigInput = TConfig> {
@@ -50,13 +61,13 @@ export type InternalExtension<TConfig, TConfigInput> = Extension<
           [inputName in string]: {
             $$type: '@backstage/ExtensionInput';
             extensionData: {
-              [name in string]: AnyExtensionDataRef;
+              [name in string]: ExtensionDataRef;
             };
             config: { optional: boolean; singleton: boolean };
           };
         };
         readonly output: {
-          [name in string]: AnyExtensionDataRef;
+          [name in string]: ExtensionDataRef;
         };
         factory(context: {
           apis: ApiHolder;
@@ -71,22 +82,14 @@ export type InternalExtension<TConfig, TConfigInput> = Extension<
       }
     | {
         readonly version: 'v2';
-        readonly inputs: {
-          [inputName in string]: ExtensionInput<
-            AnyExtensionDataRef,
-            { optional: boolean; singleton: boolean }
-          >;
-        };
-        readonly output: Array<AnyExtensionDataRef>;
+        readonly inputs: { [inputName in string]: ExtensionInput };
+        readonly output: Array<ExtensionDataRef>;
         factory(options: {
           apis: ApiHolder;
           node: AppNode;
           config: TConfig;
           inputs: ResolvedExtensionInputs<{
-            [inputName in string]: ExtensionInput<
-              AnyExtensionDataRef,
-              { optional: boolean; singleton: boolean }
-            >;
+            [inputName in string]: ExtensionInput;
           }>;
         }): Iterable<ExtensionDataValue<any, any>>;
       }
@@ -116,6 +119,7 @@ export type ResolveExtensionId<
 > = TExtension extends ExtensionDefinition<{
   kind: infer IKind extends string | undefined;
   name: infer IName extends string | undefined;
+  params: any;
 }>
   ? [string] extends [IKind | IName]
     ? never
@@ -128,24 +132,11 @@ export type ResolveExtensionId<
     : never
   : never;
 
-/** @internal */
-export function resolveExtensionDefinition<
-  T extends ExtensionDefinitionParameters,
->(
-  definition: ExtensionDefinition<T>,
-  context?: { namespace?: string },
-): Extension<T['config'], T['configInput']> {
-  const internalDefinition = OpaqueExtensionDefinition.toInternal(definition);
-  const {
-    name,
-    kind,
-    namespace: _skip1,
-    override: _skip2,
-    ...rest
-  } = internalDefinition;
-
-  const namespace = internalDefinition.namespace ?? context?.namespace;
-
+function resolveExtensionId(
+  kind?: string,
+  namespace?: string,
+  name?: string,
+): string {
   const namePart =
     name && namespace ? `${namespace}/${name}` : namespace || name;
   if (!namePart) {
@@ -154,10 +145,75 @@ export function resolveExtensionDefinition<
     );
   }
 
-  const id = kind ? `${kind}:${namePart}` : namePart;
+  return kind ? `${kind}:${namePart}` : namePart;
+}
+
+function resolveAttachTo(
+  attachTo: ExtensionDefinitionAttachTo,
+  namespace?: string,
+): ExtensionAttachToSpec {
+  const resolveSpec = (
+    spec: Exclude<ExtensionDefinitionAttachTo, Array<any>>,
+  ): { id: string; input: string } => {
+    if (OpaqueExtensionInput.isType(spec)) {
+      const { context } = OpaqueExtensionInput.toInternal(spec);
+      if (!context) {
+        throw new Error(
+          'Invalid input object without a parent extension used as attachment point',
+        );
+      }
+      return {
+        id: resolveExtensionId(context.kind, namespace, context.name),
+        input: context.input,
+      };
+    }
+    if ('relative' in spec && spec.relative) {
+      return {
+        id: resolveExtensionId(
+          spec.relative.kind,
+          namespace,
+          spec.relative.name,
+        ),
+        input: spec.input,
+      };
+    }
+    if ('id' in spec) {
+      return { id: spec.id, input: spec.input };
+    }
+    throw new Error('Invalid attachment point specification');
+  };
+
+  if (Array.isArray(attachTo)) {
+    return attachTo.map(resolveSpec);
+  }
+
+  return resolveSpec(attachTo);
+}
+
+/** @internal */
+export function resolveExtensionDefinition<
+  T extends ExtensionDefinitionParameters,
+>(
+  definition: ExtensionDefinition<T>,
+  context?: { namespace?: string },
+): Extension<T['config'], T['configInput']> {
+  const internalDefinition = OpaqueExtensionDefinition.toInternal(definition);
+
+  const {
+    name,
+    kind,
+    namespace: internalNamespace,
+    override: _skip2,
+    attachTo,
+    ...rest
+  } = internalDefinition;
+
+  const namespace = internalNamespace ?? context?.namespace;
+  const id = resolveExtensionId(kind, namespace, name);
 
   return {
     ...rest,
+    attachTo: resolveAttachTo(attachTo, namespace),
     $$type: '@backstage/Extension',
     version: internalDefinition.version,
     id,

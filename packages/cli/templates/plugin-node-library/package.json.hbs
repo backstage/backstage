@@ -9,7 +9,8 @@
     "types": "dist/index.d.ts"
   },
   "backstage": {
-    "role": "node-library"
+    "role": "node-library",
+    "pluginId": "{{pluginId}}"
   },
   "scripts": {
     "build": "backstage-cli package build",
@@ -20,6 +21,7 @@
     "postpack": "backstage-cli package postpack"
   },
   "devDependencies": {
+    "@backstage/backend-test-utils": "{{versionQuery '@backstage/backend-test-utils'}}",
     "@backstage/cli": "{{versionQuery '@backstage/cli'}}"
   },
   "files": [

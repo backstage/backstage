@@ -4,6 +4,6 @@
 
 | Name        | Location     | Severity |
 | :---------- | :----------- | :------- |
-| cross-fetch | package.json | error    |
-| msw         | package.json | error    |
+| cross-fetch | packages/app-next-example-plugin/package.json | error    |
+| msw         | packages/app-next-example-plugin/package.json | error    |
 

@@ -1,0 +1,10 @@
+---
+title: KwirthLog for Backstage
+author: Julio Fernandez
+authorUrl: https://github.com/jfvilas
+category: Monitoring
+description: With KwirthLog you can view real-time log streams of Kubernetes objects linked to Backstage entities (source entities can be grouped and merged)
+documentation: https://github.com/jfvilas/plugin-kwirth-log
+iconUrl: https://raw.githubusercontent.com/jfvilas/plugin-kwirth-log/master/src/assets/kwirthlog-logo.png
+npmPackageName: '@jfvilas/plugin-kwirth-log'
+addedDate: '2025-09-18'

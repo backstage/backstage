@@ -18,15 +18,15 @@ import { ReactNode } from 'react';
 import { FrontendPlugin } from './wiring';
 
 /** @public */
-export type CoreProgressProps = {};
+export type ProgressProps = {};
 
 /** @public */
-export type CoreNotFoundErrorPageProps = {
+export type NotFoundErrorPageProps = {
   children?: ReactNode;
 };
 
 /** @public */
-export type CoreErrorBoundaryFallbackProps = {
+export type ErrorDisplayProps = {
   plugin?: FrontendPlugin;
   error: Error;
   resetError: () => void;

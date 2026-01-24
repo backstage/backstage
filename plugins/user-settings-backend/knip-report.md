@@ -1,9 +1,8 @@
 # Knip report
 
-## Unused dependencies (2)
+## Unused dependencies (1)
 
-| Name              | Location     | Severity |
-| :---------------- | :----------- | :------- |
-| @backstage/config | package.json | error    |
-| yn                | package.json | error    |
+| Name                        | Location     | Severity |
+| :-------------------------- | :----------- | :------- |
+| @backstage/plugin-auth-node | plugins/user-settings-backend/package.json | error    |
 

@@ -4,18 +4,20 @@
 
 ```ts
 import { BackstagePlugin } from '@backstage/core-plugin-api';
-import { default as default_2 } from 'react';
-import { JSX as JSX_2 } from 'react';
-import { default as React_2 } from 'react';
+import { ElementType } from 'react';
+import { JSX as JSX_2 } from 'react/jsx-runtime';
+import { ReactElement } from 'react';
+import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { TabProps } from '@material-ui/core/Tab';
+import { TaskApiTasksResponse } from '@backstage/plugin-devtools-common/alpha';
 
 // @public (undocumented)
-export const ConfigContent: () => React_2.JSX.Element;
+export const ConfigContent: () => JSX_2.Element;
 
 // @public
 export const DevToolsLayout: {
-  ({ children, title, subtitle }: DevToolsLayoutProps): default_2.JSX.Element;
+  ({ children, title, subtitle }: DevToolsLayoutProps): JSX_2.Element;
   Route: (props: SubRoute) => null;
 };
 
@@ -23,11 +25,27 @@ export const DevToolsLayout: {
 export type DevToolsLayoutProps = {
   title?: string;
   subtitle?: string;
-  children?: default_2.ReactNode;
+  children?: ReactNode;
 };
 
 // @public (undocumented)
-export const DevToolsPage: () => JSX_2.Element;
+export const DevToolsPage: ({ contents }: DevToolsPageProps) => JSX_2.Element;
+
+// @public (undocumented)
+export interface DevToolsPageContent {
+  // (undocumented)
+  children: ReactElement;
+  // (undocumented)
+  path: string;
+  // (undocumented)
+  title: string;
+}
+
+// @public (undocumented)
+export interface DevToolsPageProps {
+  // (undocumented)
+  contents?: DevToolsPageContent[];
+}
 
 // @public (undocumented)
 export const devToolsPlugin: BackstagePlugin<
@@ -38,10 +56,20 @@ export const devToolsPlugin: BackstagePlugin<
 >;
 
 // @public (undocumented)
-export const ExternalDependenciesContent: () => React_2.JSX.Element;
+export const ExternalDependenciesContent: () => JSX_2.Element;
 
 // @public (undocumented)
-export const InfoContent: () => React_2.JSX.Element;
+export const InfoContent: () => JSX_2.Element;
+
+// @public (undocumented)
+export const ScheduledTaskDetailPanel: ({
+  rowData,
+}: {
+  rowData: TaskApiTasksResponse;
+}) => JSX_2.Element;
+
+// @public (undocumented)
+export const ScheduledTasksContent: () => JSX_2.Element;
 
 // @public (undocumented)
 export type SubRoute = {
@@ -49,9 +77,9 @@ export type SubRoute = {
   title: string;
   children: JSX.Element;
   tabProps?: TabProps<
-    default_2.ElementType,
+    ElementType,
     {
-      component?: default_2.ElementType;
+      component?: ElementType;
     }
   >;
 };

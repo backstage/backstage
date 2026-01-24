@@ -48,4 +48,19 @@ export const examples: TemplateExample[] = [
       ],
     }),
   },
+  {
+    description: 'Delete all files in workspace',
+    example: yaml.stringify({
+      steps: [
+        {
+          action: 'fs:delete',
+          id: 'deleteFiles',
+          name: 'Delete files',
+          input: {
+            files: ['**'],
+          },
+        },
+      ],
+    }),
+  },
 ];

@@ -20,7 +20,6 @@ import {
   RouteRef,
   SubRouteRef,
 } from '@backstage/frontend-plugin-api';
-import { BackstagePlugin as LegacyBackstagePlugin } from '@backstage/core-plugin-api';
 
 /** @internal */
 export type AnyRouteRef = RouteRef | SubRouteRef | ExternalRouteRef;
@@ -35,6 +34,5 @@ export interface BackstageRouteObject {
   element: React.ReactNode;
   path: string;
   routeRefs: Set<RouteRef>;
-  plugins: Set<LegacyBackstagePlugin>;
   appNode?: AppNode;
 }

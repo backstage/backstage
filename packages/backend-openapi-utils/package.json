@@ -1,6 +1,6 @@
 {
   "name": "@backstage/backend-openapi-utils",
-  "version": "0.5.1-next.1",
+  "version": "0.6.5",
   "description": "OpenAPI typescript support.",
   "backstage": {
     "role": "node-library"
@@ -52,8 +52,8 @@
     "@types/express": "^4.17.6",
     "@types/express-serve-static-core": "^4.17.5",
     "ajv": "^8.16.0",
-    "express": "^4.17.1",
-    "express-openapi-validator": "^5.0.4",
+    "express": "^4.22.0",
+    "express-openapi-validator": "^5.5.8",
     "express-promise-router": "^4.1.0",
     "get-port": "^5.1.1",
     "json-schema-to-ts": "^3.0.0",

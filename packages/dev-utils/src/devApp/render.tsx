@@ -47,11 +47,13 @@ import {
 } from '@backstage/integration-react';
 import Box from '@material-ui/core/Box';
 import BookmarkIcon from '@material-ui/icons/Bookmark';
-import React, { ComponentType, PropsWithChildren, ReactNode } from 'react';
+import { ComponentType, lazy, PropsWithChildren, ReactNode } from 'react';
 import { createRoutesFromChildren, Route } from 'react-router-dom';
 import { SidebarThemeSwitcher } from './SidebarThemeSwitcher';
 import 'react-dom';
 import { SidebarLanguageSwitcher, SidebarSignOutButton } from '../components';
+
+const BuiCss = lazy(() => import('./BuiCss'));
 
 let ReactDOMPromise: Promise<
   typeof import('react-dom') | typeof import('react-dom/client')
@@ -274,6 +276,7 @@ export class DevAppBuilder {
 
     const DevApp = (
       <>
+        <BuiCss />
         <AlertDisplay />
         <OAuthRequestDialog />
         {this.rootChildren}

@@ -27,7 +27,7 @@ Object.defineProperty(global, '__@backstage/discovered__', {
 });
 
 const config = new ConfigReader({
-  app: { experimental: { packages: 'all' } },
+  app: { packages: 'all' },
 });
 
 describe('discoverAvailableFeatures', () => {
@@ -45,7 +45,7 @@ describe('discoverAvailableFeatures', () => {
   });
 
   it('should discover a plugin', () => {
-    const testPlugin = createFrontendPlugin({ id: 'test' });
+    const testPlugin = createFrontendPlugin({ pluginId: 'test' });
     globalSpy.mockReturnValue({
       modules: [{ default: testPlugin }],
     });
@@ -86,9 +86,9 @@ describe('discoverAvailableFeatures', () => {
   });
 
   it('should discover multiple plugins', () => {
-    const test1Plugin = createFrontendPlugin({ id: 'test1' });
-    const test2Plugin = createFrontendPlugin({ id: 'test2' });
-    const test3Plugin = createFrontendPlugin({ id: 'test3' });
+    const test1Plugin = createFrontendPlugin({ pluginId: 'test1' });
+    const test2Plugin = createFrontendPlugin({ pluginId: 'test2' });
+    const test3Plugin = createFrontendPlugin({ pluginId: 'test3' });
     globalSpy.mockReturnValue({
       modules: [
         { default: test1Plugin },

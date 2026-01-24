@@ -28,6 +28,7 @@ import { ConfigReader } from '@backstage/config';
 import { JWK, SignJWT, exportJWK, generateKeyPair } from 'jose';
 import { rest } from 'msw';
 import express from 'express';
+import { custom } from 'openid-client';
 
 describe('oidcAuthenticator', () => {
   let implementation: any;
@@ -169,6 +170,77 @@ describe('oidcAuthenticator', () => {
     jest.clearAllMocks();
   });
 
+  describe('timeout configuration', () => {
+    const TEST_URL = new URL('https://test.com');
+
+    it('should use default timeout when no timeout is configured', async () => {
+      const { promise } = oidcAuthenticator.initialize({
+        callbackUrl: 'https://backstage.test/callback',
+        config: new ConfigReader({
+          metadataUrl: 'https://oidc.test/.well-known/openid-configuration',
+          clientId: 'clientId',
+          clientSecret: 'clientSecret',
+        }),
+      });
+      const { client } = await promise;
+
+      const timeout = client[custom.http_options](TEST_URL, {}).timeout;
+
+      // Check if the HTTP timeout is set to the default value
+      expect(timeout).toBeDefined();
+      expect(timeout).toBe(10000);
+    });
+
+    it('should use configured timeout when provided in the config', async () => {
+      const { promise } = oidcAuthenticator.initialize({
+        callbackUrl: 'https://backstage.test/callback',
+        config: new ConfigReader({
+          metadataUrl: 'https://oidc.test/.well-known/openid-configuration',
+          clientId: 'clientId',
+          clientSecret: 'clientSecret',
+          timeout: {
+            seconds: 30,
+          },
+        }),
+      });
+      const { client } = await promise;
+
+      const timeout = client[custom.http_options](TEST_URL, {}).timeout;
+
+      // Check if the HTTP timeout is set to the configured value (30 seconds)
+      expect(timeout).toBeDefined();
+      expect(timeout).toBe(30000);
+    });
+
+    it('should handle invalid timeout configuration gracefully', async () => {
+      expect(() => {
+        oidcAuthenticator.initialize({
+          callbackUrl: 'https://backstage.test/callback',
+          config: new ConfigReader({
+            metadataUrl: 'https://oidc.test/.well-known/openid-configuration',
+            clientId: 'clientId',
+            clientSecret: 'clientSecret',
+            timeout: 123, // Invalid: should be a duration object
+          }),
+        });
+      }).toThrow();
+
+      expect(() => {
+        oidcAuthenticator.initialize({
+          callbackUrl: 'https://backstage.test/callback',
+          config: new ConfigReader({
+            metadataUrl: 'https://oidc.test/.well-known/openid-configuration',
+            clientId: 'clientId',
+            clientSecret: 'clientSecret',
+            timeout: {
+              invalid: 'value',
+            },
+          }),
+        });
+      }).toThrow();
+    });
+  });
+
   describe('#start', () => {
     let fakeSession: Record<string, any>;
     let startRequest: OAuthAuthenticatorStartInput;
@@ -205,6 +277,62 @@ describe('oidcAuthenticator', () => {
       const { searchParams } = new URL(startResponse.url);
 
       expect(searchParams.get('response_type')).toBe('code');
+    });
+
+    it('passes custom start URL search parameters', async () => {
+      const customImplementation = oidcAuthenticator.initialize({
+        callbackUrl: 'https://backstage.test/callback',
+        config: new ConfigReader({
+          metadataUrl: 'https://oidc.test/.well-known/openid-configuration',
+          clientId: 'clientId123',
+          clientSecret: 'clientSecret',
+          startUrlSearchParams: {
+            foo: '1',
+            bar: '2',
+          },
+        }),
+      });
+
+      const startResponse = await oidcAuthenticator.start(
+        startRequest,
+        customImplementation,
+      );
+
+      const { searchParams } = new URL(startResponse.url);
+
+      expect(searchParams.get('foo')).toBe('1');
+      expect(searchParams.get('bar')).toBe('2');
+    });
+
+    it('does not override the core start URL search parameters with custom ones', async () => {
+      const customImplementation = oidcAuthenticator.initialize({
+        callbackUrl: 'https://backstage.test/callback',
+        config: new ConfigReader({
+          metadataUrl: 'https://oidc.test/.well-known/openid-configuration',
+          clientId: 'clientId123',
+          clientSecret: 'clientSecret',
+          startUrlSearchParams: {
+            foo: '1',
+            prompt: 'customPrompt',
+            scope: 'customScope',
+            state: 'customState',
+            nonce: 'customNonce',
+          },
+        }),
+      });
+
+      const startResponse = await oidcAuthenticator.start(
+        startRequest,
+        customImplementation,
+      );
+
+      const { searchParams } = new URL(startResponse.url);
+
+      expect(searchParams.get('foo')).toBe('1');
+      expect(searchParams.get('scope')).not.toBe('customScope');
+      expect(searchParams.get('state')).not.toBe('customState');
+      expect(searchParams.get('nonce')).not.toBe('customNonce');
+      expect(searchParams.get('prompt')).not.toBe('customPrompt');
     });
 
     it('passes a nonce', async () => {

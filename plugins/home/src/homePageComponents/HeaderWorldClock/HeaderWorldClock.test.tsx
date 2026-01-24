@@ -16,7 +16,6 @@
 
 import { renderInTestApp } from '@backstage/test-utils';
 import { HeaderWorldClock, ClockConfig } from './HeaderWorldClock';
-import React from 'react';
 
 describe('HeaderWorldClock with valid Time Zones', () => {
   it('displays Time Zones as expected', async () => {

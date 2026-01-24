@@ -5,7 +5,7 @@ description: How to define custom permission rules for existing resources
 ---
 
 :::info
-This documentation is written for [the new backend system](../backend-system/index.md) which is the default since Backstage [version 1.24](../releases/v1.24.0.md). If you are still on the old backend system, you may want to read [its own article](./custom-rules--old.md) instead, and [consider migrating](../backend-system/building-backends/08-migrating.md)!
+This documentation is written for [the new backend system](../backend-system/index.md) which is the default since Backstage [version 1.24](../releases/v1.24.0.md). If you are still on the old backend system, you may want to read [its own article](https://github.com/backstage/backstage/blob/v1.37.0/docs/permissions/custom-rules--old.md) instead, and [consider migrating](../backend-system/building-backends/08-migrating.md)!
 :::
 
 For some use cases, you may want to define custom [rules](../references/glossary.md#rule-permission-plugin) in addition to the ones provided by a plugin. In the [previous section](./writing-a-policy.md) we used the `isEntityOwner` rule to control access for catalog entities. Let's extend this policy with a custom rule that checks what [system](https://backstage.io/docs/features/software-catalog/system-model#system) an entity is part of.
@@ -159,7 +159,7 @@ To install custom rules in a plugin, we need to use the [`PermissionsRegistrySer
    ```typescript title="packages/backend/src/modules/catalogPermissionRules.ts"
    import { createBackendModule } from '@backstage/backend-plugin-api';
    import { catalogPermissionExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
-   import { isInSystemRule } from './permissionPolicyExtension';
+   import { isInSystemRule } from './permissionsPolicyExtension';
 
    export default createBackendModule({
      pluginId: 'catalog',
@@ -184,10 +184,10 @@ To install custom rules in a plugin, we need to use the [`PermissionsRegistrySer
      import('@backstage/plugin-catalog-backend-module-scaffolder-entity-model'),
    );
    /* highlight-add-next-line */
-   backend.add(import('./extensions/catalogPermissionRules'));
+   backend.add(import('./modules/catalogPermissionRules'));
    ```
 
-5. Now when you run you Backstage instance - `yarn dev` - the rule will be added to the catalog plugin.
+5. Now when you run you Backstage instance - `yarn start` - the rule will be added to the catalog plugin.
 
 The updated policy will allow catalog entity resource permissions if any of the following are true:
 

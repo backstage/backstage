@@ -34,11 +34,13 @@ import IconButton from '@material-ui/core/IconButton';
 import { makeStyles } from '@material-ui/core/styles';
 import ArrowForwardIcon from '@material-ui/icons/ArrowForward';
 import CloseIcon from '@material-ui/icons/Close';
-import React, { ReactNode, useCallback, useEffect, useRef } from 'react';
+import { ReactNode, useCallback, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 import { rootRouteRef } from '../../plugin';
 import { SearchResultSet } from '@backstage/plugin-search-common';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { searchTranslationRef } from '../../translation';
 
 /**
  * @public
@@ -121,6 +123,7 @@ export const Modal = ({
   const navigate = useNavigate();
   const { transitions } = useTheme();
   const { focusContent } = useContent();
+  const { t } = useTranslationRef(searchTranslationRef);
 
   const searchRootRoute = useRouteRef(rootRouteRef)();
   const searchBarRef = useRef<HTMLInputElement | null>(null);
@@ -171,7 +174,7 @@ export const Modal = ({
               onClick={handleSearchBarSubmit}
               disableRipple
             >
-              View Full Results
+              {t('searchModal.viewFullResults')}
             </Button>
           </Grid>
         </Grid>

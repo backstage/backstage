@@ -1,5 +1,152 @@
 # @backstage/plugin-events-backend-test-utils
 
+## 0.1.51
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-events-node@0.4.18
+
+## 0.1.51-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-events-node@0.4.18-next.0
+
+## 0.1.50
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-events-node@0.4.17
+
+## 0.1.50-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-events-node@0.4.17-next.0
+
+## 0.1.49
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-events-node@0.4.16
+
+## 0.1.49-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-events-node@0.4.16-next.0
+
+## 0.1.48
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-events-node@0.4.15
+
+## 0.1.48-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-events-node@0.4.15-next.0
+
+## 0.1.47
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-events-node@0.4.14
+
+## 0.1.47-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-events-node@0.4.14-next.0
+
+## 0.1.46
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-events-node@0.4.13
+
+## 0.1.46-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-events-node@0.4.13-next.0
+
+## 0.1.45
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-events-node@0.4.12
+
+## 0.1.45-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-events-node@0.4.12-next.1
+
+## 0.1.45-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-events-node@0.4.12-next.0
+
+## 0.1.44
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-events-node@0.4.11
+
+## 0.1.44-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-events-node@0.4.11-next.2
+
+## 0.1.44-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-events-node@0.4.11-next.1
+
+## 0.1.44-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-events-node@0.4.11-next.0
+
+## 0.1.43
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-events-node@0.4.10
+
+## 0.1.42
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-events-node@0.4.9
+
 ## 0.1.42-next.2
 
 ### Patch Changes

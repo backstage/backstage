@@ -12,25 +12,30 @@ jobs:
   create-release-pr:
     name: Create Changeset PR
     runs-on: ubuntu-latest
+
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@cb605e52c26070c328afc4562f0b4ada7618a84e # v2.10.4
+        uses: step-security/harden-runner@df199fb7be9f65074067a9eb93f12bb4c5547cf2 # v2.13.3
         with:
           egress-policy: audit
 
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 20000
           fetch-tags: true
           token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
 
-      - name: Fetch tags # See https://github.com/actions/checkout/issues/2041
-        run: git fetch --tags
+      - name: Use Node.js 22.x
+        uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
+        with:
+          node-version: 22.x
+          registry-url: https://registry.npmjs.org/ # Needed for auth
 
       - name: Install Dependencies
         run: yarn --immutable
+
       - name: Create Release Pull Request
-        uses: backstage/changesets-action@291bfc1f76d1dcfbf967f5810dc0423592eae09a # v2.3.1
+        uses: backstage/changesets-action@a39baf18913e669734ffb00c2fd9900472cfa240 # v2.3.2
         with:
           # Calls out to `changeset version`, but also runs prettier
           version: yarn release
@@ -40,7 +45,7 @@ jobs:
 
       - name: Discord notification
         if: ${{ failure() }}
-        uses: Ilshidur/action-discord@0c4b27844ba47cb1c7bee539c8eead5284ce9fa9 # 0.3.2
+        uses: Ilshidur/action-discord@d2594079a10f1d6739ee50a2471f0ca57418b554 # 0.4.0
         env:
           DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK }}
         with:

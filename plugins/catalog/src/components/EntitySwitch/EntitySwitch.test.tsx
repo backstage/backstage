@@ -20,7 +20,7 @@ import {
   EntityProvider,
 } from '@backstage/plugin-catalog-react';
 import { render, screen } from '@testing-library/react';
-import React, { useEffect } from 'react';
+import { ReactNode, useEffect } from 'react';
 import { isKind } from './conditions';
 import { EntitySwitch } from './EntitySwitch';
 import { featureFlagsApiRef } from '@backstage/core-plugin-api';
@@ -28,7 +28,7 @@ import { LocalStorageFeatureFlags } from '@backstage/core-app-api';
 import { TestApiProvider } from '@backstage/test-utils';
 
 const mockFeatureFlagsApi = new LocalStorageFeatureFlags();
-const Wrapper = ({ children }: { children?: React.ReactNode }) => (
+const Wrapper = ({ children }: { children?: ReactNode }) => (
   <TestApiProvider apis={[[featureFlagsApiRef, mockFeatureFlagsApi]]}>
     {children}
   </TestApiProvider>

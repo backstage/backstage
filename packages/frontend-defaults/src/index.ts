@@ -20,11 +20,8 @@
  * @packageDocumentation
  */
 
-export {
-  createApp,
-  type CreateAppOptions,
-  type CreateAppFeatureLoader,
-} from './createApp';
+export { createApp, type CreateAppOptions } from './createApp';
 export { createPublicSignInApp } from './createPublicSignInApp';
 export { discoverAvailableFeatures } from './discovery';
 export { resolveAsyncFeatures } from './resolution';
+export { maybeCreateErrorPage } from './maybeCreateErrorPage';

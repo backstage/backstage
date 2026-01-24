@@ -32,14 +32,18 @@ import {
   PassportOAuthAuthenticatorHelper,
   PassportOAuthPrivateInfo,
 } from '@backstage/plugin-auth-node';
+import { durationToMilliseconds } from '@backstage/types';
+import { readDurationFromConfig } from '@backstage/config';
 
 const HTTP_OPTION_TIMEOUT = 10000;
-const httpOptionsProvider: CustomHttpOptionsProvider = (_url, options) => {
-  return {
-    ...options,
-    timeout: HTTP_OPTION_TIMEOUT,
+const createHttpOptionsProvider =
+  ({ timeout }: { timeout?: number }): CustomHttpOptionsProvider =>
+  (_url, options) => {
+    return {
+      ...options,
+      timeout: timeout ?? HTTP_OPTION_TIMEOUT,
+    };
   };
-};
 
 /**
  * authentication result for the OIDC which includes the token set and user
@@ -79,11 +83,23 @@ export const oidcAuthenticator = createOAuthAuthenticator({
     );
     const initializedPrompt = config.getOptionalString('prompt');
 
+    const startUrlSearchParams: Record<string, string> =
+      config.getOptional('startUrlSearchParams') || {};
+
     if (config.has('scope')) {
       throw new Error(
         'The oidc provider no longer supports the "scope" configuration option. Please use the "additionalScopes" option instead.',
       );
     }
+
+    const timeoutMilliseconds = config.has('timeout')
+      ? durationToMilliseconds(
+          readDurationFromConfig(config, { key: 'timeout' }),
+        )
+      : undefined;
+    const httpOptionsProvider = createHttpOptionsProvider({
+      timeout: timeoutMilliseconds,
+    });
 
     Issuer[custom.http_options] = httpOptionsProvider;
     const promise = Issuer.discover(metadataUrl).then(issuer => {
@@ -130,17 +146,21 @@ export const oidcAuthenticator = createOAuthAuthenticator({
       return { helper, client, strategy };
     });
 
-    return { initializedPrompt, promise };
+    return { initializedPrompt, promise, searchParams: startUrlSearchParams };
   },
 
   async start(input, ctx) {
-    const { initializedPrompt, promise } = ctx;
+    const { initializedPrompt, promise, searchParams } = ctx;
     const { helper } = await promise;
+
+    // Merge the custom start URL params, but do not override the standard params (scope, state etc)
     const options: Record<string, string> = {
+      ...searchParams,
       scope: input.scope,
       state: input.state,
       nonce: crypto.randomBytes(16).toString('base64'),
     };
+
     const prompt = initializedPrompt || 'none';
     if (prompt !== 'auto') {
       options.prompt = prompt;

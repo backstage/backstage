@@ -14,17 +14,19 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { screen } from '@testing-library/react';
 import { JobsAccordions } from './JobsAccordions';
 import * as oneCronJobsFixture from '../../__fixtures__/1-cronjobs.json';
 import { renderInTestApp } from '@backstage/test-utils';
 import { kubernetesProviders } from '../../hooks/test-utils';
-import { V1Job } from '@kubernetes/client-node';
-import { ObjectSerializer } from '@kubernetes/client-node/dist/gen/models/ObjectSerializer';
+import type { V1Job } from '@kubernetes/client-node';
 
 describe('JobsAccordions', () => {
   it('should render 2 jobs', async () => {
+    const { ObjectSerializer } = await import(
+      '@kubernetes/client-node/dist/gen/models/ObjectSerializer'
+    );
+
     const wrapper = kubernetesProviders(oneCronJobsFixture, new Set<string>());
 
     const jobs: V1Job[] = oneCronJobsFixture.jobs.map(

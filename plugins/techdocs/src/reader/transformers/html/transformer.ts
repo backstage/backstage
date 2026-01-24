@@ -20,7 +20,12 @@ import { useCallback, useMemo } from 'react';
 import { configApiRef, useApi } from '@backstage/core-plugin-api';
 
 import { Transformer } from '../transformer';
-import { removeUnsafeIframes, removeUnsafeLinks } from './hooks';
+import {
+  removeRestrictedAttributes,
+  removeUnsafeIframes,
+  removeUnsafeLinks,
+  removeUnsafeMetaTags,
+} from './hooks';
 
 /**
  * Returns html sanitizer configuration
@@ -51,32 +56,44 @@ export const useSanitizerTransformer = (): Transformer => {
         DOMPurify.addHook('beforeSanitizeElements', removeUnsafeIframes(hosts));
       }
 
-      // Only allow meta tags if they are used for refreshing the page. They are required for the redirect feature.
-      DOMPurify.addHook('uponSanitizeElement', (currNode, data) => {
-        if (data.tagName === 'meta') {
-          const isMetaRefreshTag =
-            currNode.getAttribute('http-equiv') === 'refresh' &&
-            currNode.getAttribute('content')?.includes('url=');
-          if (!isMetaRefreshTag) {
-            currNode.parentNode?.removeChild(currNode);
-          }
-        }
-      });
+      DOMPurify.addHook('uponSanitizeElement', removeUnsafeMetaTags);
 
-      // Only allow http-equiv and content attributes on meta tags. They are required for the redirect feature.
-      DOMPurify.addHook('uponSanitizeAttribute', (currNode, data) => {
-        if (currNode.tagName !== 'meta') {
-          if (data.attrName === 'http-equiv' || data.attrName === 'content') {
-            currNode.removeAttribute(data.attrName);
-          }
-        }
-      });
+      DOMPurify.addHook('uponSanitizeAttribute', removeRestrictedAttributes);
 
       const tagNameCheck = config?.getOptionalString(
         'allowedCustomElementTagNameRegExp',
       );
       const attributeNameCheck = config?.getOptionalString(
         'allowedCustomElementAttributeNameRegExp',
+      );
+      const additionalAllowedURIProtocols =
+        config?.getOptionalStringArray('additionalAllowedURIProtocols') || [];
+
+      // Define allowed URI protocols, including any additional ones from the config.
+      // The default protocols are based on the DOMPurify defaults.
+      const allowedURIProtocols = [
+        'callto',
+        'cid',
+        'ftp',
+        'ftps',
+        'http',
+        'https',
+        'mailto',
+        'matrix',
+        'sms',
+        'tel',
+        'xmpp',
+        ...additionalAllowedURIProtocols,
+      ].filter(Boolean);
+
+      const allowedURIRegExp = new RegExp(
+        // This regex is not exposed by DOMPurify, so we need to define it ourselves.
+        // It is possible for this to drift from the default in future versions of DOMPurify.
+        // See: https://raw.githubusercontent.com/cure53/DOMPurify/master/src/regexp.ts
+        `^(?:${allowedURIProtocols.join(
+          '|',
+        )}:|[^a-z]|[a-z+.-]+(?:[^a-z+.\\-:]|$))`,
+        'i',
       );
 
       // using outerHTML as we want to preserve the html tag attributes (lang)
@@ -86,13 +103,14 @@ export const useSanitizerTransformer = (): Transformer => {
         ADD_ATTR: ['http-equiv', 'content', 'dominant-baseline'],
         WHOLE_DOCUMENT: true,
         RETURN_DOM: true,
+        ALLOWED_URI_REGEXP: allowedURIRegExp,
         CUSTOM_ELEMENT_HANDLING: {
           tagNameCheck: tagNameCheck ? new RegExp(tagNameCheck) : undefined,
           attributeNameCheck: attributeNameCheck
             ? new RegExp(attributeNameCheck)
             : undefined,
         },
-      });
+      }) as Element;
     },
     [config],
   );

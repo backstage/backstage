@@ -1,0 +1,10 @@
+---
+title: Holiday Tracker
+author: Infosys Limited
+authorUrl: https://github.com/Infosys
+category: Utility
+description: The Holiday Tracker Plugin for Backstage provides real-time public holiday information for a specified country or region using the Calendarific API.
+documentation: https://github.com/Infosys/holiday-tracker-plugin/blob/main/plugins/holiday-tracker/README.md
+iconUrl: https://github.com/Infosys/holiday-tracker-plugin/blob/main/plugins/holiday-tracker/src/docs/holiday-tracker-plugin.logo.png?raw=true
+npmPackageName: '@infosys_ltd/holiday-tracker-plugin'
+addedDate: '2025-07-23'

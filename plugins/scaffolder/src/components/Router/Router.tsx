@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { PropsWithChildren } from 'react';
+import { ComponentType, PropsWithChildren } from 'react';
 import { Routes, Route, useOutlet } from 'react-router-dom';
 
 import {
@@ -41,6 +41,7 @@ import {
   scaffolderTaskRouteRef,
   selectedTemplateRouteRef,
   templateFormRouteRef,
+  templatingExtensionsRouteRef,
 } from '../../routes';
 
 import { ActionsPage } from '../../components/ActionsPage';
@@ -59,13 +60,12 @@ import {
   CustomFieldsPage,
 } from '../../alpha/components/TemplateEditorPage';
 import { RequirePermission } from '@backstage/plugin-permission-react';
-import {
-  taskReadPermission,
-  templateManagementPermission,
-} from '@backstage/plugin-scaffolder-common/alpha';
+import { templateManagementPermission } from '@backstage/plugin-scaffolder-common/alpha';
 import { useApp } from '@backstage/core-plugin-api';
-import { FormField, OpaqueFormField } from '@internal/scaffolder';
+import { OpaqueFormField } from '@internal/scaffolder';
 import { useAsync, useMountEffect } from '@react-hookz/web';
+import { TemplatingExtensionsPage } from '../TemplatingExtensionsPage';
+import { FormField } from '@backstage/plugin-scaffolder-react/alpha';
 
 /**
  * The Props for the Scaffolder Router
@@ -74,16 +74,16 @@ import { useAsync, useMountEffect } from '@react-hookz/web';
  */
 export type RouterProps = {
   components?: {
-    ReviewStepComponent?: React.ComponentType<ReviewStepProps>;
-    TemplateCardComponent?: React.ComponentType<{
+    ReviewStepComponent?: ComponentType<ReviewStepProps>;
+    TemplateCardComponent?: ComponentType<{
       template: TemplateEntityV1beta3;
     }>;
-    TaskPageComponent?: React.ComponentType<PropsWithChildren<{}>>;
-    EXPERIMENTAL_TemplateOutputsComponent?: React.ComponentType<{
+    TaskPageComponent?: ComponentType<PropsWithChildren<{}>>;
+    EXPERIMENTAL_TemplateOutputsComponent?: ComponentType<{
       output?: ScaffolderTaskOutput;
     }>;
-    EXPERIMENTAL_TemplateListPageComponent?: React.ComponentType<TemplateListPageProps>;
-    EXPERIMENTAL_TemplateWizardPageComponent?: React.ComponentType<TemplateWizardPageProps>;
+    EXPERIMENTAL_TemplateListPageComponent?: ComponentType<TemplateListPageProps>;
+    EXPERIMENTAL_TemplateWizardPageComponent?: ComponentType<TemplateWizardPageProps>;
   };
   groups?: TemplateGroupFilter[];
   templateFilter?: (entity: TemplateEntityV1beta3) => boolean;
@@ -103,6 +103,8 @@ export type RouterProps = {
     tasks?: boolean;
     /** Whether to show a link to the create page (on /create subroutes) */
     create?: boolean;
+    /** Whether to show a link to the templating extensions page */
+    templatingExtensions?: boolean;
   };
 };
 
@@ -180,11 +182,9 @@ export const InternalRouter = (
       <Route
         path={scaffolderTaskRouteRef.path}
         element={
-          <RequirePermission permission={taskReadPermission}>
-            <TaskPageComponent
-              TemplateOutputsComponent={TemplateOutputsComponent}
-            />
-          </RequirePermission>
+          <TaskPageComponent
+            TemplateOutputsComponent={TemplateOutputsComponent}
+          />
         }
       />
       <Route
@@ -228,11 +228,7 @@ export const InternalRouter = (
       />
       <Route
         path={scaffolderListTaskRouteRef.path}
-        element={
-          <RequirePermission permission={taskReadPermission}>
-            <ListTasksPage contextMenu={props.contextMenu} />
-          </RequirePermission>
-        }
+        element={<ListTasksPage contextMenu={props.contextMenu} />}
       />
       <Route
         path={editorRouteRef.path}
@@ -247,6 +243,10 @@ export const InternalRouter = (
             </SecretsContextProvider>
           </RequirePermission>
         }
+      />
+      <Route
+        path={templatingExtensionsRouteRef.path}
+        element={<TemplatingExtensionsPage contextMenu={props.contextMenu} />}
       />
       <Route path="*" element={<NotFoundErrorPage />} />
     </Routes>

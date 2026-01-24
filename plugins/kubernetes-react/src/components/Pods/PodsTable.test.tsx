@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { screen } from '@testing-library/react';
 import * as pod from './__fixtures__/pod.json';
 import * as crashingPod from './__fixtures__/crashing-pod.json';
@@ -75,7 +74,7 @@ describe('PodsTable', () => {
           limitTotal: '134217728',
         },
         cpu: {
-          currentUsage: 0.4966115,
+          currentUsage: 0.0496,
           requestTotal: 0.05,
           limitTotal: 0.05,
         },

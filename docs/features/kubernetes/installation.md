@@ -87,6 +87,7 @@ import {
   ClusterDetails,
   KubernetesClustersSupplier,
   kubernetesClusterSupplierExtensionPoint,
+  kubernetesServiceLocatorExtensionPoint,
 } from '@backstage/plugin-kubernetes-node';
 
 export class CustomClustersSupplier implements KubernetesClustersSupplier {
@@ -119,11 +120,25 @@ export const kubernetesModuleCustomClusterDiscovery = createBackendModule({
   register(env) {
     env.registerInit({
       deps: {
-        kubernetes: kubernetesClusterSupplierExtensionPoint,
+        clusterSupplier: kubernetesClusterSupplierExtensionPoint,
+        serviceLocator: kubernetesServiceLocatorExtensionPoint,
       },
-      async init({ kubernetes }) {
-        kubernetes.addClusterSupplier(
+      async init({ clusterSupplier, serviceLocator }) {
+        // simple replace of the internal dependency
+        clusterSupplier.addClusterSupplier(
           CustomClustersSupplier.create(Duration.fromObject({ minutes: 60 })),
+        );
+
+        // there's also the ability to get access to some of the default implementations of the extension points where
+        // neccessary:
+        serviceLocator.addServiceLocator(
+          async ({ getDefault, clusterSupplier }) => {
+            // get access to the default service locator:
+            const defaultImplementation = await getDefault();
+
+            // build your own with the clusterSupplier dependency:
+            return new MyNewServiceLocator({ clusterSupplier });
+          },
         );
       },
     });

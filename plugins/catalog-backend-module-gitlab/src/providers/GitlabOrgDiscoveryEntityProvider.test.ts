@@ -303,7 +303,7 @@ describe('GitlabOrgDiscoveryEntityProvider - refresh', () => {
     });
   });
 
-  // This should return all members of the SaaS Root group (group1) -> expected_full_org_scan_entities_saas
+  // This should return all members of the SaaS Root group (group1) and any subgroups -> expected_full_org_scan_entities_saas
   it('SaaS: should get all saas root group users when restrictUsersToGroup is not set', async () => {
     const config = new ConfigReader(mock.config_org_group_saas);
     const schedule = new PersistingTaskRunner();
@@ -334,7 +334,7 @@ describe('GitlabOrgDiscoveryEntityProvider - refresh', () => {
     });
   });
 
-  // This should return all members of the SaaS Root group (group1) -> expected_full_org_scan_entities_saas
+  // This should return all members of the SaaS Root group (group1) and any subgroups -> expected_full_org_scan_entities_saas
   it('SaaS: should get all saas root group users when restrictUsersToGroup is false', async () => {
     const config = new ConfigReader(
       mock.config_org_group_restrictUsers_false_saas,

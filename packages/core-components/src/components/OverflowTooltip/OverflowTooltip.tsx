@@ -16,7 +16,6 @@
 
 import { makeStyles } from '@material-ui/core/styles';
 import Tooltip, { TooltipProps } from '@material-ui/core/Tooltip';
-import React from 'react';
 import Typography from '@material-ui/core/Typography';
 
 type Props = {
@@ -24,6 +23,7 @@ type Props = {
   title?: TooltipProps['title'];
   line?: number | undefined;
   placement?: TooltipProps['placement'];
+  tooltipClasses?: TooltipProps['classes'];
 };
 
 export type OverflowTooltipClassKey = 'container';
@@ -52,6 +52,7 @@ export function OverflowTooltip(props: Props) {
     <Tooltip
       title={props.title ?? (props.text || '')}
       placement={props.placement}
+      classes={props.tooltipClasses}
     >
       <Typography className={classes.typo} variant="inherit">
         {props.text}

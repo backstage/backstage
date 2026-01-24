@@ -28,7 +28,7 @@ import {
   useState,
 } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Direction } from '../EntityRelationsGraph';
+import { Direction } from '../../lib/types';
 
 export type CatalogGraphPageValue = {
   rootEntityNames: CompoundEntityRef[];
@@ -73,8 +73,10 @@ export function useCatalogGraphPage({
 
   const query = useMemo(
     () =>
-      (qs.parse(location.search, { arrayLimit: 0, ignoreQueryPrefix: true }) ||
-        {}) as {
+      (qs.parse(location.search, {
+        arrayLimit: 10000,
+        ignoreQueryPrefix: true,
+      }) || {}) as {
         selectedRelations?: string[] | string;
         selectedKinds?: string[] | string;
         rootEntityRefs?: string[] | string;

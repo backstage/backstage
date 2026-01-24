@@ -167,7 +167,7 @@ describe('readAzureIntegrationConfig', () => {
     });
   });
 
-  it('reads all values when using a managed identity credential', () => {
+  it('reads all values when using a managed identity client assertion credential', () => {
     const output = readAzureIntegrationConfig(
       buildConfig({
         host: 'dev.azure.com',
@@ -175,6 +175,62 @@ describe('readAzureIntegrationConfig', () => {
           {
             organizations: ['org1', 'org2'],
             clientId: 'id',
+            managedIdentityClientId: 'system-assigned',
+            tenantId: 'tenant',
+          },
+        ],
+      }),
+    );
+
+    expect(output).toEqual({
+      host: 'dev.azure.com',
+      credentials: [
+        {
+          kind: 'ManagedIdentityClientAssertion',
+          organizations: ['org1', 'org2'],
+          clientId: 'id',
+          managedIdentityClientId: 'system-assigned',
+          tenantId: 'tenant',
+        },
+      ],
+    });
+  });
+
+  it('reads all values when using a managed identity client assertion credential (without organizations)', () => {
+    const output = readAzureIntegrationConfig(
+      buildConfig({
+        host: 'dev.azure.com',
+        credentials: [
+          {
+            clientId: 'id',
+            managedIdentityClientId: 'system-assigned',
+            tenantId: 'tenant',
+          },
+        ],
+      }),
+    );
+
+    expect(output).toEqual({
+      host: 'dev.azure.com',
+      credentials: [
+        {
+          kind: 'ManagedIdentityClientAssertion',
+          clientId: 'id',
+          managedIdentityClientId: 'system-assigned',
+          tenantId: 'tenant',
+        },
+      ],
+    });
+  });
+
+  it('reads all values when using a managed identity credential', () => {
+    const output = readAzureIntegrationConfig(
+      buildConfig({
+        host: 'dev.azure.com',
+        credentials: [
+          {
+            organizations: ['org1', 'org2'],
+            clientId: 'system-assigned',
           },
         ],
       }),
@@ -186,7 +242,7 @@ describe('readAzureIntegrationConfig', () => {
         {
           kind: 'ManagedIdentity',
           organizations: ['org1', 'org2'],
-          clientId: 'id',
+          clientId: 'system-assigned',
         },
       ],
     });

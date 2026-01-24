@@ -1,5 +1,5 @@
 /*
- * Copyright 2023 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,43 +13,54 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import React from 'react';
-// TODO: Dependency on MUI should be removed from core packages
-import Button from '@material-ui/core/Button';
+import {
+  NotFoundErrorPage as SwappableNotFoundErrorPage,
+  Progress as SwappableProgress,
+  ErrorDisplay as SwappableErrorDisplay,
+  SwappableComponentBlueprint,
+} from '@backstage/frontend-plugin-api';
 
 import {
-  createComponentExtension,
-  coreComponentRefs,
-} from '@backstage/frontend-plugin-api';
-import { ErrorPanel } from '@backstage/core-components';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { components as defaultComponents } from '../../../../packages/app-defaults/src/defaults';
+  ErrorPage,
+  ErrorPanel,
+  Progress as ProgressComponent,
+} from '@backstage/core-components';
+import Button from '@material-ui/core/Button';
 
-export const DefaultProgressComponent = createComponentExtension({
-  ref: coreComponentRefs.progress,
-  loader: { sync: () => defaultComponents.Progress },
+export const Progress = SwappableComponentBlueprint.make({
+  name: 'core-progress',
+  params: define =>
+    define({
+      component: SwappableProgress,
+      loader: () => ProgressComponent,
+    }),
 });
 
-export const DefaultNotFoundErrorPageComponent = createComponentExtension({
-  ref: coreComponentRefs.notFoundErrorPage,
-  loader: { sync: () => defaultComponents.NotFoundErrorPage },
+export const NotFoundErrorPage = SwappableComponentBlueprint.make({
+  name: 'core-not-found-error-page',
+  params: define =>
+    define({
+      component: SwappableNotFoundErrorPage,
+      loader: () => () =>
+        <ErrorPage status="404" statusMessage="PAGE NOT FOUND" />,
+    }),
 });
 
-export const DefaultErrorBoundaryComponent = createComponentExtension({
-  ref: coreComponentRefs.errorBoundaryFallback,
-  loader: {
-    sync: () => props => {
-      const { plugin, error, resetError } = props;
-      const title = `Error in ${plugin?.id}`;
-
-      return (
-        <ErrorPanel title={title} error={error} defaultExpanded>
-          <Button variant="outlined" onClick={resetError}>
-            Retry
-          </Button>
-        </ErrorPanel>
-      );
-    },
-  },
+export const ErrorDisplay = SwappableComponentBlueprint.make({
+  name: 'core-error-display',
+  params: define =>
+    define({
+      component: SwappableErrorDisplay,
+      loader: () => props => {
+        const { plugin, error, resetError } = props;
+        const title = `Error in ${plugin?.id}`;
+        return (
+          <ErrorPanel title={title} error={error} defaultExpanded>
+            <Button variant="outlined" onClick={resetError}>
+              Retry
+            </Button>
+          </ErrorPanel>
+        );
+      },
+    }),
 });

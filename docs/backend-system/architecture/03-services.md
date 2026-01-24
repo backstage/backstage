@@ -2,7 +2,6 @@
 id: services
 title: Backend Services
 sidebar_label: Services
-# prettier-ignore
 description: Services for backend plugins
 ---
 
@@ -223,6 +222,35 @@ export const customFooServiceFactory = createServiceFactory({
 ```
 
 This allows you to provide more advanced options for the service implementation that couldn't be expressed through static configuration. It also gives users of the service implementation access to other services through dependency injection, which can be useful for their customizations.
+
+## Multiton
+
+By default the service reference will point to a singleton instance of the service. This mean if a new service factory uses this reference it will override the previous one. This is the most common use-case, but in some cases you may want to have multiple instances of the same service.
+For some services, it is desirable to extend the functionality instead of overriding it. For example, some services could have many handlers to address specific events, and you may want to add a new handler instead of overriding the previous one. In this case, you can use the `multiton` option when creating the service reference:
+
+```ts
+// example-service-ref.ts
+import { createServiceRef } from '@backstage/backend-plugin-api';
+
+export interface FooService {
+  foo(options: FooOptions): Promise<FooResult>;
+}
+
+export const fooServiceRef = createServiceRef<FooService>({
+  id: 'example.foo',
+  multiton: true, // this service ref will be an array of instances
+});
+```
+
+When adding this `serviceRef` as a dependency to a factory, the factory will receive an array of instances instead of a single instance:
+
+```ts
+deps: {fooServices: fooServiceRef},
+  factory(fooServices) {
+    // fooServices is an array of instances
+    return new Bar(fooServices);
+  },
+```
 
 ## Service Factory Options Pattern
 

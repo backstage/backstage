@@ -18,5 +18,10 @@ export {
   ExtensionBoundary,
   type ExtensionBoundaryProps,
 } from './ExtensionBoundary';
-export { coreComponentRefs } from './coreComponentRefs';
-export { createComponentRef, type ComponentRef } from './createComponentRef';
+export {
+  createSwappableComponent,
+  type CreateSwappableComponentOptions,
+  type SwappableComponentRef,
+} from './createSwappableComponent';
+export { useAppNode } from './AppNodeProvider';
+export * from './DefaultSwappableComponents';

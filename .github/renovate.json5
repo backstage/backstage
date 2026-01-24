@@ -31,9 +31,9 @@
       matchSourceUrls: ['https://github.com/microsoft/rushstack{/,}**'],
     },
     {
-      groupName: 'SVGR monorepo packages',
+      groupName: 'Module-federation monorepo packages',
       rangeStrategy: 'replace',
-      matchSourceUrls: ['https://github.com/gregberge/svgr{/,}**'],
+      matchSourceUrls: ['https://github.com/module-federation/core{/,}**'],
     },
     // We update yarn packages manually as it's gzip'd and we don't want to pollute the repository too much.
     {

@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-catalog-graph",
-  "version": "0.4.17-next.2",
+  "version": "0.5.6",
   "backstage": {
     "role": "frontend-plugin",
     "pluginId": "catalog-graph",
@@ -51,7 +51,6 @@
   "dependencies": {
     "@backstage/catalog-client": "workspace:^",
     "@backstage/catalog-model": "workspace:^",
-    "@backstage/core-compat-api": "workspace:^",
     "@backstage/core-components": "workspace:^",
     "@backstage/core-plugin-api": "workspace:^",
     "@backstage/frontend-plugin-api": "workspace:^",

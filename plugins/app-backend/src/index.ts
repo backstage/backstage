@@ -21,4 +21,3 @@
  */
 
 export { appPlugin as default } from './service/appPlugin';
-export * from './service/router';

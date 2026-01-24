@@ -45,12 +45,14 @@ import {
 const BATCH_SIZE = 50;
 
 export class DefaultProviderDatabase implements ProviderDatabase {
-  constructor(
-    private readonly options: {
-      database: Knex;
-      logger: LoggerService;
-    },
-  ) {}
+  private readonly options: {
+    database: Knex;
+    logger: LoggerService;
+  };
+
+  constructor(options: { database: Knex; logger: LoggerService }) {
+    this.options = options;
+  }
 
   async transaction<T>(fn: (tx: Transaction) => Promise<T>): Promise<T> {
     try {

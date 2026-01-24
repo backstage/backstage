@@ -15,7 +15,7 @@
  */
 
 import type { JsonObject, JsonValue } from '@backstage/types';
-import {
+import type {
   PodStatus,
   V1ConfigMap,
   V1CronJob,
@@ -72,7 +72,7 @@ export interface ClusterAttributes {
    */
   name: string;
   /**
-   * Human-readable name for the cluster, to be dispayed in UIs.
+   * Human-readable name for the cluster, to be displayed in UIs.
    */
   title?: string;
   /**
@@ -129,6 +129,7 @@ export type FetchResponse =
   | PodFetchResponse
   | ServiceFetchResponse
   | ConfigMapFetchResponse
+  | SecretFetchResponse
   | DeploymentFetchResponse
   | LimitRangeFetchResponse
   | ResourceQuotaFetchResponse
@@ -159,6 +160,12 @@ export interface ServiceFetchResponse {
 export interface ConfigMapFetchResponse {
   type: 'configmaps';
   resources: Array<V1ConfigMap>;
+}
+
+/** @public */
+export interface SecretFetchResponse {
+  type: 'secrets';
+  resources: Array<V1Secret>;
 }
 
 /** @public */
@@ -297,6 +304,7 @@ export interface DeploymentResources {
 export interface GroupedResponses extends DeploymentResources {
   services: V1Service[];
   configMaps: V1ConfigMap[];
+  secrets: V1Secret[];
   ingresses: V1Ingress[];
   jobs: V1Job[];
   cronJobs: V1CronJob[];

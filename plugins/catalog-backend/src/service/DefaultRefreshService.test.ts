@@ -57,6 +57,7 @@ describe('DefaultRefreshService', () => {
         database: knex,
         logger,
         refreshInterval: () => 100,
+        events: mockServices.events.mock(),
       }),
       catalogDb: new DefaultCatalogDatabase({
         database: knex,
@@ -121,6 +122,7 @@ describe('DefaultRefreshService', () => {
       processingDatabase: db,
       knex: knex,
       stitcher: stitcher,
+      scheduler: mockServices.scheduler(),
       orchestrator: {
         async process(request: EntityProcessingRequest) {
           const entityRef = stringifyEntityRef(request.entity);
@@ -161,6 +163,7 @@ describe('DefaultRefreshService', () => {
       },
       createHash: () => createHash('sha1'),
       pollingIntervalMs: 50,
+      events: mockServices.events.mock(),
     });
 
     return engine;

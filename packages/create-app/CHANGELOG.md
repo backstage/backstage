@@ -1,5 +1,469 @@
 # @backstage/create-app
 
+## 0.7.8
+
+### Patch Changes
+
+- fea3e39: Bumped create-app version.
+- 9f1ee3e: Bumped create-app version.
+- 880310b: Bumped create-app version.
+- f1fe6fe: Updated Dockerfile to use Node 24 and Debian Trixie
+- Updated dependencies
+  - @backstage/cli-common@0.1.17
+
+## 0.7.8-next.3
+
+### Patch Changes
+
+- Bumped create-app version.
+
+## 0.7.8-next.2
+
+### Patch Changes
+
+- f1fe6fe: Updated Dockerfile to use Node 24 and Debian Trixie
+
+## 0.7.8-next.1
+
+### Patch Changes
+
+- Bumped create-app version.
+
+## 0.7.8-next.0
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.16
+
+## 0.7.7
+
+### Patch Changes
+
+- 336db00: Bumped create-app version.
+- 2bae83a: Updated engines to support Node 22 or 24
+- c8c2329: Add proxy configuration from env-vars to create-app tasks
+- 2bae83a: Bumped dev dependencies `@types/node`
+- Updated dependencies
+  - @backstage/cli-common@0.1.16
+
+## 0.7.7-next.2
+
+### Patch Changes
+
+- 2bae83a: Updated engines to support Node 22 or 24
+- 2bae83a: Bumped dev dependencies `@types/node`
+- Updated dependencies
+  - @backstage/cli-common@0.1.16-next.2
+
+## 0.7.7-next.1
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.16-next.1
+
+## 0.7.7-next.0
+
+### Patch Changes
+
+- c8c2329: Add proxy configuration from env-vars to create-app tasks
+- Updated dependencies
+  - @backstage/cli-common@0.1.16-next.0
+
+## 0.7.6
+
+### Patch Changes
+
+- 2c1fe37: Bumped create-app version.
+- 20fae88: Bumped create-app version.
+- 9f939a6: Added `@backstage/plugin-app-visualizer` to the app in the `--next` template.
+- fc7cbfc: Added the new `@backstage/cli/templates/catalog-provider-module` template to the explicit template configuration for the `next-app` template.
+
+## 0.7.6-next.3
+
+### Patch Changes
+
+- Bumped create-app version.
+
+## 0.7.6-next.2
+
+### Patch Changes
+
+- 9f939a6: Added `@backstage/plugin-app-visualizer` to the app in the `--next` template.
+
+## 0.7.6-next.1
+
+### Patch Changes
+
+- Bumped create-app version.
+
+## 0.7.6-next.0
+
+### Patch Changes
+
+- fc7cbfc: Added the new `@backstage/cli/templates/catalog-provider-module` template to the explicit template configuration for the `next-app` template.
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+
+## 0.7.5
+
+### Patch Changes
+
+- c73bfa4: Bumped create-app version.
+- c2c6054: Bumped create-app version.
+- ffb5b44: Bumped create-app version.
+- 316d077: Bumped create-app version.
+- 7dcedff: Bump `better-sqlite3` to the latest version
+
+## 0.7.5-next.3
+
+### Patch Changes
+
+- Bumped create-app version.
+
+## 0.7.5-next.2
+
+### Patch Changes
+
+- Bumped create-app version.
+
+## 0.7.5-next.1
+
+### Patch Changes
+
+- Bumped create-app version.
+
+## 0.7.5-next.0
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+
+## 0.7.4
+
+### Patch Changes
+
+- b2d9fc1: Creates a plugin that redirects from the Home page to the Catalog index page to avoid seeing a not found page error when starting the app.
+- 020d484: Bumped create-app version.
+- 02dbe8e: Add missing dependency to `@backstage/cli`, `@backstage/core-plugin-api` and `@backstage/integration-react`
+
+## 0.7.4-next.2
+
+### Patch Changes
+
+- Bumped create-app version.
+
+## 0.7.4-next.1
+
+### Patch Changes
+
+- 02dbe8e: Add missing dependency to `@backstage/cli`, `@backstage/core-plugin-api` and `@backstage/integration-react`
+
+## 0.7.4-next.0
+
+### Patch Changes
+
+- b2d9fc1: Creates a plugin that redirects from the Home page to the Catalog index page to avoid seeing a not found page error when starting the app.
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+
+## 0.7.2
+
+### Patch Changes
+
+- d7a3d04: Created a flag for scaffolding apps using the new frontend system.
+- 4704160: Bumped create-app version.
+- 1e8a013: Bumped create-app version.
+- e33fce1: Added Notifications and Signals to be installed by default
+- 8b1bf6e: Updated the `app.packages` config setting now that it no longer is experimental
+- 2a156e0: Updated the `better-sqlite` dependency from `v9.0.0` to `v13.0.0`. You can apply this change to your instance by applying the following change to your `packages/backend/package.json` and running `yarn install`.
+
+  ```diff
+    "dependencies": {
+      "app": "link:../app",
+  -    "better-sqlite3": "^9.0.0",
+  +    "better-sqlite3": "^12.0.0",
+      "node-gyp": "^10.0.0",
+      "pg": "^8.11.3"
+    }
+  ```
+
+## 0.7.2-next.3
+
+### Patch Changes
+
+- 8b1bf6e: Updated the `app.packages` config setting now that it no longer is experimental
+
+## 0.7.2-next.2
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+
+## 0.7.2-next.1
+
+### Patch Changes
+
+- d7a3d04: Created a flag for scaffolding apps using the new frontend system.
+- 2a156e0: Updated the `better-sqlite` dependency from `v9.0.0` to `v13.0.0`. You can apply this change to your instance by applying the following change to your `packages/backend/package.json` and running `yarn install`.
+
+  ```diff
+    "dependencies": {
+      "app": "link:../app",
+  -    "better-sqlite3": "^9.0.0",
+  +    "better-sqlite3": "^12.0.0",
+      "node-gyp": "^10.0.0",
+      "pg": "^8.11.3"
+    }
+  ```
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+
+## 0.7.2-next.0
+
+### Patch Changes
+
+- Bumped create-app version.
+
+## 0.7.1
+
+### Patch Changes
+
+- 952cefe: Bumped create-app version.
+- 2339363: **BREAKING:** The experimental `catalog.useUrlReadersSearch` configuration flag (introduced in v1.36) has been removed.
+
+  The `UrlReaderProcessor` now always uses the `search` method of `UrlReaders`. Built-in `UrlReaderService` implementations have been updated accordingly.
+  If you use custom `UrlReaderService` implementations, you need to adapt their `search` method to correctly handle both specific URLs and potential
+  search patterns (see changes on built-in readers [in the original PR](https://github.com/backstage/backstage/pull/28379/files#diff-68b0452f173ee54bdd40f7b5e047a9cb8bb59200425622c212c217b76dac1d1b)).
+
+  Previous behavior was to call the `search` method only if the parsed Git URL's filename contained a wildcard and use `readUrl` otherwise. Each `UrlReaderService` must implement this logic in the `search` method instead.
+
+  This allows each `UrlReaderService` implementation to check whether it's a search URL (that contains a wildcard pattern) or not using logic that is specific to each provider.
+
+- c4a0830: Removed deprecated 'allowedHosts' field from GitHub Publish action input in default template files to fix validation errors with strict Zod validation.
+
+## 0.7.1-next.2
+
+### Patch Changes
+
+- c4a0830: Removed deprecated 'allowedHosts' field from GitHub Publish action input in default template files to fix validation errors with strict Zod validation.
+
+## 0.7.1-next.1
+
+### Patch Changes
+
+- Bumped create-app version.
+
+## 0.7.1-next.0
+
+### Patch Changes
+
+- 2339363: **BREAKING:** The experimental `catalog.useUrlReadersSearch` configuration flag (introduced in v1.36) has been removed.
+
+  The `UrlReaderProcessor` now always uses the `search` method of `UrlReaders`. Built-in `UrlReaderService` implementations have been updated accordingly.
+  If you use custom `UrlReaderService` implementations, you need to adapt their `search` method to correctly handle both specific URLs and potential
+  search patterns (see changes on built-in readers [in the original PR](https://github.com/backstage/backstage/pull/28379/files#diff-68b0452f173ee54bdd40f7b5e047a9cb8bb59200425622c212c217b76dac1d1b)).
+
+  Previous behavior was to call the `search` method only if the parsed Git URL's filename contained a wildcard and use `readUrl` otherwise. Each `UrlReaderService` must implement this logic in the `search` method instead.
+
+  This allows each `UrlReaderService` implementation to check whether it's a search URL (that contains a wildcard pattern) or not using logic that is specific to each provider.
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+
+## 0.7.0
+
+### Minor Changes
+
+- 30474c4: Add .cache directory to shipped gitignore.
+
+### Patch Changes
+
+- d57a6f7: Bumped create-app version.
+- f628f44: Bumped create-app version.
+- 9c9faf2: Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+
+## 0.7.0-next.3
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+
+## 0.7.0-next.2
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+
+## 0.7.0-next.1
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+
+## 0.7.0-next.0
+
+### Minor Changes
+
+- 30474c4: Add .cache directory to shipped gitignore.
+
+## 0.6.2
+
+### Patch Changes
+
+- 8448948: Removed `lerna-debug.log*` pattern from `.gitignore` as Lerna was removed from the package in version `@backstage/create-app@0.5.19`.
+- ce2cf32: Bumped create-app version.
+- 125d096: Bumped create-app version.
+- 1c0cb7b: Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+
+## 0.6.2-next.3
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+
+## 0.6.2-next.2
+
+### Patch Changes
+
+- 8448948: Removed `lerna-debug.log*` pattern from `.gitignore` as Lerna was removed from the package in version `@backstage/create-app@0.5.19`.
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+
+## 0.6.2-next.1
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+
+## 0.6.2-next.0
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+
+## 0.6.1
+
+### Patch Changes
+
+- 5590536: Bumped create-app version.
+- 2fc663a: Bumped create-app version.
+- edabbd6: Updated the root `package.json` in the template to use the new `backstage-cli repo start` command.
+
+  The `yarn dev` command is now redundant and has been removed from the template. We recommend existing projects to add these or similar scripts to help redirect users:
+
+  ```json
+  {
+    "scripts": {
+      "dev": "echo \"Use 'yarn start' instead\"",
+      "start-backend": "echo \"Use 'yarn start backend' instead\""
+    }
+  }
+  ```
+
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+- c761cf5: **BREAKING** The `publish:github` scaffolder action now defaults to initializing with a branch named "main" instead of "master" when creating new repositories.
+
+  If you or your organization have relied on all new github repositories having a default branch name of "master" you **must** set the `defaultBranch: 'master'` in your existing templates that feature the `publish:github` scaffolder action.
+
+  To keep using the name "master" for your new github repos, these are the **required** changes:
+
+  ```diff
+      - id: publish
+        name: Publish
+        action: publish:github
+        input:
+          allowedHosts: ['github.com']
+          description: This is ${{ parameters.name }}
+          repoUrl: ${{ parameters.repoUrl }}
+  +       defaultBranch: 'master'
+  ```
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+
+## 0.6.1-next.2
+
+### Patch Changes
+
+- edabbd6: Updated the root `package.json` in the template to use the new `backstage-cli repo start` command.
+
+  The `yarn dev` command is now redundant and has been removed from the template. We recommend existing projects to add these or similar scripts to help redirect users:
+
+  ```json
+  {
+    "scripts": {
+      "dev": "echo \"Use 'yarn start' instead\"",
+      "start-backend": "echo \"Use 'yarn start backend' instead\""
+    }
+  }
+  ```
+
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+
+## 0.6.1-next.1
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+
+## 0.6.1-next.0
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+
+## 0.6.0
+
+### Minor Changes
+
+- 31731b0: Upgraded the TypeScript version in the template to `5.8`.
+
+### Patch Changes
+
+- 7d083ce: Canon is now ready to be used in Alpha. We are adding a custom CSS file at the root of the app to make all styles available for Canon components.
+- aed536a: Bumped create-app version.
+- f9fb465: Bumped create-app version.
+- 19e5c3f: Added link to multi-stage Dockerfile documentation as alternative option
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+
 ## 0.6.0-next.2
 
 ### Minor Changes

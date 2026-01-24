@@ -20,6 +20,9 @@ import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
 
+import { Octokit } from 'octokit';
+
+const octokitMock = Octokit as unknown as jest.Mock;
 const mockOctokit = {
   rest: {
     repos: {
@@ -29,13 +32,8 @@ const mockOctokit = {
     },
   },
 };
-
 jest.mock('octokit', () => ({
-  Octokit: class {
-    constructor() {
-      return mockOctokit;
-    }
-  },
+  Octokit: jest.fn(),
 }));
 
 describe('github:branch-protection:create', () => {
@@ -49,7 +47,7 @@ describe('github:branch-protection:create', () => {
   });
 
   const integrations = ScmIntegrations.fromConfig(config);
-  let action: TemplateAction<any>;
+  let action: TemplateAction<any, any, any>;
 
   const mockContext = createMockActionContext({
     input: {
@@ -59,6 +57,8 @@ describe('github:branch-protection:create', () => {
   });
 
   beforeEach(() => {
+    octokitMock.mockImplementation(() => mockOctokit);
+
     mockOctokit.rest.repos.get.mockResolvedValue({
       data: {
         default_branch: 'master',
@@ -71,6 +71,14 @@ describe('github:branch-protection:create', () => {
   });
 
   afterEach(jest.resetAllMocks);
+
+  it('should pass context logger to Octokit client', async () => {
+    await action.handler(mockContext);
+
+    expect(octokitMock).toHaveBeenCalledWith(
+      expect.objectContaining({ log: mockContext.logger }),
+    );
+  });
 
   it('should work with default params', async () => {
     await action.handler(mockContext);
@@ -97,6 +105,7 @@ describe('github:branch-protection:create', () => {
       },
       required_conversation_resolution: false,
       required_linear_history: false,
+      block_creations: false,
     });
     expect(
       mockOctokit.rest.repos.createCommitSignatureProtection,
@@ -134,6 +143,7 @@ describe('github:branch-protection:create', () => {
       },
       required_conversation_resolution: false,
       required_linear_history: false,
+      block_creations: false,
     });
     expect(
       mockOctokit.rest.repos.createCommitSignatureProtection,
@@ -170,6 +180,7 @@ describe('github:branch-protection:create', () => {
         requireLastPushApproval: true,
         requiredCommitSigning: true,
         requiredLinearHistory: true,
+        blockCreations: true,
       },
     });
 
@@ -203,6 +214,7 @@ describe('github:branch-protection:create', () => {
       },
       required_conversation_resolution: true,
       required_linear_history: true,
+      block_creations: true,
     });
     expect(
       mockOctokit.rest.repos.createCommitSignatureProtection,

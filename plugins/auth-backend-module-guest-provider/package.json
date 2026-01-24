@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-auth-backend-module-guest-provider",
-  "version": "0.2.6-next.1",
+  "version": "0.2.15",
   "description": "The guest-provider backend module for the auth plugin.",
   "backstage": {
     "role": "backend-plugin-module",
@@ -44,7 +44,7 @@
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@backstage/config": "workspace:^",
-    "express": "^4.18.2"
+    "express": "^4.22.0"
   },
   "configSchema": "config.d.ts"
 }

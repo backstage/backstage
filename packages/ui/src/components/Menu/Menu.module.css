@@ -1,0 +1,270 @@
+/*
+ * Copyright 2025 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@layer tokens, base, components, utilities;
+
+@layer components {
+  .bui-MenuPopover {
+    display: flex;
+    flex-direction: column;
+    box-shadow: var(--bui-shadow);
+    border: 1px solid var(--bui-border);
+    border-radius: var(--bui-radius-2);
+    background: var(--bui-bg-surface-1);
+    color: var(--bui-fg-primary);
+    outline: none;
+    transition: transform 200ms, opacity 200ms;
+    /* Let React Aria handle height constraints naturally */
+    min-height: 0;
+    /* Remove overflow from popover since ScrollArea will handle it */
+    overflow: hidden;
+
+    &[data-entering],
+    &[data-exiting] {
+      transform: var(--origin);
+      opacity: 0;
+    }
+
+    &[data-placement='top'] {
+      --origin: translateY(8px);
+    }
+
+    &[data-placement='bottom'] {
+      --origin: translateY(-8px);
+    }
+
+    &[data-placement='right'] {
+      --origin: translateX(-8px);
+    }
+
+    &[data-placement='left'] {
+      --origin: translateX(8px);
+    }
+  }
+
+  .bui-MenuContent {
+    max-height: inherit;
+    box-sizing: border-box;
+    overflow: auto;
+    min-width: 150px;
+    box-sizing: border-box;
+    outline: none;
+    padding-block: var(--bui-space-1);
+  }
+
+  .bui-MenuItem {
+    padding-inline: var(--bui-space-1);
+    display: block;
+
+    &[data-focused] .bui-MenuItemWrapper {
+      background: var(--bui-bg-surface-2);
+      color: var(--bui-fg-primary);
+    }
+
+    &[data-open] .bui-MenuItemWrapper {
+      background: var(--bui-bg-surface-2);
+      color: var(--bui-fg-primary);
+    }
+
+    &[data-color='danger'] .bui-MenuItemWrapper {
+      color: var(--bui-fg-danger);
+    }
+
+    &[data-color='danger'][data-focused] .bui-MenuItemWrapper {
+      background: var(--bui-bg-danger);
+      color: var(--bui-fg-danger);
+    }
+
+    &[data-has-submenu] {
+      & > .bui-MenuItemWrapper > .bui-MenuItemArrow {
+        display: block;
+      }
+    }
+  }
+
+  .bui-MenuItemWrapper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 2rem;
+    padding-inline: var(--bui-space-2);
+    border-radius: var(--bui-radius-2);
+    outline: none;
+    cursor: default;
+    color: var(--bui-fg-primary);
+    font-size: var(--bui-font-size-3);
+    gap: var(--bui-space-6);
+  }
+
+  .bui-MenuItemListBox {
+    padding-inline: var(--bui-space-1);
+    display: block;
+
+    &:hover .bui-MenuItemWrapper {
+      background: var(--bui-bg-surface-2);
+      color: var(--bui-fg-primary);
+    }
+
+    &[data-selected] .bui-MenuItemListBoxCheck {
+      & > svg {
+        opacity: 1;
+        color: var(--bui-fg-primary);
+      }
+    }
+  }
+
+  .bui-MenuItemListBoxCheck {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1rem;
+    height: 1rem;
+
+    & > svg {
+      opacity: 0;
+      width: 1rem;
+      height: 1rem;
+    }
+  }
+
+  .bui-MenuItemContent {
+    display: flex;
+    align-items: center;
+    gap: var(--bui-space-2);
+
+    & > svg {
+      width: 1rem;
+      height: 1rem;
+    }
+  }
+
+  .bui-MenuItemArrow {
+    display: none;
+    width: 1rem;
+    height: 1rem;
+
+    & > svg {
+      width: 1rem;
+      height: 1rem;
+    }
+  }
+
+  .bui-MenuSection {
+    &:first-child .bui-MenuSectionHeader {
+      padding-top: 0;
+    }
+  }
+
+  .bui-MenuSectionHeader {
+    height: 2rem;
+    display: flex;
+    align-items: center;
+    padding-top: var(--bui-space-3);
+    padding-left: var(--bui-space-3);
+    color: var(--bui-fg-primary);
+    font-size: var(--bui-font-size-1);
+    font-weight: bold;
+    letter-spacing: 0.05rem;
+    text-transform: uppercase;
+  }
+
+  .bui-MenuSeparator {
+    height: 1px;
+    background: var(--bui-border);
+    margin-inline: var(--bui-space-1_5);
+    margin-block: var(--bui-space-1);
+  }
+
+  .bui-MenuSearchField {
+    font-family: var(--bui-font-regular);
+    width: 100%;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    border-bottom: 1px solid var(--bui-border);
+    background-color: var(--bui-bg-surface-1);
+    height: 2rem;
+
+    &[data-empty] {
+      .bui-MenuSearchFieldClear {
+        visibility: hidden;
+      }
+    }
+  }
+
+  .bui-MenuSearchFieldInput {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    padding: 0;
+    border: none;
+    background-color: transparent;
+    font-size: var(--bui-font-size-3);
+    font-family: var(--bui-font-regular);
+    font-weight: var(--bui-font-weight-regular);
+    color: var(--bui-fg-primary);
+    width: 100%;
+    height: 100%;
+    outline: none;
+    cursor: inherit;
+
+    &::-webkit-search-cancel-button,
+    &::-webkit-search-decoration {
+      -webkit-appearance: none;
+    }
+
+    &::placeholder {
+      color: var(--bui-fg-secondary);
+    }
+
+    &:first-child {
+      padding-inline: var(--bui-space-3) 0;
+    }
+  }
+
+  .bui-MenuSearchFieldClear {
+    flex: 0 0 auto;
+    display: grid;
+    place-content: center;
+    background-color: transparent;
+    border: none;
+    padding: 0;
+    margin: 0;
+    cursor: pointer;
+    color: var(--bui-fg-secondary);
+    transition: color 0.2s ease-in-out;
+    width: 2rem;
+    height: 2rem;
+
+    &:hover {
+      color: var(--bui-fg-primary);
+    }
+
+    & > svg {
+      width: 1rem;
+      height: 1rem;
+    }
+  }
+
+  .bui-MenuEmptyState {
+    padding-inline: var(--bui-space-3);
+    padding-block: var(--bui-space-2);
+    color: var(--bui-fg-secondary);
+    font-size: var(--bui-font-size-3);
+    font-family: var(--bui-font-regular);
+    font-weight: var(--bui-font-weight-regular);
+  }
+}

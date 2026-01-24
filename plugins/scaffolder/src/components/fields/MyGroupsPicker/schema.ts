@@ -14,42 +14,33 @@
  * limitations under the License.
  */
 
-import { z } from 'zod';
-import { makeFieldSchemaFromZod } from '../utils';
+import { makeFieldSchema } from '@backstage/plugin-scaffolder-react';
 
 /**
  * Field schema for the MyGroupsPicker.
  * @public
  */
 
-export const MyGroupsPickerFieldSchema = makeFieldSchemaFromZod(
-  z.string(),
-  z.object({
-    title: z.string().default('Group').describe('Group'),
-    description: z
-      .string()
-      .default('A group you are part of')
-      .describe('The group to which the entity belongs'),
-  }),
-);
+export const MyGroupsPickerFieldSchema = makeFieldSchema({
+  output: z => z.string(),
+});
 
 /**
  * UI options for the MyGroupsPicker.
  * @public
  */
 
-export type MyGroupsPickerUiOptions =
-  typeof MyGroupsPickerFieldSchema.uiOptionsType;
+export type MyGroupsPickerUiOptions = NonNullable<
+  (typeof MyGroupsPickerFieldSchema.TProps.uiSchema)['ui:options']
+>;
+
 /**
  * Props for the MyGroupsPicker.
- * @public
  */
-
-export type MyGroupsPickerProps = typeof MyGroupsPickerFieldSchema.type;
+export type MyGroupsPickerProps = typeof MyGroupsPickerFieldSchema.TProps;
 
 /**
  * Schema for the MyGroupsPicker.
  * @public
  */
-
 export const MyGroupsPickerSchema = MyGroupsPickerFieldSchema.schema;

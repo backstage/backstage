@@ -4,6 +4,7 @@
 
 ```ts
 import { DiscoveryService } from '@backstage/backend-plugin-api';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { RootConfigService } from '@backstage/backend-plugin-api';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 
@@ -16,11 +17,32 @@ export const discoveryServiceFactory: ServiceFactory<
 
 // @public
 export class HostDiscovery implements DiscoveryService {
-  static fromConfig(config: RootConfigService): HostDiscovery;
+  // (undocumented)
+  static fromConfig(
+    config: RootConfigService,
+    options?: HostDiscoveryOptions,
+  ): HostDiscovery;
   // (undocumented)
   getBaseUrl(pluginId: string): Promise<string>;
   // (undocumented)
   getExternalBaseUrl(pluginId: string): Promise<string>;
+}
+
+// @public
+export interface HostDiscoveryEndpoint {
+  plugins: string[];
+  target:
+    | string
+    | {
+        internal?: string;
+        external?: string;
+      };
+}
+
+// @public
+export interface HostDiscoveryOptions {
+  defaultEndpoints?: HostDiscoveryEndpoint[];
+  logger: LoggerService;
 }
 
 // (No @packageDocumentation comment for this package)

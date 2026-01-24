@@ -67,10 +67,13 @@ const SECONDS_IN_MS = 1000;
  * private and public key paths in the `create` method.
  */
 export class StaticConfigPluginKeySource implements PluginKeySource {
-  private constructor(
-    private readonly keyPairs: KeyPair[],
-    private readonly keyDurationSeconds: number,
-  ) {}
+  private readonly keyPairs: KeyPair[];
+  private readonly keyDurationSeconds: number;
+
+  private constructor(keyPairs: KeyPair[], keyDurationSeconds: number) {
+    this.keyPairs = keyPairs;
+    this.keyDurationSeconds = keyDurationSeconds;
+  }
 
   public static async create(options: {
     sourceConfig: Config;

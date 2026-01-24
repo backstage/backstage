@@ -22,10 +22,13 @@ import {
   hasProperty,
   hasStringProperty,
   hasTag,
+  isTaskOwner,
 } from './rules';
 import { createConditionAuthorizer } from '@backstage/plugin-permission-node';
 import { RESOURCE_TYPE_SCAFFOLDER_ACTION } from '@backstage/plugin-scaffolder-common/alpha';
 import { AuthorizeResult } from '@backstage/plugin-permission-common';
+import { SerializedTask } from '@backstage/plugin-scaffolder-node';
+import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 
 describe('hasTag', () => {
   describe('apply', () => {
@@ -521,5 +524,79 @@ describe('hasStringProperty', () => {
         ).toEqual(true);
       },
     );
+  });
+});
+
+describe('isTaskOwner', () => {
+  describe('apply', () => {
+    const task: SerializedTask = {
+      id: 'a-random-id',
+      spec: {} as TaskSpec,
+      status: 'completed',
+      createdAt: '',
+      createdBy: 'user:default/user-1',
+    };
+    it('returns false when createdBy is an empty array', () => {
+      expect(
+        isTaskOwner.apply(task, {
+          createdBy: [],
+        }),
+      ).toEqual(false);
+    });
+    it('returns false when createdBy is not matched (single user in createdBy)', () => {
+      expect(
+        isTaskOwner.apply(task, {
+          createdBy: ['not-matched'],
+        }),
+      ).toEqual(false);
+    });
+    it('returns true when createdBy matches (single user in createdBy)', () => {
+      expect(
+        isTaskOwner.apply(task, {
+          createdBy: ['user:default/user-1'],
+        }),
+      ).toEqual(true);
+    });
+    it('returns false when createdBy is not matched (multiple users in createdBy)', () => {
+      expect(
+        isTaskOwner.apply(task, {
+          createdBy: [
+            'user:default/user-2',
+            'user:default/user-3',
+            'user:default/user-4',
+          ],
+        }),
+      ).toEqual(false);
+    });
+    it('returns true when createdBy matches (multiple users in createdBy)', () => {
+      expect(
+        isTaskOwner.apply(task, {
+          createdBy: [
+            'user:default/user-1',
+            'user:default/user-2',
+            'user:default/user-3',
+          ],
+        }),
+      ).toEqual(true);
+    });
+  });
+  describe('toQuery', () => {
+    it('returns the correct query filter with values (single user in createdBy)', () => {
+      expect(
+        isTaskOwner.toQuery({
+          createdBy: ['user:default/user-1'],
+        }),
+      ).toEqual({ key: 'created_by', values: ['user:default/user-1'] });
+    });
+  });
+  it('returns the correct query filter with values (multiple users in createdBy)', () => {
+    expect(
+      isTaskOwner.toQuery({
+        createdBy: ['user:default/user-1', 'user:default/user-2'],
+      }),
+    ).toEqual({
+      key: 'created_by',
+      values: ['user:default/user-1', 'user:default/user-2'],
+    });
   });
 });

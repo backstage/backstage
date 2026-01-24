@@ -111,7 +111,7 @@ If you opt for the second option of replacing the entire string, take care to no
 [Start the Backstage app](../index.md#2-run-the-backstage-app):
 
 ```shell
-yarn dev
+yarn start
 ```
 
 After the Backstage frontend launches, you should notice that nothing has changed. This is a good sign. If everything is setup correctly above, this means that the data is flowing from the demo data files directly into your database!
@@ -129,13 +129,13 @@ You can run Postgres in a Docker container, this is great for local development 
 First we need to pull down the container image, we'll use Postgres 17, check out the [Postgres Version Policy](../../overview/versioning-policy.md#postgresql-releases) to learn which versions are supported.
 
 ```shell
-docker pull postgres:17.0-bookworm
+docker pull postgres:17.0-trixie
 ```
 
 Then we just need to start up the container.
 
 ```shell
-docker run -d --name postgres --restart=always -p 5432:5432 -e POSTGRES_PASSWORD=<secret> postgres:17.0-bookworm
+docker run -d --name postgres --restart=always -p 5432:5432 -e POSTGRES_PASSWORD=<secret> postgres:17.0-trixie
 ```
 
 This will run Postgres in the background for you, but remember to start it up again when you reboot your system.
@@ -149,10 +149,13 @@ version: '4'
 
 services:
   postgres:
-    image: postgres:17.0-bookworm
+    image: postgres:17.0-trixie
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: <secret>
+      # If you want to set a timezone you can use the following environment variables, this is handy when trying to figure out when scheduled tasks will run!
+      # TZ: Europe/Stockholm
+      # PGTZ: Europe/Stockholm
     ports:
       - 5432:5432
 ```

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { PropsWithChildren, useEffect } from 'react';
+import { PropsWithChildren, useEffect } from 'react';
 import Helmet from 'react-helmet';
 
 import Grid from '@material-ui/core/Grid';
@@ -172,17 +172,16 @@ export const TechDocsReaderPageHeader = (
 
   const removeTrailingSlash = (str: string) => str.replace(/\/$/, '');
   const normalizeAndSpace = (str: string) =>
-    str.replace(/-/g, ' ').split(' ').map(capitalize).join(' ');
+    str.replace(/[-_]/g, ' ').split(' ').map(capitalize).join(' ');
 
   let techdocsTabTitleItems: string[] = [];
 
   if (path !== '')
     techdocsTabTitleItems = removeTrailingSlash(path)
       .split('/')
-      .slice(0, 3)
       .map(normalizeAndSpace);
 
-  const tabTitleItems = [appTitle, entityDisplayName, ...techdocsTabTitleItems];
+  const tabTitleItems = [entityDisplayName, ...techdocsTabTitleItems, appTitle];
   const tabTitle = tabTitleItems.join(' | ');
 
   return (

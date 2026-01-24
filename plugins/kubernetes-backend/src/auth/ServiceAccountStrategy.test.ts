@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { createMockDirectory } from '@backstage/backend-test-utils';
 import { ServiceAccountStrategy } from './ServiceAccountStrategy';
 
@@ -22,7 +23,7 @@ const mockDir = createMockDirectory({
   },
 });
 
-jest.mock('@kubernetes/client-node', () => ({
+const mockClient = {
   KubeConfig: class {
     #loaded = false;
     loadFromCluster() {
@@ -43,12 +44,13 @@ jest.mock('@kubernetes/client-node', () => ({
       };
     }
   },
-}));
+};
 
 describe('ServiceAccountStrategy', () => {
   describe('#getCredential', () => {
     it('reads bearer token from config', async () => {
       const strategy = new ServiceAccountStrategy();
+      (strategy as any).injectedKubernetesClient = mockClient;
 
       const credential = await strategy.getCredential({
         name: '',
@@ -65,6 +67,7 @@ describe('ServiceAccountStrategy', () => {
     describe('when serviceAccountToken is absent from config', () => {
       it('reads in-cluster token', async () => {
         const strategy = new ServiceAccountStrategy();
+        (strategy as any).injectedKubernetesClient = mockClient;
 
         const credential = await strategy.getCredential({
           name: '',

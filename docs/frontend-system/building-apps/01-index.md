@@ -2,11 +2,8 @@
 id: index
 title: Building Frontend Apps
 sidebar_label: Overview
-# prettier-ignore
 description: Building frontend apps using the new frontend system
 ---
-
-> **NOTE: The new frontend system is in alpha and is only supported by a small number of plugins.**
 
 To get set up quickly with your own Backstage project you can create a Backstage App.
 
@@ -17,16 +14,16 @@ A Backstage App is a monorepo setup that includes everything you need to run Bac
 To create a new Backstage app we recommend using the `@backstage/create-app` command line, and the easiest way to run this package is with `npx`:
 
 :::note
-The create-app CLI requires Node.js Active LTS Release.
+The create-app CLI requires Node.js Active LTS Release, see the [prerequisites documentation](../../getting-started/index.md) for all the details.
 :::
 
 ```sh
 # The command bellow creates a Backstage App inside the current folder.
 # The name of the app-folder is the name that was provided when prompted.
-npx @backstage/create-app@latest
+npx @backstage/create-app@latest --next
 ```
 
-The created-app is currently templated for legacy frontend system applications, so the app wiring code it creates needs to be migrated, see [the app instance](#the-app-instance) section for an example.
+Using the `--next` flag will result in a Backstage app using the New Frontend System which will be further explained in the sections below.
 
 ## The app instance
 
@@ -38,10 +35,12 @@ This is how to create a minimal app:
 import ReactDOM from 'react-dom/client';
 import { createApp } from '@backstage/frontend-defaults';
 import catalogPlugin from '@backstage/plugin-catalog/alpha';
+import '@backstage/ui/css/styles.css';
 
 // Create your app instance
 const app = createApp({
-  // Features such as plugins can be installed explicitly, but we will explore other options later on
+  // Custom features such as plugins can be installed explicitly, but they are usually
+  // auto-discovered, unless `app.packages` is customized in `app-config.yaml`.
   features: [catalogPlugin],
 });
 

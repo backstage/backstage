@@ -25,14 +25,22 @@ import {
   InfoCardVariants,
   Link,
 } from '@backstage/core-components';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
+import BaseButton from '@material-ui/core/ButtonBase';
 import IconButton from '@material-ui/core/IconButton';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import Tooltip from '@material-ui/core/Tooltip';
+import Button from '@material-ui/core/Button';
+import Dialog from '@material-ui/core/Dialog';
+import DialogTitle from '@material-ui/core/DialogTitle';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogActions from '@material-ui/core/DialogActions';
+import CloseIcon from '@material-ui/icons/Close';
 import {
   EntityRefLinks,
   getEntityRelations,
@@ -45,7 +53,36 @@ import EmailIcon from '@material-ui/icons/Email';
 import GroupIcon from '@material-ui/icons/Group';
 import { LinksGroup } from '../../Meta';
 import PersonIcon from '@material-ui/icons/Person';
-import React from 'react';
+
+import { useCallback, useState } from 'react';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { orgTranslationRef } from '../../../../translation';
+
+/** @public */
+export type UserProfileCardClassKey =
+  | 'closeButton'
+  | 'moreButton'
+  | 'dialogPaper';
+
+const useStyles = makeStyles(
+  theme =>
+    createStyles({
+      closeButton: {
+        position: 'absolute',
+        right: theme.spacing(1),
+        top: theme.spacing(1),
+        color: theme.palette.grey[500],
+      },
+      moreButton: {
+        display: 'contents',
+        color: theme.palette.primary.main,
+      },
+      dialogPaper: {
+        minHeight: 400,
+      },
+    }),
+  { name: 'PluginOrgUserProfileCard' },
+);
 
 const CardTitle = (props: { title?: string }) =>
   props.title ? (
@@ -59,10 +96,26 @@ const CardTitle = (props: { title?: string }) =>
 export const UserProfileCard = (props: {
   variant?: InfoCardVariants;
   showLinks?: boolean;
+  maxRelations?: number;
+  hideIcons?: boolean;
 }) => {
+  const { maxRelations, hideIcons } = props;
+
+  const classes = useStyles();
   const { entity: user } = useEntity<UserEntity>();
+  const [isAllGroupsDialogOpen, setIsAllGroupsDialogOpen] = useState(false);
+  const { t } = useTranslationRef(orgTranslationRef);
+
+  const toggleAllGroupsDialog = useCallback(
+    () =>
+      setIsAllGroupsDialogOpen(
+        prevIsViewAllGroupsDialogOpen => !prevIsViewAllGroupsDialogOpen,
+      ),
+    [],
+  );
+
   if (!user) {
-    return <Alert severity="error">User not found</Alert>;
+    return <Alert severity="error">{t('userProfileCard.userNotFound')}</Alert>;
   }
 
   const entityMetadataEditUrl =
@@ -87,8 +140,8 @@ export const UserProfileCard = (props: {
         <>
           {entityMetadataEditUrl && (
             <IconButton
-              aria-label="Edit"
-              title="Edit Metadata"
+              aria-label={t('userProfileCard.editIconButtonTitle')}
+              title={t('userProfileCard.editIconButtonTitle')}
               component={Link}
               to={entityMetadataEditUrl}
             >
@@ -108,7 +161,7 @@ export const UserProfileCard = (props: {
             {profile?.email && (
               <ListItem>
                 <ListItemIcon>
-                  <Tooltip title="Email">
+                  <Tooltip title={t('userProfileCard.listItemTitle.email')}>
                     <EmailIcon />
                   </Tooltip>
                 </ListItemIcon>
@@ -118,24 +171,73 @@ export const UserProfileCard = (props: {
               </ListItem>
             )}
 
-            <ListItem>
-              <ListItemIcon>
-                <Tooltip title="Member of">
-                  <GroupIcon />
-                </Tooltip>
-              </ListItemIcon>
-              <ListItemText>
-                <EntityRefLinks
-                  entityRefs={memberOfRelations}
-                  defaultKind="Group"
-                />
-              </ListItemText>
-            </ListItem>
-
+            {maxRelations === undefined || maxRelations > 0 ? (
+              <ListItem>
+                <ListItemIcon>
+                  <Tooltip title={t('userProfileCard.listItemTitle.memberOf')}>
+                    <GroupIcon />
+                  </Tooltip>
+                </ListItemIcon>
+                <ListItemText>
+                  <EntityRefLinks
+                    entityRefs={memberOfRelations.slice(0, maxRelations)}
+                    defaultKind="Group"
+                    hideIcons={hideIcons}
+                  />
+                  {maxRelations && memberOfRelations.length > maxRelations ? (
+                    <>
+                      ,
+                      <BaseButton
+                        className={classes.moreButton}
+                        onClick={toggleAllGroupsDialog}
+                        disableRipple
+                      >
+                        {t('userProfileCard.moreGroupButtonTitle', {
+                          number: String(
+                            memberOfRelations.length - maxRelations,
+                          ),
+                        })}
+                      </BaseButton>
+                    </>
+                  ) : null}
+                </ListItemText>
+              </ListItem>
+            ) : null}
             {props?.showLinks && <LinksGroup links={links} />}
           </List>
         </Grid>
       </Grid>
+
+      <Dialog
+        classes={{ paper: classes.dialogPaper }}
+        open={isAllGroupsDialogOpen}
+        onClose={toggleAllGroupsDialog}
+        scroll="paper"
+        aria-labelledby="view-all-groups-dialog-title"
+        maxWidth="md"
+        fullWidth
+      >
+        <DialogTitle id="view-all-groups-dialog-title">
+          {t('userProfileCard.allGroupDialog.title', {
+            name: user.metadata.name,
+          })}
+          <IconButton
+            className={classes.closeButton}
+            aria-label={t('userProfileCard.allGroupDialog.closeButtonTitle')}
+            onClick={toggleAllGroupsDialog}
+          >
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
+        <DialogContent dividers>
+          <EntityRefLinks entityRefs={memberOfRelations} defaultKind="Group" />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={toggleAllGroupsDialog}>
+            {t('userProfileCard.allGroupDialog.closeButtonTitle')}
+          </Button>
+        </DialogActions>
+      </Dialog>
     </InfoCard>
   );
 };

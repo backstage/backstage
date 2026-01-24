@@ -147,6 +147,21 @@ describe('GitlabDiscoveryEntityProvider - refresh', () => {
       'GitlabDiscoveryEntityProvider:test-id',
     );
 
+    // Mock the GitLabClient listProjects method to verify default parameters
+    const originalListProjects = (provider as any).gitLabClient.listProjects;
+    const mockListProjects = jest.fn().mockImplementation(async options => {
+      // Verify default parameters: archived=false and simple=true (since skipForkedRepos=false by default)
+      expect(options).toMatchObject({
+        group: 'group1',
+        per_page: 50,
+        archived: false,
+        simple: true, // Should be set since skipForkedRepos defaults to false
+      });
+      // Call the original method to maintain test behavior
+      return originalListProjects.call((provider as any).gitLabClient, options);
+    });
+    (provider as any).gitLabClient.listProjects = mockListProjects;
+
     await provider.connect(entityProviderConnection);
 
     const taskDef = schedule.getTasks()[0];
@@ -557,5 +572,233 @@ describe('GitlabDiscoveryEntityProvider - events', () => {
     });
     expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(0);
   });
-  // EventSupportChange: stop add tests >>>
+
+  it('should ignore projects when none of the groups regex patterns match', async () => {
+    const config = new ConfigReader(mock.config_groupPatterns_only_noMatch);
+
+    const schedule = new PersistingTaskRunner();
+    const entityProviderConnection: EntityProviderConnection = {
+      applyMutation: jest.fn(),
+      refresh: jest.fn(),
+    };
+    const provider = GitlabDiscoveryEntityProvider.fromConfig(config, {
+      logger,
+      schedule,
+    })[0];
+
+    await provider.connect(entityProviderConnection);
+
+    await provider.refresh(logger);
+
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
+      type: 'full',
+      entities: [],
+    });
+
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1); // No entities should be applied
+  });
+
+  it('should include only the project that matches one of the group regex patterns', async () => {
+    const config = new ConfigReader(mock.config_groupPatterns_only_Match1Group);
+
+    const schedule = new PersistingTaskRunner();
+    const entityProviderConnection: EntityProviderConnection = {
+      applyMutation: jest.fn(),
+      refresh: jest.fn(),
+    };
+    const provider = GitlabDiscoveryEntityProvider.fromConfig(config, {
+      logger,
+      schedule,
+    })[0];
+
+    await provider.connect(entityProviderConnection);
+
+    await provider.refresh(logger);
+
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
+      type: 'full',
+      entities: mock.expected_location_entities_default_branch.filter(
+        entity =>
+          entity.entity.metadata.annotations[
+            'backstage.io/managed-by-location'
+          ].includes('/group1/'), // Only projects in 'group2' should match
+      ),
+    });
+
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1); // Only one matching project should be applied
+  });
+
+  it('should include projects that match multiple group regex patterns', async () => {
+    const config = new ConfigReader(mock.config_groupPatterns_multiple_matches);
+
+    const schedule = new PersistingTaskRunner();
+    const entityProviderConnection: EntityProviderConnection = {
+      applyMutation: jest.fn(),
+      refresh: jest.fn(),
+    };
+    const provider = GitlabDiscoveryEntityProvider.fromConfig(config, {
+      logger,
+      schedule,
+    })[0];
+
+    await provider.connect(entityProviderConnection);
+
+    await provider.refresh(logger);
+
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
+      type: 'full',
+      entities: mock.expected_location_entities_default_branch.filter(
+        entity =>
+          entity.entity.metadata.annotations[
+            'backstage.io/managed-by-location'
+          ].includes('/group1/') ||
+          entity.entity.metadata.annotations[
+            'backstage.io/managed-by-location'
+          ].includes('/group2/'),
+      ),
+    });
+
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1); // Projects from both groups should be applied
+  });
+
+  it('should not create duplicate locations when multiple groupPatterns match the same group', async () => {
+    const config = new ConfigReader(mock.config_groupPatterns_duplicate_match);
+
+    const schedule = new PersistingTaskRunner();
+    const entityProviderConnection: EntityProviderConnection = {
+      applyMutation: jest.fn(),
+      refresh: jest.fn(),
+    };
+    const provider = GitlabDiscoveryEntityProvider.fromConfig(config, {
+      logger,
+      schedule,
+    })[0];
+
+    await provider.connect(entityProviderConnection);
+
+    await provider.refresh(logger);
+
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledWith({
+      type: 'full',
+      entities: mock.expected_location_entities_default_branch.filter(entity =>
+        entity.entity.metadata.annotations[
+          'backstage.io/managed-by-location'
+        ].includes('/group1/'),
+      ),
+    });
+
+    expect(entityProviderConnection.applyMutation).toHaveBeenCalledTimes(1);
+  });
+});
+
+describe('GitlabDiscoveryEntityProvider - simple parameter', () => {
+  it('should pass simple=true when skipForkedRepos is false', async () => {
+    const config = new ConfigReader({
+      integrations: {
+        gitlab: [
+          {
+            host: 'example.com',
+            apiBaseUrl: 'https://example.com/api/v4',
+            token: 'test-token',
+          },
+        ],
+      },
+      catalog: {
+        providers: {
+          gitlab: {
+            'test-id': {
+              host: 'example.com',
+              group: 'test-group',
+              skipForkedRepos: false,
+            },
+          },
+        },
+      },
+    });
+
+    const schedule = new PersistingTaskRunner();
+    const entityProviderConnection: EntityProviderConnection = {
+      applyMutation: jest.fn(),
+      refresh: jest.fn(),
+    };
+
+    const provider = GitlabDiscoveryEntityProvider.fromConfig(config, {
+      logger,
+      schedule,
+    })[0];
+
+    // Mock the GitLabClient listProjects method to verify parameters
+    const mockListProjects = jest.fn().mockResolvedValue({
+      items: [],
+      nextPage: undefined,
+    });
+
+    (provider as any).gitLabClient.listProjects = mockListProjects;
+
+    await provider.connect(entityProviderConnection);
+    await provider.refresh(logger);
+
+    expect(mockListProjects).toHaveBeenCalledWith({
+      group: 'test-group',
+      page: undefined,
+      per_page: 50,
+      archived: false,
+      simple: true, // Should be set when skipForkedRepos is false
+    });
+  });
+
+  it('should not pass simple when skipForkedRepos is true', async () => {
+    const config = new ConfigReader({
+      integrations: {
+        gitlab: [
+          {
+            host: 'example.com',
+            apiBaseUrl: 'https://example.com/api/v4',
+            token: 'test-token',
+          },
+        ],
+      },
+      catalog: {
+        providers: {
+          gitlab: {
+            'test-id': {
+              host: 'example.com',
+              group: 'test-group',
+              skipForkedRepos: true,
+            },
+          },
+        },
+      },
+    });
+
+    const schedule = new PersistingTaskRunner();
+    const entityProviderConnection: EntityProviderConnection = {
+      applyMutation: jest.fn(),
+      refresh: jest.fn(),
+    };
+
+    const provider = GitlabDiscoveryEntityProvider.fromConfig(config, {
+      logger,
+      schedule,
+    })[0];
+
+    // Mock the GitLabClient listProjects method to verify parameters
+    const mockListProjects = jest.fn().mockResolvedValue({
+      items: [],
+      nextPage: undefined,
+    });
+
+    (provider as any).gitLabClient.listProjects = mockListProjects;
+
+    await provider.connect(entityProviderConnection);
+    await provider.refresh(logger);
+
+    expect(mockListProjects).toHaveBeenCalledWith({
+      group: 'test-group',
+      page: undefined,
+      per_page: 50,
+      archived: false,
+      // simple should not be present when skipForkedRepos is true
+    });
+  });
 });

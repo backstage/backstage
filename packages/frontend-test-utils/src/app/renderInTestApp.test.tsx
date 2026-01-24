@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-import React, { useCallback } from 'react';
+import { useCallback } from 'react';
 import { screen, fireEvent } from '@testing-library/react';
 import {
   MockAnalyticsApi,
   TestApiProvider,
 } from '@backstage/frontend-test-utils';
 import { analyticsApiRef, useAnalytics } from '@backstage/frontend-plugin-api';
+import { Routes, Route } from 'react-router-dom';
 import { renderInTestApp } from './renderInTestApp';
 
 describe('renderInTestApp', () => {
@@ -64,5 +65,19 @@ describe('renderInTestApp', () => {
         }),
       ]),
     );
+  });
+
+  it('should support setting different locations in the history stack', async () => {
+    renderInTestApp(
+      <Routes>
+        <Route path="/" element={<h1>Index Page</h1>} />
+        <Route path="/second-page" element={<h1>Second Page</h1>} />
+      </Routes>,
+      {
+        initialRouteEntries: ['/second-page'],
+      },
+    );
+
+    expect(screen.getByText('Second Page')).toBeInTheDocument();
   });
 });

@@ -5,29 +5,25 @@ sidebar_label: Docker
 description: How to build a Backstage Docker image for deployment
 ---
 
-:::note Note
-Before you start this section, it would be good to have a basic understanding of Docker and how it works. If you are new to Docker, you can start with the [Docker overview](https://docs.docker.com/get-started/overview/) guide.
+## Summary
+
+This section describes how to build a Backstage App into a deployable Docker image. It is split into three sections, first covering the host build approach, which is recommended due to its speed and more efficient and often simpler caching. The second section covers a full multi-stage Docker build, and the last section covers how to deploy the frontend and backend as separate images.
+
+## Prerequisites
+
+This guide assumes your have a basic understanding of Docker and how it works. If you are new to Docker, you can start with the [Docker overview](https://docs.docker.com/get-started/overview/) guide.
+
+You'll also want to complete the following prerequisites:
+
+1. Created an app following the [Getting Started guide](../getting-started/index.md)
+2. Setup an auth provider, the [Authentication guide](../getting-started/config/authentication.md) is a good starting point for this, the default [Guest auth provider](../auth/guest/provider.md) is not intended for use in containerized environments
+3. A Postgres database setup that you are able to connect to, the [Database guide](../getting-started/config/database.md) can help you with this
+
+:::warning
+
+Moving forward without addressing these prerequisites is very likely to cause undesirable results, the most common being not having a proper auth provider setup as the default [Guest auth provider](../auth/guest/provider.md) is not intended for use in containerized environments.
+
 :::
-
-This section describes how to build a Backstage App into a deployable Docker
-image. It is split into three sections, first covering the host build approach,
-which is recommended due to its speed and more efficient and often simpler
-caching. The second section covers a full multi-stage Docker build, and the last
-section covers how to deploy the frontend and backend as separate images.
-
-Something that goes for all of these docker deployment strategies is that they
-are stateless, so for a production deployment you will want to set up and
-connect to an external PostgreSQL instance where the backend plugins can store
-their state, rather than using SQLite.
-
-This section assumes that an [app](https://backstage.io/docs/getting-started/)
-has already been created with `@backstage/create-app`, in which the frontend is
-bundled and served from the backend. This is done using the
-`@backstage/plugin-app-backend` plugin, which also injects the frontend
-configuration into the app. This means that you only need to build and deploy a
-single container in a minimal setup of Backstage. If you wish to separate the
-serving of the frontend out from the backend, see the
-[separate frontend](#separate-frontend) topic below.
 
 ## Host Build
 
@@ -57,7 +53,7 @@ Once the host build is complete, we are ready to build our image. The following
 `Dockerfile` is included when creating a new app with `@backstage/create-app`:
 
 ```dockerfile
-FROM node:20-bookworm-slim
+FROM node:24-trixie-slim
 
 # Set Python interpreter for `node-gyp` to use
 ENV PYTHON=/usr/bin/python3
@@ -182,7 +178,7 @@ the repo root:
 
 ```dockerfile
 # Stage 1 - Create yarn install skeleton layer
-FROM node:20-bookworm-slim AS packages
+FROM node:24-trixie-slim AS packages
 
 WORKDIR /app
 COPY backstage.json package.json yarn.lock ./
@@ -197,7 +193,7 @@ COPY plugins plugins
 RUN find packages \! -name "package.json" -mindepth 2 -maxdepth 2 -exec rm -rf {} \+
 
 # Stage 2 - Install dependencies and build packages
-FROM node:20-bookworm-slim AS build
+FROM node:24-trixie-slim AS build
 
 # Set Python interpreter for `node-gyp` to use
 ENV PYTHON=/usr/bin/python3
@@ -235,7 +231,7 @@ RUN mkdir packages/backend/dist/skeleton packages/backend/dist/bundle \
     && tar xzf packages/backend/dist/bundle.tar.gz -C packages/backend/dist/bundle
 
 # Stage 3 - Build the actual backend image and install production dependencies
-FROM node:20-bookworm-slim
+FROM node:24-trixie-slim
 
 # Set Python interpreter for `node-gyp` to use
 ENV PYTHON=/usr/bin/python3

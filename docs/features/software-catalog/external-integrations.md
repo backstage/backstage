@@ -1,7 +1,6 @@
 ---
 id: external-integrations
 title: External integrations
-# prettier-ignore
 description: Documentation on External integrations to integrate systems with Backstage
 ---
 
@@ -53,9 +52,7 @@ Some defining traits of entity providers:
 
 ### Creating an Entity Provider
 
-The recommended way of instantiating the catalog backend classes is to use the
-`CatalogBuilder`, as illustrated in the
-[example backend here](https://github.com/backstage/backstage/blob/master/packages/backend-legacy/src/plugins/catalog.ts).
+The recommended way of instantiating the catalog backend classes is to use the `CatalogBuilder`.
 We will create a new
 [`EntityProvider`](https://github.com/backstage/backstage/blob/master/plugins/catalog-node/src/api/provider.ts)
 subclass that can be added to this catalog builder.
@@ -72,7 +69,7 @@ putting all extensions like this in a backend module package of their own in the
 `plugins` folder of your Backstage repo:
 
 ```sh
-yarn new --select backend-module --option pluginId=catalog
+yarn new --select backend-plugin-module --option pluginId=catalog
 ```
 
 The class will have this basic structure:
@@ -637,9 +634,7 @@ does so!
 
 ### Creating a Catalog Data Reader Processor
 
-The recommended way of instantiating the catalog backend classes is to use the
-`CatalogBuilder`, as illustrated in the
-[example backend here](https://github.com/backstage/backstage/blob/master/packages/backend-legacy/src/plugins/catalog.ts).
+The recommended way of instantiating the catalog backend classes is to use the `CatalogBuilder`.
 We will create a new
 [`CatalogProcessor`](https://github.com/backstage/backstage/blob/master/plugins/catalog-node/src/api/processor.ts)
 subclass that can be added to this catalog builder.
@@ -780,7 +775,7 @@ sent. Luckily many external systems provide ETag support to check for changes
 which usually doesn't count towards the quota and saves resources both
 internally and externally.
 
-The catalog has built in support for leveraging ETags when refreshing external
+The catalog has built in support for leveraging `ETag`s when refreshing external
 locations in GitHub. This example aims to demonstrate how to add the same
 behavior for `system-x` that we implemented earlier.
 
@@ -1157,13 +1152,21 @@ export class MyIncrementalEntityProvider
 The last step is to implement the actual `next` method that will accept the cursor, call the API, process the result and return the result.
 
 ```ts
+import {
+  ANNOTATION_LOCATION,
+  ANNOTATION_ORIGIN_LOCATION,
+} from '@backstage/catalog-model';
+import { IncrementalEntityProvider } from '@backstage/plugin-catalog-backend-module-incremental-ingestion';
+
 export class MyIncrementalEntityProvider
   implements IncrementalEntityProvider<Cursor, Context>
 {
   private readonly token: string;
+  private readonly mySource: string;
 
-  constructor(token: string) {
+  constructor(token: string, mySource: string) {
     this.token = token;
+    this.mySource = mySource;
   }
 
   getProviderName() {
@@ -1181,6 +1184,7 @@ export class MyIncrementalEntityProvider
     cursor: Cursor = { page: 1 },
   ): Promise<EntityIteratorResult<Cursor>> {
     const { apiClient } = context;
+    const location = `${this.getProviderName()}:${this.mySource}`;
 
     // call your API with the current cursor
     const data = await apiClient.getServices(cursor);
@@ -1200,8 +1204,8 @@ export class MyIncrementalEntityProvider
           name: item.name,
           annotations: {
             // You need to define these, otherwise they'll fail validation
-            [ANNOTATION_LOCATION]: this.getProviderName(),
-            [ANNOTATION_ORIGIN_LOCATION]: this.getProviderName(),
+            [ANNOTATION_LOCATION]: location,
+            [ANNOTATION_ORIGIN_LOCATION]: location,
           },
         },
         spec: {

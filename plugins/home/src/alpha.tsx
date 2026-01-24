@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
-
 import {
   coreExtensionData,
   createExtensionDataRef,
@@ -23,8 +21,13 @@ import {
   PageBlueprint,
   createFrontendPlugin,
   createRouteRef,
+  AppRootElementBlueprint,
+  identityApiRef,
+  storageApiRef,
+  ApiBlueprint,
 } from '@backstage/frontend-plugin-api';
-import { compatWrapper } from '@backstage/core-compat-api';
+import { VisitListener } from './components/';
+import { visitsApiRef, VisitsStorageApi } from './api';
 
 const rootRouteRef = createRouteRef();
 
@@ -50,25 +53,50 @@ const homePage = PageBlueprint.makeWithOverrides({
   },
   factory: (originalFactory, { inputs }) => {
     return originalFactory({
-      defaultPath: '/home',
+      path: '/home',
       routeRef: rootRouteRef,
       loader: () =>
-        import('./components/').then(m =>
-          compatWrapper(
-            <m.HomepageCompositionRoot
-              children={inputs.props?.get(coreExtensionData.reactElement)}
-              title={inputs.props?.get(titleExtensionDataRef)}
-            />,
-          ),
-        ),
+        import('./components/').then(m => (
+          <m.HomepageCompositionRoot
+            children={inputs.props?.get(coreExtensionData.reactElement)}
+            title={inputs.props?.get(titleExtensionDataRef)}
+          />
+        )),
     });
   },
+});
+
+const visitListenerAppRootElement = AppRootElementBlueprint.make({
+  name: 'visit-listener',
+  params: {
+    element: <VisitListener />,
+  },
+});
+
+const visitsApi = ApiBlueprint.make({
+  name: 'visits',
+  params: defineParams =>
+    defineParams({
+      api: visitsApiRef,
+      deps: {
+        storageApi: storageApiRef,
+        identityApi: identityApiRef,
+      },
+      factory: ({ storageApi, identityApi }) =>
+        VisitsStorageApi.create({ storageApi, identityApi }),
+    }),
 });
 
 /**
  * @alpha
  */
 export default createFrontendPlugin({
-  id: 'home',
-  extensions: [homePage],
+  pluginId: 'home',
+  info: { packageJson: () => import('../package.json') },
+  extensions: [homePage, visitsApi, visitListenerAppRootElement],
+  routes: {
+    root: rootRouteRef,
+  },
 });
+
+export { homeTranslationRef } from './translation';

@@ -33,8 +33,12 @@ export const discoveryServiceFactory = createServiceFactory({
   service: coreServices.discovery,
   deps: {
     config: coreServices.rootConfig,
+    logger: coreServices.logger,
   },
-  async factory({ config }) {
-    return HostDiscovery.fromConfig(config);
+  async factory({ config, logger }) {
+    return HostDiscovery.fromConfig(config, {
+      logger,
+      defaultEndpoints: [],
+    });
   },
 });

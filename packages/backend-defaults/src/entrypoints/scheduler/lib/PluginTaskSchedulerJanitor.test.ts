@@ -39,8 +39,8 @@ describe('PluginTaskSchedulerJanitor', () => {
   const databases = TestDatabases.create({
     ids: [
       /* 'MYSQL_8' not supported yet */
-      'POSTGRES_16',
-      'POSTGRES_12',
+      'POSTGRES_18',
+      'POSTGRES_14',
       'SQLITE_3',
       'MYSQL_8',
     ],
@@ -87,6 +87,8 @@ describe('PluginTaskSchedulerJanitor', () => {
             current_run_ticket: null,
             current_run_started_at: null,
             current_run_expires_at: null,
+            last_run_ended_at: expect.anything(),
+            last_run_error_json: expect.stringContaining('Task timed out'),
           }),
         );
       });

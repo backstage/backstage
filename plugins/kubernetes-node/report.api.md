@@ -5,9 +5,10 @@
 ```ts
 import { AuthenticationStrategy as AuthenticationStrategy_2 } from '@backstage/plugin-kubernetes-node';
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
-import { ClusterDetails as ClusterDetails_2 } from '@backstage/plugin-kubernetes-node';
+import { CustomResource as CustomResource_2 } from '@backstage/plugin-kubernetes-node';
 import { CustomResourceMatcher } from '@backstage/plugin-kubernetes-common';
 import { Entity } from '@backstage/catalog-model';
+import type express from 'express';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { FetchResponse } from '@backstage/plugin-kubernetes-common';
 import { JsonObject } from '@backstage/types';
@@ -17,8 +18,9 @@ import { KubernetesFetchError } from '@backstage/plugin-kubernetes-common';
 import { KubernetesObjectsProvider as KubernetesObjectsProvider_2 } from '@backstage/plugin-kubernetes-node';
 import { KubernetesRequestAuth } from '@backstage/plugin-kubernetes-common';
 import { KubernetesServiceLocator as KubernetesServiceLocator_2 } from '@backstage/plugin-kubernetes-node';
-import { Logger } from 'winston';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import { ObjectsByEntityResponse } from '@backstage/plugin-kubernetes-common';
+import { ObjectToFetch as ObjectToFetch_2 } from '@backstage/plugin-kubernetes-node';
 
 // @public (undocumented)
 export interface AuthenticationStrategy {
@@ -96,11 +98,20 @@ export interface KubernetesClustersSupplier {
 // @public
 export interface KubernetesClusterSupplierExtensionPoint {
   // (undocumented)
-  addClusterSupplier(clusterSupplier: KubernetesClustersSupplier_2): void;
+  addClusterSupplier(
+    clusterSupplier:
+      | KubernetesClustersSupplier_2
+      | KubernetesClusterSupplierFactory,
+  ): void;
 }
 
 // @public
 export const kubernetesClusterSupplierExtensionPoint: ExtensionPoint<KubernetesClusterSupplierExtensionPoint>;
+
+// @public
+export type KubernetesClusterSupplierFactory = (opts: {
+  getDefault: () => Promise<KubernetesClustersSupplier_2>;
+}) => Promise<KubernetesClustersSupplier_2>;
 
 // @public
 export type KubernetesCredential =
@@ -135,11 +146,16 @@ export interface KubernetesFetcher {
 // @public
 export interface KubernetesFetcherExtensionPoint {
   // (undocumented)
-  addFetcher(fetcher: KubernetesFetcher_2): void;
+  addFetcher(fetcher: KubernetesFetcher_2 | KubernetesFetcherFactory): void;
 }
 
 // @public
 export const kubernetesFetcherExtensionPoint: ExtensionPoint<KubernetesFetcherExtensionPoint>;
+
+// @public
+export type KubernetesFetcherFactory = (opts: {
+  getDefault: () => Promise<KubernetesFetcher_2>;
+}) => Promise<KubernetesFetcher_2>;
 
 // @public (undocumented)
 export interface KubernetesObjectsByEntity {
@@ -170,11 +186,24 @@ export interface KubernetesObjectsProvider {
 // @public
 export interface KubernetesObjectsProviderExtensionPoint {
   // (undocumented)
-  addObjectsProvider(provider: KubernetesObjectsProvider_2): void;
+  addObjectsProvider(
+    provider: KubernetesObjectsProvider_2 | KubernetesObjectsProviderFactory,
+  ): void;
 }
 
 // @public
 export const kubernetesObjectsProviderExtensionPoint: ExtensionPoint<KubernetesObjectsProviderExtensionPoint>;
+
+// @public
+export type KubernetesObjectsProviderFactory = (opts: {
+  getDefault: () => Promise<KubernetesObjectsProvider_2>;
+  clusterSupplier: KubernetesClustersSupplier_2;
+  serviceLocator: KubernetesServiceLocator_2;
+  fetcher: KubernetesFetcher_2;
+  customResources: CustomResource_2[];
+  objectTypesToFetch?: ObjectToFetch_2[];
+  authStrategy: AuthenticationStrategy_2;
+}) => Promise<KubernetesObjectsProvider_2>;
 
 // @public (undocumented)
 export type KubernetesObjectTypes =
@@ -195,6 +224,25 @@ export type KubernetesObjectTypes =
   | 'secrets';
 
 // @public
+export interface KubernetesRouterExtensionPoint {
+  // (undocumented)
+  addRouter(router: KubernetesRouterFactory): void;
+}
+
+// @public
+export const kubernetesRouterExtensionPoint: ExtensionPoint<KubernetesRouterExtensionPoint>;
+
+// @public
+export type KubernetesRouterFactory = (opts: {
+  getDefault: () => express.Router;
+  objectsProvider: KubernetesObjectsProvider_2;
+  clusterSupplier: KubernetesClustersSupplier_2;
+  authStrategyMap: {
+    [key: string]: AuthenticationStrategy_2;
+  };
+}) => express.Router;
+
+// @public
 export interface KubernetesServiceLocator {
   // (undocumented)
   getClustersByEntity(
@@ -208,11 +256,21 @@ export interface KubernetesServiceLocator {
 // @public
 export interface KubernetesServiceLocatorExtensionPoint {
   // (undocumented)
-  addServiceLocator(serviceLocator: KubernetesServiceLocator_2): void;
+  addServiceLocator(
+    serviceLocator:
+      | KubernetesServiceLocator_2
+      | KubernetesServiceLocatorFactory,
+  ): void;
 }
 
 // @public
 export const kubernetesServiceLocatorExtensionPoint: ExtensionPoint<KubernetesServiceLocatorExtensionPoint>;
+
+// @public
+export type KubernetesServiceLocatorFactory = (opts: {
+  getDefault: () => Promise<KubernetesServiceLocator_2>;
+  clusterSupplier: KubernetesClustersSupplier_2;
+}) => Promise<KubernetesServiceLocator_2>;
 
 // @public (undocumented)
 export interface ObjectFetchParams {
@@ -253,10 +311,10 @@ export type PinnipedClientCerts = {
 
 // @public (undocumented)
 export class PinnipedHelper {
-  constructor(logger: Logger);
+  constructor(logger: LoggerService);
   // (undocumented)
   tokenCredentialRequest(
-    clusterDetails: ClusterDetails_2,
+    clusterDetails: ClusterDetails,
     pinnipedParams: PinnipedParameters,
   ): Promise<PinnipedClientCerts>;
 }

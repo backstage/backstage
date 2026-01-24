@@ -20,14 +20,13 @@ import {
   NavItemBlueprint,
   PageBlueprint,
 } from '@backstage/frontend-plugin-api';
-import VisualizerIcon from '@material-ui/icons/Visibility';
-import React from 'react';
+import { RiEyeLine as VisualizerIcon } from '@remixicon/react';
 
 const rootRouteRef = createRouteRef();
 
 const appVisualizerPage = PageBlueprint.make({
   params: {
-    defaultPath: '/visualizer',
+    path: '/visualizer',
     routeRef: rootRouteRef,
     loader: () =>
       import('./components/AppVisualizerPage').then(m => (
@@ -39,13 +38,14 @@ const appVisualizerPage = PageBlueprint.make({
 export const appVisualizerNavItem = NavItemBlueprint.make({
   params: {
     title: 'Visualizer',
-    icon: VisualizerIcon,
+    icon: () => <VisualizerIcon />,
     routeRef: rootRouteRef,
   },
 });
 
 /** @public */
 export const visualizerPlugin = createFrontendPlugin({
-  id: 'app-visualizer',
+  pluginId: 'app-visualizer',
+  info: { packageJson: () => import('../package.json') },
   extensions: [appVisualizerPage, appVisualizerNavItem],
 });

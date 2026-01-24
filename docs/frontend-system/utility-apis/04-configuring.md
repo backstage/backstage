@@ -2,11 +2,8 @@
 id: configuring
 title: Configuring Utility APIs
 sidebar_label: Configuring
-# prettier-ignore
 description: Configuring, extending, and overriding utility APIs
 ---
-
-> **NOTE: The new frontend system is in alpha and is only supported by a small number of plugins.**
 
 Utility APIs are extensions and can therefore optionally be amended with configurability, as well as inputs that other extensions attach themselves to. This section describes how to make use of that as a consumer of such utility APIs.
 
@@ -38,6 +35,8 @@ Well written input-enabled extension often have extension creator functions that
 ## Replacing a Utility API implementation
 
 Like with other extension types, you replace Utility APIs with your own custom implementation using [extension overrides](../architecture/25-extension-overrides.md).
+
+Note that it is only possible to override a Utility API using a module for the plugin that originally provided the API. Attempting to override an API using a different plugin or module for a different plugin will result in a conflict error.
 
 ```tsx title="in your app"
 /* highlight-add-start */

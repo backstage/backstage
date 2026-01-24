@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-techdocs",
-  "version": "1.12.4-next.2",
+  "version": "1.16.2",
   "description": "The Backstage plugin that renders technical documentation for your components",
   "backstage": {
     "role": "frontend-plugin",
@@ -30,7 +30,7 @@
   "sideEffects": false,
   "exports": {
     ".": "./src/index.ts",
-    "./alpha": "./src/alpha.tsx",
+    "./alpha": "./src/alpha/index.tsx",
     "./package.json": "./package.json"
   },
   "main": "src/index.ts",
@@ -38,7 +38,7 @@
   "typesVersions": {
     "*": {
       "alpha": [
-        "src/alpha.tsx"
+        "src/alpha/index.tsx"
       ],
       "package.json": [
         "package.json"
@@ -62,7 +62,6 @@
     "@backstage/catalog-client": "workspace:^",
     "@backstage/catalog-model": "workspace:^",
     "@backstage/config": "workspace:^",
-    "@backstage/core-compat-api": "workspace:^",
     "@backstage/core-components": "workspace:^",
     "@backstage/core-plugin-api": "workspace:^",
     "@backstage/errors": "workspace:^",
@@ -81,9 +80,8 @@
     "@material-ui/lab": "4.0.0-alpha.61",
     "@material-ui/styles": "^4.10.0",
     "@microsoft/fetch-event-source": "^2.0.1",
-    "dompurify": "^3.0.0",
+    "dompurify": "^3.2.4",
     "git-url-parse": "^15.0.0",
-    "jss": "~10.10.0",
     "lodash": "^4.17.21",
     "react-helmet": "6.1.0",
     "react-use": "^17.2.4"

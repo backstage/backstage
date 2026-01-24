@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { screen, waitFor } from '@testing-library/react';
+import { screen, waitFor, fireEvent } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import MenuItem from '@material-ui/core/MenuItem';
@@ -67,7 +66,7 @@ describe('SearchResultGroup', () => {
   });
 
   it('Renders without exploding', async () => {
-    query.mockResolvedValueOnce({
+    query.mockResolvedValue({
       results,
     });
 
@@ -97,7 +96,7 @@ describe('SearchResultGroup', () => {
   });
 
   it('Renders search results from context', async () => {
-    query.mockResolvedValueOnce({
+    query.mockResolvedValue({
       results,
     });
 
@@ -108,7 +107,9 @@ describe('SearchResultGroup', () => {
           [analyticsApiRef, analyticsApiMock],
         ]}
       >
-        <SearchContextProvider>
+        <SearchContextProvider
+          initialState={{ term: '', filters: {}, types: ['techdocs'] }}
+        >
           <SearchResultGroup
             icon={<DocsIcon titleAccess="Docs icon" />}
             title="Documentation"
@@ -129,7 +130,7 @@ describe('SearchResultGroup', () => {
   });
 
   it('Renders search results using extensions', async () => {
-    query.mockResolvedValueOnce({
+    query.mockResolvedValue({
       results,
     });
 
@@ -167,7 +168,7 @@ describe('SearchResultGroup', () => {
   });
 
   it('Defines a default link', async () => {
-    query.mockResolvedValueOnce({
+    query.mockResolvedValue({
       results,
     });
 
@@ -191,7 +192,7 @@ describe('SearchResultGroup', () => {
   });
 
   it('Defines a default render result item', async () => {
-    query.mockResolvedValueOnce({
+    query.mockResolvedValue({
       results,
     });
 
@@ -222,6 +223,10 @@ describe('SearchResultGroup', () => {
   });
 
   it('Could be customized with no results text', async () => {
+    query.mockResolvedValue({
+      results: [],
+    });
+
     await renderInTestApp(
       <TestApiProvider
         apis={[
@@ -243,7 +248,7 @@ describe('SearchResultGroup', () => {
   });
 
   it('Could be customized with filters', async () => {
-    query.mockResolvedValueOnce({
+    query.mockResolvedValue({
       results,
     });
 
@@ -273,7 +278,7 @@ describe('SearchResultGroup', () => {
   });
 
   it('Could have a text search filter field', async () => {
-    query.mockResolvedValueOnce({
+    query.mockResolvedValue({
       results,
     });
 
@@ -313,10 +318,10 @@ describe('SearchResultGroup', () => {
 
     await userEvent.click(screen.getByText('owner'));
 
-    await userEvent.type(
-      screen.getByRole('textbox'),
-      '{backspace}{backspace}{backspace}{backspace}techdocs-core',
-    );
+    // Use fireEvent.blur for contentEditable elements since userEvent.type with
+    // backspace doesn't work properly in jsdom (jsdom limitation, not a bug)
+    const textbox = screen.getByRole('textbox');
+    fireEvent.blur(textbox, { target: { textContent: 'techdocs-core' } });
 
     await waitFor(() => {
       expect(screen.getByText('techdocs-core')).toBeInTheDocument();
@@ -324,7 +329,7 @@ describe('SearchResultGroup', () => {
   });
 
   it('Could have a select search filter field', async () => {
-    query.mockResolvedValueOnce({
+    query.mockResolvedValue({
       results,
     });
 
@@ -377,7 +382,7 @@ describe('SearchResultGroup', () => {
   });
 
   it('Shows a progress bar when loading results', async () => {
-    query.mockReturnValueOnce(new Promise(() => {}));
+    query.mockReturnValue(new Promise(() => {}));
     await renderInTestApp(
       <TestApiProvider
         apis={[
@@ -399,7 +404,7 @@ describe('SearchResultGroup', () => {
   });
 
   it('Does not render result group if no results returned and disableRenderingWithNoResults prop is provided', async () => {
-    query.mockResolvedValueOnce({ results: [] });
+    query.mockResolvedValue({ results: [] });
     await renderInTestApp(
       <TestApiProvider
         apis={[
@@ -422,7 +427,7 @@ describe('SearchResultGroup', () => {
   });
 
   it('Should render custom component when no results returned', async () => {
-    query.mockResolvedValueOnce({ results: [] });
+    query.mockResolvedValue({ results: [] });
     await renderInTestApp(
       <TestApiProvider
         apis={[
@@ -445,7 +450,7 @@ describe('SearchResultGroup', () => {
   });
 
   it('Shows an error panel when results rendering fails', async () => {
-    query.mockRejectedValueOnce(new Error());
+    query.mockRejectedValue(new Error());
     await renderInTestApp(
       <TestApiProvider
         apis={[

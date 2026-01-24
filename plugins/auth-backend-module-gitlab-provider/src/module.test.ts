@@ -52,7 +52,7 @@ describe('authModuleGitlabProvider', () => {
     expect(res.status).toEqual(302);
 
     const nonceCookie = agent.jar.getCookie('gitlab-nonce', {
-      domain: 'localhost',
+      domain: '127.0.0.1',
       path: '/api/auth/gitlab/handler',
       script: false,
       secure: false,

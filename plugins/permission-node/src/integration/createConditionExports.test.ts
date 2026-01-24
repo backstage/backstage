@@ -21,11 +21,14 @@ import {
 import { z } from 'zod';
 import { createConditionExports } from './createConditionExports';
 import { createPermissionRule } from './createPermissionRule';
+import { createPermissionResourceRef } from './createPermissionResourceRef';
 
 const testIntegration = () =>
   createConditionExports({
-    pluginId: 'test-plugin',
-    resourceType: 'test-resource',
+    resourceRef: createPermissionResourceRef<any, any>().with({
+      pluginId: 'test-plugin',
+      resourceType: 'test-resource',
+    }),
     rules: {
       testRule1: createPermissionRule({
         name: 'testRule1',

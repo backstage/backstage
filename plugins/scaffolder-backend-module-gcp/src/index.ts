@@ -15,7 +15,7 @@
  */
 
 /**
- * A module for the scaffolder backend that lets you interact with azure
+ * A module for the scaffolder backend that lets you interact with GCP
  *
  * @packageDocumentation
  */

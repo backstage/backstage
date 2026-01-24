@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
 import { ErrorListProps, RJSFValidationError } from '@rjsf/utils';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';

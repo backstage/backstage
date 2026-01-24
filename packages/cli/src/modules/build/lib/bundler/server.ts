@@ -17,9 +17,10 @@
 import { AppConfig } from '@backstage/config';
 import chalk from 'chalk';
 import fs from 'fs-extra';
+import { resolve as resolvePath } from 'path';
 import openBrowser from 'react-dev-utils/openBrowser';
-import webpack from 'webpack';
-import WebpackDevServer from 'webpack-dev-server';
+import { rspack } from '@rspack/core';
+import { RspackDevServer } from '@rspack/dev-server';
 
 import { paths as libPaths } from '../../../../lib/paths';
 import { loadCliConfig } from '../../../config/lib/config';
@@ -50,22 +51,24 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
 
   checkReactVersion();
 
-  const { name } = await fs.readJson(libPaths.resolveTarget('package.json'));
+  const { name } = await fs.readJson(
+    resolvePath(options.targetDir ?? libPaths.targetDir, 'package.json'),
+  );
 
-  let webpackServer: WebpackDevServer | undefined = undefined;
+  let devServer: RspackDevServer | undefined = undefined;
 
   let latestFrontendAppConfigs: AppConfig[] = [];
 
   /** Triggers a full reload of all clients */
   const triggerReload = () => {
-    if (webpackServer) {
-      webpackServer.invalidate();
+    if (devServer) {
+      devServer.invalidate();
 
       // For the Rspack server it's not enough to invalidate, we also need to
       // tell the browser to reload, which we do with a 'static-changed' message
-      if (process.env.EXPERIMENTAL_RSPACK) {
-        webpackServer.sendMessage(
-          webpackServer.webSocketServer?.clients ?? [],
+      if (!process.env.LEGACY_WEBPACK_BUILD) {
+        devServer.sendMessage(
+          devServer.webSocketServer?.clients ?? [],
           'static-changed',
         );
       }
@@ -74,6 +77,7 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
 
   const cliConfig = await loadCliConfig({
     args: options.configPaths,
+    targetDir: options.targetDir,
     fromPackage: name,
     withFilteredKeys: true,
     watch(appConfigs) {
@@ -118,8 +122,8 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
     },
   });
 
-  const rspack = process.env.EXPERIMENTAL_RSPACK
-    ? (require('@rspack/core') as typeof import('@rspack/core').rspack)
+  const webpack = process.env.LEGACY_WEBPACK_BUILD
+    ? (require('webpack') as typeof import('webpack'))
     : undefined;
 
   const commonConfigOptions = {
@@ -128,7 +132,7 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
     isDev: true,
     baseUrl: url,
     frontendConfig,
-    rspack,
+    webpack,
     getFrontendAppConfigs: () => {
       return latestFrontendAppConfigs;
     },
@@ -140,15 +144,13 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
     moduleFederation: options.moduleFederation,
   });
 
-  const bundler = (rspack ?? webpack) as typeof webpack;
-  const DevServer: typeof WebpackDevServer = rspack
-    ? require('@rspack/dev-server').RspackDevServer
-    : WebpackDevServer;
+  const bundler = (webpack ?? rspack) as typeof rspack;
+  const DevServer: typeof RspackDevServer = webpack
+    ? require('webpack-dev-server')
+    : RspackDevServer;
 
-  if (rspack) {
-    console.log(
-      chalk.yellow(`⚠️  WARNING: Using experimental RSPack dev server.`),
-    );
+  if (webpack) {
+    console.log(chalk.yellow(`⚠️  WARNING: Using legacy WebPack dev server.`));
   }
 
   const publicPaths = await resolveOptionalBundlingPaths({
@@ -166,7 +168,7 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
     ? bundler([config, await createConfig(publicPaths, commonConfigOptions)])
     : bundler(config);
 
-  webpackServer = new DevServer(
+  devServer = new DevServer(
     {
       hot: !process.env.CI,
       devMiddleware: {
@@ -195,8 +197,10 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
           ? {
               type: 'https',
               options: {
-                cert: fullConfig.getString('app.https.certificate.cert'),
-                key: fullConfig.getString('app.https.certificate.key'),
+                cert: fullConfig.getOptionalString(
+                  'app.https.certificate.cert',
+                ),
+                key: fullConfig.getOptionalString('app.https.certificate.key'),
               },
             }
           : {},
@@ -219,8 +223,8 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
   );
 
   await new Promise<void>(async (resolve, reject) => {
-    if (webpackServer) {
-      webpackServer.startCallback((err?: Error) => {
+    if (devServer) {
+      devServer.startCallback((err?: Error) => {
         if (err) {
           reject(err);
           return;
@@ -239,7 +243,7 @@ DEPRECATION WARNING: React Router Beta is deprecated and support for it will be 
   const waitForExit = async () => {
     for (const signal of ['SIGINT', 'SIGTERM'] as const) {
       process.on(signal, () => {
-        webpackServer?.stop();
+        devServer?.stop();
         // exit instead of resolve. The process is shutting down and resolving a promise here logs an error
         process.exit();
       });

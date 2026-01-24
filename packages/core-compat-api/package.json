@@ -1,6 +1,6 @@
 {
   "name": "@backstage/core-compat-api",
-  "version": "0.4.0-next.2",
+  "version": "0.5.6",
   "backstage": {
     "role": "web-library"
   },
@@ -34,12 +34,12 @@
     "@backstage/core-plugin-api": "workspace:^",
     "@backstage/frontend-plugin-api": "workspace:^",
     "@backstage/plugin-catalog-react": "workspace:^",
+    "@backstage/types": "workspace:^",
     "@backstage/version-bridge": "workspace:^",
-    "lodash": "^4.17.21"
+    "lodash": "^4.17.21",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
-    "@backstage-community/plugin-puppetdb": "^0.1.18",
-    "@backstage-community/plugin-stackstorm": "^0.1.16",
     "@backstage/cli": "workspace:^",
     "@backstage/core-app-api": "workspace:^",
     "@backstage/frontend-app-api": "workspace:^",
@@ -47,7 +47,6 @@
     "@backstage/plugin-catalog": "workspace:^",
     "@backstage/test-utils": "workspace:^",
     "@backstage/types": "workspace:^",
-    "@oriflame/backstage-plugin-score-card": "^0.9.0",
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^16.0.0",
     "@types/react": "^18.0.0",

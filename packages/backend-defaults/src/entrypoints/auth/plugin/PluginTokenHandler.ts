@@ -46,7 +46,7 @@ type Options = {
 
 /**
  * @public
- * Issues and verifies {@link https://backstage.iceio/docs/auth/service-to-service-auth | service-to-service tokens}.
+ * Issues and verifies {@link https://backstage.io/docs/auth/service-to-service-auth | service-to-service tokens}.
  */
 export interface PluginTokenHandler {
   verifyToken(
@@ -77,14 +77,28 @@ export class DefaultPluginTokenHandler implements PluginTokenHandler {
     );
   }
 
+  private readonly logger: LoggerService;
+  private readonly ownPluginId: string;
+  private readonly keySource: PluginKeySource;
+  private readonly algorithm: string;
+  private readonly keyDurationSeconds: number;
+  private readonly discovery: DiscoveryService;
+
   private constructor(
-    private readonly logger: LoggerService,
-    private readonly ownPluginId: string,
-    private readonly keySource: PluginKeySource,
-    private readonly algorithm: string,
-    private readonly keyDurationSeconds: number,
-    private readonly discovery: DiscoveryService,
-  ) {}
+    logger: LoggerService,
+    ownPluginId: string,
+    keySource: PluginKeySource,
+    algorithm: string,
+    keyDurationSeconds: number,
+    discovery: DiscoveryService,
+  ) {
+    this.logger = logger;
+    this.ownPluginId = ownPluginId;
+    this.keySource = keySource;
+    this.algorithm = algorithm;
+    this.keyDurationSeconds = keyDurationSeconds;
+    this.discovery = discovery;
+  }
 
   async verifyToken(
     token: string,

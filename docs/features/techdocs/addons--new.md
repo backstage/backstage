@@ -1,11 +1,11 @@
 ---
-id: addons
+id: addons--new
 title: TechDocs Addons
 description: How to find, use, or create TechDocs Addons.
 ---
 
 :::info
-This documentation is written for [the new frontend system](../../frontend-system/index.md) which is still in alpha and is only supported by a small number of plugins.
+This documentation is written for [the new frontend system](../../frontend-system/index.md) which is still in alpha and is only supported by a small number of plugins. If you are on the [old frontend system](./getting-started.md#adding-techdocs-frontend-plugin) you may want to read [its own article](./addons.md) instead.
 :::
 
 ## Concepts

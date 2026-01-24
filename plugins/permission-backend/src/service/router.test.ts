@@ -41,8 +41,8 @@ const mockApplyConditions: jest.MockedFunction<
       id: decision.id,
       result:
         (decision.conditions as any).params[0] === 'yes'
-          ? (AuthorizeResult.ALLOW as const)
-          : (AuthorizeResult.DENY as const),
+          ? AuthorizeResult.ALLOW
+          : AuthorizeResult.DENY,
     })),
 );
 
@@ -154,6 +154,95 @@ describe('createRouter', () => {
       });
     });
 
+    it('calls the permission policy with batched resourceRef as an array', async () => {
+      policy.handle.mockResolvedValueOnce({
+        result: AuthorizeResult.CONDITIONAL,
+        pluginId: 'test-plugin',
+        resourceType: 'test-resource-1',
+        conditions: { rule: 'test-rule', params: ['abc'] },
+      });
+
+      mockApplyConditions.mockResolvedValueOnce([
+        {
+          id: '123',
+          result: [AuthorizeResult.ALLOW, AuthorizeResult.DENY],
+        },
+      ]);
+
+      const response = await request(app)
+        .post('/authorize')
+        .send({
+          items: [
+            {
+              id: '123',
+              permission: {
+                type: 'resource',
+                name: 'test.permission1',
+                attributes: {},
+                resourceType: 'test-resource-1',
+              },
+              resourceRef: ['resource:1', 'resource:2'],
+            },
+            {
+              id: '234',
+              permission: {
+                type: 'basic',
+                name: 'test.permission2',
+                attributes: {},
+              },
+            },
+          ],
+        });
+
+      expect(mockApplyConditions).toHaveBeenCalledWith(
+        'test-plugin',
+        expect.any(Object),
+        [
+          {
+            conditions: { params: ['abc'], rule: 'test-rule' },
+            id: '123',
+            pluginId: 'test-plugin',
+            resourceRef: ['resource:1', 'resource:2'],
+            resourceType: 'test-resource-1',
+            result: 'CONDITIONAL',
+          },
+        ],
+      );
+
+      expect(response.status).toEqual(200);
+
+      expect(policy.handle).toHaveBeenCalledWith(
+        {
+          permission: {
+            type: 'resource',
+            name: 'test.permission1',
+            attributes: {},
+            resourceType: 'test-resource-1',
+          },
+        },
+        undefined,
+      );
+      expect(policy.handle).toHaveBeenCalledWith(
+        {
+          permission: {
+            type: 'basic',
+            name: 'test.permission2',
+            attributes: {},
+          },
+        },
+        undefined,
+      );
+
+      expect(policy.handle).toHaveBeenCalledTimes(2);
+
+      expect(response.body).toEqual({
+        items: [
+          { id: '123', result: [AuthorizeResult.ALLOW, AuthorizeResult.DENY] },
+          { id: '234', result: AuthorizeResult.DENY },
+        ],
+      });
+    });
+
     it('resolves identity from the Authorization header', async () => {
       const response = await request(app)
         .post('/authorize')
@@ -217,6 +306,9 @@ describe('createRouter', () => {
 
         const response = await request(app)
           .post('/authorize')
+          .auth(userTokenIssuedByService(), {
+            type: 'bearer',
+          })
           .send({
             items: [
               {
@@ -519,7 +611,7 @@ describe('createRouter', () => {
         });
       });
 
-      it('leaves conditional results without resourceRefs unchanged', async () => {
+      it('leaves conditional results without resourceRef unchanged', async () => {
         policy.handle
           .mockResolvedValueOnce({
             result: AuthorizeResult.CONDITIONAL,
@@ -545,7 +637,7 @@ describe('createRouter', () => {
 
         const response = await request(app)
           .post('/authorize')
-          .auth(mockCredentials.user.token(), { type: 'bearer' })
+          .auth(userTokenIssuedByService(), { type: 'bearer' })
           .send({
             items: [
               {
@@ -592,7 +684,9 @@ describe('createRouter', () => {
 
         expect(mockApplyConditions).toHaveBeenCalledWith(
           'plugin-1',
-          mockCredentials.user(),
+          mockCredentials.user('user:default/spiderman', {
+            actor: { subject: 'some-service' },
+          }),
           [
             expect.objectContaining({
               id: '123',
@@ -605,7 +699,9 @@ describe('createRouter', () => {
 
         expect(mockApplyConditions).toHaveBeenCalledWith(
           'plugin-2',
-          mockCredentials.user(),
+          mockCredentials.user('user:default/spiderman', {
+            actor: { subject: 'some-service' },
+          }),
           [
             expect.objectContaining({
               id: '234',
@@ -719,6 +815,12 @@ describe('createRouter', () => {
           });
         },
       );
+
+      function userTokenIssuedByService() {
+        return mockCredentials.user.token('user:default/spiderman', {
+          actor: { subject: 'some-service' },
+        });
+      }
     });
 
     it.each([
@@ -761,20 +863,90 @@ describe('createRouter', () => {
           { id: '123', permission: { attributes: { invalid: 'attribute' } } },
         ],
       },
-    ])('returns a 400 error for invalid request %#', async requestBody => {
+      {
+        items: [
+          {
+            id: '123',
+            // basic permission can't have resourceRef
+            resourceRef: 'resource:1',
+            permission: {
+              type: 'basic',
+              name: 'test.permission',
+              attributes: {},
+            },
+          },
+        ],
+      },
+      {
+        items: [
+          {
+            id: '123',
+            resourceRef: ['resource:1'],
+            permission: {
+              type: 'basic',
+              name: 'test.permission',
+              attributes: {},
+            },
+          },
+        ],
+      },
+      {
+        items: [
+          {
+            id: '123',
+            resourceRef: [],
+            permission: {
+              type: 'resource',
+              name: 'test.permission',
+              attributes: {},
+              resourceType: 'test-resource-1',
+            },
+          },
+        ],
+      },
+    ])('returns a 400 error for invalid request %o', async requestBody => {
       const response = await request(app).post('/authorize').send(requestBody);
 
       expect(response.status).toEqual(400);
+      expect(response.body.error.name).toEqual('InputError');
+    });
+
+    it('returns a 500 error if the policy returns a different resourceType', async () => {
+      policy.handle.mockResolvedValueOnce({
+        result: AuthorizeResult.CONDITIONAL,
+        pluginId: 'test-plugin',
+        resourceType: 'test-resource-2',
+        conditions: {},
+      });
+
+      const response = await request(app)
+        .post('/authorize')
+        .send({
+          items: [
+            {
+              id: '123',
+              permission: {
+                type: 'resource',
+                name: 'test.permission',
+                resourceType: 'test-resource-1',
+                attributes: {},
+              },
+              resourceRef: 'resource:1',
+            },
+          ],
+        });
+
+      expect(response.status).toEqual(500);
       expect(response.body).toEqual(
         expect.objectContaining({
           error: expect.objectContaining({
-            message: expect.stringMatching(/invalid/i),
+            message: expect.stringMatching(/invalid resource conditions/i),
           }),
         }),
       );
     });
 
-    it('returns a 500 error if the policy returns a different resourceType', async () => {
+    it(`returns a 400 error if the request doesn't contain resourceRef for credentials not issued by a service`, async () => {
       policy.handle.mockResolvedValueOnce({
         result: AuthorizeResult.CONDITIONAL,
         pluginId: 'test-plugin',
@@ -798,11 +970,13 @@ describe('createRouter', () => {
           ],
         });
 
-      expect(response.status).toEqual(500);
+      expect(response.status).toEqual(400);
       expect(response.body).toEqual(
         expect.objectContaining({
           error: expect.objectContaining({
-            message: expect.stringMatching(/invalid resource conditions/i),
+            message: expect.stringMatching(
+              /Resource permissions require a resourceRef to be set/i,
+            ),
           }),
         }),
       );

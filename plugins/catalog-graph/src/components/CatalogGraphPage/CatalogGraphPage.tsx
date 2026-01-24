@@ -34,12 +34,9 @@ import { makeStyles } from '@material-ui/core/styles';
 import FilterListIcon from '@material-ui/icons/FilterList';
 import ZoomOutMap from '@material-ui/icons/ZoomOutMap';
 import ToggleButton from '@material-ui/lab/ToggleButton';
-import React, { MouseEvent, useCallback } from 'react';
+import { MouseEvent, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
-  ALL_RELATION_PAIRS,
-  Direction,
-  EntityNode,
   EntityRelationsGraph,
   EntityRelationsGraphProps,
 } from '../EntityRelationsGraph';
@@ -50,6 +47,9 @@ import { SelectedKindsFilter } from './SelectedKindsFilter';
 import { SelectedRelationsFilter } from './SelectedRelationsFilter';
 import { SwitchFilter } from './SwitchFilter';
 import { useCatalogGraphPage } from './useCatalogGraphPage';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { catalogGraphTranslationRef } from '../../translation';
+import { Direction, EntityNode } from '../../lib/types';
 
 /** @public */
 export type CatalogGraphPageClassKey =
@@ -131,12 +131,8 @@ export const CatalogGraphPage = (
     };
   } & Partial<EntityRelationsGraphProps>,
 ) => {
-  const {
-    relationPairs = ALL_RELATION_PAIRS,
-    initialState,
-    entityFilter,
-  } = props;
-
+  const { relationPairs, initialState, entityFilter } = props;
+  const { t } = useTranslationRef(catalogGraphTranslationRef);
   const navigate = useNavigate();
   const classes = useStyles();
   const catalogEntityRoute = useRouteRef(entityRouteRef);
@@ -192,7 +188,7 @@ export const CatalogGraphPage = (
   return (
     <Page themeId="home">
       <Header
-        title="Catalog Graph"
+        title={t('catalogGraphPage.title')}
         subtitle={rootEntityNames.map(e => humanizeEntityRef(e)).join(', ')}
       />
       <Content stretch className={classes.content}>
@@ -203,13 +199,12 @@ export const CatalogGraphPage = (
               selected={showFilters}
               onChange={() => toggleShowFilters()}
             >
-              <FilterListIcon /> Filters
+              <FilterListIcon /> {t('catalogGraphPage.filterToggleButtonTitle')}
             </ToggleButton>
           }
         >
           <SupportButton>
-            Start tracking your component in by adding it to the software
-            catalog.
+            {t('catalogGraphPage.supportButtonDescription')}
           </SupportButton>
         </ContentHeader>
         <Grid container alignItems="stretch" className={classes.container}>
@@ -223,19 +218,18 @@ export const CatalogGraphPage = (
               <SelectedRelationsFilter
                 value={selectedRelations}
                 onChange={setSelectedRelations}
-                relationPairs={relationPairs}
               />
               <DirectionFilter value={direction} onChange={setDirection} />
               <CurveFilter value={curve} onChange={setCurve} />
               <SwitchFilter
                 value={unidirectional}
                 onChange={setUnidirectional}
-                label="Simplified"
+                label={t('catalogGraphPage.simplifiedSwitchLabel')}
               />
               <SwitchFilter
                 value={mergeRelations}
                 onChange={setMergeRelations}
-                label="Merge Relations"
+                label={t('catalogGraphPage.mergeRelationsSwitchLabel')}
               />
             </Grid>
           )}
@@ -247,9 +241,8 @@ export const CatalogGraphPage = (
                 display="block"
                 className={classes.legend}
               >
-                <ZoomOutMap className="icon" /> Use pinch &amp; zoom to move
-                around the diagram. Click to change active node, shift click to
-                navigate to entity.
+                <ZoomOutMap className="icon" />{' '}
+                {t('catalogGraphPage.zoomOutDescription')}
               </Typography>
               <EntityRelationsGraph
                 {...props}

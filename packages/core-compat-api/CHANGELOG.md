@@ -1,5 +1,422 @@
 # @backstage/core-compat-api
 
+## 0.5.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.3
+  - @backstage/plugin-catalog-react@1.21.5
+
+## 0.5.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.5-next.0
+  - @backstage/frontend-plugin-api@0.13.2
+
+## 0.5.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.2
+  - @backstage/plugin-catalog-react@1.21.4
+  - @backstage/core-plugin-api@1.12.1
+
+## 0.5.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.2-next.0
+  - @backstage/core-plugin-api@1.12.1-next.0
+  - @backstage/plugin-catalog-react@1.21.4-next.0
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.11
+
+## 0.5.4
+
+### Patch Changes
+
+- 4d03f08: Internal refactor of route reference implementations with minor updates to the `toString` implementations.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.0
+  - @backstage/plugin-catalog-react@1.21.3
+  - @backstage/core-plugin-api@1.12.0
+
+## 0.5.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.3-next.0
+  - @backstage/core-plugin-api@1.11.2-next.0
+  - @backstage/frontend-plugin-api@0.12.2-next.0
+  - @backstage/version-bridge@1.0.11
+
+## 0.5.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.2
+  - @backstage/frontend-plugin-api@0.12.1
+  - @backstage/core-plugin-api@1.11.1
+
+## 0.5.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.11.1-next.0
+  - @backstage/plugin-catalog-react@1.21.2-next.1
+  - @backstage/frontend-plugin-api@0.12.1-next.1
+
+## 0.5.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.2-next.0
+  - @backstage/frontend-plugin-api@0.12.1-next.0
+  - @backstage/core-plugin-api@1.11.0
+  - @backstage/version-bridge@1.0.11
+
+## 0.5.2
+
+### Patch Changes
+
+- dc01d6f: Fix for `compatWrapper` creating many wrapping `Providers` when they should not
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.0
+  - @backstage/frontend-plugin-api@0.12.0
+  - @backstage/core-plugin-api@1.11.0
+
+## 0.5.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.0-next.2
+
+## 0.5.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.20.2-next.1
+  - @backstage/frontend-plugin-api@0.11.1-next.0
+
+## 0.5.2-next.0
+
+### Patch Changes
+
+- dc01d6f: Fix for `compatWrapper` creating many wrapping `Providers` when they should not
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.20.2-next.0
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/frontend-plugin-api@0.11.0
+  - @backstage/version-bridge@1.0.11
+
+## 0.5.0
+
+### Minor Changes
+
+- 62c3628: Rename `createLegacyApp` to `createLegacyAppRoot` as it better refers to the purpose of the function.
+- e4ddf22: **BREAKING**: The `defaultPath` override of `convertLegacyPageExtension` has been renamed to `path`, in order to align with the same update that was made to the `PageBlueprint`.
+
+### Patch Changes
+
+- e4ddf22: Internal update to align with new blueprint parameter naming in the new frontend system.
+- f2f133c: Internal update to use the new variant of `ApiBlueprint`.
+- fda1bbc: The `compatWrapper` has been switched to use the new `SwappableComponentsApi` instead of the old `ComponentsApi` in its bridging to the old frontend system.
+- 5d31d66: Updated the usage of the `RouterBlueprint` and `AppRootWrapperBlueprint` to use the lowercase `component` parameter
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.11.0
+  - @backstage/plugin-catalog-react@1.20.0
+
+## 0.5.0-next.3
+
+### Patch Changes
+
+- fda1bbc: The `compatWrapper` has been switched to use the new `SwappableComponentsApi` instead of the old `ComponentsApi` in its bridging to the old frontend system.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.11.0-next.2
+
+## 0.5.0-next.2
+
+### Minor Changes
+
+- e4ddf22: **BREAKING**: The `defaultPath` override of `convertLegacyPageExtension` has been renamed to `path`, in order to align with the same update that was made to the `PageBlueprint`.
+
+### Patch Changes
+
+- e4ddf22: Internal update to align with new blueprint parameter naming in the new frontend system.
+- 5d31d66: Updated the usage of the `RouterBlueprint` and `AppRootWrapperBlueprint` to use the lowercase `component` parameter
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.11.0-next.1
+  - @backstage/plugin-catalog-react@1.20.0-next.2
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/version-bridge@1.0.11
+
+## 0.4.5-next.1
+
+### Patch Changes
+
+- f2f133c: Internal update to use the new variant of `ApiBlueprint`.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.20.0-next.1
+  - @backstage/frontend-plugin-api@0.11.0-next.0
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/version-bridge@1.0.11
+
+## 0.4.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.19.2-next.0
+  - @backstage/frontend-plugin-api@0.10.4
+
+## 0.4.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.19.1
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/frontend-plugin-api@0.10.4
+
+## 0.4.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.19.1-next.1
+  - @backstage/core-plugin-api@1.10.9-next.0
+  - @backstage/frontend-plugin-api@0.10.4-next.1
+
+## 0.4.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.19.1-next.0
+  - @backstage/core-plugin-api@1.10.8
+  - @backstage/frontend-plugin-api@0.10.4-next.0
+  - @backstage/version-bridge@1.0.11
+
+## 0.4.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.8
+  - @backstage/frontend-plugin-api@0.10.3
+  - @backstage/plugin-catalog-react@1.19.0
+  - @backstage/version-bridge@1.0.11
+
+## 0.4.3-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.19.0-next.2
+  - @backstage/frontend-plugin-api@0.10.3-next.1
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/version-bridge@1.0.11
+
+## 0.4.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.18.1-next.1
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/frontend-plugin-api@0.10.3-next.0
+  - @backstage/version-bridge@1.0.11
+
+## 0.4.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.3-next.0
+  - @backstage/plugin-catalog-react@1.18.1-next.0
+
+## 0.4.2
+
+### Patch Changes
+
+- 173db8f: Updates to use the new `plugin` property of `AppNodeSpec`.
+- fb58f20: Internal update to use the new `pluginId` option of `createFrontendPlugin`.
+- 6eedf46: Updated dependency `@backstage-community/plugin-puppetdb` to `^0.6.0`.
+- 72d019d: Removed various typos
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.2
+  - @backstage/plugin-catalog-react@1.18.0
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/version-bridge@1.0.11
+
+## 0.4.2-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.7-next.0
+  - @backstage/plugin-catalog-react@1.18.0-next.3
+  - @backstage/frontend-plugin-api@0.10.2-next.1
+  - @backstage/version-bridge@1.0.11
+
+## 0.4.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.7-next.0
+  - @backstage/frontend-plugin-api@0.10.2-next.1
+  - @backstage/plugin-catalog-react@1.18.0-next.2
+  - @backstage/version-bridge@1.0.11
+
+## 0.4.2-next.1
+
+### Patch Changes
+
+- fb58f20: Internal update to use the new `pluginId` option of `createFrontendPlugin`.
+- 72d019d: Removed various typos
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.2-next.0
+  - @backstage/plugin-catalog-react@1.18.0-next.1
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/version-bridge@1.0.11
+
+## 0.4.2-next.0
+
+### Patch Changes
+
+- 6eedf46: Updated dependency `@backstage-community/plugin-puppetdb` to `^0.6.0`.
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.18.0-next.0
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/frontend-plugin-api@0.10.1
+  - @backstage/version-bridge@1.0.11
+
+## 0.4.1
+
+### Patch Changes
+
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.17.0
+  - @backstage/frontend-plugin-api@0.10.1
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/version-bridge@1.0.11
+
+## 0.4.1-next.2
+
+### Patch Changes
+
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.1-next.1
+  - @backstage/core-plugin-api@1.10.6-next.0
+  - @backstage/plugin-catalog-react@1.17.0-next.2
+  - @backstage/version-bridge@1.0.11
+
+## 0.4.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.1-next.0
+  - @backstage/plugin-catalog-react@1.16.1-next.1
+  - @backstage/core-plugin-api@1.10.5
+  - @backstage/version-bridge@1.0.11
+
+## 0.4.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.16.1-next.0
+  - @backstage/core-plugin-api@1.10.5
+  - @backstage/frontend-plugin-api@0.10.0
+  - @backstage/version-bridge@1.0.11
+
+## 0.4.0
+
+### Minor Changes
+
+- 8250ffe: **BREAKING**: Dropped support for the removed opaque `@backstage/ExtensionOverrides` and `@backstage/BackstagePlugin` types.
+
+### Patch Changes
+
+- cbe6177: Improved route path normalization when converting existing route elements in `converLegacyApp`, for example handling trailing `/*` in paths.
+- d34e0e5: Added a new `convertLegacyAppOptions` helper that converts many of the options passed to `createApp` in the old frontend system to a module with app overrides for the new system. The supported options are `apis`, `icons`, `plugins`, `components`, and `themes`.
+
+  For example, given the following options for the old `createApp`:
+
+  ```ts
+  import { createApp } from '@backstage/app-deafults';
+
+  const app = createApp({
+    apis,
+    plugins,
+    icons: {
+      custom: MyIcon,
+    },
+    components: {
+      SignInPage: MySignInPage,
+    },
+    themes: [myTheme],
+  });
+  ```
+
+  They can be converted to the new system like this:
+
+  ```ts
+  import { createApp } from '@backstage/frontend-deafults';
+  import { convertLegacyAppOptions } from '@backstage/core-compat-api';
+
+  const app = createApp({
+    features: [
+      convertLegacyAppOptions({
+        apis,
+        plugins,
+        icons: {
+          custom: MyIcon,
+        },
+        components: {
+          SignInPage: MySignInPage,
+        },
+        themes: [myTheme],
+      }),
+    ],
+  });
+  ```
+
+- e7fab55: Added the `entityPage` option to `convertLegacyApp`, which you can read more about in the [app migration docs](https://backstage.io/docs/frontend-system/building-apps/migrating#entity-pages).
+- 18faf65: The `convertLegacyApp` has received the following changes:
+
+  - `null` routes will now be ignored.
+  - Converted routes no longer need to belong to a plugin, falling back to a `converted-orphan-routes` plugin instead.
+  - The generate layout override extension is now properly attached to the `app/root` extension.
+  - Converted root elements are now automatically wrapped with `compatWrapper`.
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.5
+  - @backstage/frontend-plugin-api@0.10.0
+  - @backstage/plugin-catalog-react@1.16.0
+  - @backstage/version-bridge@1.0.11
+
 ## 0.4.0-next.2
 
 ### Minor Changes

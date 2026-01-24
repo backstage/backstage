@@ -19,7 +19,7 @@ import { ConflictError } from '@backstage/errors';
 import { DeferredEntity } from '@backstage/plugin-catalog-node';
 import { Knex } from 'knex';
 import lodash from 'lodash';
-import { ProcessingIntervalFunction } from '../processing';
+import { ProcessingIntervalFunction } from '../processing/refresh';
 import { rethrowError, timestampToDateTime } from './conversion';
 import { initDatabaseMetrics } from './metrics';
 import {
@@ -42,11 +42,7 @@ import { checkLocationKeyConflict } from './operations/refreshState/checkLocatio
 import { insertUnprocessedEntity } from './operations/refreshState/insertUnprocessedEntity';
 import { updateUnprocessedEntity } from './operations/refreshState/updateUnprocessedEntity';
 import { generateStableHash, generateTargetKey } from './util';
-import {
-  EventBroker,
-  EventParams,
-  EventsService,
-} from '@backstage/plugin-events-node';
+import { EventParams, EventsService } from '@backstage/plugin-events-node';
 import { DateTime } from 'luxon';
 import { CATALOG_CONFLICTS_TOPIC } from '../constants';
 import { CatalogConflictEventPayload } from '../catalog/types';
@@ -59,14 +55,20 @@ import { LoggerService } from '@backstage/backend-plugin-api';
 const BATCH_SIZE = 50;
 
 export class DefaultProcessingDatabase implements ProcessingDatabase {
-  constructor(
-    private readonly options: {
-      database: Knex;
-      logger: LoggerService;
-      refreshInterval: ProcessingIntervalFunction;
-      eventBroker?: EventBroker | EventsService;
-    },
-  ) {
+  private readonly options: {
+    database: Knex;
+    logger: LoggerService;
+    refreshInterval: ProcessingIntervalFunction;
+    events: EventsService;
+  };
+
+  constructor(options: {
+    database: Knex;
+    logger: LoggerService;
+    refreshInterval: ProcessingIntervalFunction;
+    events: EventsService;
+  }) {
+    this.options = options;
     initDatabaseMetrics(options.database);
   }
 
@@ -367,7 +369,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
         this.options.logger.warn(
           `Detected conflicting entityRef ${entityRef} already referenced by ${conflictingKey} and now also ${locationKey}`,
         );
-        if (this.options.eventBroker && locationKey) {
+        if (locationKey) {
           const eventParams: EventParams<CatalogConflictEventPayload> = {
             topic: CATALOG_CONFLICTS_TOPIC,
             eventPayload: {
@@ -378,7 +380,7 @@ export class DefaultProcessingDatabase implements ProcessingDatabase {
               lastConflictAt: DateTime.now().toISO()!,
             },
           };
-          await this.options.eventBroker?.publish(eventParams);
+          await this.options.events.publish(eventParams);
         }
       }
     }

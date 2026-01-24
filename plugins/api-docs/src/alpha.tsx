@@ -14,21 +14,14 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import Grid from '@material-ui/core/Grid';
 
 import {
   ApiBlueprint,
   NavItemBlueprint,
   PageBlueprint,
-  createApiFactory,
   createFrontendPlugin,
 } from '@backstage/frontend-plugin-api';
-
-import {
-  compatWrapper,
-  convertLegacyRouteRef,
-} from '@backstage/core-compat-api';
 
 import {
   ApiEntity,
@@ -49,15 +42,15 @@ import {
 const apiDocsNavItem = NavItemBlueprint.make({
   params: {
     title: 'APIs',
-    routeRef: convertLegacyRouteRef(rootRoute),
-    icon: () => compatWrapper(<AppIcon id="kind:api" />),
+    routeRef: rootRoute,
+    icon: () => <AppIcon id="kind:api" />,
   },
 });
 
 const apiDocsConfigApi = ApiBlueprint.make({
   name: 'config',
-  params: {
-    factory: createApiFactory({
+  params: defineParams =>
+    defineParams({
       api: apiDocsConfigRef,
       deps: {},
       factory: () => {
@@ -69,29 +62,26 @@ const apiDocsConfigApi = ApiBlueprint.make({
         };
       },
     }),
-  },
 });
 
 const apiDocsExplorerPage = PageBlueprint.makeWithOverrides({
   config: {
     schema: {
-      // Ommiting columns and actions for now as their types are too complex to map to zod
+      // Omitting columns and actions for now as their types are too complex to map to zod
       initiallySelectedFilter: z =>
         z.enum(['owned', 'starred', 'all']).optional(),
     },
   },
   factory(originalFactory, { config }) {
     return originalFactory({
-      defaultPath: '/api-docs',
-      routeRef: convertLegacyRouteRef(rootRoute),
+      path: '/api-docs',
+      routeRef: rootRoute,
       loader: () =>
-        import('./components/ApiExplorerPage').then(m =>
-          compatWrapper(
-            <m.ApiExplorerIndexPage
-              initiallySelectedFilter={config.initiallySelectedFilter}
-            />,
-          ),
-        ),
+        import('./components/ApiExplorerPage').then(m => (
+          <m.ApiExplorerIndexPage
+            initiallySelectedFilter={config.initiallySelectedFilter}
+          />
+        )),
     });
   },
 });
@@ -99,7 +89,7 @@ const apiDocsExplorerPage = PageBlueprint.makeWithOverrides({
 const apiDocsHasApisEntityCard = EntityCardBlueprint.make({
   name: 'has-apis',
   params: {
-    // Ommiting configSchema for now
+    // Omitting configSchema for now
     // We are skipping variants and columns are too complex to map to zod
     // See: https://github.com/backstage/backstage/pull/22619#discussion_r1477333252
     filter: entity => {
@@ -112,10 +102,7 @@ const apiDocsHasApisEntityCard = EntityCardBlueprint.make({
         )!!
       );
     },
-    loader: () =>
-      import('./components/ApisCards').then(m =>
-        compatWrapper(<m.HasApisCard />),
-      ),
+    loader: () => import('./components/ApisCards').then(m => <m.HasApisCard />),
   },
 });
 
@@ -124,116 +111,109 @@ const apiDocsDefinitionEntityCard = EntityCardBlueprint.make({
   params: {
     filter: 'kind:api',
     loader: () =>
-      import('./components/ApiDefinitionCard').then(m =>
-        compatWrapper(<m.ApiDefinitionCard />),
-      ),
+      import('./components/ApiDefinitionCard').then(m => (
+        <m.ApiDefinitionCard />
+      )),
   },
 });
 
 const apiDocsConsumedApisEntityCard = EntityCardBlueprint.make({
   name: 'consumed-apis',
   params: {
-    // Ommiting configSchema for now
+    // Omitting configSchema for now
     // We are skipping variants and columns are too complex to map to zod
     // See: https://github.com/backstage/backstage/pull/22619#discussion_r1477333252
     filter: 'kind:component',
     loader: () =>
-      import('./components/ApisCards').then(m =>
-        compatWrapper(<m.ConsumedApisCard />),
-      ),
+      import('./components/ApisCards').then(m => <m.ConsumedApisCard />),
   },
 });
 
 const apiDocsProvidedApisEntityCard = EntityCardBlueprint.make({
   name: 'provided-apis',
   params: {
-    // Ommiting configSchema for now
+    // Omitting configSchema for now
     // We are skipping variants and columns are too complex to map to zod
     // See: https://github.com/backstage/backstage/pull/22619#discussion_r1477333252
     filter: 'kind:component',
     loader: () =>
-      import('./components/ApisCards').then(m =>
-        compatWrapper(<m.ProvidedApisCard />),
-      ),
+      import('./components/ApisCards').then(m => <m.ProvidedApisCard />),
   },
 });
 
 const apiDocsConsumingComponentsEntityCard = EntityCardBlueprint.make({
   name: 'consuming-components',
   params: {
-    // Ommiting configSchema for now
+    // Omitting configSchema for now
     // We are skipping variants
     // See: https://github.com/backstage/backstage/pull/22619#discussion_r1477333252
     filter: 'kind:api',
     loader: () =>
-      import('./components/ComponentsCards').then(m =>
-        compatWrapper(<m.ConsumingComponentsCard />),
-      ),
+      import('./components/ComponentsCards').then(m => (
+        <m.ConsumingComponentsCard />
+      )),
   },
 });
 
 const apiDocsProvidingComponentsEntityCard = EntityCardBlueprint.make({
   name: 'providing-components',
   params: {
-    // Ommiting configSchema for now
+    // Omitting configSchema for now
     // We are skipping variants
     // See: https://github.com/backstage/backstage/pull/22619#discussion_r1477333252
     filter: 'kind:api',
     loader: () =>
-      import('./components/ComponentsCards').then(m =>
-        compatWrapper(<m.ProvidingComponentsCard />),
-      ),
+      import('./components/ComponentsCards').then(m => (
+        <m.ProvidingComponentsCard />
+      )),
   },
 });
 
 const apiDocsDefinitionEntityContent = EntityContentBlueprint.make({
   name: 'definition',
   params: {
-    defaultPath: '/definition',
-    defaultTitle: 'Definition',
+    path: '/definition',
+    title: 'Definition',
     filter: 'kind:api',
     loader: async () =>
-      import('./components/ApiDefinitionCard').then(m =>
-        compatWrapper(
-          <Grid container spacing={3}>
-            <Grid item xs={12}>
-              <m.ApiDefinitionCard />
-            </Grid>
-          </Grid>,
-        ),
-      ),
+      import('./components/ApiDefinitionCard').then(m => (
+        <Grid container spacing={3}>
+          <Grid item xs={12}>
+            <m.ApiDefinitionCard />
+          </Grid>
+        </Grid>
+      )),
   },
 });
 
 const apiDocsApisEntityContent = EntityContentBlueprint.make({
   name: 'apis',
   params: {
-    defaultPath: '/apis',
-    defaultTitle: 'APIs',
+    path: '/apis',
+    title: 'APIs',
     filter: 'kind:component',
     loader: async () =>
-      import('./components/ApisCards').then(m =>
-        compatWrapper(
-          <Grid container spacing={3} alignItems="stretch">
-            <Grid item xs={12}>
-              <m.ProvidedApisCard />
-            </Grid>
-            <Grid item xs={12}>
-              <m.ConsumedApisCard />
-            </Grid>
-          </Grid>,
-        ),
-      ),
+      import('./components/ApisCards').then(m => (
+        <Grid container spacing={3} alignItems="stretch">
+          <Grid item xs={12}>
+            <m.ProvidedApisCard />
+          </Grid>
+          <Grid item xs={12}>
+            <m.ConsumedApisCard />
+          </Grid>
+        </Grid>
+      )),
   },
 });
 
 export default createFrontendPlugin({
-  id: 'api-docs',
+  pluginId: 'api-docs',
+  info: { packageJson: () => import('../package.json') },
   routes: {
-    root: convertLegacyRouteRef(rootRoute),
+    root: rootRoute,
   },
   externalRoutes: {
-    registerApi: convertLegacyRouteRef(registerComponentRouteRef),
+    registerApi: registerComponentRouteRef,
   },
   extensions: [
     apiDocsNavItem,
@@ -249,3 +229,5 @@ export default createFrontendPlugin({
     apiDocsApisEntityContent,
   ],
 });
+
+export { apiDocsTranslationRef } from './translation';

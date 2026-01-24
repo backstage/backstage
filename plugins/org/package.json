@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-org",
-  "version": "0.6.37-next.2",
+  "version": "0.6.48",
   "description": "A Backstage plugin that helps you create entity pages for your organization",
   "backstage": {
     "role": "frontend-plugin",
@@ -52,7 +52,6 @@
   },
   "dependencies": {
     "@backstage/catalog-model": "workspace:^",
-    "@backstage/core-compat-api": "workspace:^",
     "@backstage/core-components": "workspace:^",
     "@backstage/core-plugin-api": "workspace:^",
     "@backstage/frontend-plugin-api": "workspace:^",

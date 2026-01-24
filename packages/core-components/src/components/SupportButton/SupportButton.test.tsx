@@ -21,7 +21,6 @@ import {
   TestApiProvider,
 } from '@backstage/test-utils';
 import { act, fireEvent, screen } from '@testing-library/react';
-import React from 'react';
 import { SupportButton } from './SupportButton';
 
 const configApi = mockApis.config({

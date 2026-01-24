@@ -2,7 +2,6 @@
 id: modules
 title: Plugin Modules
 sidebar_label: Modules
-# prettier-ignore
 description: Modules for backend plugins
 ---
 

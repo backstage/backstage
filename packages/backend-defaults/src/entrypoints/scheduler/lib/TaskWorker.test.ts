@@ -46,7 +46,7 @@ describe('TaskWorker', () => {
       const settings: TaskSettingsV2 = {
         version: 2,
         cadence: '*/2 * * * * *',
-        initialDelayDuration: Duration.fromObject({ seconds: 1 }).toISO()!,
+        initialDelayDuration: Duration.fromObject({ seconds: 3 }).toISO()!, // over 1 second, to cover for 1-second granularity in some database timestamps
         timeoutAfterDuration: Duration.fromObject({ minutes: 1 }).toISO()!,
       };
 
@@ -65,10 +65,25 @@ describe('TaskWorker', () => {
       expect(JSON.parse(row.settings_json)).toEqual({
         version: 2,
         cadence: '*/2 * * * * *',
-        initialDelayDuration: 'PT1S',
+        initialDelayDuration: 'PT3S',
         timeoutAfterDuration: 'PT1M',
       });
+      await expect(TaskWorker.taskStates(knex)).resolves.toEqual(
+        new Map([
+          [
+            'task1',
+            {
+              status: 'idle',
+              startsAt: expect.anything(),
+            },
+          ],
+        ]),
+      );
 
+      // Note that this is timing sensitive - if things take too long between
+      // persistTask and findReadyTask, this test will fail. We set some margin
+      // of initialDelayDuration to cover for this, but if this turns out to be
+      // flaky, we may have to revisit how this test is written.
       await expect(worker.findReadyTask()).resolves.toEqual({
         result: 'not-ready-yet',
       });
@@ -101,6 +116,18 @@ describe('TaskWorker', () => {
           current_run_expires_at: expect.anything(),
         }),
       );
+      await expect(TaskWorker.taskStates(knex)).resolves.toEqual(
+        new Map([
+          [
+            'task1',
+            {
+              status: 'running',
+              startedAt: expect.anything(),
+              timesOutAt: expect.anything(),
+            },
+          ],
+        ]),
+      );
 
       await expect(worker.tryReleaseTask('ticket', settings)).resolves.toBe(
         true,
@@ -114,6 +141,18 @@ describe('TaskWorker', () => {
           current_run_started_at: null,
           current_run_expires_at: null,
         }),
+      );
+      await expect(TaskWorker.taskStates(knex)).resolves.toEqual(
+        new Map([
+          [
+            'task1',
+            {
+              status: 'idle',
+              startsAt: expect.anything(),
+              lastRunEndedAt: expect.anything(),
+            },
+          ],
+        ]),
       );
     },
   );
@@ -136,8 +175,21 @@ describe('TaskWorker', () => {
       const worker = new TaskWorker('task1', fn, knex, logger, checkFrequency);
       worker.start(settings, { signal: testScopedSignal() });
 
-      await waitForExpect(() => {
+      await waitForExpect(async () => {
         expect(logger.error).toHaveBeenCalled();
+        await expect(TaskWorker.taskStates(knex)).resolves.toEqual(
+          new Map([
+            [
+              'task1',
+              {
+                status: 'idle',
+                startsAt: expect.anything(),
+                lastRunEndedAt: expect.anything(),
+                lastRunError: expect.stringContaining('failed'),
+              },
+            ],
+          ]),
+        );
       });
     },
   );
@@ -373,7 +425,8 @@ describe('TaskWorker', () => {
       // contrived check removes a test flakiness based on wall clock time.
       expect(
         Math.abs(
-          +new Date(row3.next_run_start_at) - +new Date(row2.next_run_start_at),
+          +new Date(row3.next_run_start_at!) -
+            +new Date(row2.next_run_start_at!),
         ),
       ).toBeLessThanOrEqual(60_000);
 
@@ -416,10 +469,10 @@ describe('TaskWorker', () => {
       const row1 = (await knex<DbTasksRow>(DB_TASKS_TABLE))[0];
 
       const rowAfterClaimAndReleaseNextStartAt = DateTime.fromJSDate(
-        new Date(rowAfterClaimAndRelease.next_run_start_at),
+        new Date(rowAfterClaimAndRelease.next_run_start_at!),
       );
       const row1NextStartAt = DateTime.fromJSDate(
-        new Date(row1.next_run_start_at),
+        new Date(row1.next_run_start_at!),
       );
       const now = DateTime.now();
       expect(
@@ -478,10 +531,10 @@ describe('TaskWorker', () => {
       const row1 = (await knex<DbTasksRow>(DB_TASKS_TABLE))[0];
 
       const rowAfterClaimAndReleaseNextStartAt = DateTime.fromJSDate(
-        new Date(rowAfterClaimAndRelease.next_run_start_at),
+        new Date(rowAfterClaimAndRelease.next_run_start_at!),
       );
       const row1NextStartAt = DateTime.fromJSDate(
-        new Date(row1.next_run_start_at),
+        new Date(row1.next_run_start_at!),
       );
       const now = DateTime.now();
       expect(

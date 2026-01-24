@@ -17,7 +17,6 @@
 import { renderInTestApp } from '@backstage/test-utils';
 import { waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import React from 'react';
 import { OpenApiDefinition } from './OpenApiDefinition';
 
 describe('<OpenApiDefinition />', () => {
@@ -97,13 +96,13 @@ paths:
     `;
 
     const requestInterceptor = (req: any) => req;
-    const supportedSubmitMethods = ['get', 'post', 'put', 'delete'];
+    const supportedSubmitMethods = ['get', 'post', 'put', 'delete'] as const;
 
     const { findByRole, getByRole, getByLabelText } = await renderInTestApp(
       <OpenApiDefinition
         definition={definition}
         requestInterceptor={requestInterceptor}
-        supportedSubmitMethods={supportedSubmitMethods}
+        supportedSubmitMethods={supportedSubmitMethods as any}
       />,
     );
 

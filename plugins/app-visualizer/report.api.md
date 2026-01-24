@@ -4,24 +4,24 @@
 
 ```ts
 import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
-import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
-import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
-import { FrontendPlugin } from '@backstage/frontend-plugin-api';
-import { IconComponent } from '@backstage/core-plugin-api';
-import { default as React_2 } from 'react';
+import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
+import { IconComponent } from '@backstage/frontend-plugin-api';
+import { JSX as JSX_2 } from 'react';
+import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
+import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 
 // @public (undocumented)
-const visualizerPlugin: FrontendPlugin<
+const visualizerPlugin: OverridableFrontendPlugin<
   {},
   {},
   {
-    'nav-item:app-visualizer': ExtensionDefinition<{
+    'nav-item:app-visualizer': OverridableExtensionDefinition<{
       kind: 'nav-item';
       name: undefined;
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
+      output: ExtensionDataRef<
         {
           title: string;
           icon: IconComponent;
@@ -37,7 +37,7 @@ const visualizerPlugin: FrontendPlugin<
         routeRef: RouteRef<undefined>;
       };
     }>;
-    'page:app-visualizer': ExtensionDefinition<{
+    'page:app-visualizer': OverridableExtensionDefinition<{
       kind: 'page';
       name: undefined;
       config: {
@@ -47,13 +47,9 @@ const visualizerPlugin: FrontendPlugin<
         path?: string | undefined;
       };
       output:
-        | ConfigurableExtensionDataRef<
-            React_2.JSX.Element,
-            'core.reactElement',
-            {}
-          >
-        | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
-        | ConfigurableExtensionDataRef<
+        | ExtensionDataRef<string, 'core.routing.path', {}>
+        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+        | ExtensionDataRef<
             RouteRef<AnyRouteRefParams>,
             'core.routing.ref',
             {
@@ -62,7 +58,8 @@ const visualizerPlugin: FrontendPlugin<
           >;
       inputs: {};
       params: {
-        defaultPath: string;
+        defaultPath?: [Error: `Use the 'path' param instead`];
+        path: string;
         loader: () => Promise<JSX.Element>;
         routeRef?: RouteRef;
       };

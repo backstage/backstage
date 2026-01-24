@@ -14,18 +14,20 @@
  * limitations under the License.
  */
 
-import { UrlReaderService } from '@backstage/backend-plugin-api';
-import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
+import {
+  resolveSafeChildPath,
+  UrlReaderService,
+} from '@backstage/backend-plugin-api';
 import { ScmIntegrations } from '@backstage/integration';
 import { examples } from './plainFile.examples';
+
 import {
   createTemplateAction,
   fetchFile,
 } from '@backstage/plugin-scaffolder-node';
 
 /**
- * Downloads content and places it in the workspace, or optionally
- * in a subdirectory specified by the 'targetPath' input option.
+ * Downloads a single file and places it in the workspace.
  * @public
  */
 export function createFetchPlainFileAction(options: {
@@ -34,38 +36,29 @@ export function createFetchPlainFileAction(options: {
 }) {
   const { reader, integrations } = options;
 
-  return createTemplateAction<{
-    url: string;
-    targetPath: string;
-    token?: string;
-  }>({
+  return createTemplateAction({
     id: 'fetch:plain:file',
     description: 'Downloads single file and places it in the workspace.',
     examples,
     schema: {
       input: {
-        type: 'object',
-        required: ['url', 'targetPath'],
-        properties: {
-          url: {
-            title: 'Fetch URL',
+        url: z =>
+          z.string({
             description:
               'Relative path or absolute URL pointing to the single file to fetch.',
-            type: 'string',
-          },
-          targetPath: {
-            title: 'Target Path',
+          }),
+        targetPath: z =>
+          z.string({
             description:
               'Target path within the working directory to download the file as.',
-            type: 'string',
-          },
-          token: {
-            title: 'Token',
-            description:
-              'An optional token to use for authentication when reading the resources.',
-            type: 'string',
-          },
-        },
+          }),
+        token: z =>
+          z
+            .string({
+              description:
+                'An optional token to use for authentication when reading the resources.',
+            })
+            .optional(),
       },
     },
     supportsDryRun: true,

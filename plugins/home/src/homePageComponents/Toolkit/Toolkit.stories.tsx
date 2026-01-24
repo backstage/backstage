@@ -17,7 +17,7 @@
 import { InfoCard } from '@backstage/core-components';
 import { wrapInTestApp } from '@backstage/test-utils';
 import Grid from '@material-ui/core/Grid';
-import React, { ComponentType, PropsWithChildren } from 'react';
+import { ComponentType, PropsWithChildren } from 'react';
 import { ComponentAccordion } from '../../componentRenderers';
 import { HomePageToolkit } from '../../plugin';
 import { TemplateBackstageLogoIcon } from '../../assets';
@@ -27,6 +27,7 @@ export default {
   decorators: [
     (Story: ComponentType<PropsWithChildren<{}>>) => wrapInTestApp(<Story />),
   ],
+  tags: ['!manifest'],
 };
 
 export const Default = () => {
@@ -43,7 +44,7 @@ export const Default = () => {
   );
 };
 
-export const InAccordian = () => {
+export const InAccordion = () => {
   const ExpandedComponentAccordion = (props: any) => (
     <ComponentAccordion expanded {...props} />
   );

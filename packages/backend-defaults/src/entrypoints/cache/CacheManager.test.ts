@@ -15,7 +15,8 @@
  */
 
 import { mockServices, TestCaches } from '@backstage/backend-test-utils';
-import KeyvRedis from '@keyv/redis';
+import KeyvRedis, { createCluster } from '@keyv/redis';
+import KeyvValkey from '@keyv/valkey';
 import KeyvMemcache from '@keyv/memcache';
 import { CacheManager } from './CacheManager';
 
@@ -30,6 +31,17 @@ jest.mock('@keyv/redis', () => {
     ...Actual,
     __esModule: true,
     default: jest.fn((...args: any[]) => new DefaultConstructor(...args)),
+    createCluster: jest.fn(),
+  };
+});
+jest.mock('@keyv/valkey', () => {
+  const Actual = jest.requireActual('@keyv/valkey');
+  const DefaultConstructor = Actual.default;
+  return {
+    ...Actual,
+    __esModule: true,
+    default: jest.fn((...args: any[]) => new DefaultConstructor(...args)),
+    createCluster: jest.fn(),
   };
 });
 jest.mock('@keyv/memcache', () => {
@@ -69,6 +81,9 @@ describe('CacheManager integration', () => {
       } else if (store === 'memcache') {
         // eslint-disable-next-line jest/no-conditional-expect
         expect(KeyvMemcache).toHaveBeenCalledTimes(3);
+      } else if (store === 'valkey') {
+        // eslint-disable-next-line jest/no-conditional-expect
+        expect(KeyvValkey).toHaveBeenCalledTimes(3);
       }
     },
   );
@@ -192,5 +207,302 @@ describe('CacheManager integration', () => {
         }),
       ),
     ).toThrow(/Invalid duration 'hello' in config/);
+  });
+});
+
+describe('CacheManager store options', () => {
+  it('uses default options when no store-specific config exists', () => {
+    const manager = CacheManager.fromConfig(
+      mockServices.rootConfig({
+        data: {
+          backend: {
+            cache: {
+              store: 'redis',
+              connection: 'redis://localhost:6379',
+            },
+          },
+        },
+      }),
+    );
+
+    manager.forPlugin('p1');
+
+    expect(KeyvRedis).toHaveBeenCalledWith('redis://localhost:6379', {
+      keyPrefixSeparator: ':',
+    });
+  });
+
+  it('defaults to non-clustered mode when cluster config is missing root nodes', () => {
+    const manager = CacheManager.fromConfig(
+      mockServices.rootConfig({
+        data: {
+          backend: {
+            cache: {
+              store: 'redis',
+              connection: 'redis://localhost:6379',
+              redis: {
+                cluster: {},
+              },
+            },
+          },
+        },
+      }),
+    );
+    manager.forPlugin('p1');
+
+    expect(KeyvRedis).toHaveBeenCalledWith('redis://localhost:6379', {
+      keyPrefixSeparator: ':',
+    });
+  });
+
+  it('uses cluster config when present', () => {
+    const manager = CacheManager.fromConfig(
+      mockServices.rootConfig({
+        data: {
+          backend: {
+            cache: {
+              store: 'redis',
+              connection: 'redis://localhost:6379',
+              redis: {
+                cluster: {
+                  rootNodes: [{ url: 'redis://localhost:6379' }],
+                },
+              },
+            },
+          },
+        },
+      }),
+    );
+    manager.forPlugin('p1');
+
+    expect(createCluster).toHaveBeenCalledWith({
+      rootNodes: [{ url: 'redis://localhost:6379' }],
+      defaults: undefined,
+    });
+  });
+
+  it('respects client config for non-clustered mode', () => {
+    const manager = CacheManager.fromConfig(
+      mockServices.rootConfig({
+        data: {
+          backend: {
+            cache: {
+              store: 'redis',
+              connection: 'redis://localhost:6379',
+              redis: {
+                client: {
+                  keyPrefixSeparator: '!',
+                },
+              },
+            },
+          },
+        },
+      }),
+    );
+    manager.forPlugin('p1');
+
+    expect(KeyvRedis).toHaveBeenCalledWith('redis://localhost:6379', {
+      keyPrefixSeparator: '!',
+    });
+  });
+
+  it('accepts client config for clustered mode', () => {
+    const manager = CacheManager.fromConfig(
+      mockServices.rootConfig({
+        data: {
+          backend: {
+            cache: {
+              store: 'redis',
+              connection: 'redis://localhost:6379',
+              redis: {
+                client: {
+                  keyPrefixSeparator: '!',
+                },
+                cluster: {
+                  rootNodes: [{ url: 'redis://localhost:6379' }],
+                },
+              },
+            },
+          },
+        },
+      }),
+    );
+    manager.forPlugin('p1');
+
+    expect(KeyvRedis).toHaveBeenCalledWith(expect.anything(), {
+      keyPrefixSeparator: '!',
+    });
+  });
+
+  it('correctly applies namespace configuration to redis and valkey stores', () => {
+    const testCases = [
+      {
+        store: 'redis',
+        client: {
+          namespace: 'my-app',
+          keyPrefixSeparator: ':',
+        },
+      },
+      { store: 'valkey', client: { keyPrefix: 'my-app:' } },
+    ];
+
+    testCases.forEach(({ store, client }) => {
+      const manager = CacheManager.fromConfig(
+        mockServices.rootConfig({
+          data: {
+            backend: {
+              cache: {
+                store,
+                connection: 'redis://localhost:6379',
+                [store]: {
+                  client,
+                },
+              },
+            },
+          },
+        }),
+      );
+
+      manager.forPlugin('testPlugin');
+
+      if (store === 'redis') {
+        // eslint-disable-next-line jest/no-conditional-expect
+        expect(KeyvRedis).toHaveBeenCalledWith(
+          'redis://localhost:6379',
+          client,
+        );
+      } else if (store === 'valkey') {
+        // eslint-disable-next-line jest/no-conditional-expect
+        expect(KeyvValkey).toHaveBeenCalledWith(
+          'redis://localhost:6379',
+          client,
+        );
+      }
+    });
+  });
+
+  it('falls back to pluginId when no namespace is configured', () => {
+    const manager = CacheManager.fromConfig(
+      mockServices.rootConfig({
+        data: {
+          backend: {
+            cache: {
+              store: 'redis',
+              connection: 'redis://localhost:6379',
+            },
+          },
+        },
+      }),
+    );
+
+    manager.forPlugin('testPlugin');
+
+    expect(KeyvRedis).toHaveBeenCalledWith('redis://localhost:6379', {
+      keyPrefixSeparator: ':',
+    });
+  });
+
+  describe('Namespace construction', () => {
+    it('returns pluginId when no store options are provided', () => {
+      const result = (CacheManager as any).constructNamespace(
+        'testPlugin',
+        undefined,
+      );
+      expect(result).toBe('testPlugin');
+    });
+
+    it.each([
+      {
+        type: 'redis',
+        field: 'namespace',
+        client: { keyPrefixSeparator: ':' },
+      },
+      { type: 'valkey', field: 'keyPrefix', client: {} },
+    ])(
+      'returns pluginId when store options have no $field for $type',
+      ({ type, client }) => {
+        const storeOptions = {
+          type,
+          client,
+        };
+        const result = (CacheManager as any).constructNamespace(
+          'testPlugin',
+          storeOptions,
+        );
+        expect(result).toBe('testPlugin');
+      },
+    );
+
+    it('combines namespace and pluginId with default separator for redis', () => {
+      const storeOptions = {
+        type: 'redis',
+        client: {
+          namespace: 'my-app',
+          keyPrefixSeparator: ':',
+        },
+      };
+      const result = (CacheManager as any).constructNamespace(
+        'testPlugin',
+        storeOptions,
+      );
+      expect(result).toBe('my-app:testPlugin');
+    });
+
+    it('combines namespace and pluginId with custom separator for redis', () => {
+      const storeOptions = {
+        type: 'redis',
+        client: {
+          namespace: 'my-app',
+          keyPrefixSeparator: '-',
+        },
+      };
+      const result = (CacheManager as any).constructNamespace(
+        'testPlugin',
+        storeOptions,
+      );
+      expect(result).toBe('my-app-testPlugin');
+    });
+
+    it('uses default separator when keyPrefixSeparator is not provided for redis', () => {
+      const storeOptions = {
+        type: 'redis',
+        client: {
+          namespace: 'my-app',
+        },
+      };
+      const result = (CacheManager as any).constructNamespace(
+        'testPlugin',
+        storeOptions,
+      );
+      expect(result).toBe('my-app:testPlugin');
+    });
+
+    it('uses keyPrefix for valkey', () => {
+      const storeOptions = {
+        type: 'valkey',
+        client: {
+          keyPrefix: 'my-app:',
+        },
+      };
+      const result = (CacheManager as any).constructNamespace(
+        'testPlugin',
+        storeOptions,
+      );
+      expect(result).toBe('my-app:testPlugin');
+    });
+
+    it('handles empty namespace by falling back to pluginId', () => {
+      const storeOptions = {
+        client: {
+          namespace: '',
+          keyPrefixSeparator: ':',
+        },
+      };
+      const result = (CacheManager as any).constructNamespace(
+        'testPlugin',
+        storeOptions,
+      );
+      expect(result).toBe('testPlugin');
+    });
   });
 });

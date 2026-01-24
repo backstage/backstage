@@ -6,11 +6,10 @@
 import { AnalyzeOptions } from '@backstage/plugin-catalog-node';
 import { AuthService } from '@backstage/backend-plugin-api';
 import { BackendFeature } from '@backstage/backend-plugin-api';
-import { CatalogApi } from '@backstage/catalog-client';
 import { CatalogProcessor } from '@backstage/plugin-catalog-node';
 import { CatalogProcessorEmit } from '@backstage/plugin-catalog-node';
+import { CatalogService } from '@backstage/plugin-catalog-node';
 import { Config } from '@backstage/config';
-import { DiscoveryService } from '@backstage/backend-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { EntityProvider } from '@backstage/plugin-catalog-node';
 import { EntityProviderConnection } from '@backstage/plugin-catalog-node';
@@ -26,7 +25,6 @@ import { SchedulerService } from '@backstage/backend-plugin-api';
 import { SchedulerServiceTaskRunner } from '@backstage/backend-plugin-api';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { ScmLocationAnalyzer } from '@backstage/plugin-catalog-node';
-import { TokenManager } from '@backstage/backend-common';
 import { UserEntity } from '@backstage/catalog-model';
 
 // @public
@@ -127,11 +125,9 @@ export class GithubLocationAnalyzer implements ScmLocationAnalyzer {
 // @public (undocumented)
 export type GithubLocationAnalyzerOptions = {
   config: Config;
-  discovery: DiscoveryService;
-  tokenManager?: TokenManager;
-  auth?: AuthService;
+  auth: AuthService;
   githubCredentialsProvider?: GithubCredentialsProvider;
-  catalog?: CatalogApi;
+  catalog: CatalogService;
 };
 
 // @public
@@ -154,6 +150,8 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
     userTransformer?: UserTransformer;
     teamTransformer?: TeamTransformer;
     alwaysUseDefaultNamespace?: boolean;
+    pageSizes?: Partial<GithubPageSizes>;
+    excludeSuspendedUsers?: boolean;
   });
   connect(connection: EntityProviderConnection): Promise<void>;
   // (undocumented)
@@ -169,11 +167,13 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
 export interface GithubMultiOrgEntityProviderOptions {
   alwaysUseDefaultNamespace?: boolean;
   events?: EventsService;
+  excludeSuspendedUsers?: boolean;
   githubCredentialsProvider?: GithubCredentialsProvider;
   githubUrl: string;
   id: string;
   logger: LoggerService;
   orgs?: string[];
+  pageSizes?: Partial<GithubPageSizes>;
   schedule?: 'manual' | SchedulerServiceTaskRunner;
   teamTransformer?: TeamTransformer;
   userTransformer?: UserTransformer;
@@ -229,6 +229,8 @@ export class GithubOrgEntityProvider implements EntityProvider {
     githubCredentialsProvider?: GithubCredentialsProvider;
     userTransformer?: UserTransformer;
     teamTransformer?: TeamTransformer;
+    pageSizes?: Partial<GithubPageSizes>;
+    excludeSuspendedUsers?: boolean;
   });
   connect(connection: EntityProviderConnection): Promise<void>;
   // (undocumented)
@@ -246,10 +248,12 @@ export type GitHubOrgEntityProviderOptions = GithubOrgEntityProviderOptions;
 // @public
 export interface GithubOrgEntityProviderOptions {
   events?: EventsService;
+  excludeSuspendedUsers?: boolean;
   githubCredentialsProvider?: GithubCredentialsProvider;
   id: string;
   logger: LoggerService;
   orgUrl: string;
+  pageSizes?: Partial<GithubPageSizes>;
   schedule?: 'manual' | SchedulerServiceTaskRunner;
   teamTransformer?: TeamTransformer;
   userTransformer?: UserTransformer;
@@ -281,6 +285,14 @@ export class GithubOrgReaderProcessor implements CatalogProcessor {
 }
 
 // @public
+export type GithubPageSizes = {
+  teams: number;
+  teamMembers: number;
+  organizationMembers: number;
+  repositories: number;
+};
+
+// @public
 export type GithubTeam = {
   slug: string;
   combinedSlug: string;
@@ -295,11 +307,13 @@ export type GithubTeam = {
 // @public
 export type GithubUser = {
   login: string;
+  id?: string;
   bio?: string;
   avatarUrl?: string;
   email?: string;
   name?: string;
   organizationVerifiedDomainEmails?: string[];
+  suspendedAt?: string;
 };
 
 // @public

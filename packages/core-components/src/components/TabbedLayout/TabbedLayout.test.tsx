@@ -15,7 +15,6 @@
  */
 import { renderInTestApp, withLogCollector } from '@backstage/test-utils';
 import { act, fireEvent } from '@testing-library/react';
-import React from 'react';
 import { TabbedLayout } from './TabbedLayout';
 import { Link, Route, Routes } from 'react-router-dom';
 
@@ -48,18 +47,20 @@ describe('TabbedLayout', () => {
     });
 
     expect(error).toEqual([
+      expect.stringContaining(
+        'Error: Child of TabbedLayout must be an TabbedLayout.Route',
+      ),
       expect.objectContaining({
-        detail: new Error(
-          'Child of TabbedLayout must be an TabbedLayout.Route',
-        ),
+        type: 'unhandled-exception',
       }),
+      expect.stringContaining(
+        'Error: Child of TabbedLayout must be an TabbedLayout.Route',
+      ),
       expect.objectContaining({
-        detail: new Error(
-          'Child of TabbedLayout must be an TabbedLayout.Route',
-        ),
+        type: 'unhandled-exception',
       }),
-      expect.stringMatching(
-        /The above error occurred in the <TabbedLayout> component/,
+      expect.stringContaining(
+        'The above error occurred in the <TabbedLayout> component',
       ),
     ]);
   });

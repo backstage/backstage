@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import {
   UnifiedThemeProvider,
   themes as builtinThemes,
@@ -25,7 +24,6 @@ import {
   createExtensionInput,
   ThemeBlueprint,
   ApiBlueprint,
-  createApiFactory,
   appThemeApiRef,
 } from '@backstage/frontend-plugin-api';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
@@ -42,14 +40,30 @@ export const AppThemeApi = ApiBlueprint.makeWithOverrides({
     }),
   },
   factory: (originalFactory, { inputs }) => {
-    return originalFactory({
-      factory: createApiFactory(
-        appThemeApiRef,
-        AppThemeSelector.createWithStorage(
-          inputs.themes.map(i => i.get(ThemeBlueprint.dataRefs.theme)),
-        ),
-      ),
-    });
+    return originalFactory(defineParams =>
+      defineParams({
+        api: appThemeApiRef,
+        deps: {},
+        factory: () => {
+          const nonAppExtensions = inputs.themes.filter(
+            i => i.node.spec.plugin?.id !== 'app',
+          );
+
+          if (nonAppExtensions.length > 0) {
+            const list = nonAppExtensions.map(i => i.node.spec.id).join(', ');
+            // eslint-disable-next-line no-console
+            console.warn(
+              `DEPRECATION WARNING: Theme should only be installed as an extension in the app plugin. ` +
+                `You can either use appPlugin.override(), or a module for the app plugin. The following extension will be ignored in the future: ${list}`,
+            );
+          }
+
+          return AppThemeSelector.createWithStorage(
+            inputs.themes.map(i => i.get(ThemeBlueprint.dataRefs.theme)),
+          );
+        },
+      }),
+    );
   },
 });
 

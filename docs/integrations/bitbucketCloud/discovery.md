@@ -2,7 +2,6 @@
 id: discovery
 title: Bitbucket Cloud Discovery
 sidebar_label: Discovery
-# prettier-ignore
 description: Automatically discovering catalog entities from repositories in Bitbucket Cloud
 ---
 
@@ -11,6 +10,23 @@ catalog files located in [Bitbucket Cloud](https://bitbucket.org).
 The provider will search your Bitbucket Cloud account and register catalog files matching the configured path
 as Location entity and via following processing steps add all contained catalog entities.
 This can be useful as an alternative to static locations or manually adding things to the catalog.
+
+## Event-based Discovery
+
+Supported events for event-based updates:
+
+- [`repo:push`](https://support.atlassian.com/bitbucket-cloud/docs/event-payloads/#Push)
+  received as `bitbucket.repo:push`
+- [`repo:updated`](https://support.atlassian.com/bitbucket-cloud/docs/event-payloads/#Updated)
+  received as `bitbucket.repo:updated`
+  - Changes are triggered if the repository slug/name changed, causing a new URL for it.
+
+To receive events, you need to add webhook subscriptions at Bitbucket Cloud.
+Enable the triggers (event types) you want to receive.
+For the entity provider, only the event types above are supported ("Repository Push" and/or "Repository Updated")
+and additional event types will be ignored (e.g., for other use cases/integrations you might have).
+
+For more information on how to set up the event-based discovery, see the installation instructions below.
 
 ## Installation
 
@@ -38,6 +54,8 @@ You need to decide how you want to receive events from external sources like
 
 - [via HTTP endpoint](https://github.com/backstage/backstage/tree/master/plugins/events-backend/README.md)
 - [via an AWS SQS queue](https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-aws-sqs/README.md)
+- [via Google Pub/Sub](https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-google-pubsub/README.md)
+- [via a Kafka topic](https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-kafka/README.md)
 
 Further documentation:
 
@@ -56,6 +74,8 @@ Additionally, you need to decide how you want to receive events from external so
 
 - [via HTTP endpoint](https://github.com/backstage/backstage/tree/master/plugins/events-backend/README.md)
 - [via an AWS SQS queue](https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-aws-sqs/README.md)
+- [via Google Pub/Sub](https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-google-pubsub/README.md)
+- [via a Kafka topic](https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-kafka/README.md)
 
 Set up your provider
 

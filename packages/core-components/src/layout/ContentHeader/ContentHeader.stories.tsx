@@ -14,12 +14,13 @@
  * limitations under the License.
  */
 
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { ContentHeader } from '../ContentHeader';
 
 export default {
   title: 'Layout/ContentHeader',
   component: ContentHeader,
+  tags: ['!manifest'],
 };
 
 type ContentHeaderProps = {

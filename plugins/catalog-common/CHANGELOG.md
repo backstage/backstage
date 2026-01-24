@@ -1,5 +1,75 @@
 # @backstage/plugin-catalog-common
 
+## 1.1.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.3
+  - @backstage/catalog-model@1.7.6
+  - @backstage/plugin-search-common@1.2.21
+
+## 1.1.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.7.6-next.0
+  - @backstage/plugin-permission-common@0.9.3-next.0
+  - @backstage/plugin-search-common@1.2.21-next.0
+
+## 1.1.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.2
+  - @backstage/plugin-search-common@1.2.20
+
+## 1.1.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.2-next.0
+  - @backstage/plugin-search-common@1.2.20-next.0
+
+## 1.1.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.1
+  - @backstage/catalog-model@1.7.5
+  - @backstage/plugin-search-common@1.2.19
+
+## 1.1.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.1-next.0
+  - @backstage/catalog-model@1.7.5-next.0
+  - @backstage/plugin-search-common@1.2.19-next.0
+
+## 1.1.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.7.4
+  - @backstage/plugin-permission-common@0.9.0
+  - @backstage/plugin-search-common@1.2.18
+
+## 1.1.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.0-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/plugin-search-common@1.2.18-next.0
+
 ## 1.1.3
 
 ### Patch Changes

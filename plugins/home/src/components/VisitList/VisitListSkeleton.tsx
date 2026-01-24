@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import Collapse from '@material-ui/core/Collapse';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemAvatar from '@material-ui/core/ListItemAvatar';

@@ -26,6 +26,7 @@ import {
   addFiles,
   cloneRepo,
   parseRepoUrl,
+  isNotGitDirectoryOrContents,
 } from '@backstage/plugin-scaffolder-node';
 import { Config } from '@backstage/config';
 import fs from 'fs-extra';
@@ -96,7 +97,7 @@ const createPullRequest = async (opts: {
       data,
     );
   } catch (e) {
-    throw new Error(`Unable to create pull-reqeusts, ${e}`);
+    throw new Error(`Unable to create pull-requests, ${e}`);
   }
 
   if (response.status !== 201) {
@@ -252,83 +253,69 @@ export function createPublishBitbucketServerPullRequestAction(options: {
 }) {
   const { integrations, config } = options;
 
-  return createTemplateAction<{
-    repoUrl: string;
-    title: string;
-    description?: string;
-    targetBranch?: string;
-    sourceBranch: string;
-    reviewers?: string[];
-    token?: string;
-    gitAuthorName?: string;
-    gitAuthorEmail?: string;
-  }>({
+  return createTemplateAction({
     id: 'publish:bitbucketServer:pull-request',
     examples,
     schema: {
       input: {
-        type: 'object',
-        required: ['repoUrl', 'title', 'sourceBranch'],
-        properties: {
-          repoUrl: {
-            title: 'Repository Location',
-            type: 'string',
-          },
-          title: {
-            title: 'Pull Request title',
-            type: 'string',
+        repoUrl: z =>
+          z.string({
+            description: 'Repository Location',
+          }),
+        title: z =>
+          z.string({
             description: 'The title for the pull request',
-          },
-          description: {
-            title: 'Pull Request Description',
-            type: 'string',
-            description: 'The description of the pull request',
-          },
-          targetBranch: {
-            title: 'Target Branch',
-            type: 'string',
-            description: `Branch of repository to apply changes to. The default value is 'master'`,
-          },
-          sourceBranch: {
-            title: 'Source Branch',
-            type: 'string',
+          }),
+        description: z =>
+          z
+            .string({
+              description: 'The description of the pull request',
+            })
+            .optional(),
+        targetBranch: z =>
+          z
+            .string({
+              description: `Branch of repository to apply changes to. The default value is 'master'`,
+            })
+            .optional(),
+        sourceBranch: z =>
+          z.string({
             description: 'Branch of repository to copy changes from',
-          },
-          reviewers: {
-            title: 'Pull Request Reviewers',
-            type: 'array',
-            items: {
-              type: 'string',
-            },
-            description:
-              'The usernames of reviewers that will be added to the pull request',
-          },
-          token: {
-            title: 'Authorization Token',
-            type: 'string',
-            description:
-              'The token to use for authorization to BitBucket Server',
-          },
-          gitAuthorName: {
-            title: 'Author Name',
-            type: 'string',
-            description: `Sets the author name for the commit. The default value is 'Scaffolder'`,
-          },
-          gitAuthorEmail: {
-            title: 'Author Email',
-            type: 'string',
-            description: `Sets the author email for the commit.`,
-          },
-        },
+          }),
+        reviewers: z =>
+          z
+            .array(z.string(), {
+              description:
+                'The usernames of reviewers that will be added to the pull request',
+            })
+            .optional(),
+        token: z =>
+          z
+            .string({
+              description:
+                'The token to use for authorization to BitBucket Server',
+            })
+            .optional(),
+        gitAuthorName: z =>
+          z
+            .string({
+              description: `Sets the author name for the commit. The default value is 'Scaffolder'`,
+            })
+            .optional(),
+        gitAuthorEmail: z =>
+          z
+            .string({
+              description: `Sets the author email for the commit.`,
+            })
+            .optional(),
       },
       output: {
-        type: 'object',
-        properties: {
-          pullRequestUrl: {
-            title: 'A URL to the pull request with the provider',
-            type: 'string',
-          },
-        },
+        pullRequestUrl: z =>
+          z
+            .string({
+              description: 'A URL to the pull request with the provider',
+            })
+            .optional(),
       },
     },
     async handler(ctx) {
@@ -393,6 +380,12 @@ export function createPublishBitbucketServerPullRequestAction(options: {
         apiBaseUrl,
       });
 
+      if (!toRef) {
+        throw new InputError(
+          `Target branch '${finalTargetBranch}' not found in repository ${project}/${repo}. Please ensure the branch exists before creating a pull request.`,
+        );
+      }
+
       let fromRef = await findBranches({
         project,
         repo,
@@ -453,9 +446,7 @@ export function createPublishBitbucketServerPullRequestAction(options: {
         // copy files
         fs.cpSync(sourceDir, tempDir, {
           recursive: true,
-          filter: path => {
-            return !(path.indexOf('.git') > -1);
-          },
+          filter: isNotGitDirectoryOrContents,
         });
 
         await addFiles({

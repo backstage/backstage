@@ -2,11 +2,8 @@
 id: extension-overrides
 title: Frontend Extension Overrides
 sidebar_label: Extension Overrides
-# prettier-ignore
 description: Frontend extension overrides
 ---
-
-> **NOTE: The new frontend system is in alpha and is only supported by a small number of plugins.**
 
 ## Introduction
 
@@ -90,7 +87,7 @@ const exampleExtension = PageBlueprint.make({
   params: {
     loader: () =>
       import('./components/ExamplePage').then(m => <m.ExamplePage />),
-    defaultPath: '/example',
+    path: '/example',
   },
 });
 ```
@@ -319,7 +316,7 @@ import {
 
 const customSearchPage = PageBlueprint.make({
   params: {
-    defaultPath: '/search',
+    path: '/search',
     loader: () =>
       import('./CustomSearchPage').then(m => <m.CustomSearchPage />),
   },

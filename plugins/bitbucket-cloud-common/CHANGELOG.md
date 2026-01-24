@@ -1,5 +1,215 @@
 # @backstage/plugin-bitbucket-cloud-common
 
+## 0.3.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.19.2
+
+## 0.3.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.19.2-next.0
+
+## 0.3.5
+
+### Patch Changes
+
+- 37fba1d: Added support for Bitbucket Cloud OAuth. This introduces an alternative authentication method using a workspace OAuth consumer, alongside App Passwords (deprecated) and API tokens. OAuth does not require a bot or service account and avoids token expiry issues.
+
+  **BREAKING CHANGES**
+
+  - **@backstage/integration** (`src/bitbucketCloud/core.ts`)
+
+    - `getBitbucketCloudRequestOptions` now returns a `Promise` and **must** be awaited.
+
+  - **@backstage/plugin-scaffolder-backend-module-bitbucket-cloud** (`src/actions/helpers.ts`)
+    - `getBitbucketClient` now returns a `Promise` and **must** be awaited.
+    - `getAuthorizationHeader` now returns a `Promise` and **must** be awaited.
+
+  **OAuth usage example**
+
+  ```yaml
+  integrations:
+    bitbucketCloud:
+      - clientId: client-id
+        clientSecret: client-secret
+  ```
+
+- Updated dependencies
+  - @backstage/integration@1.19.0
+
+## 0.3.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.18.3-next.0
+
+## 0.3.4
+
+### Patch Changes
+
+- fa255f5: Support for Bitbucket Cloud's API token was added as `appPassword` is deprecated (no new creation from September 9, 2025) and will be removed on June 9, 2026.
+
+  API token usage example:
+
+  ```yaml
+  integrations:
+    bitbucketCloud:
+      - username: user@domain.com
+        token: my-token
+  ```
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/integration@1.18.2
+
+## 0.3.4-next.0
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/integration@1.18.2-next.0
+
+## 0.3.3
+
+### Patch Changes
+
+- 2aded73: Allow for passing a `pagelen` parameter to configure the `pagelength` property of the `BitbucketCloudEntityProvider` `searchCode` pagination to resolve [bug](https://jira.atlassian.com/browse/BCLOUD-23644) pertaining to duplicate results being returned.
+- Updated dependencies
+  - @backstage/integration@1.18.1
+
+## 0.3.3-next.0
+
+### Patch Changes
+
+- 2aded73: Allow for passing a `pagelen` parameter to configure the `pagelength` property of the `BitbucketCloudEntityProvider` `searchCode` pagination to resolve [bug](https://jira.atlassian.com/browse/BCLOUD-23644) pertaining to duplicate results being returned.
+- Updated dependencies
+  - @backstage/integration@1.18.1-next.0
+
+## 0.3.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.18.0
+
+## 0.3.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.18.0-next.0
+
+## 0.3.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.17.1
+
+## 0.3.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.17.1-next.0
+
+## 0.3.0
+
+### Minor Changes
+
+- 5850717: Update Bitbucket Cloud schema and models.
+
+  The latest schema was fetched from Bitbucket Cloud and stored locally.
+  Based on the updated schema, the models got regenerated.
+
+  **BREAKING:**
+
+  Due to the schema changes, the model update includes one breaking change:
+
+  - `Account.username` was removed.
+
+  Additionally, there were a couple of compatible changes including the addition of
+  `BaseCommit.committer` and others.
+
+### Patch Changes
+
+- 57ad208: Add support for `repo:updated` events as `Events.RepoUpdatedEvent`.
+- Updated dependencies
+  - @backstage/integration@1.17.0
+
+## 0.3.0-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.17.0-next.3
+
+## 0.3.0-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.17.0-next.2
+
+## 0.3.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.16.4-next.1
+
+## 0.3.0-next.0
+
+### Minor Changes
+
+- 5850717: Update Bitbucket Cloud schema and models.
+
+  The latest schema was fetched from Bitbucket Cloud and stored locally.
+  Based on the updated schema, the models got regenerated.
+
+  **BREAKING:**
+
+  Due to the schema changes, the model update includes one breaking change:
+
+  - `Account.username` was removed.
+
+  Additionally, there were a couple of compatible changes including the addition of
+  `BaseCommit.committer` and others.
+
+### Patch Changes
+
+- 57ad208: Add support for `repo:updated` events as `Events.RepoUpdatedEvent`.
+- Updated dependencies
+  - @backstage/integration@1.16.4-next.0
+
+## 0.2.29
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.16.3
+
+## 0.2.29-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.16.3-next.0
+
+## 0.2.28
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.16.2
+
 ## 0.2.28-next.0
 
 ### Patch Changes

@@ -15,10 +15,7 @@
  */
 
 import { InputError } from '@backstage/errors';
-import {
-  BackstageIdentityResponse,
-  BackstageSignInResult,
-} from '@backstage/plugin-auth-node';
+import { BackstageIdentityResponse, BackstageSignInResult } from '../types';
 
 function parseJwtPayload(token: string) {
   const [_header, payload, _signature] = token.split('.');
@@ -57,7 +54,7 @@ export function prepareBackstageIdentityResponse(
   return {
     ...result,
     expiresInSeconds: exp,
-    identity: {
+    identity: result.identity ?? {
       type: 'user',
       userEntityRef: sub,
       ownershipEntityRefs: ent,

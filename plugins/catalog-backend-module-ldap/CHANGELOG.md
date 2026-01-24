@@ -1,5 +1,478 @@
 # @backstage/plugin-catalog-backend-module-ldap
 
+## 0.12.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.0
+  - @backstage/plugin-catalog-node@1.20.1
+
+## 0.12.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.0-next.1
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-catalog-common@1.1.7
+  - @backstage/plugin-catalog-node@1.20.1-next.1
+
+## 0.12.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.1-next.0
+  - @backstage/plugin-catalog-node@1.20.1-next.0
+  - @backstage/config@1.3.6
+  - @backstage/catalog-model@1.7.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-catalog-common@1.1.7
+
+## 0.12.0
+
+### Minor Changes
+
+- 980f240: Moved from `ldapjs` dependency to `ldapts`
+
+  ### Breaking Changes
+
+  **Type Migration**
+
+  Custom transformers must now accept `Entry` from `ldapts` instead of `SearchEntry`
+  from `ldapjs` The Entry type provides direct property access without need for
+  `.object()` or `.raw()` methods.
+
+  If you have custom user or group transformers, update the signature from:
+
+  ```typescript
+  (vendor: LdapVendor, config: UserConfig, entry: SearchEntry) =>
+    Promise<UserEntity | undefined>;
+  ```
+
+  to
+
+  ```typescript
+  (vendor: LdapVendor, config: UserConfig, entry: Entry) =>
+    Promise<UserEntity | undefined>;
+  ```
+
+  **Search Options**
+
+  Updated LDAP search configuration `typesOnly: false` → `attributeValues: true`
+  This inverts the boolean logic: `ldapjs` used negative form while `ldapts` uses
+  positive form. Both achieve the same result: retrieving attribute values rather
+  than just attribute names.
+
+  Update LDAP search options in configuration from
+
+  ```yaml
+  options:
+    typesOnly: false
+  ```
+
+  to
+
+  ```yaml
+  options:
+    attributeValues: true
+  ```
+
+  **API Changes** Removed `LdapClient.searchStreaming()` method. Users should
+  migrate to `LdapClient.search()` instead
+
+  If you're using `searchStreaming` directly:
+
+  ```typescript
+  // Before
+  await client.searchStreaming(dn, options, async entry => {
+    // process each entry
+  });
+
+  // After
+  const entries = await client.search(dn, options);
+  for (const entry of entries) {
+    // process each entry
+  }
+  ```
+
+  > **_NOTE:_**: Both methods have always loaded all entries into memory. The
+  > `searchStreaming` method was only needed internally to handle `ldapjs`'s
+  > event-based API.
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.20.0
+  - @backstage/backend-plugin-api@1.5.0
+  - @backstage/config@1.3.6
+  - @backstage/catalog-model@1.7.6
+  - @backstage/plugin-catalog-common@1.1.7
+
+## 0.12.0-next.1
+
+### Minor Changes
+
+- 980f240: Moved from `ldapjs` dependency to `ldapts`
+
+  ### Breaking Changes
+
+  **Type Migration**
+
+  Custom transformers must now accept `Entry` from ldapts instead of `SearchEntry`
+  from ldapjs The Entry type provides direct property access without need for
+  `.object()` or `.raw()` methods.
+
+  If you have custom user or group transformers, update the signature from:
+
+  ```typescript
+  (vendor: LdapVendor, config: UserConfig, entry: SearchEntry) =>
+    Promise<UserEntity | undefined>;
+  ```
+
+  to
+
+  ```typescript
+  (vendor: LdapVendor, config: UserConfig, entry: Entry) =>
+    Promise<UserEntity | undefined>;
+  ```
+
+  **Search Options**
+
+  Updated LDAP search configuration `typesOnly: false` → `attributeValues: true`
+  This inverts the boolean logic: ldapjs used negative form while ldapts uses
+  positive form. Both achieve the same result: retrieving attribute values rather
+  than just attribute names.
+
+  Update LDAP search options in configuration from
+
+  ```yaml
+  options:
+    typesOnly: false
+  ```
+
+  to
+
+  ```yaml
+  options:
+    attributeValues: true
+  ```
+
+  **API Changes** Removed `LdapClient.searchStreaming()` method. Users should
+  migrate to `LdapClient.search()` instead
+
+  If you're using `searchStreaming` directly:
+
+  ```typescript
+  // Before
+  await client.searchStreaming(dn, options, async entry => {
+    // process each entry
+  });
+
+  // After
+  const entries = await client.search(dn, options);
+  for (const entry of entries) {
+    // process each entry
+  }
+  ```
+
+  > **_NOTE:_**: Both methods have always loaded all entries into memory. The
+  > searchStreaming method was only needed internally to handle ldapjs's
+  > event-based API.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.20.0-next.1
+  - @backstage/backend-plugin-api@1.5.0-next.1
+
+## 0.11.11-next.0
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/config@1.3.6-next.0
+  - @backstage/catalog-model@1.7.6-next.0
+  - @backstage/backend-plugin-api@1.4.5-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-catalog-common@1.1.7-next.0
+  - @backstage/plugin-catalog-node@1.19.2-next.0
+
+## 0.11.10
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.5
+  - @backstage/backend-plugin-api@1.4.4
+  - @backstage/plugin-catalog-common@1.1.6
+  - @backstage/plugin-catalog-node@1.19.1
+
+## 0.11.10-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.4-next.0
+  - @backstage/backend-plugin-api@1.4.4-next.0
+  - @backstage/plugin-catalog-node@1.19.1-next.0
+  - @backstage/plugin-catalog-common@1.1.6-next.0
+
+## 0.11.9
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.19.0
+  - @backstage/types@1.2.2
+  - @backstage/backend-plugin-api@1.4.3
+
+## 0.11.9-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.19.0-next.1
+
+## 0.11.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.3-next.0
+  - @backstage/plugin-catalog-node@1.18.1-next.0
+
+## 0.11.8
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.18.0
+  - @backstage/backend-plugin-api@1.4.2
+
+## 0.11.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.18.0-next.0
+  - @backstage/backend-plugin-api@1.4.2-next.0
+  - @backstage/catalog-model@1.7.5
+  - @backstage/config@1.3.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.5
+
+## 0.11.7
+
+### Patch Changes
+
+- 3507fcd: Just some more circular dep cleanup
+- Updated dependencies
+  - @backstage/config@1.3.3
+  - @backstage/catalog-model@1.7.5
+  - @backstage/backend-plugin-api@1.4.1
+  - @backstage/plugin-catalog-common@1.1.5
+  - @backstage/plugin-catalog-node@1.17.2
+
+## 0.11.7-next.0
+
+### Patch Changes
+
+- 3507fcd: Just some more circular dep cleanup
+- Updated dependencies
+  - @backstage/config@1.3.3-next.0
+  - @backstage/catalog-model@1.7.5-next.0
+  - @backstage/backend-plugin-api@1.4.1-next.0
+  - @backstage/plugin-catalog-common@1.1.5-next.0
+  - @backstage/plugin-catalog-node@1.17.2-next.0
+
+## 0.11.6
+
+### Patch Changes
+
+- 087d51d: Export LDAP vendor types and instances for testing custom transformers
+- f07b0ad: Added the ability to configure disabling one side of the relations tree with LDAP.
+
+  Groups have a `member` attribute and users have a `memberOf` attribute, however these can drift out of sync in some LDAP installations, leaving weird states in the Catalog as we collate these results together and deduplicate them.
+
+  You can chose to optionally disable one side of these relationships, or even both by setting the respective mapping to `null` in your `app-config.yaml` for your groups and/or users:
+
+  ```yaml
+  catalog:
+    providers:
+      ldapOrg:
+        default:
+          target: ldaps://ds.example.net
+          bind:
+            dn: uid=ldap-reader-user,ou=people,ou=example,dc=example,dc=net
+            secret: ${LDAP_SECRET}
+          users:
+            - dn: ou=people,ou=example,dc=example,dc=net
+              options:
+                filter: (uid=*)
+              map:
+                # this ensures that outgoing memberships from users is ignored
+                memberOf: null
+          groups:
+            - dn: ou=access,ou=groups,ou=example,dc=example,dc=net
+              options:
+                filter: (&(objectClass=some-group-class)(!(groupType=email)))
+              map:
+                description: l
+              set:
+                metadata.customField: 'hello'
+              map:
+                # this ensures that outgoing memberships from groups is ignored
+                members: null
+  ```
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.17.1
+  - @backstage/backend-plugin-api@1.4.0
+  - @backstage/catalog-model@1.7.4
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.4
+
+## 0.11.6-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.17.1-next.1
+  - @backstage/backend-plugin-api@1.4.0-next.1
+  - @backstage/catalog-model@1.7.4
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.4
+
+## 0.11.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.0-next.0
+  - @backstage/plugin-catalog-node@1.17.1-next.0
+
+## 0.11.5
+
+### Patch Changes
+
+- e253d1d: Improves error reporting for missing metadata.name in LDAP catalog provider.
+- Updated dependencies
+  - @backstage/catalog-model@1.7.4
+  - @backstage/plugin-catalog-node@1.17.0
+  - @backstage/backend-plugin-api@1.3.1
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.4
+
+## 0.11.5-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.3.1-next.2
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.4-next.0
+  - @backstage/plugin-catalog-node@1.17.0-next.2
+
+## 0.11.5-next.2
+
+### Patch Changes
+
+- e253d1d: Improves error reporting for missing metadata.name in LDAP catalog provider.
+- Updated dependencies
+  - @backstage/config@1.3.2
+  - @backstage/backend-plugin-api@1.3.1-next.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.4-next.0
+  - @backstage/plugin-catalog-node@1.17.0-next.1
+
+## 0.11.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.17.0-next.1
+  - @backstage/backend-plugin-api@1.3.1-next.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.4-next.0
+
+## 0.11.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.17.0-next.0
+  - @backstage/backend-plugin-api@1.3.1-next.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.3
+
+## 0.11.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.16.3
+  - @backstage/backend-plugin-api@1.3.0
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.3
+
+## 0.11.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.16.3-next.0
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.3
+
+## 0.11.3
+
+### Patch Changes
+
+- e43f41b: Fix `config.d.ts` for `ldapOrg` being incorrect. The documentation says a single
+  object or an array are accepted, but the definition only allows an object.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/catalog-model@1.7.3
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+  - @backstage/plugin-catalog-common@1.1.3
+  - @backstage/plugin-catalog-node@1.16.1
+
 ## 0.11.3-next.2
 
 ### Patch Changes

@@ -51,12 +51,10 @@ export const defaultResourceTransformer: ResourceTransformer = async (
       description: node.facts?.data
         ?.find(e => e.name === 'ipaddress')
         ?.value?.toString(),
-      tags: kernel
-        ? [
-            kernel.toString().toLocaleLowerCase('en-US'),
-            latest_report_status.toString().toLocaleLowerCase('en-US'),
-          ]
-        : [],
+      tags: [
+        kernel?.toString().toLocaleLowerCase('en-US'),
+        latest_report_status?.toString().toLocaleLowerCase('en-US'),
+      ].filter((tag): tag is string => Boolean(tag)),
     },
     spec: {
       type: type,

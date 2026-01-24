@@ -14,20 +14,13 @@
  * limitations under the License.
  */
 
-import {
-  bufferFromFileOrString,
-  Cluster,
-  CoreV1Api,
-  KubeConfig,
-  Metrics,
-  topPods,
-} from '@kubernetes/client-node';
+import type { Cluster, CoreV1Api, Metrics } from '@kubernetes/client-node';
 import lodash, { Dictionary } from 'lodash';
 import {
   FetchResponseWrapper,
   KubernetesFetcher,
   ObjectFetchParams,
-} from '../types/types';
+} from '@backstage/plugin-kubernetes-node';
 import {
   ANNOTATION_KUBERNETES_AUTH_PROVIDER,
   SERVICEACCOUNT_CA_PATH,
@@ -110,13 +103,7 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
               ? r.json().then(
                   ({ kind, items }): FetchResponse => ({
                     type: objectType,
-                    resources:
-                      objectType === 'customresources'
-                        ? items.map((item: JsonObject) => ({
-                            ...item,
-                            kind: kind.replace(/(List)$/, ''),
-                          }))
-                        : items,
+                    resources: this.transformResources(objectType, kind, items),
                   }),
                 )
               : this.handleUnsuccessfulResponse(params.clusterDetails.name, r),
@@ -126,12 +113,14 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
     return Promise.all(fetchResults).then(fetchResultsToResponseWrapper);
   }
 
-  fetchPodMetricsByNamespaces(
+  async fetchPodMetricsByNamespaces(
     clusterDetails: ClusterDetails,
     credential: KubernetesCredential,
     namespaces: Set<string>,
     labelSelector?: string,
   ): Promise<FetchResponseWrapper> {
+    const { topPods } = await import('@kubernetes/client-node');
+
     const fetchResults = Array.from(namespaces).map(async ns => {
       const [podMetrics, podList] = await Promise.all([
         this.fetchResource(
@@ -193,7 +182,7 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
     };
   }
 
-  private fetchResource(
+  private async fetchResource(
     clusterDetails: ClusterDetails,
     credential: KubernetesCredential,
     group: string,
@@ -217,9 +206,9 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
       clusterDetails.authMetadata[ANNOTATION_KUBERNETES_AUTH_PROVIDER];
 
     if (this.isServiceAccountAuthentication(authProvider, clusterDetails)) {
-      [url, requestInit] = this.fetchArgsInCluster(credential);
+      [url, requestInit] = await this.fetchArgsInCluster(credential);
     } else if (!this.isCredentialMissing(authProvider, credential)) {
-      [url, requestInit] = this.fetchArgs(clusterDetails, credential);
+      [url, requestInit] = await this.fetchArgs(clusterDetails, credential);
     } else {
       return Promise.reject(
         new Error(
@@ -261,10 +250,12 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
     );
   }
 
-  private fetchArgs(
+  private async fetchArgs(
     clusterDetails: ClusterDetails,
     credential: KubernetesCredential,
-  ): [URL, RequestInit] {
+  ): Promise<[URL, fetch.RequestInit]> {
+    const { bufferFromFileOrString } = await import('@kubernetes/client-node');
+
     const requestInit: RequestInit = {
       method: 'GET',
       headers: {
@@ -293,9 +284,12 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
     }
     return [url, requestInit];
   }
-  private fetchArgsInCluster(
+
+  private async fetchArgsInCluster(
     credential: KubernetesCredential,
-  ): [URL, RequestInit] {
+  ): Promise<[URL, fetch.RequestInit]> {
+    const { KubeConfig } = await import('@kubernetes/client-node');
+
     const requestInit: RequestInit = {
       method: 'GET',
       headers: {
@@ -319,5 +313,34 @@ export class KubernetesClientBasedFetcher implements KubernetesFetcher {
       });
     }
     return [url, requestInit];
+  }
+
+  private transformResources(
+    objectType: string,
+    kind: string,
+    items: JsonObject[],
+  ): JsonObject[] {
+    if (objectType === 'customresources') {
+      return items.map((item: JsonObject) => ({
+        ...item,
+        kind: kind.replace(/(List)$/, ''),
+      }));
+    }
+
+    if (objectType === 'secrets') {
+      return items.map((item: JsonObject) => {
+        if (item.data && typeof item.data === 'object') {
+          return {
+            ...item,
+            data: Object.fromEntries(
+              Object.keys(item.data).map(key => [key, '***']),
+            ),
+          };
+        }
+        return item;
+      });
+    }
+
+    return items;
   }
 }

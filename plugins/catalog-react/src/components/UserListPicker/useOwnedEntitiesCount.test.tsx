@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { PropsWithChildren } from 'react';
+import { PropsWithChildren } from 'react';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { renderHook, waitFor } from '@testing-library/react';
 import {

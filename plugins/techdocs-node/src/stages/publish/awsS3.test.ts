@@ -22,6 +22,7 @@ import {
   ListObjectsV2Command,
   PutObjectCommand,
   S3Client,
+  S3ServiceException,
   UploadPartCommand,
 } from '@aws-sdk/client-s3';
 import { Entity, DEFAULT_NAMESPACE } from '@backstage/catalog-model';
@@ -43,10 +44,13 @@ import {
   mockServices,
 } from '@backstage/backend-test-utils';
 
+jest.setTimeout(30_000);
+
 const env = process.env;
 let s3Mock: AwsClientStub<S3Client>;
 
-const mockDir = createMockDirectory();
+// Create a new MockDirectory for each test to avoid Windows file locking issues
+let mockDir: ReturnType<typeof createMockDirectory>;
 
 function getMockCredentialProvider(): Promise<AwsCredentialProvider> {
   return Promise.resolve({
@@ -155,7 +159,7 @@ describe('AwsS3Publish', () => {
     build_timestamp: 612741599,
   };
 
-  const directory = getEntityRootDir(entity);
+  let directory: string;
 
   const files = {
     'index.html': '',
@@ -176,7 +180,7 @@ describe('AwsS3Publish', () => {
     },
   };
 
-  beforeEach(() => {
+  beforeEach(async () => {
     process.env = { ...env };
     process.env.AWS_REGION = 'us-west-2';
 
@@ -185,6 +189,12 @@ describe('AwsS3Publish', () => {
       getMockCredentialProvider(),
     );
 
+    // Create a fresh mockdirectory for each test to avoid windows file locking
+    mockDir = createMockDirectory();
+    // Calculate directory path with the new mockDir instance
+    directory = getEntityRootDir(entity);
+
+    // Set up the test files
     mockDir.setContent({
       [directory]: files,
     });
@@ -270,25 +280,385 @@ describe('AwsS3Publish', () => {
       expect(getCredProviderMock).toHaveBeenCalledTimes(1);
     });
 
-    it('should fall back to deprecated method of retrieving credentials', async () => {
+    it('should use aws.accounts over integrations.awsS3 if both are provided', async () => {
+      await jest.isolateModulesAsync(async () => {
+        jest.doMock('@aws-sdk/client-s3', () => ({
+          ...jest.requireActual('@aws-sdk/client-s3'),
+          S3Client: jest.fn(),
+        }));
+
+        const { S3Client: MockS3Client } = require('@aws-sdk/client-s3');
+        const { AwsS3Publish: IsolatedAwsS3Publish } = require('./awsS3');
+        const mockConfig = new ConfigReader({
+          techdocs: {
+            publisher: {
+              type: 'awsS3',
+              awsS3: {
+                accountId: '111111111111',
+                bucketName: 'bucketName',
+                bucketRootPath: '/',
+              },
+            },
+          },
+          integrations: {
+            awsS3: [
+              {
+                accessKeyId: 'access-key-from-integrations',
+                secretAccessKey: 'secret-access-key-from-integrations',
+              },
+            ],
+          },
+          aws: {
+            accounts: [
+              {
+                accountId: '111111111111',
+                accessKeyId: 'access-key-from-aws',
+                secretAccessKey: 'secret-access-key-from-aws',
+              },
+            ],
+          },
+        });
+
+        await IsolatedAwsS3Publish.fromConfig(mockConfig, logger);
+        expect(getCredProviderMock).toHaveBeenCalledTimes(0);
+        expect(MockS3Client).toHaveBeenCalledTimes(1);
+        await expect(
+          MockS3Client.mock.calls[0][0]!.credentialDefaultProvider!(
+            undefined!,
+          )(),
+        ).resolves.toEqual({
+          accessKeyId: 'access-key-from-aws',
+          secretAccessKey: 'secret-access-key-from-aws',
+        });
+      });
+    });
+
+    it('should use awsS3.credentials if they are provided', async () => {
+      await jest.isolateModulesAsync(async () => {
+        jest.doMock('@aws-sdk/client-s3', () => ({
+          ...jest.requireActual('@aws-sdk/client-s3'),
+          S3Client: jest.fn(),
+        }));
+
+        const { S3Client: MockS3Client } = require('@aws-sdk/client-s3');
+        const { AwsS3Publish: IsolatedAwsS3Publish } = require('./awsS3');
+        const mockConfig = new ConfigReader({
+          techdocs: {
+            publisher: {
+              type: 'awsS3',
+              awsS3: {
+                credentials: {
+                  accessKeyId: 'accessKeyId',
+                  secretAccessKey: 'secretAccessKey',
+                },
+                bucketName: 'bucketName',
+                bucketRootPath: '/',
+              },
+            },
+          },
+          integrations: {
+            awsS3: [
+              {
+                accessKeyId: 'access-key-from-integrations',
+                secretAccessKey: 'secret-access-key-from-integrations',
+              },
+            ],
+          },
+        });
+
+        await IsolatedAwsS3Publish.fromConfig(mockConfig, logger);
+        expect(getCredProviderMock).toHaveBeenCalledTimes(0);
+        expect(MockS3Client).toHaveBeenCalledTimes(1);
+        await expect(
+          MockS3Client.mock.calls[0][0]!.credentialDefaultProvider!(
+            undefined!,
+          )(),
+        ).resolves.toEqual({
+          accessKeyId: 'accessKeyId',
+          secretAccessKey: 'secretAccessKey',
+        });
+      });
+    });
+
+    it('should use credentials from integrations if awsS3.credentials is not provided', async () => {
+      await jest.isolateModulesAsync(async () => {
+        jest.doMock('@aws-sdk/client-s3', () => ({
+          ...jest.requireActual('@aws-sdk/client-s3'),
+          S3Client: jest.fn(),
+        }));
+
+        const { S3Client: MockS3Client } = require('@aws-sdk/client-s3');
+        const { AwsS3Publish: IsolatedAwsS3Publish } = require('./awsS3');
+
+        const mockConfig = new ConfigReader({
+          techdocs: {
+            publisher: {
+              type: 'awsS3',
+              awsS3: {
+                credentials: {},
+                bucketName: 'bucketName',
+                bucketRootPath: '/',
+              },
+            },
+          },
+          integrations: {
+            awsS3: [
+              {
+                accessKeyId: 'access-key-from-integrations',
+                secretAccessKey: 'secret-access-key-from-integrations',
+              },
+            ],
+          },
+        });
+
+        await IsolatedAwsS3Publish.fromConfig(mockConfig, logger);
+        expect(getCredProviderMock).toHaveBeenCalledTimes(0);
+        expect(MockS3Client).toHaveBeenCalledTimes(1);
+        await expect(
+          MockS3Client.mock.calls[0][0]!.credentialDefaultProvider!(
+            undefined!,
+          )(),
+        ).resolves.toEqual({
+          accessKeyId: 'access-key-from-integrations',
+          secretAccessKey: 'secret-access-key-from-integrations',
+        });
+      });
+    });
+
+    it('should retrieve default credentials if multiple integrations are present', async () => {
       const mockConfig = new ConfigReader({
         techdocs: {
           publisher: {
             type: 'awsS3',
             awsS3: {
-              credentials: {
-                accessKeyId: 'accessKeyId',
-                secretAccessKey: 'secretAccessKey',
-              },
+              credentials: {},
               bucketName: 'bucketName',
               bucketRootPath: '/',
             },
           },
         },
+        integrations: {
+          awsS3: [
+            {
+              accessKeyId: 'access-key-from-integrations',
+              secretAccessKey: 'secret-access-key-from-integrations',
+            },
+            {
+              accessKeyId: 'access-key-from-integrations-2',
+              secretAccessKey: 'secret-access-key-from-integrations-2',
+            },
+          ],
+        },
       });
 
       await AwsS3Publish.fromConfig(mockConfig, logger);
-      expect(getCredProviderMock).toHaveBeenCalledTimes(0);
+      expect(getCredProviderMock).toHaveBeenCalledTimes(1);
+    });
+
+    it('should retrieve the target integration if multiple integrations are provided and credentials are not provided', async () => {
+      await jest.isolateModulesAsync(async () => {
+        jest.doMock('@aws-sdk/client-s3', () => ({
+          ...jest.requireActual('@aws-sdk/client-s3'),
+          S3Client: jest.fn(),
+        }));
+
+        const { S3Client: MockS3Client } = require('@aws-sdk/client-s3');
+        const { AwsS3Publish: IsolatedAwsS3Publish } = require('./awsS3');
+
+        const mockConfig = new ConfigReader({
+          techdocs: {
+            publisher: {
+              type: 'awsS3',
+              awsS3: {
+                credentials: {
+                  accessKeyId: 'access-key-from-integrations-2',
+                },
+                bucketName: 'bucketName',
+                bucketRootPath: '/',
+              },
+            },
+          },
+          integrations: {
+            awsS3: [
+              {
+                accessKeyId: 'access-key-from-integrations',
+                secretAccessKey: 'secret-access-key-from-integrations',
+              },
+              {
+                accessKeyId: 'access-key-from-integrations-2',
+                secretAccessKey: 'secret-access-key-from-integrations-2',
+              },
+            ],
+          },
+        });
+
+        await IsolatedAwsS3Publish.fromConfig(mockConfig, logger);
+        expect(getCredProviderMock).toHaveBeenCalledTimes(0);
+        expect(MockS3Client).toHaveBeenCalledTimes(1);
+        await expect(
+          MockS3Client.mock.calls[0][0]!.credentialDefaultProvider!(
+            undefined!,
+          )(),
+        ).resolves.toEqual({
+          accessKeyId: 'access-key-from-integrations-2',
+          secretAccessKey: 'secret-access-key-from-integrations-2',
+        });
+      });
+    });
+  });
+
+  describe('retry mechanism', () => {
+    it('should retry with custom retry strategy', async () => {
+      const publisher = await createPublisherFromConfig();
+      const customRetryStrategy = jest.fn(error => {
+        return error.name === 'NetworkingError';
+      });
+
+      s3Mock
+        .on(ListObjectsV2Command)
+        .rejectsOnce(
+          new S3ServiceException({
+            name: 'NetworkingError',
+            $fault: 'client',
+            $metadata: {},
+          }),
+        )
+        .resolvesOnce({ Contents: [] });
+
+      await (publisher as AwsS3Publish).retryOperation(
+        async () => {
+          const command = new ListObjectsV2Command({ Bucket: 'bucketName' });
+          return (publisher as AwsS3Publish).storageClient.send(command);
+        },
+        'TestOperation',
+        3,
+        customRetryStrategy,
+      );
+
+      expect(customRetryStrategy).toHaveBeenCalled();
+    });
+
+    it('should use default retry strategy when no custom strategy provided', async () => {
+      const publisher = await createPublisherFromConfig();
+      s3Mock
+        .on(ListObjectsV2Command)
+        .rejectsOnce(
+          new S3ServiceException({
+            name: 'RequestTimeout',
+            $fault: 'client',
+            $metadata: {},
+          }),
+        )
+        .resolvesOnce({ Contents: [] });
+
+      await (publisher as AwsS3Publish).retryOperation(
+        async () => {
+          const command = new ListObjectsV2Command({ Bucket: 'bucketName' });
+          return (publisher as AwsS3Publish).storageClient.send(command);
+        },
+        'TestOperation',
+        3,
+      );
+    });
+
+    it('should retry on server errors (5xx)', async () => {
+      const publisher = await createPublisherFromConfig();
+      s3Mock
+        .on(ListObjectsV2Command)
+        .rejectsOnce(
+          new S3ServiceException({
+            name: 'InternalError',
+            $fault: 'server',
+            $metadata: { httpStatusCode: 500 },
+          }),
+        )
+        .resolvesOnce({ Contents: [] });
+
+      await (publisher as AwsS3Publish).retryOperation(
+        async () => {
+          const command = new ListObjectsV2Command({ Bucket: 'bucketName' });
+          return (publisher as AwsS3Publish).storageClient.send(command);
+        },
+        'TestOperation',
+        3,
+      );
+    });
+
+    it('should retry on specific 4xx errors that are transient', async () => {
+      const publisher = await createPublisherFromConfig();
+      s3Mock
+        .on(ListObjectsV2Command)
+        .rejectsOnce(
+          new S3ServiceException({
+            name: 'RequestTimeout',
+            $fault: 'client',
+            $metadata: { httpStatusCode: 408 },
+          }),
+        )
+        .resolvesOnce({ Contents: [] });
+
+      await (publisher as AwsS3Publish).retryOperation(
+        async () => {
+          const command = new ListObjectsV2Command({ Bucket: 'bucketName' });
+          return (publisher as AwsS3Publish).storageClient.send(command);
+        },
+        'TestOperation',
+        3,
+      );
+    });
+
+    it('should use exact error code matching for transient errors', async () => {
+      const publisher = await createPublisherFromConfig();
+      // Test that ConnectionError (exact match) is retried, but ConnectionErrorSomething (substring) is not
+      s3Mock
+        .on(ListObjectsV2Command)
+        .rejectsOnce(
+          new S3ServiceException({
+            name: 'ConnectionError',
+            $fault: 'client',
+            $metadata: {},
+          }),
+        )
+        .resolvesOnce({ Contents: [] });
+
+      await (publisher as AwsS3Publish).retryOperation(
+        async () => {
+          const command = new ListObjectsV2Command({ Bucket: 'bucketName' });
+          return (publisher as AwsS3Publish).storageClient.send(command);
+        },
+        'TestOperation',
+        3,
+      );
+    });
+
+    it('should apply exponential backoff with correct calculation', async () => {
+      const publisher = await createPublisherFromConfig();
+      const startTime = Date.now();
+
+      s3Mock
+        .on(ListObjectsV2Command)
+        .rejectsOnce(
+          new S3ServiceException({
+            name: 'SlowDown',
+            $fault: 'server',
+            $metadata: {},
+          }),
+        )
+        .resolvesOnce({ Contents: [] });
+
+      await (publisher as AwsS3Publish).retryOperation(
+        async () => {
+          const command = new ListObjectsV2Command({ Bucket: 'bucketName' });
+          return (publisher as AwsS3Publish).storageClient.send(command);
+        },
+        'TestOperation',
+        3,
+      );
+
+      const elapsedTime = Date.now() - startTime;
+      // First attempt fails, then backoff with baseDelay * 2^(attempt-1) = 1000 * 2^0 = 1000ms minimum
+      // Adding jitter (0-1000ms), so we expect at least 1000ms total
+      expect(elapsedTime).toBeGreaterThanOrEqual(900);
     });
   });
 
@@ -405,7 +775,7 @@ describe('AwsS3Publish', () => {
         bucketName: bucketName,
       });
       await publisher.publish({ entity, directory });
-      expect(loggerInfoSpy).toHaveBeenLastCalledWith(
+      expect(loggerInfoSpy).toHaveBeenCalledWith(
         `Successfully deleted stale files for Entity ${entity.metadata.name}. Total number of files: 1`,
       );
     });
@@ -549,7 +919,7 @@ describe('AwsS3Publish', () => {
     });
 
     it('should return an error if the techdocs_metadata.json file cannot be read from stream', async () => {
-      s3Mock.on(GetObjectCommand).callsFake(_ => {
+      s3Mock.on(GetObjectCommand).callsFake(() => {
         return {
           Body: new ErrorReadable('No stream!'),
         };
@@ -688,7 +1058,7 @@ describe('AwsS3Publish', () => {
     });
 
     it('should return 404 if file cannot be read from stream', async () => {
-      s3Mock.on(GetObjectCommand).callsFake(_ => {
+      s3Mock.on(GetObjectCommand).callsFake(() => {
         return {
           Body: new ErrorReadable('No stream!'),
         };

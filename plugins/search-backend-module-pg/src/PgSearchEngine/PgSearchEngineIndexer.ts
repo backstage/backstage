@@ -85,16 +85,33 @@ export class PgSearchEngineIndexer extends BatchSearchEngineIndexer {
       return;
     }
 
-    // Attempt to complete and commit the transaction.
-    try {
-      await this.store.completeInsert(this.tx!, this.type);
-      this.tx!.commit();
-    } catch (e) {
-      // Otherwise, rollback the transaction and re-throw the error so that the
-      // stream can be closed and destroyed properly.
-      this.tx!.rollback!(e);
-      throw e;
-    }
+    // Do not truncate text by default
+    let retryTruncated = false;
+
+    do {
+      // Attempt to complete and commit the transaction.
+      try {
+        await this.store.completeInsert(this.tx!, this.type, retryTruncated);
+        this.tx!.commit();
+        retryTruncated = false;
+      } catch (e) {
+        // Otherwise, rollback the transaction and re-throw the error so that the
+        // stream can be closed and destroyed properly.
+        this.tx!.rollback!(e);
+
+        if (
+          e instanceof Error &&
+          e.message.includes('string is too long for tsvector') &&
+          !retryTruncated
+        ) {
+          // If the error is due to a string being too long for tsvector, we
+          // retry the operation with truncated text.
+          retryTruncated = true;
+        } else {
+          throw e;
+        }
+      }
+    } while (retryTruncated);
   }
 
   /**

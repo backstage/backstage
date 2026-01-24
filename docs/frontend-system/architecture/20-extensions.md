@@ -2,11 +2,8 @@
 id: extensions
 title: Frontend Extensions
 sidebar_label: Extensions
-# prettier-ignore
 description: Frontend extensions
 ---
-
-> **NOTE: The new frontend system is in alpha and is only supported by a small number of plugins.**
 
 As mentioned in the [previous section](./10-app.md), Backstage apps are built up from a tree of extensions. This section will go into more detail about what extensions are, how to create and use them, and how to create your own extensibility patterns.
 
@@ -355,3 +352,69 @@ const extension = createExtension({
   },
 });
 ```
+
+## Relative attachment points
+
+When creating an extension or an [extension blueprint](./23-extension-blueprints.md) you can specify an attachment point that is relative to the current plugin. This is particularly useful for groups of blueprints that are part of a common hierarchy, with extensions from one blueprint attaching to extensions from the other blueprint. For example, the following pair of extension definitions could be installed multiple times in different plugins, each creating their own hierarchy:
+
+```tsx
+// Parent extension with a fixed attachment point
+const parentExtension = createExtension({
+  kind: 'section',
+  attachTo: [{ id: 'app/some-fixed-extension', input: 'children' }],
+  inputs: {
+    content: createExtensionInput([coreExtensionData.reactElement], {
+      singleton: true,
+    }),
+  },
+  output: [coreExtensionData.reactElement],
+  factory({ inputs }) {
+    return [
+      coreExtensionData.reactElement(
+        <section>
+          <h1>Section Title</h1>
+          {inputs.content.get(coreExtensionData.reactElement)}
+        </section>,
+      ),
+    ];
+  },
+});
+
+// Child extension with a relative attachment point
+const childExtension = createExtension({
+  kind: 'section-content',
+  attachTo: [{ relative: { kind: 'section' }, input: 'content' }],
+  output: [coreExtensionData.reactElement],
+  factory() {
+    return [coreExtensionData.reactElement(<p>Section Content</p>)];
+  },
+});
+```
+
+## Extension input references
+
+Building on the relative attachment point concept, you can also reference extension inputs directly via the `inputs` property of an extension definition. This provides a more convenient and type-safe way to attach child extensions, especially when using blueprints that provide a nested hierarchy of extensions.
+
+Extension inputs references are always relative, this means that they can only be used for referencing extensions within the same plugin.
+
+Each extension definition exposes an `inputs` property that contains references to all of its defined inputs. These references can be passed directly to the `attachTo` option when creating child extensions:
+
+```tsx
+const parent = createExtension({
+  inputs: {
+    children: createExtensionInput([coreExtensionData.reactElement]),
+  },
+  // other options...
+});
+
+// Create a child extension that attaches to the parent's input
+const child = createExtension({
+  attachTo: page.inputs.children, // Direct reference to the input
+  output: [coreExtensionData.reactElement], // Outputs are verified against the parent input
+  // other options...
+});
+```
+
+These references are a type-safe way to attach child extensions, it both ensures that the parent input is present, as well as the child providing the required data for the parent.
+
+Under the hood, input references are resolved in the same way as relative attachment points, using the extension's kind, namespace, and name to construct the final attachment target.

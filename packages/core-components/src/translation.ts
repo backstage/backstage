@@ -79,6 +79,8 @@ export const coreComponentsTranslationRef = createTranslationRef({
       authRedirectTitle: 'This will trigger a http redirect to OAuth Login.',
       login: 'Log in',
       rejectAll: 'Reject All',
+      message:
+        'Sign-in to allow {{appTitle}} access to {{provider}} APIs and identities.',
     },
     supportButton: {
       title: 'Support',
@@ -104,10 +106,13 @@ export const coreComponentsTranslationRef = createTranslationRef({
       toolbar: {
         search: 'Filter',
       },
+      header: {
+        actions: 'Actions',
+      },
     },
     alertDisplay: {
-      message_one: '({{ count }} older message)',
-      message_other: '({{ count }} older messages)',
+      message_one: '({{ count }} newer message)',
+      message_other: '({{ count }} newer messages)',
     },
     autoLogout: {
       stillTherePrompt: {
@@ -115,9 +120,17 @@ export const coreComponentsTranslationRef = createTranslationRef({
         buttonText: "Yes! Don't log me out",
       },
     },
+    dependencyGraph: {
+      fullscreenTooltip: 'Toggle fullscreen',
+    },
     proxiedSignInPage: {
       title:
         'You do not appear to be signed in. Please try reloading the browser page.',
+    },
+    logViewer: {
+      searchField: {
+        placeholder: 'Search',
+      },
     },
   },
 });

@@ -28,7 +28,7 @@ import { ForwardedError } from '@backstage/errors';
 import { Readable } from 'stream';
 import { finished } from 'stream/promises';
 import { ReadableStream } from 'stream/web';
-import tar from 'tar';
+import * as tar from 'tar';
 
 // TODO: add option for this
 const DEFAULT_REGISTRY_URL = 'https://registry.npmjs.org';
@@ -98,7 +98,9 @@ export default async (
     throw new Error(`Could not find package ${packageArg} in source repo`);
   }
 
-  const tmpDir = await fs.mkdtemp(os.tmpdir());
+  const tmpDir = await fs.mkdtemp(
+    joinPath(os.tmpdir(), 'backstage-repo-tools-generate-patch-'),
+  );
   const ctx: PatchContext = {
     sourceRepo,
     targetRepo,

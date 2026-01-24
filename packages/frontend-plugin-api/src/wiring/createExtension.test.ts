@@ -216,6 +216,167 @@ describe('createExtension', () => {
     );
   });
 
+  it('should create an extension with relative attachment points', () => {
+    const extension = createExtension({
+      attachTo: [
+        { relative: {}, input: 'tabs' },
+        { relative: { kind: 'page' }, input: 'tabs' },
+        { relative: { name: 'index' }, input: 'tabs' },
+        { relative: { kind: 'page', name: 'index' }, input: 'tabs' },
+      ],
+      output: [stringDataRef],
+      factory: () => [stringDataRef('bar')],
+    });
+    expect(String(extension)).toBe(
+      'ExtensionDefinition{attachTo=<plugin>@tabs+page:<plugin>@tabs+<plugin>/index@tabs+page:<plugin>/index@tabs}',
+    );
+  });
+
+  it('should create an extension with relative attachment points by reference', () => {
+    const baseOpts = {
+      attachTo: { id: 'root', input: 'children' },
+      inputs: {
+        tabs: createExtensionInput([stringDataRef]),
+      },
+      output: [],
+      factory: () => [],
+    };
+    const parent1 = createExtension({
+      ...baseOpts,
+    });
+    const parent2 = createExtension({
+      ...baseOpts,
+      kind: 'page',
+    });
+    const parent3 = createExtension({
+      ...baseOpts,
+      name: 'index',
+    });
+    const parent4 = createExtension({
+      ...baseOpts,
+      inputs: {},
+      kind: 'page',
+      name: 'index',
+    }).override({
+      inputs: {
+        otherTabs: createExtensionInput([stringDataRef]),
+      },
+      factory: () => [],
+    });
+    const extension = createExtension({
+      attachTo: [
+        parent1.inputs.tabs,
+        parent2.inputs.tabs,
+        parent3.inputs.tabs,
+        parent4.inputs.otherTabs,
+      ],
+      output: [stringDataRef],
+      factory: () => [stringDataRef('bar')],
+    });
+    expect(String(extension)).toBe(
+      'ExtensionDefinition{attachTo=<plugin>@tabs+page:<plugin>@tabs+<plugin>/index@tabs+page:<plugin>/index@otherTabs}',
+    );
+    const overrdeExtension = extension.override({
+      attachTo: [
+        parent2.inputs.tabs,
+        parent3.inputs.tabs,
+        parent4.inputs.otherTabs,
+      ],
+    });
+    expect(String(overrdeExtension)).toBe(
+      'ExtensionDefinition{attachTo=page:<plugin>@tabs+<plugin>/index@tabs+page:<plugin>/index@otherTabs}',
+    );
+  });
+
+  it('should provide type safe attachments by reference', () => {
+    const parent = createExtension({
+      attachTo: { id: 'root', input: 'children' },
+      inputs: {
+        string: createExtensionInput([stringDataRef]),
+        stringOpt: createExtensionInput([stringDataRef.optional()]),
+        number: createExtensionInput([numberDataRef]),
+        numberOpt: createExtensionInput([numberDataRef.optional()]),
+        both: createExtensionInput([stringDataRef, numberDataRef]),
+        bothOptString: createExtensionInput([
+          stringDataRef.optional(),
+          numberDataRef,
+        ]),
+        bothOptNumber: createExtensionInput([
+          stringDataRef,
+          numberDataRef.optional(),
+        ]),
+        bothOpt: createExtensionInput([
+          stringDataRef.optional(),
+          numberDataRef.optional(),
+        ]),
+      },
+      output: [],
+      factory: () => [],
+    });
+    const strOutExt = createExtension({
+      attachTo: parent.inputs.string,
+      output: [stringDataRef],
+      factory: () => [stringDataRef('str')],
+    });
+    strOutExt.override({
+      attachTo: parent.inputs.string,
+    });
+    strOutExt.override({
+      attachTo: parent.inputs.stringOpt,
+    });
+    strOutExt.override({
+      // @ts-expect-error
+      attachTo: parent.inputs.number,
+    });
+    strOutExt.override({
+      attachTo: parent.inputs.numberOpt,
+    });
+    strOutExt.override({
+      // @ts-expect-error
+      attachTo: parent.inputs.both,
+    });
+    strOutExt.override({
+      attachTo: parent.inputs.bothOptNumber,
+    });
+    strOutExt.override({
+      // @ts-expect-error
+      attachTo: parent.inputs.bothOptString,
+    });
+    strOutExt.override({
+      attachTo: parent.inputs.bothOpt,
+    });
+    const numberOutExt = createExtension({
+      // @ts-expect-error
+      attachTo: parent.inputs.string,
+      output: [numberDataRef],
+      factory: () => [numberDataRef(1)],
+    });
+    numberOutExt.override({
+      // @ts-expect-error
+      attachTo: parent.inputs.string,
+    });
+    numberOutExt.override({
+      attachTo: parent.inputs.number,
+    });
+    const bothOutExt = createExtension({
+      attachTo: parent.inputs.both,
+      output: [numberDataRef, stringDataRef],
+      factory: () => [numberDataRef(1), stringDataRef('str')],
+    });
+    // TODO(Rugvip): Potentially encapsulate the parent input type in the extension, until then we can't verify this
+    bothOutExt.override({
+      output: [numberDataRef.optional(), stringDataRef],
+      factory: () => [stringDataRef('str')],
+    });
+    bothOutExt.override({
+      // @ts-expect-error
+      attachTo: parent.inputs.both,
+      output: [numberDataRef.optional(), stringDataRef],
+      factory: () => [stringDataRef('str')],
+    });
+    expect('types').not.toBe('broken');
+  });
+
   it('should create an extension with input', () => {
     const extension = createExtension({
       attachTo: { id: 'root', input: 'default' },
@@ -669,7 +830,7 @@ describe('createExtension', () => {
         },
       });
 
-      const overriden = testExtension.override({
+      const overridden = testExtension.override({
         config: {
           schema: {
             bar: z => z.string().default('hello'),
@@ -684,12 +845,12 @@ describe('createExtension', () => {
         },
       });
 
-      expect(createExtensionTester(overriden).get(stringDataRef)).toBe(
+      expect(createExtensionTester(overridden).get(stringDataRef)).toBe(
         'foo-boom-override-hello',
       );
 
       expect(
-        createExtensionTester(overriden, {
+        createExtensionTester(overridden, {
           config: { foo: 'hello', bar: 'world' },
         }).get(stringDataRef),
       ).toBe('foo-hello-override-world');
@@ -1078,7 +1239,7 @@ describe('createExtension', () => {
           .add(multi2Ext)
           .get(outputRef),
       ).toThrowErrorMatchingInlineSnapshot(
-        `"Failed to instantiate extension 'subject', override data provided for input 'multi' must match the length of the original inputs"`,
+        `"Failed to resolve the extension tree: Failed to instantiate extension 'subject', override data provided for input 'multi' must match the length of the original inputs"`,
       );
 
       // Mix forward and data override
@@ -1101,7 +1262,7 @@ describe('createExtension', () => {
           .add(multi2Ext)
           .get(outputRef),
       ).toThrowErrorMatchingInlineSnapshot(
-        `"Failed to instantiate extension 'subject', override data for input 'multi' may not mix forwarded inputs with data overrides"`,
+        `"Failed to resolve the extension tree: Failed to instantiate extension 'subject', override data for input 'multi' may not mix forwarded inputs with data overrides"`,
       );
 
       // Required input not provided
@@ -1124,7 +1285,7 @@ describe('createExtension', () => {
           .add(multi2Ext)
           .get(outputRef),
       ).toThrowErrorMatchingInlineSnapshot(
-        `"Failed to instantiate extension 'subject', missing required extension data value(s) 'test1'"`,
+        `"Failed to resolve the extension tree: Failed to instantiate extension 'subject', missing required extension data value(s) 'test1'"`,
       );
 
       // Wrong value provided
@@ -1153,8 +1314,30 @@ describe('createExtension', () => {
           .add(multi2Ext)
           .get(outputRef),
       ).toThrowErrorMatchingInlineSnapshot(
-        `"Failed to instantiate extension 'subject', extension data 'test2' was provided but not declared"`,
+        `"Failed to resolve the extension tree: Failed to instantiate extension 'subject', extension data 'test2' was provided but not declared"`,
       );
     });
+  });
+
+  it('should old inputs without context support', () => {
+    const legacyInput = createExtensionInput([numberDataRef]);
+
+    // old API without context
+    delete (legacyInput as any).context;
+    delete (legacyInput as any).withContext;
+
+    const extension = createExtension({
+      attachTo: { id: 'root', input: 'default' },
+      output: [stringDataRef],
+      inputs: {
+        foo: legacyInput,
+      },
+      factory({ inputs }) {
+        unused(inputs.foo);
+        return [stringDataRef('output')];
+      },
+    });
+
+    expect(extension.inputs.foo).toBe(legacyInput);
   });
 });

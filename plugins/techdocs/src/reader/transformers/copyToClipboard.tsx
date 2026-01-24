@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { renderReactElement } from './renderReactElement';
 import { ThemeProvider } from '@material-ui/core/styles';
 import SvgIcon from '@material-ui/core/SvgIcon';
@@ -67,9 +67,15 @@ const CopyToClipboardButton = ({ text }: CopyToClipboardButtonProps) => {
       leaveDelay={1000}
     >
       <IconButton
-        style={{ color: 'inherit', position: 'absolute' }}
+        style={{
+          position: 'absolute',
+          // top & right was removed from upstream .md-clipboard in mkdocs-material 9.7.0
+          top: '0.5rem',
+          right: '0.5rem',
+        }}
         className="md-clipboard md-icon"
         onClick={handleClick}
+        aria-label="Copy to clipboard"
       >
         <CopyToClipboardIcon />
       </IconButton>
@@ -80,6 +86,8 @@ const CopyToClipboardButton = ({ text }: CopyToClipboardButtonProps) => {
 /**
  * Recreates copy-to-clipboard functionality attached to <code> snippets that
  * is native to mkdocs-material theme.
+ *
+ * Unlike native mkdocs-material theme, this is always enabled and does not respect the mkdocs's config `theme.features` `content.code.copy` setting.
  */
 export const copyToClipboard = (theme: Theme): Transformer => {
   return dom => {

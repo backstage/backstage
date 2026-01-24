@@ -22,7 +22,7 @@ import {
   WithStyles,
 } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import React from 'react';
+import { ReactNode } from 'react';
 
 /** @public */
 export type ItemCardHeaderClassKey = 'root';
@@ -30,7 +30,7 @@ export type ItemCardHeaderClassKey = 'root';
 const styles = (theme: Theme) =>
   createStyles({
     root: {
-      color: theme.palette.common.white,
+      color: theme.getPageTheme({ themeId: 'card' }).fontColor,
       padding: theme.spacing(2, 2, 3),
       backgroundImage: theme.getPageTheme({ themeId: 'card' }).backgroundImage,
       backgroundPosition: 0,
@@ -47,7 +47,7 @@ export type ItemCardHeaderProps = Partial<WithStyles<typeof styles>> & {
    *
    * Use this if you want to have the default styling and placement of a title.
    */
-  title?: React.ReactNode;
+  title?: ReactNode;
   /**
    * A slightly smaller title to show in the header, providing additional
    * details.
@@ -55,14 +55,14 @@ export type ItemCardHeaderProps = Partial<WithStyles<typeof styles>> & {
    * Use this if you want to have the default styling and placement of a
    * subtitle.
    */
-  subtitle?: React.ReactNode;
+  subtitle?: ReactNode;
   /**
    * Custom children to draw in the header.
    *
    * If the title and/or subtitle were specified, the children are drawn below
    * those.
    */
-  children?: React.ReactNode;
+  children?: ReactNode;
 };
 
 /**

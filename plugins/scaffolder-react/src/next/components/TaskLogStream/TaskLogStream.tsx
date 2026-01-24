@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
 import { LogViewer } from '@backstage/core-components';
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -22,6 +21,7 @@ const useStyles = makeStyles({
     width: '100%',
     height: '100%',
     position: 'relative',
+    minHeight: 240,
   },
 });
 

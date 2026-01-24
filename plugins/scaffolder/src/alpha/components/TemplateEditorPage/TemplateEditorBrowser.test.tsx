@@ -16,18 +16,9 @@
 import { renderInTestApp } from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import React from 'react';
 import { MockFileSystemAccess } from '../../../lib/filesystem/MockFileSystemAccess';
 import { DirectoryEditorProvider } from './DirectoryEditorContext';
 import { TemplateEditorBrowser } from './TemplateEditorBrowser';
-
-Blob.prototype.text = async function text() {
-  return new Promise(resolve => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result as string);
-    reader.readAsText(this);
-  });
-};
 
 describe('TemplateEditorBrowser', () => {
   it('should render files and expand dirs without exploding', async () => {

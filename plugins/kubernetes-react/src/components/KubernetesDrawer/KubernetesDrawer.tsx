@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { ChangeEvent, useState } from 'react';
+import { ReactNode, ChangeEvent, useState } from 'react';
 
-import { IObjectMeta } from '@kubernetes-models/apimachinery/apis/meta/v1/ObjectMeta';
+import type { IObjectMeta } from '@kubernetes-models/apimachinery/apis/meta/v1/ObjectMeta';
 import Drawer from '@material-ui/core/Drawer';
 import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
@@ -31,6 +31,8 @@ import {
 } from '@material-ui/core/styles';
 import CloseIcon from '@material-ui/icons/Close';
 import { ManifestYaml } from './ManifestYaml';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { kubernetesReactTranslationRef } from '../../translation';
 
 const useDrawerContentStyles = makeStyles((_theme: Theme) =>
   createStyles({
@@ -61,8 +63,8 @@ export interface KubernetesObject {
 interface KubernetesDrawerContentProps {
   close: () => void;
   kubernetesObject: KubernetesObject;
-  header?: React.ReactNode;
-  children?: React.ReactNode;
+  header?: ReactNode;
+  children?: ReactNode;
 }
 
 const KubernetesDrawerContent = ({
@@ -72,6 +74,7 @@ const KubernetesDrawerContent = ({
   close,
 }: KubernetesDrawerContentProps) => {
   const classes = useDrawerContentStyles();
+  const { t } = useTranslationRef(kubernetesReactTranslationRef);
   const [isYaml, setIsYaml] = useState<boolean>(false);
 
   return (
@@ -86,7 +89,7 @@ const KubernetesDrawerContent = ({
           <Grid item xs={1}>
             <IconButton
               key="dismiss"
-              title="Close the drawer"
+              title={t('kubernetesDrawer.closeDrawer')}
               onClick={() => close()}
               color="inherit"
             >
@@ -104,10 +107,10 @@ const KubernetesDrawerContent = ({
                   onChange={event => {
                     setIsYaml(event.target.checked);
                   }}
-                  name="YAML"
+                  name={t('kubernetesDrawer.yaml')}
                 />
               }
-              label="YAML"
+              label={t('kubernetesDrawer.yaml')}
             />
           </Grid>
         </Grid>
@@ -128,9 +131,9 @@ const KubernetesDrawerContent = ({
 export interface KubernetesDrawerProps {
   open?: boolean;
   kubernetesObject: KubernetesObject;
-  label: React.ReactNode;
-  drawerContentsHeader?: React.ReactNode;
-  children?: React.ReactNode;
+  label: ReactNode;
+  drawerContentsHeader?: ReactNode;
+  children?: ReactNode;
 }
 
 const useDrawerStyles = makeStyles((theme: Theme) =>

@@ -78,7 +78,7 @@ export interface ClusterDetails {
    */
   name: string;
   /**
-   * Human-readable name for the cluster, to be dispayed in UIs.
+   * Human-readable name for the cluster, to be displayed in UIs.
    */
   title?: string;
   url: string;

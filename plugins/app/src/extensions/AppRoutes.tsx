@@ -14,13 +14,11 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import {
   createExtension,
   coreExtensionData,
   createExtensionInput,
-  coreComponentRefs,
-  useComponentRef,
+  NotFoundErrorPage,
 } from '@backstage/frontend-plugin-api';
 import { useRoutes } from 'react-router-dom';
 
@@ -37,15 +35,19 @@ export const AppRoutes = createExtension({
   output: [coreExtensionData.reactElement],
   factory({ inputs }) {
     const Routes = () => {
-      const NotFoundErrorPage = useComponentRef(
-        coreComponentRefs.notFoundErrorPage,
-      );
-
       const element = useRoutes([
-        ...inputs.routes.map(route => ({
-          path: `${route.get(coreExtensionData.routePath)}/*`,
-          element: route.get(coreExtensionData.reactElement),
-        })),
+        ...inputs.routes.map(route => {
+          const routePath = route.get(coreExtensionData.routePath);
+
+          return {
+            path:
+              routePath === '/'
+                ? routePath
+                : `${routePath.replace(/\/$/, '')}/*`,
+
+            element: route.get(coreExtensionData.reactElement),
+          };
+        }),
         {
           path: '*',
           element: <NotFoundErrorPage />,

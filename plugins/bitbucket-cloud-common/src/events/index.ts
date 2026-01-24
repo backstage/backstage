@@ -31,6 +31,29 @@ export namespace Events {
   }
 
   /** @public */
+  export interface RepoUpdatedEvent extends RepoEvent {
+    changes: RepoChanges;
+  }
+
+  /** @public */
+  export interface RepoChanges {
+    description?: RepoChange<string>;
+    full_name?: RepoChange<string>;
+    language?: RepoChange<string>;
+    links?: RepoChange<
+      Pick<Models.RepositoryLinks, 'avatar' | 'html' | 'self'>
+    >;
+    name?: RepoChange<string>;
+    website?: RepoChange<string>;
+  }
+
+  /** @public */
+  export interface RepoChange<T> {
+    new: T;
+    old: T;
+  }
+
+  /** @public */
   export interface RepoPush {
     changes: Change[];
   }

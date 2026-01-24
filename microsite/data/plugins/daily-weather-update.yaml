@@ -1,0 +1,10 @@
+---
+title: Daily Weather
+author: Infosys Limited
+authorUrl: https://github.com/Infosys
+category: Utility
+description: The Daily Weather Plugin for Backstage provides real-time weather information for a specified location using the Weatherstack API.
+documentation: https://github.com/Infosys/daily-weather-plugin/tree/main/plugins/weather
+iconUrl: https://github.com/Infosys/daily-weather-plugin/blob/main/plugins/weather/src/docs/plugin-logo.png?raw=true
+npmPackageName: '@infosys_ltd/daily-weather-plugin'
+addedDate: '2025-04-16'

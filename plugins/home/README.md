@@ -20,8 +20,6 @@ yarn --cwd packages/app add @backstage/plugin-home
 `packages/app/src/components/home/HomePage.tsx`
 
 ```tsx
-import React from 'react';
-
 export const homePage = (
   /* TODO: Compose a Home Page here */
 );
@@ -66,7 +64,6 @@ In summary: it is not necessary to use the `createCardExtension` extension creat
 Composing a Home Page is no different from creating a regular React Component, i.e. the App Integrator is free to include whatever content they like. However, there are components developed with the Home Page in mind, as described in the previous section. If created by the `createCardExtension` extension creator, they are rendered like so
 
 ```tsx
-import React from 'react';
 import Grid from '@material-ui/core/Grid';
 import { RandomJokeHomePageComponent } from '@backstage/plugin-home';
 
@@ -110,6 +107,9 @@ export const homePage = (
 );
 ```
 
+> [!NOTE]
+> You can provide a title to the grid by passing it as a prop: `<CustomHomepageGrid title="Your Dashboard" />`. This will be displayed as a header above the grid layout.
+
 ### Creating Customizable Components
 
 The custom home page can use the default components created by using the default `createCardExtension` method but if you
@@ -132,7 +132,7 @@ export const RandomJokeHomePageComponent = homePlugin.provide(
 );
 ```
 
-These settings can also be defined for components that use `createReactExtension` instead `createCardExtension` by using
+These settings can also be defined for components that use `createReactExtension` instead of `createCardExtension` by using
 the data property:
 
 ```tsx
@@ -173,7 +173,7 @@ Available home page properties that are used for homepage widgets are:
 To define settings that the users can change for your component, you should define the `layout` and `settings`
 properties. The `settings.schema` object should follow
 [react-jsonschema-form](https://rjsf-team.github.io/react-jsonschema-form/docs/) definition and the type of the schema
-must be `object`. As well, the `uiSchema` can be defined if a certain UI style needs to be applied fo any of the defined
+must be `object`. As well, the `uiSchema` can be defined if a certain UI style needs to be applied for any of the defined
 properties. More documentation [here](https://rjsf-team.github.io/react-jsonschema-form/docs/api-reference/uiSchema).
 
 If you want to hide the card title, you can do it by setting a `name` and leaving the `title` empty.
@@ -249,7 +249,6 @@ Being provided by the `<HomePageTopVisited/>` and `<HomePageRecentlyVisited/>` c
 
 ```tsx
 // packages/app/src/components/home/HomePage.tsx
-import React from 'react';
 import Grid from '@material-ui/core/Grid';
 import {
   HomePageTopVisited,
@@ -357,13 +356,189 @@ home:
 
 In order to validate the config you can use `backstage/cli config:check`
 
+### Customizing the VisitList
+
+If you want more control over the recent and top visited lists, you can write your own functions to transform the path names and determine which visits to save. You can also enrich each visit with other fields and customize the chip colors/labels in the visit lists.
+
+#### Transform Pathname Function
+
+Provide a `transformPathname` function to transform the pathname before it's processed for visit tracking. This can be used for transforming the pathname for the visit (before any other consideration). As an example, you can treat multiple sub-path visits to be counted as a singular path, e.g. `/entity-path/sub1` , `/entity-path/sub-2`, `/entity-path/sub-2/sub-sub-2` can all be mapped to `/entity-path` so visits to any of those routes are all counted as the same.
+
+```tsx
+import {
+  AnyApiFactory,
+  createApiFactory,
+  identityApiRef,
+  storageApiRef,
+} from '@backstage/core-plugin-api';
+import { VisitsStorageApi } from '@backstage/plugin-home';
+
+const transformPathname = (pathname: string) => {
+  const pathnameParts = pathname.split('/').filter(part => part !== '');
+  const rootPathFromPathname = pathnameParts[0] ?? '';
+  if (rootPathFromPathname === 'catalog' && pathnameParts.length >= 4) {
+    return `/${pathnameParts.slice(0, 4).join('/')}`;
+  }
+  return pathname;
+};
+
+export const apis: AnyApiFactory[] = [
+  createApiFactory({
+    api: visitsApiRef,
+    deps: {
+      storageApi: storageApiRef,
+      identityApi: identityApiRef,
+    },
+    factory: ({ storageApi, identityApi }) =>
+      VisitsStorageApi.create({
+        storageApi,
+        identityApi,
+        transformPathname,
+      }),
+  }),
+];
+```
+
+#### Can Save Function
+
+Provide a `canSave` function to determine which visits should be tracked and saved. This allows you to conditionally save visits to the list:
+
+```tsx
+import {
+  AnyApiFactory,
+  createApiFactory,
+  identityApiRef,
+  storageApiRef,
+} from '@backstage/core-plugin-api';
+import { VisitInput, VisitsStorageApi } from '@backstage/plugin-home';
+
+const canSave = (visit: VisitInput) => {
+  // Don't save visits to admin or settings pages
+  return (
+    !visit.pathname.startsWith('/admin') &&
+    !visit.pathname.startsWith('/settings')
+  );
+};
+
+export const apis: AnyApiFactory[] = [
+  createApiFactory({
+    api: visitsApiRef,
+    deps: {
+      storageApi: storageApiRef,
+      identityApi: identityApiRef,
+    },
+    factory: ({ storageApi, identityApi }) =>
+      VisitsStorageApi.create({
+        storageApi,
+        identityApi,
+        canSave,
+      }),
+  }),
+];
+```
+
+#### Enrich Visit Function
+
+You can also add the `enrichVisit` function to put additional values on each `Visit`. The values could later be used to customize the chips in the `VisitList`. For example, you could add the entity `type` on the `Visit` so that `type` is used for labels instead of `kind`.
+
+```tsx
+import {
+  AnyApiFactory,
+  createApiFactory,
+  identityApiRef,
+  storageApiRef,
+} from '@backstage/core-plugin-api';
+import { CatalogApi, catalogApiRef } from '@backstage/plugin-catalog-react';
+import { VisitsStorageApi } from '@backstage/plugin-home';
+
+type EnrichedVisit = VisitInput & {
+  type?: string;
+};
+
+const createEnrichVisit =
+  (catalogApi: CatalogApi) =>
+  async (visit: VisitInput): Promise<EnrichedVisit> => {
+    if (!visit.entityRef) {
+      return visit;
+    }
+    try {
+      const entity = await catalogApi.getEntityByRef(visit.entityRef);
+      const type = entity?.spec?.type?.toString();
+      return { ...visit, type };
+    } catch (error) {
+      return visit;
+    }
+  };
+
+export const apis: AnyApiFactory[] = [
+  createApiFactory({
+    api: visitsApiRef,
+    deps: {
+      storageApi: storageApiRef,
+      identityApi: identityApiRef,
+      catalogApi: catalogApiRef,
+    },
+    factory: ({ storageApi, identityApi, catalogApi }) =>
+      VisitsStorageApi.create({
+        storageApi,
+        identityApi,
+        enrichVisit: createEnrichVisit(catalogApi),
+      }),
+  }),
+];
+```
+
+#### Custom Chip Colors and Labels
+
+To provide your own chip colors and/or labels for the recent and top visited lists, wrap the components in `VisitDisplayProvider` with `getChipColor` and `getChipLabel` functions. The colors provided will be used instead of the hard coded [`colorVariants`](https://github.com/backstage/backstage/blob/2da352043425bcab4c4422e4d2820c26c0a83382/packages/theme/src/base/pageTheme.ts#L46) provided via `@backstage/theme`.
+
+```tsx
+import {
+  CustomHomepageGrid,
+  HomePageTopVisited,
+  HomePageRecentlyVisited,
+  VisitDisplayProvider,
+} from '@backstage/plugin-home';
+
+const getChipColor = (visit: any) => {
+  const type = visit.type;
+  switch (type) {
+    case 'application':
+      return '#b39ddb';
+    case 'service':
+      return '#90caf9';
+    case 'account':
+      return '#a5d6a7';
+    case 'suite':
+      return '#fff59d';
+    default:
+      return '#ef9a9a';
+  }
+};
+
+const getChipLabel = (visit?: any) => {
+  return visit?.type ? visit.type : 'Other';
+};
+
+export default function HomePage() {
+  return (
+    <VisitDisplayProvider getChipColor={getChipColor} getLabel={getChipLabel}>
+      <CustomHomepageGrid title="Your Dashboard">
+        <HomePageRecentlyVisited />
+        <HomePageTopVisited />
+      </CustomHomepageGrid>
+    </VisitDisplayProvider>
+  );
+}
+```
+
 ## Contributing
 
 ### Homepage Components
 
-We believe that people have great ideas for what makes a useful Home Page, and we want to make it easy for every to benefit from the effort you put in to create something cool for the Home Page. Therefore, a great way of contributing is by simply creating more Home Page Components, than can then be used by everyone when composing their own Home Page. If they are tightly coupled to an existing plugin, it is recommended to allow them to live within that plugin, for convenience and to limit complex dependencies. On the other hand, if there's no clear plugin that the component is based on, it's also fine to contribute them into the [home plugin](/plugins/home/src/homePageComponents)
+We believe that people have great ideas for what makes a useful Home Page, and we want to make it easy for everyone to benefit from the effort you put in to create something cool for the Home Page. Therefore, a great way of contributing is by simply creating more Home Page Components that can then be used by everyone when composing their own Home Page. If they are tightly coupled to an existing plugin, it is recommended to allow them to live within that plugin, for convenience and to limit complex dependencies. On the other hand, if there's no clear plugin that the component is based on, it's also fine to contribute them into the [home plugin](/plugins/home/src/homePageComponents)
 
-Additionally, the API is at a very early state, so contributing with additional use cases may expose weaknesses in the current solution that we may iterate on, to provide more flexibility and ease of use for those who wish to develop components for the Home Page.
+Additionally, the API is at a very early state, so contributing additional use cases may expose weaknesses in the current solution that we may iterate on to provide more flexibility and ease of use for those who wish to develop components for the Home Page.
 
 ### Homepage Templates
 

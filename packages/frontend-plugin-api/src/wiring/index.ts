@@ -15,12 +15,13 @@
  */
 
 export { coreExtensionData } from './coreExtensionData';
+export { createExtension } from './createExtension';
 export {
-  createExtension,
   type ExtensionDefinition,
+  type ExtensionDefinitionAttachTo,
   type ExtensionDefinitionParameters,
-  type ExtensionAttachToSpec,
   type CreateExtensionOptions,
+  type OverridableExtensionDefinition,
   type ResolvedExtensionInput,
   type ResolvedExtensionInputs,
 } from './createExtension';
@@ -39,7 +40,10 @@ export {
 export {
   createFrontendPlugin,
   type FrontendPlugin,
+  type OverridableFrontendPlugin,
   type PluginOptions,
+  type FrontendPluginInfo,
+  type FrontendPluginInfoOptions,
 } from './createFrontendPlugin';
 export {
   createFrontendModule,
@@ -51,10 +55,12 @@ export {
   type FrontendFeatureLoader,
   type CreateFrontendFeatureLoaderOptions,
 } from './createFrontendFeatureLoader';
-export { type Extension } from './resolveExtensionDefinition';
 export {
-  type AnyRoutes,
-  type AnyExternalRoutes,
+  type Extension,
+  type ExtensionAttachTo,
+  type ExtensionAttachToSpec,
+} from './resolveExtensionDefinition';
+export {
   type ExtensionDataContainer,
   type FeatureFlagConfig,
   type ExtensionFactoryMiddleware,
@@ -64,6 +70,8 @@ export {
   type CreateExtensionBlueprintOptions,
   type ExtensionBlueprint,
   type ExtensionBlueprintParameters,
+  type ExtensionBlueprintParams,
+  type ExtensionBlueprintDefineParams,
   createExtensionBlueprint,
+  createExtensionBlueprintParams,
 } from './createExtensionBlueprint';
-export { type ResolveInputValueOverrides } from './resolveInputOverrides';

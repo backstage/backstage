@@ -21,7 +21,6 @@ import request from 'supertest';
 import path from 'path';
 import fs from 'fs-extra';
 import { AzureBlobStoragePublish } from './azureBlobStorage';
-import { EventEmitter } from 'events';
 import {
   BlobUploadCommonResponse,
   ContainerGetPropertiesResponse,
@@ -40,7 +39,11 @@ jest.mock('@azure/identity', () => ({
 
 jest.mock('@azure/storage-blob', () => {
   class BlockBlobClient {
-    constructor(private readonly blobName: string) {}
+    private readonly blobName: string;
+
+    constructor(blobName: string) {
+      this.blobName = blobName;
+    }
 
     uploadFile(source: string): Promise<BlobUploadCommonResponse> {
       mockDir.addContent({
@@ -62,20 +65,13 @@ jest.mock('@azure/storage-blob', () => {
     }
 
     download() {
-      const emitter = new EventEmitter();
-      setTimeout(() => {
-        if (fs.pathExistsSync(mockDir.resolve(this.blobName))) {
-          emitter.emit('data', fs.readFileSync(mockDir.resolve(this.blobName)));
-          emitter.emit('end');
-        } else {
-          emitter.emit(
-            'error',
-            new Error(`The file ${this.blobName} does not exist!`),
-          );
-        }
-      }, 0);
+      if (!fs.pathExistsSync(mockDir.resolve(this.blobName))) {
+        return Promise.reject(
+          new Error(`The file ${this.blobName} does not exist!`),
+        );
+      }
       return Promise.resolve({
-        readableStreamBody: emitter,
+        readableStreamBody: fs.createReadStream(mockDir.resolve(this.blobName)),
       });
     }
   }
@@ -125,7 +121,11 @@ jest.mock('@azure/storage-blob', () => {
   }
 
   class ContainerClient {
-    constructor(private readonly containerName: string) {}
+    private readonly containerName: string;
+
+    constructor(containerName: string) {
+      this.containerName = containerName;
+    }
 
     getProperties(): Promise<ContainerGetPropertiesResponse> {
       return Promise.resolve({
@@ -181,10 +181,13 @@ jest.mock('@azure/storage-blob', () => {
   }
 
   class BlobServiceClient {
-    constructor(
-      public readonly url: string,
-      private readonly credential?: StorageSharedKeyCredential,
-    ) {}
+    public readonly url: string;
+    private readonly credential?: StorageSharedKeyCredential;
+
+    constructor(url: string, credential?: StorageSharedKeyCredential) {
+      this.url = url;
+      this.credential = credential;
+    }
 
     getContainerClient(containerName: string) {
       if (containerName === 'bad_container') {
@@ -211,6 +214,7 @@ jest.mock('@azure/storage-blob', () => {
     __esModule: true,
     BlobServiceClient,
     StorageSharedKeyCredential,
+    BlockBlobClient,
   };
 });
 
@@ -568,6 +572,32 @@ describe('AzureBlobStoragePublish', () => {
       );
       expect(response.status).toBe(404);
 
+      expect(Buffer.from(response.text).toString('utf8')).toEqual(
+        'File Not Found',
+      );
+    });
+
+    it('should handle stream pipe errors', async () => {
+      // Get BlockBlobClient from the mock module and replace the download method with a failing one
+      const { BlockBlobClient } = jest.requireMock('@azure/storage-blob');
+      const originalDownload = BlockBlobClient.prototype.download;
+      BlockBlobClient.prototype.download = function () {
+        return Promise.resolve({
+          readableStreamBody: {
+            pipe: () => {
+              throw new Error('Pipe operation failed');
+            },
+          },
+        });
+      };
+
+      const response = await request(app).get(
+        `/${entityTripletPath}/index.html`,
+      );
+
+      BlockBlobClient.prototype.download = originalDownload;
+
+      expect(response.status).toBe(404);
       expect(Buffer.from(response.text).toString('utf8')).toEqual(
         'File Not Found',
       );

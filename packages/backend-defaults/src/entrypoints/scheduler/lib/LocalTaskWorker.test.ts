@@ -16,6 +16,9 @@
 
 import { LocalTaskWorker } from './LocalTaskWorker';
 import { mockServices } from '@backstage/backend-test-utils';
+import waitFor from 'wait-for-expect';
+
+jest.setTimeout(10_000);
 
 describe('LocalTaskWorker', () => {
   const logger = mockServices.logger.mock();
@@ -105,5 +108,109 @@ describe('LocalTaskWorker', () => {
     await new Promise(r => setTimeout(r, 10));
     expect(fn).toHaveBeenCalledTimes(2);
     controller.abort();
+  });
+
+  it('goes through the expected states', async () => {
+    const fn = jest
+      .fn()
+      .mockImplementationOnce(() => new Promise<void>(r => setTimeout(r, 100)))
+      .mockImplementationOnce(
+        () =>
+          new Promise<void>((_, r) =>
+            setTimeout(() => r(new Error('boo')), 100),
+          ),
+      )
+      .mockImplementation(() => new Promise<void>(r => setTimeout(r, 100)));
+    const controller = new AbortController();
+
+    const worker = new LocalTaskWorker('a', fn, logger);
+    worker.start(
+      {
+        version: 2,
+        initialDelayDuration: 'PT0.5S',
+        cadence: 'PT0.5S',
+        timeoutAfterDuration: 'PT1S',
+      },
+      { signal: controller.signal },
+    );
+
+    await waitFor(() => {
+      expect(worker.taskState()).toEqual({
+        status: 'idle',
+        startsAt: expect.any(String),
+      });
+      expect(worker.workerState()).toEqual({
+        status: 'initial-wait',
+      });
+    });
+
+    // Start, complete successfully
+    await waitFor(() => {
+      expect(worker.taskState()).toEqual({
+        status: 'running',
+        startedAt: expect.any(String),
+        timesOutAt: expect.any(String),
+      });
+      expect(worker.workerState()).toEqual({
+        status: 'running',
+      });
+    });
+    await waitFor(() => {
+      expect(worker.taskState()).toEqual({
+        status: 'idle',
+        startsAt: expect.any(String),
+        lastRunEndedAt: expect.any(String),
+      });
+      expect(worker.workerState()).toEqual({
+        status: 'idle',
+      });
+    });
+
+    // Start, complete with error
+    await waitFor(() => {
+      expect(worker.taskState()).toEqual({
+        status: 'running',
+        startedAt: expect.any(String),
+        timesOutAt: expect.any(String),
+        lastRunEndedAt: expect.any(String),
+      });
+      expect(worker.workerState()).toEqual({
+        status: 'running',
+      });
+    });
+    await waitFor(() => {
+      expect(worker.taskState()).toEqual({
+        status: 'idle',
+        startsAt: expect.any(String),
+        lastRunEndedAt: expect.any(String),
+        lastRunError: expect.any(String),
+      });
+      expect(worker.workerState()).toEqual({
+        status: 'idle',
+      });
+    });
+
+    // Start, complete successfully
+    await waitFor(() => {
+      expect(worker.taskState()).toEqual({
+        status: 'running',
+        startedAt: expect.any(String),
+        timesOutAt: expect.any(String),
+        lastRunEndedAt: expect.any(String),
+      });
+      expect(worker.workerState()).toEqual({
+        status: 'running',
+      });
+    });
+    await waitFor(() => {
+      expect(worker.taskState()).toEqual({
+        status: 'idle',
+        startsAt: expect.any(String),
+        lastRunEndedAt: expect.any(String),
+      });
+      expect(worker.workerState()).toEqual({
+        status: 'idle',
+      });
+    });
   });
 });

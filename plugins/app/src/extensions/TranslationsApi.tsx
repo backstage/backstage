@@ -16,7 +16,6 @@
 import {
   ApiBlueprint,
   TranslationBlueprint,
-  createApiFactory,
   createExtensionInput,
 } from '@backstage/frontend-plugin-api';
 import {
@@ -39,18 +38,32 @@ export const TranslationsApi = ApiBlueprint.makeWithOverrides({
     ),
   },
   factory: (originalFactory, { inputs }) => {
-    return originalFactory({
-      factory: createApiFactory({
+    return originalFactory(defineParams =>
+      defineParams({
         api: translationApiRef,
         deps: { languageApi: appLanguageApiRef },
-        factory: ({ languageApi }) =>
-          I18nextTranslationApi.create({
+        factory: ({ languageApi }) => {
+          const nonAppExtensions = inputs.translations.filter(
+            i => i.node.spec.plugin?.id !== 'app',
+          );
+
+          if (nonAppExtensions.length > 0) {
+            const list = nonAppExtensions.map(i => i.node.spec.id).join(', ');
+            // eslint-disable-next-line no-console
+            console.warn(
+              `DEPRECATION WARNING: Translations should only be installed as an extension in the app plugin. ` +
+                `You can either use appPlugin.override(), or a module for the app plugin. The following extension will be ignored in the future: ${list}`,
+            );
+          }
+
+          return I18nextTranslationApi.create({
             languageApi,
             resources: inputs.translations.map(i =>
               i.get(TranslationBlueprint.dataRefs.translation),
             ),
-          }),
+          });
+        },
       }),
-    });
+    );
   },
 });

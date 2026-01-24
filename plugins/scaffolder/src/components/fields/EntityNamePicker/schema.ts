@@ -13,11 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { z } from 'zod';
-import { makeFieldSchemaFromZod } from '../utils';
+import { makeFieldSchema } from '@backstage/plugin-scaffolder-react';
 
-const EntityNamePickerFieldSchema = makeFieldSchemaFromZod(z.string());
+export const EntityNamePickerFieldSchema = makeFieldSchema({
+  output: z => z.string(),
+});
 
 export const EntityNamePickerSchema = EntityNamePickerFieldSchema.schema;
 
-export type EntityNamePickerProps = typeof EntityNamePickerFieldSchema.type;
+export type EntityNamePickerProps = typeof EntityNamePickerFieldSchema.TProps;

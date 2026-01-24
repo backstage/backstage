@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
+import { ReactNode, MouseEventHandler } from 'react';
 import classnames from 'classnames';
 import { makeStyles } from '@material-ui/core/styles';
 import LinkIcon from '@material-ui/icons/Link';
@@ -25,9 +25,9 @@ export type IconLinkVerticalProps = {
   color?: 'primary' | 'secondary';
   disabled?: boolean;
   href?: string;
-  icon?: React.ReactNode;
+  icon?: ReactNode;
   label: string;
-  onClick?: React.MouseEventHandler<HTMLAnchorElement>;
+  onClick?: MouseEventHandler<HTMLAnchorElement>;
   title?: string;
 };
 

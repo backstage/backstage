@@ -28,14 +28,14 @@ import {
   extractGlobalValueMetadata,
 } from './templating';
 import { JsonValue } from '@backstage/types';
-import builtInFilters from '../lib/templating/filters';
+import { createDefaultFilters } from '../lib/templating/filters/createDefaultFilters';
 import { ScmIntegrations } from '@backstage/integration';
 import { ConfigReader } from '@backstage/config';
 
 describe('templating utilities', () => {
   describe('built-in filters', () => {
     const integrations = ScmIntegrations.fromConfig(new ConfigReader({}));
-    const filters = builtInFilters({ integrations });
+    const filters = createDefaultFilters({ integrations });
     it('generates equivalent filter metadata', () => {
       const metadata = extractFilterMetadata(filters);
       expect(metadata).toMatchObject(extractFilterMetadata(filters));
@@ -64,7 +64,7 @@ describe('templating utilities', () => {
               z.string().describe('separator').optional(),
             )
             .returns(z.string()),
-        filter: (input: string, times: number, separator?: string) =>
+        filter: (input, times, separator) =>
           Array(times)
             .fill(input)
             .join(separator ?? ''),
@@ -149,7 +149,7 @@ describe('templating utilities', () => {
       id: 'respond',
       schema: z =>
         z.function().args(z.string().describe('prompt')).returns(z.string()),
-      fn: (prompt: string) =>
+      fn: prompt =>
         prompt === 'knock knock' ? "who's there?" : "nobody's home",
     }),
   ];

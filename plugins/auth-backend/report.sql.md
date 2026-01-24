@@ -5,6 +5,59 @@
 > [!WARNING]
 > Failed to migrate down from '20220321100910_timestamptz_again.js'
 
+## Table `oauth_authorization_sessions`
+
+| Column                  | Type                       | Nullable | Max Length | Default           |
+| ----------------------- | -------------------------- | -------- | ---------- | ----------------- |
+| `client_id`             | `character varying`        | false    | 255        | -                 |
+| `code_challenge`        | `character varying`        | true     | 255        | -                 |
+| `code_challenge_method` | `character varying`        | true     | 255        | -                 |
+| `expires_at`            | `timestamp with time zone` | false    | -          | -                 |
+| `id`                    | `character varying`        | false    | 255        | -                 |
+| `nonce`                 | `character varying`        | true     | 255        | -                 |
+| `redirect_uri`          | `text`                     | false    | -          | -                 |
+| `response_type`         | `character varying`        | false    | 255        | -                 |
+| `scope`                 | `text`                     | true     | -          | -                 |
+| `state`                 | `text`                     | true     | -          | -                 |
+| `status`                | `text`                     | true     | -          | `'pending'::text` |
+| `user_entity_ref`       | `character varying`        | true     | 255        | -                 |
+
+### Indices
+
+- `oauth_authorization_sessions_client_id_user_entity_ref_index` (`client_id`, `user_entity_ref`)
+- `oauth_authorization_sessions_pkey` (`id`) unique primary
+- `oauth_authorization_sessions_status_expires_at_index` (`status`, `expires_at`)
+
+## Table `oidc_authorization_codes`
+
+| Column       | Type                       | Nullable | Max Length | Default |
+| ------------ | -------------------------- | -------- | ---------- | ------- |
+| `code`       | `character varying`        | false    | 255        | -       |
+| `expires_at` | `timestamp with time zone` | false    | -          | -       |
+| `session_id` | `character varying`        | false    | 255        | -       |
+| `used`       | `boolean`                  | true     | -          | `false` |
+
+### Indices
+
+- `oidc_authorization_codes_pkey` (`code`) unique primary
+
+## Table `oidc_clients`
+
+| Column           | Type                | Nullable | Max Length | Default |
+| ---------------- | ------------------- | -------- | ---------- | ------- |
+| `client_id`      | `character varying` | false    | 255        | -       |
+| `client_name`    | `character varying` | false    | 255        | -       |
+| `client_secret`  | `character varying` | false    | 255        | -       |
+| `grant_types`    | `text`              | false    | -          | -       |
+| `metadata`       | `text`              | true     | -          | -       |
+| `redirect_uris`  | `text`              | false    | -          | -       |
+| `response_types` | `text`              | false    | -          | -       |
+| `scope`          | `text`              | true     | -          | -       |
+
+### Indices
+
+- `oidc_clients_pkey` (`client_id`) unique primary
+
 ## Table `sessions`
 
 | Column    | Type                       | Nullable | Max Length | Default |
@@ -33,11 +86,12 @@
 
 ## Table `user_info`
 
-| Column            | Type                       | Nullable | Max Length | Default |
-| ----------------- | -------------------------- | -------- | ---------- | ------- |
-| `exp`             | `timestamp with time zone` | false    | -          | -       |
-| `user_entity_ref` | `character varying`        | false    | 255        | -       |
-| `user_info`       | `text`                     | false    | -          | -       |
+| Column            | Type                       | Nullable | Max Length | Default             |
+| ----------------- | -------------------------- | -------- | ---------- | ------------------- |
+| `created_at`      | `timestamp with time zone` | false    | -          | `CURRENT_TIMESTAMP` |
+| `updated_at`      | `timestamp with time zone` | false    | -          | -                   |
+| `user_entity_ref` | `character varying`        | false    | 255        | -                   |
+| `user_info`       | `text`                     | false    | -          | -                   |
 
 ### Indices
 

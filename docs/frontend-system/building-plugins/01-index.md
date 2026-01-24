@@ -2,11 +2,8 @@
 id: index
 title: Building Frontend Plugins
 sidebar_label: Overview
-# prettier-ignore
 description: Building frontend plugins using the new frontend system
 ---
-
-> **NOTE: The new frontend system is in alpha and is only supported by a small number of plugins.**
 
 This section covers how to build your own frontend [plugins](../architecture/15-plugins.md) and
 [overrides](../architecture/25-extension-overrides.md). They are sometimes collectively referred to as
@@ -32,7 +29,7 @@ This is how to create a minimal plugin:
 import { createFrontendPlugin } from '@backstage/frontend-plugin-api';
 
 export const examplePlugin = createFrontendPlugin({
-  id: 'example',
+  pluginId: 'example',
   extensions: [],
 });
 ```
@@ -76,7 +73,7 @@ const examplePage = PageBlueprint.make({
     routeRef: rootRouteRef,
 
     // This is the default path of this page, but integrators are free to override it
-    defaultPath: '/example',
+    path: '/example',
 
     // Page extensions are always dynamically loaded using React.lazy().
     // All of the functionality of this page is implemented in the
@@ -98,7 +95,7 @@ const exampleNavItem = NavItemBlueprint.make({
 
 // The same plugin as above, now with the extensions added
 export const examplePlugin = createFrontendPlugin({
-  id: 'example',
+  pluginId: 'example',
   extensions: [examplePage, exampleNavItem],
   // We can also make routes available to other plugins.
   // highlight-start
@@ -127,7 +124,7 @@ export interface ExampleApi {
 }
 
 export const exampleApiRef = createApiRef<ExampleApi>({
-  id: 'plugin.example',
+  id: 'plugin.example.api',
 });
 
 export class DefaultExampleApi implements ExampleApi {
@@ -155,26 +152,25 @@ export function ExamplePage() {
 ```
 
 ```tsx title="in src/plugin.ts - Registering a factory for our API"
-import { createApiFactory, ApiBlueprint } from '@backstage/frontend-plugin-api';
+import { ApiBlueprint } from '@backstage/frontend-plugin-api';
 import { exampleApiRef, DefaultExampleApi } from './api';
 
 // highlight-add-start
 const exampleApi = ApiBlueprint.make({
   name: 'example',
-  params: {
-    factory: createApiFactory({
+  params: defineParams =>
+    defineParams({
       api: exampleApiRef,
       deps: {},
       factory: () => new DefaultExampleApi(),
     }),
-  },
 });
 // highlight-add-end
 
 /* Omitted definitions for examplePage, exampleNavItem, and rootRouteRef. */
 
 export const examplePlugin = createFrontendPlugin({
-  id: 'example',
+  pluginId: 'example',
   extensions: [
     // highlight-add-next-line
     exampleApi,
@@ -200,8 +196,8 @@ import { EntityContentBlueprint } from '@backstage/plugin-catalog-react/alpha';
 // route reference if you want to be able to generate a URL that links to the content.
 const exampleEntityContent = EntityContentBlueprint.make({
   params: {
-    defaultPath: 'example',
-    defaultTitle: 'Example',
+    path: 'example',
+    title: 'Example',
     loader: () =>
       import('./components/ExampleEntityContent').then(m => (
         <m.ExampleEntityContent />
@@ -210,7 +206,7 @@ const exampleEntityContent = EntityContentBlueprint.make({
 });
 
 export const examplePlugin = createFrontendPlugin({
-  id: 'example',
+  pluginId: 'example',
   extensions: [
     // highlight-add-next-line
     exampleEntityContent,
@@ -224,6 +220,6 @@ export const examplePlugin = createFrontendPlugin({
 });
 ```
 
-The `ExampleEntityContent` itself is again a regular React component where you can implement any functionality you want. To access the entity that the content is being rendered for, you can use the `useEntity` hook from `@backstage/plugin-catalog-react`. You can see a full list of APIs provided by the catalog React library in [the API reference](../../reference/plugin-catalog-react.md).
+The `ExampleEntityContent` itself is again a regular React component where you can implement any functionality you want. To access the entity that the content is being rendered for, you can use the `useEntity` hook from `@backstage/plugin-catalog-react`. You can see a full list of APIs provided by the catalog React library in [the API reference](https://backstage.io/api/stable/modules/_backstage_plugin-catalog-react.index.html).
 
 For a more complete list of the different kinds of extensions that you can create for your plugin, see the [extension blueprints](./03-common-extension-blueprints.md) section.

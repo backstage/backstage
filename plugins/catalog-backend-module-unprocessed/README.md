@@ -19,19 +19,3 @@ In `packages/backend/src/index.ts` add the module:
 ```ts title="packages/backend/src/index.ts"
 backend.add(import('@backstage/plugin-catalog-backend-module-unprocessed'));
 ```
-
-### Legacy Backend
-
-In `packages/backend/src/plugins/catalog.ts` import the module and initialize it after invoking `CatalogBuilder.build()`:
-
-```ts title="packages/backend/src/plugins/catalog.ts"
-import { UnprocessedEntitiesModule } from '@backstage/plugin-catalog-backend-module-unprocessed';
-
-//...
-
-const unprocessed = new UnprocessedEntitiesModule(
-  await env.database.getClient(),
-  router,
-);
-unprocessed.registerRoutes();
-```

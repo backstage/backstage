@@ -13,13 +13,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { ComponentType } from 'react';
+import { ComponentType } from 'react';
 import { wrapInTestApp } from '@backstage/test-utils';
 import { CatalogAutocomplete } from './CatalogAutocomplete';
 
 export default {
   title: 'Catalog /CatalogAutocomplete',
   decorators: [(Story: ComponentType<{}>) => wrapInTestApp(<Story />)],
+  tags: ['!manifest'],
 };
 
 export const Default = (args: any) => {

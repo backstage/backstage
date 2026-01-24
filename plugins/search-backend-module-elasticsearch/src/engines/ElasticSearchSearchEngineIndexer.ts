@@ -32,6 +32,7 @@ export type ElasticSearchSearchEngineIndexerOptions = {
   logger: LoggerService;
   elasticSearchClientWrapper: ElasticSearchClientWrapper;
   batchSize: number;
+  batchKeyField?: string;
   skipRefresh?: boolean;
 };
 
@@ -87,10 +88,13 @@ export class ElasticSearchSearchEngineIndexer extends BatchSearchEngineIndexer {
     // documents have been successfully written to ES.
     this.bulkResult = this.elasticSearchClientWrapper.bulk({
       datasource: this.sourceStream,
-      onDocument() {
+      onDocument(doc) {
         that.processed++;
         return {
           index: { _index: that.indexName },
+          ...(options.batchKeyField && doc[options.batchKeyField]
+            ? { _id: doc[options.batchKeyField] }
+            : {}),
         };
       },
       refreshOnCompletion: options.skipRefresh !== true,

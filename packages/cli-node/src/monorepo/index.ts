@@ -27,4 +27,5 @@ export {
   Lockfile,
   type LockfileDiff,
   type LockfileDiffEntry,
+  type LockfileQueryEntry,
 } from './Lockfile';

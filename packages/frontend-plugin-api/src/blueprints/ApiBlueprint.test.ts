@@ -16,21 +16,19 @@
 
 import { createExtensionInput } from '../wiring';
 import { ApiBlueprint } from './ApiBlueprint';
-import { createApiFactory, createApiRef } from '@backstage/core-plugin-api';
+import { createApiRef } from '../apis/system';
 
 describe('ApiBlueprint', () => {
   it('should create an extension with sensible defaults', () => {
     const api = createApiRef<{ foo: string }>({ id: 'test' });
-    const factory = createApiFactory({
-      api,
-      deps: {},
-      factory: () => ({ foo: 'bar' }),
-    });
 
     const extension = ApiBlueprint.make({
-      params: {
-        factory,
-      },
+      params: defineParams =>
+        defineParams({
+          api,
+          deps: {},
+          factory: () => ({ foo: 'bar' }),
+        }),
       name: 'test',
     });
 
@@ -58,6 +56,101 @@ describe('ApiBlueprint', () => {
     `);
   });
 
+  it('should properly type the API factory', () => {
+    const fooApi = createApiRef<{ foo: string }>({ id: 'foo' });
+    const barApi = createApiRef<{ bar: string }>({ id: 'bar' });
+
+    expect('test').not.toBe('failing without assertions');
+
+    ApiBlueprint.make({
+      params: defineParams =>
+        defineParams({
+          api: fooApi,
+          deps: {},
+          factory: () => ({ foo: 'foo' }),
+        }),
+    });
+
+    ApiBlueprint.make({
+      params: defineParams =>
+        defineParams({
+          api: fooApi,
+          deps: {},
+          // @ts-expect-error missing property
+          factory: () => ({}),
+        }),
+    });
+
+    ApiBlueprint.make({
+      params: defineParams =>
+        defineParams({
+          api: fooApi,
+          deps: {},
+          // @ts-expect-error wrong property
+          factory: () => ({
+            bar: 'bar',
+          }),
+        }),
+    });
+
+    ApiBlueprint.make({
+      params: defineParams =>
+        defineParams({
+          api: fooApi,
+          deps: {},
+          factory: () => ({
+            // @ts-expect-error wrong type
+            foo: 1,
+          }),
+        }),
+    });
+
+    ApiBlueprint.make({
+      params: defineParams =>
+        defineParams({
+          api: fooApi,
+          deps: { bar: barApi },
+          factory: ({ bar }) => ({ foo: bar.bar }),
+        }),
+    });
+
+    ApiBlueprint.make({
+      params: defineParams =>
+        defineParams({
+          api: fooApi,
+          deps: { bar: barApi },
+          factory: ({ bar }) => ({
+            // @ts-expect-error not an available property
+            foo: bar.foo,
+          }),
+        }),
+    });
+
+    ApiBlueprint.make({
+      params: defineParams =>
+        defineParams({
+          api: fooApi,
+          deps: { bar: barApi },
+          factory: ({ bar }) => ({
+            // @ts-expect-error not an available property
+            foo: bar.foo,
+          }),
+        }),
+    });
+
+    ApiBlueprint.make({
+      params: defineParams =>
+        defineParams({
+          api: fooApi,
+          deps: {},
+          factory: ({ bar }) => ({
+            // @ts-expect-error unknown dep
+            foo: bar.bar,
+          }),
+        }),
+    });
+  });
+
   it('should create an extension with custom factory', () => {
     const api = createApiRef<{ foo: string }>({ id: 'test' });
     const factory = jest.fn(() => ({ foo: 'bar' }));
@@ -73,13 +166,9 @@ describe('ApiBlueprint', () => {
       },
       name: api.id,
       factory(originalFactory, { config: _config, inputs: _inputs }) {
-        return originalFactory({
-          factory: createApiFactory({
-            api,
-            deps: {},
-            factory,
-          }),
-        });
+        return originalFactory(defineParams =>
+          defineParams({ api, deps: {}, factory }),
+        );
       },
     });
 
@@ -114,10 +203,16 @@ describe('ApiBlueprint', () => {
               "optional": false,
               "singleton": false,
             },
+            "context": {
+              "input": "test",
+              "kind": "api",
+              "name": "test",
+            },
             "extensionData": [
               [Function],
             ],
             "replaces": undefined,
+            "withContext": [Function],
           },
         },
         "kind": "api",

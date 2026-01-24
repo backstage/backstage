@@ -19,7 +19,7 @@ import Paper from '@material-ui/core/Paper';
 import CatalogIcon from '@material-ui/icons/MenuBook';
 import DocsIcon from '@material-ui/icons/Description';
 import UsersGroupsIcon from '@material-ui/icons/Person';
-import React, { ComponentType, PropsWithChildren } from 'react';
+import { ComponentType, PropsWithChildren } from 'react';
 import { SearchType } from './SearchType';
 import { TestApiProvider } from '@backstage/test-utils';
 import {
@@ -44,6 +44,7 @@ export default {
       </TestApiProvider>
     ),
   ],
+  tags: ['!manifest'],
 };
 
 const values = ['value-1', 'value-2', 'value-3'];

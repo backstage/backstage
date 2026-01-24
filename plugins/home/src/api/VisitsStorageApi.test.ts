@@ -359,4 +359,202 @@ describe('VisitsStorageApi.create', () => {
       expect(visits.length).toEqual(8);
     });
   });
+  describe('.save() with transformPathname', () => {
+    it('transforms pathname before saving', async () => {
+      const api = VisitsStorageApi.create({
+        storageApi: mockApis.storage(),
+        identityApi: mockIdentityApi,
+        transformPathname: (pathname: string) =>
+          pathname.replace(/\/admin$/, ''),
+      });
+
+      const visit = {
+        pathname: '/catalog/default/component/test/admin',
+        entityRef: 'component:default/test',
+        name: 'Test Component',
+      };
+
+      const savedVisit = await api.save({ visit });
+      expect(savedVisit.pathname).toBe('/catalog/default/component/test');
+    });
+  });
+
+  describe('.save() with canSave', () => {
+    it('skips saving when canSave returns false', async () => {
+      const api = VisitsStorageApi.create({
+        storageApi: mockApis.storage(),
+        identityApi: mockIdentityApi,
+        canSave: visitInput => !visitInput.pathname.includes('/private'),
+      });
+
+      const privateVisit = {
+        pathname: '/private/admin',
+        entityRef: 'component:default/admin',
+        name: 'Admin Component',
+      };
+
+      const result = await api.save({ visit: privateVisit });
+      expect(result.id).toBe('');
+      expect(result.hits).toBe(0);
+
+      const visits = await api.list();
+      expect(visits).toHaveLength(0);
+    });
+
+    it('saves when canSave returns true', async () => {
+      const api = VisitsStorageApi.create({
+        storageApi: mockApis.storage(),
+        identityApi: mockIdentityApi,
+        canSave: visitInput => !visitInput.pathname.includes('/private'),
+      });
+
+      const publicVisit = {
+        pathname: '/catalog/default/component/public',
+        entityRef: 'component:default/public',
+        name: 'Public Component',
+      };
+
+      const result = await api.save({ visit: publicVisit });
+      expect(result.id).toBeTruthy();
+      expect(result.hits).toBe(1);
+
+      const visits = await api.list();
+      expect(visits).toHaveLength(1);
+    });
+
+    it('handles async canSave function', async () => {
+      const api = VisitsStorageApi.create({
+        storageApi: mockApis.storage(),
+        identityApi: mockIdentityApi,
+        canSave: async visitInput =>
+          Promise.resolve(!visitInput.pathname.includes('/restricted')),
+      });
+
+      const restrictedVisit = {
+        pathname: '/restricted/area',
+        entityRef: 'component:default/restricted',
+        name: 'Restricted Component',
+      };
+
+      const result = await api.save({ visit: restrictedVisit });
+      expect(result.id).toBe('');
+
+      const visits = await api.list();
+      expect(visits).toHaveLength(0);
+    });
+  });
+
+  describe('.save() with enrichVisit', () => {
+    it('enriches visit data before saving', async () => {
+      const api = VisitsStorageApi.create({
+        storageApi: mockApis.storage(),
+        identityApi: mockIdentityApi,
+        enrichVisit: visitInput => ({
+          category: visitInput.entityRef?.split(':')[0] || 'unknown',
+          source: 'test',
+        }),
+      });
+
+      const visit = {
+        pathname: '/catalog/default/component/test',
+        entityRef: 'component:default/test',
+        name: 'Test Component',
+      };
+
+      const savedVisit = await api.save({ visit });
+      expect(savedVisit).toEqual(
+        expect.objectContaining({
+          ...visit,
+          category: 'component',
+          source: 'test',
+        }),
+      );
+
+      const visits = await api.list();
+      expect(visits[0]).toEqual(
+        expect.objectContaining({
+          category: 'component',
+          source: 'test',
+        }),
+      );
+    });
+
+    it('handles async enrichVisit function', async () => {
+      const api = VisitsStorageApi.create({
+        storageApi: mockApis.storage(),
+        identityApi: mockIdentityApi,
+        enrichVisit: async visitInput =>
+          Promise.resolve({
+            enrichedAt: Date.now(),
+            type: visitInput.entityRef?.split(':')[0],
+          }),
+      });
+
+      const visit = {
+        pathname: '/catalog/default/api/test-api',
+        entityRef: 'api:default/test-api',
+        name: 'Test API',
+      };
+
+      const savedVisit = await api.save({ visit });
+      expect(savedVisit).toEqual(
+        expect.objectContaining({
+          type: 'api',
+          enrichedAt: expect.any(Number),
+        }),
+      );
+    });
+  });
+
+  describe('.save() with combined options', () => {
+    it('applies transformPathname, canSave, and enrichVisit in sequence', async () => {
+      const api = VisitsStorageApi.create({
+        storageApi: mockApis.storage(),
+        identityApi: mockIdentityApi,
+        transformPathname: pathname => pathname.toLowerCase(),
+        canSave: visitInput => !visitInput.pathname.includes('forbidden'),
+        enrichVisit: visitInput => ({
+          processed: true,
+          originalPath: visitInput.pathname,
+        }),
+      });
+
+      const visit = {
+        pathname: '/CATALOG/Default/Component/Test',
+        entityRef: 'component:default/test',
+        name: 'Test Component',
+      };
+
+      const savedVisit = await api.save({ visit });
+      expect(savedVisit).toEqual(
+        expect.objectContaining({
+          pathname: '/catalog/default/component/test',
+          processed: true,
+          originalPath: '/catalog/default/component/test',
+        }),
+      );
+    });
+
+    it('prevents saving when canSave returns false after pathname transformation', async () => {
+      const api = VisitsStorageApi.create({
+        storageApi: mockApis.storage(),
+        identityApi: mockIdentityApi,
+        transformPathname: pathname =>
+          pathname.replace('/test/', '/forbidden/'),
+        canSave: visitInput => !visitInput.pathname.includes('forbidden'),
+      });
+
+      const visit = {
+        pathname: '/catalog/test/component/sample',
+        entityRef: 'component:default/sample',
+        name: 'Sample Component',
+      };
+
+      const result = await api.save({ visit });
+      expect(result.id).toBe('');
+
+      const visits = await api.list();
+      expect(visits).toHaveLength(0);
+    });
+  });
 });

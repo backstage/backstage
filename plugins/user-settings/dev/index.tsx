@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { CatalogEntityPage } from '@backstage/plugin-catalog';
 import { createDevApp } from '@backstage/dev-utils';
 import { UserSettingsPage, userSettingsPlugin } from '../src';

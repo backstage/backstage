@@ -36,18 +36,18 @@ This plugin installation requires the following steps:
 1. Add the `@backstage/catalog-graph` dependency to your app `package.json` file and install it;
 2. In your application's configuration file, enable the catalog entity relations graphic card extension so that the card begins to be presented on the catalog entity page:
 
-```yaml
-# app-config.yaml
-app:
-  experimental:
-    # Auto discovering all plugins extensions
-    packages: all
-  extensions:
-    # This is required because the card is not enable by default once you install the plugin
-    - entity-card:catalog-graph/relations
-```
+   ```yaml
+   # app-config.yaml
+   app:
+     # Auto discovering all plugins extensions
+     packages: all
+     extensions:
+       # This is required because the card is not enable by default once you install the plugin
+       - entity-card:catalog-graph/relations
+   ```
 
 3. Then start the app, navigate to an entity's page and see the Relations graph there;
+
 4. By clicking on the "View Graph" card action, you will be redirected to the catalog entity relations page.
 
 ## Customization
@@ -64,11 +64,10 @@ _Enabling auto discovering the plugin extensions in production_
 # app-config.production.yaml
 # Overriding configurations for the local production environment
 app:
-  experimental:
-    packages:
-      # Only the following packages will be included
-      include:
-        - '@backstage/plugin-catalog-graph'
+  packages:
+    # Only the following packages will be included
+    include:
+      - '@backstage/plugin-catalog-graph'
 ```
 
 _Disabling auto discovering the plugin extensions in development_
@@ -77,11 +76,10 @@ _Disabling auto discovering the plugin extensions in development_
 # app-config.local.yaml
 # Overriding configurations for the local development environment
 app:
-  experimental:
-    packages:
-      # All but the following package will be included
-      exclude:
-        - '@backstage/plugin-catalog-graph'
+  packages:
+    # All but the following package will be included
+    exclude:
+      - '@backstage/plugin-catalog-graph'
 ```
 
 For more options of package configurations, see [this](https://backstage.io/docs/frontend-system/architecture/app/#feature-discovery) documentation.
@@ -184,7 +182,7 @@ app:
   extensions:
     # this is the extension id and it follows the naming pattern bellow:
     # <extension-kind>/<plugin-namespace>:<extension-name>
-    # example disbaling the graph card extension
+    # example disabling the graph card extension
     - entity-card:catalog-graph/relations: false
 ```
 
@@ -212,7 +210,7 @@ export default createFrontendModule({
       configSchema: createSchemaFromZod(z =>
         z.object({
           filter: z.string().optional(),
-          // Ommitting the rest of default configs for simplicity in this example
+          // Omitting the rest of default configs for simplicity in this example
         }),
       ),
       loader: () =>
@@ -283,7 +281,7 @@ app:
   extensions:
     # this is the extension id and it follows the naming pattern bellow:
     # <extension-kind>/<plugin-namespace>:<extension-name>
-    # example disbaling the graph page extension
+    # example disabling the graph page extension
     - page:catalog-graph: false
 ```
 
@@ -305,12 +303,12 @@ export default createFrontendModule({
   pluginId: 'catalog-graph',
   extensions: [
     createPageExtension({
-      // Ommiting name since it is an index page
-      defaultPath: '/catalog-graph',
+      // Omitting name since it is an index page
+      path: '/catalog-graph',
       routeRef: convertLegacyRouteRef(catalogGraphRouteRef),
       createSchemaFromZod(z => z.object({
         path: z.string().default('/catalog-graph')
-        // Ommitting the rest of default configs for simplicity in this example
+        // Omitting the rest of default configs for simplicity in this example
       })),
       loader: () => import('./components').then(m => <m.CustomEntityRelationsPage />)
     })

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
+import { FC } from 'react';
 
 import {
   DismissableBanner,
@@ -25,6 +25,8 @@ import Skeleton from '@material-ui/lab/Skeleton';
 
 import { ContainerScope } from './types';
 import { usePodLogs } from './usePodLogs';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { kubernetesReactTranslationRef } from '../../../translation';
 
 /**
  * Props for PodLogs
@@ -41,10 +43,11 @@ export interface PodLogsProps {
  *
  * @public
  */
-export const PodLogs: React.FC<PodLogsProps> = ({
+export const PodLogs: FC<PodLogsProps> = ({
   containerScope,
   previous,
 }: PodLogsProps) => {
+  const { t } = useTranslationRef(kubernetesReactTranslationRef);
   const { value, error, loading } = usePodLogs({
     containerScope,
     previous,
@@ -72,8 +75,8 @@ export const PodLogs: React.FC<PodLogsProps> = ({
           (value.text === '' ? (
             <EmptyState
               missing="data"
-              title="No logs emitted"
-              description="No logs were emitted by the container"
+              title={t('podLogs.title')}
+              description={t('podLogs.description')}
             />
           ) : (
             <LogViewer text={value.text} />

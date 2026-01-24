@@ -17,3 +17,5 @@
 export { useConfig } from './useConfig';
 export { useExternalDependencies } from './useExternalDependencies';
 export { useInfo } from './useInfo';
+export { useScheduledTasks } from './useScheduledTasks';
+export { useTriggerScheduledTask } from './useTriggerScheduledTask';

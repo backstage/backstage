@@ -4,9 +4,8 @@
 
 ```ts
 import { ApiRef } from '@backstage/core-plugin-api';
-import { default as React_2 } from 'react';
+import { JSXElementConstructor } from 'react';
 import { ReactElement } from 'react';
-import { screen as screen_2 } from 'testing-library__dom';
 import { TechDocsEntityMetadata } from '@backstage/plugin-techdocs-react';
 import { TechDocsMetadata } from '@backstage/plugin-techdocs-react';
 
@@ -14,16 +13,11 @@ import { TechDocsMetadata } from '@backstage/plugin-techdocs-react';
 export class TechDocsAddonTester {
   protected constructor(addons: ReactElement[]);
   atPath(path: string): this;
-  build(): React_2.ReactElement<
-    any,
-    string | React_2.JSXElementConstructor<any>
-  >;
+  build(): ReactElement<any, string | JSXElementConstructor<any>>;
   static buildAddonsInTechDocs(addons: ReactElement[]): TechDocsAddonTester;
-  renderWithEffects(): Promise<
-    typeof screen_2 & {
-      shadowRoot: ShadowRoot | null;
-    }
-  >;
+  renderWithEffects(): Promise<{
+    shadowRoot: ShadowRoot | null;
+  }>;
   withApis<T extends any[]>(apis: TechdocsAddonTesterApis<T>): this;
   withDom(dom: ReactElement): this;
   withEntity(entity: Partial<TechDocsEntityMetadata>): this;

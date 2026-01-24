@@ -17,11 +17,19 @@
 import {
   OAuthRequestApi,
   OAuthRequesterOptions,
+  PendingOAuthRequest,
 } from '@backstage/core-plugin-api';
 import { OAuthRequestManager } from './OAuthRequestManager';
 
 export default class MockOAuthApi implements OAuthRequestApi {
   private readonly real = new OAuthRequestManager();
+  private requests: PendingOAuthRequest[] = [];
+
+  constructor() {
+    this.authRequest$().subscribe(requests => {
+      this.requests = requests;
+    });
+  }
 
   createAuthRequester<T>(options: OAuthRequesterOptions<T>) {
     return this.real.createAuthRequester(options);
@@ -34,25 +42,12 @@ export default class MockOAuthApi implements OAuthRequestApi {
   async triggerAll() {
     await Promise.resolve(); // Wait a tick to allow new requests to get forwarded
 
-    return new Promise<void>(resolve => {
-      const subscription = this.authRequest$().subscribe(requests => {
-        subscription.unsubscribe();
-        Promise.all(requests.map(request => request.trigger())).then(() =>
-          resolve(),
-        );
-      });
-    });
+    return Promise.all(this.requests.map(request => request.trigger()));
   }
 
   async rejectAll() {
     await Promise.resolve(); // Wait a tick to allow new requests to get forwarded
 
-    return new Promise<void>(resolve => {
-      const subscription = this.authRequest$().subscribe(requests => {
-        subscription.unsubscribe();
-        requests.map(request => request.reject());
-        resolve();
-      });
-    });
+    this.requests.forEach(request => request.reject());
   }
 }

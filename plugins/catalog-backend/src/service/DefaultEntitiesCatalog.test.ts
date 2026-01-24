@@ -525,7 +525,7 @@ describe('DefaultEntitiesCatalog', () => {
     );
 
     it.each(databases.eachSupportedId())(
-      'should return both target and targetRef for entities',
+      'should return both target and targetRef for entities in compat mode',
       async databaseId => {
         await createDatabase(databaseId);
         await addEntity(
@@ -557,6 +557,7 @@ describe('DefaultEntitiesCatalog', () => {
           database: knex,
           logger: mockServices.logger.mock(),
           stitcher,
+          enableRelationsCompatibility: true,
         });
 
         const res = await catalog.entities();
@@ -1576,10 +1577,11 @@ describe('DefaultEntitiesCatalog', () => {
           totalItems: 0,
           items: {
             type: 'raw',
-            entities: expect.objectContaining({ length: 10 }),
+            entities: expect.any(Array),
           },
           pageInfo: { nextCursor: expect.anything() },
         });
+        expect(response.items.entities).toHaveLength(10);
         response = await catalog.queryEntities({
           ...request,
           cursor: response.pageInfo.nextCursor!,
@@ -1588,10 +1590,11 @@ describe('DefaultEntitiesCatalog', () => {
           totalItems: 0,
           items: {
             type: 'raw',
-            entities: expect.objectContaining({ length: 5 }),
+            entities: expect.any(Array),
           },
           pageInfo: { prevCursor: expect.anything() },
         });
+        expect(response.items.entities).toHaveLength(5);
       },
     );
 
@@ -1970,6 +1973,87 @@ describe('DefaultEntitiesCatalog', () => {
         ).resolves.toEqual(['BB']);
       },
     );
+
+    it.each(databases.eachSupportedId())(
+      'should not return duplicate entities when using orderField, %p',
+      async databaseId => {
+        await createDatabase(databaseId);
+
+        // Create a few test entities with different names to sort by
+        const entities = [
+          {
+            apiVersion: 'a',
+            kind: 'k',
+            metadata: {
+              name: 'a-entity',
+              title: 'A Test Entity',
+              uid: 'uid-a',
+            },
+            spec: {},
+          },
+          {
+            apiVersion: 'a',
+            kind: 'k',
+            metadata: {
+              name: 'b-entity',
+              title: 'B Test Entity',
+              uid: 'uid-b',
+            },
+            spec: {},
+          },
+          {
+            apiVersion: 'a',
+            kind: 'k',
+            metadata: {
+              name: 'c-entity',
+              title: 'C Test Entity',
+              uid: 'uid-c',
+            },
+            spec: {},
+          },
+        ];
+
+        await Promise.all(entities.map(e => addEntityToSearch(e)));
+
+        // Manually insert duplicate search entries for the same entities
+        // I'm not sure exactly how this happens but I have seen it in the real world
+        await knex<DbSearchRow>('search').insert([
+          {
+            entity_id: 'uid-a',
+            key: 'metadata.title',
+            value: 'a test entity',
+            original_value: 'A Test Entity',
+          },
+          {
+            entity_id: 'uid-b',
+            key: 'metadata.title',
+            value: 'b test entity',
+            original_value: 'B Test Entity',
+          },
+        ]);
+
+        const catalog = new DefaultEntitiesCatalog({
+          database: knex,
+          logger: mockServices.logger.mock(),
+          stitcher,
+        });
+
+        // Query with orderField
+        const response = await catalog.queryEntities({
+          orderFields: [{ field: 'metadata.title', order: 'asc' }],
+          credentials: mockCredentials.none(),
+        });
+
+        const resultEntities = entitiesResponseToObjects(response.items);
+
+        // Ensure we get exactly 3 entities back, sorted, with no duplicates
+        expect(resultEntities.map(e => e!.metadata.name)).toEqual([
+          'a-entity',
+          'b-entity',
+          'c-entity',
+        ]);
+      },
+    );
   });
 
   describe('removeEntityByUid', () => {
@@ -2273,6 +2357,52 @@ describe('DefaultEntitiesCatalog', () => {
               { value: 'two', count: 1 },
             ]),
             missing: [],
+          },
+        });
+      },
+    );
+
+    it.each(databases.eachSupportedId())(
+      'works when the entity is duplicated in search results, %p',
+      async databaseId => {
+        await createDatabase(databaseId);
+
+        await addEntityToSearch({
+          apiVersion: 'a',
+          kind: 'k',
+          metadata: {
+            name: 'one',
+            uid: 'uid-a',
+          },
+          spec: {},
+        });
+
+        // Manually insert a duplicate search entry, this shouldn't happen but does in reality
+        await knex<DbSearchRow>('search').insert([
+          {
+            entity_id: 'uid-a',
+            key: 'metadata.name',
+            value: 'one',
+            original_value: 'one',
+          },
+        ]);
+
+        const catalog = new DefaultEntitiesCatalog({
+          database: knex,
+          logger: mockServices.logger.mock(),
+          stitcher,
+        });
+
+        await expect(
+          catalog.facets({
+            facets: ['metadata.name'],
+            credentials: mockCredentials.none(),
+          }),
+        ).resolves.toEqual({
+          facets: {
+            'metadata.name': expect.arrayContaining([
+              { value: 'one', count: 1 },
+            ]),
           },
         });
       },

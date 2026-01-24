@@ -17,7 +17,9 @@ import {
   createVersionedContext,
   createVersionedValueMap,
 } from '@backstage/version-bridge';
-import React, {
+import {
+  SetStateAction,
+  Dispatch,
   useState,
   useCallback,
   useContext,
@@ -29,7 +31,7 @@ import React, {
  */
 type SecretsContextContents = {
   secrets: Record<string, string>;
-  setSecrets: React.Dispatch<React.SetStateAction<Record<string, string>>>;
+  setSecrets: Dispatch<SetStateAction<Record<string, string>>>;
 };
 
 /**

@@ -185,7 +185,7 @@ describe('authModuleOidcProvider', () => {
     expect(startResponse.status).toEqual(302);
 
     const nonceCookie = agent.jar.getCookie('oidc-nonce', {
-      domain: 'localhost',
+      domain: '127.0.0.1',
       path: '/api/auth/oidc/handler',
       script: false,
       secure: false,

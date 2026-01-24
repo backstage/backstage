@@ -1,5 +1,244 @@
 # @backstage/core-app-api
 
+## 1.19.3
+
+### Patch Changes
+
+- 75683ed: Added replay functionality to `AlertApiForwarder` to buffer and replay recent alerts to new subscribers, preventing missed alerts that were posted before subscription.
+- 97cd16f: Internal update of translation imports.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.1
+
+## 1.19.3-next.1
+
+### Patch Changes
+
+- 75683ed: Added replay functionality to `AlertApiForwarder` to buffer and replay recent alerts to new subscribers, preventing missed alerts that were posted before subscription.
+- Updated dependencies
+  - @backstage/config@1.3.6
+  - @backstage/core-plugin-api@1.12.1-next.0
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.11
+
+## 1.19.3-next.0
+
+### Patch Changes
+
+- 97cd16f: Internal update of translation imports.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.1-next.0
+  - @backstage/config@1.3.6
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.11
+
+## 1.19.2
+
+### Patch Changes
+
+- b2bef92: Convert all enums to erasable-syntax compliant patterns
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.0
+  - @backstage/config@1.3.6
+
+## 1.19.2-next.1
+
+### Patch Changes
+
+- b2bef92: Convert all enums to erasable-syntax compliant patterns
+- Updated dependencies
+  - @backstage/core-plugin-api@1.11.2-next.1
+
+## 1.19.2-next.0
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.11.2-next.0
+  - @backstage/config@1.3.6-next.0
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.11
+
+## 1.19.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.5
+  - @backstage/core-plugin-api@1.11.1
+
+## 1.19.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.4-next.0
+  - @backstage/core-plugin-api@1.11.1-next.0
+
+## 1.19.0
+
+### Minor Changes
+
+- 3fca906: Add `OpenShiftAuth` helper to create default OAuth flow for OpenShift.
+
+### Patch Changes
+
+- 5ae6d9d: feat: support no en languages
+- Updated dependencies
+  - @backstage/core-plugin-api@1.11.0
+  - @backstage/types@1.2.2
+
+## 1.18.0
+
+### Minor Changes
+
+- 5ddc0fe: if session exists and refresh fails, then create a new session if not instant popup
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3
+  - @backstage/core-plugin-api@1.10.9
+
+## 1.18.0-next.1
+
+### Minor Changes
+
+- 5ddc0fe: if session exists and refresh fails, then create a new session if not instant popup
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.9-next.0
+
+## 1.17.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3-next.0
+  - @backstage/core-plugin-api@1.10.9-next.0
+
+## 1.17.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.8
+  - @backstage/config@1.3.2
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 1.17.0
+
+### Minor Changes
+
+- 1e0230e: Support custom `AuthConnector` for `OAuth2`.
+
+  A user can pass their own `AuthConnector` implementation in `OAuth2` constructor.
+  In which case the session manager will use that instead of the `DefaultAuthConnector` to interact with the
+  authentication provider.
+
+  A custom `AuthConnector` may call the authentication provider from the front-end, store and retrieve tokens
+  in the session storage, for example, and otherwise send custom requests to the authentication provider and
+  handle its responses.
+
+  Note, that if the custom `AuthConnector` transforms scopes returned from the authentication provider,
+  the transformation must be the same as `OAuth2CreateOptions#scopeTransform` passed to `OAuth2` constructor.
+  See creating `DefaultAuthConnector` in `OAuth2#create(...)` for an example.
+
+### Patch Changes
+
+- 73f6cc3: Updated `I18nextTranslationApi` to support interpolation of JSX elements.
+- cc119b2: Fixed an issue causing `OAuthRequestDialog` to re-render on mount.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/config@1.3.2
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 1.17.0-next.1
+
+### Minor Changes
+
+- 1e0230e: Support custom `AuthConnector` for `OAuth2`.
+
+  A user can pass their own `AuthConnector` implementation in `OAuth2` constructor.
+  In which case the session manager will use that instead of the `DefaultAuthConnector` to interact with the
+  authentication provider.
+
+  A custom `AuthConnector` may call the authentication provider from the front-end, store and retrieve tokens
+  in the session storage, for example, and otherwise send custom requests to the authentication provider and
+  handle its responses.
+
+  Note, that if the custom `AuthConnector` transforms scopes returned from the authentication provider,
+  the transformation must be the same as `OAuth2CreateOptions#scopeTransform` passed to `OAuth2` constructor.
+  See creating `DefaultAuthConnector` in `OAuth2#create(...)` for an example.
+
+### Patch Changes
+
+- cc119b2: Fixed an issue causing `OAuthRequestDialog` to re-render on mount.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.7-next.0
+  - @backstage/config@1.3.2
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 1.16.2-next.0
+
+### Patch Changes
+
+- 73f6cc3: Updated `I18nextTranslationApi` to support interpolation of JSX elements.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.7-next.0
+  - @backstage/config@1.3.2
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 1.16.1
+
+### Patch Changes
+
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/config@1.3.2
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 1.16.1-next.0
+
+### Patch Changes
+
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.6-next.0
+  - @backstage/config@1.3.2
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 1.16.0
+
+### Minor Changes
+
+- 9262001: The default auth injection middleware for the `FetchApi` will now also take configuration under `discovery.endpoints` into consideration when deciding whether to include credentials or not.
+- 12f8e01: The `discovery.endpoints` configuration no longer requires both `internal` and `external` target when using the object form, instead falling back to the default.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.5
+  - @backstage/config@1.3.2
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
 ## 1.16.0-next.0
 
 ### Minor Changes

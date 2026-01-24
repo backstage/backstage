@@ -4,5 +4,5 @@
 
 | Name                          | Location     | Severity |
 | :---------------------------- | :----------- | :------- |
-| @backstage/backend-test-utils | package.json | error    |
+| @backstage/backend-test-utils | plugins/auth-backend-module-oauth2-proxy-provider/package.json | error    |
 

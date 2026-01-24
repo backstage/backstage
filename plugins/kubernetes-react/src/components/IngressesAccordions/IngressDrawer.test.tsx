@@ -20,7 +20,6 @@ import {
   textContentMatcher,
 } from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
-import React from 'react';
 import { IngressDrawer } from './IngressDrawer';
 import * as ingresses from './__fixtures__/2-ingresses.json';
 import { kubernetesClusterLinkFormatterApiRef } from '../../api';

@@ -14,6 +14,11 @@
  * limitations under the License.
  */
 
+// @ts-check
+
+/**
+ * @param {import('knex').Knex} knex
+ */
 exports.up = async function up(knex) {
   await knex.schema.createTable('broadcast', table => {
     table.uuid('id').primary();
@@ -37,7 +42,7 @@ exports.up = async function up(knex) {
 
     table
       .foreign('broadcast_id')
-      .references(['id'])
+      .references('id')
       .inTable('broadcast')
       .onDelete('CASCADE');
     table.unique(['broadcast_id', 'user'], {

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { DatabaseManager } from '@backstage/backend-common';
+import { DatabaseManager } from '@backstage/backend-defaults/database';
 import { ConfigReader } from '@backstage/config';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import {
@@ -36,7 +36,10 @@ async function createStore(): Promise<DatabaseTaskStore> {
         },
       },
     }),
-  ).forPlugin('scaffolder');
+  ).forPlugin('scaffolder', {
+    logger: mockServices.logger.mock(),
+    lifecycle: mockServices.lifecycle.mock(),
+  });
 
   return await DatabaseTaskStore.create({
     database: manager,
@@ -98,6 +101,22 @@ describe('StorageTaskBroker', () => {
     await broker.dispatch(emptyTaskWithFakeSecretsSpec);
     const task = await broker.claim();
     expect(task.secrets).toEqual(fakeSecrets);
+  }, 10000);
+
+  it('should return secrets with priority over defaults', async () => {
+    const broker = new StorageTaskBroker(storage, logger);
+    await broker.dispatch(emptyTaskWithFakeSecretsSpec);
+    const task = await broker.claim();
+
+    expect(task.secrets).toEqual(fakeSecrets);
+  }, 10000);
+
+  it('should return all secrets', async () => {
+    const broker = new StorageTaskBroker(storage, logger);
+    await broker.dispatch(emptyTaskWithFakeSecretsSpec);
+    const task = await broker.claim();
+
+    expect(task.secrets).toEqual({ ...fakeSecrets });
   }, 10000);
 
   it('should complete a task', async () => {
@@ -229,7 +248,7 @@ describe('StorageTaskBroker', () => {
           id: taskId,
         }),
       ]),
-      totalTasks: 13,
+      totalTasks: 15,
     });
   });
 

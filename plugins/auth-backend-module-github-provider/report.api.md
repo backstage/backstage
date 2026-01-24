@@ -17,14 +17,29 @@ export default authModuleGithubProvider;
 // @public (undocumented)
 export const githubAuthenticator: OAuthAuthenticator<
   PassportOAuthAuthenticatorHelper,
-  PassportProfile
+  GithubProfile
 >;
+
+// @public (undocumented)
+export type GithubProfile = PassportProfile & {
+  nodeId?: string;
+};
 
 // @public
 export namespace githubSignInResolvers {
   const usernameMatchingUserEntityName: SignInResolverFactory<
-    OAuthAuthenticatorResult<PassportProfile>,
-    unknown
+    OAuthAuthenticatorResult<GithubProfile>,
+    | {
+        dangerouslyAllowSignInWithoutUserInCatalog?: boolean | undefined;
+      }
+    | undefined
+  >;
+  const userIdMatchingUserEntityAnnotation: SignInResolverFactory<
+    OAuthAuthenticatorResult<GithubProfile>,
+    | {
+        dangerouslyAllowSignInWithoutUserInCatalog?: boolean | undefined;
+      }
+    | undefined
   >;
 }
 ```

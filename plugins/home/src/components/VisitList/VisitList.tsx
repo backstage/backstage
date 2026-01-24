@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { ReactElement } from 'react';
 import Collapse from '@material-ui/core/Collapse';
 import List from '@material-ui/core/List';
 import { Visit } from '../../api/VisitsApi';
@@ -24,6 +24,9 @@ import { VisitListEmpty } from './VisitListEmpty';
 import { VisitListFew } from './VisitListFew';
 import { VisitListSkeleton } from './VisitListSkeleton';
 
+/**
+ * @internal
+ */
 export const VisitList = ({
   detailType,
   visits = [],
@@ -41,7 +44,7 @@ export const VisitList = ({
   loading?: boolean;
   title?: string;
 }) => {
-  let listBody: React.ReactElement = <></>;
+  let listBody: ReactElement = <></>;
   if (loading) {
     listBody = (
       <VisitListSkeleton

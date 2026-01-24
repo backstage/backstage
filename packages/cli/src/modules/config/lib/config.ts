@@ -19,9 +19,11 @@ import { AppConfig, ConfigReader } from '@backstage/config';
 import { paths } from '../../../lib/paths';
 import { getPackages } from '@manypkg/get-packages';
 import { PackageGraph } from '@backstage/cli-node';
+import { resolve as resolvePath } from 'path';
 
 type Options = {
   args: string[];
+  targetDir?: string;
   fromPackage?: string;
   mockEnv?: boolean;
   withFilteredKeys?: boolean;
@@ -32,8 +34,10 @@ type Options = {
 };
 
 export async function loadCliConfig(options: Options) {
+  const targetDir = options.targetDir ?? paths.targetDir;
+
   // Consider all packages in the monorepo when loading in config
-  const { packages } = await getPackages(paths.targetDir);
+  const { packages } = await getPackages(targetDir);
 
   let localPackageNames;
   if (options.fromPackage) {
@@ -70,7 +74,7 @@ export async function loadCliConfig(options: Options) {
       : undefined,
     watch: Boolean(options.watch),
     rootDir: paths.targetRoot,
-    argv: options.args.flatMap(t => ['--config', paths.resolveTarget(t)]),
+    argv: options.args.flatMap(t => ['--config', resolvePath(targetDir, t)]),
   });
 
   const appConfigs = await new Promise<AppConfig[]>((resolve, reject) => {

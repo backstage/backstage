@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { renderInTestApp } from '@backstage/test-utils';
-import React, { ReactNode } from 'react';
+import { ReactNode } from 'react';
 import { TaskLogStream } from './TaskLogStream';
 
 // The <AutoSizer> inside <LogViewer> needs mocking to render in jsdom

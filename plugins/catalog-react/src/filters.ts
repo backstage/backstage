@@ -23,13 +23,20 @@ import {
 import { AlphaEntity } from '@backstage/catalog-model/alpha';
 import { EntityFilter, UserListFilterKind } from './types';
 import { getEntityRelations } from './utils/getEntityRelations';
+import { EntityOrderQuery } from '@backstage/catalog-client';
 
 /**
  * Filter entities based on Kind.
  * @public
  */
 export class EntityKindFilter implements EntityFilter {
-  constructor(readonly value: string, readonly label: string) {}
+  readonly value: string;
+  readonly label: string;
+
+  constructor(value: string, label: string) {
+    this.value = value;
+    this.label = label;
+  }
 
   getCatalogFilters(): Record<string, string | string[]> {
     return { kind: this.value };
@@ -45,7 +52,11 @@ export class EntityKindFilter implements EntityFilter {
  * @public
  */
 export class EntityTypeFilter implements EntityFilter {
-  constructor(readonly value: string | string[]) {}
+  readonly value: string | string[];
+
+  constructor(value: string | string[]) {
+    this.value = value;
+  }
 
   // Simplify `string | string[]` for consumers, always returns an array
   getTypes(): string[] {
@@ -66,7 +77,11 @@ export class EntityTypeFilter implements EntityFilter {
  * @public
  */
 export class EntityTagFilter implements EntityFilter {
-  constructor(readonly values: string[]) {}
+  readonly values: string[];
+
+  constructor(values: string[]) {
+    this.values = values;
+  }
 
   filterEntity(entity: Entity): boolean {
     return this.values.every(v => (entity.metadata.tags ?? []).includes(v));
@@ -86,7 +101,11 @@ export class EntityTagFilter implements EntityFilter {
  * @public
  */
 export class EntityTextFilter implements EntityFilter {
-  constructor(readonly value: string) {}
+  readonly value: string;
+
+  constructor(value: string) {
+    this.value = value;
+  }
 
   filterEntity(entity: Entity): boolean {
     const words = this.toUpperArray(this.value.split(/\s/));
@@ -179,7 +198,11 @@ export class EntityOwnerFilter implements EntityFilter {
  * @public
  */
 export class EntityLifecycleFilter implements EntityFilter {
-  constructor(readonly values: string[]) {}
+  readonly values: string[];
+
+  constructor(values: string[]) {
+    this.values = values;
+  }
 
   getCatalogFilters(): Record<string, string | string[]> {
     return { 'spec.lifecycle': this.values };
@@ -199,7 +222,11 @@ export class EntityLifecycleFilter implements EntityFilter {
  * @public
  */
 export class EntityNamespaceFilter implements EntityFilter {
-  constructor(readonly values: string[]) {}
+  readonly values: string[];
+
+  constructor(values: string[]) {
+    this.values = values;
+  }
 
   getCatalogFilters(): Record<string, string | string[]> {
     return { 'metadata.namespace': this.values };
@@ -217,10 +244,13 @@ export class EntityNamespaceFilter implements EntityFilter {
  * @public
  */
 export class EntityUserFilter implements EntityFilter {
-  private constructor(
-    readonly value: UserListFilterKind,
-    readonly refs?: string[],
-  ) {}
+  readonly value: UserListFilterKind;
+  readonly refs?: string[];
+
+  private constructor(value: UserListFilterKind, refs?: string[]) {
+    this.value = value;
+    this.refs = refs;
+  }
 
   static owned(ownershipEntityRefs: string[]) {
     return new EntityUserFilter('owned', ownershipEntityRefs);
@@ -276,11 +306,19 @@ export class EntityUserFilter implements EntityFilter {
  * @public
  */
 export class UserListFilter implements EntityFilter {
+  readonly value: UserListFilterKind;
+  readonly isOwnedEntity: (entity: Entity) => boolean;
+  readonly isStarredEntity: (entity: Entity) => boolean;
+
   constructor(
-    readonly value: UserListFilterKind,
-    readonly isOwnedEntity: (entity: Entity) => boolean,
-    readonly isStarredEntity: (entity: Entity) => boolean,
-  ) {}
+    value: UserListFilterKind,
+    isOwnedEntity: (entity: Entity) => boolean,
+    isStarredEntity: (entity: Entity) => boolean,
+  ) {
+    this.value = value;
+    this.isOwnedEntity = isOwnedEntity;
+    this.isStarredEntity = isStarredEntity;
+  }
 
   filterEntity(entity: Entity): boolean {
     switch (this.value) {
@@ -303,7 +341,11 @@ export class UserListFilter implements EntityFilter {
  * @public
  */
 export class EntityOrphanFilter implements EntityFilter {
-  constructor(readonly value: boolean) {}
+  readonly value: boolean;
+
+  constructor(value: boolean) {
+    this.value = value;
+  }
 
   getCatalogFilters(): Record<string, string | string[]> {
     if (this.value) {
@@ -323,11 +365,35 @@ export class EntityOrphanFilter implements EntityFilter {
  * @public
  */
 export class EntityErrorFilter implements EntityFilter {
-  constructor(readonly value: boolean) {}
+  readonly value: boolean;
+
+  constructor(value: boolean) {
+    this.value = value;
+  }
 
   filterEntity(entity: Entity): boolean {
     const error =
       ((entity as AlphaEntity)?.status?.items?.length as number) > 0;
     return error !== undefined && this.value === error;
+  }
+}
+
+/**
+ * Sort entities by a given field/column.
+ * @public
+ */
+export class EntityOrderFilter implements EntityFilter {
+  readonly values: [string, 'asc' | 'desc'][];
+
+  constructor(values: [string, 'asc' | 'desc'][]) {
+    this.values = values;
+  }
+
+  getOrderFilters(): EntityOrderQuery {
+    return this.values.map(([field, order]) => ({ field, order }));
+  }
+
+  toQueryValue(): string[] {
+    return this.values.flat();
   }
 }

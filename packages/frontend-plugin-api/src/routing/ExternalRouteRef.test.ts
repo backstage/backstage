@@ -14,24 +14,23 @@
  * limitations under the License.
  */
 
-import {
-  ExternalRouteRef,
-  createExternalRouteRef,
-  toInternalExternalRouteRef,
-} from './ExternalRouteRef';
+import { ExternalRouteRef, createExternalRouteRef } from './ExternalRouteRef';
+import { OpaqueExternalRouteRef } from '@internal/frontend';
 import { AnyRouteRefParams } from './types';
 
 describe('ExternalRouteRef', () => {
   it('should be created', () => {
     const routeRef: ExternalRouteRef<undefined> = createExternalRouteRef();
-    const internal = toInternalExternalRouteRef(routeRef);
+    const internal = OpaqueExternalRouteRef.toInternal(routeRef);
     expect(internal.getParams()).toEqual([]);
 
     expect(String(internal)).toMatch(
-      /^ExternalRouteRef\{created at '.*ExternalRouteRef\.test\.ts.*'\}$/,
+      /^externalRouteRef\{id=undefined,at='.*ExternalRouteRef\.test\.ts.*'\}$/,
     );
     internal.setId('some-id');
-    expect(String(internal)).toBe('ExternalRouteRef{some-id}');
+    expect(String(internal)).toMatch(
+      /^externalRouteRef\{id=some-id,at='.*ExternalRouteRef\.test\.ts.*'\}$/,
+    );
   });
 
   it('should be created with params', () => {
@@ -39,7 +38,7 @@ describe('ExternalRouteRef', () => {
       x: string;
       y: string;
     }> = createExternalRouteRef({ params: ['x', 'y'] });
-    const internal = toInternalExternalRouteRef(routeRef);
+    const internal = OpaqueExternalRouteRef.toInternal(routeRef);
     expect(internal.getParams()).toEqual(['x', 'y']);
   });
 

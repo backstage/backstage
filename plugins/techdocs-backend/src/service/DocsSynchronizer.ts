@@ -36,7 +36,7 @@ import {
   DocsBuilder,
   shouldCheckForUpdate,
 } from '../DocsBuilder';
-import { DiscoveryService } from '@backstage/backend-plugin-api';
+import { DiscoveryService, LoggerService } from '@backstage/backend-plugin-api';
 
 export type DocsSynchronizerSyncOpts = {
   log: (message: string) => void;
@@ -46,7 +46,7 @@ export type DocsSynchronizerSyncOpts = {
 
 export class DocsSynchronizer {
   private readonly publisher: PublisherBase;
-  private readonly logger: winston.Logger;
+  private readonly logger: LoggerService;
   private readonly buildLogTransport?: winston.transport;
   private readonly config: Config;
   private readonly scmIntegrations: ScmIntegrationRegistry;
@@ -62,7 +62,7 @@ export class DocsSynchronizer {
     cache,
   }: {
     publisher: PublisherBase;
-    logger: winston.Logger;
+    logger: LoggerService;
     buildLogTransport?: winston.transport;
     config: Config;
     scmIntegrations: ScmIntegrationRegistry;

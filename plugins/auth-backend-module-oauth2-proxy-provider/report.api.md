@@ -6,6 +6,7 @@
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { IncomingHttpHeaders } from 'http';
 import { ProxyAuthenticator } from '@backstage/plugin-auth-node';
+import { SignInResolverFactory } from '@backstage/plugin-auth-node';
 
 // @public (undocumented)
 const authModuleOauth2ProxyProvider: BackendFeature;
@@ -30,4 +31,16 @@ export type OAuth2ProxyResult<JWTPayload = {}> = {
   headers: IncomingHttpHeaders;
   getHeader(name: string): string | undefined;
 };
+
+// @public (undocumented)
+export namespace oauth2ProxySignInResolvers {
+  const // (undocumented)
+    forwardedUserMatchingUserEntityName: SignInResolverFactory<
+      OAuth2ProxyResult,
+      | {
+          dangerouslyAllowSignInWithoutUserInCatalog?: boolean | undefined;
+        }
+      | undefined
+    >;
+}
 ```

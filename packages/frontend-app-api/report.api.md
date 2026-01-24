@@ -4,13 +4,135 @@
 
 ```ts
 import { ApiHolder } from '@backstage/core-plugin-api';
+import { AppNode } from '@backstage/frontend-plugin-api';
 import { AppTree } from '@backstage/frontend-plugin-api';
 import { ConfigApi } from '@backstage/core-plugin-api';
 import { ExtensionFactoryMiddleware } from '@backstage/frontend-plugin-api';
 import { ExternalRouteRef } from '@backstage/frontend-plugin-api';
-import { FrontendFeature as FrontendFeature_2 } from '@backstage/frontend-plugin-api';
+import { FrontendFeature } from '@backstage/frontend-plugin-api';
+import { FrontendPlugin } from '@backstage/frontend-plugin-api';
+import { FrontendPluginInfo } from '@backstage/frontend-plugin-api';
+import { JsonObject } from '@backstage/types';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { SubRouteRef } from '@backstage/frontend-plugin-api';
+
+// @public (undocumented)
+export type AppError =
+  keyof AppErrorTypes extends infer ICode extends keyof AppErrorTypes
+    ? ICode extends any
+      ? {
+          code: ICode;
+          message: string;
+          context: AppErrorTypes[ICode]['context'];
+        }
+      : never
+    : never;
+
+// @public (undocumented)
+export type AppErrorTypes = {
+  EXTENSION_IGNORED: {
+    context: {
+      plugin: FrontendPlugin;
+      extensionId: string;
+    };
+  };
+  INVALID_EXTENSION_CONFIG_KEY: {
+    context: {
+      extensionId: string;
+    };
+  };
+  EXTENSION_INPUT_REDIRECT_CONFLICT: {
+    context: {
+      node: AppNode;
+      inputName: string;
+    };
+  };
+  EXTENSION_INPUT_DATA_IGNORED: {
+    context: {
+      node: AppNode;
+      inputName: string;
+    };
+  };
+  EXTENSION_INPUT_DATA_MISSING: {
+    context: {
+      node: AppNode;
+      inputName: string;
+    };
+  };
+  EXTENSION_ATTACHMENT_CONFLICT: {
+    context: {
+      node: AppNode;
+      inputName: string;
+    };
+  };
+  EXTENSION_ATTACHMENT_MISSING: {
+    context: {
+      node: AppNode;
+      inputName: string;
+    };
+  };
+  EXTENSION_CONFIGURATION_INVALID: {
+    context: {
+      node: AppNode;
+    };
+  };
+  EXTENSION_INVALID: {
+    context: {
+      node: AppNode;
+    };
+  };
+  EXTENSION_OUTPUT_CONFLICT: {
+    context: {
+      node: AppNode;
+      dataRefId: string;
+    };
+  };
+  EXTENSION_OUTPUT_MISSING: {
+    context: {
+      node: AppNode;
+      dataRefId: string;
+    };
+  };
+  EXTENSION_OUTPUT_IGNORED: {
+    context: {
+      node: AppNode;
+      dataRefId: string;
+    };
+  };
+  EXTENSION_FACTORY_ERROR: {
+    context: {
+      node: AppNode;
+    };
+  };
+  API_EXTENSION_INVALID: {
+    context: {
+      node: AppNode;
+    };
+  };
+  API_FACTORY_CONFLICT: {
+    context: {
+      node: AppNode;
+      apiRefId: string;
+      pluginId: string;
+      existingPluginId: string;
+    };
+  };
+  ROUTE_DUPLICATE: {
+    context: {
+      routeId: string;
+    };
+  };
+  ROUTE_BINDING_INVALID_VALUE: {
+    context: {
+      routeId: string;
+    };
+  };
+  ROUTE_NOT_FOUND: {
+    context: {
+      routeId: string;
+    };
+  };
+};
 
 // @public
 export type CreateAppRouteBinder = <
@@ -26,19 +148,38 @@ export type CreateAppRouteBinder = <
 ) => void;
 
 // @public
-export function createSpecializedApp(options?: {
+export function createSpecializedApp(options?: CreateSpecializedAppOptions): {
+  apis: ApiHolder;
+  tree: AppTree;
+  errors?: AppError[];
+};
+
+// @public
+export type CreateSpecializedAppOptions = {
   features?: FrontendFeature[];
   config?: ConfigApi;
   bindRoutes?(context: { bind: CreateAppRouteBinder }): void;
-  apis?: ApiHolder;
-  extensionFactoryMiddleware?:
-    | ExtensionFactoryMiddleware
-    | ExtensionFactoryMiddleware[];
-}): {
-  apis: ApiHolder;
-  tree: AppTree;
+  advanced?: {
+    apis?: ApiHolder;
+    allowUnknownExtensionConfig?: boolean;
+    extensionFactoryMiddleware?:
+      | ExtensionFactoryMiddleware
+      | ExtensionFactoryMiddleware[];
+    pluginInfoResolver?: FrontendPluginInfoResolver;
+  };
 };
 
-// @public @deprecated (undocumented)
-export type FrontendFeature = FrontendFeature_2;
+// @public
+export type FrontendPluginInfoResolver = (ctx: {
+  packageJson(): Promise<JsonObject | undefined>;
+  manifest(): Promise<JsonObject | undefined>;
+  defaultResolver(sources: {
+    packageJson: JsonObject | undefined;
+    manifest: JsonObject | undefined;
+  }): Promise<{
+    info: FrontendPluginInfo;
+  }>;
+}) => Promise<{
+  info: FrontendPluginInfo;
+}>;
 ```

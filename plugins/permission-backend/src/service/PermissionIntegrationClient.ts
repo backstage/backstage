@@ -34,9 +34,16 @@ const responseSchema = z.object({
   items: z.array(
     z.object({
       id: z.string(),
-      result: z
-        .literal(AuthorizeResult.ALLOW)
-        .or(z.literal(AuthorizeResult.DENY)),
+      result: z.union([
+        z.literal(AuthorizeResult.ALLOW),
+        z.literal(AuthorizeResult.DENY),
+        z.array(
+          z.union([
+            z.literal(AuthorizeResult.ALLOW),
+            z.literal(AuthorizeResult.DENY),
+          ]),
+        ),
+      ]),
     }),
   ),
 });
@@ -45,6 +52,9 @@ export type ResourcePolicyDecision = ConditionalPolicyDecision & {
   resourceRef: string;
 };
 
+/**
+ * @internal
+ */
 export class PermissionIntegrationClient {
   private readonly discovery: DiscoveryService;
   private readonly auth: AuthService;
@@ -74,14 +84,7 @@ export class PermissionIntegrationClient {
     const response = await fetch(endpoint, {
       method: 'POST',
       body: JSON.stringify({
-        items: decisions.map(
-          ({ id, resourceRef, resourceType, conditions }) => ({
-            id,
-            resourceRef,
-            resourceType,
-            conditions,
-          }),
-        ),
+        items: decisions,
       }),
       headers: {
         ...(token ? { authorization: `Bearer ${token}` } : {}),

@@ -4,5 +4,5 @@
 
 | Name               | Location     | Severity |
 | :----------------- | :----------- | :------- |
-| @material-ui/icons | package.json | error    |
+| @material-ui/icons | plugins/notifications-common/package.json | error    |
 

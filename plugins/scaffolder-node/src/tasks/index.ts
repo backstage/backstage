@@ -18,6 +18,8 @@ export type {
   TaskSecrets,
   SerializedTask,
   SerializedTaskEvent,
+  TaskFilter,
+  TaskFilters,
   TaskBroker,
   TaskBrokerDispatchOptions,
   TaskBrokerDispatchResult,

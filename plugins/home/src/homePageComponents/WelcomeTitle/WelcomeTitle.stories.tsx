@@ -16,7 +16,7 @@
 
 import { Header } from '@backstage/core-components';
 import { wrapInTestApp } from '@backstage/test-utils';
-import React, { ComponentType, PropsWithChildren } from 'react';
+import { ComponentType, PropsWithChildren } from 'react';
 import { WelcomeTitle } from './WelcomeTitle';
 
 export default {
@@ -24,6 +24,7 @@ export default {
   decorators: [
     (Story: ComponentType<PropsWithChildren<{}>>) => wrapInTestApp(<Story />),
   ],
+  tags: ['!manifest'],
 };
 
 export const Default = () => {

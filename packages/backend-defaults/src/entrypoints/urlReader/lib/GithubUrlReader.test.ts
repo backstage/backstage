@@ -373,7 +373,7 @@ describe('GithubUrlReader', () => {
                 'content-disposition',
                 'attachment; filename=backstage-mock-etag123.tar.gz',
               ),
-              ctx.body(repoBuffer),
+              ctx.body(new Uint8Array(repoBuffer)),
             ),
         ),
         rest.get(
@@ -390,7 +390,7 @@ describe('GithubUrlReader', () => {
                 'content-disposition',
                 'attachment; filename=backstage-mock-etag123.tar.gz',
               ),
-              ctx.body(repoBuffer),
+              ctx.body(new Uint8Array(repoBuffer)),
             ),
         ),
         rest.get(
@@ -480,7 +480,7 @@ describe('GithubUrlReader', () => {
                 'content-disposition',
                 'attachment; filename=backstage-mock-etag123.tar.gz',
               ),
-              ctx.body(repoBuffer),
+              ctx.body(new Uint8Array(repoBuffer)),
             );
           },
         ),
@@ -492,7 +492,7 @@ describe('GithubUrlReader', () => {
     });
 
     it('should override the token when provided', async () => {
-      expect.assertions(1);
+      expect.assertions(2);
 
       const mockHeaders = {
         Authorization: 'bearer blah',
@@ -503,6 +503,20 @@ describe('GithubUrlReader', () => {
       });
 
       worker.use(
+        rest.get(
+          'https://ghe.github.com/api/v3/repos/backstage/mock/commits/main/status',
+          (req, res, ctx) => {
+            expect(req.headers.get('authorization')).toBe(
+              'Bearer overridentoken',
+            );
+
+            return res(
+              ctx.status(200),
+              ctx.set('Content-Type', 'application/json'),
+              ctx.json(commitStatusGheResponse),
+            );
+          },
+        ),
         rest.get(
           'https://ghe.github.com/api/v3/repos/backstage/mock/tarball/etag123abc',
           (req, res, ctx) => {
@@ -517,7 +531,7 @@ describe('GithubUrlReader', () => {
                 'content-disposition',
                 'attachment; filename=backstage-mock-etag123.tar.gz',
               ),
-              ctx.body(repoBuffer),
+              ctx.body(new Uint8Array(repoBuffer)),
             );
           },
         ),
@@ -678,6 +692,21 @@ describe('GithubUrlReader', () => {
       },
     ];
 
+    const gheCommitsResponse = {
+      sha: 'etag123abc',
+      repository: {
+        id: 123,
+        full_name: 'backstage/mock',
+        default_branch: 'main',
+        branches_url:
+          'https://ghe.github.com/api/v3/repos/backstage/mock/branches{/branch}',
+        archive_url:
+          'https://ghe.github.com/api/v3/repos/backstage/mock/{archive_format}{/ref}',
+        trees_url:
+          'https://ghe.github.com/api/v3/repos/backstage/mock/git/trees{/sha}',
+      },
+    } as Partial<GhCombinedCommitStatusResponse>;
+
     // Tarballs
     beforeEach(() => {
       worker.use(
@@ -691,7 +720,7 @@ describe('GithubUrlReader', () => {
                 'content-disposition',
                 'attachment; filename=backstage-mock-etag123.tar.gz',
               ),
-              ctx.body(repoBuffer),
+              ctx.body(new Uint8Array(repoBuffer)),
             ),
         ),
         rest.get(
@@ -704,7 +733,7 @@ describe('GithubUrlReader', () => {
                 'content-disposition',
                 'attachment; filename=backstage-mock-etag123.tar.gz',
               ),
-              ctx.body(repoBuffer),
+              ctx.body(new Uint8Array(repoBuffer)),
             ),
         ),
       );
@@ -773,21 +802,6 @@ describe('GithubUrlReader', () => {
         },
       } as Partial<GhCombinedCommitStatusResponse>;
 
-      const gheResponse = {
-        sha: 'etag123abc',
-        repository: {
-          id: 123,
-          full_name: 'backstage/mock',
-          default_branch: 'main',
-          branches_url:
-            'https://ghe.github.com/api/v3/repos/backstage/mock/branches{/branch}',
-          archive_url:
-            'https://ghe.github.com/api/v3/repos/backstage/mock/{archive_format}{/ref}',
-          trees_url:
-            'https://ghe.github.com/api/v3/repos/backstage/mock/git/trees{/sha}',
-        },
-      } as Partial<GhCombinedCommitStatusResponse>;
-
       worker.use(
         rest.get(
           'https://api.github.com/repos/backstage/mock/commits/main/status',
@@ -810,7 +824,7 @@ describe('GithubUrlReader', () => {
               return res(
                 ctx.status(200),
                 ctx.set('Content-Type', 'application/json'),
-                ctx.json(gheResponse),
+                ctx.json(gheCommitsResponse),
               );
             }
 
@@ -909,6 +923,17 @@ describe('GithubUrlReader', () => {
       await expect(r5.files[0].content()).resolves.toEqual(
         Buffer.from('# Test\n'),
       );
+
+      const r6 = await reader.search(
+        `${baseUrl}/backstage/mock/tree/main/{M,m}kdocs.yml`,
+      );
+      expect(r6.files.length).toBe(1);
+      expect(r6.files[0].url).toBe(
+        `${baseUrl}/backstage/mock/tree/main/mkdocs.yml`,
+      );
+      await expect(r6.files[0].content()).resolves.toEqual(
+        Buffer.from('site_name: Test\n'),
+      );
     }
 
     // eslint-disable-next-line jest/expect-expect
@@ -969,9 +994,23 @@ describe('GithubUrlReader', () => {
     });
 
     it('passes through a token for the search request', async () => {
-      expect.assertions(1);
+      expect.assertions(2);
 
       worker.use(
+        rest.get(
+          'https://ghe.github.com/api/v3/repos/backstage/mock/commits/main/status',
+          (req, res, ctx) => {
+            expect(req.headers.get('authorization')).toBe(
+              'Bearer overridentoken',
+            );
+
+            return res(
+              ctx.status(200),
+              ctx.set('Content-Type', 'application/json'),
+              ctx.json(gheCommitsResponse),
+            );
+          },
+        ),
         rest.get(
           'https://ghe.github.com/api/v3/repos/backstage/mock/git/trees/etag123abc',
           (req, res, ctx) => {

@@ -34,8 +34,8 @@ export const useIsPodExecTerminalSupported = (): AsyncState<boolean> => {
     }
 
     const { authProvider } = clusters[0];
-    const isClientAuthProvider = ['aks', 'google', 'oidc'].some(
-      authProviderName => authProvider.includes(authProviderName),
+    const isClientAuthProvider = ['aks', 'oidc'].some(authProviderName =>
+      authProvider.includes(authProviderName),
     );
 
     return !isClientAuthProvider;

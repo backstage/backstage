@@ -18,10 +18,9 @@ import {
   PermissionCriteria,
   PermissionRuleParams,
 } from '@backstage/plugin-permission-common';
-import { PermissionRule } from '../types';
+import { NoInfer, PermissionRule } from '../types';
 import { z } from 'zod';
 import { PermissionResourceRef } from './createPermissionResourceRef';
-import { NoInfer } from './util';
 
 /**
  * @public

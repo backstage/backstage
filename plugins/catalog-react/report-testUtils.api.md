@@ -9,8 +9,8 @@ import { CatalogApi } from '@backstage/catalog-client';
 import { DefaultEntityFilters } from '@backstage/plugin-catalog-react';
 import { Entity } from '@backstage/catalog-model';
 import { EntityListContextProps } from '@backstage/plugin-catalog-react';
+import { JSX as JSX_2 } from 'react/jsx-runtime';
 import { PropsWithChildren } from 'react';
-import { default as React_2 } from 'react';
 
 // @public
 export function catalogApiMock(options?: { entities?: Entity[] }): CatalogApi;
@@ -32,5 +32,5 @@ export function MockEntityListContextProvider<
   props: PropsWithChildren<{
     value?: Partial<EntityListContextProps<T>>;
   }>,
-): React_2.JSX.Element;
+): JSX_2.Element;
 ```

@@ -18,13 +18,14 @@ import {
   BackstageIdentityResponse,
   configApiRef,
   SignInPageProps,
+  useAnalytics,
   useApi,
 } from '@backstage/core-plugin-api';
 import { UserIdentity } from './UserIdentity';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
-import React, { ComponentType, ReactNode, useState } from 'react';
+import { ComponentType, ReactNode, useState } from 'react';
 import { useMountEffect } from '@react-hookz/web';
 import { Progress } from '../../components/Progress';
 import { Content } from '../Content/Content';
@@ -116,6 +117,7 @@ export const SingleSignInPage = ({
   const authApi = useApi(provider.apiRef);
   const configApi = useApi(configApiRef);
   const { t } = useTranslationRef(coreComponentsTranslationRef);
+  const analytics = useAnalytics();
 
   const [error, setError] = useState<Error>();
 
@@ -167,6 +169,7 @@ export const SingleSignInPage = ({
           profile,
         }),
       );
+      analytics.captureEvent('signIn', 'success');
     } catch (err: any) {
       // User closed the sign-in modal
       setError(err);

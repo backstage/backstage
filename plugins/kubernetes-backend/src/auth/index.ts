@@ -23,4 +23,3 @@ export * from './GoogleServiceAccountStrategy';
 export * from './DispatchStrategy';
 export * from './ServiceAccountStrategy';
 export * from './OidcStrategy';
-export * from './types';

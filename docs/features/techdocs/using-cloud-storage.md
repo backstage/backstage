@@ -172,15 +172,17 @@ TechDocs will publish documentation to this bucket and will fetch files from
 here to serve documentation in Backstage. Note that the bucket names are
 globally unique.
 
-Set the config `techdocs.publisher.awsS3.bucketName` in your `app-config.yaml`
-to the name of the bucket you just created.
+Set the bucket name and region in your `app-config.yaml` to the name of the bucket you just created:
 
 ```yaml
 techdocs:
   publisher:
     type: 'awsS3'
+/* highlight-add-start */
     awsS3:
       bucketName: 'name-of-techdocs-storage-bucket'
+      region: 'us-east-1'
+/* highlight-add-end */
 ```
 
 **3. Create minimal AWS IAM policies to manage TechDocs**
@@ -266,7 +268,7 @@ environment automatically by defining appropriate IAM role with access to the
 bucket. Read more in the
 [official AWS documentation for using IAM roles](https://docs.aws.amazon.com/general/latest/gr/aws-access-keys-best-practices.html#use-roles).
 
-**4b. Authentication using app-config.yaml**
+**4b. Authentication using app-config.yaml via aws.accounts**
 
 AWS credentials and region can be provided to the AWS SDK via `app-config.yaml`.
 If the configs below are present, they will be used over existing `AWS_*`
@@ -290,7 +292,45 @@ aws:
 Refer to the
 [official AWS documentation for obtaining the credentials](https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/setting-credentials-node.html).
 
-**4c. Authentication using an assumed role** Users with multiple AWS accounts
+**4c. Authentication using app-config.yaml via integrations.awsS3**
+
+If you already have an [AWS S3 integration](../../integrations/aws-s3/locations.md), you can use it to authenticate with AWS S3:
+
+```yaml
+techdocs:
+  publisher:
+    type: 'awsS3'
+    awsS3:
+      bucketName: 'name-of-techdocs-storage-bucket'
+      region: 'eu-west-1'
+integrations:
+  awsS3:
+    - accessKeyId: ${AWS_ACCESS_KEY_ID}
+      secretAccessKey: ${AWS_SECRET_ACCESS_KEY}
+```
+
+This will use the credentials from the integration to authenticate with AWS S3 and it does not require any additional configuration in the `app-config.yaml`. However, **if you have multiple S3 integrations**, you **must** specify the target integration by setting the `accessKeyId` in the `techdocs.publisher.awsS3.credentials` config:
+
+```yaml
+techdocs:
+  publisher:
+    type: 'awsS3'
+    awsS3:
+      bucketName: 'name-of-techdocs-storage-bucket'
+      region: 'eu-west-1'
+/* highlight-add-start */
+      credentials:
+        accessKeyId: ${AWS_ACCESS_KEY_ID_1}
+/* highlight-add-end */
+integrations:
+  awsS3:
+    - accessKeyId: ${AWS_ACCESS_KEY_ID_1}
+      secretAccessKey: ${AWS_SECRET_ACCESS_KEY_1}
+    - accessKeyId: ${AWS_ACCESS_KEY_ID_2}
+      secretAccessKey: ${AWS_SECRET_ACCESS_KEY_2}
+```
+
+**4d. Authentication using an assumed role** Users with multiple AWS accounts
 may want to use a role for S3 storage that is in a different AWS account. Using
 the `roleArn` parameter as seen below, you can instruct the TechDocs publisher
 to assume a role before accessing S3.
@@ -355,31 +395,53 @@ techdocs:
 
 **3a. (Recommended) Authentication using environment variable**
 
-If you do not prefer (3a) and optionally like to use a service account, you can
-set the config `techdocs.publisher.azureBlobStorage.credentials.accountName` in
-your `app-config.yaml` to the your account name.
+The Azure Blob Storage client in Backstage supports all credential types
+provided by
+[DefaultAzureCredential](https://azuresdkdocs.z19.web.core.windows.net/javascript/azure-identity/4.10.1/classes/DefaultAzureCredential.html).
+This means you can authenticate using environment variables for a service
+principal, managed identity, and other methods in the default credential
+chain.
 
-The storage blob client will automatically use the environment variable
-`AZURE_TENANT_ID`, `AZURE_CLIENT_ID`, `AZURE_CLIENT_SECRET` to authenticate with
-Azure Blob Storage.
-[Steps to create the service where the variables can be retrieved from](https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-create-service-principal-portal).
+For deployment on Kubernetes, you can use
+[Azure Workload Identity Federation](https://learn.microsoft.com/en-us/azure/active-directory/workload-identities/workload-identity-federation-overview)
+to grant your Backstage workload access to the storage account without
+managing secrets.
+If running in Azure Virtual Machines or Azure Kubernetes Service (AKS) with managed
+identity, no additional configuration apart from the `accountName` and
+`containerName` may be needed.
+For other scenarios, you can use a
+[service principal](https://docs.microsoft.com/en-us/azure/active-directory/develop/howto-create-service-principal-portal)
+by setting:
 
-https://docs.microsoft.com/en-us/azure/storage/common/storage-auth-aad for more
-details.
+- `AZURE_CLIENT_ID`
+- `AZURE_TENANT_ID`
+- `AZURE_CLIENT_SECRET`
+
+Example configuration in `app-config.yaml`:
 
 ```yaml
 techdocs:
   publisher:
     type: 'azureBlobStorage'
     azureBlobStorage:
-      containerName: 'name-of-techdocs-storage-bucket'
+      containerName: 'name-of-techdocs-storage-container'
       credentials:
         accountName: ${TECHDOCS_AZURE_BLOB_STORAGE_ACCOUNT_NAME}
 ```
 
+> **Note:** The account or credentials used must have the
+> `Storage Blob Data Owner` role on the container to read, write, and
+> delete objects as needed. If you use an external publisher, the
+> `Storage Blob Data Reader` role is sufficient.
+
+For more details, see the
+[Azure Identity documentation](https://azuresdkdocs.z19.web.core.windows.net/javascript/azure-identity/4.10.1/classes/DefaultAzureCredential.html)
+and
+[Workload Identity Federation for Kubernetes](https://learn.microsoft.com/en-us/azure/active-directory/workload-identities/workload-identity-federation-overview).
+
 **3b. Authentication using app-config.yaml**
 
-If you do not prefer (3a) and optionally like to use a service account, you can
+If you do not prefer (3a) and optionally like to use key-based access, you can
 follow these steps.
 
 To get credentials, access the Azure Portal and go to "Settings > Access Keys",
@@ -400,7 +462,9 @@ techdocs:
 
 In either case, the account or credentials used to access your container and all
 TechDocs objects underneath it should have the `Storage Blog Data Owner` role
-applied, in order to read, write, and delete objects as needed.
+applied, in order to read, write, and delete objects as needed, unless you use
+an external publisher, in this case the `Storage Blob Data Reader` role is
+sufficient.
 
 **4. That's it!**
 

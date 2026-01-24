@@ -2,7 +2,6 @@
 id: life-of-an-entity
 title: The Life of an Entity
 sidebar_label: The Life of an Entity
-# prettier-ignore
 description: The life cycle of entities, from being introduced into the catalog, through processing, to being removed again
 ---
 
@@ -126,6 +125,19 @@ all of the processors' contributions to one step are run in the order that the
 processors were registered, then all of their contributions to the next step in
 the same order, and so on.
 
+:::note Technical note
+
+Processors registered from the same catalog module always run
+in the registration order, but this does not apply over multiple catalog modules as
+the order of registration depends on the order in which the modules are loaded
+by the framework.
+
+It's possible to customize the order of the processors by modifying the
+`catalog.processorOptions.<processorName>.priority` configuration option.
+The default priority is `20`, and lower value means that the processor runs earlier.
+
+:::
+
 Each step has the opportunity to optionally modify the entity, and to optionally
 emit other information. For example, the processor might look at information in
 the `spec` field of the entity, and emit relations that correspond to those
@@ -183,6 +195,19 @@ The diagram shows how the stitcher reads from several sources:
 The last part is noteworthy: This is how the stitcher is able to collect all of
 the relation edges, both incoming and outgoing, no matter who produced them.
 
+:::note Technical note
+
+Whether the entity will be stitched depends on the entity hash value,
+which is calculated based on the entity body, relations, errors, referred entities,
+and entity parents after the processing. The hash value changes if any of these components
+change. The hash value is then compared to hash value from the previous processing of the
+entity and if they are different, the entity is stitched again.
+In entity body, changes in array order, for example `metadata.tags`, changes the hash
+value. It is a good idea to monitor the stitched entities count in the catalog as it
+might cause performance issues if the number of entities gets too high.
+
+:::
+
 The stitching is currently a fixed process, that cannot be modified or extended.
 This means that any modifications you want to make on the final result, has to
 happen during ingestion or processing.
@@ -229,8 +254,8 @@ either, it becomes _orphaned_. The end result is as follows:
   the child entity.
 - The child entity is _not_ removed from the catalog, but stays around until
   explicitly deleted via the catalog API, implicitly if `orphanStrategy: delete`
-  configuration is set, or until it is "reclaimed" by the original parent
-  or another parent starting to reference it.
+  configuration is set (the default), or until it is "reclaimed" by the original
+  parent or another parent starting to reference it.
 - The catalog page in Backstage for the child entity detects the new annotation
   and informs users about the orphan status.
 
@@ -257,21 +282,13 @@ Orphaning can occur in several different scenarios.
 > to inform the owner that something is wrong. But processing and other
 > behaviors continue as usual.
 
-The reason that the orphaning mechanism exists instead of having an eager
-deletion triggered, is safety. Scenarios like these can happen purely by
-accident, due to the asynchronous nature of the system and the fallible nature
-of humans. In particular when external systems start consuming and relying on
-the catalog, there could be substantial consequences to suddenly dropping
-entities without explicit owner consent. The catalog therefore takes the stance
-that entities that often were added by direct user action should also be deleted
-only by direct user action.
-
-However, if you want to delete orphaned entities automatically anyway, you can
-enable the automated clean up with the following app-config option.
+The default behavior of the catalog is to automatically remove orphaned
+entities. However, if you want to keep them instead, you can disable the
+automated cleanup with the following app-config option.
 
 ```
 catalog:
-  orphanStrategy: delete
+  orphanStrategy: keep
 ```
 
 ## Implicit Deletion

@@ -1,5 +1,367 @@
 # @backstage/plugin-scaffolder-node-test-utils
 
+## 0.3.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.1
+  - @backstage/plugin-scaffolder-node@0.12.3
+  - @backstage/backend-test-utils@1.10.3
+
+## 0.3.7-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.12.3-next.0
+
+## 0.3.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.0
+  - @backstage/backend-test-utils@1.10.3-next.0
+  - @backstage/types@1.2.2
+  - @backstage/plugin-scaffolder-node@0.12.2
+
+## 0.3.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-test-utils@1.10.2
+  - @backstage/backend-plugin-api@1.6.0
+  - @backstage/plugin-scaffolder-node@0.12.2
+
+## 0.3.6-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-test-utils@1.10.2-next.1
+  - @backstage/backend-plugin-api@1.6.0-next.1
+  - @backstage/types@1.2.2
+  - @backstage/plugin-scaffolder-node@0.12.2-next.1
+
+## 0.3.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.1-next.0
+  - @backstage/backend-test-utils@1.10.1-next.0
+  - @backstage/plugin-scaffolder-node@0.12.2-next.0
+  - @backstage/types@1.2.2
+
+## 0.3.5
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/backend-test-utils@1.10.0
+  - @backstage/backend-plugin-api@1.5.0
+  - @backstage/plugin-scaffolder-node@0.12.1
+
+## 0.3.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.0-next.1
+  - @backstage/backend-test-utils@1.10.0-next.1
+  - @backstage/plugin-scaffolder-node@0.12.1-next.1
+
+## 0.3.5-next.0
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/backend-test-utils@1.10.0-next.0
+  - @backstage/plugin-scaffolder-node@0.12.1-next.0
+  - @backstage/backend-plugin-api@1.4.5-next.0
+  - @backstage/types@1.2.2
+
+## 0.3.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.12.0
+  - @backstage/backend-plugin-api@1.4.4
+  - @backstage/backend-test-utils@1.9.1
+
+## 0.3.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.4-next.0
+  - @backstage/backend-test-utils@1.9.1-next.1
+  - @backstage/plugin-scaffolder-node@0.12.0-next.1
+
+## 0.3.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.12.0-next.0
+  - @backstage/backend-test-utils@1.9.1-next.0
+  - @backstage/backend-plugin-api@1.4.3
+  - @backstage/types@1.2.2
+
+## 0.3.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-test-utils@1.9.0
+  - @backstage/types@1.2.2
+  - @backstage/backend-plugin-api@1.4.3
+  - @backstage/plugin-scaffolder-node@0.11.1
+
+## 0.3.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.11.1-next.0
+  - @backstage/backend-plugin-api@1.4.3-next.0
+  - @backstage/backend-test-utils@1.9.0-next.1
+
+## 0.3.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-test-utils@1.9.0-next.0
+  - @backstage/backend-plugin-api@1.4.2
+  - @backstage/types@1.2.1
+  - @backstage/plugin-scaffolder-node@0.11.0
+
+## 0.3.2
+
+### Patch Changes
+
+- 812485c: Add step info to scaffolder action context to access the step id and name.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.11.0
+  - @backstage/backend-test-utils@1.8.0
+  - @backstage/backend-plugin-api@1.4.2
+
+## 0.3.2-next.0
+
+### Patch Changes
+
+- 812485c: Add step info to scaffolder action context to access the step id and name.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.11.0-next.0
+  - @backstage/backend-test-utils@1.7.1-next.0
+  - @backstage/backend-plugin-api@1.4.2-next.0
+  - @backstage/types@1.2.1
+
+## 0.3.1
+
+### Patch Changes
+
+- dbde180: An internal refactor which adds additional types to experimental checkpoints
+- Updated dependencies
+  - @backstage/backend-test-utils@1.7.0
+  - @backstage/plugin-scaffolder-node@0.10.0
+  - @backstage/backend-plugin-api@1.4.1
+
+## 0.3.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.10.0-next.2
+
+## 0.3.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.1-next.0
+  - @backstage/backend-test-utils@1.7.0-next.1
+  - @backstage/plugin-scaffolder-node@0.9.1-next.1
+
+## 0.3.1-next.0
+
+### Patch Changes
+
+- dbde180: An internal refactor which adds additional types to experimental checkpoints
+- Updated dependencies
+  - @backstage/backend-test-utils@1.7.0-next.0
+  - @backstage/plugin-scaffolder-node@0.9.1-next.0
+  - @backstage/backend-plugin-api@1.4.0
+  - @backstage/types@1.2.1
+
+## 0.3.0
+
+### Minor Changes
+
+- 3cea7ee: **BREAKING CHANGES**
+
+  Because of the removal of the `logStream` property to the `ActionsContext` this has been removed from the `createMockActionContext` method.
+
+  You can remove this as it's no longer supported in the scaffolder actions.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.9.0
+  - @backstage/backend-test-utils@1.6.0
+  - @backstage/backend-plugin-api@1.4.0
+  - @backstage/types@1.2.1
+
+## 0.3.0-next.2
+
+### Minor Changes
+
+- 3cea7ee: **BREAKING CHANGES**
+
+  Because of the removal of the `logStream` property to the `ActionsContext` this has been removed from the `createMockActionContext` method.
+
+  You can remove this as it's no longer supported in the scaffolder actions.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.9.0-next.2
+  - @backstage/backend-test-utils@1.6.0-next.2
+  - @backstage/backend-plugin-api@1.4.0-next.1
+  - @backstage/types@1.2.1
+
+## 0.2.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.8.3-next.1
+  - @backstage/backend-plugin-api@1.4.0-next.1
+  - @backstage/backend-test-utils@1.6.0-next.1
+  - @backstage/types@1.2.1
+
+## 0.2.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.8.3-next.0
+  - @backstage/backend-test-utils@1.6.0-next.0
+  - @backstage/backend-plugin-api@1.4.0-next.0
+
+## 0.2.2
+
+### Patch Changes
+
+- b27c48d: Include optional `user` in `createMockActionContext`
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.3.1
+  - @backstage/backend-test-utils@1.5.0
+  - @backstage/plugin-scaffolder-node@0.8.2
+  - @backstage/types@1.2.1
+
+## 0.2.2-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.8.2-next.3
+  - @backstage/backend-plugin-api@1.3.1-next.2
+  - @backstage/backend-test-utils@1.5.0-next.3
+  - @backstage/types@1.2.1
+
+## 0.2.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.8.2-next.2
+  - @backstage/backend-test-utils@1.5.0-next.2
+  - @backstage/backend-plugin-api@1.3.1-next.1
+  - @backstage/types@1.2.1
+
+## 0.2.2-next.1
+
+### Patch Changes
+
+- b27c48d: Include optional `user` in `createMockActionContext`
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.3.1-next.1
+  - @backstage/plugin-scaffolder-node@0.8.2-next.1
+  - @backstage/backend-test-utils@1.5.0-next.1
+  - @backstage/types@1.2.1
+
+## 0.2.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-test-utils@1.5.0-next.0
+  - @backstage/plugin-scaffolder-node@0.8.2-next.0
+  - @backstage/backend-plugin-api@1.3.1-next.0
+  - @backstage/types@1.2.1
+
+## 0.2.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.8.1
+  - @backstage/backend-plugin-api@1.3.0
+  - @backstage/backend-test-utils@1.4.0
+  - @backstage/types@1.2.1
+
+## 0.2.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/backend-test-utils@1.3.2-next.2
+  - @backstage/types@1.2.1
+  - @backstage/plugin-scaffolder-node@0.8.1-next.1
+
+## 0.2.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.8.1-next.1
+  - @backstage/backend-test-utils@1.3.2-next.1
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/types@1.2.1
+
+## 0.2.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.8.1-next.0
+  - @backstage/backend-test-utils@1.3.2-next.0
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/types@1.2.1
+
+## 0.2.0
+
+### Minor Changes
+
+- 36677bb: Use update `createTemplateAction` kinds
+
+### Patch Changes
+
+- 09cf038: Got rid of most `@backstage/backend-common` usages
+- Updated dependencies
+  - @backstage/plugin-scaffolder-node@0.8.0
+  - @backstage/backend-test-utils@1.3.1
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/types@1.2.1
+
 ## 0.2.0-next.2
 
 ### Minor Changes

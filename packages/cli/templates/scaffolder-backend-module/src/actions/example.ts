@@ -12,22 +12,16 @@ import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 export function createExampleAction() {
   // For more information on how to define custom actions, see
   //   https://backstage.io/docs/features/software-templates/writing-custom-actions
-  return createTemplateAction<{
-    myParameter: string;
-  }>({
+  return createTemplateAction({
     id: 'acme:example',
     description: 'Runs an example action',
     schema: {
       input: {
-        type: 'object',
-        required: ['myParameter'],
-        properties: {
-          myParameter: {
-            title: 'An example parameter',
-            description: "This is an example parameter, don't set it to foo",
-            type: 'string',
-          },
-        },
+        myParameter: z =>
+          z.string({
+            description:
+              "This is an example parameter, don't set it to foo",
+          }),
       },
     },
     async handler(ctx) {

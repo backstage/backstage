@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-import { ClusterDetails } from '@backstage/plugin-kubernetes-node';
+import { LoggerService } from '@backstage/backend-plugin-api';
 import * as https from 'https';
-import { bufferFromFileOrString } from '@kubernetes/client-node';
 import fetch, { RequestInit } from 'node-fetch';
-import { Logger } from 'winston';
+import { ClusterDetails } from '../types/types';
 
 /**
  *
@@ -51,7 +50,11 @@ export type PinnipedParameters = {
  * @public
  */
 export class PinnipedHelper {
-  constructor(private readonly logger: Logger) {}
+  private readonly logger: LoggerService;
+
+  constructor(logger: LoggerService) {
+    this.logger = logger;
+  }
 
   public async tokenCredentialRequest(
     clusterDetails: ClusterDetails,
@@ -75,7 +78,7 @@ export class PinnipedHelper {
 
     url.pathname = `/apis/${apiGroup}/tokencredentialrequests`;
 
-    const requestInit: RequestInit = this.buildRequestForPinniped(
+    const requestInit = await this.buildRequestForPinniped(
       url,
       clusterDetails,
       pinnipedParams,
@@ -107,11 +110,13 @@ export class PinnipedHelper {
     return Promise.reject(data.status.message);
   }
 
-  private buildRequestForPinniped(
+  private async buildRequestForPinniped(
     url: URL,
     clusterDetails: ClusterDetails,
     pinnipedParams: PinnipedParameters,
-  ): RequestInit {
+  ): Promise<fetch.RequestInit> {
+    const { bufferFromFileOrString } = await import('@kubernetes/client-node');
+
     const body = {
       apiVersion:
         pinnipedParams.tokenCredentialRequest?.apiGroup ??

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { Avatar } from './Avatar';
 import { makeStyles } from '@material-ui/core/styles';
 
@@ -29,6 +28,7 @@ const useStyles = makeStyles({
 export default {
   title: 'Data Display/Avatar',
   component: Avatar,
+  tags: ['!manifest'],
 };
 
 export const Default = () => (

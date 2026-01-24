@@ -2,7 +2,6 @@
 id: software-catalog-overview
 title: Backstage Software Catalog
 sidebar_label: Overview
-# prettier-ignore
 description: The Backstage Software Catalog
 ---
 
@@ -108,7 +107,7 @@ metadata in the software catalog after a short while.
 
 ## Finding software in the catalog
 
-By default the software catalog shows components owned by the team of the logged
+By default, the software catalog shows components owned by the team of the logged
 in user. But you can also switch to _All_ to see all the components across your
 company's software ecosystem. Basic inline _search_ and _column filtering_ makes
 it easy to browse a big set of components.
@@ -127,7 +126,7 @@ _starring_ of components:
 The software catalog is a great way to organize the infrastructure tools you use
 to manage the software. This is how Backstage creates one developer portal for
 all your tools. Rather than asking teams to jump between different
-infrastructure UIs (and incurring additional cognitive overhead each time they
+infrastructure user interfaces (and incurring additional cognitive overhead each time they
 make a context switch), most of these tools can be organized around the entities
 in the catalog.
 

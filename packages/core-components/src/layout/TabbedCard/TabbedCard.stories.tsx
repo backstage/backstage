@@ -16,7 +16,7 @@
 
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
-import React, { PropsWithChildren, useState } from 'react';
+import { PropsWithChildren, useState } from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import { CardTab, TabbedCard } from './TabbedCard';
 
@@ -36,6 +36,7 @@ export default {
       </Grid>
     ),
   ],
+  tags: ['!manifest'],
 };
 
 export const Default = () => {

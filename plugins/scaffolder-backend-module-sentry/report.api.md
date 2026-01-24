@@ -5,7 +5,6 @@
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
-import { JsonObject } from '@backstage/types';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 
 // @public
@@ -16,11 +15,31 @@ export function createSentryCreateProjectAction(options: {
     organizationSlug: string;
     teamSlug: string;
     name: string;
-    slug?: string;
-    authToken?: string;
+    slug?: string | undefined;
+    platform?: string | undefined;
+    authToken?: string | undefined;
+    apiBaseUrl?: string | undefined;
   },
-  JsonObject,
-  'v1'
+  {
+    [x: string]: any;
+  },
+  'v2'
+>;
+
+// @public
+export function createSentryFetchDSNAction(options: {
+  config: Config;
+}): TemplateAction<
+  {
+    organizationSlug: string;
+    projectSlug: string;
+    authToken?: string | undefined;
+    apiBaseUrl?: string | undefined;
+  },
+  {
+    dsn?: string | undefined;
+  },
+  'v2'
 >;
 
 // @public

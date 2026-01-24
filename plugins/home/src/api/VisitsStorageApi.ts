@@ -21,11 +21,26 @@ import {
   VisitsApiSaveParams,
 } from './VisitsApi';
 
+/**
+ * @public
+ * Type definition for visit data before it's saved (without auto-generated fields)
+ */
+export type VisitInput = {
+  name: string;
+  pathname: string;
+  entityRef?: string;
+};
+
 /** @public */
 export type VisitsStorageApiOptions = {
   limit?: number;
   storageApi: StorageApi;
   identityApi: IdentityApi;
+  transformPathname?: (pathname: string) => string;
+  canSave?: (visit: VisitInput) => boolean | Promise<boolean>;
+  enrichVisit?: (
+    visit: VisitInput,
+  ) => Promise<Record<string, any>> | Record<string, any>;
 };
 
 type ArrayElement<A> = A extends readonly (infer T)[] ? T : never;
@@ -43,6 +58,13 @@ export class VisitsStorageApi implements VisitsApi {
   private readonly storageApi: StorageApi;
   private readonly storageKeyPrefix = '@backstage/plugin-home:visits';
   private readonly identityApi: IdentityApi;
+  private readonly transformPathnameImpl?: (pathname: string) => string;
+  private readonly canSaveImpl?: (
+    visit: VisitInput,
+  ) => boolean | Promise<boolean>;
+  private readonly enrichVisitImpl?: (
+    visit: VisitInput,
+  ) => Promise<Record<string, any>> | Record<string, any>;
 
   static create(options: VisitsStorageApiOptions) {
     return new VisitsStorageApi(options);
@@ -52,6 +74,9 @@ export class VisitsStorageApi implements VisitsApi {
     this.limit = Math.abs(options.limit ?? 100);
     this.storageApi = options.storageApi;
     this.identityApi = options.identityApi;
+    this.transformPathnameImpl = options.transformPathname;
+    this.canSaveImpl = options.canSave;
+    this.enrichVisitImpl = options.enrichVisit;
   }
 
   /**
@@ -89,33 +114,89 @@ export class VisitsStorageApi implements VisitsApi {
   }
 
   /**
+   * Transform the pathname before it is considered for any other processing.
+   * @param pathname - the original pathname
+   * @returns the transformed pathname
+   */
+  transformPathname(pathname: string): string {
+    return this.transformPathnameImpl?.(pathname) ?? pathname;
+  }
+
+  /**
+   * Determine whether a visit should be saved.
+   * @param visit - page visit data
+   */
+  async canSave(visit: VisitInput): Promise<boolean> {
+    if (!this.canSaveImpl) {
+      return true;
+    }
+    return Promise.resolve(this.canSaveImpl(visit));
+  }
+
+  /**
+   * Add additional data to the visit before saving.
+   * @param visit - page visit data
+   */
+  async enrichVisit(visit: VisitInput): Promise<Record<string, any>> {
+    if (!this.enrichVisitImpl) {
+      return {};
+    }
+    return Promise.resolve(this.enrichVisitImpl(visit));
+  }
+
+  /**
    * Saves a visit through the visitsApi
    */
   async save(saveParams: VisitsApiSaveParams): Promise<Visit> {
+    let visit = saveParams.visit;
+
+    // Transform pathname if needed
+    visit = {
+      ...visit,
+      pathname: this.transformPathname(visit.pathname),
+    };
+
+    // Check if visit should be saved
+    if (!(await this.canSave(visit))) {
+      // Return a minimal visit object without saving
+      return {
+        ...visit,
+        id: '',
+        hits: 0,
+        timestamp: Date.now(),
+      };
+    }
+
+    // Enrich the visit
+    const enrichedData = await this.enrichVisit(visit);
+    const enrichedVisit = { ...visit, ...enrichedData };
+
     const visits: Visit[] = [...(await this.retrieveAll())];
 
-    const visit: Visit = {
-      ...saveParams.visit,
+    const visitToSave: Visit = {
+      ...enrichedVisit,
       id: window.crypto.randomUUID(),
       hits: 1,
       timestamp: Date.now(),
     };
 
     // Updates entry if pathname is already registered
-    const visitIndex = visits.findIndex(e => e.pathname === visit.pathname);
+    const visitIndex = visits.findIndex(
+      e => e.pathname === visitToSave.pathname,
+    );
     if (visitIndex >= 0) {
-      visit.id = visits[visitIndex].id;
-      visit.hits = visits[visitIndex].hits + 1;
-      visits[visitIndex] = visit;
+      visitToSave.id = visits[visitIndex].id;
+      visitToSave.hits = visits[visitIndex].hits + 1;
+      visits[visitIndex] = visitToSave;
     } else {
-      visits.push(visit);
+      visits.push(visitToSave);
     }
 
     // Sort by time, most recent first
     visits.sort((a, b) => b.timestamp - a.timestamp);
     // Keep the most recent items up to limit
     await this.persistAll(visits.splice(0, this.limit));
-    return visit;
+    return visitToSave;
   }
 
   private async persistAll(visits: Array<Visit>) {
@@ -125,7 +206,7 @@ export class VisitsStorageApi implements VisitsApi {
 
   private async retrieveAll(): Promise<Array<Visit>> {
     const storageKey = await this.getStorageKey();
-    // Handles for case when snapshot is and is not referenced per storaged type used
+    // Handles for case when snapshot is and is not referenced per storage type used
     const snapshot = this.storageApi.snapshot<Array<Visit>>(storageKey);
     if (snapshot?.presence !== 'unknown') {
       return snapshot?.value ?? [];

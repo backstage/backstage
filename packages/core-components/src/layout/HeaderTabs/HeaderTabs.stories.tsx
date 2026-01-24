@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
 import { HeaderTabs } from './HeaderTabs';
 
 export default {
   title: 'Layout/HeaderTabs',
   component: HeaderTabs,
+  tags: ['!manifest'],
 };
 
 export const SingleTab = (args: any) => <HeaderTabs {...args} />;

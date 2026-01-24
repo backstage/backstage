@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import React, { useContext } from 'react';
+import { ReactNode, useContext } from 'react';
 import Accordion from '@material-ui/core/Accordion';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
 import Grid from '@material-ui/core/Grid';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { V1Pod, V1DaemonSet } from '@kubernetes/client-node';
+import type { V1Pod, V1DaemonSet } from '@kubernetes/client-node';
 import { PodsTable } from '../Pods';
 import { DaemonSetDrawer } from './DaemonSetsDrawer';
 import { getOwnedResources } from '../../utils/owner';
@@ -30,22 +30,24 @@ import {
 } from '../../hooks';
 import { StatusError, StatusOK } from '@backstage/core-components';
 import { READY_COLUMNS, RESOURCE_COLUMNS } from '../Pods/PodsTable';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { kubernetesReactTranslationRef } from '../../translation';
 
 type DaemonSetsAccordionsProps = {
-  children?: React.ReactNode;
+  children?: ReactNode;
 };
 
 type DaemonSetAccordionProps = {
   daemonset: V1DaemonSet;
   ownedPods: V1Pod[];
-  children?: React.ReactNode;
+  children?: ReactNode;
 };
 
 type DaemonSetSummaryProps = {
   daemonset: V1DaemonSet;
   numberOfCurrentPods: number;
   numberOfPodsWithErrors: number;
-  children?: React.ReactNode;
+  children?: ReactNode;
 };
 
 const DaemonSetSummary = ({
@@ -53,6 +55,7 @@ const DaemonSetSummary = ({
   numberOfCurrentPods,
   numberOfPodsWithErrors,
 }: DaemonSetSummaryProps) => {
+  const { t } = useTranslationRef(kubernetesReactTranslationRef);
   return (
     <Grid
       container
@@ -74,16 +77,15 @@ const DaemonSetSummary = ({
         spacing={0}
       >
         <Grid item>
-          <StatusOK>{numberOfCurrentPods} pods</StatusOK>
+          <StatusOK>{t('pods.pods', { count: numberOfCurrentPods })}</StatusOK>
         </Grid>
         <Grid item>
           {numberOfPodsWithErrors > 0 ? (
             <StatusError>
-              {numberOfPodsWithErrors} pod
-              {numberOfPodsWithErrors > 1 ? 's' : ''} with errors
+              {t('cluster.podsWithErrors', { count: numberOfPodsWithErrors })}
             </StatusError>
           ) : (
-            <StatusOK>No pods with errors</StatusOK>
+            <StatusOK>{t('cluster.noPodsWithErrors')}</StatusOK>
           )}
         </Grid>
       </Grid>

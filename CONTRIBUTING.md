@@ -17,6 +17,8 @@ If you need help, just jump into our [Discord chatroom](https://discord.gg/backs
 - [Accessibility](#accessibility)
 - [Get Started!](#get-started)
 - [Coding Guidelines](#coding-guidelines)
+- [AI Use Policy and Guidelines](#ai-use-policy-and-guidelines)
+- [Documentation Guidelines](#documentation-guidelines)
 - [Package Scripts](#package-scripts)
 - [Local configuration](#local-configuration)
 - [Creating Changesets](#creating-changesets)
@@ -68,7 +70,7 @@ yarn tsc      # does a first run of type generation and checks
 Open a terminal window and start the web app by using the following command from the project root. Make sure you have run the above mentioned commands first.
 
 ```bash
-yarn dev
+yarn start
 ```
 
 This is going to start two things, the frontend (:3000) and the backend (:7007).
@@ -101,6 +103,16 @@ Visit <http://localhost:3000> and you should see the bleeding edge of Backstage 
 
 If you want to get a better understanding of the layout of the repo now that you have a local copy running feel free to review the [Backstage Project Structure](https://backstage.io/docs/getting-started/#general-folder-structure) documentation.
 
+#### Using Docker for the Example App
+
+You can run the Example App using Docker with Postgres, OpenSearch and Redis services. This setup very closely resembles how Backstage is run in production in many occasions.
+
+To start the Example App with Docker, make sure you have Docker and Docker Compose installed on your machine, then run the following command from the root of the repository:
+
+```bash
+yarn start:docker
+```
+
 ## Coding Guidelines
 
 All code is formatted with `prettier` using the configuration in the repo. If possible, we recommend configuring your editor to format automatically, but you can also use the `yarn prettier --write <file>` command to format files.
@@ -116,6 +128,51 @@ If there are any updates in `markdown` file please make sure to run `yarn run li
 ### Editor
 
 The Backstage development environment does not require any specific editor, but it is intended to be used with one that has built-in linting and type-checking. The development server does not include any checks by default, but they can be enabled using the `--check` flag. Note that using the flag may consume more system resources and slow things down.
+
+## AI Use Policy and Guidelines
+
+Our goal in the Backstage project is to develop an excellent software system. This requires careful attention to detail in every change we integrate. Maintainer time and attention is very limited, so it's important that changes you ask us to review represent your _best_ work.
+
+You are encouraged to use tools that help you write good code, including AI tools. However, you always need to understand and explain the changes you're proposing to make, whether or not you used an LLM as part of your process to produce them. The answer to "Why did you make change X?" should never be "I'm not sure. The AI did it."
+
+**Do not submit an AI-generated PR you haven't personally understood and tested**, as this wastes maintainers' time. PRs that appear to violate this guideline will be closed without review. If you do submit a largely AI-generated PR, clearly mark it as such in the description—maintainers may still close it without further review if it does not seem worthwhile.
+
+### Using AI as a Coding Assistant
+
+1. Don't skip **becoming familiar with the part of the codebase** you're working on. This will let you write better prompts and validate their output if you use an LLM. Code assistants can be a useful search engine/discovery tool in this process, but don't trust claims they make about how Backstage works. LLMs are often wrong, even about details that are clearly answered in the [Backstage documentation](https://backstage.io/docs).
+2. Split up your changes into **coherent commits**, even if an LLM generates them all in one go. See our section on [Creating Changesets](#creating-changesets) for guidance on documenting your changes.
+3. Don't simply ask an LLM to add **code comments**, as it will likely produce a bunch of text that unnecessarily explains what's already clear from the code. If using an LLM to generate comments, be really specific in your request, demand succinctness, and carefully edit the result.
+
+### Using AI for Communication
+
+Backstage contributors are expected to communicate with intention, to avoid wasting maintainer time with long, sloppy writing. We strongly prefer clear and concise communication about points that actually require discussion over long AI-generated comments.
+
+When you use an LLM to write a message for you, it remains **your responsibility** to read through the whole thing and make sure that it makes sense to you and represents your ideas concisely. A good rule of thumb is that if you can't make yourself carefully read some LLM output that you generated, nobody else wants to read it either.
+
+Here are some concrete guidelines for using LLMs as part of your communication workflows:
+
+1. When writing a pull request description, **do not include anything that's obvious** from looking at your changes directly (e.g., files changed, functions updated, etc.). Instead, focus on the _why_ behind your changes. Don't ask an LLM to generate a PR description on your behalf based on your code changes, as it will simply regurgitate the information that's already there.
+2. Similarly, when responding to a pull request comment, **explain _your_ reasoning**. Don't prompt an LLM to re-describe what can already be seen from the code.
+3. Verify that **everything you write is accurate**, whether or not an LLM generated any part of it. Backstage's maintainers will be unable to review your contributions if you misrepresent your work (e.g., wrongly describing your code changes, their effect, or your testing process).
+4. Complete all parts of the **PR description template**, including screenshots and the checklist. Don't simply overwrite the template with LLM output.
+5. **Clarity and succinctness** are much more important than perfect grammar, so you shouldn't feel obliged to pass your writing through an LLM. If you do ask an LLM to clean up your writing style, be sure it does _not_ make it longer in the process. Demand succinctness in your prompt.
+6. Quoting an LLM answer is usually less helpful than linking to **relevant primary sources**, like source code, [Backstage documentation](https://backstage.io/docs), or reference materials. If you do need to quote an LLM answer in a discussion, clearly distinguish LLM output from your own thoughts.
+
+If you have questions about AI usage or need help, feel free to ask in [Discord](https://discord.gg/backstage-687207715902193673).
+
+## Documentation Guidelines
+
+Contributing to the docs is one of the best ways to start getting involved with Backstage. The documentation site is often the first stop for anyone using or exploring Backstage, so even small improvements can have a big impact!
+
+To help your changes get reviewed and merged smoothly, please keep the following in mind:
+
+- Try to group related updates into a single pull request. For example, if you notice missing admonitions or outdated information in a section, feel free to update all of it together. This makes it easier for maintainers to review your contribution in context.
+
+- We really appreciate contributions that improve clarity or fix outdated information. That said, we generally don’t accept changes that are purely stylistic (e.g., rewording a sentence just to tweak the tone or phrasing). If something is **unclear**, **confusing**, or **factually inaccurate**, those are great opportunities to help!
+
+Ready to get started? You can find all the documentation files in the [docs](docs) directory! If you have any questions or need help, feel free to reach out in the [Backstage Discord Docs Channel](https://discord.com/channels/687207715902193673/687994765559463940)
+
+Thank you in advance for your contributions! We really appreciate it. 🙏
 
 ## Package Scripts
 
@@ -373,7 +430,7 @@ Once you've submitted a Pull Request (PR) the various bots will come out and do 
 - adding labels to help make reviewing PRs easier
 - checking for missing changesets or confirming them
 - checking for commits for their DCO (Developer Certificate of Origin)
-- kick of the various CI builds
+- kick off the various CI builds
 
 Once these steps are completed, it's just a matter of being patient. As the reviewers have time, they will begin reviewing your PR. When the review process begins, there may be a few layers to this, but the general rule is that you need approval from one of the core maintainers and one from the specific area impacted by your PR. You may also have someone from the community review your changes. This can really help speed things up as they may catch some early items making the review for the maintainers simpler. Once you have the two (2) approvals, it's ready to be merged, a task that is also performed by the maintainers.
 

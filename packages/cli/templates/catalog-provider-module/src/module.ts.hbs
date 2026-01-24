@@ -1,0 +1,29 @@
+import {
+  coreServices,
+  createBackendModule,
+} from '@backstage/backend-plugin-api';
+import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
+import { {{providerClass}} } from './provider/{{providerClass}}';
+
+export const {{moduleVar}} = createBackendModule({
+  moduleId: '{{fullModuleId}}',
+  pluginId: '{{pluginId}}',
+  register({ registerInit }) {
+    registerInit({
+      deps: {
+        logger: coreServices.logger,
+        config: coreServices.rootConfig,
+        scheduler: coreServices.scheduler,
+        processing: catalogProcessingExtensionPoint,
+      },
+      async init({ logger, scheduler, config, processing }) {
+        processing.addEntityProvider(
+          {{providerClass}}.fromConfig(config, {
+            logger,
+            scheduler,
+          }),
+        );
+      }
+    });
+  },
+})

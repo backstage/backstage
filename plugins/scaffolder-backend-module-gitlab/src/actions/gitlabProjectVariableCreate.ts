@@ -17,8 +17,6 @@
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import { VariableType } from '@gitbeaker/rest';
-import { z } from 'zod';
-import commonGitlabConfig from '../commonGitlabConfig';
 import { getClient, parseRepoUrl } from '../util';
 import { examples } from './gitlabProjectVariableCreate.examples';
 
@@ -36,39 +34,65 @@ export const createGitlabProjectVariableAction = (options: {
     id: 'gitlab:projectVariable:create',
     examples,
     schema: {
-      input: commonGitlabConfig.merge(
-        z.object({
-          projectId: z.union([z.number(), z.string()], {
+      input: {
+        repoUrl: z =>
+          z.string({
+            description: `Accepts the format 'gitlab.com?repo=project_name&owner=group_name' where 'project_name' is the repository name and 'group_name' is a group or username`,
+          }),
+        token: z =>
+          z
+            .string({
+              description: 'The token to use for authorization to GitLab',
+            })
+            .optional(),
+        projectId: z =>
+          z.union([z.number(), z.string()], {
             description: 'Project ID',
           }),
-          key: z
+        key: z =>
+          z
             .string({
               description:
                 'The key of a variable; must have no more than 255 characters; only A-Z, a-z, 0-9, and _ are allowed',
             })
             .regex(/^[A-Za-z0-9_]{1,255}$/),
-          value: z.string({ description: 'The value of a variable' }),
-          variableType: z.string({
+        value: z =>
+          z.string({
+            description: 'The value of a variable',
+          }),
+        variableType: z =>
+          z.string({
             description: 'Variable Type (env_var or file)',
           }),
-          variableProtected: z
-            .boolean({ description: 'Whether the variable is protected' })
+        variableProtected: z =>
+          z
+            .boolean({
+              description: 'Whether the variable is protected',
+            })
             .default(false)
             .optional(),
-          masked: z
-            .boolean({ description: 'Whether the variable is masked' })
+        masked: z =>
+          z
+            .boolean({
+              description: 'Whether the variable is masked',
+            })
             .default(false)
             .optional(),
-          raw: z
-            .boolean({ description: 'Whether the variable is expandable' })
+        raw: z =>
+          z
+            .boolean({
+              description: 'Whether the variable is expandable',
+            })
             .default(false)
             .optional(),
-          environmentScope: z
-            .string({ description: 'The environment_scope of the variable' })
+        environmentScope: z =>
+          z
+            .string({
+              description: 'The environment_scope of the variable',
+            })
             .default('*')
             .optional(),
-        }),
-      ),
+      },
     },
     async handler(ctx) {
       const {
@@ -88,12 +112,17 @@ export const createGitlabProjectVariableAction = (options: {
 
       const api = getClient({ host, integrations, token });
 
-      await api.ProjectVariables.create(projectId, key, value, {
-        variableType: variableType as VariableType,
-        protected: variableProtected,
-        masked,
-        raw,
-        environmentScope,
+      await ctx.checkpoint({
+        key: `create.project.variables.${projectId}.${key}.${value}`,
+        fn: async () => {
+          await api.ProjectVariables.create(projectId, key, value, {
+            variableType: variableType as VariableType,
+            protected: variableProtected,
+            masked,
+            raw,
+            environmentScope,
+          });
+        },
       });
     },
   });

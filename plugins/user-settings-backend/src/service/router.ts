@@ -41,7 +41,7 @@ export async function createRouter(options: {
   };
 
   // get a single value
-  router.get('/buckets/:bucket/keys/:key', async (req, res) => {
+  router.get('/buckets/:bucket/keys/:key(*)', async (req, res) => {
     const userEntityRef = await getUserEntityRef(req);
     const { bucket, key } = req.params;
 
@@ -55,7 +55,7 @@ export async function createRouter(options: {
   });
 
   // set a single value
-  router.put('/buckets/:bucket/keys/:key', async (req, res) => {
+  router.put('/buckets/:bucket/keys/:key(*)', async (req, res) => {
     const userEntityRef = await getUserEntityRef(req);
     const { bucket, key } = req.params;
     const { value } = req.body;
@@ -87,8 +87,8 @@ export async function createRouter(options: {
     res.json(setting);
   });
 
-  // get a single value
-  router.delete('/buckets/:bucket/keys/:key', async (req, res) => {
+  // delete a single value
+  router.delete('/buckets/:bucket/keys/:key(*)', async (req, res) => {
     const userEntityRef = await getUserEntityRef(req);
     const { bucket, key } = req.params;
 

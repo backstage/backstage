@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import { RouteRef, toInternalRouteRef } from './RouteRef';
+import { OpaqueRouteRef, OpaqueSubRouteRef } from '@internal/frontend';
+import { RouteRef } from './RouteRef';
 import { AnyRouteRefParams } from './types';
 
 // Should match the pattern in react-router
@@ -48,59 +49,6 @@ export interface InternalSubRouteRef<
   getParams(): string[];
   getParent(): RouteRef;
   getDescription(): string;
-}
-
-/** @internal */
-export function toInternalSubRouteRef<
-  TParams extends AnyRouteRefParams = AnyRouteRefParams,
->(resource: SubRouteRef<TParams>): InternalSubRouteRef<TParams> {
-  const r = resource as InternalSubRouteRef<TParams>;
-  if (r.$$type !== '@backstage/SubRouteRef') {
-    throw new Error(`Invalid SubRouteRef, bad type '${r.$$type}'`);
-  }
-
-  return r;
-}
-
-/** @internal */
-export function isSubRouteRef(opaque: {
-  $$type: string;
-}): opaque is SubRouteRef {
-  return opaque.$$type === '@backstage/SubRouteRef';
-}
-
-/** @internal */
-export class SubRouteRefImpl<TParams extends AnyRouteRefParams>
-  implements SubRouteRef<TParams>
-{
-  readonly $$type = '@backstage/SubRouteRef';
-  readonly version = 'v1';
-  declare readonly T: never;
-
-  #params: string[];
-  #parent: RouteRef;
-
-  constructor(readonly path: string, params: string[], parent: RouteRef) {
-    this.#params = params;
-    this.#parent = parent;
-  }
-
-  getParams(): string[] {
-    return this.#params;
-  }
-
-  getParent(): RouteRef {
-    return this.#parent;
-  }
-
-  getDescription(): string {
-    const parent = toInternalRouteRef(this.#parent);
-    return `at ${this.path} with parent ${parent.getDescription()}`;
-  }
-
-  toString(): string {
-    return `SubRouteRef{${this.getDescription()}}`;
-  }
 }
 
 /**
@@ -168,8 +116,9 @@ export function createSubRouteRef<
   const { path, parent } = config;
   type Params = PathParams<Path>;
 
-  const internalParent = toInternalRouteRef(parent);
+  const internalParent = OpaqueRouteRef.toInternal(parent);
   const parentParams = internalParent.getParams();
+  const parentDescription = internalParent.getDescription();
 
   // Collect runtime parameters from the path, e.g. ['bar', 'baz'] from '/foo/:bar/:baz'
   const pathParams = path
@@ -195,14 +144,22 @@ export function createSubRouteRef<
     }
   }
 
-  // We ensure that the type of the return type is sane here
-  const subRouteRef = new SubRouteRefImpl(
+  return OpaqueSubRouteRef.createInstance('v1', {
+    T: undefined as unknown as TrimEmptyParams<
+      MergeParams<Params, ParentParams>
+    >,
     path,
-    params as string[],
-    parent,
-  ) as SubRouteRef<TrimEmptyParams<MergeParams<Params, ParentParams>>>;
-
-  // But skip type checking of the return value itself, because the conditional
-  // type checking of the parent parameter overlap is tricky to express.
-  return subRouteRef as any;
+    getParams() {
+      return params;
+    },
+    getParent() {
+      return parent;
+    },
+    getDescription() {
+      return `at ${path} with parent ${parentDescription}`;
+    },
+    toString() {
+      return `subRouteRef{path='${path}',parent=${parent}}`;
+    },
+  });
 }

@@ -4,5 +4,5 @@
 
 | Name     | Location     | Severity |
 | :------- | :----------- | :------- |
-| fs-extra | package.json | error    |
+| fs-extra | plugins/scaffolder-backend-module-bitbucket/package.json | error    |
 

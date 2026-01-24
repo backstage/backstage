@@ -13,7 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import {
+  ComponentType,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { Content, ErrorPanel, Header, Page } from '@backstage/core-components';
 import { useNavigate, useParams } from 'react-router-dom';
 import Box from '@material-ui/core/Box';
@@ -26,7 +32,12 @@ import {
   useTaskEventStream,
 } from '@backstage/plugin-scaffolder-react';
 import { selectedTemplateRouteRef } from '../../routes';
-import { useAnalytics, useApi, useRouteRef } from '@backstage/core-plugin-api';
+import {
+  AnalyticsContext,
+  useAnalytics,
+  useApi,
+  useRouteRef,
+} from '@backstage/core-plugin-api';
 import qs from 'qs';
 import { ContextMenu } from './ContextMenu';
 import {
@@ -45,6 +56,7 @@ import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../translation';
 import { entityPresentationApiRef } from '@backstage/plugin-catalog-react';
 import { default as reactUseAsync } from 'react-use/esm/useAsync';
+import { stringifyEntityRef } from '@backstage/catalog-model';
 
 const useStyles = makeStyles(theme => ({
   contentWrapper: {
@@ -71,11 +83,41 @@ const useStyles = makeStyles(theme => ({
  * @public
  */
 export const OngoingTask = (props: {
-  TemplateOutputsComponent?: React.ComponentType<{
+  TemplateOutputsComponent?: ComponentType<{
     output?: ScaffolderTaskOutput;
   }>;
 }) => {
   // todo(blam): check that task Id actually exists, and that it's valid. otherwise redirect to something more useful.
+  const { taskId } = useParams();
+  const taskStream = useTaskEventStream(taskId!);
+  const { namespace, name } =
+    taskStream.task?.spec.templateInfo?.entity?.metadata ?? {};
+
+  return (
+    <AnalyticsContext
+      attributes={{
+        entityRef:
+          name &&
+          stringifyEntityRef({
+            kind: 'template',
+            namespace,
+            name,
+          }),
+        taskId,
+      }}
+    >
+      <Page themeId="website">
+        <OngoingTaskContent {...props} />
+      </Page>
+    </AnalyticsContext>
+  );
+};
+
+function OngoingTaskContent(props: {
+  TemplateOutputsComponent?: ComponentType<{
+    output?: ScaffolderTaskOutput;
+  }>;
+}) {
   const { taskId } = useParams();
   const templateRouteRef = useRouteRef(selectedTemplateRouteRef);
   const navigate = useNavigate();
@@ -97,13 +139,14 @@ export const OngoingTask = (props: {
   const [logsVisible, setLogVisibleState] = useState(false);
   const [buttonBarVisible, setButtonBarVisibleState] = useState(true);
 
-  // Used dummy string value for `resourceRef` since `allowed` field will always return `false` if `resourceRef` is `undefined`
   const { allowed: canCancelTask } = usePermission({
     permission: taskCancelPermission,
+    resourceRef: taskId,
   });
 
   const { allowed: canReadTask } = usePermission({
     permission: taskReadPermission,
+    resourceRef: taskId,
   });
 
   const { allowed: canCreateTask } = usePermission({
@@ -177,7 +220,7 @@ export const OngoingTask = (props: {
     templateRouteRef,
   ]);
 
-  const [{ status: _ }, { execute: triggerRetry }] = useAsync(async () => {
+  const [, { execute: triggerRetry }] = useAsync(async () => {
     if (taskId) {
       analytics.captureEvent('retried', 'Template has been retried');
       await scaffolderApi.retry?.(taskId);
@@ -196,9 +239,11 @@ export const OngoingTask = (props: {
   const Outputs = props.TemplateOutputsComponent ?? DefaultTemplateOutputs;
 
   const cancelEnabled = !(taskStream.cancelled || taskStream.completed);
+  const isCancelButtonDisabled =
+    !cancelEnabled || cancelStatus !== 'not-executed' || !canCancelTask;
 
   return (
-    <Page themeId="website">
+    <>
       <Header
         pageTitleOverride={
           presentation
@@ -226,6 +271,8 @@ export const OngoingTask = (props: {
           onToggleLogs={setLogVisibleState}
           onToggleButtonBar={setButtonBarVisibleState}
           taskId={taskId}
+          onCancel={triggerCancel}
+          isCancelButtonDisabled={isCancelButtonDisabled}
         />
       </Header>
       <Content className={classes.contentWrapper}>
@@ -310,6 +357,6 @@ export const OngoingTask = (props: {
           </Paper>
         ) : null}
       </Content>
-    </Page>
+    </>
   );
-};
+}

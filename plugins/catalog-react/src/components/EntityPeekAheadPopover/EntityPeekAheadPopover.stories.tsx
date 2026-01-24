@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ComponentType, PropsWithChildren } from 'react';
+import { ComponentType, PropsWithChildren } from 'react';
 import {
   EntityPeekAheadPopover,
   EntityPeekAheadPopoverProps,
@@ -89,6 +89,7 @@ export default {
         },
       ),
   ],
+  tags: ['!manifest'],
 };
 
 export const Default = (args: EntityPeekAheadPopoverProps) => (

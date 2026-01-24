@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-auth-backend-module-bitbucket-server-provider",
-  "version": "0.2.1-next.1",
+  "version": "0.2.10",
   "description": "The bitbucket-server-provider backend module for the auth plugin.",
   "backstage": {
     "role": "backend-plugin-module",
@@ -37,7 +37,8 @@
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/plugin-auth-node": "workspace:^",
     "passport": "^0.7.0",
-    "passport-oauth2": "^1.6.1"
+    "passport-oauth2": "^1.6.1",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@backstage/backend-defaults": "workspace:^",

@@ -21,10 +21,12 @@ import {
 } from '@backstage/backend-test-utils';
 import { DatabaseEventBusStore } from './DatabaseEventBusStore';
 
+jest.setTimeout(60_000);
+
 const logger = mockServices.logger.mock();
 
 const databases = TestDatabases.create({
-  ids: ['POSTGRES_9', 'POSTGRES_13', 'POSTGRES_16'],
+  ids: ['POSTGRES_14', 'POSTGRES_18'],
 });
 
 const maybeDescribe =

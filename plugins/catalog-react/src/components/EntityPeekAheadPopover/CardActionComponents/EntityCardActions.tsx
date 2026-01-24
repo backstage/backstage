@@ -17,7 +17,6 @@
 import { entityRouteRef } from '../../../routes';
 import IconButton from '@material-ui/core/IconButton';
 import InfoIcon from '@material-ui/icons/Info';
-import React from 'react';
 import { useRouteRef } from '@backstage/core-plugin-api';
 import { Entity, getCompoundEntityRef } from '@backstage/catalog-model';
 import { Link } from '@backstage/core-components';
@@ -36,7 +35,7 @@ export const EntityCardActions = (props: { entity: Entity }) => {
   return (
     <IconButton
       component={Link}
-      aria-label="Show"
+      aria-label={t('entityPeekAheadPopover.entityCardActionsAriaLabel')}
       title={t('entityPeekAheadPopover.entityCardActionsTitle')}
       to={entityRoute(getCompoundEntityRef(props.entity))}
     >

@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
 import { EntityContentBlueprint } from './EntityContentBlueprint';
 import {
   createExtensionTester,
@@ -33,8 +32,8 @@ describe('EntityContentBlueprint', () => {
     const extension = EntityContentBlueprint.make({
       name: 'test',
       params: {
-        defaultPath: '/test',
-        defaultTitle: 'Test',
+        path: '/test',
+        title: 'Test',
         loader: async () => <div>Test!</div>,
       },
     });
@@ -63,19 +62,74 @@ describe('EntityContentBlueprint', () => {
                       {
                         "anyOf": [
                           {
-                            "type": [
-                              "string",
-                              "number",
-                              "boolean",
-                            ],
+                            "additionalProperties": {
+                              "anyOf": [
+                                {
+                                  "type": [
+                                    "string",
+                                    "number",
+                                    "boolean",
+                                  ],
+                                },
+                                {
+                                  "additionalProperties": false,
+                                  "properties": {
+                                    "$exists": {
+                                      "type": "boolean",
+                                    },
+                                  },
+                                  "required": [
+                                    "$exists",
+                                  ],
+                                  "type": "object",
+                                },
+                                {
+                                  "additionalProperties": false,
+                                  "properties": {
+                                    "$in": {
+                                      "items": {
+                                        "$ref": "#/properties/filter/anyOf/1/anyOf/0/anyOf/0/additionalProperties/anyOf/0",
+                                      },
+                                      "type": "array",
+                                    },
+                                  },
+                                  "required": [
+                                    "$in",
+                                  ],
+                                  "type": "object",
+                                },
+                                {
+                                  "additionalProperties": false,
+                                  "properties": {
+                                    "$contains": {
+                                      "$ref": "#/properties/filter/anyOf/1",
+                                    },
+                                  },
+                                  "required": [
+                                    "$contains",
+                                  ],
+                                  "type": "object",
+                                },
+                              ],
+                            },
+                            "propertyNames": {
+                              "pattern": "^(?!\\$).*$",
+                            },
+                            "type": "object",
                           },
                           {
-                            "items": {
-                              "$ref": "#/properties/filter/anyOf/1/anyOf/0/anyOf/0",
+                            "additionalProperties": {
+                              "not": {},
                             },
-                            "type": "array",
+                            "propertyNames": {
+                              "pattern": "^\\$",
+                            },
+                            "type": "object",
                           },
                         ],
+                      },
+                      {
+                        "$ref": "#/properties/filter/anyOf/1/anyOf/0/anyOf/0/additionalProperties/anyOf/0",
                       },
                       {
                         "additionalProperties": false,
@@ -117,58 +171,6 @@ describe('EntityContentBlueprint', () => {
                         "required": [
                           "$not",
                         ],
-                        "type": "object",
-                      },
-                      {
-                        "additionalProperties": {
-                          "anyOf": [
-                            {
-                              "$ref": "#/properties/filter/anyOf/1/anyOf/0",
-                            },
-                            {
-                              "additionalProperties": false,
-                              "properties": {
-                                "$exists": {
-                                  "type": "boolean",
-                                },
-                              },
-                              "required": [
-                                "$exists",
-                              ],
-                              "type": "object",
-                            },
-                            {
-                              "additionalProperties": false,
-                              "properties": {
-                                "$in": {
-                                  "items": {
-                                    "$ref": "#/properties/filter/anyOf/1/anyOf/0/anyOf/0",
-                                  },
-                                  "type": "array",
-                                },
-                              },
-                              "required": [
-                                "$in",
-                              ],
-                              "type": "object",
-                            },
-                            {
-                              "additionalProperties": false,
-                              "properties": {
-                                "$contains": {
-                                  "$ref": "#/properties/filter/anyOf/1",
-                                },
-                              },
-                              "required": [
-                                "$contains",
-                              ],
-                              "type": "object",
-                            },
-                          ],
-                        },
-                        "propertyNames": {
-                          "pattern": "^(?!\\$).*$",
-                        },
                         "type": "object",
                       },
                     ],
@@ -254,8 +256,8 @@ describe('EntityContentBlueprint', () => {
     const extension = EntityContentBlueprint.make({
       name: 'test',
       params: {
-        defaultPath: '/test',
-        defaultTitle: 'Test',
+        path: '/test',
+        title: 'Test',
         routeRef: mockRouteRef,
         loader: async () => <div>Test!</div>,
       },
@@ -278,8 +280,8 @@ describe('EntityContentBlueprint', () => {
         EntityContentBlueprint.make({
           name: 'test',
           params: {
-            defaultPath: '/test',
-            defaultTitle: 'Test',
+            path: '/test',
+            title: 'Test',
             loader: async () => <div>Test!</div>,
             filter: 'test',
           },
@@ -292,8 +294,8 @@ describe('EntityContentBlueprint', () => {
         EntityContentBlueprint.make({
           name: 'test',
           params: {
-            defaultPath: '/test',
-            defaultTitle: 'Test',
+            path: '/test',
+            title: 'Test',
             loader: async () => <div>Test!</div>,
           },
         }),
@@ -306,8 +308,8 @@ describe('EntityContentBlueprint', () => {
         EntityContentBlueprint.make({
           name: 'test',
           params: {
-            defaultPath: '/test',
-            defaultTitle: 'Test',
+            path: '/test',
+            title: 'Test',
             filter: mockFilter,
             loader: async () => <div>Test!</div>,
           },
@@ -329,8 +331,8 @@ describe('EntityContentBlueprint', () => {
       },
       factory(originalFactory, { inputs, config }) {
         return originalFactory({
-          defaultPath: '/test',
-          defaultTitle: 'Test',
+          path: '/test',
+          title: 'Test',
           loader: async () => (
             <div data-testid="test">
               config: {config.mock}

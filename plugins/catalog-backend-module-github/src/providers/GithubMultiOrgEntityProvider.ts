@@ -60,11 +60,14 @@ import {
   defaultOrganizationTeamTransformer,
   defaultUserTransformer,
   getOrganizationTeams,
+  assignGroupsToUser,
   getOrganizationUsers,
   GithubTeam,
   TeamTransformer,
   TransformerContext,
   UserTransformer,
+  GithubPageSizes,
+  DEFAULT_PAGE_SIZES,
 } from '../lib';
 import {
   ANNOTATION_GITHUB_TEAM_SLUG,
@@ -73,6 +76,7 @@ import {
 import {
   getOrganizationsFromUser,
   getOrganizationTeam,
+  getOrganizationTeamsForUser,
   getOrganizationTeamsFromUsers,
 } from '../lib/github';
 import { splitTeamSlug } from '../lib/util';
@@ -164,6 +168,20 @@ export interface GithubMultiOrgEntityProviderOptions {
    * By default, groups will be namespaced according to their GitHub org.
    */
   teamTransformer?: TeamTransformer;
+
+  /**
+   * Optionally configure page sizes for GitHub GraphQL API queries.
+   * Reduce these values if hitting RESOURCE_LIMITS_EXCEEDED errors.
+   */
+  pageSizes?: Partial<GithubPageSizes>;
+
+  /**
+   * Optionally exclude suspended users when querying organization users.
+   * @defaultValue false
+   * @remarks
+   * Only for GitHub Enterprise instances. Will error if used against GitHub.com API.
+   */
+  excludeSuspendedUsers?: boolean;
 }
 
 type CreateDeltaOperation = (entities: Entity[]) => {
@@ -210,6 +228,8 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       teamTransformer: options.teamTransformer,
       events: options.events,
       alwaysUseDefaultNamespace: options.alwaysUseDefaultNamespace,
+      pageSizes: options.pageSizes,
+      excludeSuspendedUsers: options.excludeSuspendedUsers,
     });
 
     provider.schedule(options.schedule);
@@ -229,12 +249,21 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       userTransformer?: UserTransformer;
       teamTransformer?: TeamTransformer;
       alwaysUseDefaultNamespace?: boolean;
+      pageSizes?: Partial<GithubPageSizes>;
+      excludeSuspendedUsers?: boolean;
     },
   ) {}
 
   /** {@inheritdoc @backstage/plugin-catalog-node#EntityProvider.getProviderName} */
   getProviderName() {
     return `GithubMultiOrgEntityProvider:${this.options.id}`;
+  }
+
+  private getPageSizes(): GithubPageSizes {
+    return {
+      ...DEFAULT_PAGE_SIZES,
+      ...this.options.pageSizes,
+    };
   }
 
   /** {@inheritdoc @backstage/plugin-catalog-node#EntityProvider.connect} */
@@ -279,17 +308,22 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
 
       logger.info(`Reading GitHub users and teams for org: ${org}`);
 
+      const pageSizes = this.getPageSizes();
+
       const { users } = await getOrganizationUsers(
         client,
         org,
         tokenType,
         this.options.userTransformer,
+        pageSizes,
+        this.options.excludeSuspendedUsers,
       );
 
       const { teams } = await getOrganizationTeams(
         client,
         org,
         this.defaultMultiOrgTeamTransformer.bind(this),
+        pageSizes,
       );
 
       // Grab current users from `allUsersMap` if they already exist in our
@@ -427,17 +461,22 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       headers,
     });
 
+    const pageSizes = this.getPageSizes();
+
     const { users } = await getOrganizationUsers(
       client,
       org,
       tokenType,
       this.options.userTransformer,
+      pageSizes,
+      this.options.excludeSuspendedUsers,
     );
 
     const { teams } = await getOrganizationTeams(
       client,
       org,
       this.defaultMultiOrgTeamTransformer.bind(this),
+      pageSizes,
     );
 
     if (users.length) {
@@ -462,6 +501,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
               u.metadata.name,
           ),
           this.defaultMultiOrgTeamTransformer.bind(this),
+          pageSizes,
         );
 
         if (areGroupEntities(userTeams) && areUserEntities(users)) {
@@ -491,7 +531,13 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
 
     const userTransformer =
       this.options.userTransformer || defaultUserTransformer;
-    const { name, avatar_url: avatarUrl, email, login } = event.membership.user;
+    const {
+      name,
+      avatar_url: avatarUrl,
+      email,
+      login,
+      node_id,
+    } = event.membership.user;
     const org = event.organization.login;
     const { headers } =
       await this.options.githubCredentialsProvider.getCredentials({
@@ -533,6 +579,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
         avatarUrl,
         login,
         email: email ?? undefined,
+        id: node_id,
       },
       {
         org,
@@ -546,6 +593,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
     }
 
     if (updateMemberships) {
+      const pageSizes = this.getPageSizes();
       for (const userOrg of userApplicableOrgs) {
         const { headers: orgHeaders } =
           await this.options.githubCredentialsProvider.getCredentials({
@@ -556,15 +604,16 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
           headers: orgHeaders,
         });
 
-        const { teams } = await getOrganizationTeamsFromUsers(
+        const { teams } = await getOrganizationTeamsForUser(
           orgClient,
           userOrg,
-          [login],
+          login,
           this.defaultMultiOrgTeamTransformer.bind(this),
+          pageSizes,
         );
 
         if (isUserEntity(user) && areGroupEntities(teams)) {
-          assignGroupsToUsers([user], teams);
+          assignGroupsToUser(user, teams);
         }
       }
     }
@@ -646,12 +695,14 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       headers,
     });
 
+    const pageSizes = this.getPageSizes();
     const teamSlug = event.team.slug;
     const { team } = await getOrganizationTeam(
       client,
       org,
       teamSlug,
       this.defaultMultiOrgTeamTransformer.bind(this),
+      pageSizes,
     );
 
     const { users } = await getOrganizationUsers(
@@ -659,6 +710,8 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       org,
       tokenType,
       this.options.userTransformer,
+      pageSizes,
+      this.options.excludeSuspendedUsers,
     );
 
     const usersFromChangedGroup = isGroupEntity(team)
@@ -691,6 +744,7 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
               u.metadata.name,
           ),
           this.defaultMultiOrgTeamTransformer.bind(this),
+          pageSizes,
         );
 
         if (areGroupEntities(teams) && areUserEntities(usersToRebuild)) {
@@ -759,23 +813,26 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
       headers,
     });
 
+    const pageSizes = this.getPageSizes();
     const teamSlug = event.team.slug;
     const { team } = await getOrganizationTeam(
       client,
       org,
       teamSlug,
       this.defaultMultiOrgTeamTransformer.bind(this),
+      pageSizes,
     );
 
     const userTransformer =
       this.options.userTransformer || defaultUserTransformer;
-    const { name, avatar_url: avatarUrl, email, login } = event.member;
+    const { name, avatar_url: avatarUrl, email, login, node_id } = event.member;
     const user = await userTransformer(
       {
         name,
         avatarUrl,
         login,
         email: email ?? undefined,
+        id: node_id,
       },
       {
         org,
@@ -799,15 +856,16 @@ export class GithubMultiOrgEntityProvider implements EntityProvider {
           headers: orgHeaders,
         });
 
-        const { teams } = await getOrganizationTeamsFromUsers(
+        const { teams } = await getOrganizationTeamsForUser(
           orgClient,
           userOrg,
-          [login],
+          login,
           this.defaultMultiOrgTeamTransformer.bind(this),
+          pageSizes,
         );
 
         if (areGroupEntities(teams)) {
-          assignGroupsToUsers([user], teams);
+          assignGroupsToUser(user, teams);
         }
       }
 

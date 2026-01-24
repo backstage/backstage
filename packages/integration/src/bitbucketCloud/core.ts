@@ -17,6 +17,100 @@
 import fetch from 'cross-fetch';
 import parseGitUrl from 'git-url-parse';
 import { BitbucketCloudIntegrationConfig } from './config';
+import { DateTime } from 'luxon';
+
+type OAuthTokenData = {
+  token: string;
+  expiresAt: DateTime;
+};
+
+// In-memory token cache (single entry since there's only one Bitbucket Cloud integration)
+let cachedToken: OAuthTokenData | undefined;
+
+// Track in-flight token refresh request to prevent concurrent fetches
+let refreshPromise: Promise<string> | undefined;
+
+/**
+ * Fetches an OAuth access token from Bitbucket Cloud using client credentials flow.
+ * Tokens are cached with a 10-minute grace period to account for clock skew.
+ * Implements concurrent refresh protection to prevent multiple simultaneous token requests.
+ *
+ * @param clientId - OAuth client ID
+ * @param clientSecret - OAuth client secret
+ * @public
+ */
+export async function getBitbucketCloudOAuthToken(
+  clientId: string,
+  clientSecret: string,
+): Promise<string> {
+  // Check cache
+  if (cachedToken && DateTime.now() < cachedToken.expiresAt) {
+    return cachedToken.token;
+  }
+
+  // Check if there's already a refresh in progress
+  if (refreshPromise) {
+    return refreshPromise;
+  }
+
+  // Start a new token fetch and track it
+  refreshPromise = (async () => {
+    try {
+      // Fetch new token
+      const credentials = Buffer.from(
+        `${clientId}:${clientSecret}`,
+        'utf8',
+      ).toString('base64');
+
+      const response = await fetch(
+        'https://bitbucket.org/site/oauth2/access_token',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            Authorization: `Basic ${credentials}`,
+          },
+          body: 'grant_type=client_credentials',
+        },
+      );
+
+      if (!response.ok) {
+        throw new Error(
+          `Failed to fetch OAuth token from Bitbucket Cloud: ${response.status} ${response.statusText}`,
+        );
+      }
+
+      const data = await response.json();
+
+      if (!data.access_token) {
+        throw new Error('OAuth token response missing access_token field');
+      }
+
+      // Calculate expiration with 10-minute grace period
+      const expiresIn = data.expires_in || 3600; // Default to 1 hour
+      const expiresAt = DateTime.now()
+        .plus({ seconds: expiresIn })
+        .minus({ minutes: 10 });
+
+      // Cache the token
+      cachedToken = {
+        token: data.access_token,
+        expiresAt,
+      };
+
+      return data.access_token;
+    } catch (error) {
+      throw new Error(
+        `Failed to fetch OAuth token for Bitbucket Cloud: ${error}`,
+      );
+    } finally {
+      // Clean up the in-flight promise tracking
+      refreshPromise = undefined;
+    }
+  })();
+
+  return refreshPromise;
+}
 
 /**
  * Given a URL pointing to a path on a provider, returns the default branch.
@@ -34,7 +128,7 @@ export async function getBitbucketCloudDefaultBranch(
   const branchUrl = `${config.apiBaseUrl}/repositories/${project}/${repoName}`;
   const response = await fetch(
     branchUrl,
-    getBitbucketCloudRequestOptions(config),
+    await getBitbucketCloudRequestOptions(config),
   );
 
   if (!response.ok) {
@@ -117,24 +211,39 @@ export function getBitbucketCloudFileFetchUrl(
 
 /**
  * Gets the request options necessary to make requests to a given provider.
+ * Returns headers for authenticating with Bitbucket Cloud.
+ * Supports OAuth (clientId/clientSecret), username/token, and username/appPassword auth.
  *
  * @param config - The relevant provider config
  * @public
  */
-export function getBitbucketCloudRequestOptions(
+export async function getBitbucketCloudRequestOptions(
   config: BitbucketCloudIntegrationConfig,
-): { headers: Record<string, string> } {
+): Promise<{
+  headers: Record<string, string>;
+}> {
   const headers: Record<string, string> = {};
 
-  if (config.username && config.appPassword) {
+  // OAuth authentication (clientId/clientSecret)
+  if (config.clientId && config.clientSecret) {
+    const token = await getBitbucketCloudOAuthToken(
+      config.clientId,
+      config.clientSecret,
+    );
+    headers.Authorization = `Bearer ${token}`;
+    return { headers };
+  }
+
+  // Basic authentication (username + token/appPassword)
+  // TODO: appPassword can be removed once fully
+  // deprecated by BitBucket on 9th June 2026.
+  if (config.username && (config.token ?? config.appPassword)) {
     const buffer = Buffer.from(
-      `${config.username}:${config.appPassword}`,
+      `${config.username}:${config.token ?? config.appPassword}`,
       'utf8',
     );
     headers.Authorization = `Basic ${buffer.toString('base64')}`;
   }
 
-  return {
-    headers,
-  };
+  return { headers };
 }

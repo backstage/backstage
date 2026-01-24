@@ -18,10 +18,14 @@ import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import React from 'react';
 import { CodeSnippet, Link, EmptyState } from '@backstage/core-components';
 import { Entity } from '@backstage/catalog-model';
+import {
+  TranslationFunction,
+  useTranslationRef,
+} from '@backstage/core-plugin-api/alpha';
 import { useEntity } from '../../hooks';
+import { catalogReactTranslationRef } from '../../translation';
 
 /** @public */
 export type MissingAnnotationEmptyStateClassKey = 'code';
@@ -69,23 +73,24 @@ spec:
   };
 }
 
-function generateDescription(annotations: string[], entityKind = 'Component') {
-  const isSingular = annotations.length <= 1;
-  return (
-    <>
-      The {isSingular ? 'annotation' : 'annotations'}{' '}
-      {annotations
-        .map(ann => <code>{ann}</code>)
-        .reduce((prev, curr) => (
-          <>
-            {prev}, {curr}
-          </>
-        ))}{' '}
-      {isSingular ? 'is' : 'are'} missing. You need to add the{' '}
-      {isSingular ? 'annotation' : 'annotations'} to your {entityKind} if you
-      want to enable this tool.
-    </>
-  );
+function generateDescription(
+  annotations: string[],
+  entityKind = 'Component',
+  t: TranslationFunction<typeof catalogReactTranslationRef.T>,
+) {
+  const annotationList = annotations
+    .map(ann => <code key={ann}>{ann}</code>)
+    .reduce((prev, curr) => (
+      <>
+        {prev}, {curr}
+      </>
+    ));
+
+  return t('missingAnnotationEmptyState.generateDescription', {
+    count: annotations.length,
+    entityKind,
+    annotations: annotationList,
+  });
 }
 
 /**
@@ -96,6 +101,8 @@ export function MissingAnnotationEmptyState(props: {
   annotation: string | string[];
   readMoreUrl?: string;
 }) {
+  const { t } = useTranslationRef(catalogReactTranslationRef);
+
   let entity: Entity | undefined;
   try {
     const entityContext = useEntity();
@@ -116,13 +123,12 @@ export function MissingAnnotationEmptyState(props: {
   return (
     <EmptyState
       missing="field"
-      title="Missing Annotation"
-      description={generateDescription(annotations, entityKind)}
+      title={t('missingAnnotationEmptyState.title')}
+      description={generateDescription(annotations, entityKind, t)}
       action={
         <>
           <Typography variant="body1">
-            Add the annotation to your {entityKind} YAML as shown in the
-            highlighted example below:
+            {t('missingAnnotationEmptyState.annotationYaml', { entityKind })}
           </Typography>
           <Box className={classes.code}>
             <CodeSnippet
@@ -134,7 +140,7 @@ export function MissingAnnotationEmptyState(props: {
             />
           </Box>
           <Button color="primary" component={Link} to={url}>
-            Read more
+            {t('missingAnnotationEmptyState.readMore')}
           </Button>
         </>
       }

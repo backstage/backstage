@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 import {
   useTranslationRef,
   appLanguageApiRef,
@@ -61,6 +61,9 @@ const useStyles = makeStyles(theme => ({
   },
 }));
 
+const capitalize = (s: string) =>
+  s.charAt(0).toLocaleUpperCase('en-US') + s.slice(1);
+
 /** @public */
 export const UserSettingsLanguageToggle = () => {
   const classes = useStyles();
@@ -88,7 +91,8 @@ export const UserSettingsLanguageToggle = () => {
       const names = new Intl.DisplayNames([language], {
         type: 'language',
       });
-      return names.of(language) || language;
+      const languageDisplayName = names.of(language);
+      return languageDisplayName ? capitalize(languageDisplayName) : language;
     } catch (err) {
       return language;
     }

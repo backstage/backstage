@@ -15,11 +15,11 @@
  */
 
 import { Progress } from '@backstage/core-components';
-import React, { Suspense } from 'react';
+import { lazy, Suspense } from 'react';
 
 // The graphql component, graphql and related CSS has a significant size, only
 // load it if the element is actually used.
-const LazyGraphQlDefinition = React.lazy(() =>
+const LazyGraphQlDefinition = lazy(() =>
   import('./GraphQlDefinition').then(m => ({
     default: m.GraphQlDefinition,
   })),

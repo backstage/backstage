@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { KubernetesStructuredMetadataTableDrawer } from '../../KubernetesDrawer';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import Chip from '@material-ui/core/Chip';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { kubernetesReactTranslationRef } from '../../../translation';
 
 export const RolloutDrawer = ({
   rollout,
@@ -27,6 +28,7 @@ export const RolloutDrawer = ({
   rollout: any;
   expanded?: boolean;
 }) => {
+  const { t } = useTranslationRef(kubernetesReactTranslationRef);
   const namespace = rollout.metadata?.namespace;
   return (
     <KubernetesStructuredMetadataTableDrawer
@@ -54,7 +56,10 @@ export const RolloutDrawer = ({
         </Grid>
         {namespace && (
           <Grid item>
-            <Chip size="small" label={`namespace: ${namespace}`} />
+            <Chip
+              size="small"
+              label={t('namespace.labelWithValue', { namespace })}
+            />
           </Grid>
         )}
       </Grid>

@@ -38,7 +38,20 @@ export const examples: TemplateExample[] = [
         {
           id: 'create-sentry-project',
           action: 'sentry:project:create',
-          name: 'Create a Sentry project without providing a project slug.',
+          name: 'Create a Sentry project with provided platform.',
+          input: {
+            organizationSlug: 'my-org',
+            teamSlug: 'team-a',
+            name: 'Scaffolded project A',
+            platform: 'platform-a',
+            authToken:
+              'c25711beb516e1e910d2ede554dc1bf725654ef3c75e5a9106de9aec13d5de85',
+          },
+        },
+        {
+          id: 'create-sentry-project',
+          action: 'sentry:project:create',
+          name: 'Create a Sentry project without optional parameters.',
           input: {
             organizationSlug: 'my-org',
             teamSlug: 'team-b',
@@ -82,6 +95,26 @@ export const examples: TemplateExample[] = [
             name: 'A very long name for the scaffolded project C that will generate a slug',
             authToken:
               'c16711beb516e1e910d2ede554dc1bf725654ef3c75e5a9106de9aec13d6gf94',
+          },
+        },
+      ],
+    }),
+  },
+  {
+    description: 'Creates a Sentry project with a custom API base URL.',
+    example: yaml.stringify({
+      steps: [
+        {
+          id: 'create-sentry-project',
+          action: 'sentry:project:create',
+          name: 'Create a Sentry project with custom API base URL.',
+          input: {
+            organizationSlug: 'my-org',
+            teamSlug: 'team-a',
+            name: 'Scaffolded project A',
+            apiBaseUrl: 'https://custom.sentry.io/api/0',
+            authToken:
+              'd16711beb516e1e910d2ede554dc1bf725654ef3c75e5a9106de9aec13d6gf95',
           },
         },
       ],

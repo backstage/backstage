@@ -5,7 +5,6 @@
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
-import { JsonObject } from '@backstage/types';
 import { ScmIntegrations } from '@backstage/integration';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
@@ -24,7 +23,10 @@ export const createConfluenceToMarkdownAction: (options: {
     confluenceUrls: string[];
     repoUrl: string;
   },
-  JsonObject,
-  'v1'
+  {
+    repo?: string | undefined;
+    owner?: string | undefined;
+  },
+  'v2'
 >;
 ```

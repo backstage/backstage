@@ -127,10 +127,10 @@ async function withDetectedModuleType(resolved) {
     };
   }
 
-  // TODO(Rugvip): Afaik this should never happen and we can remove this check, but want it here for a little while to verify.
-  if (ext === '.js') {
-    throw new Error('Unexpected .js file without explicit format');
-  }
+  // Under normal circumstances .js files should reliably have a format and so
+  // we should only reach this point for .ts files. However, if additional
+  // custom loaders are being used the format may not be detected for .js files
+  // either. As such we don't restrict the file format at this point.
 
   // TODO(Rugvip): Does this need caching? kept it simple for now but worth exploring
   const packageJsonPath = await findPackageJSON(fileURLToPath(resolved.url));
@@ -255,6 +255,18 @@ export async function load(url, context, nextLoad) {
     return nextLoad(url, { ...context, format });
   }
 
+  // If the Node.js version we're running supports TypeScript, i.e. type
+  // stripping, we hand over to the default loader. This is done for all cases
+  // except if we're loading a .ts file that's been resolved to CommonJS format.
+  // This is because these files aren't actually CommonJS in the Backstage build
+  // system, and need to be transformed to CommonJS.
+  if (
+    format === 'module-typescript' ||
+    (format === 'module-commonjs' && ext !== '.ts')
+  ) {
+    return nextLoad(url, { ...context, format });
+  }
+
   const transformed = await transformFile(fileURLToPath(url), {
     sourceMaps: 'inline',
     module: {
@@ -265,7 +277,7 @@ export async function load(url, context, nextLoad) {
       exportInteropAnnotation: true,
     },
     jsc: {
-      target: 'es2022',
+      target: 'es2023',
       parser: {
         syntax: 'typescript',
       },

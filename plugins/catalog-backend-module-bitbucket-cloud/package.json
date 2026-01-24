@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-catalog-backend-module-bitbucket-cloud",
-  "version": "0.4.6-next.2",
+  "version": "0.5.7",
   "description": "A Backstage catalog backend module that helps integrate towards Bitbucket Cloud",
   "backstage": {
     "role": "backend-plugin-module",
@@ -52,7 +52,6 @@
   },
   "dependencies": {
     "@backstage/backend-plugin-api": "workspace:^",
-    "@backstage/catalog-client": "workspace:^",
     "@backstage/catalog-model": "workspace:^",
     "@backstage/config": "workspace:^",
     "@backstage/integration": "workspace:^",
@@ -66,7 +65,6 @@
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@backstage/plugin-events-backend-test-utils": "workspace:^",
-    "luxon": "^3.0.0",
     "msw": "^1.0.0"
   },
   "configSchema": "config.d.ts"

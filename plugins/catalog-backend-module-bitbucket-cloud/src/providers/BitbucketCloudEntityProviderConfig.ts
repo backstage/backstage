@@ -32,6 +32,7 @@ export type BitbucketCloudEntityProviderConfig = {
     repoSlug?: RegExp;
   };
   schedule?: SchedulerServiceTaskScheduleDefinition;
+  pagelen?: number;
 };
 
 export function readProviderConfigs(
@@ -72,6 +73,8 @@ function readProviderConfig(
       )
     : undefined;
 
+  const pagelen = config.getOptionalNumber('pagelen');
+
   return {
     id,
     catalogPath,
@@ -83,6 +86,7 @@ function readProviderConfig(
       repoSlug: repoSlugPattern ? compileRegExp(repoSlugPattern) : undefined,
     },
     schedule,
+    pagelen,
   };
 }
 

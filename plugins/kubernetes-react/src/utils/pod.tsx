@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 
-import {
+import type {
   V1Pod,
   V1PodCondition,
   V1DeploymentCondition,
 } from '@kubernetes/client-node';
-import React, { Fragment, ReactNode } from 'react';
+import { Fragment, ReactNode } from 'react';
 import Chip from '@material-ui/core/Chip';
 import {
   StatusAborted,
@@ -87,7 +87,7 @@ export const containerStatuses = (pod: Pod): ReactNode => {
     }
 
     return accum;
-  }, [] as React.ReactNode[]);
+  }, [] as ReactNode[]);
 
   if (errors.length === 0) {
     return <StatusOK>OK</StatusOK>;
@@ -139,22 +139,14 @@ export const currentToDeclaredResourceToPerc = (
 export const podStatusToCpuUtil = (podStatus: ClientPodStatus): ReactNode => {
   const cpuUtil = podStatus.cpu;
 
-  let currentUsage: number | string = cpuUtil.currentUsage;
-
-  // current usage number for CPU is a different unit than request/limit total
-  // this might be a bug in the k8s library
-  if (typeof cpuUtil.currentUsage === 'number') {
-    currentUsage = cpuUtil.currentUsage / 10;
-  }
-
   return (
     <SubvalueCell
       value={`requests: ${currentToDeclaredResourceToPerc(
-        currentUsage,
+        cpuUtil.currentUsage,
         cpuUtil.requestTotal,
       )} of ${formatMillicores(cpuUtil.requestTotal)}`}
       subvalue={`limits: ${currentToDeclaredResourceToPerc(
-        currentUsage,
+        cpuUtil.currentUsage,
         cpuUtil.limitTotal,
       )} of ${formatMillicores(cpuUtil.limitTotal)}`}
     />

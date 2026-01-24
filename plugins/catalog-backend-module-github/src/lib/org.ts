@@ -91,6 +91,29 @@ export function assignGroupsToUsers(
   }
 }
 
+// Assign all relevant groups to a single user if the user is a member of each group.
+export function assignGroupsToUser(user: UserEntity, groups: GroupEntity[]) {
+  const userRef = stringifyEntityRef(user);
+  for (const group of groups) {
+    const groupKey =
+      group.metadata.namespace && group.metadata.namespace !== DEFAULT_NAMESPACE
+        ? `${group.metadata.namespace}/${group.metadata.name}`
+        : group.metadata.name;
+    const memberRefs =
+      group.spec.members?.map(m =>
+        stringifyEntityRef(parseEntityRef(m, { defaultKind: 'user' })),
+      ) || [];
+    if (memberRefs.includes(userRef)) {
+      if (!user.spec.memberOf) {
+        user.spec.memberOf = [];
+      }
+      if (!user.spec.memberOf.includes(groupKey)) {
+        user.spec.memberOf.push(groupKey);
+      }
+    }
+  }
+}
+
 // Ensure that users have their transitive group memberships. Requires that
 // the groups were previously processed with buildOrgHierarchy()
 export function buildMemberOf(groups: GroupEntity[], users: UserEntity[]) {

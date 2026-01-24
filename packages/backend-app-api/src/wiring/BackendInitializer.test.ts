@@ -22,10 +22,11 @@ import {
   createExtensionPoint,
   createBackendFeatureLoader,
   ServiceRef,
+  coreServices,
 } from '@backstage/backend-plugin-api';
 import { BackendInitializer } from './BackendInitializer';
-import { instanceMetadataServiceRef } from '@backstage/backend-plugin-api/alpha';
 import { mockServices } from '@backstage/backend-test-utils';
+import { BackendStartupError } from './BackendStartupError';
 
 const baseFactories = [
   mockServices.rootLifecycle.factory(),
@@ -57,6 +58,42 @@ const testPlugin = createBackendPlugin({
 });
 
 describe('BackendInitializer', () => {
+  it('should only load modules if the plugin is present', async () => {
+    let loadedModule = false;
+    const backend1 = new BackendInitializer(baseFactories);
+    const testModule = createBackendModule({
+      pluginId: 'test',
+      moduleId: 'producer',
+      register(reg) {
+        reg.registerInit({
+          deps: {},
+          async init() {
+            loadedModule = true;
+          },
+        });
+      },
+    });
+    await backend1.add(testModule);
+    await backend1.start();
+    expect(loadedModule).toBe(false);
+
+    const backend2 = new BackendInitializer(baseFactories);
+    await backend2.add(testModule);
+    await backend2.add(
+      createBackendPlugin({
+        pluginId: 'test',
+        register(reg) {
+          reg.registerInit({
+            deps: {},
+            async init() {},
+          });
+        },
+      }),
+    );
+    await backend2.start();
+    expect(loadedModule).toBe(true);
+  });
+
   it('should initialize root scoped services', async () => {
     const ref1 = createServiceRef<{ x: number }>({
       id: '1',
@@ -541,7 +578,7 @@ describe('BackendInitializer', () => {
   });
 
   it('should forward errors when plugins fail to start', async () => {
-    const init = new BackendInitializer([]);
+    const init = new BackendInitializer(baseFactories);
     init.add(
       createBackendPlugin({
         pluginId: 'test',
@@ -562,8 +599,7 @@ describe('BackendInitializer', () => {
 
   it('should permit startup errors for plugins with onPluginBootFailure: continue', async () => {
     const init = new BackendInitializer([
-      mockServices.rootLifecycle.factory(),
-      mockServices.rootLogger.factory(),
+      ...baseFactories,
       mockServices.rootConfig.factory({
         data: {
           backend: {
@@ -590,8 +626,7 @@ describe('BackendInitializer', () => {
 
   it('should permit startup errors if the default onPluginBootFailure is continue', async () => {
     const init = new BackendInitializer([
-      mockServices.rootLifecycle.factory(),
-      mockServices.rootLogger.factory(),
+      ...baseFactories,
       mockServices.rootConfig.factory({
         data: {
           backend: {
@@ -618,8 +653,7 @@ describe('BackendInitializer', () => {
 
   it('should forward errors for plugins explicitly marked to abort when the default is continue', async () => {
     const init = new BackendInitializer([
-      mockServices.rootLifecycle.factory(),
-      mockServices.rootLogger.factory(),
+      ...baseFactories,
       mockServices.rootConfig.factory({
         data: {
           backend: {
@@ -649,47 +683,128 @@ describe('BackendInitializer', () => {
     );
   });
 
-  it('should forward errors when multiple plugins fail to start', async () => {
-    const init = new BackendInitializer([]);
+  it('should forward errors when plugin modules fail to start', async () => {
+    const init = new BackendInitializer(baseFactories);
+    init.add(testPlugin);
     init.add(
-      createBackendPlugin({
-        pluginId: 'test-1',
+      createBackendModule({
+        pluginId: 'test',
+        moduleId: 'mod',
         register(reg) {
           reg.registerInit({
             deps: {},
             async init() {
-              throw new Error('NOPE A');
+              throw new Error('NOPE');
             },
           });
         },
       }),
     );
-    init.add(
-      createBackendPlugin({
-        pluginId: 'test-2',
-        register(reg) {
-          reg.registerInit({
-            deps: {},
-            async init() {
-              throw new Error('NOPE B');
-            },
-          });
-        },
-      }),
+    await expect(init.start()).rejects.toThrow(
+      "Module 'mod' for plugin 'test' startup failed; caused by Error: NOPE",
     );
-    const result = init.start();
+  });
 
-    await expect(result).rejects.toThrow('Backend startup failed');
-    await expect(result).rejects.toMatchObject({
-      errors: [
-        expect.objectContaining({
-          message: "Plugin 'test-1' startup failed; caused by Error: NOPE A",
-        }),
-        expect.objectContaining({
-          message: "Plugin 'test-2' startup failed; caused by Error: NOPE B",
-        }),
-      ],
-    });
+  it('should permit startup errors for plugin modules with onPluginModuleBootFailure: continue', async () => {
+    const init = new BackendInitializer([
+      ...baseFactories,
+      mockServices.rootConfig.factory({
+        data: {
+          backend: {
+            startup: {
+              plugins: {
+                test: {
+                  modules: { mod: { onPluginModuleBootFailure: 'continue' } },
+                },
+              },
+            },
+          },
+        },
+      }),
+    ]);
+    init.add(testPlugin);
+    init.add(
+      createBackendModule({
+        pluginId: 'test',
+        moduleId: 'mod',
+        register(reg) {
+          reg.registerInit({
+            deps: {},
+            async init() {
+              throw new Error('NOPE');
+            },
+          });
+        },
+      }),
+    );
+    await expect(init.start()).resolves.not.toThrow();
+  });
+
+  it('should permit startup errors if the default onPluginModuleBootFailure is continue', async () => {
+    const init = new BackendInitializer([
+      ...baseFactories,
+      mockServices.rootConfig.factory({
+        data: {
+          backend: {
+            startup: { default: { onPluginModuleBootFailure: 'continue' } },
+          },
+        },
+      }),
+    ]);
+    init.add(testPlugin);
+    init.add(
+      createBackendModule({
+        pluginId: 'test',
+        moduleId: 'mod',
+        register(reg) {
+          reg.registerInit({
+            deps: {},
+            async init() {
+              throw new Error('NOPE');
+            },
+          });
+        },
+      }),
+    );
+    await expect(init.start()).resolves.not.toThrow();
+  });
+
+  it('should forward errors for plugin modules explicitly marked to abort when the default is continue', async () => {
+    const init = new BackendInitializer([
+      ...baseFactories,
+      mockServices.rootConfig.factory({
+        data: {
+          backend: {
+            startup: {
+              default: { onPluginModuleBootFailure: 'continue' },
+              plugins: {
+                test: {
+                  modules: { mod: { onPluginModuleBootFailure: 'abort' } },
+                },
+              },
+            },
+          },
+        },
+      }),
+    ]);
+    init.add(testPlugin);
+    init.add(
+      createBackendModule({
+        pluginId: 'test',
+        moduleId: 'mod',
+        register(reg) {
+          reg.registerInit({
+            deps: {},
+            async init() {
+              throw new Error('NOPE');
+            },
+          });
+        },
+      }),
+    );
+    await expect(init.start()).rejects.toThrow(
+      "Module 'mod' for plugin 'test' startup failed; caused by Error: NOPE",
+    );
   });
 
   it('should forward errors when modules fail to start', async () => {
@@ -953,7 +1068,7 @@ describe('BackendInitializer', () => {
   });
 
   it('should properly add plugins + modules to the instance metadata service', async () => {
-    expect.assertions(2);
+    expect.assertions(1);
     const backend = new BackendInitializer(baseFactories);
     const plugin = createBackendPlugin({
       pluginId: 'test',
@@ -969,31 +1084,25 @@ describe('BackendInitializer', () => {
       register(reg) {
         reg.registerInit({
           deps: {
-            instanceMetadata: instanceMetadataServiceRef,
+            instanceMetadata: coreServices.rootInstanceMetadata,
           },
           async init({ instanceMetadata }) {
-            expect(instanceMetadata.getInstalledFeatures()).toEqual([
+            await expect(
+              instanceMetadata.getInstalledPlugins(),
+            ).resolves.toEqual([
               {
                 pluginId: 'test',
-                type: 'plugin',
-              },
-              {
-                pluginId: 'test',
-                moduleId: 'test',
-                type: 'module',
+                modules: [
+                  {
+                    moduleId: 'test',
+                  },
+                ],
               },
               {
                 pluginId: 'instance-metadata',
-                type: 'plugin',
+                modules: [],
               },
             ]);
-            expect(instanceMetadata.getInstalledFeatures().map(String)).toEqual(
-              [
-                'plugin{pluginId=test}',
-                'module{moduleId=test,pluginId=test}',
-                'plugin{pluginId=instance-metadata}',
-              ],
-            );
           },
         });
       },
@@ -1012,5 +1121,720 @@ describe('BackendInitializer', () => {
     backend.add(module);
     backend.add(instanceMetadataPlugin);
     await backend.start();
+  });
+
+  it('should ignore modules that do not have a matching plugin', async () => {
+    expect.assertions(1);
+    const backend = new BackendInitializer(baseFactories);
+    const instanceMetadataPlugin = createBackendPlugin({
+      pluginId: 'instance-metadata',
+      register(reg) {
+        reg.registerInit({
+          deps: {
+            instanceMetadata: coreServices.rootInstanceMetadata,
+          },
+          async init({ instanceMetadata }) {
+            await expect(
+              instanceMetadata.getInstalledPlugins(),
+            ).resolves.toEqual([
+              {
+                pluginId: 'instance-metadata',
+                modules: [],
+              },
+            ]);
+          },
+        });
+      },
+    });
+    const module = createBackendModule({
+      pluginId: 'test',
+      moduleId: 'test',
+      register(reg) {
+        reg.registerInit({
+          deps: {},
+          async init() {},
+        });
+      },
+    });
+    backend.add(module);
+    backend.add(instanceMetadataPlugin);
+    await backend.start();
+  });
+
+  it('should prevent writes to the instance metadata service', async () => {
+    expect.assertions(1);
+    const backend = new BackendInitializer(baseFactories);
+    const plugin = createBackendPlugin({
+      pluginId: 'test',
+      register(reg) {
+        reg.registerInit({
+          deps: {
+            instanceMetadata: coreServices.rootInstanceMetadata,
+          },
+          async init({ instanceMetadata }) {
+            const plugins = await instanceMetadata.getInstalledPlugins();
+            await expect(() => {
+              (plugins[0] as any).pluginId = 'foo';
+            }).toThrow(/Cannot assign to read only property/);
+          },
+        });
+      },
+    });
+    backend.add(plugin);
+    await backend.start();
+  });
+
+  it('should properly wait for all modules that consume an extension point to really finish, before starting the module that provides that extension point', async () => {
+    expect.assertions(3);
+    const backend = new BackendInitializer(baseFactories);
+    const ext = createExtensionPoint<{ hello: (message: string) => void }>({
+      id: 'a',
+    });
+    const plugin = createBackendPlugin({
+      pluginId: 'test',
+      register(reg) {
+        reg.registerInit({
+          deps: {},
+          async init() {},
+        });
+      },
+    });
+    const producerModule = createBackendModule({
+      pluginId: 'test',
+      moduleId: 'producer',
+      register(reg) {
+        const hello = jest.fn();
+        reg.registerExtensionPoint(ext, { hello });
+        reg.registerInit({
+          deps: {},
+          async init() {
+            // we must not have been initialized before both of the consuming modules have been initialized
+            expect(hello).toHaveBeenCalledTimes(2);
+            expect(hello).toHaveBeenNthCalledWith(1, 'fast');
+            expect(hello).toHaveBeenNthCalledWith(2, 'slow');
+          },
+        });
+      },
+    });
+    const fastConsumerModule = createBackendModule({
+      pluginId: 'test',
+      moduleId: 'fast-consumer',
+      register(reg) {
+        reg.registerInit({
+          deps: { x: ext },
+          async init({ x }) {
+            x.hello('fast');
+          },
+        });
+      },
+    });
+    const slowConsumerModule = createBackendModule({
+      pluginId: 'test',
+      moduleId: 'slow-consumer',
+      register(reg) {
+        reg.registerInit({
+          deps: { x: ext },
+          async init({ x }) {
+            await new Promise(resolve => setTimeout(resolve, 100));
+            x.hello('slow');
+          },
+        });
+      },
+    });
+    await backend.add(plugin);
+    await backend.add(producerModule);
+    await backend.add(fastConsumerModule);
+    await backend.add(slowConsumerModule);
+    await backend.start();
+  });
+
+  describe('startup results', () => {
+    it('should return successful startup result when all plugins and modules start successfully', async () => {
+      const init = new BackendInitializer(baseFactories);
+      init.add(
+        createBackendPlugin({
+          pluginId: 'plugin1',
+          register(reg) {
+            reg.registerInit({
+              deps: {},
+              async init() {},
+            });
+          },
+        }),
+      );
+      init.add(
+        createBackendPlugin({
+          pluginId: 'plugin2',
+          register(reg) {
+            reg.registerInit({
+              deps: {},
+              async init() {},
+            });
+          },
+        }),
+      );
+      init.add(
+        createBackendModule({
+          pluginId: 'plugin1',
+          moduleId: 'module1',
+          register(reg) {
+            reg.registerInit({
+              deps: {},
+              async init() {},
+            });
+          },
+        }),
+      );
+      init.add(
+        createBackendModule({
+          pluginId: 'plugin2',
+          moduleId: 'module2',
+          register(reg) {
+            reg.registerInit({
+              deps: {},
+              async init() {},
+            });
+          },
+        }),
+      );
+
+      const { result } = await init.start();
+
+      expect(result.plugins).toHaveLength(2);
+      expect(result.plugins[0]).toMatchObject({
+        pluginId: 'plugin1',
+        modules: [
+          {
+            moduleId: 'module1',
+          },
+        ],
+      });
+      expect(result.plugins[0].failure).toBeUndefined();
+      expect(result.plugins[0].modules[0].failure).toBeUndefined();
+      expect(result.plugins[1]).toMatchObject({
+        pluginId: 'plugin2',
+        modules: [
+          {
+            moduleId: 'module2',
+          },
+        ],
+      });
+      expect(result.plugins[1].failure).toBeUndefined();
+      expect(result.plugins[1].modules[0].failure).toBeUndefined();
+    });
+
+    it('should throw BackendStartupError with results when plugin fails to start', async () => {
+      const init = new BackendInitializer(baseFactories);
+      const error = new Error('Plugin failed');
+      init.add(
+        createBackendPlugin({
+          pluginId: 'plugin1',
+          register(reg) {
+            reg.registerInit({
+              deps: {},
+              async init() {
+                throw error;
+              },
+            });
+          },
+        }),
+      );
+      init.add(
+        createBackendPlugin({
+          pluginId: 'plugin2',
+          register(reg) {
+            reg.registerInit({
+              deps: {},
+              async init() {},
+            });
+          },
+        }),
+      );
+
+      const err = await init.start().then(
+        () => {
+          throw new Error('Expected BackendStartupError to be thrown');
+        },
+        (e: BackendStartupError) => e,
+      );
+
+      expect(err).toBeInstanceOf(BackendStartupError);
+      expect(err?.result.plugins).toHaveLength(2);
+      expect(err?.result.plugins[0]).toMatchObject({
+        pluginId: 'plugin1',
+        failure: { error, allowed: false },
+      });
+      expect(err?.result.plugins[1]).toMatchObject({
+        pluginId: 'plugin2',
+      });
+      expect(err?.result.plugins[1].failure).toBeUndefined();
+    });
+
+    it('should throw BackendStartupError with results when module fails to start', async () => {
+      const init = new BackendInitializer(baseFactories);
+      const error = new Error('Module failed');
+      init.add(
+        createBackendPlugin({
+          pluginId: 'plugin1',
+          register(reg) {
+            reg.registerInit({
+              deps: {},
+              async init() {},
+            });
+          },
+        }),
+      );
+      init.add(
+        createBackendModule({
+          pluginId: 'plugin1',
+          moduleId: 'module1',
+          register(reg) {
+            reg.registerInit({
+              deps: {},
+              async init() {
+                throw error;
+              },
+            });
+          },
+        }),
+      );
+
+      const err = await init.start().then(
+        () => {
+          throw new Error('Expected BackendStartupError to be thrown');
+        },
+        (e: BackendStartupError) => e,
+      );
+
+      expect(err).toBeInstanceOf(BackendStartupError);
+      expect(err?.result.plugins).toHaveLength(1);
+      expect(err?.result.plugins[0]).toMatchObject({
+        pluginId: 'plugin1',
+        modules: [
+          {
+            moduleId: 'module1',
+            failure: { error, allowed: false },
+          },
+        ],
+      });
+      expect(err?.result.plugins[0].failure).toBeUndefined();
+    });
+
+    it('should throw BackendStartupError with results when multiple plugins fail', async () => {
+      const init = new BackendInitializer(baseFactories);
+      const error1 = new Error('Plugin1 failed');
+      const error2 = new Error('Plugin2 failed');
+      init.add(
+        createBackendPlugin({
+          pluginId: 'plugin1',
+          register(reg) {
+            reg.registerInit({
+              deps: {},
+              async init() {
+                throw error1;
+              },
+            });
+          },
+        }),
+      );
+      init.add(
+        createBackendPlugin({
+          pluginId: 'plugin2',
+          register(reg) {
+            reg.registerInit({
+              deps: {},
+              async init() {
+                throw error2;
+              },
+            });
+          },
+        }),
+      );
+
+      const err = await init.start().then(
+        () => {
+          throw new Error('Expected BackendStartupError to be thrown');
+        },
+        (e: BackendStartupError) => e,
+      );
+
+      expect(err).toBeInstanceOf(BackendStartupError);
+      expect(err?.result.plugins).toHaveLength(2);
+      expect(err?.result.plugins[0].failure?.error).toBe(error1);
+      expect(err?.result.plugins[1].failure?.error).toBe(error2);
+    });
+
+    it('should return results with failure status when plugin boot failure is permitted', async () => {
+      const error = new Error('Plugin failed');
+      const init = new BackendInitializer([
+        ...baseFactories,
+        mockServices.rootConfig.factory({
+          data: {
+            backend: {
+              startup: {
+                plugins: { plugin1: { onPluginBootFailure: 'continue' } },
+              },
+            },
+          },
+        }),
+      ]);
+      init.add(
+        createBackendPlugin({
+          pluginId: 'plugin1',
+          register(reg) {
+            reg.registerInit({
+              deps: {},
+              async init() {
+                throw error;
+              },
+            });
+          },
+        }),
+      );
+      init.add(
+        createBackendPlugin({
+          pluginId: 'plugin2',
+          register(reg) {
+            reg.registerInit({
+              deps: {},
+              async init() {},
+            });
+          },
+        }),
+      );
+
+      const { result } = await init.start();
+
+      expect(result.plugins).toHaveLength(2);
+      expect(result.plugins[0]).toMatchObject({
+        pluginId: 'plugin1',
+        failure: { error, allowed: true },
+      });
+      expect(result.plugins[1]).toMatchObject({
+        pluginId: 'plugin2',
+      });
+      expect(result.plugins[1].failure).toBeUndefined();
+    });
+
+    it('should return results with failure status when module boot failure is permitted', async () => {
+      const error = new Error('Module failed');
+      const init = new BackendInitializer([
+        ...baseFactories,
+        mockServices.rootConfig.factory({
+          data: {
+            backend: {
+              startup: {
+                plugins: {
+                  plugin1: {
+                    modules: {
+                      module1: { onPluginModuleBootFailure: 'continue' },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        }),
+      ]);
+      init.add(
+        createBackendPlugin({
+          pluginId: 'plugin1',
+          register(reg) {
+            reg.registerInit({
+              deps: {},
+              async init() {},
+            });
+          },
+        }),
+      );
+      init.add(
+        createBackendModule({
+          pluginId: 'plugin1',
+          moduleId: 'module1',
+          register(reg) {
+            reg.registerInit({
+              deps: {},
+              async init() {
+                throw error;
+              },
+            });
+          },
+        }),
+      );
+      init.add(
+        createBackendModule({
+          pluginId: 'plugin1',
+          moduleId: 'module2',
+          register(reg) {
+            reg.registerInit({
+              deps: {},
+              async init() {},
+            });
+          },
+        }),
+      );
+
+      const { result } = await init.start();
+
+      expect(result.plugins).toHaveLength(1);
+      expect(result.plugins[0]).toMatchObject({
+        pluginId: 'plugin1',
+        modules: [
+          {
+            moduleId: 'module1',
+            failure: { error, allowed: true },
+          },
+          {
+            moduleId: 'module2',
+          },
+        ],
+      });
+      expect(result.plugins[0].failure).toBeUndefined();
+      expect(result.plugins[0].modules[1].failure).toBeUndefined();
+    });
+
+    it('should include all module results even when some modules fail', async () => {
+      const error1 = new Error('Module1 failed');
+      const error2 = new Error('Module2 failed');
+      const init = new BackendInitializer([
+        ...baseFactories,
+        mockServices.rootConfig.factory({
+          data: {
+            backend: {
+              startup: {
+                plugins: {
+                  plugin1: {
+                    modules: {
+                      module1: { onPluginModuleBootFailure: 'continue' },
+                      module2: { onPluginModuleBootFailure: 'continue' },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        }),
+      ]);
+      init.add(
+        createBackendPlugin({
+          pluginId: 'plugin1',
+          register(reg) {
+            reg.registerInit({
+              deps: {},
+              async init() {},
+            });
+          },
+        }),
+      );
+      init.add(
+        createBackendModule({
+          pluginId: 'plugin1',
+          moduleId: 'module1',
+          register(reg) {
+            reg.registerInit({
+              deps: {},
+              async init() {
+                throw error1;
+              },
+            });
+          },
+        }),
+      );
+      init.add(
+        createBackendModule({
+          pluginId: 'plugin1',
+          moduleId: 'module2',
+          register(reg) {
+            reg.registerInit({
+              deps: {},
+              async init() {
+                throw error2;
+              },
+            });
+          },
+        }),
+      );
+      init.add(
+        createBackendModule({
+          pluginId: 'plugin1',
+          moduleId: 'module3',
+          register(reg) {
+            reg.registerInit({
+              deps: {},
+              async init() {},
+            });
+          },
+        }),
+      );
+
+      const { result } = await init.start();
+
+      expect(result.plugins[0].modules).toHaveLength(3);
+      expect(result.plugins[0].modules[0]).toMatchObject({
+        moduleId: 'module1',
+        failure: { error: error1, allowed: true },
+      });
+      expect(result.plugins[0].modules[1]).toMatchObject({
+        moduleId: 'module2',
+        failure: { error: error2, allowed: true },
+      });
+      expect(result.plugins[0].modules[2]).toMatchObject({
+        moduleId: 'module3',
+      });
+      expect(result.plugins[0].modules[2].failure).toBeUndefined();
+    });
+
+    it('should return results for plugins without modules', async () => {
+      const init = new BackendInitializer(baseFactories);
+      init.add(
+        createBackendPlugin({
+          pluginId: 'plugin1',
+          register(reg) {
+            reg.registerInit({
+              deps: {},
+              async init() {},
+            });
+          },
+        }),
+      );
+
+      const { result } = await init.start();
+
+      expect(result.plugins).toHaveLength(1);
+      expect(result.plugins[0]).toMatchObject({
+        pluginId: 'plugin1',
+        modules: [],
+      });
+      expect(result.plugins[0].failure).toBeUndefined();
+    });
+
+    it('should include error information in BackendStartupError', async () => {
+      const error = new Error('Test error');
+      const init = new BackendInitializer(baseFactories);
+      init.add(
+        createBackendPlugin({
+          pluginId: 'plugin1',
+          register(reg) {
+            reg.registerInit({
+              deps: {},
+              async init() {
+                throw error;
+              },
+            });
+          },
+        }),
+      );
+
+      const err = await init.start().then(
+        () => {
+          throw new Error('Expected BackendStartupError to be thrown');
+        },
+        (e: BackendStartupError) => e,
+      );
+
+      expect(err).toBeInstanceOf(BackendStartupError);
+      expect(err?.message).toBe(
+        "Backend startup failed due to the following errors:\n  Plugin 'plugin1' startup failed; caused by Error: Test error",
+      );
+      expect(err?.result).toBeDefined();
+      expect(err?.result.plugins[0].failure?.error).toBe(error);
+    });
+
+    it('should handle plugin scoped service factory failures', async () => {
+      const serviceFactoryError = new Error('Service factory failed');
+      const ref = createServiceRef<{ value: string }>({
+        id: 'failing-service',
+      });
+      const init = new BackendInitializer([
+        ...baseFactories,
+        createServiceFactory({
+          service: ref,
+          deps: {},
+          factory: () => {
+            throw serviceFactoryError;
+          },
+        }),
+      ]);
+      init.add(
+        createBackendPlugin({
+          pluginId: 'plugin1',
+          register(reg) {
+            reg.registerInit({
+              deps: { service: ref },
+              async init() {},
+            });
+          },
+        }),
+      );
+
+      const err = await init.start().then(
+        () => {
+          throw new Error('Expected BackendStartupError to be thrown');
+        },
+        (e: BackendStartupError) => e,
+      );
+
+      expect(err).toBeInstanceOf(BackendStartupError);
+      expect(err?.result.plugins).toHaveLength(1);
+      expect(err?.result.plugins[0].pluginId).toBe('plugin1');
+      expect(err?.result.plugins[0].failure).toBeDefined();
+      expect(err?.result.plugins[0].failure?.allowed).toBe(false);
+      expect(err?.result.plugins[0].failure?.error.message).toContain(
+        "Failed to instantiate service 'failing-service'",
+      );
+      expect(err?.result.plugins[0].failure?.error.message).toContain(
+        'Service factory failed',
+      );
+    });
+
+    it('should handle plugin scoped service factory failures with allowed boot failure', async () => {
+      const serviceFactoryError = new Error('Service factory failed');
+      const ref = createServiceRef<{ value: string }>({
+        id: 'failing-service',
+      });
+      const init = new BackendInitializer([
+        ...baseFactories,
+        mockServices.rootConfig.factory({
+          data: {
+            backend: {
+              startup: {
+                plugins: { plugin1: { onPluginBootFailure: 'continue' } },
+              },
+            },
+          },
+        }),
+        createServiceFactory({
+          service: ref,
+          deps: {},
+          factory: () => {
+            throw serviceFactoryError;
+          },
+        }),
+      ]);
+      init.add(
+        createBackendPlugin({
+          pluginId: 'plugin1',
+          register(reg) {
+            reg.registerInit({
+              deps: { service: ref },
+              async init() {},
+            });
+          },
+        }),
+      );
+
+      const { result } = await init.start();
+
+      expect(result.plugins).toHaveLength(1);
+      expect(result.plugins[0].pluginId).toBe('plugin1');
+      expect(result.plugins[0].failure).toBeDefined();
+      expect(result.plugins[0].failure?.allowed).toBe(true);
+      expect(result.plugins[0].failure?.error.message).toContain(
+        "Failed to instantiate service 'failing-service'",
+      );
+      expect(result.plugins[0].failure?.error.message).toContain(
+        'Service factory failed',
+      );
+    });
   });
 });

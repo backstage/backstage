@@ -1,5 +1,5 @@
 ---
-id: permissions
+id: permissions-registry
 title: Permissions Registry Service
 sidebar_label: Permissions Registry
 description: Documentation for the Permissions Registry service

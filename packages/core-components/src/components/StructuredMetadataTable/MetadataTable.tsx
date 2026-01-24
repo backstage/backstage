@@ -25,7 +25,7 @@ import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableRow from '@material-ui/core/TableRow';
-import React from 'react';
+import { ReactNode } from 'react';
 
 export type MetadataTableTitleCellClassKey = 'root';
 
@@ -80,7 +80,7 @@ export const MetadataTable = ({
   children,
 }: {
   dense?: boolean;
-  children: React.ReactNode;
+  children: ReactNode;
 }) => (
   <Table size={dense ? 'small' : 'medium'}>
     <TableBody>{children}</TableBody>
@@ -93,7 +93,7 @@ export const MetadataTableItem = ({
   ...rest
 }: {
   title: string;
-  children: React.ReactNode;
+  children: ReactNode;
 }) => (
   <TableRow>
     {title && <TitleCell>{title}</TitleCell>}
@@ -104,7 +104,7 @@ export const MetadataTableItem = ({
 );
 
 interface StyleProps extends WithStyles {
-  children?: React.ReactNode;
+  children?: ReactNode;
 }
 
 export const MetadataList = withStyles(listStyles, {

@@ -26,7 +26,7 @@ import {
 } from '@backstage/cli-node';
 import { paths } from '../../../../lib/paths';
 import { runWorkerQueueThreads } from '../../../../lib/parallel';
-import { createScriptOptionsParser } from '../../../../commands/repo/optionsParser';
+import { createScriptOptionsParser } from '../../../../lib/optionsParser';
 import { SuccessCache } from '../../../../lib/cache/SuccessCache';
 
 function depCount(pkg: BackstagePackageJson) {
@@ -111,6 +111,7 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
       fix: Boolean(opts.fix),
       format: opts.format as string | undefined,
       shouldCache: Boolean(cacheContext),
+      maxWarnings: opts.maxWarnings ?? -1,
       successCache: cacheContext?.entries,
       rootDir: paths.targetRoot,
     },
@@ -120,6 +121,7 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
       shouldCache,
       successCache,
       rootDir,
+      maxWarnings,
     }) => {
       const { ESLint } = require('eslint') as typeof import('eslint');
       const crypto = require('crypto') as typeof import('crypto');
@@ -131,7 +133,6 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
       return async ({
         fullDir,
         relativeDir,
-        lintOptions,
         parentHash,
       }): Promise<{
         relativeDir: string;
@@ -199,7 +200,6 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
           await ESLint.outputFixes(results);
         }
 
-        const maxWarnings = lintOptions?.maxWarnings ?? 0;
         const ignoreWarnings = +maxWarnings === -1;
 
         const resultText = formatter.format(results) as string;
@@ -220,6 +220,7 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
   });
 
   const outputSuccessCache = [];
+  const jsonResults = [];
 
   let errorOutput = '';
 
@@ -238,7 +239,11 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
       // dump of all warnings that might be irrelevant
       if (resultText) {
         if (opts.outputFile) {
-          errorOutput += `${resultText}\n`;
+          if (opts.format === 'json') {
+            jsonResults.push(resultText);
+          } else {
+            errorOutput += `${resultText}\n`;
+          }
         } else {
           console.log();
           console.log(resultText.trimStart());
@@ -247,6 +252,14 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
     } else if (sha) {
       outputSuccessCache.push(sha);
     }
+  }
+
+  if (opts.format === 'json') {
+    let mergedJsonResults: any[] = [];
+    for (const jsonResult of jsonResults) {
+      mergedJsonResults = mergedJsonResults.concat(JSON.parse(jsonResult));
+    }
+    errorOutput = JSON.stringify(mergedJsonResults, null, 2);
   }
 
   if (opts.outputFile && errorOutput) {

@@ -79,6 +79,10 @@ notifications:
       # Who to send email for broadcast notifications
       broadcastConfig:
         receiver: 'users'
+      # Optional SES config
+      # sesConfig:
+      #   fromArn: 'arn:aws:ses:us-west-2:123456789012:identity/example.com'
+      #   configurationSetName: 'custom-config'
       # How many emails to send concurrently, defaults to 2
       concurrencyLimit: 10
       # How much to throttle between emails, defaults to 100ms

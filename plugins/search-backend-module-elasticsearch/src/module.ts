@@ -22,7 +22,7 @@ import { searchEngineRegistryExtensionPoint } from '@backstage/plugin-search-bac
 import {
   ElasticSearchQueryTranslator,
   ElasticSearchSearchEngine,
-} from '@backstage/plugin-search-backend-module-elasticsearch';
+} from './engines/ElasticSearchSearchEngine';
 
 /** @public */
 export interface ElasticSearchQueryTranslatorExtensionPoint {
@@ -72,7 +72,7 @@ export default createBackendModule({
         const baseConfig = config.getOptional(baseKey);
         if (!baseConfig) {
           logger.warn(
-            'No configuration found under "search.elasticsearch" key.  Skipping search engine inititalization.',
+            'No configuration found under "search.elasticsearch" key.  Skipping search engine initialization.',
           );
           return;
         }

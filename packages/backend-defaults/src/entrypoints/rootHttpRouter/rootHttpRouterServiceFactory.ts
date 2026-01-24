@@ -15,13 +15,13 @@
  */
 
 import {
-  RootConfigService,
   coreServices,
   createServiceFactory,
   LifecycleService,
   LoggerService,
+  RootConfigService,
 } from '@backstage/backend-plugin-api';
-import express, { RequestHandler, Express } from 'express';
+import express, { Express, RequestHandler } from 'express';
 import type { Server } from 'node:http';
 import {
   createHttpServer,
@@ -87,6 +87,8 @@ const rootHttpRouterServiceFactoryWithOptions = (
       const logger = rootLogger.child({ service: 'rootHttpRouter' });
       const app = express();
 
+      const trustProxy = config.getOptional('backend.trustProxy');
+
       const router = DefaultRootHttpRouter.create({ indexPath });
       const middleware = MiddlewareFactory.create({ config, logger });
       const routes = router.handler();
@@ -112,10 +114,83 @@ const rootHttpRouterServiceFactoryWithOptions = (
           if (process.env.NODE_ENV === 'development') {
             app.set('json spaces', 2);
           }
+          if (trustProxy !== undefined) {
+            app.set('trust proxy', trustProxy);
+          }
+
+          // Apply server-level HTTP options from config
+          const backendConfig = config.getOptionalConfig('backend');
+          const serverConfig = backendConfig?.getOptionalConfig('server');
+
+          if (serverConfig) {
+            // Helper function to read duration values (supporting number, string, or HumanDuration)
+            const readDurationValue = (key: string): number | undefined => {
+              if (!serverConfig.has(key)) {
+                return undefined;
+              }
+
+              const value = serverConfig.getOptional(key);
+              if (typeof value === 'number') {
+                return value;
+              }
+
+              // If it's not a number, try to read it as a duration
+              try {
+                const duration = readDurationFromConfig(serverConfig, { key });
+                return durationToMilliseconds(duration);
+              } catch (error) {
+                // Log warning for parsing failures
+                logger.warn(
+                  `Failed to parse backend.server.${key} as duration: ${error}. ` +
+                    `Expected a number (milliseconds), duration string (e.g., '30s'), ` +
+                    `ISO duration (e.g., 'PT30S'), or duration object (e.g., {seconds: 30}). ` +
+                    `Falling back to number parsing.`,
+                );
+                return undefined;
+              }
+            };
+
+            // Apply timeout settings
+            const headersTimeout = readDurationValue('headersTimeout');
+            if (headersTimeout !== undefined) {
+              server.headersTimeout = headersTimeout;
+            }
+
+            const requestTimeout = readDurationValue('requestTimeout');
+            if (requestTimeout !== undefined) {
+              server.requestTimeout = requestTimeout;
+            }
+
+            const keepAliveTimeout = readDurationValue('keepAliveTimeout');
+            if (keepAliveTimeout !== undefined) {
+              server.keepAliveTimeout = keepAliveTimeout;
+            }
+
+            const timeout = readDurationValue('timeout');
+            if (timeout !== undefined) {
+              server.timeout = timeout;
+            }
+
+            // Apply numeric settings
+            const maxHeadersCount =
+              serverConfig.getOptionalNumber('maxHeadersCount');
+            if (maxHeadersCount !== undefined) {
+              server.maxHeadersCount = maxHeadersCount;
+            }
+
+            const maxRequestsPerSocket = serverConfig.getOptionalNumber(
+              'maxRequestsPerSocket',
+            );
+            if (maxRequestsPerSocket !== undefined) {
+              server.maxRequestsPerSocket = maxRequestsPerSocket;
+            }
+          }
+
           app.use(middleware.helmet());
           app.use(middleware.cors());
           app.use(middleware.compression());
           app.use(middleware.logging());
+          app.use(middleware.rateLimit());
           app.use(healthRouter);
           app.use(routes);
           app.use(middleware.notFound());

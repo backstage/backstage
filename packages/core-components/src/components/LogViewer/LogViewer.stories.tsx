@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ComponentType, PropsWithChildren } from 'react';
+import { ComponentType, PropsWithChildren } from 'react';
 import { wrapInTestApp } from '@backstage/test-utils';
 import { LogViewer } from './LogViewer';
 
@@ -24,6 +24,7 @@ export default {
   decorators: [
     (Story: ComponentType<PropsWithChildren<{}>>) => wrapInTestApp(<Story />),
   ],
+  tags: ['!manifest'],
 };
 
 const exampleLog = `Starting up task with 3 steps
@@ -81,5 +82,11 @@ Run completed with status: failed`;
 export const ExampleLogViewer = () => (
   <div style={{ height: 240 }}>
     <LogViewer text={exampleLog} />
+  </div>
+);
+
+export const WithTextWrap = () => (
+  <div style={{ height: 240 }}>
+    <LogViewer text={exampleLog} textWrap />
   </div>
 );

@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { DependencyGraph } from './DependencyGraph';
 import { DependencyGraphTypes as Types } from './types';
 
 export default {
   title: 'Data Display/DependencyGraph',
   component: DependencyGraph,
+  tags: ['!manifest'],
 };
 
 const containerStyle = { width: '100%' };

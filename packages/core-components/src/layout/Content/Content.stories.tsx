@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
 import { Content } from './Content';
 
 export default {
   title: 'Layout/Content',
   component: Content,
+  tags: ['!manifest'],
 };
 
 type Props = {

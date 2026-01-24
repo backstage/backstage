@@ -41,6 +41,17 @@ export interface NotificationProcessor {
 // @public @deprecated (undocumented)
 export type NotificationProcessorFilters = NotificationProcessorFilters_2;
 
+// @public
+export interface NotificationRecipientResolver {
+  // (undocumented)
+  resolveNotificationRecipients(options: {
+    entityRefs: string[];
+    excludedEntityRefs?: string[];
+  }): Promise<{
+    userEntityRefs: string[];
+  }>;
+}
+
 // @public (undocumented)
 export type NotificationRecipients =
   | {
@@ -82,6 +93,10 @@ export interface NotificationsProcessingExtensionPoint {
   // (undocumented)
   addProcessor(
     ...processors: Array<NotificationProcessor | Array<NotificationProcessor>>
+  ): void;
+  // (undocumented)
+  setNotificationRecipientResolver(
+    resolver: NotificationRecipientResolver,
   ): void;
 }
 

@@ -36,6 +36,7 @@ import {
   createRemoveEntitiesOperation,
   createReplaceEntitiesOperation,
   createGraphqlClient,
+  getOrganizationTeamsForUser,
 } from './github';
 import { Octokit } from '@octokit/core';
 import { throttling } from '@octokit/plugin-throttling';
@@ -52,6 +53,79 @@ describe('github', () => {
   registerMswTestHooks(server);
 
   const graphql = graphqlOctokit.defaults({});
+
+  describe('getOrganizationTeamsForUser', () => {
+    const org = 'my-org';
+    const userLogin = 'testuser';
+
+    it('returns teams for a user', async () => {
+      server.use(
+        graphqlMsw.query('teams', () =>
+          HttpResponse.json({
+            data: {
+              organization: {
+                teams: {
+                  pageInfo: { hasNextPage: false, endCursor: null },
+                  nodes: [
+                    {
+                      slug: 'team1',
+                      combinedSlug: 'my-org/team1',
+                      name: 'Team 1',
+                      description: 'desc',
+                      avatarUrl: '',
+                      editTeamUrl: '',
+                      parentTeam: null,
+                    },
+                  ],
+                },
+              },
+            },
+          }),
+        ),
+      );
+
+      const mockTransformer = jest.fn().mockImplementation(async team => ({
+        kind: 'Group',
+        metadata: { name: team.slug },
+      }));
+
+      const { teams } = await getOrganizationTeamsForUser(
+        graphql as any,
+        org,
+        userLogin,
+        mockTransformer as any,
+      );
+      expect(Array.isArray(teams)).toBe(true);
+      expect(teams[0]).toEqual({ kind: 'Group', metadata: { name: 'team1' } });
+      expect(mockTransformer).toHaveBeenCalled();
+    });
+
+    it('returns an empty array if no teams found', async () => {
+      server.use(
+        graphqlMsw.query('teams', () =>
+          HttpResponse.json({
+            data: {
+              organization: {
+                teams: {
+                  pageInfo: { hasNextPage: false, endCursor: null },
+                  nodes: [],
+                },
+              },
+            },
+          }),
+        ),
+      );
+      const mockTransformer = jest.fn().mockResolvedValue(undefined);
+      const { teams } = await getOrganizationTeamsForUser(
+        graphql as any,
+        org,
+        userLogin,
+        mockTransformer as any,
+      );
+      expect(Array.isArray(teams)).toBe(true);
+      expect(teams.length).toBe(0);
+    });
+  });
 
   describe('getOrganizationUsers using defaultUserMapper', () => {
     it('reads members', async () => {
@@ -90,6 +164,54 @@ describe('github', () => {
 
       await expect(
         getOrganizationUsers(graphql, 'a', 'token'),
+      ).resolves.toEqual(output);
+    });
+
+    it('reads members excluding suspended users', async () => {
+      const input: QueryResponse = {
+        organization: {
+          membersWithRole: {
+            pageInfo: { hasNextPage: false },
+            nodes: [
+              {
+                login: 'a',
+                name: 'b',
+                bio: 'c',
+                email: 'd',
+                avatarUrl: 'e',
+                suspendedAt: '2025-01-01',
+              },
+              {
+                login: 'a',
+                name: 'b',
+                bio: 'c',
+                email: 'd',
+                avatarUrl: 'e',
+                suspendedAt: undefined,
+              },
+            ],
+          },
+        },
+      };
+
+      const output = {
+        users: [
+          expect.objectContaining({
+            metadata: expect.objectContaining({ name: 'a', description: 'c' }),
+            spec: {
+              profile: { displayName: 'b', email: 'd', picture: 'e' },
+              memberOf: [],
+            },
+          }),
+        ],
+      };
+
+      server.use(
+        graphqlMsw.query('users', () => HttpResponse.json({ data: input })),
+      );
+
+      await expect(
+        getOrganizationUsers(graphql, 'a', 'token', undefined, undefined, true),
       ).resolves.toEqual(output);
     });
   });
@@ -204,6 +326,63 @@ describe('github', () => {
 
       expect(users.users).toHaveLength(1);
       expect(users).toEqual(output);
+    });
+
+    it('reads members including suspended users', async () => {
+      const input: QueryResponse = {
+        organization: {
+          membersWithRole: {
+            pageInfo: { hasNextPage: false },
+            nodes: [
+              {
+                login: 'a',
+                name: 'b',
+                bio: 'c',
+                email: 'd',
+                avatarUrl: 'e',
+              },
+              {
+                login: 'ab',
+                name: 'bb',
+                bio: 'cc',
+                email: 'dd',
+                avatarUrl: 'ee',
+                suspendedAt: '2025-01-01',
+              },
+            ],
+          },
+        },
+      };
+
+      const output = {
+        users: [
+          expect.objectContaining({
+            metadata: expect.objectContaining({
+              name: 'a-custom',
+            }),
+          }),
+          expect.objectContaining({
+            metadata: expect.objectContaining({
+              name: 'ab-custom',
+            }),
+          }),
+        ],
+      };
+
+      server.use(
+        graphqlMsw.query('users', () => HttpResponse.json({ data: input })),
+      );
+
+      await expect(
+        getOrganizationUsers(
+          graphql,
+          'a',
+          'token',
+          customUserTransformer,
+          undefined,
+          false,
+        ),
+      ).resolves.toEqual(output);
     });
   });
 
@@ -787,6 +966,146 @@ describe('github', () => {
 
         expect(result).toBe(expectedResult);
       });
+    });
+  });
+
+  describe('Page sizes configuration', () => {
+    const org = 'my-org';
+
+    it('uses custom page sizes for getOrganizationTeams', async () => {
+      server.use(
+        graphqlMsw.query('teams', ({ variables }) => {
+          expect(variables.teamsPageSize).toBe(10);
+          expect(variables.membersPageSize).toBe(20);
+          return HttpResponse.json({
+            data: {
+              organization: {
+                teams: {
+                  pageInfo: { hasNextPage: false, endCursor: null },
+                  nodes: [
+                    {
+                      slug: 'team1',
+                      combinedSlug: 'my-org/team1',
+                      name: 'Team 1',
+                      description: 'desc',
+                      avatarUrl: '',
+                      editTeamUrl: '',
+                      parentTeam: null,
+                      members: {
+                        pageInfo: { hasNextPage: false },
+                        nodes: [{ login: 'user1' }],
+                      },
+                    },
+                  ],
+                },
+              },
+            },
+          });
+        }),
+      );
+
+      await getOrganizationTeams(graphql as any, org, undefined, {
+        teams: 10,
+        teamMembers: 20,
+        organizationMembers: 20,
+        repositories: 10,
+      });
+    });
+
+    it('uses custom page sizes for getOrganizationUsers', async () => {
+      server.use(
+        graphqlMsw.query('users', ({ variables }) => {
+          expect(variables.organizationMembersPageSize).toBe(30);
+          return HttpResponse.json({
+            data: {
+              organization: {
+                membersWithRole: {
+                  pageInfo: { hasNextPage: false, endCursor: null },
+                  nodes: [
+                    {
+                      login: 'user1',
+                      name: 'User 1',
+                      bio: '',
+                      avatarUrl: '',
+                      email: 'user1@example.com',
+                      organizationVerifiedDomainEmails: [],
+                    },
+                  ],
+                },
+              },
+            },
+          });
+        }),
+      );
+
+      await getOrganizationUsers(graphql as any, org, 'token', undefined, {
+        teams: 10,
+        teamMembers: 20,
+        organizationMembers: 30,
+        repositories: 10,
+      });
+    });
+
+    it('uses custom page sizes for getOrganizationRepositories', async () => {
+      server.use(
+        graphqlMsw.query('repositories', ({ variables }) => {
+          expect(variables.repositoriesPageSize).toBe(15);
+          return HttpResponse.json({
+            data: {
+              repositoryOwner: {
+                repositories: {
+                  pageInfo: { hasNextPage: false, endCursor: null },
+                  nodes: [
+                    {
+                      name: 'repo1',
+                      url: 'https://github.com/my-org/repo1',
+                      isArchived: false,
+                      isFork: false,
+                      visibility: 'public',
+                      defaultBranchRef: { name: 'main' },
+                      catalogInfoFile: null,
+                      repositoryTopics: { nodes: [] },
+                    },
+                  ],
+                },
+              },
+            },
+          });
+        }),
+      );
+
+      await getOrganizationRepositories(
+        graphql as any,
+        org,
+        '/catalog-info.yaml',
+        {
+          teams: 10,
+          teamMembers: 20,
+          organizationMembers: 30,
+          repositories: 15,
+        },
+      );
+    });
+
+    it('uses default page sizes when not specified', async () => {
+      server.use(
+        graphqlMsw.query('teams', ({ variables }) => {
+          expect(variables.teamsPageSize).toBe(25);
+          expect(variables.membersPageSize).toBe(50);
+          return HttpResponse.json({
+            data: {
+              organization: {
+                teams: {
+                  pageInfo: { hasNextPage: false, endCursor: null },
+                  nodes: [],
+                },
+              },
+            },
+          });
+        }),
+      );
+
+      await getOrganizationTeams(graphql as any, org);
     });
   });
 });

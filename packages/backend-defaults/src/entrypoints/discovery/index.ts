@@ -15,4 +15,8 @@
  */
 
 export { discoveryServiceFactory } from './discoveryServiceFactory';
-export { HostDiscovery } from './HostDiscovery';
+export {
+  HostDiscovery,
+  type HostDiscoveryEndpoint,
+  type HostDiscoveryOptions,
+} from './HostDiscovery';

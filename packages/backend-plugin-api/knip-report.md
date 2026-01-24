@@ -4,5 +4,5 @@
 
 | Name                        | Location     | Severity |
 | :-------------------------- | :----------- | :------- |
-| @backstage/plugin-auth-node | package.json | error    |
+| @backstage/plugin-auth-node | packages/backend-plugin-api/package.json | error    |
 

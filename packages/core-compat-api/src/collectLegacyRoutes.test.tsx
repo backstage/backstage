@@ -23,10 +23,7 @@ import {
   EntitySwitch,
   isKind,
 } from '@backstage/plugin-catalog';
-import { PuppetDbPage } from '@backstage-community/plugin-puppetdb';
-import { StackstormPage } from '@backstage-community/plugin-stackstorm';
-import { ScoreBoardPage } from '@oriflame/backstage-plugin-score-card';
-import React, { Fragment } from 'react';
+import { Fragment } from 'react';
 // TODO(rugvip): this should take into account that this is a test file, so these deps don't need to be in the dependencies
 // eslint-disable-next-line @backstage/no-undeclared-imports
 import { OpaqueFrontendPlugin } from '@internal/frontend';
@@ -34,23 +31,50 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 
 import { collectLegacyRoutes } from './collectLegacyRoutes';
 import {
+  createApiFactory,
+  createApiRef,
   createPlugin,
   createRoutableExtension,
   createRouteRef,
   useApp,
 } from '@backstage/core-plugin-api';
 import { screen } from '@testing-library/react';
-import { renderInTestApp } from '@backstage/frontend-test-utils';
+import { renderTestApp } from '@backstage/frontend-test-utils';
+
+const exampleApiRef = createApiRef<string>({
+  id: 'plugin.example.service',
+});
+const examplePlugin1 = createPlugin({
+  id: 'example-1',
+  apis: [createApiFactory(exampleApiRef, 'example-api-1')],
+});
+const ExamplePage1 = examplePlugin1.provide(
+  createRoutableExtension({
+    name: 'ExamplePage1',
+    mountPoint: createRouteRef({ id: 'example-1' }),
+    component: () => Promise.resolve(() => <div>Example Page 1</div>),
+  }),
+);
+
+const examplePlugin2 = createPlugin({
+  id: 'example-2',
+});
+const ExamplePage2 = examplePlugin2.provide(
+  createRoutableExtension({
+    name: 'ExamplePage2',
+    mountPoint: createRouteRef({ id: 'example-2' }),
+    component: () => Promise.resolve(() => <div>Example Page 2</div>),
+  }),
+);
 
 describe('collectLegacyRoutes', () => {
   it('should collect legacy routes', () => {
     const collected = collectLegacyRoutes(
       <FlatRoutes>
-        <Route path="/score-board" element={<ScoreBoardPage />} />
-        <Route path="/stackstorm" element={<StackstormPage />} />
+        <Route path="/example-1" element={<ExamplePage1 />} />
         <Route path="/other" element={<div />} />
-        <Route path="/puppetdb" element={<PuppetDbPage />} />
-        <Route path="/puppetdb" element={<PuppetDbPage />} />
+        <Route path="/example-2" element={<ExamplePage2 />} />
+        <Route path="/example-2" element={<ExamplePage2 />} />
         <Route path="/other" element={<div />} />
       </FlatRoutes>,
     );
@@ -67,32 +91,16 @@ describe('collectLegacyRoutes', () => {
       })),
     ).toEqual([
       {
-        id: 'score-card',
+        id: 'example-1',
         extensions: [
           {
-            id: 'page:score-card',
+            id: 'page:example-1',
             attachTo: { id: 'app/routes', input: 'routes' },
             disabled: false,
             defaultConfig: {},
           },
           {
-            id: 'api:score-card/plugin.scoringdata.service',
-            attachTo: { id: 'root', input: 'apis' },
-            disabled: false,
-          },
-        ],
-      },
-      {
-        id: 'stackstorm',
-        extensions: [
-          {
-            id: 'page:stackstorm',
-            attachTo: { id: 'app/routes', input: 'routes' },
-            disabled: false,
-            defaultConfig: {},
-          },
-          {
-            id: 'api:stackstorm/plugin.stackstorm.service',
+            id: 'api:example-1/plugin.example.service',
             attachTo: { id: 'root', input: 'apis' },
             disabled: false,
           },
@@ -116,24 +124,19 @@ describe('collectLegacyRoutes', () => {
         ],
       },
       {
-        id: 'puppetDb',
+        id: 'example-2',
         extensions: [
           {
-            id: 'page:puppetDb',
+            id: 'page:example-2',
             attachTo: { id: 'app/routes', input: 'routes' },
             disabled: false,
             defaultConfig: {},
           },
           {
-            id: 'page:puppetDb/1',
+            id: 'page:example-2/1',
             attachTo: { id: 'app/routes', input: 'routes' },
             disabled: false,
             defaultConfig: {},
-          },
-          {
-            id: 'api:puppetDb/plugin.puppetdb.service',
-            attachTo: { id: 'root', input: 'apis' },
-            disabled: false,
           },
         ],
       },
@@ -163,7 +166,7 @@ describe('collectLegacyRoutes', () => {
                   <Fragment>
                     <Routes>
                       <Route path="/subthing">
-                        <ScoreBoardPage />
+                        <ExamplePage1 />
                       </Route>
                     </Routes>
                   </Fragment>
@@ -258,10 +261,10 @@ describe('collectLegacyRoutes', () => {
         ],
       },
       {
-        id: 'score-card',
+        id: 'example-1',
         extensions: [
           {
-            id: 'api:score-card/plugin.scoringdata.service',
+            id: 'api:example-1/plugin.example.service',
             attachTo: { id: 'root', input: 'apis' },
             disabled: false,
           },
@@ -301,7 +304,7 @@ describe('collectLegacyRoutes', () => {
       </FlatRoutes>,
     );
 
-    renderInTestApp(<div />, { features });
+    renderTestApp({ features });
 
     await expect(
       screen.findByText('plugins: app, test'),

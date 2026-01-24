@@ -1,5 +1,218 @@
 # @backstage/plugin-proxy-backend
 
+## 0.6.9
+
+### Patch Changes
+
+- de96a60: chore(deps): bump `express` from 4.21.2 to 4.22.0
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.0
+  - @backstage/plugin-proxy-node@0.1.11
+
+## 0.6.9-next.1
+
+### Patch Changes
+
+- de96a60: chore(deps): bump `express` from 4.21.2 to 4.22.0
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.0-next.1
+  - @backstage/types@1.2.2
+  - @backstage/plugin-proxy-node@0.1.11-next.1
+
+## 0.6.9-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.1-next.0
+  - @backstage/plugin-proxy-node@0.1.11-next.0
+  - @backstage/types@1.2.2
+
+## 0.6.8
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.0
+  - @backstage/plugin-proxy-node@0.1.10
+
+## 0.6.8-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.0-next.1
+  - @backstage/plugin-proxy-node@0.1.10-next.1
+
+## 0.6.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.5-next.0
+  - @backstage/types@1.2.2
+  - @backstage/plugin-proxy-node@0.1.10-next.0
+
+## 0.6.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.4
+  - @backstage/plugin-proxy-node@0.1.9
+
+## 0.6.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.4-next.0
+  - @backstage/plugin-proxy-node@0.1.9-next.0
+
+## 0.6.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/types@1.2.2
+  - @backstage/backend-plugin-api@1.4.3
+  - @backstage/plugin-proxy-node@0.1.8
+
+## 0.6.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.3-next.0
+  - @backstage/plugin-proxy-node@0.1.8-next.0
+
+## 0.6.5
+
+### Patch Changes
+
+- 0810cd8: correct rewrite rule to avoid extra subpath in proxy path
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.2
+  - @backstage/plugin-proxy-node@0.1.7
+
+## 0.6.5-next.1
+
+### Patch Changes
+
+- 0810cd8: correct rewrite rule to avoid extra subpath in proxy path
+
+## 0.6.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.2-next.0
+  - @backstage/plugin-proxy-node@0.1.7-next.0
+  - @backstage/types@1.2.1
+
+## 0.6.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.1
+  - @backstage/plugin-proxy-node@0.1.6
+
+## 0.6.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.1-next.0
+  - @backstage/plugin-proxy-node@0.1.6-next.0
+
+## 0.6.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.0
+  - @backstage/types@1.2.1
+  - @backstage/plugin-proxy-node@0.1.5
+
+## 0.6.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.0-next.1
+  - @backstage/types@1.2.1
+  - @backstage/plugin-proxy-node@0.1.5-next.1
+
+## 0.6.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.0-next.0
+  - @backstage/plugin-proxy-node@0.1.5-next.0
+
+## 0.6.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.3.1
+  - @backstage/types@1.2.1
+  - @backstage/plugin-proxy-node@0.1.4
+
+## 0.6.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.3.1-next.2
+  - @backstage/types@1.2.1
+  - @backstage/plugin-proxy-node@0.1.4-next.2
+
+## 0.6.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.3.1-next.1
+  - @backstage/types@1.2.1
+  - @backstage/plugin-proxy-node@0.1.4-next.1
+
+## 0.6.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.3.1-next.0
+  - @backstage/plugin-proxy-node@0.1.4-next.0
+  - @backstage/types@1.2.1
+
+## 0.6.1
+
+### Patch Changes
+
+- 9b5b744: Fixed handling of proxied SSE connections when the upstream server closes the connection
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.3.0
+  - @backstage/types@1.2.1
+  - @backstage/plugin-proxy-node@0.1.3
+
+## 0.6.0
+
+### Minor Changes
+
+- 2d8b0e4: **BREAKING**: Removed support for the old backend system.
+
+  As part of this change the plugin export from `/alpha` as been removed. If you are currently importing `@backstage/plugin-proxy-backend/alpha`, please update your import to `@backstage/plugin-proxy-backend`.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/types@1.2.1
+  - @backstage/plugin-proxy-node@0.1.2
+
 ## 0.6.0-next.1
 
 ### Minor Changes

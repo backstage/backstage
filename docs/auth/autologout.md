@@ -1,7 +1,6 @@
 ---
 id: autologout
 title: Auto Logout
-# prettier-ignore
 description: This section describes how to setup the Auto Logout mechanism in Backstage
 ---
 
@@ -69,7 +68,7 @@ These are the available settings:
 | Configuration Key                         | Component Property        | Description                                                                                                                                                                                                                                                            | Allowed Values   | Default Value               |
 | ----------------------------------------- | ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------- | --------------------------- |
 | `auth.autologout.enabled`                 | `enabled`                 | Enable/disable the Auto Logout feature.                                                                                                                                                                                                                                | `true`/`false`   | Default is enabled (`true`) |
-| `auth.autologout.idleTimeoutMinutes`      | `idleTimeoutMinutes`      | Sets the idle time (in minutes) after which the user will be logged out.                                                                                                                                                                                               | `>= 0.5` minutes | `60`                        |
+| `auth.autologout.idleTimeoutMinutes`      | `idleTimeoutMinutes`      | Sets the idle time (in minutes) after which the user will be logged out.                                                                                                                                                                                               | `>= 0.5` minutes | `0.5`                       |
 | `auth.autologout.promptBeforeIdleSeconds` | `promptBeforeIdleSeconds` | Determines the time (in seconds) prior to idle state when a prompt will appear. A value of 0 disables the prompt. This must be less than the value of `idleTimeoutMinutes`.                                                                                            | `>= 0` seconds   | `10`                        |
 | `auth.autologout.useWorkerTimers`         | `useWorkerTimers`         | Enables or disables the use of Node's worker thread timers instead of main thread timers. This can be beneficial if the browser is terminating timers in inactive tabs, like those used by auto logout. In case of browser incompatibility, try setting this to false. | `true`/`false`   | `true`                      |
 | `auth.autologout.logoutIfDisconnected`    | `logoutIfDisconnected`    | Enable/disable auto logout for disconnected users. Disconnected users are those who are logged in but do not have any active Backstage tabs open in their browsers. If enabled, such users will be automatically logged out after `idleTimeoutMinutes`.                | `true`/`false`   | `true`                      |

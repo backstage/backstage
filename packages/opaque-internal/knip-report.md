@@ -4,6 +4,6 @@
 
 | Name                      | Location     | Severity |
 | :------------------------ | :----------- | :------- |
-| @testing-library/jest-dom | package.json | error    |
-| @testing-library/react    | package.json | error    |
+| @testing-library/jest-dom | packages/opaque-internal/package.json | error    |
+| @testing-library/react    | packages/opaque-internal/package.json | error    |
 

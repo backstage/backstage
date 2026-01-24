@@ -1,5 +1,400 @@
 # @backstage/core-components
 
+## 0.18.5
+
+### Patch Changes
+
+- a723b8a: The MarkdownContent component now handles HTML content the same way as GitHub when rendering GitHub-flavored Markdown
+- c671db9: Fixed bug in Table component where the toolbar layout would break when both a title and filters were present.
+- 55a9dc2: Update colour token again in ItemCardHeader to respect theme definition.
+
+## 0.18.5-next.0
+
+### Patch Changes
+
+- a723b8a: The MarkdownContent component now handles HTML content the same way as GitHub when rendering GitHub-flavored Markdown
+
+## 0.18.4
+
+### Patch Changes
+
+- 9a942a4: Fixed bug in the `LogViewer` component where shift + click always opened a new window instead of just changing the selection.
+
+  In addition, improved the `LogViewer` component by a few usability enhancements:
+
+  - Added support for multiple selections using cmd/ctrl + click
+  - Improved the generated hash that is added to the URL to also support ranges & multiple selections
+  - Added an hover effect & info tooltip to the "Copy to clipboard" button to indicate its functionality
+  - Added some color and a separator to the line numbers to improve readability
+
+- 207c3c8: long words like urls now breaks to new line on warning panels instead of overflowing the container
+- 4c00303: Add `tooltipClasses` prop to `OverflowTooltip` component to allow customisation of the tooltip
+- 5d52dab: Add i18n support for LogViewer search control
+- f6b49ce: added support for wrapLongLines option in CodeSnippet
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.1
+  - @backstage/theme@0.7.1
+
+## 0.18.4-next.2
+
+### Patch Changes
+
+- 4c00303: Add `tooltipClasses` prop to `OverflowTooltip` component to allow customisation of the tooltip
+- Updated dependencies
+  - @backstage/config@1.3.6
+  - @backstage/core-plugin-api@1.12.1-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/theme@0.7.1-next.0
+  - @backstage/version-bridge@1.0.11
+
+## 0.18.4-next.1
+
+### Patch Changes
+
+- 9a942a4: Fixed bug in the `LogViewer` component where shift + click always opened a new window instead of just changing the selection.
+
+  In addition, improved the `LogViewer` component by a few usability enhancements:
+
+  - Added support for multiple selections using cmd/ctrl + click
+  - Improved the generated hash that is added to the URL to also support ranges & multiple selections
+  - Added an hover effect & info tooltip to the "Copy to clipboard" button to indicate its functionality
+  - Added some color and a separator to the line numbers to improve readability
+
+- 207c3c8: long words like urls now breaks to new line on warning panels instead of overflowing the container
+- 5d52dab: Add i18n support for LogViewer search control
+
+## 0.18.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.1-next.0
+  - @backstage/theme@0.7.1-next.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/version-bridge@1.0.11
+
+## 0.18.3
+
+### Patch Changes
+
+- 1c7e1ce: - Revert `viewbox` back to old values.
+  - Added `fullScreen` prop to `EntityCatalogGraphCard`
+- 96ad674: Line numbers in LogViewer will not be selectable in UI anymore
+- b2bef92: Convert all enums to erasable-syntax compliant patterns
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.0
+  - @backstage/config@1.3.6
+
+## 0.18.3-next.2
+
+### Patch Changes
+
+- 96ad674: Line numbers in LogViewer will not be selectable in UI anymore
+
+## 0.18.3-next.1
+
+### Patch Changes
+
+- b2bef92: Convert all enums to erasable-syntax compliant patterns
+- Updated dependencies
+  - @backstage/core-plugin-api@1.11.2-next.1
+
+## 0.18.3-next.0
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.11.2-next.0
+  - @backstage/config@1.3.6-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/theme@0.7.0
+  - @backstage/version-bridge@1.0.11
+
+## 0.18.2
+
+### Patch Changes
+
+- d493126: Swap base token for semantic token in ItemCardHeader to ensure readability in light mode.
+- 431130c: Added `renderEdge` prop to `<DependencyGraph />` component in `@backstage/core-components` to allow custom rendering of graph edges.
+- 6981ae6: Fixed DependencyGraph `svg` size not adapting to the container size
+- 95935fb: Fixed dependency graph automatically scrolling forever
+- Updated dependencies
+  - @backstage/config@1.3.5
+  - @backstage/theme@0.7.0
+  - @backstage/core-plugin-api@1.11.1
+
+## 0.18.2-next.3
+
+### Patch Changes
+
+- 431130c: Added `renderEdge` prop to `<DependencyGraph />` component in `@backstage/core-components` to allow custom rendering of graph edges.
+
+## 0.18.2-next.2
+
+### Patch Changes
+
+- 95935fb: Fixed dependency graph automatically scrolling forever
+- Updated dependencies
+  - @backstage/theme@0.6.9-next.0
+
+## 0.18.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.4-next.0
+  - @backstage/core-plugin-api@1.11.1-next.0
+
+## 0.18.2-next.0
+
+### Patch Changes
+
+- d493126: Swap base token for semantic token in ItemCardHeader to ensure readability in light mode.
+- 6981ae6: Fixed DependencyGraph `svg` size not adapting to the container size
+- Updated dependencies
+  - @backstage/config@1.3.3
+  - @backstage/core-plugin-api@1.11.0
+  - @backstage/errors@1.2.7
+  - @backstage/theme@0.6.8
+  - @backstage/version-bridge@1.0.11
+
+## 0.18.0
+
+### Minor Changes
+
+- b9a87f4: Add optional `distance` property to `DependencyEdge` to reflect the distance to a root.
+
+### Patch Changes
+
+- 1ad3d94: Dependency graph can now be opened in full screen mode
+- e409bec: Fixes for rendering initials in the avatar component.
+- ae7d426: update about card links style for pretty display with other language
+- Updated dependencies
+  - @backstage/core-plugin-api@1.11.0
+
+## 0.17.6-next.1
+
+### Patch Changes
+
+- 1ad3d94: Dependency graph can now be opened in full screen mode
+- ae7d426: update about card links style for pretty display with other language
+
+## 0.17.6-next.0
+
+### Patch Changes
+
+- e409bec: Fixes for rendering initials in the avatar component.
+
+## 0.17.5
+
+### Patch Changes
+
+- 1de1186: Added missing space for alert display component
+- 77467bb: Updated dependency `linkifyjs` to `4.3.2`.
+- 5563605: Added `FavoriteToggleProps`.
+- Updated dependencies
+  - @backstage/theme@0.6.8
+
+## 0.17.5-next.2
+
+### Patch Changes
+
+- 77467bb: Updated dependency `linkifyjs` to `4.3.2`.
+
+## 0.17.5-next.1
+
+### Patch Changes
+
+- 5563605: Added `FavoriteToggleProps`.
+- Updated dependencies
+  - @backstage/config@1.3.3
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/errors@1.2.7
+  - @backstage/theme@0.6.8-next.0
+  - @backstage/version-bridge@1.0.11
+
+## 0.17.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.6.8-next.0
+  - @backstage/config@1.3.3
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/errors@1.2.7
+  - @backstage/version-bridge@1.0.11
+
+## 0.17.4
+
+### Patch Changes
+
+- f6ffea6: Add optional message field for auth providers. This is intended to be a user friendly message that displays in the OAuth request dialog. A default message will be displayed if one is not provided.
+- aa3b054: Added `signIn` and `signOut` analytic events to the `@backstage/core-components` of sign in and sign out.
+- Updated dependencies
+  - @backstage/config@1.3.3
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/theme@0.6.7
+
+## 0.17.4-next.2
+
+### Patch Changes
+
+- aa3b054: Added `signIn` and `signOut` analytic events to the `@backstage/core-components` of sign in and sign out.
+- Updated dependencies
+  - @backstage/theme@0.6.7-next.1
+  - @backstage/core-plugin-api@1.10.9-next.0
+
+## 0.17.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3-next.0
+  - @backstage/core-plugin-api@1.10.9-next.0
+
+## 0.17.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/theme@0.6.7-next.0
+  - @backstage/config@1.3.2
+  - @backstage/core-plugin-api@1.10.8
+  - @backstage/errors@1.2.7
+  - @backstage/version-bridge@1.0.11
+
+## 0.17.3
+
+### Patch Changes
+
+- 6232160: table actions header support i18n
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.8
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/theme@0.6.6
+  - @backstage/version-bridge@1.0.11
+
+## 0.17.3-next.0
+
+### Patch Changes
+
+- 6232160: table actions header support i18n
+- Updated dependencies
+  - @backstage/config@1.3.2
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/errors@1.2.7
+  - @backstage/theme@0.6.6
+  - @backstage/version-bridge@1.0.11
+
+## 0.17.2
+
+### Patch Changes
+
+- e0d1025: `LogViewer` now supports a `textWrap` prop that wraps log lines to the next line for overflowing content instead of using horizontal scroll
+- bb84534: Fix the hidden sidebar's sub-menu when the sidebar is scrollable
+- 72d019d: Removed various typos
+- Updated dependencies
+  - @backstage/theme@0.6.6
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/version-bridge@1.0.11
+
+## 0.17.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.7-next.0
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/theme@0.6.6-next.0
+  - @backstage/version-bridge@1.0.11
+
+## 0.17.2-next.0
+
+### Patch Changes
+
+- e0d1025: `LogViewer` now supports a `textWrap` prop that wraps log lines to the next line for overflowing content instead of using horizontal scroll
+- bb84534: Fix the hidden sidebar's sub-menu when the sidebar is scrollable
+- 72d019d: Removed various typos
+- Updated dependencies
+  - @backstage/theme@0.6.6-next.0
+  - @backstage/config@1.3.2
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/errors@1.2.7
+  - @backstage/version-bridge@1.0.11
+
+## 0.17.1
+
+### Patch Changes
+
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+- 5d7bad4: Fixed the messaging in the `AlertDisplay` where it was claiming that there were older messages available rather than newer.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/theme@0.6.5
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/version-bridge@1.0.11
+
+## 0.17.1-next.1
+
+### Patch Changes
+
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.6-next.0
+  - @backstage/theme@0.6.5-next.0
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/version-bridge@1.0.11
+
+## 0.17.1-next.0
+
+### Patch Changes
+
+- 5d7bad4: Fixed the messaging in the `AlertDisplay` where it was claiming that there were older messages available rather than newer.
+- Updated dependencies
+  - @backstage/config@1.3.2
+  - @backstage/core-plugin-api@1.10.5
+  - @backstage/errors@1.2.7
+  - @backstage/theme@0.6.4
+  - @backstage/version-bridge@1.0.11
+
+## 0.17.0
+
+### Minor Changes
+
+- 25300cb: `SimpleStepper` back button now works with `activeStep` property set higher than 0
+- 9545af2: Declared CancelIcon explicitly on Chip component inside Select.tsx to disable onMouseDown event by default that creates the flaw of re-opening select component when user tries to remove a selected filter.
+
+### Patch Changes
+
+- fffe3c0: Added `classNames` prop to the `Page` component
+- df3b9f0: Fixed a bug in the SidebarSubmenuItem within the core-components package that caused the dropdown button to be misaligned in the sidebar and the button text to appear in uppercase due to the default <Button> behavior. Also added an example dropdown menu to the app for reference.
+- 48aab13: Add i18n support for scaffolder-react plugin
+- 0a0ced6: Avoid Layout Shift for `DismissableBanner` when using a `storageApi` with latency (e.g. `user-settings-backend`)
+
+  Properly handle the `unknown` state of the `storageApi`. There's a trade-off: this may lead to some Layout Shift if the banner has not been dismissed, but once it has been dismissed, you won't have any.
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.5
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+  - @backstage/theme@0.6.4
+  - @backstage/version-bridge@1.0.11
+
 ## 0.16.5-next.1
 
 ### Patch Changes

@@ -25,7 +25,7 @@ import MuiListSubheader from '@material-ui/core/ListSubheader';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
 import HelpOutlineIcon from '@material-ui/icons/HelpOutline';
-import React from 'react';
+import { ReactNode } from 'react';
 
 const useStyles = makeStyles(theme => ({
   root: {
@@ -45,8 +45,8 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export function ListItemText(props: {
-  primary: React.ReactNode;
-  secondary?: React.ReactNode;
+  primary: ReactNode;
+  secondary?: ReactNode;
 }) {
   const classes = useStyles();
   return (
@@ -58,7 +58,7 @@ export function ListItemText(props: {
   );
 }
 
-export function ListSubheader(props: { children?: React.ReactNode }) {
+export function ListSubheader(props: { children?: ReactNode }) {
   const classes = useStyles();
   return (
     <MuiListSubheader className={classes.monospace}>
@@ -68,9 +68,9 @@ export function ListSubheader(props: { children?: React.ReactNode }) {
 }
 
 export function Container(props: {
-  title: React.ReactNode;
+  title: ReactNode;
   helpLink?: string;
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   return (
     <Box mt={2}>

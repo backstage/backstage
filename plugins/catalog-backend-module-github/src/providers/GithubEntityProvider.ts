@@ -16,6 +16,7 @@
 
 import { Config } from '@backstage/config';
 import {
+  GithubAppCredentialsMux,
   GithubCredentialsProvider,
   GithubIntegration,
   GithubIntegrationConfig,
@@ -41,6 +42,8 @@ import {
   getOrganizationRepositories,
   getOrganizationRepository,
   RepositoryResponse,
+  GithubPageSizes,
+  DEFAULT_PAGE_SIZES,
 } from '../lib/github';
 import {
   satisfiesForkFilter,
@@ -82,6 +85,7 @@ type Repository = {
   defaultBranchRef?: string;
   isCatalogInfoFilePresent: boolean;
   visibility: string;
+  organization: string;
 };
 
 /**
@@ -219,8 +223,25 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
     );
   }
 
-  private async createGraphqlClient() {
-    const organization = this.config.organization;
+  private async getOrganizations(): Promise<string[]> {
+    if (this.config.organization) return [this.config.organization];
+
+    const githubAppMux = new GithubAppCredentialsMux(this.integration, [
+      this.config.app!,
+    ]);
+    const installs = await githubAppMux.getAllInstallations();
+    return installs
+      .map(install =>
+        install.target_type === 'Organization' &&
+        install.account &&
+        'login' in install.account
+          ? install.account.login
+          : undefined,
+      )
+      .filter(Boolean) as string[];
+  }
+
+  private async createGraphqlClient(organization: string) {
     const host = this.integration.host;
     const orgUrl = `https://${host}/${organization}`;
 
@@ -236,15 +257,31 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
 
   // go to the server and get all repositories
   private async findCatalogFiles(): Promise<Repository[]> {
-    const organization = this.config.organization;
+    const organizations = await this.getOrganizations();
     const catalogPath = this.config.catalogPath;
-    const client = await this.createGraphqlClient();
 
-    const { repositories: repositoriesFromGithub } =
-      await getOrganizationRepositories(client, organization, catalogPath);
-    const repositories = repositoriesFromGithub.map(
-      this.createRepoFromGithubResponse,
-    );
+    let repositories: Repository[] = [];
+    for (const organization of organizations) {
+      const client = await this.createGraphqlClient(organization);
+
+      const pageSizes: GithubPageSizes = {
+        ...DEFAULT_PAGE_SIZES,
+        ...this.config.pageSizes,
+      };
+
+      const { repositories: repositoriesFromGithub } =
+        await getOrganizationRepositories(
+          client,
+          organization,
+          catalogPath,
+          pageSizes,
+        );
+      repositories = repositories.concat(
+        repositoriesFromGithub.map(r =>
+          this.createRepoFromGithubResponse(r, organization),
+        ),
+      );
+    }
 
     if (this.config.validateLocationsExist) {
       return repositories.filter(
@@ -256,15 +293,16 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
   }
 
   private matchesFilters(repositories: Repository[]): Repository[] {
-    const repositoryFilter = this.config.filters?.repository;
-    const topicFilters = this.config.filters?.topic;
-    const allowForks = this.config.filters?.allowForks ?? true;
-    const visibilities = this.config.filters?.visibility ?? [];
+    const repositoryFilter = this.config.filters.repository;
+    const topicFilters = this.config.filters.topic;
+    const allowForks = this.config.filters.allowForks;
+    const visibilities = this.config.filters.visibility ?? [];
+    const allowArchived = this.config.filters.allowArchived;
 
     return repositories.filter(r => {
       const repoTopics: string[] = r.repositoryTopics;
       return (
-        !r.isArchived &&
+        (allowArchived || !r.isArchived) &&
         (!repositoryFilter || repositoryFilter.test(r.name)) &&
         satisfiesTopicFilter(repoTopics, topicFilters) &&
         satisfiesForkFilter(allowForks, r.isFork) &&
@@ -276,7 +314,7 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
 
   private createLocationUrl(repository: Repository): string {
     const branch =
-      this.config.filters?.branch || repository.defaultBranchRef || '-';
+      this.config.filters.branch || repository.defaultBranchRef || '-';
     const catalogFile = this.config.catalogPath.startsWith('/')
       ? this.config.catalogPath.substring(1)
       : this.config.catalogPath;
@@ -322,7 +360,16 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
   }
 
   private async onPush(event: PushEvent) {
-    if (this.config.organization !== event.organization?.login) {
+    const configOrganizations = (await this.getOrganizations()).map(org =>
+      org.toLocaleLowerCase('en-US'),
+    );
+    const eventOrganization =
+      event.organization?.login.toLocaleLowerCase('en-US');
+
+    if (
+      !eventOrganization ||
+      !configOrganizations.includes(eventOrganization)
+    ) {
       this.logger.debug(
         `skipping push event from organization ${event.organization?.login}`,
       );
@@ -334,9 +381,9 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
     this.logger.debug(`handle github:push event for ${repoName} - ${repoUrl}`);
 
     const branch =
-      this.config.filters?.branch || event.repository.default_branch;
+      this.config.filters.branch || event.repository.default_branch;
 
-    if (!event.ref.includes(branch)) {
+    if (event.ref !== `refs/heads/${branch}`) {
       this.logger.debug(`skipping push event from ref ${event.ref}`);
       return;
     }
@@ -405,7 +452,16 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
   }
 
   private async onRepoChange(event: RepositoryEvent) {
-    if (this.config.organization !== event.organization?.login) {
+    const configOrganizations = (await this.getOrganizations()).map(org =>
+      org.toLocaleLowerCase('en-US'),
+    );
+    const eventOrganization =
+      event.organization?.login.toLocaleLowerCase('en-US');
+
+    if (
+      !eventOrganization ||
+      !configOrganizations.includes(eventOrganization)
+    ) {
       this.logger.debug(
         `skipping repository event from organization ${event.organization?.login}`,
       );
@@ -468,6 +524,8 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
    * @param event - The repository archived event.
    */
   private async onRepoArchived(event: RepositoryArchivedEvent) {
+    if (this.config.filters.allowArchived) return;
+
     const repository = this.createRepoFromEvent(event);
     await this.removeEntitiesForRepo(repository);
     this.logger.debug(
@@ -549,7 +607,7 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
    *
    * Creates new entities for the repository if it matches the filters.
    *
-   * @param event - The repository unarchived event.
+   * @param event - The repository transferred event.
    */
   private async onRepoTransferred(event: RepositoryTransferredEvent) {
     const repository = this.createRepoFromEvent(event);
@@ -597,16 +655,18 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
 
   private async addEntitiesForRepo(repository: Repository) {
     if (this.config.validateLocationsExist) {
-      const organization = this.config.organization;
+      const organization = repository.organization;
       const catalogPath = this.config.catalogPath;
-      const client = await this.createGraphqlClient();
+      const client = await this.createGraphqlClient(organization);
 
       const repositoryFromGithub = await getOrganizationRepository(
         client,
         organization,
         repository.name,
         catalogPath,
-      ).then(r => (r ? this.createRepoFromGithubResponse(r) : null));
+      ).then(r =>
+        r ? this.createRepoFromGithubResponse(r, organization) : null,
+      );
 
       if (!repositoryFromGithub?.isCatalogInfoFilePresent) {
         return;
@@ -636,11 +696,13 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
       // only the catalog file will be recovered from the commits
       isCatalogInfoFilePresent: true,
       visibility: event.repository.visibility,
+      organization: event.repository.owner.login,
     };
   }
 
   private createRepoFromGithubResponse(
     repositoryResponse: RepositoryResponse,
+    organization: string,
   ): Repository {
     return {
       url: repositoryResponse.url,
@@ -655,6 +717,7 @@ export class GithubEntityProvider implements EntityProvider, EventSubscriber {
         repositoryResponse.catalogInfoFile?.__typename === 'Blob' &&
         repositoryResponse.catalogInfoFile.text !== '',
       visibility: repositoryResponse.visibility,
+      organization,
     };
   }
 

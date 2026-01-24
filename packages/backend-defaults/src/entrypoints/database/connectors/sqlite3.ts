@@ -174,7 +174,11 @@ function normalizeConnection(
 }
 
 export class Sqlite3Connector implements Connector {
-  constructor(private readonly config: Config) {}
+  private readonly config: Config;
+
+  constructor(config: Config) {
+    this.config = config;
+  }
 
   async getClient(
     pluginId: string,

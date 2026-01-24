@@ -15,7 +15,6 @@
  */
 
 import { renderInTestApp } from '@backstage/test-utils';
-import React from 'react';
 import { OwnerListPicker } from './OwnerListPicker';
 import { fireEvent } from '@testing-library/react';
 

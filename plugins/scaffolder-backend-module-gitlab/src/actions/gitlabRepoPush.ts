@@ -14,18 +14,21 @@
  * limitations under the License.
  */
 
+import path from 'path';
+import { ScmIntegrationRegistry } from '@backstage/integration';
+import { InputError } from '@backstage/errors';
+import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
 import {
   createTemplateAction,
   parseRepoUrl,
   serializeDirectoryContents,
 } from '@backstage/plugin-scaffolder-node';
 import { CommitAction } from '@gitbeaker/rest';
-import path from 'path';
-import { ScmIntegrationRegistry } from '@backstage/integration';
-import { InputError } from '@backstage/errors';
-import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
 import { createGitlabApi, getErrorMessage } from './helpers';
 import { examples } from './gitlabRepoPush.examples';
+import { getFileAction } from '../util';
+import { SerializedFile } from '@backstage/plugin-scaffolder-node';
+import { RepositoryTreeSchema } from '@gitbeaker/rest';
 
 /**
  * Create a new action that commits into a gitlab repository.
@@ -37,78 +40,63 @@ export const createGitlabRepoPushAction = (options: {
 }) => {
   const { integrations } = options;
 
-  return createTemplateAction<{
-    repoUrl: string;
-    branchName: string;
-    commitMessage: string;
-    sourcePath?: string;
-    targetPath?: string;
-    token?: string;
-    commitAction?: 'create' | 'delete' | 'update';
-  }>({
+  return createTemplateAction({
     id: 'gitlab:repo:push',
     examples,
     schema: {
       input: {
-        required: ['repoUrl', 'branchName', 'commitMessage'],
-        type: 'object',
-        properties: {
-          repoUrl: {
-            type: 'string',
-            title: 'Repository Location',
+        repoUrl: z =>
+          z.string({
             description: `Accepts the format 'gitlab.com?repo=project_name&owner=group_name' where 'project_name' is the repository name and 'group_name' is a group or username`,
-          },
-          branchName: {
-            type: 'string',
-            title: 'Source Branch Name',
+          }),
+        branchName: z =>
+          z.string({
             description: 'The branch name for the commit',
-          },
-          commitMessage: {
-            type: 'string',
-            title: 'Commit Message',
+          }),
+        commitMessage: z =>
+          z.string({
             description: `The commit message`,
-          },
-          sourcePath: {
-            type: 'string',
-            title: 'Working Subdirectory',
-            description:
-              'Subdirectory of working directory to copy changes from',
-          },
-          targetPath: {
-            type: 'string',
-            title: 'Repository Subdirectory',
-            description: 'Subdirectory of repository to apply changes to',
-          },
-          token: {
-            title: 'Authentication Token',
-            type: 'string',
-            description: 'The token to use for authorization to GitLab',
-          },
-          commitAction: {
-            title: 'Commit action',
-            type: 'string',
-            enum: ['create', 'update', 'delete'],
-            description:
-              'The action to be used for git commit. Defaults to create.',
-          },
-        },
+          }),
+        sourcePath: z =>
+          z
+            .string({
+              description:
+                'Subdirectory of working directory to copy changes from',
+            })
+            .optional(),
+        targetPath: z =>
+          z
+            .string({
+              description: 'Subdirectory of repository to apply changes to',
+            })
+            .optional(),
+        token: z =>
+          z
+            .string({
+              description: 'The token to use for authorization to GitLab',
+            })
+            .optional(),
+        commitAction: z =>
+          z
+            .enum(['create', 'update', 'delete', 'auto'], {
+              description:
+                'The action to be used for git commit. Defaults to create, but can be set to update or delete',
+            })
+            .optional(),
       },
       output: {
-        type: 'object',
-        properties: {
-          projectid: {
-            title: 'Gitlab Project id/Name(slug)',
-            type: 'string',
-          },
-          projectPath: {
-            title: 'Gitlab Project path',
-            type: 'string',
-          },
-          commitHash: {
-            title: 'The git commit hash of the commit',
-            type: 'string',
-          },
-        },
+        projectid: z =>
+          z.string({
+            description: 'Gitlab Project id/Name(slug)',
+          }),
+        projectPath: z =>
+          z.string({
+            description: 'Gitlab Project path',
+          }),
+        commitHash: z =>
+          z.string({
+            description: 'The git commit hash of the commit',
+          }),
       },
     },
     async handler(ctx) {
@@ -141,29 +129,69 @@ export const createGitlabRepoPushAction = (options: {
         gitignore: true,
       });
 
-      const actions: CommitAction[] = fileContents.map(file => ({
-        action: commitAction ?? 'create',
-        filePath: targetPath
-          ? path.posix.join(targetPath, file.path)
-          : file.path,
-        encoding: 'base64',
-        content: file.content.toString('base64'),
-        execute_filemode: file.executable,
-      }));
-
-      let branchExists = false;
-      try {
-        await api.Branches.show(repoID, branchName);
-        branchExists = true;
-      } catch (e: any) {
-        if (e.cause?.response?.status !== 404) {
-          throw new InputError(
-            `Failed to check status of branch '${branchName}'. Please make sure that branch already exists or Backstage has permissions to create one. ${getErrorMessage(
+      let remoteFiles: RepositoryTreeSchema[] = [];
+      if ((ctx.input.commitAction ?? 'auto') === 'auto') {
+        try {
+          remoteFiles = await api.Repositories.allRepositoryTrees(repoID, {
+            ref: branchName,
+            recursive: true,
+            path: targetPath ?? undefined,
+          });
+        } catch (e) {
+          ctx.logger.warn(
+            `Could not retrieve the list of files for ${repoID} (branch: ${branchName}) : ${getErrorMessage(
               e,
             )}`,
           );
         }
       }
+
+      const fileActionMap: {
+        file: SerializedFile;
+        action: 'create' | 'delete' | 'update' | 'skip';
+      }[] = [];
+      for (const file of fileContents) {
+        const action = await getFileAction(
+          { file, targetPath },
+          { repoID, branch: branchName },
+          api,
+          ctx.logger,
+          remoteFiles,
+          ctx.input.commitAction,
+        );
+        fileActionMap.push({ file, action });
+      }
+
+      const actions: CommitAction[] = fileActionMap
+        .filter(o => o.action !== 'skip')
+        .map(({ file, action }) => ({
+          action: action as CommitAction['action'],
+          filePath: targetPath
+            ? path.posix.join(targetPath, file.path)
+            : file.path,
+          encoding: 'base64',
+          content: file.content.toString('base64'),
+          execute_filemode: file.executable,
+        }));
+
+      const branchExists = await ctx.checkpoint({
+        key: `branch.exists.${repoID}.${branchName}`,
+        fn: async () => {
+          try {
+            await api.Branches.show(repoID, branchName);
+            return true;
+          } catch (e: any) {
+            if (e.cause?.response?.status !== 404) {
+              throw new InputError(
+                `Failed to check status of branch '${branchName}'. Please make sure that branch already exists or Backstage has permissions to create one. ${getErrorMessage(
+                  e,
+                )}`,
+              );
+            }
+          }
+          return false;
+        },
+      });
 
       if (!branchExists) {
         // create a branch using the default branch as ref
@@ -181,16 +209,30 @@ export const createGitlabRepoPushAction = (options: {
       }
 
       try {
-        const commit = await api.Commits.create(
-          repoID,
-          branchName,
-          ctx.input.commitMessage,
-          actions,
-        );
+        const commitId = await ctx.checkpoint({
+          key: `commit.create.${repoID}.${branchName}`,
+          fn: async () => {
+            const commit = await api.Commits.create(
+              repoID,
+              branchName,
+              ctx.input.commitMessage,
+              actions,
+            );
+            return commit.id;
+          },
+        });
+
         ctx.output('projectid', repoID);
         ctx.output('projectPath', repoID);
-        ctx.output('commitHash', commit.id);
+        ctx.output('commitHash', commitId);
       } catch (e) {
+        if (commitAction !== 'create') {
+          throw new InputError(
+            `Committing the changes to ${branchName} failed. Please verify that all files you're trying to modify exist in the repository. ${getErrorMessage(
+              e,
+            )}`,
+          );
+        }
         throw new InputError(
           `Committing the changes to ${branchName} failed. Please check that none of the files created by the template already exists. ${getErrorMessage(
             e,

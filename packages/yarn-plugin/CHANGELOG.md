@@ -1,5 +1,68 @@
 # yarn-plugin-backstage
 
+## 0.0.8
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.16
+
+## 0.0.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/cli-common@0.1.16-next.0
+  - @backstage/release-manifests@0.0.13
+  - @backstage/errors@1.2.7
+
+## 0.0.7
+
+### Patch Changes
+
+- d6084b8: Fixed a bug that would prevent the yarn plugin from installing new dependencies with the `backstage:^` protocol.
+
+## 0.0.7-next.0
+
+### Patch Changes
+
+- d6084b8: Fixed a bug that would prevent the yarn plugin from installing new dependencies with the `backstage:^` protocol.
+
+## 0.0.6
+
+### Patch Changes
+
+- a0f9e4e: added functionality so that adding or updating a backstage dependency to a package would maintain the "backstage:^" placeholder for the version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+  - @backstage/release-manifests@0.0.13
+
+## 0.0.5
+
+### Patch Changes
+
+- fd70d86: Add both `npm:` and `backstage:` ranges to the lockfile to ensure compatibility with tools that parse the lockfile and ensure dependencies stay locked when building dist workspaces.
+- Updated dependencies
+  - @backstage/release-manifests@0.0.13
+  - @backstage/cli-common@0.1.15
+
+## 0.0.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/release-manifests@0.0.13-next.0
+  - @backstage/cli-common@0.1.15
+
+## 0.0.5-next.0
+
+### Patch Changes
+
+- fd70d86: Add both `npm:` and `backstage:` ranges to the lockfile to ensure compatibility with tools that parse the lockfile and ensure dependencies stay locked when building dist workspaces.
+- Updated dependencies
+  - @backstage/cli-common@0.1.15
+  - @backstage/release-manifests@0.0.12
+
 ## 0.0.4
 
 ### Patch Changes

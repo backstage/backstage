@@ -24,8 +24,10 @@ import {
 /** @internal */
 export class DefaultRootHealthService implements RootHealthService {
   #state: 'init' | 'up' | 'down' = 'init';
+  readonly options: { lifecycle: RootLifecycleService };
 
-  constructor(readonly options: { lifecycle: RootLifecycleService }) {
+  constructor(options: { lifecycle: RootLifecycleService }) {
+    this.options = options;
     options.lifecycle.addStartupHook(() => {
       this.#state = 'up';
     });
@@ -48,7 +50,7 @@ export class DefaultRootHealthService implements RootHealthService {
     if (this.#state === 'down') {
       return {
         status: 503,
-        payload: { message: 'Backend is shuttting down', status: 'error' },
+        payload: { message: 'Backend is shutting down', status: 'error' },
       };
     }
 

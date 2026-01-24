@@ -14,19 +14,22 @@
  * limitations under the License.
  */
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
-import z from 'zod';
 import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
 import fs from 'fs/promises';
 import path from 'path';
+import { z as zod } from 'zod';
+import { examples } from './read.examples';
 
-const contentSchema = z.object({
-  name: z.string().describe('Name of the file or directory'),
-  path: z
-    .string()
-    .describe('path to the file or directory relative to the workspace'),
-  fullPath: z.string().describe('full path to the file or directory'),
-});
-type Content = z.infer<typeof contentSchema>;
+const contentSchema = (z: typeof zod) =>
+  z.object({
+    name: z.string().describe('Name of the file or directory'),
+    path: z
+      .string()
+      .describe('path to the file or directory relative to the workspace'),
+    fullPath: z.string().describe('full path to the file or directory'),
+  });
+
+type Content = zod.infer<ReturnType<typeof contentSchema>>;
 
 /**
  * Creates new action that enables reading directories in the workspace.
@@ -37,15 +40,16 @@ export const createFilesystemReadDirAction = () => {
     id: 'fs:readdir',
     description: 'Reads files and directories from the workspace',
     supportsDryRun: true,
+    examples,
     schema: {
-      input: z.object({
-        paths: z.array(z.string().min(1)),
-        recursive: z.boolean().default(false),
-      }),
-      output: z.object({
-        files: z.array(contentSchema),
-        folders: z.array(contentSchema),
-      }),
+      input: {
+        paths: z => z.array(z.string().min(1)),
+        recursive: z => z.boolean().default(false),
+      },
+      output: {
+        files: z => z.array(contentSchema(z)),
+        folders: z => z.array(contentSchema(z)),
+      },
     },
     async handler(ctx) {
       const files: Content[] = [];

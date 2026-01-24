@@ -44,6 +44,7 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
   squashMergeCommitMessage: 'PR_BODY' | 'COMMIT_MESSAGES' | 'BLANK' | undefined,
   allowRebaseMerge: boolean,
   allowAutoMerge: boolean,
+  allowUpdateBranch: boolean,
   access: string | undefined,
   collaborators:
     | (
@@ -74,11 +75,12 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
         includeClaimKeys?: string[];
       }
     | undefined,
-  customProperties: { [key: string]: string } | undefined,
+  customProperties: { [key: string]: string | string[] } | undefined,
   subscribe: boolean | undefined,
   logger: LoggerService,
+  autoInit?: boolean | undefined,
+  workflowAccess?: 'none' | 'organization' | 'user',
 ) {
-  // eslint-disable-next-line testing-library/no-await-sync-queries
   const user = await client.rest.users.getByUsername({
     username: owner,
   });
@@ -87,45 +89,35 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
     await validateAccessTeam(client, access);
   }
 
+  const baseRepoParams = {
+    allow_auto_merge: allowAutoMerge,
+    allow_merge_commit: allowMergeCommit,
+    allow_rebase_merge: allowRebaseMerge,
+    allow_squash_merge: allowSquashMerge,
+    allow_update_branch: allowUpdateBranch,
+    auto_init: autoInit,
+    delete_branch_on_merge: deleteBranchOnMerge,
+    description,
+    has_issues: hasIssues,
+    has_projects: hasProjects,
+    has_wiki: hasWiki,
+    homepage,
+    name: repo,
+    private: repoVisibility === 'private',
+    squash_merge_commit_message: squashMergeCommitMessage,
+    squash_merge_commit_title: squashMergeCommitTitle,
+  };
   const repoCreationPromise =
     user.data.type === 'Organization'
       ? client.rest.repos.createInOrg({
-          name: repo,
-          org: owner,
-          private: repoVisibility === 'private',
-          // @ts-ignore https://github.com/octokit/types.ts/issues/522
-          visibility: repoVisibility,
-          description: description,
-          delete_branch_on_merge: deleteBranchOnMerge,
-          allow_merge_commit: allowMergeCommit,
-          allow_squash_merge: allowSquashMerge,
-          squash_merge_commit_title: squashMergeCommitTitle,
-          squash_merge_commit_message: squashMergeCommitMessage,
-          allow_rebase_merge: allowRebaseMerge,
-          allow_auto_merge: allowAutoMerge,
-          homepage: homepage,
-          has_projects: hasProjects,
-          has_wiki: hasWiki,
-          has_issues: hasIssues,
+          ...baseRepoParams,
           // Custom properties only available on org repos
           custom_properties: customProperties,
+          org: owner,
+          // @ts-ignore https://github.com/octokit/types.ts/issues/522
+          visibility: repoVisibility,
         })
-      : client.rest.repos.createForAuthenticatedUser({
-          name: repo,
-          private: repoVisibility === 'private',
-          description: description,
-          delete_branch_on_merge: deleteBranchOnMerge,
-          allow_merge_commit: allowMergeCommit,
-          allow_squash_merge: allowSquashMerge,
-          squash_merge_commit_title: squashMergeCommitTitle,
-          squash_merge_commit_message: squashMergeCommitMessage,
-          allow_rebase_merge: allowRebaseMerge,
-          allow_auto_merge: allowAutoMerge,
-          homepage: homepage,
-          has_projects: hasProjects,
-          has_wiki: hasWiki,
-          has_issues: hasIssues,
-        });
+      : client.rest.repos.createForAuthenticatedUser(baseRepoParams);
 
   let newRepo;
 
@@ -266,6 +258,14 @@ export async function createGithubRepoWithCollaboratorsAndTopics(
     });
   }
 
+  if (workflowAccess) {
+    await client.rest.actions.setWorkflowAccessToRepository({
+      access_level: workflowAccess,
+      owner,
+      repo,
+    });
+  }
+
   return newRepo;
 }
 
@@ -276,7 +276,7 @@ export async function initRepoPushAndProtect(
   sourcePath: string | undefined,
   defaultBranch: string,
   protectDefaultBranch: boolean,
-  protectEnforceAdmins: boolean,
+  enforceAdmins: boolean,
   owner: string,
   client: Octokit,
   repo: string,
@@ -350,10 +350,10 @@ export async function initRepoPushAndProtect(
         requireBranchesToBeUpToDate,
         requiredConversationResolution,
         requireLastPushApproval,
-        enforceAdmins: protectEnforceAdmins,
-        dismissStaleReviews: dismissStaleReviews,
-        requiredCommitSigning: requiredCommitSigning,
-        requiredLinearHistory: requiredLinearHistory,
+        enforceAdmins,
+        dismissStaleReviews,
+        requiredCommitSigning,
+        requiredLinearHistory,
       });
     } catch (e) {
       assertError(e);

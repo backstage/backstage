@@ -18,7 +18,7 @@ import { ComponentEntity, RELATION_OWNED_BY } from '@backstage/catalog-model';
 import { identityApiRef } from '@backstage/core-plugin-api';
 import { TestApiProvider, mockApis } from '@backstage/test-utils';
 import { renderHook, waitFor } from '@testing-library/react';
-import React from 'react';
+import { ReactNode } from 'react';
 import { useEntityOwnership } from './useEntityOwnership';
 
 describe('useEntityOwnership', () => {
@@ -27,7 +27,7 @@ describe('useEntityOwnership', () => {
     ownershipEntityRefs: ['user:default/user1', 'group:default/group1'],
   });
 
-  const Wrapper = (props: { children?: React.ReactNode }) => (
+  const Wrapper = (props: { children?: ReactNode }) => (
     <TestApiProvider apis={[[identityApiRef, identityApi]]}>
       {props.children}
     </TestApiProvider>

@@ -30,49 +30,36 @@ export const createBitbucketPipelinesRunAction = (options: {
   integrations: ScmIntegrationRegistry;
 }) => {
   const { integrations } = options;
-  return createTemplateAction<
-    {
-      workspace: string;
-      repo_slug: string;
-      body?: object;
-      token?: string;
-    },
-    {
-      buildNumber: number;
-      repoUrl: string;
-      pipelinesUrl: string;
-    }
-  >({
+  return createTemplateAction({
     id,
     description: 'Run a bitbucket cloud pipeline',
     examples,
     schema: {
       input: {
-        type: 'object',
-        required: ['workspace', 'repo_slug'],
-        properties: {
-          workspace: inputProps.workspace,
-          repo_slug: inputProps.repo_slug,
-          body: inputProps.pipelinesRunBody,
-          token: inputProps.token,
-        },
+        workspace: inputProps.workspace,
+        repo_slug: inputProps.repo_slug,
+        body: inputProps.pipelinesRunBody,
+        token: inputProps.token,
       },
       output: {
-        type: 'object',
-        properties: {
-          buildNumber: {
-            title: 'Build number',
-            type: 'number',
-          },
-          repoUrl: {
-            title: 'A URL to the pipeline repository',
-            type: 'string',
-          },
-          repoContentsUrl: {
-            title: 'A URL to the pipeline',
-            type: 'string',
-          },
-        },
+        buildNumber: z =>
+          z
+            .number({
+              description: 'Build number',
+            })
+            .optional(),
+        repoUrl: z =>
+          z
+            .string({
+              description: 'A URL to the pipeline repository',
+            })
+            .optional(),
+        pipelinesUrl: z =>
+          z
+            .string({
+              description: 'A URL to the pipeline',
+            })
+            .optional(),
       },
     },
     supportsDryRun: false,
@@ -81,7 +68,7 @@ export const createBitbucketPipelinesRunAction = (options: {
       const host = 'bitbucket.org';
       const integrationConfig = integrations.bitbucketCloud.byHost(host);
 
-      const authorization = getAuthorizationHeader(
+      const authorization = await getAuthorizationHeader(
         token ? { token } : integrationConfig!.config,
       );
       let response: Response;

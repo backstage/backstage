@@ -18,7 +18,7 @@ import { Location } from '@backstage/catalog-client';
 import { Entity, ANNOTATION_ORIGIN_LOCATION } from '@backstage/catalog-model';
 import { catalogApiRef } from '../../api';
 import { renderHook, waitFor } from '@testing-library/react';
-import React from 'react';
+import { ReactNode } from 'react';
 import { useUnregisterEntityDialogState } from './useUnregisterEntityDialogState';
 import { TestApiProvider } from '@backstage/test-utils';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
@@ -27,7 +27,7 @@ import { createDeferred } from '@backstage/types';
 describe('useUnregisterEntityDialogState', () => {
   const catalogApi = catalogApiMock.mock();
 
-  const Wrapper = (props: { children?: React.ReactNode }) => (
+  const Wrapper = (props: { children?: ReactNode }) => (
     <TestApiProvider apis={[[catalogApiRef, catalogApi]]}>
       {props.children}
     </TestApiProvider>

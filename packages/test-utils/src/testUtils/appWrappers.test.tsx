@@ -25,7 +25,7 @@ import {
 } from '@backstage/core-plugin-api';
 import { withLogCollector } from './logCollector';
 import { render } from '@testing-library/react';
-import React, { useEffect } from 'react';
+import { useEffect } from 'react';
 import { Route, Routes } from 'react-router-dom';
 import { MockErrorApi } from './apis';
 import { renderInTestApp, wrapInTestApp } from './appWrappers';
@@ -92,17 +92,15 @@ describe('wrapInTestApp', () => {
     });
 
     expect(error).toEqual([
-      expect.objectContaining({
-        detail: new Error(
-          'MockErrorApi received unexpected error, Error: NOPE',
-        ),
-      }),
-      expect.objectContaining({
-        detail: new Error(
-          'MockErrorApi received unexpected error, Error: NOPE',
-        ),
-      }),
-      expect.stringMatching(/^The above error occurred in the <A> component:/),
+      expect.stringContaining(
+        'Error: MockErrorApi received unexpected error, Error: NOPE',
+      ),
+      expect.objectContaining({ type: 'unhandled-exception' }),
+      expect.stringContaining(
+        'Error: MockErrorApi received unexpected error, Error: NOPE',
+      ),
+      expect.objectContaining({ type: 'unhandled-exception' }),
+      expect.stringContaining('The above error occurred in the <A> component:'),
     ]);
   });
 

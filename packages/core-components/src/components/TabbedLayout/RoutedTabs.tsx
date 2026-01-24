@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { useMemo } from 'react';
+import { useMemo } from 'react';
 import { Helmet } from 'react-helmet';
 import { matchRoutes, useParams, useRoutes } from 'react-router-dom';
 import { Content } from '../../layout/Content';

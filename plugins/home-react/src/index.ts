@@ -30,3 +30,4 @@ export type {
   CardSettings,
   CardConfig,
 } from './extensions';
+export * from './overridableComponents';

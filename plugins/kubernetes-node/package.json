@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-kubernetes-node",
-  "version": "0.2.4-next.1",
+  "version": "0.4.0",
   "description": "Node.js library for the kubernetes plugin",
   "backstage": {
     "role": "node-library",
@@ -42,13 +42,13 @@
     "@backstage/catalog-model": "workspace:^",
     "@backstage/plugin-kubernetes-common": "workspace:^",
     "@backstage/types": "workspace:^",
-    "@kubernetes/client-node": "1.0.0-rc7",
+    "@kubernetes/client-node": "1.4.0",
+    "@types/express": "^4.17.6",
     "node-fetch": "^2.7.0",
     "winston": "^3.2.1"
   },
   "devDependencies": {
     "@backstage/backend-app-api": "workspace:^",
-    "@backstage/backend-common": "^0.25.0",
     "@backstage/backend-defaults": "workspace:^",
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",

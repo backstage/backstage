@@ -21,6 +21,7 @@ import { GkeClusterLinksFormatter } from './GkeClusterLinksFormatter';
 import { StandardClusterLinksFormatter } from './StandardClusterLinksFormatter';
 import { OpenshiftClusterLinksFormatter } from './OpenshiftClusterLinksFormatter';
 import { RancherClusterLinksFormatter } from './RancherClusterLinksFormatter';
+import { HeadlampClusterLinksFormatter } from './HeadlampClusterLinksFormatter';
 import { ProfileInfoApi } from '@backstage/core-plugin-api';
 
 export {
@@ -30,6 +31,7 @@ export {
   GkeClusterLinksFormatter,
   OpenshiftClusterLinksFormatter,
   RancherClusterLinksFormatter,
+  HeadlampClusterLinksFormatter,
 };
 
 /** @public */
@@ -46,5 +48,6 @@ export function getDefaultFormatters(deps: {
     gke: new GkeClusterLinksFormatter(deps.googleAuthApi),
     openshift: new OpenshiftClusterLinksFormatter(),
     rancher: new RancherClusterLinksFormatter(),
+    headlamp: new HeadlampClusterLinksFormatter(),
   };
 }

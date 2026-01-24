@@ -1,5 +1,98 @@
 # @backstage/theme
 
+## 0.7.1
+
+### Patch Changes
+
+- fa06f6b: Added a `themeName` prop to `UnifiedThemeProvider`, enabling Backstage UI `data-theme-name` CSS attribute to be set based on active theme.
+
+## 0.7.1-next.0
+
+### Patch Changes
+
+- fa06f6b: Added a `themeName` prop to `UnifiedThemeProvider`, enabling Backstage UI `data-theme-name` CSS attribute to be set based on active theme.
+
+## 0.7.0
+
+### Minor Changes
+
+- 865bce8: **BREAKING**: Removed the built-in `CssBaseline` from `UnifiedThemeProvider`. If your Backstage instance looks broken after this update, you likely forgot to add our new Backstage UI global CSS. To do that, please import `@backstage/ui/css/styles.css` in `packages/app/src/index.tsx`:
+
+  ```tsx
+  import '@backstage/ui/css/styles.css';
+  ```
+
+  This change also removes the `noCssBaseline` prop, which became redundant.
+
+### Patch Changes
+
+- d5cbdba: The `UnifiedThemeProvider` now coordinates theme attributes on the document `body` in case multiple theme providers are rendered.
+
+## 0.6.9-next.0
+
+### Patch Changes
+
+- d5cbdba: The `UnifiedThemeProvider` now coordinates theme attributes on the document `body` in case multiple theme providers are rendered.
+
+## 0.6.8
+
+### Patch Changes
+
+- b731527: We are introducing two new data attributes on the `body` to support Backstage UI (BUI) new theming system.
+
+## 0.6.8-next.0
+
+### Patch Changes
+
+- b731527: We are introducing two new data attributes on the `body` to support Backstage UI (BUI) new theming system.
+
+## 0.6.7
+
+### Patch Changes
+
+- 373486e: Add a different background colour to focused `MenuItem`s to fix a bug in MUI 4 (which is fixed in MUI 5)
+- b68d269: Update uncomfortably bright color in recently visited and top visited home page cards
+
+## 0.6.7-next.1
+
+### Patch Changes
+
+- 373486e: Add a different background colour to focused `MenuItem`s to fix a bug in MUI 4 (which is fixed in MUI 5)
+
+## 0.6.7-next.0
+
+### Patch Changes
+
+- b68d269: Update uncomfortably bright color in recently visited and top visited home page cards
+
+## 0.6.6
+
+### Patch Changes
+
+- 1b14572: Show arrow when MuiTableSortLabel receives focus
+
+## 0.6.6-next.0
+
+### Patch Changes
+
+- 1b14572: Show arrow when MuiTableSortLabel receives focus
+
+## 0.6.5
+
+### Patch Changes
+
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+## 0.6.5-next.0
+
+### Patch Changes
+
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
 ## 0.6.4
 
 ### Patch Changes

@@ -123,6 +123,11 @@ const config: Config = {
         },
         blog: {
           path: 'blog',
+          // Gets rid of the following:
+          // Warning:  Some blog authors used in "2024-12-18-backstage-wrapped-2024.mdx" are not defined in "authors.yml":
+          // - {"name":"Patrik Oldsberg, Spotify & Ben Lambert, Spotify","key":null,"page":null}
+          // Note that we recommend to declare authors once in a "authors.yml" file and reference them by key in blog posts front matter to avoid author info duplication.
+          onInlineAuthors: 'ignore',
         },
         theme: {
           customCss: 'src/theme/customTheme.scss',
@@ -264,6 +269,14 @@ const config: Config = {
             from: '/docs/plugins/url-reader/',
             to: '/docs/backend-system/core-services/url-reader',
           },
+          {
+            from: '/docs/getting-started/app-custom-theme',
+            to: '/docs/conf/user-interface',
+          },
+          {
+            from: '/docs/plugins/existing-plugins',
+            to: '/docs/plugins/',
+          },
         ],
       }),
     [
@@ -292,6 +305,11 @@ const config: Config = {
             specPath: '../plugins/search-backend/src/schema/openapi.yaml',
             outputDir: '../docs/features/search/api',
           } satisfies OpenApiPlugin.Options,
+          scaffolder: {
+            ...defaultOpenApiOptions,
+            specPath: '../plugins/scaffolder-backend/src/schema/openapi.yaml',
+            outputDir: '../docs/features/software-templates/api',
+          } satisfies OpenApiPlugin.Options,
         },
       },
     ],
@@ -299,11 +317,6 @@ const config: Config = {
   themes: ['docusaurus-theme-openapi-docs'],
   themeConfig: {
     languageTabs: [
-      {
-        highlight: 'javascript',
-        language: 'nodejs',
-        logoClass: 'nodejs',
-      },
       {
         highlight: 'javascript',
         language: 'javascript',
@@ -343,13 +356,14 @@ const config: Config = {
     ],
 
     colorMode: {
+      disableSwitch: false,
       defaultMode: 'dark',
-      disableSwitch: true,
     },
     navbar: {
       logo: {
         alt: 'Backstage Software Catalog and Developer Platform',
-        src: 'img/logo.svg',
+        src: 'img/logo-black.svg',
+        srcDark: 'img/logo.svg',
       },
       items: [
         {
@@ -453,7 +467,7 @@ const config: Config = {
             },
             {
               label: 'Adopting',
-              to: 'https://backstage.spotify.com',
+              to: 'https://backstage.io/docs/getting-started/',
             },
             {
               label: 'Subscribe to our newsletter',
@@ -469,18 +483,6 @@ const config: Config = {
           title: 'More',
           items: [
             {
-              label: 'Open Source @ Spotify',
-              to: 'https://spotify.github.io/',
-            },
-            {
-              label: 'Spotify Engineering Blog',
-              to: 'https://engineering.atspotify.com/',
-            },
-            {
-              label: 'Spotify for Developers',
-              to: 'https://developer.spotify.com/',
-            },
-            {
               label: 'GitHub',
               to: 'https://github.com/backstage/',
             },
@@ -494,7 +496,7 @@ const config: Config = {
       copyright: `<p style="text-align:center"><a href="https://spotify.github.io/">Made with ❤️ at Spotify</a></p><p class="copyright">Copyright © ${new Date().getFullYear()} Backstage Project Authors. All rights reserved. The Linux Foundation has registered trademarks and uses trademarks. For a list of trademarks of The Linux Foundation, please see our Trademark Usage page: <a href="https://www.linuxfoundation.org/trademark-usage" />https://www.linuxfoundation.org/trademark-usage</a></p>`,
     },
     algolia: {
-      apiKey: '1f0ba86672ccfc3576faa94583e5b318',
+      apiKey: '60d2643a9c6306463f15f8c3556e7f2e', // Owned by @Rugvip
       indexName: 'crawler_Backstage Docusaurus 2',
       appId: 'JCMFNHCHI8',
       searchParameters: {},

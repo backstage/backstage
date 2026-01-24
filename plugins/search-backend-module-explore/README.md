@@ -1,5 +1,7 @@
 # search-backend-module-explore
 
+THIS ENTIRE PACKAGE IS DEPRECATED and has been moved to the Backstage community repository; please use the `@backstage-community/plugin-search-backend-module-explore` package instead.
+
 This package exports a module that extends the search backend to also indexing the tools exposed by the [`explore` service](https://github.com/backstage/community-plugins/tree/main/workspaces/explore/plugins/explore-backend).
 
 ## Installation

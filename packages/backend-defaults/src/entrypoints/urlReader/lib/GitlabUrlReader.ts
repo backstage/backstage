@@ -32,18 +32,18 @@ import {
   NotModifiedError,
 } from '@backstage/errors';
 import {
-  GitLabIntegration,
-  ScmIntegrations,
   getGitLabFileFetchUrl,
   getGitLabIntegrationRelativePath,
   getGitLabRequestOptions,
+  GitLabIntegration,
+  ScmIntegrations,
 } from '@backstage/integration';
 import parseGitUrl from 'git-url-parse';
 import { trimEnd, trimStart } from 'lodash';
 import { Minimatch } from 'minimatch';
 import { Readable } from 'stream';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
-import { ReadTreeResponseFactory, ReaderFactory } from './types';
+import { ReaderFactory, ReadTreeResponseFactory } from './types';
 import { parseLastModified } from './util';
 
 /**
@@ -63,10 +63,16 @@ export class GitlabUrlReader implements UrlReaderService {
     });
   };
 
+  private readonly integration: GitLabIntegration;
+  private readonly deps: { treeResponseFactory: ReadTreeResponseFactory };
+
   constructor(
-    private readonly integration: GitLabIntegration,
-    private readonly deps: { treeResponseFactory: ReadTreeResponseFactory },
-  ) {}
+    integration: GitLabIntegration,
+    deps: { treeResponseFactory: ReadTreeResponseFactory },
+  ) {
+    this.integration = integration;
+    this.deps = deps;
+  }
 
   async read(url: string): Promise<Buffer> {
     const response = await this.readUrl(url);
@@ -79,7 +85,7 @@ export class GitlabUrlReader implements UrlReaderService {
   ): Promise<UrlReaderServiceReadUrlResponse> {
     const { etag, lastModifiedAfter, signal, token } = options ?? {};
     const isArtifact = url.includes('/-/jobs/artifacts/');
-    const builtUrl = await this.getGitlabFetchUrl(url);
+    const builtUrl = await this.getGitlabFetchUrl(url, token);
 
     let response: Response;
     try {
@@ -313,14 +319,10 @@ export class GitlabUrlReader implements UrlReaderService {
    */
   private getStaticPart(globPattern: string) {
     const segments = globPattern.split('/');
-    let i = segments.length;
-    while (
-      i > 0 &&
-      new Minimatch(segments.slice(0, i).join('/')).match(globPattern)
-    ) {
-      i--;
-    }
-    return segments.slice(0, i).join('/');
+    const globIndex = segments.findIndex(segment => segment.match(/[*?]/));
+    return globIndex === -1
+      ? globPattern
+      : segments.slice(0, globIndex).join('/');
   }
 
   toString() {
@@ -328,23 +330,29 @@ export class GitlabUrlReader implements UrlReaderService {
     return `gitlab{host=${host},authed=${Boolean(token)}}`;
   }
 
-  private async getGitlabFetchUrl(target: string): Promise<string> {
+  private async getGitlabFetchUrl(
+    target: string,
+    token?: string,
+  ): Promise<string> {
     // If the target is for a job artifact then go down that path
     const targetUrl = new URL(target);
     if (targetUrl.pathname.includes('/-/jobs/artifacts/')) {
-      return this.getGitlabArtifactFetchUrl(targetUrl).then(value =>
+      return this.getGitlabArtifactFetchUrl(targetUrl, token).then(value =>
         value.toString(),
       );
     }
     // Default to the old behavior of assuming the url is for a file
-    return getGitLabFileFetchUrl(target, this.integration.config);
+    return getGitLabFileFetchUrl(target, this.integration.config, token);
   }
 
   // convert urls of the form:
   //    https://example.com/<namespace>/<project>/-/jobs/artifacts/<ref>/raw/<path_to_file>?job=<job_name>
   // to urls of the form:
   //    https://example.com/api/v4/projects/:id/jobs/artifacts/:ref_name/raw/*artifact_path?job=<job_name>
-  private async getGitlabArtifactFetchUrl(target: URL): Promise<URL> {
+  private async getGitlabArtifactFetchUrl(
+    target: URL,
+    token?: string,
+  ): Promise<URL> {
     if (!target.pathname.includes('/-/jobs/artifacts/')) {
       throw new Error('Unable to process url as an GitLab artifact');
     }
@@ -353,7 +361,7 @@ export class GitlabUrlReader implements UrlReaderService {
         target.pathname.split('/-/jobs/artifacts/');
       const projectPath = new URL(target);
       projectPath.pathname = namespaceAndProject;
-      const projectId = await this.resolveProjectToId(projectPath);
+      const projectId = await this.resolveProjectToId(projectPath, token);
       const relativePath = getGitLabIntegrationRelativePath(
         this.integration.config,
       );
@@ -367,7 +375,10 @@ export class GitlabUrlReader implements UrlReaderService {
     }
   }
 
-  private async resolveProjectToId(pathToProject: URL): Promise<number> {
+  private async resolveProjectToId(
+    pathToProject: URL,
+    token?: string,
+  ): Promise<number> {
     let project = pathToProject.pathname;
     // Check relative path exist and remove it if so
     const relativePath = getGitLabIntegrationRelativePath(
@@ -382,10 +393,16 @@ export class GitlabUrlReader implements UrlReaderService {
       `${
         pathToProject.origin
       }${relativePath}/api/v4/projects/${encodeURIComponent(project)}`,
-      getGitLabRequestOptions(this.integration.config),
+      getGitLabRequestOptions(this.integration.config, token),
     );
     const data = await result.json();
     if (!result.ok) {
+      if (result.status === 401) {
+        throw new Error(
+          'GitLab Error: 401 - Unauthorized. The access token used is either expired, or does not have permission to read the project',
+        );
+      }
+
       throw new Error(`Gitlab error: ${data.error}, ${data.error_description}`);
     }
     return Number(data.id);

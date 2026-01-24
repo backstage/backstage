@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-api-docs",
-  "version": "0.12.5-next.2",
+  "version": "0.13.3",
   "description": "A Backstage plugin that helps represent API entities in the frontend",
   "backstage": {
     "role": "frontend-plugin",
@@ -55,7 +55,6 @@
   "dependencies": {
     "@asyncapi/react-component": "^2.3.3",
     "@backstage/catalog-model": "workspace:^",
-    "@backstage/core-compat-api": "workspace:^",
     "@backstage/core-components": "workspace:^",
     "@backstage/core-plugin-api": "workspace:^",
     "@backstage/frontend-plugin-api": "workspace:^",
@@ -71,8 +70,7 @@
     "graphql": "^16.0.0",
     "graphql-config": "^5.0.2",
     "graphql-ws": "^5.4.1",
-    "isomorphic-form-data": "^2.0.0",
-    "swagger-ui-react": "^5.0.0"
+    "swagger-ui-react": "^5.27.1"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
@@ -85,7 +83,7 @@
     "@testing-library/user-event": "^14.0.0",
     "@types/highlightjs": "^10.1.0",
     "@types/react": "^18.0.0",
-    "@types/swagger-ui-react": "^4.18.0",
+    "@types/swagger-ui-react": "^5.0.0",
     "react": "^18.0.2",
     "react-dom": "^18.0.2",
     "react-router-dom": "^6.3.0"

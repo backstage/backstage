@@ -5,35 +5,39 @@
 ```ts
 import { AnyApiFactory } from '@backstage/frontend-plugin-api';
 import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
-import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
-import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
-import { FrontendPlugin } from '@backstage/frontend-plugin-api';
-import { default as React_2 } from 'react';
-import { RouteRef } from '@backstage/frontend-plugin-api';
+import { ApiFactory } from '@backstage/frontend-plugin-api';
+import { ExtensionBlueprintParams } from '@backstage/frontend-plugin-api';
+import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
+import { JSX as JSX_2 } from 'react';
+import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
+import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
+import { RouteRef } from '@backstage/core-plugin-api';
+import { RouteRef as RouteRef_2 } from '@backstage/frontend-plugin-api';
+import { TranslationRef } from '@backstage/frontend-plugin-api';
 
 // @alpha (undocumented)
-const _default: FrontendPlugin<
+const _default: OverridableFrontendPlugin<
   {
     root: RouteRef<undefined>;
   },
   {},
   {
-    'api:notifications': ExtensionDefinition<{
+    'api:notifications': OverridableExtensionDefinition<{
       kind: 'api';
       name: undefined;
       config: {};
       configInput: {};
-      output: ConfigurableExtensionDataRef<
-        AnyApiFactory,
-        'core.api.factory',
-        {}
-      >;
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
       inputs: {};
-      params: {
-        factory: AnyApiFactory;
-      };
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
-    'page:notifications': ExtensionDefinition<{
+    'page:notifications': OverridableExtensionDefinition<{
       kind: 'page';
       name: undefined;
       config: {
@@ -43,14 +47,10 @@ const _default: FrontendPlugin<
         path?: string | undefined;
       };
       output:
-        | ConfigurableExtensionDataRef<
-            React_2.JSX.Element,
-            'core.reactElement',
-            {}
-          >
-        | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
-        | ConfigurableExtensionDataRef<
-            RouteRef<AnyRouteRefParams>,
+        | ExtensionDataRef<string, 'core.routing.path', {}>
+        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+        | ExtensionDataRef<
+            RouteRef_2<AnyRouteRefParams>,
             'core.routing.ref',
             {
               optional: true;
@@ -58,14 +58,80 @@ const _default: FrontendPlugin<
           >;
       inputs: {};
       params: {
-        defaultPath: string;
+        defaultPath?: [Error: `Use the 'path' param instead`];
+        path: string;
         loader: () => Promise<JSX.Element>;
-        routeRef?: RouteRef;
+        routeRef?: RouteRef_2;
       };
     }>;
   }
 >;
 export default _default;
+
+// @alpha (undocumented)
+export const notificationsTranslationRef: TranslationRef<
+  'plugin.notifications',
+  {
+    readonly 'table.errors.markAllReadFailed': 'Failed to mark all notifications as read';
+    readonly 'table.pagination.firstTooltip': 'First Page';
+    readonly 'table.pagination.labelDisplayedRows': '{from}-{to} of {count}';
+    readonly 'table.pagination.labelRowsSelect': 'rows';
+    readonly 'table.pagination.lastTooltip': 'Last Page';
+    readonly 'table.pagination.nextTooltip': 'Next Page';
+    readonly 'table.pagination.previousTooltip': 'Previous Page';
+    readonly 'table.emptyMessage': 'No records to display';
+    readonly 'table.bulkActions.markAllRead': 'Mark all read';
+    readonly 'table.bulkActions.markSelectedAsRead': 'Mark selected as read';
+    readonly 'table.bulkActions.returnSelectedAmongUnread': 'Return selected among unread';
+    readonly 'table.bulkActions.saveSelectedForLater': 'Save selected for later';
+    readonly 'table.bulkActions.undoSaveForSelected': 'Undo save for selected';
+    readonly 'table.confirmDialog.title': 'Are you sure?';
+    readonly 'table.confirmDialog.markAllReadDescription': 'Mark <b>all</b> notifications as <b>read</b>.';
+    readonly 'table.confirmDialog.markAllReadConfirmation': 'Mark All';
+    readonly 'filters.view.all': 'All';
+    readonly 'filters.view.label': 'View';
+    readonly 'filters.view.read': 'Read notifications';
+    readonly 'filters.view.saved': 'Saved';
+    readonly 'filters.view.unread': 'Unread notifications';
+    readonly 'filters.title': 'Filters';
+    readonly 'filters.severity.normal': 'Normal';
+    readonly 'filters.severity.high': 'High';
+    readonly 'filters.severity.low': 'Low';
+    readonly 'filters.severity.label': 'Min severity';
+    readonly 'filters.severity.critical': 'Critical';
+    readonly 'filters.topic.label': 'Topic';
+    readonly 'filters.topic.anyTopic': 'Any topic';
+    readonly 'filters.createdAfter.label': 'Sent out';
+    readonly 'filters.createdAfter.placeholder': 'Notifications since';
+    readonly 'filters.createdAfter.last24h': 'Last 24h';
+    readonly 'filters.createdAfter.lastWeek': 'Last week';
+    readonly 'filters.createdAfter.anyTime': 'Any time';
+    readonly 'filters.sortBy.origin': 'Origin';
+    readonly 'filters.sortBy.label': 'Sort by';
+    readonly 'filters.sortBy.placeholder': 'Field to sort by';
+    readonly 'filters.sortBy.newest': 'Newest on top';
+    readonly 'filters.sortBy.oldest': 'Oldest on top';
+    readonly 'filters.sortBy.topic': 'Topic';
+    readonly 'settings.table.origin': 'Origin';
+    readonly 'settings.table.topic': 'Topic';
+    readonly 'settings.title': 'Notification settings';
+    readonly 'settings.errors.useNotificationFormat': 'useNotificationFormat must be used within a NotificationFormatProvider';
+    readonly 'settings.errorTitle': 'Failed to load settings';
+    readonly 'settings.noSettingsAvailable': 'No notification settings available, check back later';
+    readonly 'sidebar.title': 'Notifications';
+    readonly 'sidebar.errors.markAsReadFailed': 'Failed to mark notification as read';
+    readonly 'sidebar.errors.fetchNotificationFailed': 'Failed to fetch notification';
+    readonly 'notificationsPage.title': 'Notifications';
+    readonly 'notificationsPage.tableTitle.all_one': 'All notifications ({{count}})';
+    readonly 'notificationsPage.tableTitle.all_other': 'All notifications ({{count}})';
+    readonly 'notificationsPage.tableTitle.saved_one': 'Saved notifications ({{count}})';
+    readonly 'notificationsPage.tableTitle.saved_other': 'Saved notifications ({{count}})';
+    readonly 'notificationsPage.tableTitle.unread_one': 'Unread notifications ({{count}})';
+    readonly 'notificationsPage.tableTitle.unread_other': 'Unread notifications ({{count}})';
+    readonly 'notificationsPage.tableTitle.read_one': 'Read notifications ({{count}})';
+    readonly 'notificationsPage.tableTitle.read_other': 'Read notifications ({{count}})';
+  }
+>;
 
 // (No @packageDocumentation comment for this package)
 ```

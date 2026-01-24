@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { lazy } from 'react';
+import { lazy } from 'react';
 import { screen, waitFor } from '@testing-library/react';
 import { renderWithEffects, wrapInTestApp } from '@backstage/test-utils';
 import { ExtensionSuspense } from './ExtensionSuspense';
@@ -31,7 +31,7 @@ describe('ExtensionSuspense', () => {
       ),
     );
 
-    expect(screen.getByTestId('progress')).toBeInTheDocument();
+    expect(screen.getByTestId('core-progress')).toBeInTheDocument();
   });
 
   it('should render the lazy loaded children component', async () => {

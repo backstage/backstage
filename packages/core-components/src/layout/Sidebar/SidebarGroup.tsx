@@ -19,7 +19,7 @@ import BottomNavigationAction, {
   BottomNavigationActionProps,
 } from '@material-ui/core/BottomNavigationAction';
 import { Theme, makeStyles } from '@material-ui/core/styles';
-import React, { useContext } from 'react';
+import { ReactNode, ChangeEvent, useContext } from 'react';
 import { useLocation } from 'react-router-dom';
 import { Link } from '../../components/Link/Link';
 import { SidebarConfig, SidebarConfigContext } from './config';
@@ -44,7 +44,7 @@ export interface SidebarGroupProps extends BottomNavigationActionProps {
   /**
    * React children
    */
-  children?: React.ReactNode;
+  children?: ReactNode;
 }
 
 const useStyles = makeStyles<Theme, { sidebarConfig: SidebarConfig }>(
@@ -82,7 +82,7 @@ const MobileSidebarGroup = (props: SidebarGroupProps) => {
   const { selectedMenuItemIndex, setSelectedMenuItemIndex } =
     useContext(MobileSidebarContext);
 
-  const onChange = (_: React.ChangeEvent<{}>, value: number) => {
+  const onChange = (_: ChangeEvent<{}>, value: number) => {
     if (value === selectedMenuItemIndex) {
       setSelectedMenuItemIndex(-1);
     } else {

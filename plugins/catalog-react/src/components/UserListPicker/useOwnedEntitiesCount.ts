@@ -38,7 +38,7 @@ export function useOwnedEntitiesCount() {
   );
 
   const { user, owners, ...allFilters } = filters;
-  const catalogFilters = reduceCatalogFilters(
+  const { orderFields, ...catalogFilters } = reduceCatalogFilters(
     compact(Object.values(allFilters)),
   );
 

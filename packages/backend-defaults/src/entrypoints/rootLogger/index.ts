@@ -16,3 +16,7 @@
 
 export { rootLoggerServiceFactory } from './rootLoggerServiceFactory';
 export { WinstonLogger, type WinstonLoggerOptions } from './WinstonLogger';
+export {
+  type WinstonLoggerLevelOverride,
+  type WinstonLoggerLevelOverrideMatchers,
+} from './types';

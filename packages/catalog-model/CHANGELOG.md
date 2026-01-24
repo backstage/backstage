@@ -1,5 +1,41 @@
 # @backstage/catalog-model
 
+## 1.7.6
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+
+## 1.7.6-next.0
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
+## 1.7.5
+
+### Patch Changes
+
+- 3507fcd: Just some more circular dep cleanup
+
+## 1.7.5-next.0
+
+### Patch Changes
+
+- 3507fcd: Just some more circular dep cleanup
+
+## 1.7.4
+
+### Patch Changes
+
+- ed4e625: Added support for icons containing colons
+- Updated dependencies
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.1
+
 ## 1.7.3
 
 ### Patch Changes

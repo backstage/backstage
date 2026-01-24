@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-catalog-backend-module-gerrit",
-  "version": "0.2.8-next.2",
+  "version": "0.3.10",
   "backstage": {
     "role": "backend-plugin-module",
     "pluginId": "catalog",
@@ -51,15 +51,16 @@
     "@backstage/config": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@backstage/integration": "workspace:^",
+    "@backstage/plugin-catalog-common": "workspace:^",
     "@backstage/plugin-catalog-node": "workspace:^",
     "fs-extra": "^11.2.0",
+    "p-limit": "^3.1.0",
     "uuid": "^11.0.0"
   },
   "devDependencies": {
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
     "@types/fs-extra": "^11.0.0",
-    "luxon": "^3.0.0",
     "msw": "^1.0.0"
   },
   "configSchema": "config.d.ts"

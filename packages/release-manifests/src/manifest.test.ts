@@ -86,6 +86,71 @@ describe('Release Manifests', () => {
         getManifestByVersion({ version: '0.0.0', fetch: mockFetch }),
       ).rejects.toThrow('No release found for 0.0.0 version');
     });
+
+    it('should allow overriding the versions host', async () => {
+      const mockFetch = jest.fn().mockImplementation(async url => ({
+        status: 200,
+        url,
+        json: () => ({
+          packages: [{ name: '@backstage/core', version: '2.3.4' }],
+        }),
+      }));
+
+      const pkgs = await getManifestByVersion({
+        version: '0.0.0',
+        fetch: mockFetch,
+        versionsBaseUrl: 'https://versions.some-test-host.com',
+      });
+
+      expect(pkgs.packages).toEqual([
+        {
+          name: '@backstage/core',
+          version: '2.3.4',
+        },
+      ]);
+
+      expect(mockFetch).toHaveBeenCalledWith(
+        'https://versions.some-test-host.com/v1/releases/0.0.0/manifest.json',
+        expect.anything(),
+      );
+    });
+
+    it('should allow overriding github host', async () => {
+      const mockFetch = jest.fn().mockImplementation(async url => {
+        if (
+          url ===
+          'https://versions.some-test-host.com/v1/releases/0.0.0/manifest.json'
+        ) {
+          return {
+            status: 200,
+            url,
+            json: () => ({
+              packages: [{ name: '@backstage/core', version: '2.3.4' }],
+            }),
+          };
+        }
+
+        throw new Error('Host not found');
+      });
+
+      const pkgs = await getManifestByVersion({
+        version: '0.0.0',
+        fetch: mockFetch,
+        gitHubRawBaseUrl: 'https://versions.some-test-host.com',
+      });
+
+      expect(pkgs.packages).toEqual([
+        {
+          name: '@backstage/core',
+          version: '2.3.4',
+        },
+      ]);
+
+      expect(mockFetch).toHaveBeenCalledWith(
+        'https://versions.some-test-host.com/v1/releases/0.0.0/manifest.json',
+        expect.anything(),
+      );
+    });
   });
 
   describe('getManifestByReleaseLine', () => {
@@ -118,6 +183,121 @@ describe('Release Manifests', () => {
       await expect(
         getManifestByReleaseLine({ releaseLine: 'foo' }),
       ).rejects.toThrow("No 'foo' release line found");
+    });
+
+    it('should allow overriding the fetch implementation', async () => {
+      const mockFetch = jest.fn().mockImplementation(async url => ({
+        status: 200,
+        url,
+        json: () => ({
+          packages: [{ name: '@backstage/core', version: '1.2.3' }],
+        }),
+      }));
+
+      const pkgs = await getManifestByReleaseLine({
+        releaseLine: 'main',
+        fetch: mockFetch,
+      });
+
+      expect(pkgs.packages).toEqual([
+        {
+          name: '@backstage/core',
+          version: '1.2.3',
+        },
+      ]);
+
+      mockFetch.mockImplementation(async url => ({
+        status: 404,
+        url,
+      }));
+
+      await expect(
+        getManifestByReleaseLine({ releaseLine: 'foo', fetch: mockFetch }),
+      ).rejects.toThrow("No 'foo' release line found");
+    });
+
+    it('should allow overriding the versions host', async () => {
+      const mockFetch = jest.fn().mockImplementation(async url => ({
+        status: 200,
+        url,
+        json: () => ({
+          packages: [{ name: '@backstage/core', version: '1.2.3' }],
+        }),
+      }));
+
+      const pkgs = await getManifestByReleaseLine({
+        releaseLine: 'main',
+        fetch: mockFetch,
+        versionsBaseUrl: 'https://versions.some-test-host.com',
+      });
+
+      expect(pkgs.packages).toEqual([
+        {
+          name: '@backstage/core',
+          version: '1.2.3',
+        },
+      ]);
+
+      expect(mockFetch).toHaveBeenCalledWith(
+        'https://versions.some-test-host.com/v1/tags/main/manifest.json',
+        expect.anything(),
+      );
+    });
+
+    it('should allow overriding github host', async () => {
+      const mockFetch = jest.fn().mockImplementation(async url => {
+        if (
+          url ===
+          'https://hosted.raw.internal-github.com/backstage/versions/main/v1/tags/main'
+        ) {
+          return {
+            ok: true,
+            status: 200,
+            url,
+            text: () =>
+              'https://hosted.raw.internal-github.com/backstage/versions/tags/main',
+          };
+        }
+
+        if (
+          url ===
+          'https://hosted.raw.internal-github.com/backstage/versions/tags/main/manifest.json'
+        ) {
+          return {
+            status: 200,
+            url,
+            json: () => ({
+              packages: [{ name: '@backstage/core', version: '1.2.3' }],
+            }),
+          };
+        }
+
+        throw new Error('Host Not Found');
+      });
+
+      const pkgs = await getManifestByReleaseLine({
+        releaseLine: 'main',
+        fetch: mockFetch,
+        gitHubRawBaseUrl:
+          'https://hosted.raw.internal-github.com/backstage/versions/main',
+      });
+
+      expect(pkgs.packages).toEqual([
+        {
+          name: '@backstage/core',
+          version: '1.2.3',
+        },
+      ]);
+
+      expect(mockFetch).toHaveBeenCalledWith(
+        'https://hosted.raw.internal-github.com/backstage/versions/main/v1/tags/main',
+        expect.anything(),
+      );
+
+      expect(mockFetch).toHaveBeenCalledWith(
+        'https://hosted.raw.internal-github.com/backstage/versions/tags/main/manifest.json',
+        expect.anything(),
+      );
     });
   });
 });

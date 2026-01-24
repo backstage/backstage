@@ -19,6 +19,7 @@ import { Entity } from '@backstage/catalog-model';
 import path from 'path';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
 import { minimatch } from 'minimatch';
+import { z } from 'zod';
 
 /**
  * Rules to apply to catalog entities.
@@ -26,14 +27,17 @@ import { minimatch } from 'minimatch';
  * An undefined list of matchers means match all, an empty list of matchers means match none.
  */
 export type CatalogRule = {
-  allow: Array<{
-    kind: string;
-  }>;
+  allow: CatalogRuleAllow[];
   locations?: Array<{
     exact?: string;
     type: string;
     pattern?: string;
   }>;
+};
+
+type CatalogRuleAllow = {
+  kind: string;
+  'spec.type'?: string;
 };
 
 /**
@@ -43,6 +47,16 @@ export type CatalogRule = {
 export type CatalogRulesEnforcer = {
   isAllowed(entity: Entity, location: LocationSpec): boolean;
 };
+
+const allowRuleParser = z.array(
+  z
+    .object({
+      kind: z.string(),
+      'spec.type': z.string().optional(),
+    })
+    .or(z.string())
+    .transform(val => (typeof val === 'string' ? { kind: val } : val)),
+);
 
 /**
  * Implements the default catalog rule set, consuming the config keys
@@ -78,6 +92,9 @@ export class DefaultCatalogRulesEnforcer implements CatalogRulesEnforcer {
    * catalog:
    *   rules:
    *   - allow: [Component, API]
+   *   - allow:
+   *     - kind: Resource
+   *       'spec.type': database
    *   - allow: [Template]
    *     locations:
    *       - type: url
@@ -105,7 +122,7 @@ export class DefaultCatalogRulesEnforcer implements CatalogRulesEnforcer {
       const globalRules = config
         .getConfigArray('catalog.rules')
         .map(ruleConf => ({
-          allow: ruleConf.getStringArray('allow').map(kind => ({ kind })),
+          allow: allowRuleParser.parse(ruleConf.get('allow')),
           locations: ruleConf
             .getOptionalConfigArray('locations')
             ?.map(locationConfig => {
@@ -149,7 +166,11 @@ export class DefaultCatalogRulesEnforcer implements CatalogRulesEnforcer {
     return new DefaultCatalogRulesEnforcer(rules);
   }
 
-  constructor(private readonly rules: CatalogRule[]) {}
+  private readonly rules: CatalogRule[];
+
+  constructor(rules: CatalogRule[]) {
+    this.rules = rules;
+  }
 
   /**
    * Checks whether a specific entity/location combination is allowed
@@ -199,14 +220,29 @@ export class DefaultCatalogRulesEnforcer implements CatalogRulesEnforcer {
     return false;
   }
 
-  private matchEntity(entity: Entity, matchers?: { kind: string }[]): boolean {
+  private matchEntity(entity: Entity, matchers?: CatalogRuleAllow[]): boolean {
     if (!matchers) {
       return true;
     }
 
     for (const matcher of matchers) {
-      if (entity?.kind?.toLowerCase() !== matcher.kind.toLowerCase()) {
+      if (
+        entity.kind?.toLocaleLowerCase('en-US') !==
+        matcher.kind.toLocaleLowerCase('en-US')
+      ) {
         continue;
+      }
+
+      if (matcher['spec.type']) {
+        if (typeof entity.spec?.type !== 'string') {
+          continue;
+        }
+        if (
+          matcher['spec.type'].toLocaleLowerCase('en-US') !==
+          entity.spec.type.toLocaleLowerCase('en-US')
+        ) {
+          continue;
+        }
       }
 
       return true;

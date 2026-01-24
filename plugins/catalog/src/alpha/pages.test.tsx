@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import {
@@ -25,6 +24,7 @@ import {
 import { catalogEntityPage } from './pages';
 import {
   EntityContentBlueprint,
+  EntityContextMenuItemBlueprint,
   EntityHeaderBlueprint,
 } from '@backstage/plugin-catalog-react/alpha';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
@@ -36,6 +36,7 @@ import {
 } from '@backstage/plugin-catalog-react';
 import { convertLegacyRouteRef } from '@backstage/core-compat-api';
 import { rootRouteRef } from '../routes';
+import { Entity } from '@backstage/catalog-model';
 
 describe('Entity page', () => {
   const entityMock = {
@@ -115,8 +116,8 @@ describe('Entity page', () => {
   const overviewEntityContent = EntityContentBlueprint.make({
     name: 'overview',
     params: {
-      defaultPath: '/overview',
-      defaultTitle: 'Overview',
+      path: '/overview',
+      title: 'Overview',
       loader: async () => <div>Mock Overview content</div>,
     },
   });
@@ -124,9 +125,9 @@ describe('Entity page', () => {
   const techdocsEntityContent = EntityContentBlueprint.make({
     name: 'techdocs',
     params: {
-      defaultPath: '/techdocs',
-      defaultTitle: 'TechDocs',
-      defaultGroup: 'documentation',
+      path: '/techdocs',
+      title: 'TechDocs',
+      group: 'documentation',
       loader: async () => <div>Mock TechDocs content</div>,
     },
   });
@@ -134,9 +135,9 @@ describe('Entity page', () => {
   const apidocsEntityContent = EntityContentBlueprint.make({
     name: 'apidocs',
     params: {
-      defaultPath: '/apidocs',
-      defaultTitle: 'ApiDocs',
-      defaultGroup: 'documentation',
+      path: '/apidocs',
+      title: 'ApiDocs',
+      group: 'documentation',
       loader: async () => <div>Mock ApiDocs content</div>,
     },
   });
@@ -596,5 +597,239 @@ describe('Entity page', () => {
         ).toBeInTheDocument(),
       );
     });
+  });
+
+  describe('Entity Page Context Menu', () => {
+    const onClickMock = jest.fn();
+    beforeEach(() => {
+      onClickMock.mockReset();
+    });
+
+    it.each([
+      {
+        useProps: () => ({
+          title: 'Test Title',
+          href: '/somewhere',
+          disabled: true,
+          component: 'a',
+        }),
+      },
+      {
+        useProps: () => ({
+          title: 'Test Title',
+          href: '/somewhere',
+          disabled: false,
+          component: 'a',
+        }),
+      },
+    ])('should render an href based context menu item', async params => {
+      const menuItem = EntityContextMenuItemBlueprint.make({
+        name: 'test-href',
+        params: {
+          icon: <span>Test Icon</span>,
+          ...params,
+        },
+      });
+      const tester = createExtensionTester(
+        Object.assign({ namespace: 'catalog' }, catalogEntityPage),
+      ).add(menuItem);
+
+      await renderInTestApp(
+        <TestApiProvider
+          apis={[
+            [catalogApiRef, mockCatalogApi],
+            [starredEntitiesApiRef, mockStarredEntitiesApi],
+          ]}
+        >
+          {tester.reactElement()}
+        </TestApiProvider>,
+        {
+          config: {
+            app: {
+              title: 'Custom app',
+            },
+            backend: { baseUrl: 'http://localhost:7000' },
+          },
+          mountedRoutes: {
+            '/catalog': convertLegacyRouteRef(rootRouteRef),
+            '/catalog/:namespace/:kind/:name':
+              convertLegacyRouteRef(entityRouteRef),
+          },
+        },
+      );
+      const { disabled } = params.useProps();
+
+      await userEvent.click(await screen.findByTestId('menu-button'));
+
+      await waitFor(async () => {
+        expect(screen.getByText('Test Title')).toBeInTheDocument();
+        expect(screen.getByText('Test Icon')).toBeInTheDocument();
+        const anchor = screen.getByText('Test Title').closest('a');
+        expect(anchor).toHaveAttribute('href', '/somewhere');
+        expect(anchor).toHaveAttribute('aria-disabled', disabled.toString());
+      });
+    });
+
+    it.each([
+      {
+        useProps: () => ({
+          title: 'Test Title',
+          onClick: onClickMock,
+          disabled: true,
+        }),
+      },
+      {
+        useProps: () => ({
+          title: 'Test Title',
+          onClick: onClickMock,
+          disabled: false,
+        }),
+      },
+    ])('should render an onClick based context menu item', async params => {
+      const menuItem = EntityContextMenuItemBlueprint.make({
+        name: 'test-click',
+        params: {
+          icon: <span>Test Icon</span>,
+          ...params,
+        },
+      });
+      const tester = createExtensionTester(
+        Object.assign({ namespace: 'catalog' }, catalogEntityPage),
+      ).add(menuItem);
+
+      await renderInTestApp(
+        <TestApiProvider
+          apis={[
+            [catalogApiRef, mockCatalogApi],
+            [starredEntitiesApiRef, mockStarredEntitiesApi],
+          ]}
+        >
+          {tester.reactElement()}
+        </TestApiProvider>,
+        {
+          config: {
+            app: {
+              title: 'Custom app',
+            },
+            backend: { baseUrl: 'http://localhost:7000' },
+          },
+          mountedRoutes: {
+            '/catalog': convertLegacyRouteRef(rootRouteRef),
+            '/catalog/:namespace/:kind/:name':
+              convertLegacyRouteRef(entityRouteRef),
+          },
+        },
+      );
+
+      const { disabled } = params.useProps();
+
+      // Wait for entity to load first
+      await waitFor(() =>
+        expect(screen.getByText(/artist-lookup/)).toBeInTheDocument(),
+      );
+
+      await userEvent.click(screen.getByTestId('menu-button'));
+
+      // Wait for menu to open
+      await waitFor(() =>
+        expect(screen.getByText('Test Title')).toBeInTheDocument(),
+      );
+
+      expect(screen.getByText('Test Icon')).toBeInTheDocument();
+      const listItem = screen.getByText('Test Title').closest('li');
+      expect(listItem).toHaveAttribute('aria-disabled', disabled.toString());
+      if (!disabled) {
+        await userEvent.click(screen.getByText('Test Title'));
+      }
+
+      expect(onClickMock).toHaveBeenCalledTimes(disabled ? 0 : 1);
+    });
+
+    it.each([
+      {
+        positive: { params: {} },
+        negative: { params: { filter: { kind: 'api' } } },
+      },
+      {
+        positive: { params: { filter: { kind: 'component' } } },
+        negative: { params: { filter: { kind: 'api' } } },
+      },
+      {
+        positive: {
+          params: {
+            filter: (e: Entity) => e.kind.toLowerCase() === 'component',
+          },
+        },
+        negative: {
+          params: { filter: (e: Entity) => e.kind.toLowerCase() === 'api' },
+        },
+      },
+    ])(
+      'should render menu items according to filters',
+      async ({ positive, negative }) => {
+        const menuItem = EntityContextMenuItemBlueprint.make({
+          name: 'should-render-menu-item',
+          params: {
+            icon: <span>Test Icon</span>,
+            useProps: () => ({
+              onClick: onClickMock,
+              title: 'Should Render',
+            }),
+            ...positive.params,
+          },
+        });
+
+        const filteredMenuItem = EntityContextMenuItemBlueprint.make({
+          name: 'should-not-render-menu-item',
+          params: {
+            icon: <span>Test Icon</span>,
+            useProps: () => ({
+              onClick: onClickMock,
+              title: 'Should Not Render',
+            }),
+            ...negative.params,
+          },
+        });
+
+        const tester = createExtensionTester(
+          Object.assign({ namespace: 'catalog' }, catalogEntityPage),
+        )
+          .add(menuItem)
+          .add(filteredMenuItem);
+
+        await renderInTestApp(
+          <TestApiProvider
+            apis={[
+              [catalogApiRef, mockCatalogApi],
+              [starredEntitiesApiRef, mockStarredEntitiesApi],
+            ]}
+          >
+            {tester.reactElement()}
+          </TestApiProvider>,
+          {
+            config: {
+              app: {
+                title: 'Custom app',
+              },
+              backend: { baseUrl: 'http://localhost:7000' },
+            },
+            mountedRoutes: {
+              '/catalog': convertLegacyRouteRef(rootRouteRef),
+              '/catalog/:namespace/:kind/:name':
+                convertLegacyRouteRef(entityRouteRef),
+            },
+          },
+        );
+
+        await userEvent.click(await screen.findByTestId('menu-button'));
+
+        await waitFor(async () => {
+          expect(screen.getByText('Should Render')).toBeInTheDocument();
+          expect(
+            screen.queryByText('Should Not Render'),
+          ).not.toBeInTheDocument();
+        });
+      },
+    );
   });
 });

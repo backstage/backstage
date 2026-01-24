@@ -89,6 +89,19 @@ describe('ConfigSources', () => {
       { name: 'FileConfigSource', path: `${root}app-config.yaml` },
       { name: 'FileConfigSource', path: `${root}app-config.local.yaml` },
     ]);
+
+    process.env = Object.assign(process.env, { BACKSTAGE_ENV: 'test' });
+    expect(
+      mergeSources(
+        ConfigSources.defaultForTargets({ rootDir: '/', targets: [] }),
+      ),
+    ).toEqual([
+      { name: 'FileConfigSource', path: `${root}app-config.yaml` },
+      { name: 'FileConfigSource', path: `${root}app-config.test.yaml` },
+      { name: 'FileConfigSource', path: `${root}app-config.local.yaml` },
+      { name: 'FileConfigSource', path: `${root}app-config.test.local.yaml` },
+    ]);
+
     fsSpy.mockRestore();
 
     expect(

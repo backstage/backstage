@@ -15,7 +15,7 @@
  */
 
 import { Config } from '@backstage/config';
-import React, {
+import {
   ComponentType,
   PropsWithChildren,
   Suspense,

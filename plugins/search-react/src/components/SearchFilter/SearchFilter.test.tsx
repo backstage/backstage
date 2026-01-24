@@ -14,15 +14,18 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { screen, render, waitFor } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
 import { configApiRef } from '@backstage/core-plugin-api';
 
 import { SearchContextProvider } from '../../context';
 import { SearchFilter } from './SearchFilter';
-import { mockApis, TestApiProvider } from '@backstage/test-utils';
+import {
+  mockApis,
+  renderInTestApp,
+  TestApiProvider,
+} from '@backstage/test-utils';
 import { searchApiRef } from '../../api';
 
 describe('SearchFilter', () => {
@@ -56,14 +59,16 @@ describe('SearchFilter', () => {
   it('Check that element was rendered and received props', async () => {
     const CustomFilter = (props: { name: string }) => <h6>{props.name}</h6>;
 
-    render(<SearchFilter name={name} component={CustomFilter} />);
+    await renderInTestApp(
+      <SearchFilter name={name} component={CustomFilter} />,
+    );
 
     expect(screen.getByRole('heading', { name })).toBeInTheDocument();
   });
 
   describe('Checkbox', () => {
     it('Renders field name and values when provided as props', async () => {
-      render(
+      await renderInTestApp(
         <TestApiProvider
           apis={[
             [searchApiRef, searchApiMock],
@@ -89,7 +94,7 @@ describe('SearchFilter', () => {
     });
 
     it('Renders correctly based on filter state', async () => {
-      render(
+      await renderInTestApp(
         <TestApiProvider
           apis={[
             [searchApiRef, searchApiMock],
@@ -120,7 +125,7 @@ describe('SearchFilter', () => {
     });
 
     it('Renders correctly based on defaultValue', async () => {
-      render(
+      await renderInTestApp(
         <TestApiProvider
           apis={[
             [searchApiRef, searchApiMock],
@@ -149,7 +154,7 @@ describe('SearchFilter', () => {
     });
 
     it('Checking / unchecking a value sets filter state', async () => {
-      render(
+      await renderInTestApp(
         <TestApiProvider
           apis={[
             [searchApiRef, searchApiMock],
@@ -173,6 +178,7 @@ describe('SearchFilter', () => {
       await waitFor(() => {
         expect(searchApiMock.query).toHaveBeenLastCalledWith(
           expect.objectContaining({ filters: { field: [values[0]] } }),
+          { signal: expect.any(Object) },
         );
       });
 
@@ -181,12 +187,13 @@ describe('SearchFilter', () => {
       await waitFor(() => {
         expect(searchApiMock.query).toHaveBeenLastCalledWith(
           expect.objectContaining({ filters: {} }),
+          { signal: expect.any(Object) },
         );
       });
     });
 
     it('Checking / unchecking a value maintains unrelated filter state', async () => {
-      render(
+      await renderInTestApp(
         <TestApiProvider
           apis={[
             [searchApiRef, searchApiMock],
@@ -212,6 +219,7 @@ describe('SearchFilter', () => {
           expect.objectContaining({
             filters: { ...filters, field: [values[0]] },
           }),
+          { signal: expect.any(Object) },
         );
       });
 
@@ -220,6 +228,7 @@ describe('SearchFilter', () => {
       await waitFor(() => {
         expect(searchApiMock.query).toHaveBeenLastCalledWith(
           expect.objectContaining({ filters }),
+          { signal: expect.any(Object) },
         );
       });
     });
@@ -227,7 +236,7 @@ describe('SearchFilter', () => {
 
   describe('Select', () => {
     it('Renders field name and values when provided as props', async () => {
-      render(
+      await renderInTestApp(
         <TestApiProvider
           apis={[
             [searchApiRef, searchApiMock],
@@ -259,7 +268,7 @@ describe('SearchFilter', () => {
     });
 
     it('Renders values when provided asynchronously', async () => {
-      render(
+      await renderInTestApp(
         <TestApiProvider
           apis={[
             [searchApiRef, searchApiMock],
@@ -300,7 +309,7 @@ describe('SearchFilter', () => {
     });
 
     it('Renders correctly based on filter state', async () => {
-      render(
+      await renderInTestApp(
         <TestApiProvider
           apis={[
             [searchApiRef, searchApiMock],
@@ -343,7 +352,7 @@ describe('SearchFilter', () => {
     });
 
     it('Renders correctly based on defaultValue', async () => {
-      render(
+      await renderInTestApp(
         <TestApiProvider
           apis={[
             [searchApiRef, searchApiMock],
@@ -384,7 +393,7 @@ describe('SearchFilter', () => {
     });
 
     it('Selecting a value sets filter state', async () => {
-      render(
+      await renderInTestApp(
         <TestApiProvider
           apis={[
             [searchApiRef, searchApiMock],
@@ -416,6 +425,7 @@ describe('SearchFilter', () => {
           expect.objectContaining({
             filters: { [name]: values[0] },
           }),
+          { signal: expect.any(AbortSignal) },
         );
       });
 
@@ -432,12 +442,13 @@ describe('SearchFilter', () => {
           expect.objectContaining({
             filters: {},
           }),
+          { signal: expect.any(AbortSignal) },
         );
       });
     });
 
     it('Selecting a value maintains unrelated filter state', async () => {
-      render(
+      await renderInTestApp(
         <TestApiProvider
           apis={[
             [searchApiRef, searchApiMock],
@@ -474,6 +485,7 @@ describe('SearchFilter', () => {
           expect.objectContaining({
             filters: { ...filters, [name]: values[0] },
           }),
+          { signal: expect.any(AbortSignal) },
         );
       });
 
@@ -488,6 +500,7 @@ describe('SearchFilter', () => {
       await waitFor(() => {
         expect(searchApiMock.query).toHaveBeenLastCalledWith(
           expect.objectContaining({ filters }),
+          { signal: expect.any(AbortSignal) },
         );
       });
     });

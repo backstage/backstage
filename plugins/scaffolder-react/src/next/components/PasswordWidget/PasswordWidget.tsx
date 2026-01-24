@@ -19,7 +19,6 @@ import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import TextField from '@material-ui/core/TextField';
 import { WidgetProps } from '@rjsf/utils';
-import React from 'react';
 
 import { scaffolderReactTranslationRef } from '../../../translation';
 

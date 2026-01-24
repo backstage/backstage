@@ -19,7 +19,7 @@ import Button from '@material-ui/core/Button';
 import { makeStyles, Theme } from '@material-ui/core/styles';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import classnames from 'classnames';
-import React, { useContext, useRef, useState } from 'react';
+import { ReactNode, useContext, useRef, useState } from 'react';
 
 import {
   makeSidebarConfig,
@@ -41,15 +41,21 @@ import { coreComponentsTranslationRef } from '../../translation';
 export type SidebarClassKey = 'drawer' | 'drawerOpen';
 const useStyles = makeStyles<Theme, { sidebarConfig: SidebarConfig }>(
   theme => ({
-    drawer: {
-      display: 'flex',
-      flexFlow: 'column nowrap',
-      alignItems: 'flex-start',
-      position: 'fixed',
+    root: {
       left: 0,
       top: 0,
       bottom: 0,
       zIndex: theme.zIndex.appBar,
+      position: 'fixed',
+    },
+    drawer: {
+      display: 'flex',
+      flexFlow: 'column nowrap',
+      alignItems: 'flex-start',
+      left: 0,
+      top: 0,
+      bottom: 0,
+      position: 'absolute',
       background: theme.palette.navigation.background,
       overflowX: 'hidden',
       msOverflowStyle: 'none',
@@ -91,11 +97,11 @@ const useStyles = makeStyles<Theme, { sidebarConfig: SidebarConfig }>(
   { name: 'BackstageSidebar' },
 );
 
-enum State {
-  Closed,
-  Idle,
-  Open,
-}
+const State = {
+  Closed: 0,
+  Idle: 1,
+  Open: 2,
+} as const;
 
 /** @public */
 export type SidebarProps = {
@@ -104,14 +110,14 @@ export type SidebarProps = {
   sidebarOptions?: SidebarOptions;
   submenuOptions?: SubmenuOptions;
   disableExpandOnHover?: boolean;
-  children?: React.ReactNode;
+  children?: ReactNode;
 };
 
 export type DesktopSidebarProps = {
   openDelayMs?: number;
   closeDelayMs?: number;
   disableExpandOnHover?: boolean;
-  children?: React.ReactNode;
+  children?: ReactNode;
 };
 
 /**
@@ -138,7 +144,9 @@ const DesktopSidebar = (props: DesktopSidebarProps) => {
     theme => theme.breakpoints.down('md'),
     { noSsr: true },
   );
-  const [state, setState] = useState(State.Closed);
+  const [state, setState] = useState<(typeof State)[keyof typeof State]>(
+    State.Closed,
+  );
   const hoverTimerRef = useRef<number>();
   const { isPinned, toggleSidebarPinState } = useSidebarPinState();
 

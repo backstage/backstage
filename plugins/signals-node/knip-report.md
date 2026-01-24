@@ -4,15 +4,15 @@
 
 | Name                        | Location     | Severity |
 | :-------------------------- | :----------- | :------- |
-| @backstage/plugin-auth-node | package.json | error    |
-| @backstage/config           | package.json | error    |
-| express                     | package.json | error    |
-| uuid                        | package.json | error    |
-| ws                          | package.json | error    |
+| @backstage/plugin-auth-node | plugins/signals-node/package.json | error    |
+| @backstage/config           | plugins/signals-node/package.json | error    |
+| express                     | plugins/signals-node/package.json | error    |
+| uuid                        | plugins/signals-node/package.json | error    |
+| ws                          | plugins/signals-node/package.json | error    |
 
 ## Unused devDependencies (1)
 
 | Name           | Location     | Severity |
 | :------------- | :----------- | :------- |
-| @types/express | package.json | error    |
+| @types/express | plugins/signals-node/package.json | error    |
 

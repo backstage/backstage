@@ -37,6 +37,7 @@ import { Config } from '@backstage/config';
 
 /**
  * Retrieves the account ID for the given credential provider from STS.
+ * Include the region if present, otherwise use the default region.
  */
 async function fillInAccountId(credProvider: AwsCredentialProvider) {
   if (credProvider.accountId) {
@@ -44,7 +45,7 @@ async function fillInAccountId(credProvider: AwsCredentialProvider) {
   }
 
   const client = new STSClient({
-    region: credProvider.stsRegion,
+    region: credProvider.stsRegion ?? 'us-east-1',
     customUserAgent: 'backstage-aws-credentials-manager',
     credentialDefaultProvider: () => credProvider.sdkCredentialProvider,
   });
@@ -174,6 +175,7 @@ export class DefaultAwsCredentialsManager implements AwsCredentialsManager {
       awsConfig.mainAccount,
     );
     const mainAccountCredProvider: AwsCredentialProvider = {
+      stsRegion: awsConfig.mainAccount.region,
       sdkCredentialProvider: mainAccountSdkCredProvider,
     };
 
@@ -197,14 +199,22 @@ export class DefaultAwsCredentialsManager implements AwsCredentialsManager {
     );
   }
 
+  private readonly accountCredentialProviders: Map<
+    string,
+    AwsCredentialProvider
+  >;
+  private readonly accountDefaults: AwsIntegrationDefaultAccountConfig;
+  private readonly mainAccountCredentialProvider: AwsCredentialProvider;
+
   private constructor(
-    private readonly accountCredentialProviders: Map<
-      string,
-      AwsCredentialProvider
-    >,
-    private readonly accountDefaults: AwsIntegrationDefaultAccountConfig,
-    private readonly mainAccountCredentialProvider: AwsCredentialProvider,
-  ) {}
+    accountCredentialProviders: Map<string, AwsCredentialProvider>,
+    accountDefaults: AwsIntegrationDefaultAccountConfig,
+    mainAccountCredentialProvider: AwsCredentialProvider,
+  ) {
+    this.accountCredentialProviders = accountCredentialProviders;
+    this.accountDefaults = accountDefaults;
+    this.mainAccountCredentialProvider = mainAccountCredentialProvider;
+  }
 
   /**
    * Returns an {@link AwsCredentialProvider} for a given AWS account.

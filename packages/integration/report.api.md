@@ -137,6 +137,7 @@ export interface AzureCredentialsManager {
 // @public
 export type AzureDevOpsCredential =
   | AzureClientSecretCredential
+  | AzureManagedIdentityClientAssertionCredential
   | AzureManagedIdentityCredential
   | PersonalAccessTokenCredential;
 
@@ -144,11 +145,13 @@ export type AzureDevOpsCredential =
 export type AzureDevOpsCredentialKind =
   | 'PersonalAccessToken'
   | 'ClientSecret'
-  | 'ManagedIdentity';
+  | 'ManagedIdentity'
+  | 'ManagedIdentityClientAssertion';
 
 // @public
 export type AzureDevOpsCredentialLike = Omit<
   Partial<AzureClientSecretCredential> &
+    Partial<AzureManagedIdentityClientAssertionCredential> &
     Partial<AzureManagedIdentityCredential> &
     Partial<PersonalAccessTokenCredential>,
   'kind'
@@ -205,9 +208,18 @@ export type AzureIntegrationConfig = {
 };
 
 // @public
+export type AzureManagedIdentityClientAssertionCredential =
+  AzureCredentialBase & {
+    kind: 'ManagedIdentityClientAssertion';
+    tenantId: string;
+    clientId: string;
+    managedIdentityClientId: 'system-assigned' | string;
+  };
+
+// @public
 export type AzureManagedIdentityCredential = AzureCredentialBase & {
   kind: 'ManagedIdentity';
-  clientId: string;
+  clientId: 'system-assigned' | string;
 };
 
 // @public
@@ -238,6 +250,8 @@ export type BitbucketCloudIntegrationConfig = {
   username?: string;
   appPassword?: string;
   token?: string;
+  clientId?: string;
+  clientSecret?: string;
   commitSigningKey?: string;
 };
 
@@ -396,6 +410,7 @@ export type GerritIntegrationConfig = {
   host: string;
   baseUrl?: string;
   cloneUrl?: string;
+  disableEditUrl?: boolean;
   gitilesBaseUrl: string;
   username?: string;
   password?: string;
@@ -438,11 +453,17 @@ export function getBitbucketCloudFileFetchUrl(
 ): string;
 
 // @public
+export function getBitbucketCloudOAuthToken(
+  clientId: string,
+  clientSecret: string,
+): Promise<string>;
+
+// @public
 export function getBitbucketCloudRequestOptions(
   config: BitbucketCloudIntegrationConfig,
-): {
+): Promise<{
   headers: Record<string, string>;
-};
+}>;
 
 // @public @deprecated
 export function getBitbucketDefaultBranch(
@@ -567,9 +588,15 @@ export function getGitHubRequestOptions(
 };
 
 // @public
+export function getGitilesAuthenticationUrl(
+  config: GerritIntegrationConfig,
+): string;
+
+// @public
 export function getGitLabFileFetchUrl(
   url: string,
   config: GitLabIntegrationConfig,
+  token?: string,
 ): Promise<string>;
 
 // @public
@@ -642,15 +669,16 @@ export type GiteaIntegrationConfig = {
 export type GithubAppConfig = {
   appId: number;
   privateKey: string;
-  webhookSecret: string;
+  webhookSecret?: string;
   clientId: string;
   clientSecret: string;
   allowedInstallationOwners?: string[];
+  publicAccess?: boolean;
 };
 
 // @public
 export class GithubAppCredentialsMux {
-  constructor(config: GithubIntegrationConfig);
+  constructor(config: GithubIntegrationConfig, appIds?: number[]);
   // (undocumented)
   getAllInstallations(): Promise<
     RestEndpointMethodTypes['apps']['listInstallations']['response']['data']
@@ -754,7 +782,29 @@ export type GitLabIntegrationConfig = {
 };
 
 // @public
+export class GoogleGcsIntegration implements ScmIntegration {
+  constructor(integrationConfig: GoogleGcsIntegrationConfig);
+  // (undocumented)
+  get config(): GoogleGcsIntegrationConfig;
+  // (undocumented)
+  static factory: ScmIntegrationsFactory<GoogleGcsIntegration>;
+  // (undocumented)
+  resolveEditUrl(url: string): string;
+  // (undocumented)
+  resolveUrl(options: {
+    url: string;
+    base: string;
+    lineNumber?: number | undefined;
+  }): string;
+  // (undocumented)
+  get title(): string;
+  // (undocumented)
+  get type(): string;
+}
+
+// @public
 export type GoogleGcsIntegrationConfig = {
+  host: string;
   clientEmail?: string;
   privateKey?: string;
 };
@@ -811,6 +861,8 @@ export interface IntegrationsByType {
   github: ScmIntegrationsGroup<GithubIntegration>;
   // (undocumented)
   gitlab: ScmIntegrationsGroup<GitLabIntegration>;
+  // (undocumented)
+  googleGcs: ScmIntegrationsGroup<GoogleGcsIntegration>;
   // (undocumented)
   harness: ScmIntegrationsGroup<HarnessIntegration>;
 }
@@ -1081,6 +1133,8 @@ export class ScmIntegrations implements ScmIntegrationRegistry {
   get github(): ScmIntegrationsGroup<GithubIntegration>;
   // (undocumented)
   get gitlab(): ScmIntegrationsGroup<GitLabIntegration>;
+  // (undocumented)
+  get googleGcs(): ScmIntegrationsGroup<GoogleGcsIntegration>;
   // (undocumented)
   get harness(): ScmIntegrationsGroup<HarnessIntegration>;
   // (undocumented)

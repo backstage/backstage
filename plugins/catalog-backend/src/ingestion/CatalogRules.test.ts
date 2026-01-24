@@ -27,8 +27,14 @@ const entity = {
     kind: 'Group',
   } as Entity,
   component: {
-    kind: 'component',
+    kind: 'Component',
   } as Entity,
+  componentWithType: {
+    kind: 'Component',
+    spec: {
+      type: 'service',
+    },
+  } as unknown as Entity,
   location: {
     kind: 'Location',
   } as Entity,
@@ -164,6 +170,9 @@ describe('DefaultCatalogRulesEnforcer', () => {
       expect(enforcer.isAllowed(entity.user, location.x)).toBe(false);
       expect(enforcer.isAllowed(entity.group, location.y)).toBe(false);
       expect(enforcer.isAllowed(entity.component, location.z)).toBe(true);
+      expect(enforcer.isAllowed(entity.componentWithType, location.z)).toBe(
+        true,
+      );
       expect(enforcer.isAllowed(entity.location, location.z)).toBe(true);
     });
 
@@ -266,6 +275,33 @@ describe('DefaultCatalogRulesEnforcer', () => {
       expect(enforcer.isAllowed(entity.component, location.y)).toBe(false);
       expect(enforcer.isAllowed(entity.component, location.z)).toBe(false);
     });
+  });
+
+  it('should only allow components with a specific type', () => {
+    const enforcer = DefaultCatalogRulesEnforcer.fromConfig(
+      new ConfigReader({
+        catalog: {
+          rules: [
+            {
+              allow: [{ kind: 'Component', 'spec.type': 'service' }],
+              locations: [{ type: 'url', pattern: 'https://github.com/b/**' }],
+            },
+          ],
+        },
+      }),
+    );
+
+    expect(enforcer.isAllowed(entity.component, location.w)).toBe(false);
+    expect(enforcer.isAllowed(entity.component, location.y)).toBe(false);
+    expect(enforcer.isAllowed(entity.component, location.z)).toBe(false);
+
+    expect(enforcer.isAllowed(entity.componentWithType, location.w)).toBe(true);
+    expect(enforcer.isAllowed(entity.componentWithType, location.y)).toBe(
+      false,
+    );
+    expect(enforcer.isAllowed(entity.componentWithType, location.z)).toBe(
+      false,
+    );
   });
 
   it('should allow locations with a hidden folder', () => {

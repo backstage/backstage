@@ -14,16 +14,15 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import {
-  createComponentExtension,
-  coreComponentRefs,
+  SwappableComponentBlueprint,
+  NotFoundErrorPage,
 } from '@backstage/frontend-plugin-api';
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import { Button } from '@backstage/core-components';
 
-export function CustomNotFoundErrorPage() {
+function CustomNotFoundErrorPage() {
   return (
     <Box
       component="article"
@@ -51,8 +50,11 @@ export function CustomNotFoundErrorPage() {
   );
 }
 
-export default createComponentExtension({
+export default SwappableComponentBlueprint.make({
   name: 'not-found-error-page',
-  ref: coreComponentRefs.notFoundErrorPage,
-  loader: { sync: () => CustomNotFoundErrorPage },
+  params: define =>
+    define({
+      component: NotFoundErrorPage,
+      loader: () => CustomNotFoundErrorPage,
+    }),
 });

@@ -17,83 +17,11 @@
 import { InputError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
-import commonGitlabConfig, { IssueType } from '../commonGitlabConfig';
+import { IssueType } from '../commonGitlabConfig';
 import { examples } from './gitlabIssueCreate.examples';
-import { z } from 'zod';
 import { checkEpicScope, convertDate, getClient, parseRepoUrl } from '../util';
 import { CreateIssueOptions, IssueSchema } from '@gitbeaker/rest';
 import { getErrorMessage } from './helpers';
-
-const issueInputProperties = z.object({
-  projectId: z.number().describe('Project Id'),
-  title: z.string({ description: 'Title of the issue' }),
-  assignees: z
-    .array(z.number(), {
-      description: 'IDs of the users to assign the issue to.',
-    })
-    .optional(),
-  confidential: z.boolean({ description: 'Issue Confidentiality' }).optional(),
-  description: z.string().describe('Issue description').max(1048576).optional(),
-  createdAt: z
-    .string()
-    .describe('Creation date/time')
-    .regex(
-      /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z$/,
-      'Invalid date format. Use YYYY-MM-DDTHH:mm:ssZ or YYYY-MM-DDTHH:mm:ss.SSSZ',
-    )
-    .optional(),
-  dueDate: z
-    .string()
-    .describe('Due date/time')
-    .regex(
-      /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z$/,
-      'Invalid date format. Use YYYY-MM-DDTHH:mm:ssZ or YYYY-MM-DDTHH:mm:ss.SSSZ',
-    )
-    .optional(),
-  discussionToResolve: z
-    .string({
-      description:
-        'Id of a discussion to resolve. Use in combination with "merge_request_to_resolve_discussions_of"',
-    })
-    .optional(),
-  epicId: z
-    .number({ description: 'Id of the linked Epic' })
-    .min(0, 'Valid values should be equal or greater than zero')
-    .optional(),
-  labels: z.string({ description: 'Labels to apply' }).optional(),
-  issueType: z
-    .nativeEnum(IssueType, {
-      description: 'Type of the issue',
-    })
-    .optional(),
-  mergeRequestToResolveDiscussionsOf: z
-    .number({
-      description: 'IID of a merge request in which to resolve all issues',
-    })
-    .optional(),
-  milestoneId: z
-    .number({ description: 'Global ID of a milestone to assign the issue' })
-    .optional(),
-  weight: z
-    .number({ description: 'The issue weight' })
-    .min(0)
-    .refine(value => {
-      const isValid = value >= 0;
-      if (!isValid) {
-        return {
-          message: 'Valid values should be equal or greater than zero',
-        };
-      }
-      return isValid;
-    })
-    .optional(),
-});
-
-const issueOutputProperties = z.object({
-  issueUrl: z.string({ description: 'Issue Url' }),
-  issueId: z.number({ description: 'Issue Id' }),
-  issueIid: z.number({ description: 'Issue Iid' }),
-});
 
 /**
  * Creates a `gitlab:issues:create` Scaffolder action.
@@ -110,8 +38,133 @@ export const createGitlabIssueAction = (options: {
     description: 'Creates a Gitlab issue.',
     examples,
     schema: {
-      input: commonGitlabConfig.merge(issueInputProperties),
-      output: issueOutputProperties,
+      input: {
+        repoUrl: z =>
+          z.string({
+            description: `Accepts the format 'gitlab.com?repo=project_name&owner=group_name' where 'project_name' is the repository name and 'group_name' is a group or username`,
+          }),
+        token: z =>
+          z
+            .string({
+              description: 'The token to use for authorization to GitLab',
+            })
+            .optional(),
+        projectId: z =>
+          z.number({
+            description: 'Project Id',
+          }),
+        title: z =>
+          z.string({
+            description: 'Title of the issue',
+          }),
+        assignees: z =>
+          z
+            .array(z.number(), {
+              description: 'IDs of the users to assign the issue to.',
+            })
+            .optional(),
+        confidential: z =>
+          z
+            .boolean({
+              description: 'Issue Confidentiality',
+            })
+            .optional(),
+        description: z =>
+          z
+            .string({
+              description: 'Issue description',
+            })
+            .max(1048576)
+            .optional(),
+        createdAt: z =>
+          z
+            .string({
+              description: 'Creation date/time',
+            })
+            .regex(
+              /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z$/,
+              'Invalid date format. Use YYYY-MM-DDTHH:mm:ssZ or YYYY-MM-DDTHH:mm:ss.SSSZ',
+            )
+            .optional(),
+        dueDate: z =>
+          z
+            .string({
+              description: 'Due date/time',
+            })
+            .regex(
+              /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{3})?Z$/,
+              'Invalid date format. Use YYYY-MM-DDTHH:mm:ssZ or YYYY-MM-DDTHH:mm:ss.SSSZ',
+            )
+            .optional(),
+        discussionToResolve: z =>
+          z
+            .string({
+              description:
+                'Id of a discussion to resolve. Use in combination with "merge_request_to_resolve_discussions_of"',
+            })
+            .optional(),
+        epicId: z =>
+          z
+            .number({
+              description: 'Id of the linked Epic',
+            })
+            .min(0, 'Valid values should be equal or greater than zero')
+            .optional(),
+        labels: z =>
+          z
+            .string({
+              description: 'Labels to apply',
+            })
+            .optional(),
+        issueType: z =>
+          z
+            .nativeEnum(IssueType, {
+              description: 'Type of the issue',
+            })
+            .optional(),
+        mergeRequestToResolveDiscussionsOf: z =>
+          z
+            .number({
+              description:
+                'IID of a merge request in which to resolve all issues',
+            })
+            .optional(),
+        milestoneId: z =>
+          z
+            .number({
+              description: 'Global ID of a milestone to assign the issue',
+            })
+            .optional(),
+        weight: z =>
+          z
+            .number({
+              description: 'The issue weight',
+            })
+            .min(0)
+            .refine(
+              value => {
+                return value >= 0;
+              },
+              {
+                message: 'Valid values should be equal or greater than zero',
+              },
+            )
+            .optional(),
+      },
+      output: {
+        issueUrl: z =>
+          z.string({
+            description: 'Issue Url',
+          }),
+        issueId: z =>
+          z.number({
+            description: 'Issue Id',
+          }),
+        issueIid: z =>
+          z.number({
+            description: 'Issue Iid',
+          }),
+      },
     },
     async handler(ctx) {
       try {
@@ -132,7 +185,7 @@ export const createGitlabIssueAction = (options: {
           milestoneId,
           weight,
           token,
-        } = commonGitlabConfig.merge(issueInputProperties).parse(ctx.input);
+        } = ctx.input;
 
         const { host } = parseRepoUrl(repoUrl, integrations);
         const api = getClient({ host, integrations, token });
@@ -201,12 +254,6 @@ export const createGitlabIssueAction = (options: {
         ctx.output('issueUrl', response.web_url);
         ctx.output('issueIid', response.iid);
       } catch (error: any) {
-        if (error instanceof z.ZodError) {
-          // Handling Zod validation errors
-          throw new InputError(`Validation error: ${error.message}`, {
-            validationErrors: error.errors,
-          });
-        }
         // Handling other errors
         throw new InputError(
           `Failed to create GitLab issue: ${getErrorMessage(error)}`,

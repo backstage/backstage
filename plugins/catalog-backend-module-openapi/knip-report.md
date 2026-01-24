@@ -4,5 +4,5 @@
 
 | Name          | Location     | Severity |
 | :------------ | :----------- | :------- |
-| openapi-types | package.json | error    |
+| openapi-types | plugins/catalog-backend-module-openapi/package.json | error    |
 

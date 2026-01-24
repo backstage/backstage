@@ -11,7 +11,7 @@ The Backstage `@backstage/plugin-auth-backend` package comes with an
 actual Backstage instance. This enables to reuse existing authentications within
 a cluster. In general the `oauth2-proxy` supports all OpenID Connect providers,
 for more details check this
-[list of supported providers](https://oauth2-proxy.github.io/oauth2-proxy/docs/configuration/oauth_provider).
+[list of supported providers](https://oauth2-proxy.github.io/oauth2-proxy/configuration/providers/).
 
 :::note Note
 

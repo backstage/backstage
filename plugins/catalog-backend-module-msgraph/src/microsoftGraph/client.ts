@@ -107,10 +107,13 @@ export class MicrosoftGraphClient {
    * @param tokenCredential - instance of `TokenCredential` that is used to acquire token for Graph API calls
    *
    */
-  constructor(
-    private readonly baseUrl: string,
-    private readonly tokenCredential: TokenCredential,
-  ) {}
+  private readonly baseUrl: string;
+  private readonly tokenCredential: TokenCredential;
+
+  constructor(baseUrl: string, tokenCredential: TokenCredential) {
+    this.baseUrl = baseUrl;
+    this.tokenCredential = tokenCredential;
+  }
 
   /**
    * Get a collection of resource from Graph API and
@@ -195,8 +198,7 @@ export class MicrosoftGraphClient {
       },
       {
         addQueryPrefix: true,
-        // Microsoft Graph doesn't like an encoded query string
-        encode: false,
+        encode: true,
       },
     );
 
@@ -272,16 +274,14 @@ export class MicrosoftGraphClient {
    * @public
    * @param query - OData Query {@link ODataQuery}
    * @param queryMode - Mode to use while querying. Some features are only available at "advanced".
+   * @param path - Resource endpoint in Microsoft Graph
    */
   async *getUsers(
     query?: ODataQuery,
     queryMode?: 'basic' | 'advanced',
+    path: string = 'users',
   ): AsyncIterable<MicrosoftGraph.User> {
-    yield* this.requestCollection<MicrosoftGraph.User>(
-      `users`,
-      query,
-      queryMode,
-    );
+    yield* this.requestCollection<MicrosoftGraph.User>(path, query, queryMode);
   }
 
   /**
@@ -314,16 +314,14 @@ export class MicrosoftGraphClient {
    * @public
    * @param query - OData Query {@link ODataQuery}
    * @param queryMode - Mode to use while querying. Some features are only available at "advanced".
+   * @param path - Resource endpoint in Microsoft Graph
    */
   async *getGroups(
     query?: ODataQuery,
     queryMode?: 'basic' | 'advanced',
+    path: string = 'groups',
   ): AsyncIterable<MicrosoftGraph.Group> {
-    yield* this.requestCollection<MicrosoftGraph.Group>(
-      `groups`,
-      query,
-      queryMode,
-    );
+    yield* this.requestCollection<MicrosoftGraph.Group>(path, query, queryMode);
   }
 
   /**

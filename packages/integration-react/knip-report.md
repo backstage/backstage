@@ -4,6 +4,6 @@
 
 | Name                 | Location     | Severity |
 | :------------------- | :----------- | :------- |
-| @testing-library/dom | package.json | error    |
-| msw                  | package.json | error    |
+| @testing-library/dom | packages/integration-react/package.json | error    |
+| msw                  | packages/integration-react/package.json | error    |
 

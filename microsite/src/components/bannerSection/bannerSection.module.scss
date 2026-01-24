@@ -38,13 +38,12 @@
   }
 
   &:global(.greyBackground) {
-    background: linear-gradient(90.49deg, #121212 15.36%, #282828 70.44%);
+    background: var(--ifm-grey-background);
   }
 
   &:global(.greenGradientBackground) {
-    background: linear-gradient(70.44deg, #121212 55%, #5d817b);
+    background: var(--ifm-green-gradient-background);
   }
-
   &:global(.greenBottomGradientBackground) {
     background: linear-gradient(
         178.64deg,

@@ -13,8 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import React from 'react';
+import { Fragment } from 'react';
 import { AppRootWrapperBlueprint } from './AppRootWrapperBlueprint';
 import { screen, waitFor } from '@testing-library/react';
 import {
@@ -22,13 +21,13 @@ import {
   createExtension,
   createExtensionInput,
 } from '../wiring';
-import { renderInTestApp } from '@backstage/frontend-test-utils';
+import { renderTestApp } from '@backstage/frontend-test-utils';
 
 describe('AppRootWrapperBlueprint', () => {
   it('should return an extension with sensible defaults', () => {
     const extension = AppRootWrapperBlueprint.make({
       params: {
-        Component: () => <div>Hello</div>,
+        component: () => <div>Hello</div>,
       },
     });
 
@@ -60,11 +59,11 @@ describe('AppRootWrapperBlueprint', () => {
     const extension = AppRootWrapperBlueprint.make({
       name: 'test',
       params: {
-        Component: () => <div>Hello</div>,
+        component: () => <div>Hello</div>,
       },
     });
 
-    renderInTestApp(<div />, { extensions: [extension] });
+    renderTestApp({ extensions: [extension] });
 
     await waitFor(() => expect(screen.getByText('Hello')).toBeInTheDocument());
   });
@@ -81,19 +80,21 @@ describe('AppRootWrapperBlueprint', () => {
       },
       *factory(originalFactory, { inputs, config }) {
         yield* originalFactory({
-          Component: ({ children }) => (
+          component: ({ children }) => (
             <div data-testid={`${config.name}-${inputs.children.length}`}>
               {children}
-              {inputs.children.flatMap(c =>
-                c.get(coreExtensionData.reactElement),
-              )}
+              {inputs.children.flatMap((c, index) => (
+                <Fragment key={index}>
+                  {c.get(coreExtensionData.reactElement)}
+                </Fragment>
+              ))}
             </div>
           ),
         });
       },
     });
 
-    renderInTestApp(<div />, {
+    renderTestApp({
       extensions: [
         extension,
         createExtension({

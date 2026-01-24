@@ -1,7 +1,6 @@
 ---
 id: manual-knex-rollback
 title: Manual Rollback using Knex
-# prettier-ignore
 description: Guide on how to rollback Knex migrations.
 ---
 
@@ -24,7 +23,7 @@ You can interact with Knex running the commands below in the project root:
 We want to check the migration status:
 
 ```sh
-$ node_modules/.bin/knex migrate:status --connection "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST/backstage_plugin_app" --client pg --migrations-directory node_modules/@backstage/plugin-catalog-backend/migrations/
+$ node_modules/.bin/knex migrate:status --connection "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST/backstage_plugin_catalog" --client pg --migrations-directory node_modules/@backstage/plugin-catalog-backend/migrations/
 Using environment: production
 Found 2 Completed Migration file/files.
 20211229105307_init.js
@@ -35,7 +34,7 @@ No Pending Migration files Found.
 Now lets rollback a specific migration called `20240113144027_assets-namespace.js`:
 
 ```sh
-$ node_modules/.bin/knex migrate:down 20240113144027_assets-namespace.js --connection "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST/backstage_plugin_app" --client pg --migrations-directory node_modules/@backstage/plugin-catalog-backend/migrations/
+$ node_modules/.bin/knex migrate:down 20240113144027_assets-namespace.js --connection "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST/backstage_plugin_catalog" --client pg --migrations-directory node_modules/@backstage/plugin-catalog-backend/migrations/
 Using environment: production
 Batch 2 rolled back the following migrations:
 20240113144027_assets-namespace.js
@@ -44,7 +43,7 @@ Batch 2 rolled back the following migrations:
 Now we can check the migration status again to confirm the rollback:
 
 ```sh
-$ node_modules/.bin/knex migrate:status --connection "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST/backstage_plugin_app" --client pg --migrations-directory node_modules/@backstage/plugin-catalog-backend/migrations/
+$ node_modules/.bin/knex migrate:status --connection "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST/backstage_plugin_catalog" --client pg --migrations-directory node_modules/@backstage/plugin-catalog-backend/migrations/
 Using environment: production
 Found 1 Completed Migration file/files.
 20211229105307_init.js
@@ -55,7 +54,7 @@ Found 1 Pending Migration file/files.
 Now lets use `migrate:currentVersion` which retrieves the current migration version. If there aren't any migrations run yet, it will return "none".
 
 ```sh
-$ node_modules/.bin/knex migrate:currentVersion --connection "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST/backstage_plugin_app" --client pg
+$ node_modules/.bin/knex migrate:currentVersion --connection "postgresql://$POSTGRES_USER:$POSTGRES_PASSWORD@$POSTGRES_HOST/backstage_plugin_catalog" --client pg
 Using environment: production
 Current Version: 20240113144027
 ```

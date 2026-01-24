@@ -21,8 +21,8 @@ import {
 import {
   catalogAnalysisExtensionPoint,
   catalogProcessingExtensionPoint,
-  catalogServiceRef,
 } from '@backstage/plugin-catalog-node/alpha';
+import { catalogServiceRef } from '@backstage/plugin-catalog-node';
 import { eventsServiceRef } from '@backstage/plugin-events-node';
 import { GithubEntityProvider } from '../providers/GithubEntityProvider';
 import { GithubLocationAnalyzer } from '../analyzers/GithubLocationAnalyzer';
@@ -42,7 +42,6 @@ export const githubCatalogModule = createBackendModule({
         auth: coreServices.auth,
         catalogProcessing: catalogProcessingExtensionPoint,
         config: coreServices.rootConfig,
-        discovery: coreServices.discovery,
         events: eventsServiceRef,
         logger: coreServices.logger,
         scheduler: coreServices.scheduler,
@@ -55,13 +54,11 @@ export const githubCatalogModule = createBackendModule({
         logger,
         scheduler,
         catalogAnalyzers,
-        discovery,
         auth,
         catalog,
       }) {
         catalogAnalyzers.addScmLocationAnalyzer(
           new GithubLocationAnalyzer({
-            discovery,
             config,
             auth,
             catalog,

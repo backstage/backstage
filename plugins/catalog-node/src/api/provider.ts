@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { DeferredEntity } from '../processing';
+import { DeferredEntity } from '../processing/types';
 
 /**
  * A 'full' mutation replaces all existing entities created by this entity provider with new ones.

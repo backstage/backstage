@@ -21,20 +21,16 @@ import {
   SubRouteRef,
   AnyRouteRefParams,
   RouteFunc,
-  RouteResolutionApiResolveOptions,
   RouteResolutionApi,
 } from '@backstage/frontend-plugin-api';
 import mapValues from 'lodash/mapValues';
 import { AnyRouteRef, BackstageRouteObject } from './types';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { isRouteRef } from '../../../frontend-plugin-api/src/routing/RouteRef';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import {
-  isSubRouteRef,
-  toInternalSubRouteRef,
-} from '../../../frontend-plugin-api/src/routing/SubRouteRef';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { isExternalRouteRef } from '../../../frontend-plugin-api/src/routing/ExternalRouteRef';
+  OpaqueRouteRef,
+  OpaqueExternalRouteRef,
+  OpaqueSubRouteRef,
+} from '@internal/frontend';
+import { RouteAliasResolver } from './RouteAliasResolver';
 
 // Joins a list of paths together, avoiding trailing and duplicate slashes
 export function joinPaths(...paths: string[]): string {
@@ -52,54 +48,50 @@ export function joinPaths(...paths: string[]): string {
  * Returns an undefined target ref if one could not be fully resolved.
  */
 function resolveTargetRef(
-  anyRouteRef: AnyRouteRef,
+  targetRouteRef: AnyRouteRef,
   routePaths: Map<RouteRef, string>,
   routeBindings: Map<AnyRouteRef, AnyRouteRef | undefined>,
+  routeRefsById: Map<string, RouteRef | SubRouteRef>,
 ): readonly [RouteRef | undefined, string] {
   // First we figure out which absolute route ref we're dealing with, an if there was an sub route path to append.
   // For sub routes it will be the parent path, while for external routes it will be the bound route.
-  let targetRef: RouteRef;
-  let subRoutePath = '';
-  if (isRouteRef(anyRouteRef)) {
-    targetRef = anyRouteRef;
-  } else if (isSubRouteRef(anyRouteRef)) {
-    const internal = toInternalSubRouteRef(anyRouteRef);
-    targetRef = internal.getParent();
-    subRoutePath = internal.path;
-  } else if (isExternalRouteRef(anyRouteRef)) {
-    const resolvedRoute = routeBindings.get(anyRouteRef);
+  let ref: AnyRouteRef = targetRouteRef;
+  let path = '';
+
+  if (OpaqueExternalRouteRef.isType(ref)) {
+    let resolvedRoute = routeBindings.get(ref);
+    if (!resolvedRoute) {
+      const internal = OpaqueExternalRouteRef.toInternal(ref);
+      const defaultTarget = internal.getDefaultTarget();
+      if (defaultTarget) {
+        resolvedRoute = routeRefsById.get(defaultTarget);
+      }
+    }
     if (!resolvedRoute) {
       return [undefined, ''];
     }
-    if (isRouteRef(resolvedRoute)) {
-      targetRef = resolvedRoute;
-    } else if (isSubRouteRef(resolvedRoute)) {
-      const internal = toInternalSubRouteRef(resolvedRoute);
-      targetRef = internal.getParent();
-      subRoutePath = resolvedRoute.path;
-    } else {
-      throw new Error(
-        `ExternalRouteRef was bound to invalid target, ${resolvedRoute}`,
-      );
-    }
-  } else {
-    throw new Error(`Unknown object passed to useRouteRef, got ${anyRouteRef}`);
+    ref = resolvedRoute;
   }
 
-  // Bail if no absolute path could be resolved
-  if (!targetRef) {
-    return [undefined, ''];
+  if (OpaqueSubRouteRef.isType(ref)) {
+    const internal = OpaqueSubRouteRef.toInternal(ref);
+    path = ref.path;
+    ref = internal.getParent();
+  }
+
+  if (!OpaqueRouteRef.isType(ref)) {
+    throw new Error(
+      `Unexpectedly resolved ${targetRouteRef} to a non-route ref ${ref}`,
+    );
   }
 
   // Find the path that our target route is bound to
-  const resolvedPath = routePaths.get(targetRef);
+  const resolvedPath = routePaths.get(ref);
   if (resolvedPath === undefined) {
     return [undefined, ''];
   }
 
-  // SubRouteRefs join the path from the parent route with its own path
-  const targetPath = joinPaths(resolvedPath, subRoutePath);
-  return [targetRef, targetPath];
+  return [ref, path ? joinPaths(resolvedPath, path) : resolvedPath];
 }
 
 /**
@@ -180,29 +172,47 @@ function resolveBasePath(
 }
 
 export class RouteResolver implements RouteResolutionApi {
+  private readonly routePaths: Map<RouteRef, string>;
+  private readonly routeParents: Map<RouteRef, RouteRef | undefined>;
+  private readonly routeObjects: BackstageRouteObject[];
+  private readonly routeBindings: Map<ExternalRouteRef, RouteRef | SubRouteRef>;
+  private readonly appBasePath: string; // base path without a trailing slash
+  private readonly routeAliasResolver: RouteAliasResolver;
+  private readonly routeRefsById: Map<string, RouteRef | SubRouteRef>;
+
   constructor(
-    private readonly routePaths: Map<RouteRef, string>,
-    private readonly routeParents: Map<RouteRef, RouteRef | undefined>,
-    private readonly routeObjects: BackstageRouteObject[],
-    private readonly routeBindings: Map<
-      ExternalRouteRef,
-      RouteRef | SubRouteRef
-    >,
-    private readonly appBasePath: string, // base path without a trailing slash
-  ) {}
+    routePaths: Map<RouteRef, string>,
+    routeParents: Map<RouteRef, RouteRef | undefined>,
+    routeObjects: BackstageRouteObject[],
+    routeBindings: Map<ExternalRouteRef, RouteRef | SubRouteRef>,
+    appBasePath: string, // base path without a trailing slash
+    routeAliasResolver: RouteAliasResolver,
+    routeRefsById: Map<string, RouteRef | SubRouteRef>,
+  ) {
+    this.routePaths = routePaths;
+    this.routeParents = routeParents;
+    this.routeObjects = routeObjects;
+    this.routeBindings = routeBindings;
+    this.appBasePath = appBasePath;
+    this.routeAliasResolver = routeAliasResolver;
+    this.routeRefsById = routeRefsById;
+  }
 
   resolve<TParams extends AnyRouteRefParams>(
     anyRouteRef:
       | RouteRef<TParams>
       | SubRouteRef<TParams>
       | ExternalRouteRef<TParams>,
-    options?: RouteResolutionApiResolveOptions,
+    options?: { sourcePath?: string },
   ): RouteFunc<TParams> | undefined {
     // First figure out what our target absolute ref is, as well as our target path.
     const [targetRef, targetPath] = resolveTargetRef(
-      anyRouteRef,
+      anyRouteRef?.$$type === '@backstage/RouteRef'
+        ? this.routeAliasResolver(anyRouteRef)
+        : anyRouteRef,
       this.routePaths,
       this.routeBindings,
+      this.routeRefsById,
     );
     if (!targetRef) {
       return undefined;

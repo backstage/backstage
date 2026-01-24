@@ -24,7 +24,11 @@ export type ConcretePgSearchQuery = {
 export class DatabaseDocumentStore implements DatabaseStore {
   constructor(db: Knex);
   // (undocumented)
-  completeInsert(tx: Knex.Transaction, type: string): Promise<void>;
+  completeInsert(
+    tx: Knex.Transaction,
+    type: string,
+    truncate?: boolean,
+  ): Promise<void>;
   // (undocumented)
   static create(database: DatabaseService): Promise<DatabaseDocumentStore>;
   // (undocumented)
@@ -51,7 +55,11 @@ export class DatabaseDocumentStore implements DatabaseStore {
 // @public (undocumented)
 export interface DatabaseStore {
   // (undocumented)
-  completeInsert(tx: Knex.Transaction, type: string): Promise<void>;
+  completeInsert(
+    tx: Knex.Transaction,
+    type: string,
+    truncate?: boolean,
+  ): Promise<void>;
   // (undocumented)
   getTransaction(): Promise<Knex.Transaction>;
   // (undocumented)

@@ -15,9 +15,10 @@
  */
 
 import { QuickStartCard } from '../../plugin';
-import React, { ComponentType, PropsWithChildren } from 'react';
+import { ComponentType, PropsWithChildren } from 'react';
 import { wrapInTestApp } from '@backstage/test-utils';
 import Grid from '@material-ui/core/Grid';
+import OpenInNewIcon from '@material-ui/icons/OpenInNew';
 import ContentImage from './static/backstageSystemModel.png';
 
 export default {
@@ -25,6 +26,7 @@ export default {
   decorators: [
     (Story: ComponentType<PropsWithChildren<{}>>) => wrapInTestApp(<Story />),
   ],
+  tags: ['!manifest'],
 };
 
 export const Default = () => {
@@ -51,6 +53,40 @@ export const Customized = () => {
         title="Onboarding to the Catalog"
         modalTitle="Onboarding Quick Start"
         docsLinkTitle="Learn more with getting started docs"
+        docsLink="https://backstage.io/docs/getting-started"
+        image={
+          <img
+            src={ContentImage}
+            alt="quick start"
+            width="100%"
+            height="100%"
+          />
+        }
+        cardDescription="Backstage system model will help you create new entities"
+        additionalContent={
+          <p>
+            This is a custom description for the Quick Start card. It can be
+            used to provide additional information or context about the Quick
+            Start process.
+          </p>
+        }
+      />
+    </Grid>
+  );
+};
+
+export const CustomDocLink = () => {
+  return (
+    <Grid item xs={12} md={6}>
+      <QuickStartCard
+        title="Onboarding to the Catalog"
+        modalTitle="Onboarding Quick Start"
+        docsLinkTitle={
+          <>
+            <OpenInNewIcon fontSize="small" />
+            Learn more with getting started docs
+          </>
+        }
         docsLink="https://backstage.io/docs/getting-started"
         image={
           <img

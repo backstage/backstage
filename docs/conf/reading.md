@@ -7,7 +7,7 @@ description: Documentation on Reading Backstage Configuration
 ## Config API
 
 There's a common configuration API for by both frontend and backend plugins. An
-API reference can be found [here](../reference/config.config.md).
+API reference can be found [here](https://backstage.io/api/stable/types/_backstage_config.Config.html).
 
 The configuration API is tailored towards failing fast in case of missing or bad
 config. That's because configuration errors can always be considered programming
@@ -115,7 +115,7 @@ example `getString`. These will throw an error if there is no value available.
 
 ## Accessing ConfigApi in Frontend Plugins
 
-The [ConfigApi](../reference/core-plugin-api.configapi.md) in the frontend is a
+The [ConfigApi](https://backstage.io/api/stable/types/_backstage_frontend-plugin-api.ConfigApi.html) in the frontend is a
 [UtilityApi](../api/utility-apis.md). It's accessible as usual via the
 `configApiRef` exported from `@backstage/core-plugin-api`:
 
@@ -141,15 +141,7 @@ from `@backstage/core-plugin-api`.
 
 ## Accessing ConfigApi in Backend Plugins
 
-### Old Backend System
-
-In the old backend system plugins, the configuration is passed in via options from the main
-backend package. See for example
-[packages/backend-legacy/src/plugins/auth.ts](https://github.com/backstage/backstage/blob/244eef851f5aa19f91c7c9b5c12d5df95cf482ca/packages/backend/src/plugins/auth.ts#L23).
-
-### New Backend System
-
-In the new backend system, plugins are able to directly access config through dependencies. You can access config like so,
+In the backend system, plugins are able to directly access config through dependencies. You can access config like so,
 
 ```ts title="plugins/your-plugin-backend/src/plugin.ts"
 export const yourPlugin = createBackendPlugin({
@@ -175,3 +167,7 @@ export const yourPlugin = createBackendPlugin({
   },
 });
 ```
+
+### Old Backend System
+
+In the old backend system plugins, the configuration is passed in via options from the main backend package.

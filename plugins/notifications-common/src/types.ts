@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { JsonValue } from '@backstage/types';
+
 /** @public */
 export type NotificationSeverity = 'critical' | 'high' | 'normal' | 'low';
 
@@ -50,6 +52,10 @@ export type NotificationPayload = {
    * Optional notification icon
    */
   icon?: string;
+  /**
+   * Optional additional customizable metadata.
+   */
+  metadata?: { [KMetadataKey in string]?: JsonValue };
 };
 
 /** @public */
@@ -129,12 +135,61 @@ export type NotificationProcessorFilters = {
 /**
  * @public
  */
+export type TopicSetting = {
+  /**
+   * Topic identifier
+   */
+  id: string;
+  /**
+   * Whether notifications for this topic are enabled
+   */
+  enabled: boolean;
+};
+
+/**
+ * @public
+ */
+export type OriginSetting = {
+  /**
+   * Origin identifier
+   */
+  id: string;
+  /**
+   * Whether notifications from this origin are enabled
+   */
+  enabled: boolean;
+  /**
+   * Optional array of topic-specific settings
+   */
+  topics?: TopicSetting[];
+};
+
+/**
+ * @public
+ */
+export type ChannelSetting = {
+  /**
+   * Channel identifier
+   */
+  id: string;
+  /**
+   * Optional flag to enable/disable the channel by default.
+   * If not set, defaults to true for backwards compatibility.
+   * When set to false, the channel uses an opt-in strategy.
+   */
+  enabled?: boolean;
+  /**
+   * Array of origin settings for this channel
+   */
+  origins: OriginSetting[];
+};
+
+/**
+ * @public
+ */
 export type NotificationSettings = {
-  channels: {
-    id: string;
-    origins: {
-      id: string;
-      enabled: boolean;
-    }[];
-  }[];
+  /**
+   * Array of channel settings
+   */
+  channels: ChannelSetting[];
 };

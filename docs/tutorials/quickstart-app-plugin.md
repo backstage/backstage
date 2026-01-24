@@ -134,7 +134,6 @@ changes, let's start by wiping this component clean.
 1. Replace everything in the file with the following:
 
 ```tsx
-import React from 'react';
 import useAsync from 'react-use/lib/useAsync';
 import Alert from '@material-ui/lab/Alert';
 import { Table, TableColumn, Progress } from '@backstage/core-components';
@@ -247,7 +246,7 @@ const auth = useApi(githubAuthApiRef);
 
 2. The access token we need to make our GitHub request and the request itself is
    obtained in an asynchronous manner.
-3. Add the useAsync block inside the ExampleFetchComponent
+3. Add the `useAsync` block inside the ExampleFetchComponent
 
 ```tsx
 const { value, loading, error } = useAsync(async (): Promise<any> => {

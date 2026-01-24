@@ -2,7 +2,6 @@
 id: plugins
 title: Backend Plugins
 sidebar_label: Plugins
-# prettier-ignore
 description: Backend plugins
 ---
 

@@ -14,19 +14,16 @@
  * limitations under the License.
  */
 
-import React, { Children, ReactElement, ReactNode } from 'react';
+import { Children, ReactElement, ReactNode, useMemo } from 'react';
 import { useOutlet } from 'react-router-dom';
-
-import { Page } from '@backstage/core-components';
+import { Page, Progress } from '@backstage/core-components';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import {
   TECHDOCS_ADDONS_KEY,
   TECHDOCS_ADDONS_WRAPPER_KEY,
   TechDocsReaderPageProvider,
 } from '@backstage/plugin-techdocs-react';
-
 import { TechDocsReaderPageRenderFunction } from '../../../types';
-
 import { TechDocsReaderPageContent } from '../TechDocsReaderPageContent';
 import { TechDocsReaderPageHeader } from '../TechDocsReaderPageHeader';
 import { TechDocsReaderPageSubheader } from '../TechDocsReaderPageSubheader';
@@ -35,7 +32,6 @@ import {
   getComponentData,
   useRouteRefParams,
 } from '@backstage/core-plugin-api';
-
 import { CookieAuthRefreshProvider } from '@backstage/plugin-auth-react';
 import {
   createTheme,
@@ -44,6 +40,7 @@ import {
   ThemeProvider,
   useTheme,
 } from '@material-ui/core/styles';
+import { useExternalRedirect } from './useExternalRedirect';
 
 /* An explanation for the multiple ways of customizing the TechDocs reader page
 
@@ -177,44 +174,74 @@ const StyledPage = styled(Page)({
 export const TechDocsReaderPage = (props: TechDocsReaderPageProps) => {
   const currentTheme = useTheme();
 
-  const readerPageTheme = createTheme({
-    ...currentTheme,
-    ...(props.overrideThemeOptions || {}),
-  });
+  const readerPageTheme = useMemo(
+    () =>
+      createTheme({
+        ...currentTheme,
+        ...(props.overrideThemeOptions || {}),
+      }),
+    [currentTheme, props.overrideThemeOptions],
+  );
+
   const { kind, name, namespace } = useRouteRefParams(rootDocsRouteRef);
   const { children, entityRef = { kind, name, namespace } } = props;
 
   const outlet = useOutlet();
 
-  if (!children) {
+  const memoizedEntityRef = useMemo(
+    () => ({
+      kind: entityRef.kind,
+      name: entityRef.name,
+      namespace: entityRef.namespace,
+    }),
+    [entityRef.kind, entityRef.name, entityRef.namespace],
+  );
+
+  // Check for external TechDocs redirects and handle navigation
+  const { shouldShowProgress } = useExternalRedirect(memoizedEntityRef);
+
+  const page: ReactNode = useMemo(() => {
+    if (children) {
+      return null;
+    }
+
     const childrenList = outlet ? Children.toArray(outlet.props.children) : [];
 
     const grandChildren = childrenList.flatMap<ReactElement>(
       child => (child as ReactElement)?.props?.children ?? [],
     );
 
-    const page: React.ReactNode = grandChildren.find(
+    return grandChildren.find(
       grandChild =>
         !getComponentData(grandChild, TECHDOCS_ADDONS_WRAPPER_KEY) &&
         !getComponentData(grandChild, TECHDOCS_ADDONS_KEY),
     );
+  }, [children, outlet]);
 
-    // As explained above, "page" is configuration 4 and <TechDocsReaderLayout> is 1
+  // Show full-page loading spinner when checking for external redirects or about to redirect.
+  // This replaces the entire page content (header, sidebar, and documentation).
+  if (shouldShowProgress) {
+    return <Progress />;
+  }
+
+  // As explained above, "page" is configuration 4 and <TechDocsReaderLayout> is 1
+  if (!children) {
     return (
       <ThemeProvider theme={readerPageTheme}>
         <CookieAuthRefreshProvider pluginId="techdocs">
-          <TechDocsReaderPageProvider entityRef={entityRef}>
+          <TechDocsReaderPageProvider entityRef={memoizedEntityRef}>
             {(page as JSX.Element) || <TechDocsReaderLayout />}
           </TechDocsReaderPageProvider>
         </CookieAuthRefreshProvider>
       </ThemeProvider>
     );
   }
+
   // As explained above, a render function is configuration 3 and React element is 2
   return (
     <ThemeProvider theme={readerPageTheme}>
       <CookieAuthRefreshProvider pluginId="techdocs">
-        <TechDocsReaderPageProvider entityRef={entityRef}>
+        <TechDocsReaderPageProvider entityRef={memoizedEntityRef}>
           {({ metadata, entityMetadata, onReady }) => (
             <StyledPage
               themeId="documentation"
@@ -222,7 +249,7 @@ export const TechDocsReaderPage = (props: TechDocsReaderPageProps) => {
             >
               {children instanceof Function
                 ? children({
-                    entityRef,
+                    entityRef: memoizedEntityRef,
                     techdocsMetadataValue: metadata.value,
                     entityMetadataValue: entityMetadata.value,
                     onReady,

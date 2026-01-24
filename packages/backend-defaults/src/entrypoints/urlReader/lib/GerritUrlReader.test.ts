@@ -291,7 +291,7 @@ describe.skip('GerritUrlReader', () => {
                 'content-disposition',
                 'attachment; filename=web-refs/heads/master.tar.gz',
               ),
-              ctx.body(repoArchiveBuffer),
+              ctx.body(new Uint8Array(repoArchiveBuffer)),
             ),
         ),
         rest.get(
@@ -304,7 +304,7 @@ describe.skip('GerritUrlReader', () => {
                 'content-disposition',
                 'attachment; filename=web-refs/heads/master-docs.tar.gz',
               ),
-              ctx.body(repoArchiveDocsBuffer),
+              ctx.body(new Uint8Array(repoArchiveDocsBuffer)),
             ),
         ),
         rest.get(
@@ -317,7 +317,7 @@ describe.skip('GerritUrlReader', () => {
                 'content-disposition',
                 'attachment; filename=web-refs/heads/master.tar.gz',
               ),
-              ctx.body(repoArchiveBuffer),
+              ctx.body(new Uint8Array(repoArchiveBuffer)),
             ),
         ),
       );
@@ -330,7 +330,10 @@ describe.skip('GerritUrlReader', () => {
     it('reads the wanted files correctly using gitiles.', async () => {
       worker.use(
         rest.get(branchAPIUrl, (_, res, ctx) => {
-          return res(ctx.status(200), ctx.body(branchAPIresponse));
+          return res(
+            ctx.status(200),
+            ctx.body(new Uint8Array(branchAPIresponse)),
+          );
         }),
       );
 
@@ -353,7 +356,10 @@ describe.skip('GerritUrlReader', () => {
     it('throws NotModifiedError for matching etags.', async () => {
       worker.use(
         rest.get(branchAPIUrl, (_, res, ctx) => {
-          return res(ctx.status(200), ctx.body(branchAPIresponse));
+          return res(
+            ctx.status(200),
+            ctx.body(new Uint8Array(branchAPIresponse)),
+          );
         }),
       );
 
@@ -389,7 +395,10 @@ describe.skip('GerritUrlReader', () => {
     it('should returns wanted files with a subpath using gitiles', async () => {
       worker.use(
         rest.get(branchAPIUrl, (_, res, ctx) => {
-          return res(ctx.status(200), ctx.body(branchAPIresponse));
+          return res(
+            ctx.status(200),
+            ctx.body(new Uint8Array(branchAPIresponse)),
+          );
         }),
       );
 
@@ -412,7 +421,7 @@ describe.skip('GerritUrlReader', () => {
         gerritProcessor.readTree(shaTreeUrl, { etag: sha }),
       ).rejects.toThrow(NotModifiedError);
     });
-    it('can fetch files for a specifc sha.', async () => {
+    it('can fetch files for a specific sha.', async () => {
       const response = await gerritProcessorWithGitiles.readTree(
         `https://gerrit.com/gitiles/app/web/+/${sha}/`,
       );
@@ -423,6 +432,58 @@ describe.skip('GerritUrlReader', () => {
 
   describe('search', () => {
     const responseBuffer = Buffer.from('Apache License');
+    const branchAPIUrl =
+      'https://gerrit.com/projects/app%2Fweb/branches/master';
+    const branchAPIresponse = fs.readFileSync(
+      path.resolve(__dirname, '__fixtures__/gerrit/branch-info-response.txt'),
+    );
+    const searchUrl =
+      'https://gerrit.com/gitiles/app/web/+/refs/heads/master/**/catalog-info.yaml';
+    const etag = '52432507a70b677b5674b019c9a46b2e9f29d0a1';
+    const treeRecursiveResponse = fs.readFileSync(
+      path.resolve(
+        __dirname,
+        '__fixtures__/gerrit/tree-recursive-response.txt',
+      ),
+    );
+
+    beforeEach(async () => {
+      worker.use(
+        rest.get(
+          'https://gerrit.com/projects/app%2Fweb/branches/master/files/catalog-info.yaml/content',
+          (_, res, ctx) => {
+            return res(
+              ctx.status(200),
+              ctx.body(Buffer.from('Backstage manifest').toString('base64')),
+            );
+          },
+        ),
+      );
+      worker.use(
+        rest.get(
+          'https://gerrit.com/gitiles/app/web/\\+/refs/heads/master/',
+          (req, res, ctx) => {
+            if (
+              req.url.searchParams.has('format', 'JSON') &&
+              req.url.searchParams.has('recursive')
+            ) {
+              return res(
+                ctx.status(200),
+                ctx.set('Content-Type', 'application/json'),
+                ctx.set('content-disposition', 'attachment'),
+                ctx.body(new Uint8Array(treeRecursiveResponse)),
+              );
+            }
+
+            return res(ctx.status(404));
+          },
+        ),
+      );
+    });
+
+    afterEach(() => {
+      jest.clearAllMocks();
+    });
 
     it('should return a single file when given an exact URL', async () => {
       worker.use(
@@ -467,12 +528,59 @@ describe.skip('GerritUrlReader', () => {
       expect(data.files.length).toBe(0);
     });
 
-    it('throws if given URL with wildcard', async () => {
-      await expect(
-        gerritProcessor.search(
-          'https://gerrit.com/web/project/+/refs/heads/master/*.yaml',
-        ),
-      ).rejects.toThrow('Unsupported search pattern URL');
+    it('reads the wanted files correctly using gitiles.', async () => {
+      worker.use(
+        rest.get(branchAPIUrl, (_, res, ctx) => {
+          return res(
+            ctx.status(200),
+            ctx.body(new Uint8Array(branchAPIresponse)),
+          );
+        }),
+      );
+
+      const response = await gerritProcessor.search(searchUrl);
+
+      expect(response.etag).toBe(etag);
+
+      expect(response.files.length).toBe(3);
+
+      expect(response.files[0].url).toEqual(
+        'https://gerrit.com/gitiles/app/web/+/refs/heads/master/catalog-info.yaml',
+      );
+      expect(response.files[1].url).toEqual(
+        'https://gerrit.com/gitiles/app/web/+/refs/heads/master/microservices/petstore-api/catalog-info.yaml',
+      );
+      expect(response.files[2].url).toEqual(
+        'https://gerrit.com/gitiles/app/web/+/refs/heads/master/microservices/petstore-consumer/catalog-info.yaml',
+      );
+
+      const docsYaml = await response.files[0].content();
+      expect(docsYaml.toString()).toBe('Backstage manifest');
+    });
+
+    it('throws NotModifiedError for matching etags.', async () => {
+      worker.use(
+        rest.get(branchAPIUrl, (_, res, ctx) => {
+          return res(
+            ctx.status(200),
+            ctx.body(new Uint8Array(branchAPIresponse)),
+          );
+        }),
+      );
+
+      await expect(gerritProcessor.search(searchUrl, { etag })).rejects.toThrow(
+        NotModifiedError,
+      );
+    });
+
+    it('should throw on failures while getting branch info.', async () => {
+      worker.use(
+        rest.get(branchAPIUrl, (_, res, ctx) => {
+          return res(ctx.status(500, 'Error'));
+        }),
+      );
+
+      await expect(gerritProcessor.search(searchUrl)).rejects.toThrow(Error);
     });
   });
 });

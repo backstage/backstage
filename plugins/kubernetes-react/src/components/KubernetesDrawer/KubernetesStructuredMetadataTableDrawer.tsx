@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ChangeEvent, useContext, useState } from 'react';
+import { ReactNode, ChangeEvent, useContext, useState } from 'react';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import IconButton from '@material-ui/core/IconButton';
@@ -25,7 +25,7 @@ import Grid from '@material-ui/core/Grid';
 import { makeStyles, createStyles, Theme } from '@material-ui/core/styles';
 import Close from '@material-ui/icons/Close';
 import OpenInNewIcon from '@material-ui/icons/OpenInNew';
-import { V1ObjectMeta } from '@kubernetes/client-node';
+import type { V1ObjectMeta } from '@kubernetes/client-node';
 import { withStyles } from '@material-ui/core/styles';
 import {
   LinkButton as BackstageButton,
@@ -38,6 +38,8 @@ import { ManifestYaml } from './ManifestYaml';
 import { useApi } from '@backstage/core-plugin-api';
 import { kubernetesClusterLinkFormatterApiRef } from '../../api';
 import useAsync from 'react-use/esm/useAsync';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { kubernetesReactTranslationRef } from '../../translation';
 
 const useDrawerStyles = makeStyles((theme: Theme) =>
   createStyles({
@@ -91,7 +93,7 @@ const PodDrawerButton = withStyles({
 export type LinkErrorPanelProps = {
   cluster: ClusterAttributes;
   errorMessage?: string;
-  children?: React.ReactNode;
+  children?: ReactNode;
 };
 
 /**
@@ -102,20 +104,24 @@ export type LinkErrorPanelProps = {
 export const LinkErrorPanel = ({
   cluster,
   errorMessage,
-}: LinkErrorPanelProps) => (
-  <WarningPanel
-    title="There was a problem formatting the link to the Kubernetes dashboard"
-    message={`Could not format the link to the dashboard of your cluster named '${
-      cluster.name
-    }'. Its dashboardApp property has been set to '${
-      cluster.dashboardApp || 'standard'
-    }.'`}
-  >
-    {errorMessage && (
-      <Typography variant="body2">Errors: {errorMessage}</Typography>
-    )}
-  </WarningPanel>
-);
+}: LinkErrorPanelProps) => {
+  const { t } = useTranslationRef(kubernetesReactTranslationRef);
+  return (
+    <WarningPanel
+      title={t('linkErrorPanel.title')}
+      message={t('linkErrorPanel.message', {
+        clusterName: cluster.name,
+        dashboardApp: cluster.dashboardApp || 'standard',
+      })}
+    >
+      {errorMessage && (
+        <Typography variant="body2">
+          {t('linkErrorPanel.errorsLabel')} {errorMessage}
+        </Typography>
+      )}
+    </WarningPanel>
+  );
+};
 
 /**
  *
@@ -152,6 +158,7 @@ const KubernetesStructuredMetadataTableDrawerContent = <
   renderObject,
   kind,
 }: KubernetesStructuredMetadataTableDrawerContentProps<T>) => {
+  const { t } = useTranslationRef(kubernetesReactTranslationRef);
   const [isYaml, setIsYaml] = useState<boolean>(false);
 
   const formatter = useApi(kubernetesClusterLinkFormatterApiRef);
@@ -175,13 +182,13 @@ const KubernetesStructuredMetadataTableDrawerContent = <
         <Grid container justifyContent="flex-start" alignItems="flex-start">
           <Grid item xs={11}>
             <Typography variant="h5">
-              {object.metadata?.name ?? 'unknown name'}
+              {object.metadata?.name ?? t('kubernetesDrawer.unknownName')}
             </Typography>
           </Grid>
           <Grid item xs={1}>
             <IconButton
               key="dismiss"
-              title="Close the drawer"
+              title={t('kubernetesDrawer.closeDrawer')}
               onClick={e => toggleDrawer(e, false)}
               color="inherit"
             >
@@ -201,10 +208,10 @@ const KubernetesStructuredMetadataTableDrawerContent = <
                   onChange={event => {
                     setIsYaml(event.target.checked);
                   }}
-                  name="YAML"
+                  name={t('kubernetesDrawer.yaml')}
                 />
               }
-              label="YAML"
+              label={t('kubernetesDrawer.yaml')}
             />
           </Grid>
         </Grid>
@@ -257,7 +264,7 @@ export interface KubernetesStructuredMetadataTableDrawerProps<
   buttonVariant?: 'h5' | 'subtitle2';
   kind: string;
   expanded?: boolean;
-  children?: React.ReactNode;
+  children?: ReactNode;
 }
 
 /**

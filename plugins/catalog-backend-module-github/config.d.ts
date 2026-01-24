@@ -62,15 +62,24 @@ export interface Config {
              */
             host?: string;
             /**
-             * (Required) Name of your organization account/workspace.
+             * (Required, unless `app` is set) Name of your organization account/workspace.
              */
-            organization: string;
+            organization?: string;
+            /**
+             * (Required, unless `organization` is set) ID of your GitHub App.
+             */
+            app?: number;
             /**
              * (Optional) Path where to look for `catalog-info.yaml` files.
              * You can use wildcards - `*` or `**` - to search the path and/or the filename
              * Default: `/catalog-info.yaml`.
              */
             catalogPath?: string;
+            /**
+             * (Optional) Whether to validate locations that exist before emitting them.
+             * Default: `false`.
+             */
+            validateLocationsExist?: boolean;
             /**
              * (Optional) Filter configuration.
              */
@@ -112,11 +121,28 @@ export interface Config {
                * (Optional) GitHub repository visibility filter.
                */
               visibility?: Array<'private' | 'internal' | 'public'>;
+              /**
+               * (Optional) Whether to include archived repositories.
+               * Default: `false`.
+               */
+              allowArchived?: boolean;
             };
             /**
              * (Optional) TaskScheduleDefinition for the refresh.
              */
             schedule?: SchedulerServiceTaskScheduleDefinitionConfig;
+
+            /**
+             * (Optional) Page sizes for GitHub GraphQL API queries.
+             * Reduce these values if hitting RESOURCE_LIMITS_EXCEEDED errors.
+             */
+            pageSizes?: {
+              /**
+               * (Optional) Number of repositories to fetch per page when querying repositories.
+               * Default: `25`.
+               */
+              repositories?: number;
+            };
           }
         | {
             [name: string]: {
@@ -126,9 +152,13 @@ export interface Config {
                */
               host?: string;
               /**
-               * (Required) Name of your organization account/workspace.
+               * (Required, unless `app` is set) Name of your organization account/workspace.
                */
-              organization: string;
+              organization?: string;
+              /**
+               * (Required, unless `organization` is set) ID of your GitHub App.
+               */
+              app?: number;
               /**
                * (Optional) Path where to look for `catalog-info.yaml` files.
                * You can use wildcards - `*` or `**` - to search the path and/or the filename
@@ -181,11 +211,28 @@ export interface Config {
                  * (Optional) GitHub repository visibility filter.
                  */
                 visibility?: Array<'private' | 'internal' | 'public'>;
+                /**
+                 * (Optional) Whether to include archived repositories.
+                 * Default: `false`.
+                 */
+                allowArchived?: boolean;
               };
               /**
                * (Optional) TaskScheduleDefinition for the refresh.
                */
               schedule?: SchedulerServiceTaskScheduleDefinitionConfig;
+
+              /**
+               * (Optional) Page sizes for GitHub GraphQL API queries.
+               * Reduce these values if hitting RESOURCE_LIMITS_EXCEEDED errors.
+               */
+              pageSizes?: {
+                /**
+                 * (Optional) Number of repositories to fetch per page when querying repositories.
+                 * Default: `25`.
+                 */
+                repositories?: number;
+              };
             };
           };
 
@@ -218,9 +265,37 @@ export interface Config {
             orgs?: string[];
 
             /**
+             * (Optional) Only for GitHub Enterprise. Whether to exclude suspended users when querying organization users.
+             * Default: `false`.
+             */
+            excludeSuspendedUsers?: boolean;
+
+            /**
              * The refresh schedule to use.
              */
             schedule: SchedulerServiceTaskScheduleDefinitionConfig;
+
+            /**
+             * (Optional) Page sizes for GitHub GraphQL API queries.
+             * Reduce these values if hitting RESOURCE_LIMITS_EXCEEDED errors.
+             */
+            pageSizes?: {
+              /**
+               * (Optional) Number of teams to fetch per page when querying organization teams.
+               * Default: `25`.
+               */
+              teams?: number;
+              /**
+               * (Optional) Number of team members to fetch per page when querying team members.
+               * Default: `50`.
+               */
+              teamMembers?: number;
+              /**
+               * (Optional) Number of organization members to fetch per page when querying org members.
+               * Default: `50`.
+               */
+              organizationMembers?: number;
+            };
           }
         | Array<{
             /**
@@ -247,9 +322,37 @@ export interface Config {
             orgs?: string[];
 
             /**
+             * (Optional) Only for GitHub Enterprise. Whether to exclude suspended users when querying organization users.
+             * Default: `false`.
+             */
+            excludeSuspendedUsers?: boolean;
+
+            /**
              * The refresh schedule to use.
              */
             schedule: SchedulerServiceTaskScheduleDefinitionConfig;
+
+            /**
+             * (Optional) Page sizes for GitHub GraphQL API queries.
+             * Reduce these values if hitting RESOURCE_LIMITS_EXCEEDED errors.
+             */
+            pageSizes?: {
+              /**
+               * (Optional) Number of teams to fetch per page when querying organization teams.
+               * Default: `25`.
+               */
+              teams?: number;
+              /**
+               * (Optional) Number of team members to fetch per page when querying team members.
+               * Default: `50`.
+               */
+              teamMembers?: number;
+              /**
+               * (Optional) Number of organization members to fetch per page when querying org members.
+               * Default: `50`.
+               */
+              organizationMembers?: number;
+            };
           }>;
     };
   };

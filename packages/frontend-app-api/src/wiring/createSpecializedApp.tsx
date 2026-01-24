@@ -25,12 +25,12 @@ import {
   SubRouteRef,
   AnyRouteRefParams,
   RouteFunc,
-  RouteResolutionApiResolveOptions,
   RouteResolutionApi,
   createApiFactory,
   routeResolutionApiRef,
   AppNode,
   ExtensionFactoryMiddleware,
+  FrontendFeature,
 } from '@backstage/frontend-plugin-api';
 import {
   AnyApiFactory,
@@ -52,7 +52,10 @@ import {
   toInternalExtension,
 } from '../../../frontend-plugin-api/src/wiring/resolveExtensionDefinition';
 
-import { extractRouteInfoFromAppNode } from '../routing/extractRouteInfoFromAppNode';
+import {
+  extractRouteInfoFromAppNode,
+  RouteInfo,
+} from '../routing/extractRouteInfoFromAppNode';
 
 import { CreateAppRouteBinder } from '../routing';
 import { RouteResolver } from '../routing/RouteResolver';
@@ -74,8 +77,17 @@ import { ApiRegistry } from '../../../core-app-api/src/apis/system/ApiRegistry';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { AppIdentityProxy } from '../../../core-app-api/src/apis/implementations/IdentityApi/AppIdentityProxy';
 import { BackstageRouteObject } from '../routing/types';
-import { FrontendFeature, RouteInfo } from './types';
 import { matchRoutes } from 'react-router-dom';
+import {
+  createPluginInfoAttacher,
+  FrontendPluginInfoResolver,
+} from './createPluginInfoAttacher';
+import { createRouteAliasResolver } from '../routing/RouteAliasResolver';
+import {
+  AppError,
+  createErrorCollector,
+  ErrorCollector,
+} from './createErrorCollector';
 
 function deduplicateFeatures(
   allFeatures: FrontendFeature[],
@@ -103,11 +115,13 @@ function deduplicateFeatures(
 // Helps delay callers from reaching out to the API before the app tree has been materialized
 class AppTreeApiProxy implements AppTreeApi {
   #routeInfo?: RouteInfo;
+  private readonly tree: AppTree;
+  private readonly appBasePath: string;
 
-  constructor(
-    private readonly tree: AppTree,
-    private readonly appBasePath: string,
-  ) {}
+  constructor(tree: AppTree, appBasePath: string) {
+    this.tree = tree;
+    this.appBasePath = appBasePath;
+  }
 
   private checkIfInitialized() {
     if (!this.#routeInfo) {
@@ -123,10 +137,10 @@ class AppTreeApiProxy implements AppTreeApi {
     return { tree: this.tree };
   }
 
-  getNodesByRoutePath(sourcePath: string): { nodes: AppNode[] } {
+  getNodesByRoutePath(routePath: string): { nodes: AppNode[] } {
     this.checkIfInitialized();
 
-    let path = sourcePath;
+    let path = routePath;
     if (path.startsWith(this.appBasePath)) {
       path = path.slice(this.appBasePath.length);
     }
@@ -151,20 +165,23 @@ class RouteResolutionApiProxy implements RouteResolutionApi {
   #delegate: RouteResolutionApi | undefined;
   #routeObjects: BackstageRouteObject[] | undefined;
 
+  private readonly routeBindings: Map<ExternalRouteRef, RouteRef | SubRouteRef>;
+  private readonly appBasePath: string;
+
   constructor(
-    private readonly routeBindings: Map<
-      ExternalRouteRef,
-      RouteRef | SubRouteRef
-    >,
-    private readonly appBasePath: string,
-  ) {}
+    routeBindings: Map<ExternalRouteRef, RouteRef | SubRouteRef>,
+    appBasePath: string,
+  ) {
+    this.routeBindings = routeBindings;
+    this.appBasePath = appBasePath;
+  }
 
   resolve<TParams extends AnyRouteRefParams>(
     anyRouteRef:
       | RouteRef<TParams>
       | SubRouteRef<TParams>
       | ExternalRouteRef<TParams>,
-    options?: RouteResolutionApiResolveOptions,
+    options?: { sourcePath?: string },
   ): RouteFunc<TParams> | undefined {
     if (!this.#delegate) {
       throw new Error(
@@ -175,13 +192,18 @@ class RouteResolutionApiProxy implements RouteResolutionApi {
     return this.#delegate.resolve(anyRouteRef, options);
   }
 
-  initialize(routeInfo: RouteInfo) {
+  initialize(
+    routeInfo: RouteInfo,
+    routeRefsById: Map<string, RouteRef | SubRouteRef>,
+  ) {
     this.#delegate = new RouteResolver(
       routeInfo.routePaths,
       routeInfo.routeParents,
       routeInfo.routeObjects,
       this.routeBindings,
       this.appBasePath,
+      routeInfo.routeAliasResolver,
+      routeRefsById,
     );
     this.#routeObjects = routeInfo.routeObjects;
 
@@ -194,23 +216,92 @@ class RouteResolutionApiProxy implements RouteResolutionApi {
 }
 
 /**
+ * Options for {@link createSpecializedApp}.
+ *
+ * @public
+ */
+export type CreateSpecializedAppOptions = {
+  /**
+   * The list of features to load.
+   */
+  features?: FrontendFeature[];
+
+  /**
+   * The config API implementation to use. For most normal apps, this should be
+   * specified.
+   *
+   * If none is given, a new _empty_ config will be used during startup. In
+   * later stages of the app lifecycle, the config API in the API holder will be
+   * used.
+   */
+  config?: ConfigApi;
+
+  /**
+   * Allows for the binding of plugins' external route refs within the app.
+   */
+  bindRoutes?(context: { bind: CreateAppRouteBinder }): void;
+
+  /**
+   * Advanced, more rarely used options.
+   */
+  advanced?: {
+    /**
+     * A replacement API holder implementation to use.
+     *
+     * By default, a new API holder will be constructed automatically based on
+     * the other inputs. If you pass in a custom one here, none of that
+     * automation will take place - so you will have to take care to supply all
+     * those APIs yourself.
+     */
+    apis?: ApiHolder;
+
+    /**
+     * If set to true, the system will silently accept and move on if
+     * encountering config for extensions that do not exist. The default is to
+     * reject such config to help catch simple mistakes.
+     *
+     * This flag can be useful in some scenarios where you have a dynamic set of
+     * extensions enabled at different times, but also increases the risk of
+     * accidentally missing e.g. simple typos in your config.
+     */
+    allowUnknownExtensionConfig?: boolean;
+
+    /**
+     * Applies one or more middleware on every extension, as they are added to
+     * the application.
+     *
+     * This is an advanced use case for modifying extension data on the fly as
+     * it gets emitted by extensions being instantiated.
+     */
+    extensionFactoryMiddleware?:
+      | ExtensionFactoryMiddleware
+      | ExtensionFactoryMiddleware[];
+
+    /**
+     * Allows for customizing how plugin info is retrieved.
+     */
+    pluginInfoResolver?: FrontendPluginInfoResolver;
+  };
+};
+
+/**
  * Creates an empty app without any default features. This is a low-level API is
- * intended for use in tests or specialized setups. Typically wou want to use
+ * intended for use in tests or specialized setups. Typically you want to use
  * `createApp` from `@backstage/frontend-defaults` instead.
  *
  * @public
  */
-export function createSpecializedApp(options?: {
-  features?: FrontendFeature[];
-  config?: ConfigApi;
-  bindRoutes?(context: { bind: CreateAppRouteBinder }): void;
-  apis?: ApiHolder;
-  extensionFactoryMiddleware?:
-    | ExtensionFactoryMiddleware
-    | ExtensionFactoryMiddleware[];
-}): { apis: ApiHolder; tree: AppTree } {
+export function createSpecializedApp(options?: CreateSpecializedAppOptions): {
+  apis: ApiHolder;
+  tree: AppTree;
+  errors?: AppError[];
+} {
   const config = options?.config ?? new ConfigReader({}, 'empty-config');
-  const features = deduplicateFeatures(options?.features ?? []);
+  const features = deduplicateFeatures(options?.features ?? []).map(
+    createPluginInfoAttacher(config, options?.advanced?.pluginInfoResolver),
+  );
+
+  const collector = createErrorCollector();
 
   const tree = resolveAppTree(
     'root',
@@ -221,24 +312,24 @@ export function createSpecializedApp(options?: {
       ],
       parameters: readAppExtensionsConfig(config),
       forbidden: new Set(['root']),
+      collector,
     }),
+    collector,
   );
 
-  const factories = createApiFactories({ tree });
+  const factories = createApiFactories({ tree, collector });
   const appBasePath = getBasePath(config);
   const appTreeApi = new AppTreeApiProxy(tree, appBasePath);
+
+  const routeRefsById = collectRouteIds(features, collector);
   const routeResolutionApi = new RouteResolutionApiProxy(
-    resolveRouteBindings(
-      options?.bindRoutes,
-      config,
-      collectRouteIds(features),
-    ),
+    resolveRouteBindings(options?.bindRoutes, config, routeRefsById, collector),
     appBasePath,
   );
 
   const appIdentityProxy = new AppIdentityProxy();
   const apis =
-    options?.apis ??
+    options?.advanced?.apis ??
     createApiHolder({
       factories,
       staticFactories: [
@@ -275,33 +366,106 @@ export function createSpecializedApp(options?: {
   instantiateAppNodeTree(
     tree.root,
     apis,
-    mergeExtensionFactoryMiddleware(options?.extensionFactoryMiddleware),
+    collector,
+    mergeExtensionFactoryMiddleware(
+      options?.advanced?.extensionFactoryMiddleware,
+    ),
   );
 
-  const routeInfo = extractRouteInfoFromAppNode(tree.root);
+  const routeInfo = extractRouteInfoFromAppNode(
+    tree.root,
+    createRouteAliasResolver(routeRefsById),
+  );
 
-  routeResolutionApi.initialize(routeInfo);
+  routeResolutionApi.initialize(routeInfo, routeRefsById.routes);
   appTreeApi.initialize(routeInfo);
 
-  return { apis, tree };
+  return { apis, tree, errors: collector.collectErrors() };
 }
 
-function createApiFactories(options: { tree: AppTree }): AnyApiFactory[] {
+function createApiFactories(options: {
+  tree: AppTree;
+  collector: ErrorCollector;
+}): AnyApiFactory[] {
   const emptyApiHolder = ApiRegistry.from([]);
-  const factories = new Array<AnyApiFactory>();
+  const factoriesById = new Map<
+    string,
+    { pluginId: string; factory: AnyApiFactory }
+  >();
 
   for (const apiNode of options.tree.root.edges.attachments.get('apis') ?? []) {
-    instantiateAppNodeTree(apiNode, emptyApiHolder);
-    const apiFactory = apiNode.instance?.getData(ApiBlueprint.dataRefs.factory);
-    if (!apiFactory) {
-      throw new Error(
-        `No API factory found in for extension ${apiNode.spec.id}`,
-      );
+    if (!instantiateAppNodeTree(apiNode, emptyApiHolder, options.collector)) {
+      continue;
     }
-    factories.push(apiFactory);
+    const apiFactory = apiNode.instance?.getData(ApiBlueprint.dataRefs.factory);
+    if (apiFactory) {
+      const apiRefId = apiFactory.api.id;
+      const ownerId = getApiOwnerId(apiRefId);
+      const pluginId = apiNode.spec.plugin.id ?? 'app';
+      const existingFactory = factoriesById.get(apiRefId);
+
+      // This allows modules to override factories provided by the plugin, but
+      // it rejects API overrides from other plugins. In the event of a
+      // conflict, the owning plugin is attempted to be inferred from the API
+      // reference ID.
+      if (existingFactory && existingFactory.pluginId !== pluginId) {
+        const shouldReplace =
+          ownerId === pluginId && existingFactory.pluginId !== ownerId;
+        const acceptedPluginId = shouldReplace
+          ? pluginId
+          : existingFactory.pluginId;
+        const rejectedPluginId = shouldReplace
+          ? existingFactory.pluginId
+          : pluginId;
+
+        options.collector.report({
+          code: 'API_FACTORY_CONFLICT',
+          message: `API '${apiRefId}' is already provided by plugin '${acceptedPluginId}', cannot also be provided by '${rejectedPluginId}'.`,
+          context: {
+            node: apiNode,
+            apiRefId,
+            pluginId: rejectedPluginId,
+            existingPluginId: acceptedPluginId,
+          },
+        });
+        if (shouldReplace) {
+          factoriesById.set(apiRefId, {
+            pluginId,
+            factory: apiFactory,
+          });
+        }
+        continue;
+      }
+
+      factoriesById.set(apiRefId, { pluginId, factory: apiFactory });
+    } else {
+      options.collector.report({
+        code: 'API_EXTENSION_INVALID',
+        message: `API extension '${apiNode.spec.id}' did not output an API factory`,
+        context: {
+          node: apiNode,
+        },
+      });
+    }
   }
 
-  return factories;
+  return Array.from(factoriesById.values(), entry => entry.factory);
+}
+
+// TODO(Rugvip): It would be good if this was more explicit, but I think that
+//               might need to wait for some future update for API factories.
+function getApiOwnerId(apiRefId: string): string {
+  const [prefix, ...rest] = apiRefId.split('.');
+  if (!prefix) {
+    return apiRefId;
+  }
+  if (prefix === 'core') {
+    return 'app';
+  }
+  if (prefix === 'plugin' && rest[0]) {
+    return rest[0];
+  }
+  return prefix;
 }
 
 function createApiHolder(options: {
@@ -351,6 +515,7 @@ function mergeExtensionFactoryMiddleware(
             apis: ctx.apis,
             config: ctxOverrides?.config ?? ctx.config,
           }),
+          'extension factory middleware',
         );
       }, ctx);
     };

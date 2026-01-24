@@ -24,7 +24,7 @@ import DialogTitle from '@material-ui/core/DialogTitle';
 import Tab from '@material-ui/core/Tab';
 import Tabs from '@material-ui/core/Tabs';
 import { makeStyles } from '@material-ui/core/styles';
-import React, { ComponentProps, useEffect } from 'react';
+import { ComponentProps, useEffect, useState, ReactNode, useMemo } from 'react';
 import { AncestryPage } from './components/AncestryPage';
 import { ColocatedPage } from './components/ColocatedPage';
 import { JsonPage } from './components/JsonPage';
@@ -54,7 +54,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 function TabPanel(props: {
-  children?: React.ReactNode;
+  children?: ReactNode;
   index: number;
   value: number;
 }) {
@@ -85,18 +85,12 @@ function a11yProps(index: number) {
   };
 }
 
-const tabNames: Record<
+type TabKey = 'overview' | 'ancestry' | 'colocated' | 'json' | 'yaml';
+
+type TabNames = Record<
   NonNullable<ComponentProps<typeof InspectEntityDialog>['initialTab']>,
   string
-> = {
-  overview: 'Overview',
-  ancestry: 'Ancestry',
-  colocated: 'Colocated',
-  json: 'Raw JSON',
-  yaml: 'Raw YAML',
-} as const;
-
-const tabs = Object.keys(tabNames) as Array<keyof typeof tabNames>;
+>;
 
 /**
  * A dialog that lets users inspect the low level details of their entities.
@@ -111,15 +105,28 @@ export function InspectEntityDialog(props: {
   onSelect?: (tab: string) => void;
 }) {
   const classes = useStyles();
+  const { t } = useTranslationRef(catalogReactTranslationRef);
 
-  const [activeTab, setActiveTab] = React.useState(
+  const tabNames: TabNames = useMemo(
+    () => ({
+      overview: t('inspectEntityDialog.tabNames.overview'),
+      ancestry: t('inspectEntityDialog.tabNames.ancestry'),
+      colocated: t('inspectEntityDialog.tabNames.colocated'),
+      json: t('inspectEntityDialog.tabNames.json'),
+      yaml: t('inspectEntityDialog.tabNames.yaml'),
+    }),
+    [t],
+  );
+
+  const tabs = Object.keys(tabNames) as TabKey[];
+
+  const [activeTab, setActiveTab] = useState(
     getTabIndex(tabs, props.initialTab),
   );
-  const { t } = useTranslationRef(catalogReactTranslationRef);
 
   useEffect(() => {
     getTabIndex(tabs, props.initialTab);
-  }, [props.open, props.initialTab]);
+  }, [props.open, props.initialTab, tabs]);
 
   if (!props.entity) {
     return null;
@@ -147,7 +154,7 @@ export function InspectEntityDialog(props: {
               setActiveTab(tabIndex);
               props.onSelect?.(tabs[tabIndex]);
             }}
-            aria-label="Inspector options"
+            aria-label={t('inspectEntityDialog.tabsAriaLabel')}
             className={classes.tabs}
           >
             {tabs.map((tab, index) => (
@@ -181,9 +188,6 @@ export function InspectEntityDialog(props: {
   );
 }
 
-function getTabIndex(
-  allTabs: string[],
-  initialTab: keyof typeof tabNames | undefined,
-) {
+function getTabIndex(allTabs: string[], initialTab: TabKey | undefined) {
   return initialTab ? allTabs.indexOf(initialTab) : 0;
 }

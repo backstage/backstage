@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { screen } from '@testing-library/react';
 import { DaemonSetsAccordions } from './DaemonSetsAccordions';
 import * as oneDaemonsFixture from '../../__fixtures__/2-daemonsets.json';

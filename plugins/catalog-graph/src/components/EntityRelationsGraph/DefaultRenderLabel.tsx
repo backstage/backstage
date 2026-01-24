@@ -15,8 +15,7 @@
  */
 import { DependencyGraphTypes } from '@backstage/core-components';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import React from 'react';
-import { EntityEdgeData } from './types';
+import { EntityEdgeData } from '../../lib/types';
 import classNames from 'classnames';
 
 /** @public */

@@ -29,10 +29,13 @@ export function convertLegacyPlugin(
   options: { extensions: ExtensionDefinition[] },
 ): NewBackstagePlugin {
   const apiExtensions = Array.from(legacyPlugin.getApis()).map(factory =>
-    ApiBlueprint.make({ name: factory.api.id, params: { factory } }),
+    ApiBlueprint.make({
+      name: factory.api.id,
+      params: defineParams => defineParams(factory),
+    }),
   );
   return createFrontendPlugin({
-    id: legacyPlugin.getId(),
+    pluginId: legacyPlugin.getId(),
     featureFlags: [...legacyPlugin.getFeatureFlags()],
     routes: convertLegacyRouteRefs(legacyPlugin.routes ?? {}),
     externalRoutes: convertLegacyRouteRefs(legacyPlugin.externalRoutes ?? {}),

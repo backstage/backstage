@@ -24,9 +24,8 @@ import { getOctokitOptions } from '../util';
 import { Octokit } from 'octokit';
 import Sodium from 'libsodium-wrappers';
 import { examples } from './gitHubEnvironment.examples';
-import { CatalogApi } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
-import { AuthService } from '@backstage/backend-plugin-api';
+import { CatalogService } from '@backstage/plugin-catalog-node';
 
 /**
  * Creates an `github:environment:create` Scaffolder action that creates a Github Environment.
@@ -35,124 +34,100 @@ import { AuthService } from '@backstage/backend-plugin-api';
  */
 export function createGithubEnvironmentAction(options: {
   integrations: ScmIntegrationRegistry;
-  catalogClient?: CatalogApi;
-  auth?: AuthService;
+  catalog: CatalogService;
 }) {
-  const { integrations, catalogClient, auth } = options;
+  const { integrations, catalog } = options;
   // For more information on how to define custom actions, see
   //   https://backstage.io/docs/features/software-templates/writing-custom-actions
-  return createTemplateAction<{
-    repoUrl: string;
-    name: string;
-    deploymentBranchPolicy?: {
-      protected_branches: boolean;
-      custom_branch_policies: boolean;
-    };
-    customBranchPolicyNames?: string[];
-    customTagPolicyNames?: string[];
-    environmentVariables?: { [key: string]: string };
-    secrets?: { [key: string]: string };
-    token?: string;
-    waitTimer?: number;
-    preventSelfReview?: boolean;
-    reviewers?: string[];
-  }>({
+  return createTemplateAction({
     id: 'github:environment:create',
     description: 'Creates Deployment Environments',
     examples,
     schema: {
       input: {
-        type: 'object',
-        required: ['repoUrl', 'name'],
-        properties: {
-          repoUrl: {
-            title: 'Repository Location',
+        repoUrl: z =>
+          z.string({
             description:
               'Accepts the format `github.com?repo=reponame&owner=owner` where `reponame` is the new repository name and `owner` is an organization or username',
-            type: 'string',
-          },
-          name: {
-            title: 'Environment Name',
+          }),
+        name: z =>
+          z.string({
             description: `Name of the deployment environment to create`,
-            type: 'string',
-          },
-          deploymentBranchPolicy: {
-            title: 'Deployment Branch Policy',
-            description:
-              'The type of deployment branch policy for this environment. To allow all branches to deploy, set to `null`.',
-            type: 'object',
-            required: ['protected_branches', 'custom_branch_policies'],
-            properties: {
-              protected_branches: {
-                title: 'Protected Branches',
-                description:
-                  'Whether only branches with branch protection rules can deploy to this environment. If `protected_branches` is `true`, `custom_branch_policies` must be `false`; if `protected_branches` is `false`, `custom_branch_policies` must be `true`.',
-                type: 'boolean',
+          }),
+        deploymentBranchPolicy: z =>
+          z
+            .object(
+              {
+                protected_branches: z.boolean({
+                  description:
+                    'Whether only branches with branch protection rules can deploy to this environment. If `protected_branches` is `true`, `custom_branch_policies` must be `false`; if `protected_branches` is `false`, `custom_branch_policies` must be `true`.',
+                }),
+                custom_branch_policies: z.boolean({
+                  description:
+                    'Whether only branches that match the specified name patterns can deploy to this environment. If `custom_branch_policies` is `true`, `protected_branches` must be `false`; if `custom_branch_policies` is `false`, `protected_branches` must be `true`.',
+                }),
               },
-              custom_branch_policies: {
-                title: 'Custom Branch Policies',
+              {
                 description:
-                  'Whether only branches that match the specified name patterns can deploy to this environment. If `custom_branch_policies` is `true`, `protected_branches` must be `false`; if `custom_branch_policies` is `false`, `protected_branches` must be `true`.',
-                type: 'boolean',
+                  'The type of deployment branch policy for this environment. To allow all branches to deploy, set to `null`.',
               },
-            },
-          },
-          customBranchPolicyNames: {
-            title: 'Custom Branch Policy Name',
-            description: `The name pattern that branches must match in order to deploy to the environment.
+            )
+            .optional(),
+        customBranchPolicyNames: z =>
+          z
+            .array(z.string(), {
+              description: `The name pattern that branches must match in order to deploy to the environment.
 
 Wildcard characters will not match \`/\`. For example, to match branches that begin with \`release/\` and contain an additional single slash, use \`release/*/*\`. For more information about pattern matching syntax, see the Ruby File.fnmatch documentation.`,
-            type: 'array',
-            items: {
-              type: 'string',
-            },
-          },
-          customTagPolicyNames: {
-            title: 'Custom Tag Policy Name',
-            description: `The name pattern that tags must match in order to deploy to the environment.
+            })
+            .optional(),
+        customTagPolicyNames: z =>
+          z
+            .array(z.string(), {
+              description: `The name pattern that tags must match in order to deploy to the environment.
 
 Wildcard characters will not match \`/\`. For example, to match tags that begin with \`release/\` and contain an additional single slash, use \`release/*/*\`. For more information about pattern matching syntax, see the Ruby File.fnmatch documentation.`,
-            type: 'array',
-            items: {
-              type: 'string',
-            },
-          },
-          environmentVariables: {
-            title: 'Environment Variables',
-            description: `Environment variables attached to the deployment environment`,
-            type: 'object',
-          },
-          secrets: {
-            title: 'Deployment Secrets',
-            description: `Secrets attached to the deployment environment`,
-            type: 'object',
-          },
-          token: {
-            title: 'Authentication Token',
-            type: 'string',
-            description: 'The token to use for authorization to GitHub',
-          },
-          waitTimer: {
-            title: 'Wait Timer',
-            type: 'integer',
-            description:
-              'The time to wait before creating or updating the environment (in milliseconds)',
-          },
-          preventSelfReview: {
-            title: 'Prevent Self Review',
-            type: 'boolean',
-            description: 'Whether to prevent self-review for this environment',
-          },
-          reviewers: {
-            title: 'Reviewers',
-            type: 'array',
-            description:
-              'Reviewers for this environment. Must be a list of Backstage entity references.',
-            items: {
-              type: 'string',
-            },
-          },
-        },
+            })
+            .optional(),
+        environmentVariables: z =>
+          z
+            .record(z.string(), {
+              description: `Environment variables attached to the deployment environment`,
+            })
+            .optional(),
+        secrets: z =>
+          z
+            .record(z.string(), {
+              description: `Secrets attached to the deployment environment`,
+            })
+            .optional(),
+        token: z =>
+          z
+            .string({
+              description: 'The token to use for authorization to GitHub',
+            })
+            .optional(),
+        waitTimer: z =>
+          z
+            .number({
+              description:
+                'The time to wait before creating or updating the environment (in milliseconds)',
+            })
+            .optional(),
+        preventSelfReview: z =>
+          z
+            .boolean({
+              description:
+                'Whether to prevent self-review for this environment',
+            })
+            .optional(),
+        reviewers: z =>
+          z
+            .array(z.string(), {
+              description:
+                'Reviewers for this environment. Must be a list of Backstage entity references.',
+            })
+            .optional(),
       },
     },
     async handler(ctx) {
@@ -169,11 +144,6 @@ Wildcard characters will not match \`/\`. For example, to match tags that begin 
         preventSelfReview,
         reviewers,
       } = ctx.input;
-
-      const { token } = (await auth?.getPluginRequestToken({
-        onBehalfOf: await ctx.getInitiatorCredentials(),
-        targetPluginId: 'catalog',
-      })) ?? { token: ctx.secrets?.backstageToken };
 
       // When environment creation step is executed right after a repo publish step, the repository might not be available immediately.
       // Add a 2-second delay before initiating the steps in this action.
@@ -192,11 +162,20 @@ Wildcard characters will not match \`/\`. For example, to match tags that begin 
         owner,
         repo,
       });
+      const client = new Octokit({
+        ...octokitOptions,
+        log: ctx.logger,
+      });
 
-      const client = new Octokit(octokitOptions);
-      const repository = await client.rest.repos.get({
-        owner: owner,
-        repo: repo,
+      const repositoryId = await ctx.checkpoint({
+        key: `get.repo.${owner}.${repo}`,
+        fn: async () => {
+          const repository = await client.rest.repos.get({
+            owner: owner,
+            repo: repo,
+          });
+          return repository.data.id;
+        },
       });
 
       // convert reviewers from catalog entity to Github user or team
@@ -204,12 +183,12 @@ Wildcard characters will not match \`/\`. For example, to match tags that begin 
       if (reviewers) {
         let reviewersEntityRefs: Array<Entity | undefined> = [];
         // Fetch reviewers from Catalog
-        const catalogResponse = await catalogClient?.getEntitiesByRefs(
+        const catalogResponse = await catalog.getEntitiesByRefs(
           {
             entityRefs: reviewers,
           },
           {
-            token,
+            credentials: await ctx.getInitiatorCredentials(),
           },
         );
         if (catalogResponse?.items?.length) {
@@ -219,25 +198,39 @@ Wildcard characters will not match \`/\`. For example, to match tags that begin 
         for (const reviewerEntityRef of reviewersEntityRefs) {
           if (reviewerEntityRef?.kind === 'User') {
             try {
-              const user = await client.rest.users.getByUsername({
-                username: reviewerEntityRef.metadata.name,
+              const userId = await ctx.checkpoint({
+                key: `get.user.${reviewerEntityRef.metadata.name}`,
+                fn: async () => {
+                  const user = await client.rest.users.getByUsername({
+                    username: reviewerEntityRef.metadata.name,
+                  });
+                  return user.data.id;
+                },
               });
+
               githubReviewers.push({
                 type: 'User',
-                id: user.data.id,
+                id: userId,
               });
             } catch (error) {
               ctx.logger.error('User not found:', error);
             }
           } else if (reviewerEntityRef?.kind === 'Group') {
             try {
-              const team = await client.rest.teams.getByName({
-                org: owner,
-                team_slug: reviewerEntityRef.metadata.name,
+              const teamId = await ctx.checkpoint({
+                key: `get.team.${reviewerEntityRef.metadata.name}`,
+                fn: async () => {
+                  const team = await client.rest.teams.getByName({
+                    org: owner,
+                    team_slug: reviewerEntityRef.metadata.name,
+                  });
+                  return team.data.id;
+                },
               });
+
               githubReviewers.push({
                 type: 'Team',
-                id: team.data.id,
+                id: teamId,
               });
             } catch (error) {
               ctx.logger.error('Team not found:', error);
@@ -246,63 +239,92 @@ Wildcard characters will not match \`/\`. For example, to match tags that begin 
         }
       }
 
-      await client.rest.repos.createOrUpdateEnvironment({
-        owner: owner,
-        repo: repo,
-        environment_name: name,
-        deployment_branch_policy: deploymentBranchPolicy ?? undefined,
-        wait_timer: waitTimer ?? undefined,
-        prevent_self_review: preventSelfReview ?? undefined,
-        reviewers: githubReviewers.length ? githubReviewers : undefined,
+      await ctx.checkpoint({
+        key: `create.or.update.environment.${owner}.${repo}.${name}`,
+        fn: async () => {
+          await client.rest.repos.createOrUpdateEnvironment({
+            owner: owner,
+            repo: repo,
+            environment_name: name,
+            deployment_branch_policy: deploymentBranchPolicy ?? undefined,
+            wait_timer: waitTimer ?? undefined,
+            prevent_self_review: preventSelfReview ?? undefined,
+            reviewers: githubReviewers.length ? githubReviewers : undefined,
+          });
+        },
       });
 
       if (customBranchPolicyNames) {
         for (const item of customBranchPolicyNames) {
-          await client.rest.repos.createDeploymentBranchPolicy({
-            owner: owner,
-            repo: repo,
-            type: 'branch',
-            environment_name: name,
-            name: item,
+          await ctx.checkpoint({
+            key: `create.deployment.branch.policy.branch.${owner}.${repo}.${name}.${item}`,
+            fn: async () => {
+              await client.rest.repos.createDeploymentBranchPolicy({
+                owner: owner,
+                repo: repo,
+                type: 'branch',
+                environment_name: name,
+                name: item,
+              });
+            },
           });
         }
       }
 
       if (customTagPolicyNames) {
         for (const item of customTagPolicyNames) {
-          await client.rest.repos.createDeploymentBranchPolicy({
-            owner: owner,
-            repo: repo,
-            type: 'tag',
-            environment_name: name,
-            name: item,
+          await ctx.checkpoint({
+            key: `create.deployment.branch.policy.tag.${owner}.${repo}.${name}.${item}`,
+            fn: async () => {
+              await client.rest.repos.createDeploymentBranchPolicy({
+                owner: owner,
+                repo: repo,
+                type: 'tag',
+                environment_name: name,
+                name: item,
+              });
+            },
           });
         }
       }
 
       for (const [key, value] of Object.entries(environmentVariables ?? {})) {
-        await client.rest.actions.createEnvironmentVariable({
-          repository_id: repository.data.id,
-          owner: owner,
-          repo: repo,
-          environment_name: name,
-          name: key,
-          value,
+        await ctx.checkpoint({
+          key: `create.env.variable.${owner}.${repo}.${name}.${key}`,
+          fn: async () => {
+            await client.rest.actions.createEnvironmentVariable({
+              repository_id: repositoryId,
+              owner: owner,
+              repo: repo,
+              environment_name: name,
+              name: key,
+              value,
+            });
+          },
         });
       }
 
       if (secrets) {
-        const publicKeyResponse =
-          await client.rest.actions.getEnvironmentPublicKey({
-            repository_id: repository.data.id,
-            owner: owner,
-            repo: repo,
-            environment_name: name,
-          });
+        const { publicKey, publicKeyId } = await ctx.checkpoint({
+          key: `get.env.public.key.${owner}.${repo}.${name}`,
+          fn: async () => {
+            const publicKeyResponse =
+              await client.rest.actions.getEnvironmentPublicKey({
+                repository_id: repositoryId,
+                owner: owner,
+                repo: repo,
+                environment_name: name,
+              });
+            return {
+              publicKey: publicKeyResponse.data.key,
+              publicKeyId: publicKeyResponse.data.key_id,
+            };
+          },
+        });
 
         await Sodium.ready;
         const binaryKey = Sodium.from_base64(
-          publicKeyResponse.data.key,
+          publicKey,
           Sodium.base64_variants.ORIGINAL,
         );
         for (const [key, value] of Object.entries(secrets)) {
@@ -316,14 +338,19 @@ Wildcard characters will not match \`/\`. For example, to match tags that begin 
             Sodium.base64_variants.ORIGINAL,
           );
 
-          await client.rest.actions.createOrUpdateEnvironmentSecret({
-            repository_id: repository.data.id,
-            owner: owner,
-            repo: repo,
-            environment_name: name,
-            secret_name: key,
-            encrypted_value: encryptedBase64Secret,
-            key_id: publicKeyResponse.data.key_id,
+          await ctx.checkpoint({
+            key: `create.or.update.env.secret.${owner}.${repo}.${name}.${key}`,
+            fn: async () => {
+              await client.rest.actions.createOrUpdateEnvironmentSecret({
+                repository_id: repositoryId,
+                owner: owner,
+                repo: repo,
+                environment_name: name,
+                secret_name: key,
+                encrypted_value: encryptedBase64Secret,
+                key_id: publicKeyId,
+              });
+            },
           });
         }
       }

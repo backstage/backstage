@@ -21,15 +21,13 @@ import {
   RELATION_PART_OF,
 } from '@backstage/catalog-model';
 import { OverflowTooltip, TableColumn } from '@backstage/core-components';
-import React from 'react';
 import { getEntityRelations } from '../../utils';
 import {
   EntityRefLink,
   EntityRefLinks,
   humanizeEntityRef,
 } from '../EntityRefLink';
-
-// TODO: column title support i18n
+import { EntityTableColumnTitle } from './TitleColumn';
 
 /** @public */
 export const columnFactories = Object.freeze({
@@ -47,7 +45,7 @@ export const columnFactories = Object.freeze({
     }
 
     return {
-      title: 'Name',
+      title: <EntityTableColumnTitle translationKey="name" />,
       highlight: true,
       customFilterAndSearch(filter, entity) {
         // TODO: We could implement this more efficiently, like searching over
@@ -73,7 +71,7 @@ export const columnFactories = Object.freeze({
     };
   },
   createEntityRelationColumn<T extends Entity>(options: {
-    title: string;
+    title: string | JSX.Element;
     relation: string;
     defaultKind?: string;
     filter?: { kind: string };
@@ -110,14 +108,14 @@ export const columnFactories = Object.freeze({
   },
   createOwnerColumn<T extends Entity>(): TableColumn<T> {
     return this.createEntityRelationColumn({
-      title: 'Owner',
+      title: <EntityTableColumnTitle translationKey="owner" />,
       relation: RELATION_OWNED_BY,
       defaultKind: 'group',
     });
   },
   createDomainColumn<T extends Entity>(): TableColumn<T> {
     return this.createEntityRelationColumn({
-      title: 'Domain',
+      title: <EntityTableColumnTitle translationKey="domain" />,
       relation: RELATION_PART_OF,
       defaultKind: 'domain',
       filter: {
@@ -127,7 +125,7 @@ export const columnFactories = Object.freeze({
   },
   createSystemColumn<T extends Entity>(): TableColumn<T> {
     return this.createEntityRelationColumn({
-      title: 'System',
+      title: <EntityTableColumnTitle translationKey="system" />,
       relation: RELATION_PART_OF,
       defaultKind: 'system',
       filter: {
@@ -137,7 +135,7 @@ export const columnFactories = Object.freeze({
   },
   createMetadataDescriptionColumn<T extends Entity>(): TableColumn<T> {
     return {
-      title: 'Description',
+      title: <EntityTableColumnTitle translationKey="description" />,
       field: 'metadata.description',
       render: entity => (
         <OverflowTooltip
@@ -150,13 +148,13 @@ export const columnFactories = Object.freeze({
   },
   createSpecLifecycleColumn<T extends Entity>(): TableColumn<T> {
     return {
-      title: 'Lifecycle',
+      title: <EntityTableColumnTitle translationKey="lifecycle" />,
       field: 'spec.lifecycle',
     };
   },
   createSpecTypeColumn<T extends Entity>(): TableColumn<T> {
     return {
-      title: 'Type',
+      title: <EntityTableColumnTitle translationKey="type" />,
       field: 'spec.type',
     };
   },

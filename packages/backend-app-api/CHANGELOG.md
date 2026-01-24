@@ -1,5 +1,310 @@
 # @backstage/backend-app-api
 
+## 1.4.1
+
+### Patch Changes
+
+- 04db26b: Clean up process event listeners on backend stop to prevent leaks
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.1
+
+## 1.4.0
+
+### Minor Changes
+
+- 5a2d538: Introduced backend startup result tracking and error handling. The `Backend.start()` method now returns a `BackendStartupResult` with detailed success/failure status and timing information for all plugins and modules. When startup fails, a `BackendStartupError` is thrown that includes the complete startup results, making it easier to diagnose which plugins or modules failed.
+
+  This also improves the default error message when backend startup fails, and of course makes it possible to craft your own custom error reporting based on the startup results.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.0
+
+## 1.4.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.0-next.1
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+
+## 1.4.0-next.0
+
+### Minor Changes
+
+- 5a2d538: Introduced backend startup result tracking and error handling. The `Backend.start()` method now returns a `BackendStartupResult` with detailed success/failure status and timing information for all plugins and modules. When startup fails, a `BackendStartupError` is thrown that includes the complete startup results, making it easier to diagnose which plugins or modules failed.
+
+  This also improves the default error message when backend startup fails, and of course makes it possible to craft your own custom error reporting based on the startup results.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.1-next.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+
+## 1.3.0
+
+### Minor Changes
+
+- a17d9df: Updates API for `instanceMetadata` service to return a list of plugins not features.
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.0
+  - @backstage/config@1.3.6
+
+## 1.3.0-next.1
+
+### Minor Changes
+
+- a17d9df: Updates API for `instanceMetadata` service to return a list of plugins not features.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.0-next.1
+
+## 1.2.9-next.0
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/config@1.3.6-next.0
+  - @backstage/backend-plugin-api@1.4.5-next.0
+  - @backstage/errors@1.2.7
+
+## 1.2.8
+
+### Patch Changes
+
+- dd69cf6: Moved up registration of unhandled rejections and errors listeners to be done as early as possible, avoiding flakiness in backend startups and instead always logging these failures rather than sometimes crashing the process.
+- Updated dependencies
+  - @backstage/config@1.3.5
+  - @backstage/backend-plugin-api@1.4.4
+
+## 1.2.8-next.1
+
+### Patch Changes
+
+- dd69cf6: Moved up registration of unhandled rejections and errors listeners to be done as early as possible, avoiding flakiness in backend startups and instead always logging these failures rather than sometimes crashing the process.
+
+## 1.2.8-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.4-next.0
+  - @backstage/backend-plugin-api@1.4.4-next.0
+
+## 1.2.7
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.3
+
+## 1.2.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.3-next.0
+
+## 1.2.6
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.2
+
+## 1.2.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.2-next.0
+  - @backstage/config@1.3.3
+  - @backstage/errors@1.2.7
+
+## 1.2.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3
+  - @backstage/backend-plugin-api@1.4.1
+
+## 1.2.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3-next.0
+  - @backstage/backend-plugin-api@1.4.1-next.0
+
+## 1.2.4
+
+### Patch Changes
+
+- bb9a501: Fixed a bug where occasionally the initialization order of multiple modules consuming a single extension point could happen in the wrong order.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.0
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
+## 1.2.4-next.2
+
+### Patch Changes
+
+- bb9a501: Fixed a bug where occasionally the initialization order of multiple modules consuming a single extension point could happen in the wrong order.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.0-next.1
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
+## 1.2.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.0-next.1
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
+## 1.2.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.0-next.0
+
+## 1.2.3
+
+### Patch Changes
+
+- 729a7d6: Added a configuration to permit backend plugin module failures on startup:
+
+  ```yaml
+  backend:
+    ...
+    startup:
+      plugins:
+        plugin-x:
+          modules:
+            module-y:
+              onPluginModuleBootFailure: continue
+  ```
+
+  This configuration permits `plugin-x` with `module-y` to fail on startup. Omitting the
+  `onPluginModuleBootFailure` configuration matches the previous behavior, wherein any
+  individual plugin module failure is forwarded to the plugin and aborts backend startup.
+
+  The default can also be changed, so that continuing on failure is the default
+  unless otherwise specified:
+
+  ```yaml
+  backend:
+    startup:
+      default:
+        onPluginModuleBootFailure: continue
+      plugins:
+        catalog:
+          modules:
+            github:
+              onPluginModuleBootFailure: abort
+  ```
+
+- 72d019d: Removed various typos
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.3.1
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
+## 1.2.3-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.3.1-next.2
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
+## 1.2.3-next.1
+
+### Patch Changes
+
+- 729a7d6: Added a configuration to permit backend plugin module failures on startup:
+
+  ```yaml
+  backend:
+    ...
+    startup:
+      plugins:
+        plugin-x:
+          modules:
+            module-y:
+              onPluginModuleBootFailure: continue
+  ```
+
+  This configuration permits `plugin-x` with `module-y` to fail on startup. Omitting the
+  `onPluginModuleBootFailure` configuration matches the previous behavior, wherein any
+  individual plugin module failure is forwarded to the plugin and aborts backend startup.
+
+  The default can also be changed, so that continuing on failure is the default
+  unless otherwise specified:
+
+  ```yaml
+  backend:
+    startup:
+      default:
+        onPluginModuleBootFailure: continue
+      plugins:
+        catalog:
+          modules:
+            github:
+              onPluginModuleBootFailure: abort
+  ```
+
+- 72d019d: Removed various typos
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.3.1-next.1
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
+## 1.2.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.3.1-next.0
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
+## 1.2.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.3.0
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
+## 1.2.1
+
+### Patch Changes
+
+- f422984: Remove unused dependencies
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.2.1
+  - @backstage/config@1.3.2
+  - @backstage/errors@1.2.7
+
 ## 1.2.1-next.2
 
 ### Patch Changes

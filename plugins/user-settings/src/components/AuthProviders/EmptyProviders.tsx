@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import { CodeSnippet, EmptyState } from '@backstage/core-components';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { userSettingsTranslationRef } from '../../translation';
 
 const EXAMPLE = `auth:
   providers:
@@ -27,32 +28,34 @@ const EXAMPLE = `auth:
         clientSecret: \${AUTH_GOOGLE_CLIENT_SECRET}
 `;
 
-export const EmptyProviders = () => (
-  <EmptyState
-    missing="content"
-    title="No Authentication Providers"
-    description="You can add Authentication Providers to Backstage which allows you to use these providers to authenticate yourself."
-    action={
-      <>
-        <Typography variant="body1">
-          Open <code>app-config.yaml</code> and make the changes as highlighted
-          below:
-        </Typography>
-        <CodeSnippet
-          text={EXAMPLE}
-          language="yaml"
-          showLineNumbers
-          highlightedNumbers={[3, 4, 5, 6, 7, 8]}
-          customStyle={{ background: 'inherit', fontSize: '115%' }}
-        />
-        <Button
-          variant="contained"
-          color="primary"
-          href="https://backstage.io/docs/auth/add-auth-provider"
-        >
-          Read More
-        </Button>
-      </>
-    }
-  />
-);
+export const EmptyProviders = () => {
+  const { t } = useTranslationRef(userSettingsTranslationRef);
+  return (
+    <EmptyState
+      missing="content"
+      title={t('emptyProviders.title')}
+      description={t('emptyProviders.description')}
+      action={
+        <>
+          <Typography variant="body1">
+            {t('emptyProviders.action.title')}
+          </Typography>
+          <CodeSnippet
+            text={EXAMPLE}
+            language="yaml"
+            showLineNumbers
+            highlightedNumbers={[3, 4, 5, 6, 7, 8]}
+            customStyle={{ background: 'inherit', fontSize: '115%' }}
+          />
+          <Button
+            variant="contained"
+            color="primary"
+            href="https://backstage.io/docs/auth/add-auth-provider"
+          >
+            {t('emptyProviders.action.readMoreButtonTitle')}
+          </Button>
+        </>
+      }
+    />
+  );
+};

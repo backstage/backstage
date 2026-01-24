@@ -16,7 +16,6 @@
 import Box from '@material-ui/core/Box';
 import { makeStyles } from '@material-ui/core/styles';
 import ArrowForwardIosIcon from '@material-ui/icons/ArrowForwardIos';
-import React from 'react';
 
 const useStyles = makeStyles({
   iconContainer: {

@@ -5,34 +5,19 @@
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
 import { BackstagePackageJson } from '@backstage/cli-node';
-import { CatalogBuilder } from '@backstage/plugin-catalog-backend';
 import { Config } from '@backstage/config';
 import { ConfigSchema } from '@backstage/config-loader';
-import { DatabaseService } from '@backstage/backend-plugin-api';
-import { DiscoveryService } from '@backstage/backend-plugin-api';
-import { EventBroker } from '@backstage/plugin-events-node';
-import { EventsBackend } from '@backstage/plugin-events-backend';
-import { EventsService } from '@backstage/plugin-events-node';
-import { HttpPostIngressOptions } from '@backstage/plugin-events-node';
-import { IdentityApi } from '@backstage/plugin-auth-node';
-import { IndexBuilder } from '@backstage/plugin-search-backend-node';
-import { Logger } from 'winston';
+import { JsonObject } from '@backstage/types';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { PackagePlatform } from '@backstage/cli-node';
 import { PackageRole } from '@backstage/cli-node';
-import { PermissionEvaluator } from '@backstage/plugin-permission-common';
-import { PermissionPolicy } from '@backstage/plugin-permission-node';
-import { PluginCacheManager } from '@backstage/backend-common';
 import { RootLoggerService } from '@backstage/backend-plugin-api';
-import { Router } from 'express';
-import { SchedulerService } from '@backstage/backend-plugin-api';
-import { SchedulerServiceTaskRunner } from '@backstage/backend-plugin-api';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 import { ServiceRef } from '@backstage/backend-plugin-api';
-import { TemplateAction } from '@backstage/plugin-scaffolder-node';
-import { TokenManager } from '@backstage/backend-common';
-import { UrlReaderService } from '@backstage/backend-plugin-api';
 import { WinstonLoggerOptions } from '@backstage/backend-defaults/rootLogger';
+
+// @public (undocumented)
+export type AdditionalRemoteInfo = Omit<RemoteInfo, 'name' | 'entry'>;
 
 // @public (undocumented)
 export interface BackendDynamicPlugin extends BaseDynamicPlugin {
@@ -43,9 +28,7 @@ export interface BackendDynamicPlugin extends BaseDynamicPlugin {
 }
 
 // @public (undocumented)
-export type BackendDynamicPluginInstaller =
-  | LegacyBackendPluginInstaller
-  | NewBackendPluginInstaller;
+export type BackendDynamicPluginInstaller = NewBackendPluginInstaller;
 
 // @public (undocumented)
 export interface BackendPluginProvider {
@@ -161,8 +144,21 @@ export type DynamicPluginsFeatureLoaderOptions = DynamicPluginsFactoryOptions &
     logger?: (config?: Config) => DynamicPluginsRootLoggerFactoryOptions;
   };
 
+// @public (undocumented)
+export interface DynamicPluginsFrontendRemotesService {
+  // (undocumented)
+  setResolverProvider(provider: FrontendRemoteResolverProvider): void;
+}
+
 // @public @deprecated (undocumented)
 export const dynamicPluginsFrontendSchemas: BackendFeature;
+
+// @public
+export const dynamicPluginsFrontendServiceRef: ServiceRef<
+  DynamicPluginsFrontendRemotesService,
+  'root',
+  'singleton'
+>;
 
 // @public (undocumented)
 export type DynamicPluginsRootLoggerFactoryOptions = Omit<
@@ -228,56 +224,37 @@ export interface FrontendPluginProvider {
 }
 
 // @public (undocumented)
+export type FrontendRemoteResolver = {
+  assetsPathFromPackage?: string;
+  manifestFileName?: string;
+  getRemoteEntryType?: (
+    manifestContent: JsonObject,
+  ) => 'manifest' | 'javascript';
+  getAdditionalRemoteInfo?: (
+    manifestContent: JsonObject,
+  ) => AdditionalRemoteInfo;
+  getAdditionaRemoteInfo?: (
+    manifestContent: JsonObject,
+  ) => AdditionalRemoteInfo;
+  overrideExposedModules?: (
+    exposedModules: string[],
+    manifestContent: JsonObject,
+  ) => string[];
+  customizeManifest?: (content: JsonObject) => JsonObject;
+};
+
+// @public (undocumented)
+export type FrontendRemoteResolverProvider = {
+  for(
+    pluginName: string,
+    pluginPackagePath: string,
+  ): Partial<FrontendRemoteResolver> | undefined;
+};
+
+// @public (undocumented)
 export function isBackendDynamicPluginInstaller(
   obj: any,
 ): obj is BackendDynamicPluginInstaller;
-
-// @public @deprecated (undocumented)
-export interface LegacyBackendPluginInstaller {
-  // (undocumented)
-  catalog?(builder: CatalogBuilder, env: LegacyPluginEnvironment): void;
-  // (undocumented)
-  events?(
-    eventsBackend: EventsBackend,
-    env: LegacyPluginEnvironment,
-  ): HttpPostIngressOptions[];
-  // (undocumented)
-  kind: 'legacy';
-  // (undocumented)
-  permissions?: {
-    policy?: PermissionPolicy;
-  };
-  // (undocumented)
-  router?: {
-    pluginID: string;
-    createPlugin(env: LegacyPluginEnvironment): Promise<Router>;
-  };
-  // (undocumented)
-  scaffolder?(env: LegacyPluginEnvironment): TemplateAction<any>[];
-  // (undocumented)
-  search?(
-    indexBuilder: IndexBuilder,
-    schedule: SchedulerServiceTaskRunner,
-    env: LegacyPluginEnvironment,
-  ): void;
-}
-
-// @public @deprecated (undocumented)
-export type LegacyPluginEnvironment = {
-  logger: Logger;
-  cache: PluginCacheManager;
-  database: DatabaseService;
-  config: Config;
-  reader: UrlReaderService;
-  discovery: DiscoveryService;
-  tokenManager: TokenManager;
-  permissions: PermissionEvaluator;
-  scheduler: SchedulerService;
-  identity: IdentityApi;
-  eventBroker: EventBroker;
-  events: EventsService;
-  pluginProvider: BackendPluginProvider;
-};
 
 // @public (undocumented)
 export interface ModuleLoader {
@@ -298,6 +275,39 @@ export interface NewBackendPluginInstaller {
   // (undocumented)
   kind: 'new';
 }
+
+// @public
+export interface RemoteInfo {
+  entry: string;
+  // (undocumented)
+  entryGlobalName?: string;
+  name: string;
+  // (undocumented)
+  shareScope?: string;
+  // (undocumented)
+  type?: RemoteInfoTypeEnum;
+}
+
+// @public (undocumented)
+export type RemoteInfoTypeEnum =
+  | 'var'
+  | 'module'
+  | 'assign'
+  | 'assign-properties'
+  | 'this'
+  | 'window'
+  | 'self'
+  | 'global'
+  | 'commonjs'
+  | 'commonjs2'
+  | 'commonjs-module'
+  | 'commonjs-static'
+  | 'amd'
+  | 'amd-require'
+  | 'umd'
+  | 'umd2'
+  | 'jsonp'
+  | 'system';
 
 // @public (undocumented)
 export type ScannedPluginManifest = BackstagePackageJson &

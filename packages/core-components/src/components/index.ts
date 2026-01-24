@@ -48,4 +48,3 @@ export * from './TabbedLayout';
 export * from './Table';
 export * from './TrendLine';
 export * from './WarningPanel';
-export * from './FavoriteToggle';

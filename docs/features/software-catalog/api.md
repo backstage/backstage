@@ -175,7 +175,7 @@ Some more real world usable examples:
 
 #### Ordering
 
-By default the entities are returned ordered by their internal uid. You can
+By default the entities are returned ordered by their internal `uid`. You can
 customize the `orderField` query parameters to affect that ordering.
 
 For example, to return entities by their name:

@@ -44,10 +44,13 @@ class Tracker {
   private insertBaseEntitiesEnd: number | undefined;
   private readonly deferred = createDeferred();
 
-  constructor(
-    private readonly knex: Knex,
-    private readonly load: SyntheticLoadOptions,
-  ) {}
+  private readonly knex: Knex;
+  private readonly load: SyntheticLoadOptions;
+
+  constructor(knex: Knex, load: SyntheticLoadOptions) {
+    this.knex = knex;
+    this.load = load;
+  }
 
   events(): SyntheticLoadEvents {
     return {
@@ -143,7 +146,7 @@ class Tracker {
 
 describePerformanceTest('stitchingPerformance', () => {
   const databases = TestDatabases.create({
-    ids: [/* 'MYSQL_8', */ 'POSTGRES_16', 'POSTGRES_12', 'SQLITE_3'],
+    ids: [/* 'MYSQL_8', */ 'POSTGRES_18', 'POSTGRES_14', 'SQLITE_3'],
   });
 
   it.each(databases.eachSupportedId())(

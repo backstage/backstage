@@ -26,7 +26,7 @@ import { ConfigApi } from '@backstage/core-plugin-api';
 
 jest.mock('../loginPopup', () => {
   return {
-    showLoginPopup: jest.fn(),
+    openLoginPopup: jest.fn(),
   };
 });
 
@@ -74,7 +74,9 @@ describe('DefaultAuthConnector', () => {
     );
 
     const connector = new DefaultAuthConnector<any>(defaultOptions);
-    const session = await connector.refreshSession(new Set(['a', 'b', 'c']));
+    const session = await connector.refreshSession({
+      scopes: new Set(['a', 'b', 'c']),
+    });
     expect(session.idToken).toBe('mock-id-token');
     expect(session.accessToken).toBe('mock-access-token');
     expect(session.scopes).toEqual(new Set(['a', 'b', 'c']));
@@ -118,7 +120,7 @@ describe('DefaultAuthConnector', () => {
   it('should create a session', async () => {
     const mockOauth = new MockOAuthApi();
     const popupSpy = jest
-      .spyOn(loginPopup, 'showLoginPopup')
+      .spyOn(loginPopup, 'openLoginPopup')
       .mockResolvedValue({
         idToken: 'my-id-token',
         accessToken: 'my-access-token',
@@ -151,7 +153,7 @@ describe('DefaultAuthConnector', () => {
 
   it('should instantly show popup if option is set', async () => {
     const popupSpy = jest
-      .spyOn(loginPopup, 'showLoginPopup')
+      .spyOn(loginPopup, 'openLoginPopup')
       .mockResolvedValue('my-session');
     const connector = new DefaultAuthConnector({
       ...defaultOptions,
@@ -169,7 +171,6 @@ describe('DefaultAuthConnector', () => {
     expect(popupSpy).toHaveBeenCalledTimes(1);
     expect(popupSpy).toHaveBeenCalledWith({
       name: 'My Provider Login',
-      origin: 'http://my-host',
       url: 'http://my-host/api/auth/my-provider/start?scope=&origin=http%3A%2F%2Flocalhost&flow=popup&env=production',
       width: 450,
       height: 730,
@@ -178,7 +179,7 @@ describe('DefaultAuthConnector', () => {
 
   it('should show popup fullscreen', async () => {
     const popupSpy = jest
-      .spyOn(loginPopup, 'showLoginPopup')
+      .spyOn(loginPopup, 'openLoginPopup')
       .mockResolvedValue('my-session');
 
     jest.spyOn(window.screen, 'width', 'get').mockReturnValue(1000);
@@ -205,7 +206,6 @@ describe('DefaultAuthConnector', () => {
     expect(popupSpy).toHaveBeenCalledWith({
       height: 1000,
       name: 'My Provider Login',
-      origin: 'http://my-host',
       url: 'http://my-host/api/auth/my-provider/start?scope=&origin=http%3A%2F%2Flocalhost&flow=popup&env=production',
       width: 1000,
     });
@@ -213,7 +213,7 @@ describe('DefaultAuthConnector', () => {
 
   it('should show popup with special width and height', async () => {
     const popupSpy = jest
-      .spyOn(loginPopup, 'showLoginPopup')
+      .spyOn(loginPopup, 'openLoginPopup')
       .mockResolvedValue('my-session');
     const connector = new DefaultAuthConnector({
       ...defaultOptions,
@@ -236,7 +236,6 @@ describe('DefaultAuthConnector', () => {
 
     expect(popupSpy).toHaveBeenCalledWith({
       name: 'My Provider Login',
-      origin: 'http://my-host',
       url: 'http://my-host/api/auth/my-provider/start?scope=&origin=http%3A%2F%2Flocalhost&flow=popup&env=production',
       width: 500,
       height: 1000,
@@ -246,7 +245,7 @@ describe('DefaultAuthConnector', () => {
   it('should use join func to join scopes', async () => {
     const mockOauth = new MockOAuthApi();
     const popupSpy = jest
-      .spyOn(loginPopup, 'showLoginPopup')
+      .spyOn(loginPopup, 'openLoginPopup')
       .mockResolvedValue({ scopes: '' });
     const connector = new DefaultAuthConnector({
       ...defaultOptions,

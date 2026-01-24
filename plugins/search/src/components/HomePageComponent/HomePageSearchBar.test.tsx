@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
-
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 
@@ -48,9 +46,7 @@ describe('<HomePageSearchBar/>', () => {
       },
     );
 
-    expect(searchApiMock.query).toHaveBeenCalledWith(
-      expect.objectContaining({ term: '' }),
-    );
+    expect(searchApiMock.query).not.toHaveBeenCalled();
 
     await userEvent.type(screen.getByLabelText('Search'), 'term{enter}');
 

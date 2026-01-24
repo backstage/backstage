@@ -1,13 +1,14 @@
 {
   "name": "@backstage/plugin-devtools",
-  "version": "0.1.25-next.2",
+  "version": "0.1.35",
   "backstage": {
     "role": "frontend-plugin",
     "pluginId": "devtools",
     "pluginPackages": [
       "@backstage/plugin-devtools",
       "@backstage/plugin-devtools-backend",
-      "@backstage/plugin-devtools-common"
+      "@backstage/plugin-devtools-common",
+      "@backstage/plugin-devtools-react"
     ]
   },
   "publishConfig": {
@@ -39,7 +40,8 @@
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "config.d.ts"
   ],
   "scripts": {
     "build": "backstage-cli package build",
@@ -57,10 +59,12 @@
     "@backstage/errors": "workspace:^",
     "@backstage/frontend-plugin-api": "workspace:^",
     "@backstage/plugin-devtools-common": "workspace:^",
+    "@backstage/plugin-devtools-react": "workspace:^",
     "@backstage/plugin-permission-react": "workspace:^",
     "@material-ui/core": "^4.9.13",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "^4.0.0-alpha.57",
+    "lodash": "^4.17.21",
     "react-json-view": "^1.21.3",
     "react-use": "^17.2.4"
   },
@@ -68,6 +72,7 @@
     "@backstage/cli": "workspace:^",
     "@backstage/dev-utils": "workspace:^",
     "@testing-library/jest-dom": "^6.0.0",
+    "@types/lodash": "^4.14.151",
     "@types/react": "^18.0.0",
     "react": "^18.0.2",
     "react-dom": "^18.0.2",
@@ -83,5 +88,6 @@
     "@types/react": {
       "optional": true
     }
-  }
+  },
+  "configSchema": "config.d.ts"
 }

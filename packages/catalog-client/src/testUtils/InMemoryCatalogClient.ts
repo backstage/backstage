@@ -28,9 +28,11 @@ import {
   GetEntityAncestorsResponse,
   GetEntityFacetsRequest,
   GetEntityFacetsResponse,
+  GetLocationsResponse,
   Location,
   QueryEntitiesRequest,
   QueryEntitiesResponse,
+  StreamEntitiesRequest,
   ValidateEntityResponse,
 } from '@backstage/catalog-client';
 import {
@@ -43,6 +45,11 @@ import {
 import { NotFoundError, NotImplementedError } from '@backstage/errors';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { traverse } from '../../../../plugins/catalog-backend/src/database/operations/stitcher/buildEntitySearch';
+import type {
+  AnalyzeLocationRequest,
+  AnalyzeLocationResponse,
+} from '@backstage/plugin-catalog-common';
+import { DEFAULT_STREAM_ENTITIES_LIMIT } from '../constants.ts';
 
 function buildEntitySearch(entity: Entity) {
   const rows = traverse(entity);
@@ -104,6 +111,11 @@ function createFilter(
         }
         if (expectedValue === CATALOG_FILTER_EXISTS) {
           continue;
+        }
+        if (Array.isArray(expectedValue)) {
+          return expectedValue.some(value =>
+            searchValues?.includes(String(value).toLocaleLowerCase('en-US')),
+          );
         }
         if (
           !searchValues?.includes(
@@ -228,6 +240,10 @@ export class InMemoryCatalogClient implements CatalogApi {
     };
   }
 
+  async getLocations(_request?: {}): Promise<GetLocationsResponse> {
+    throw new NotImplementedError('Method not implemented.');
+  }
+
   async getLocationById(_id: string): Promise<Location | undefined> {
     throw new NotImplementedError('Method not implemented.');
   }
@@ -257,6 +273,28 @@ export class InMemoryCatalogClient implements CatalogApi {
     _locationRef: string,
   ): Promise<ValidateEntityResponse> {
     throw new NotImplementedError('Method not implemented.');
+  }
+
+  async analyzeLocation(
+    _location: AnalyzeLocationRequest,
+  ): Promise<AnalyzeLocationResponse> {
+    throw new NotImplementedError('Method not implemented.');
+  }
+
+  async *streamEntities(
+    request?: StreamEntitiesRequest,
+  ): AsyncIterable<Entity[]> {
+    let cursor: string | undefined = undefined;
+    const limit = request?.pageSize ?? DEFAULT_STREAM_ENTITIES_LIMIT;
+    do {
+      const res = await this.queryEntities(
+        cursor ? { ...request, limit, cursor } : { ...request, limit },
+      );
+
+      yield res.items;
+
+      cursor = res.pageInfo.nextCursor;
+    } while (cursor);
   }
 
   #createEntityRefMap() {

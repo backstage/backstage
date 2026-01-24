@@ -1,6 +1,6 @@
 {
   "name": "@backstage/core-plugin-api",
-  "version": "1.10.4",
+  "version": "1.12.1",
   "description": "Core API used by Backstage plugins",
   "backstage": {
     "role": "web-library"
@@ -51,9 +51,11 @@
   "dependencies": {
     "@backstage/config": "workspace:^",
     "@backstage/errors": "workspace:^",
+    "@backstage/frontend-plugin-api": "workspace:^",
     "@backstage/types": "workspace:^",
     "@backstage/version-bridge": "workspace:^",
-    "history": "^5.0.0"
+    "history": "^5.0.0",
+    "zod": "^3.22.4"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",

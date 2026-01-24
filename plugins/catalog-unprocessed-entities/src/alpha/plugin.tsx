@@ -14,9 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import {
-  createApiFactory,
   createFrontendPlugin,
   discoveryApiRef,
   fetchApiRef,
@@ -29,17 +27,13 @@ import {
   catalogUnprocessedEntitiesApiRef,
   CatalogUnprocessedEntitiesClient,
 } from '../api';
-import {
-  compatWrapper,
-  convertLegacyRouteRef,
-} from '@backstage/core-compat-api';
 import QueueIcon from '@material-ui/icons/Queue';
 import { rootRouteRef } from '../routes';
 
 /** @alpha */
 export const catalogUnprocessedEntitiesApi = ApiBlueprint.make({
-  params: {
-    factory: createApiFactory({
+  params: defineParams =>
+    defineParams({
       api: catalogUnprocessedEntitiesApiRef,
       deps: {
         discoveryApi: discoveryApiRef,
@@ -48,18 +42,17 @@ export const catalogUnprocessedEntitiesApi = ApiBlueprint.make({
       factory: ({ discoveryApi, fetchApi }) =>
         new CatalogUnprocessedEntitiesClient(discoveryApi, fetchApi),
     }),
-  },
 });
 
 /** @alpha */
 export const catalogUnprocessedEntitiesPage = PageBlueprint.make({
   params: {
-    defaultPath: '/catalog-unprocessed-entities',
-    routeRef: convertLegacyRouteRef(rootRouteRef),
+    path: '/catalog-unprocessed-entities',
+    routeRef: rootRouteRef,
     loader: () =>
-      import('../components/UnprocessedEntities').then(m =>
-        compatWrapper(<m.UnprocessedEntities />),
-      ),
+      import('../components/UnprocessedEntities').then(m => (
+        <m.UnprocessedEntities />
+      )),
   },
 });
 
@@ -67,16 +60,17 @@ export const catalogUnprocessedEntitiesPage = PageBlueprint.make({
 export const catalogUnprocessedEntitiesNavItem = NavItemBlueprint.make({
   params: {
     title: 'Unprocessed Entities',
-    routeRef: convertLegacyRouteRef(rootRouteRef),
+    routeRef: rootRouteRef,
     icon: QueueIcon,
   },
 });
 
 /** @alpha */
 export default createFrontendPlugin({
-  id: 'catalog-unprocessed-entities',
+  pluginId: 'catalog-unprocessed-entities',
+  info: { packageJson: () => import('../../package.json') },
   routes: {
-    root: convertLegacyRouteRef(rootRouteRef),
+    root: rootRouteRef,
   },
   extensions: [
     catalogUnprocessedEntitiesApi,

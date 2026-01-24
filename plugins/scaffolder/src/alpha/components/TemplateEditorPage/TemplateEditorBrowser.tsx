@@ -21,7 +21,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import CloseIcon from '@material-ui/icons/Close';
 import RefreshIcon from '@material-ui/icons/Refresh';
 import SaveIcon from '@material-ui/icons/Save';
-import React from 'react';
 import { useDirectoryEditor } from './DirectoryEditorContext';
 import { FileBrowser } from '../../../components/FileBrowser';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';

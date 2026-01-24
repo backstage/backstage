@@ -50,18 +50,6 @@ To use the catalog graph plugin, you have to add some things to your Backstage a
        <CatalogGraphPage
          initialState={{
            selectedKinds: ['component', 'domain', 'system', 'api', 'group'],
-           selectedRelations: [
-             RELATION_OWNER_OF,
-             RELATION_OWNED_BY,
-             RELATION_CONSUMES_API,
-             RELATION_API_CONSUMED_BY,
-             RELATION_PROVIDES_API,
-             RELATION_API_PROVIDED_BY,
-             RELATION_HAS_PART,
-             RELATION_PART_OF,
-             RELATION_DEPENDS_ON,
-             RELATION_DEPENDENCY_OF,
-           ],
          }}
        />
      }
@@ -88,7 +76,7 @@ To use the catalog graph plugin, you have to add some things to your Backstage a
    </Grid>
    ```
 
-### Customization
+### Customizing the UI
 
 Copy the default implementation `DefaultRenderNode.tsx` and add more classes to the styles:
 
@@ -149,6 +137,44 @@ Once you have your custom implementation, you can follow these steps to modify t
 
 ```tsx
 <EntityCatalogGraphCard variant=“gridItem” renderNode={MyCustomRenderNode} height={400} />
+```
+
+### Custom relations
+
+Implementers with added custom relations can add them to the catalog graph plugin by overriding the default API. This also allows some relations to not be selected by default.
+
+In `packages/app/src/apis.ts`, import the api ref and create the API as:
+
+```ts
+import {
+  ALL_RELATIONS,
+  ALL_RELATION_PAIRS,
+  catalogGraphApiRef,
+  DefaultCatalogGraphApi,
+} from '@backstage/plugin-catalog-graph';
+
+// ...
+
+  createApiFactory({
+    api: catalogGraphApiRef,
+    deps: {},
+    factory: () =>
+      new DefaultCatalogGraphApi({
+        // The relations to support
+        knownRelations: [...ALL_RELATIONS, 'myRelationOf', 'myRelationFor'],
+        // The relation pairs to support
+        knownRelationPairs: [
+          ...ALL_RELATION_PAIRS,
+          ['myRelationOf', 'myRelationFor'],
+        ],
+        // Select what relations to be shown by default, either by including them,
+        // or excluding some from all known relations:
+        defaultRelationTypes: {
+          // Don't show/select these by default
+          exclude: ['myRelationOf', 'myRelationFor'],
+        },
+      }),
+  }),
 ```
 
 ## Development

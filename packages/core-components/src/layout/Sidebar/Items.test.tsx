@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import {
   mockApis,
   TestApiProvider,
@@ -97,7 +96,7 @@ describe('Items', () => {
     it('should render a button with custom style', async () => {
       expect(
         await screen.findByRole('button', { name: /create/i }),
-      ).toHaveStyle(`background-color: transparent`);
+      ).toHaveStyle(`background-color: rgba(0, 0, 0, 0)`); // transparent
     });
 
     it('should send button clicks to analytics', async () => {

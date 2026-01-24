@@ -14,12 +14,7 @@
  * limitations under the License.
  */
 
-import React, {
-  ComponentType,
-  createContext,
-  useContext,
-  ReactNode,
-} from 'react';
+import { ComponentType, createContext, useContext, ReactNode } from 'react';
 import { useParams } from 'react-router-dom';
 import { useTechDocsReaderPage } from '@backstage/plugin-techdocs-react';
 

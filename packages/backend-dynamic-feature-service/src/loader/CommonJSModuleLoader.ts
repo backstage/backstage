@@ -36,8 +36,10 @@ export type CommonJSModuleLoaderOptions = {
  */
 export class CommonJSModuleLoader implements ModuleLoader {
   private module: any;
+  public readonly options: CommonJSModuleLoaderOptions;
 
-  constructor(public readonly options: CommonJSModuleLoaderOptions) {
+  constructor(options: CommonJSModuleLoaderOptions) {
+    this.options = options;
     this.module = require('node:module');
   }
 
@@ -68,7 +70,7 @@ export class CommonJSModuleLoader implements ModuleLoader {
       return filtered;
     };
 
-    // The whole piece of code below is a way to accomodate the limitations of
+    // The whole piece of code below is a way to accommodate the limitations of
     // the current `resolvePackagePath` implementation, which cannot be provided
     // some custom locations where it should find the assets of some given packages.
     //
@@ -104,7 +106,7 @@ export class CommonJSModuleLoader implements ModuleLoader {
         mod?.path &&
         !dynamicPluginsPaths.some(p => mod.path.startsWith(p));
 
-      // If not, we don't need the dedicated specfic case below.
+      // If not, we don't need the dedicated specific case below.
       if (!resolvingPackageJsonFromBackstageApplication) {
         throw errorToThrow;
       }
@@ -133,7 +135,7 @@ export class CommonJSModuleLoader implements ModuleLoader {
       }
 
       // If a custom resolution is provided, use it.
-      // This allows accomodating alternate ways to package dynamic plugins:
+      // This allows accommodating alternate ways to package dynamic plugins:
       // static plugin package wrapped inside a distinct dynamic plugin package for example.
       if (this.options.customResolveDynamicPackage) {
         const resolvedPath = this.options.customResolveDynamicPackage(

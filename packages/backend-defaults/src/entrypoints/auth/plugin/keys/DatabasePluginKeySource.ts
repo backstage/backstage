@@ -33,13 +33,22 @@ const KEY_EXPIRATION_MARGIN_FACTOR = 3;
 export class DatabasePluginKeySource implements PluginKeySource {
   private privateKeyPromise?: Promise<JWK>;
   private keyExpiry?: Date;
+  private readonly keyStore: KeyStore;
+  private readonly logger: LoggerService;
+  private readonly keyDurationSeconds: number;
+  private readonly algorithm: string;
 
   constructor(
-    private readonly keyStore: KeyStore,
-    private readonly logger: LoggerService,
-    private readonly keyDurationSeconds: number,
-    private readonly algorithm: string,
-  ) {}
+    keyStore: KeyStore,
+    logger: LoggerService,
+    keyDurationSeconds: number,
+    algorithm: string,
+  ) {
+    this.keyStore = keyStore;
+    this.logger = logger;
+    this.keyDurationSeconds = keyDurationSeconds;
+    this.algorithm = algorithm;
+  }
 
   public static async create(options: {
     logger: LoggerService;
@@ -93,7 +102,7 @@ export class DatabasePluginKeySource implements PluginKeySource {
 
       await this.keyStore.addKey({
         id: kid,
-        key: publicKey as InternalKey,
+        key: publicKey as unknown as InternalKey,
         expiresAt: new Date(
           Date.now() +
             this.keyDurationSeconds *

@@ -24,10 +24,9 @@ import {
   renderInTestApp,
 } from '@backstage/frontend-test-utils';
 import { screen } from '@testing-library/react';
-import React from 'react';
 import { convertLegacyEntityCardExtension } from './convertLegacyEntityCardExtension';
 import { convertLegacyRouteRef } from '@backstage/core-compat-api';
-import { EntityContentBlueprint } from '../blueprints';
+import { EntityCardBlueprint } from '../blueprints';
 
 const routeRef = createLegacyRouteRef({ id: 'test' });
 const legacyPlugin = createLegacyPlugin({
@@ -61,12 +60,14 @@ describe('convertLegacyEntityCardExtension', () => {
 
     await expect(screen.findByText('Hello')).resolves.toBeInTheDocument();
 
-    expect(tester.get(EntityContentBlueprint.dataRefs.filterExpression)).toBe(
+    expect(tester.get(EntityCardBlueprint.dataRefs.filterExpression)).toBe(
       undefined,
     );
-    expect(tester.get(EntityContentBlueprint.dataRefs.filterFunction)).toBe(
+    expect(tester.get(EntityCardBlueprint.dataRefs.filterFunction)).toBe(
       undefined,
     );
+
+    expect(tester.get(EntityCardBlueprint.dataRefs.type)).toBe(undefined);
   });
 
   it('should convert an entity card extension with overrides', async () => {
@@ -95,10 +96,10 @@ describe('convertLegacyEntityCardExtension', () => {
 
     await expect(screen.findByText('Hello')).resolves.toBeInTheDocument();
 
-    expect(tester.get(EntityContentBlueprint.dataRefs.filterExpression)).toBe(
+    expect(tester.get(EntityCardBlueprint.dataRefs.filterExpression)).toBe(
       'my-filter',
     );
-    expect(tester.get(EntityContentBlueprint.dataRefs.filterFunction)).toBe(
+    expect(tester.get(EntityCardBlueprint.dataRefs.filterFunction)).toBe(
       undefined,
     );
   });
@@ -123,5 +124,33 @@ describe('convertLegacyEntityCardExtension', () => {
     expect(getDiscoveredId('EntityExampleCard')).toBe('entity-card:example');
     expect(getDiscoveredId('EntityExAmpleCard')).toBe('entity-card:ex-ample');
     expect(getDiscoveredId('ExampleCard')).toBe('entity-card:example-card');
+  });
+
+  it('should support the type override', async () => {
+    const LegacyExtension = legacyPlugin.provide(
+      createRoutableExtension({
+        name: 'EntityExampleCard',
+        mountPoint: routeRef,
+        component: async () => () => <div>Hello</div>,
+      }),
+    );
+
+    const converted = convertLegacyEntityCardExtension(LegacyExtension, {
+      type: 'info',
+    });
+
+    const tester = createExtensionTester(converted);
+
+    expect(tester.query(converted).node.spec.id).toBe('entity-card:example');
+
+    await renderInTestApp(tester.reactElement(), {
+      mountedRoutes: {
+        '/': convertLegacyRouteRef(routeRef),
+      },
+    });
+
+    await expect(screen.findByText('Hello')).resolves.toBeInTheDocument();
+
+    expect(tester.get(EntityCardBlueprint.dataRefs.type)).toBe('info');
   });
 });

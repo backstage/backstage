@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { AuditorService } from '@backstage/backend-plugin-api';
-import { assertError, stringifyError } from '@backstage/errors';
+import { AuditorService, LoggerService } from '@backstage/backend-plugin-api';
+import { assertError, InputError, stringifyError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
 import {
@@ -25,16 +25,17 @@ import {
   TemplateGlobal,
 } from '@backstage/plugin-scaffolder-node';
 import PQueue from 'p-queue';
-import { Logger } from 'winston';
-import { TemplateActionRegistry } from '../actions';
+import { TemplateActionRegistry } from '../actions/TemplateActionRegistry';
 import { NunjucksWorkflowRunner } from './NunjucksWorkflowRunner';
 import { WorkflowRunner } from './types';
 import { setTimeout } from 'timers/promises';
+import { JsonObject } from '@backstage/types';
+import { Config } from '@backstage/config';
+
+const DEFAULT_TASK_PARAMETER_MAX_LENGTH = 256;
 
 /**
  * TaskWorkerOptions
- *
- * @public
  */
 export type TaskWorkerOptions = {
   taskBroker: TaskBroker;
@@ -43,23 +44,23 @@ export type TaskWorkerOptions = {
   };
   concurrentTasksLimit: number;
   permissions?: PermissionEvaluator;
-  logger?: Logger;
+  logger?: LoggerService;
   auditor?: AuditorService;
+  config?: Config;
   gracefulShutdown?: boolean;
 };
 
 /**
  * CreateWorkerOptions
- *
- * @public
  */
 export type CreateWorkerOptions = {
   taskBroker: TaskBroker;
   actionRegistry: TemplateActionRegistry;
   integrations: ScmIntegrations;
   workingDirectory: string;
-  logger: Logger;
+  logger: LoggerService;
   auditor?: AuditorService;
+  config?: Config;
   additionalTemplateFilters?: Record<string, TemplateFilter>;
   /**
    * The number of tasks that can be executed at the same time by the worker
@@ -81,22 +82,31 @@ export type CreateWorkerOptions = {
 
 /**
  * TaskWorker
- *
- * @public
  */
 export class TaskWorker {
   private taskQueue: PQueue;
-  private logger: Logger | undefined;
+  private logger: LoggerService | undefined;
   private auditor: AuditorService | undefined;
+  private parameterAuditTransform: ParameterAuditTransform;
   private stopWorkers: boolean;
 
-  private constructor(private readonly options: TaskWorkerOptions) {
+  private readonly options: TaskWorkerOptions & {
+    parameterAuditTransform: ParameterAuditTransform;
+  };
+
+  private constructor(
+    options: TaskWorkerOptions & {
+      parameterAuditTransform: ParameterAuditTransform;
+    },
+  ) {
+    this.options = options;
     this.stopWorkers = false;
     this.logger = options.logger;
     this.auditor = options.auditor;
     this.taskQueue = new PQueue({
       concurrency: options.concurrentTasksLimit,
     });
+    this.parameterAuditTransform = options.parameterAuditTransform;
   }
 
   static async create(options: CreateWorkerOptions): Promise<TaskWorker> {
@@ -104,6 +114,7 @@ export class TaskWorker {
       taskBroker,
       logger,
       auditor,
+      config,
       actionRegistry,
       integrations,
       workingDirectory,
@@ -123,6 +134,7 @@ export class TaskWorker {
       additionalTemplateFilters,
       additionalTemplateGlobals,
       permissions,
+      config,
     });
 
     return new TaskWorker({
@@ -131,7 +143,9 @@ export class TaskWorker {
       concurrentTasksLimit,
       permissions,
       auditor,
+      config,
       gracefulShutdown,
+      parameterAuditTransform: createParameterTruncator(config),
     });
   }
 
@@ -189,8 +203,9 @@ export class TaskWorker {
       severityLevel: 'medium',
       meta: {
         actionType: 'execution',
+        createdBy: task.createdBy,
         taskId: task.taskId,
-        taskParameters: task.spec.parameters,
+        taskParameters: this.parameterAuditTransform(task.spec.parameters),
         templateRef: task.spec.templateInfo?.entityRef,
       },
     });
@@ -218,4 +233,54 @@ export class TaskWorker {
       });
     }
   }
+}
+
+type ParameterAuditTransform = (parameters: JsonObject) => JsonObject;
+
+/**
+ * Truncates task parameters for audit logging using the configured max length.
+ * @internal
+ */
+export function createParameterTruncator(
+  config?: Config,
+): ParameterAuditTransform {
+  const maxLength =
+    config?.getOptionalNumber('scaffolder.auditor.taskParameterMaxLength') ??
+    DEFAULT_TASK_PARAMETER_MAX_LENGTH;
+
+  if (!Number.isSafeInteger(maxLength) || maxLength < -1) {
+    throw new InputError(
+      `Invalid configuration for 'scaffolder.auditor.taskParameterMaxLength', got ${maxLength}. Must be a positive integer or -1 to disable truncation.`,
+    );
+  }
+
+  if (maxLength === -1) {
+    return (parameters: JsonObject) => parameters;
+  }
+
+  return (parameters: JsonObject) => {
+    function truncate(value: unknown): unknown {
+      if (typeof value === 'string') {
+        if (value.length > maxLength) {
+          return value.slice(0, maxLength).concat('...<truncated>');
+        }
+        return value;
+      }
+      if (Array.isArray(value)) {
+        return value.map(truncate);
+      }
+      if (value && typeof value === 'object') {
+        const result: Record<string, unknown> = {};
+        for (const k in value as object) {
+          if (Object.hasOwn(value, k)) {
+            result[k] = truncate((value as any)[k]);
+          }
+        }
+        return result;
+      }
+      return value;
+    }
+
+    return truncate(parameters) as JsonObject;
+  };
 }

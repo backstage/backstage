@@ -15,11 +15,15 @@
  */
 
 import os from 'os';
-import { DatabaseManager } from '@backstage/backend-common';
+import { DatabaseManager } from '@backstage/backend-defaults/database';
 import { ConfigReader } from '@backstage/config';
 import { DatabaseTaskStore } from './DatabaseTaskStore';
 import { StorageTaskBroker } from './StorageTaskBroker';
-import { TaskWorker, TaskWorkerOptions } from './TaskWorker';
+import {
+  createParameterTruncator,
+  TaskWorker,
+  TaskWorkerOptions,
+} from './TaskWorker';
 import { ScmIntegrations } from '@backstage/integration';
 import { TemplateActionRegistry } from '../actions';
 import { NunjucksWorkflowRunner } from './NunjucksWorkflowRunner';
@@ -49,7 +53,10 @@ async function createStore(): Promise<DatabaseTaskStore> {
         },
       },
     }),
-  ).forPlugin('scaffolder');
+  ).forPlugin('scaffolder', {
+    logger: mockServices.logger.mock(),
+    lifecycle: mockServices.lifecycle.mock(),
+  });
   return await DatabaseTaskStore.create({
     database: manager,
   });
@@ -136,6 +143,66 @@ describe('TaskWorker', () => {
     const { events } = await storage.listEvents({ taskId });
     const event = events.find(e => e.type === 'completion');
     expect(event?.body.output).toEqual({ testOutput: 'testmockoutput' });
+  });
+
+  it('should log an audit event with task parameters when running a task', async () => {
+    (workflowRunner.execute as jest.Mock).mockResolvedValue({
+      output: {},
+    });
+
+    const auditor = mockServices.auditor.mock();
+    const auditEvent = {
+      success: jest.fn(),
+      fail: jest.fn(),
+    };
+    auditor.createEvent.mockResolvedValue(auditEvent);
+
+    const broker = new StorageTaskBroker(storage, logger);
+    const taskWorker = await TaskWorker.create({
+      logger,
+      workingDirectory,
+      integrations,
+      taskBroker: broker,
+      actionRegistry,
+      auditor,
+      config: mockServices.rootConfig({
+        data: {
+          scaffolder: {
+            auditor: {
+              taskParameterMaxLength: 5,
+            },
+          },
+        },
+      }),
+    });
+
+    await taskWorker.runOneTask({
+      spec: {
+        apiVersion: 'scaffolder.backstage.io/v1beta3',
+        parameters: {
+          test: 'thisisaverylongstring',
+        },
+        steps: [],
+        output: {},
+      },
+      complete: jest.fn(),
+      createdBy: 'test-creator',
+      taskId: 'test-id',
+    } as unknown as TaskContext);
+
+    expect(auditor.createEvent).toHaveBeenCalledWith({
+      eventId: 'task',
+      severityLevel: 'medium',
+      meta: {
+        actionType: 'execution',
+        createdBy: 'test-creator',
+        taskId: 'test-id',
+        taskParameters: {
+          test: 'thisi...<truncated>',
+        },
+      },
+    });
+    expect(auditEvent.success).toHaveBeenCalled();
   });
 });
 
@@ -338,5 +405,113 @@ describe('TaskWorker internals', () => {
     // We now expect one more task to have been claimed, and two tasks in the queue again
     expect(claimedTaskCount).toBe(3);
     expect(inflightTasks.length).toBe(2);
+  });
+});
+
+describe('createParameterTruncator', () => {
+  it('successfully does nothing', async () => {
+    const testParams = {};
+
+    const result = createParameterTruncator()(testParams);
+
+    expect(result).toEqual({});
+  });
+
+  it('truncates long strings in nested objects and arrays', async () => {
+    const params = {
+      test: 'short',
+      test2: 'thisisaverylongstring',
+      nested: {
+        test3: 'anotherlongstringhere',
+        test4: ['ok', 'toolongstring', { prop: 'thisisaverylongstring' }],
+      },
+    };
+
+    const result = createParameterTruncator(
+      mockServices.rootConfig({
+        data: {
+          scaffolder: {
+            auditor: {
+              taskParameterMaxLength: 5,
+            },
+          },
+        },
+      }),
+    )(params);
+
+    expect(result).toEqual({
+      test: 'short',
+      test2: 'thisi...<truncated>',
+      nested: {
+        test3: 'anoth...<truncated>',
+        test4: ['ok', 'toolo...<truncated>', { prop: 'thisi...<truncated>' }],
+      },
+    });
+  });
+
+  it('should not truncate if max length is -1', async () => {
+    const params = {
+      test: 'short',
+      test2: 'thisisaverylongstring',
+      nested: {
+        test3: 'anotherlongstringhere',
+        test4: ['ok', 'toolongstring', { prop: 'thisisaverylongstring' }],
+      },
+    };
+
+    const result = createParameterTruncator(
+      mockServices.rootConfig({
+        data: {
+          scaffolder: {
+            auditor: {
+              taskParameterMaxLength: -1,
+            },
+          },
+        },
+      }),
+    )(params);
+
+    expect(result).toEqual({
+      test: 'short',
+      test2: 'thisisaverylongstring',
+      nested: {
+        test3: 'anotherlongstringhere',
+        test4: ['ok', 'toolongstring', { prop: 'thisisaverylongstring' }],
+      },
+    });
+  });
+
+  it('should throw on invalid max length', async () => {
+    expect(() =>
+      createParameterTruncator(
+        mockServices.rootConfig({
+          data: {
+            scaffolder: {
+              auditor: {
+                taskParameterMaxLength: -2,
+              },
+            },
+          },
+        }),
+      ),
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"Invalid configuration for 'scaffolder.auditor.taskParameterMaxLength', got -2. Must be a positive integer or -1 to disable truncation."`,
+    );
+
+    expect(() =>
+      createParameterTruncator(
+        mockServices.rootConfig({
+          data: {
+            scaffolder: {
+              auditor: {
+                taskParameterMaxLength: 1.5,
+              },
+            },
+          },
+        }),
+      ),
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"Invalid configuration for 'scaffolder.auditor.taskParameterMaxLength', got 1.5. Must be a positive integer or -1 to disable truncation."`,
+    );
   });
 });

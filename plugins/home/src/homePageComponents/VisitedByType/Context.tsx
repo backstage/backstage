@@ -14,27 +14,34 @@
  * limitations under the License.
  */
 
-import React, { Dispatch, SetStateAction, createContext, useMemo } from 'react';
+import {
+  Dispatch,
+  SetStateAction,
+  createContext,
+  useMemo,
+  useState,
+  useContext as useReactContext,
+} from 'react';
 import { Visit } from '../../api/VisitsApi';
 import { VisitedByTypeKind } from './Content';
 
-export type ContextValueOnly = {
+export type ContextValueOnly<T = Visit> = {
   collapsed: boolean;
   numVisitsOpen: number;
   numVisitsTotal: number;
-  visits: Array<Visit>;
+  visits: Array<T>;
   loading: boolean;
   kind: VisitedByTypeKind;
 };
 
-export type ContextValue = ContextValueOnly & {
+export type ContextValue<T = Visit> = ContextValueOnly<T> & {
   setCollapsed: Dispatch<SetStateAction<boolean>>;
   setNumVisitsOpen: Dispatch<SetStateAction<number>>;
   setNumVisitsTotal: Dispatch<SetStateAction<number>>;
-  setVisits: Dispatch<SetStateAction<Array<Visit>>>;
+  setVisits: Dispatch<SetStateAction<Array<T>>>;
   setLoading: Dispatch<SetStateAction<boolean>>;
   setKind: Dispatch<SetStateAction<VisitedByTypeKind>>;
-  setContext: Dispatch<SetStateAction<ContextValueOnly>>;
+  setContext: Dispatch<SetStateAction<ContextValueOnly<T>>>;
 };
 
 const defaultContextValueOnly: ContextValueOnly = {
@@ -72,9 +79,9 @@ const getFilteredSet =
     }));
 
 export const ContextProvider = ({ children }: { children: JSX.Element }) => {
-  const [context, setContext] = React.useState<ContextValueOnly>(
-    defaultContextValueOnly,
-  );
+  const [context, setContext] = useState<ContextValueOnly>({
+    ...defaultContextValueOnly,
+  });
   const {
     setCollapsed,
     setNumVisitsOpen,
@@ -109,7 +116,7 @@ export const ContextProvider = ({ children }: { children: JSX.Element }) => {
 };
 
 export const useContext = () => {
-  const value = React.useContext(Context);
+  const value = useReactContext(Context);
 
   if (value === undefined)
     throw new Error(

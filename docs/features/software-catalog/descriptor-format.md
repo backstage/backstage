@@ -2,7 +2,6 @@
 id: descriptor-format
 title: Descriptor Format of Catalog Entities
 sidebar_label: YAML File Format
-# prettier-ignore
 description: Documentation on Descriptor Format of Catalog Entities which describes the default data shape and semantics of catalog entities
 ---
 
@@ -240,17 +239,32 @@ Example: `visits-tracking-service`, `CircleciBuildsDumpV2_avro_gcs`
 ### `namespace` [optional]
 
 The ID of a namespace that the entity belongs to. This field is optional, and
-currently has no special semantics apart from bounding the name uniqueness
-constraint if specified. It is reserved for future use and may get broader
-semantic implication later.
+has no special semantics apart from bounding the name uniqueness constraint if
+specified.
 
-For now, it is recommended to not specify a namespace unless you have specific
-need to do so. This means the entity belongs to the `"default"` namespace.
+This can be used for ingesting entities (of the same kind) from different
+contexts where their names might otherwise end up overlapping. An example of
+this is to import users and groups from your HR system into the default
+namespace, but also wanting to ingest users from your GitHub enterprise
+installation and those potentially having the same names as the HR system users.
+Then you could set up your GitHub enterprise ingestion to place those users in a
+`"ghe"` namespace to avoid collisions.
+
+If you do not specify a namespace, it assumes the value `"default"`.
 
 Namespaces must be sequences of `[a-zA-Z0-9]`, possibly separated by `-`, at
-most 63 characters in total. Namespace names are case insensitive and will be rendered as lower case in most places.
+most 63 characters in total. Namespace names are case insensitive and will be
+rendered as lower case in most places.
 
 Example: `tracking-services`, `payment`
+
+Note that using namespaces typically means that you need to explicitly specify
+the namespace when referring to the entity. In some contexts, notably in entity
+catalog-info definition YAML files, you often refer to other entities by name.
+When they are in a different namespace, you need to use the syntax
+`<namespace>/<name>`, while if they are in the default namespace you can omit
+that part as a shorthand. Therefore it's practical to use the default namespace
+for simplicity until it's necessary to use supplemental ones. See [the references article](references.md) for more information.
 
 ### `uid` [output]
 
@@ -728,7 +742,6 @@ spec:
       name: Publish
       action: publish:github
       input:
-        allowedHosts: ['github.com']
         description: 'This is {{ parameters.name }}'
         repoUrl: '{{ parameters.repoUrl }}'
 

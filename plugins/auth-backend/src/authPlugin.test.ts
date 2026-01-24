@@ -17,6 +17,8 @@
 import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
 import request from 'supertest';
 import { authPlugin } from './authPlugin';
+import authModuleGuestProvider from '@backstage/plugin-auth-backend-module-guest-provider';
+import { authServiceFactory } from '@backstage/backend-defaults/auth';
 
 describe('authPlugin', () => {
   it('should provide an OpenID configuration', async () => {
@@ -40,6 +42,126 @@ describe('authPlugin', () => {
     expect(res.body).toMatchObject({
       claims_supported: ['sub', 'ent'],
       issuer: `http://localhost:${server.port()}/api/auth`,
+    });
+  });
+
+  describe('mock provider', () => {
+    const mockProvidersConfig = {
+      environment: 'test',
+      providers: {
+        guest: {
+          dangerouslyAllowOutsideDevelopment: true,
+          userEntityRef: 'user:default/tester',
+          ownershipEntityRefs: [
+            'group:default/testers',
+            'group:default/testers2',
+          ],
+        },
+      },
+    };
+
+    const expectedIdentity = {
+      type: 'user',
+      userEntityRef: 'user:default/tester',
+      ownershipEntityRefs: ['group:default/testers', 'group:default/testers2'],
+    };
+
+    it('should return tokens with all identity claims by default', async () => {
+      const { server } = await startTestBackend({
+        features: [
+          authPlugin,
+          authModuleGuestProvider,
+          authServiceFactory,
+          mockServices.rootConfig.factory({
+            data: {
+              app: {
+                baseUrl: 'http://localhost',
+              },
+              auth: {
+                ...mockProvidersConfig,
+              },
+            },
+          }),
+        ],
+      });
+
+      const refreshRes = await request(server).post('/api/auth/guest/refresh');
+
+      expect(refreshRes.status).toBe(200);
+      expect(refreshRes.body).toMatchObject({
+        backstageIdentity: {
+          expiresInSeconds: expect.any(Number),
+          identity: expectedIdentity,
+          token: expect.any(String),
+        },
+        profile: {},
+      });
+
+      const token = refreshRes.body.backstageIdentity.token;
+      const decoded = JSON.parse(atob(token.split('.')[1]));
+      expect(decoded.sub).toEqual(expectedIdentity.userEntityRef);
+      expect(decoded.ent).toEqual(expectedIdentity.ownershipEntityRefs);
+
+      const userInfoRes = await request(server)
+        .get('/api/auth/v1/userinfo')
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(userInfoRes.status).toBe(200);
+      expect(userInfoRes.body).toMatchObject({
+        claims: {
+          sub: expectedIdentity.userEntityRef,
+          ent: expectedIdentity.ownershipEntityRefs,
+        },
+      });
+    });
+
+    it('should omit ownership claims from the token when the config is set', async () => {
+      const { server } = await startTestBackend({
+        features: [
+          authPlugin,
+          authModuleGuestProvider,
+          authServiceFactory,
+          mockServices.rootConfig.factory({
+            data: {
+              app: {
+                baseUrl: 'http://localhost',
+              },
+              auth: {
+                omitIdentityTokenOwnershipClaim: true,
+                ...mockProvidersConfig,
+              },
+            },
+          }),
+        ],
+      });
+
+      const refreshRes = await request(server).post('/api/auth/guest/refresh');
+      expect(refreshRes.status).toBe(200);
+      expect(refreshRes.body).toMatchObject({
+        backstageIdentity: {
+          expiresInSeconds: expect.any(Number),
+          identity: expectedIdentity,
+          token: expect.any(String),
+        },
+        profile: {},
+      });
+
+      const token = refreshRes.body.backstageIdentity.token;
+      const decoded = JSON.parse(atob(token.split('.')[1]));
+      expect(decoded.sub).toEqual(expectedIdentity.userEntityRef);
+      expect(decoded.ent).toBeUndefined();
+
+      const userInfoRes = await request(server)
+        .get('/api/auth/v1/userinfo')
+        .set('Authorization', `Bearer ${token}`);
+
+      expect(userInfoRes.status).toBe(200);
+      expect(userInfoRes.body).toMatchObject({
+        claims: {
+          sub: expectedIdentity.userEntityRef,
+          ent: expectedIdentity.ownershipEntityRefs,
+        },
+      });
     });
   });
 });

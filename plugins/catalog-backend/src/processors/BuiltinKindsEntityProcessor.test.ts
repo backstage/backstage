@@ -26,6 +26,49 @@ import {
 import { BuiltinKindsEntityProcessor } from './BuiltinKindsEntityProcessor';
 
 describe('BuiltinKindsEntityProcessor', () => {
+  describe('preProcessEntity', () => {
+    const processor = new BuiltinKindsEntityProcessor();
+    afterEach(() => jest.resetAllMocks());
+
+    it('should order relation fields correctly', async () => {
+      const entity: ComponentEntity = {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: { name: 'n' },
+        spec: {
+          type: 'service',
+          owner: 'o',
+          subcomponentOf: 's',
+          lifecycle: 'l',
+          providesApis: ['b', 'a'],
+          consumesApis: ['c', 'x'],
+          dependsOn: ['resource:r', 'component:d'],
+          dependencyOf: ['resource:f', 'component:g'],
+          system: 's',
+        },
+      };
+
+      const ret = await processor.preProcessEntity(entity);
+
+      expect(ret).toEqual({
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Component',
+        metadata: { name: 'n' },
+        spec: {
+          type: 'service',
+          owner: 'o',
+          subcomponentOf: 's',
+          lifecycle: 'l',
+          providesApis: ['a', 'b'],
+          consumesApis: ['c', 'x'],
+          dependsOn: ['component:d', 'resource:r'],
+          dependencyOf: ['component:g', 'resource:f'],
+          system: 's',
+        },
+      });
+    });
+  });
+
   describe('postProcessEntity', () => {
     const processor = new BuiltinKindsEntityProcessor();
     const location = { type: 'a', target: 'b' };

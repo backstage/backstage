@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { TestApiProvider, wrapInTestApp } from '@backstage/test-utils';
 import { ComponentType, PropsWithChildren } from 'react';
 import Grid from '@material-ui/core/Grid';
@@ -110,6 +109,7 @@ export default {
         </TestApiProvider>,
       ),
   ],
+  tags: ['!manifest'],
 };
 
 export const RecentlyDefault = () => {

@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-import React, { useContext } from 'react';
+import { ReactNode, useContext } from 'react';
 import Accordion from '@material-ui/core/Accordion';
 import AccordionDetails from '@material-ui/core/AccordionDetails';
 import AccordionSummary from '@material-ui/core/AccordionSummary';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
-import { V1Pod, V2HorizontalPodAutoscaler } from '@kubernetes/client-node';
+import type { V1Pod, V2HorizontalPodAutoscaler } from '@kubernetes/client-node';
 import { PodsTable } from '../../Pods';
 import { HorizontalPodAutoscalerDrawer } from '../../HorizontalPodAutoscalers';
 import { RolloutDrawer } from './RolloutDrawer';
@@ -39,11 +39,13 @@ import {
 } from '../../../utils/owner';
 import { StatusError, StatusOK } from '@backstage/core-components';
 import { READY_COLUMNS, RESOURCE_COLUMNS } from '../../Pods/PodsTable';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { kubernetesReactTranslationRef } from '../../../translation';
 
 type RolloutAccordionsProps = {
   rollouts: any[];
   defaultExpanded?: boolean;
-  children?: React.ReactNode;
+  children?: ReactNode;
 };
 
 type RolloutAccordionProps = {
@@ -51,7 +53,7 @@ type RolloutAccordionProps = {
   ownedPods: V1Pod[];
   defaultExpanded?: boolean;
   matchingHpa?: V2HorizontalPodAutoscaler;
-  children?: React.ReactNode;
+  children?: ReactNode;
 };
 
 type RolloutSummaryProps = {
@@ -59,7 +61,7 @@ type RolloutSummaryProps = {
   numberOfCurrentPods: number;
   numberOfPodsWithErrors: number;
   hpa?: V2HorizontalPodAutoscaler;
-  children?: React.ReactNode;
+  children?: ReactNode;
 };
 
 const AbortedTitle = (
@@ -89,6 +91,7 @@ const RolloutSummary = ({
   numberOfPodsWithErrors,
   hpa,
 }: RolloutSummaryProps) => {
+  const { t } = useTranslationRef(kubernetesReactTranslationRef);
   const pauseTime: string | undefined = rollout.status?.pauseConditions?.find(
     (p: any) => p.reason === 'CanaryPauseStep',
   )?.startTime;
@@ -125,18 +128,24 @@ const RolloutSummary = ({
             >
               <Grid item>
                 <Typography variant="subtitle2">
-                  min replicas {hpa.spec?.minReplicas ?? '?'} / max replicas{' '}
-                  {hpa.spec?.maxReplicas ?? '?'}
+                  {t('hpa.replicasSummary', {
+                    min: String(hpa.spec?.minReplicas ?? '?'),
+                    max: String(hpa.spec?.maxReplicas ?? '?'),
+                  })}
                 </Typography>
               </Grid>
               <Grid item>
                 <Typography variant="subtitle2">
-                  current CPU usage: {cpuUtil ?? '?'}%
+                  {t('hpa.currentCpuUsageLabel', {
+                    value: String(cpuUtil ?? '?'),
+                  })}
                 </Typography>
               </Grid>
               <Grid item>
                 <Typography variant="subtitle2">
-                  target CPU usage: {specCpuUtil ?? '?'}%
+                  {t('hpa.targetCpuUsageLabel', {
+                    value: String(specCpuUtil ?? '?'),
+                  })}
                 </Typography>
               </Grid>
             </Grid>
@@ -153,16 +162,15 @@ const RolloutSummary = ({
         spacing={0}
       >
         <Grid item>
-          <StatusOK>{numberOfCurrentPods} pods</StatusOK>
+          <StatusOK>{t('pods.pods', { count: numberOfCurrentPods })}</StatusOK>
         </Grid>
         <Grid item>
           {numberOfPodsWithErrors > 0 ? (
             <StatusError>
-              {numberOfPodsWithErrors} pod
-              {numberOfPodsWithErrors > 1 ? 's' : ''} with errors
+              {t('cluster.podsWithErrors', { count: numberOfPodsWithErrors })}
             </StatusError>
           ) : (
-            <StatusOK>No pods with errors</StatusOK>
+            <StatusOK>{t('cluster.noPodsWithErrors')}</StatusOK>
           )}
         </Grid>
       </Grid>

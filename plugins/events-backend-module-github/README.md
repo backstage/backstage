@@ -27,16 +27,14 @@ Please find all possible webhook event types at the
 yarn --cwd packages/backend add @backstage/plugin-events-backend-module-github
 ```
 
-### Event Router
-
 ```ts
 // packages/backend/src/index.ts
-import { eventsModuleGithubEventRouter } from '@backstage/plugin-events-backend-module-github/alpha';
-// ...
-backend.add(eventsModuleGithubEventRouter);
+backend.add(import('@backstage/plugin-events-backend-module-github'));
 ```
 
-#### Legacy Backend System
+### Legacy Backend System
+
+#### Event Router
 
 ```ts
 // packages/backend/src/plugins/events.ts
@@ -44,16 +42,7 @@ const eventRouter = new GithubEventRouter({ events: env.events });
 await eventRouter.subscribe();
 ```
 
-### Signature Validator
-
-```ts
-// packages/backend/src/index.ts
-import { eventsModuleGithubWebhook } from '@backstage/plugin-events-backend-module-github/alpha';
-// ...
-backend.add(eventsModuleGithubWebhook);
-```
-
-#### Legacy Backend System
+#### Signature Validator
 
 Add the signature validator for the topic `github`:
 

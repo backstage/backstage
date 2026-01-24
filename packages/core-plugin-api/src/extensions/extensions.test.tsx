@@ -16,7 +16,6 @@
 
 import { withLogCollector } from '@backstage/test-utils';
 import { act, render, screen } from '@testing-library/react';
-import React from 'react';
 import { useAnalyticsContext } from '../analytics/AnalyticsContext';
 import { useApp, ErrorBoundaryFallbackProps } from '../app';
 import { createPlugin } from '../plugin';
@@ -27,7 +26,6 @@ import {
   createReactExtension,
   createRoutableExtension,
 } from './extensions';
-import { ForwardedError } from '@backstage/errors';
 
 jest.mock('../app');
 
@@ -118,7 +116,13 @@ describe('extensions', () => {
       render(<BrokenComponent />);
     });
     screen.getByText('Error in my-plugin');
-    expect(errors[0]).toMatchObject({ detail: new Error('Test error') });
+    expect(errors).toEqual([
+      expect.stringContaining('Error: Test error'),
+      expect.objectContaining({ type: 'unhandled-exception' }),
+      expect.stringContaining('Error: Test error'),
+      expect.objectContaining({ type: 'unhandled-exception' }),
+      expect.stringContaining('The above error occurred in'),
+    ]);
   });
 
   it('should handle failed lazy loads', async () => {
@@ -155,12 +159,17 @@ describe('extensions', () => {
     screen.getByText(
       'Error in my-plugin: Error: Failed lazy loading of the BrokenComponent extension, try to reload the page; caused by Error: Test error',
     );
-    expect(errors[0]).toMatchObject({
-      detail: new ForwardedError(
-        'Failed lazy loading of the BrokenComponent extension, try to reload the page',
-        new Error('Test error'),
+    expect(errors).toEqual([
+      expect.stringContaining(
+        'Error: Failed lazy loading of the BrokenComponent extension, try to reload the page',
       ),
-    });
+      expect.objectContaining({ type: 'unhandled-exception' }),
+      expect.stringContaining(
+        'Error: Failed lazy loading of the BrokenComponent extension, try to reload the page',
+      ),
+      expect.objectContaining({ type: 'unhandled-exception' }),
+      expect.stringContaining('The above error occurred in'),
+    ]);
   });
 
   it('should wrap extended component with analytics context', async () => {

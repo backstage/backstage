@@ -16,7 +16,6 @@
 
 import Box from '@material-ui/core/Box';
 import { useTheme } from '@material-ui/core/styles';
-import React from 'react';
 import type {} from 'react-syntax-highlighter';
 import LightAsync from 'react-syntax-highlighter/dist/esm/light-async';
 import dark from 'react-syntax-highlighter/dist/esm/styles/hljs/dark';
@@ -59,6 +58,14 @@ export interface CodeSnippetProps {
    */
   highlightedNumbers?: number[];
   /**
+   * Whether to style the `<code>` block with `white-space: pre-wrap` or `white-space: pre`
+   *
+   * @remarks
+   *
+   * Default: false (`white-space: pre`)
+   */
+  wrapLongLines?: boolean;
+  /**
    * Custom styles applied to code
    *
    * @remarks
@@ -80,6 +87,7 @@ export function CodeSnippet(props: CodeSnippetProps) {
     language,
     showLineNumbers = false,
     highlightedNumbers,
+    wrapLongLines,
     customStyle,
     showCopyCodeButton = false,
   } = props;
@@ -95,6 +103,7 @@ export function CodeSnippet(props: CodeSnippetProps) {
         style={mode}
         showLineNumbers={showLineNumbers}
         wrapLines
+        wrapLongLines={wrapLongLines}
         lineNumberStyle={{ color: theme.palette.textVerySubtle }}
         lineProps={(lineNumber: number) =>
           highlightedNumbers?.includes(lineNumber)

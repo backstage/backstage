@@ -31,13 +31,11 @@ import {
   createExternalRouteRef as createNewExternalRouteRef,
 } from '@backstage/frontend-plugin-api';
 import { convertLegacyRouteRef } from './convertLegacyRouteRef';
-
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { toInternalRouteRef as toInternalNewRouteRef } from '../../frontend-plugin-api/src/routing/RouteRef';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { toInternalSubRouteRef as toInternalNewSubRouteRef } from '../../frontend-plugin-api/src/routing/SubRouteRef';
-// eslint-disable-next-line @backstage/no-relative-monorepo-imports
-import { toInternalExternalRouteRef as toInternalNewExternalRouteRef } from '../../frontend-plugin-api/src/routing/ExternalRouteRef';
+import {
+  OpaqueExternalRouteRef,
+  OpaqueRouteRef,
+  OpaqueSubRouteRef,
+} from '@internal/frontend';
 
 describe('convertLegacyRouteRef', () => {
   it('converts old to new', () => {
@@ -85,48 +83,40 @@ describe('convertLegacyRouteRef', () => {
     expect(ref3).toBe(ref3Converted);
     expect(ref4).toBe(ref4Converted);
 
-    const ref1Internal = toInternalNewRouteRef(ref1Converted);
-    const ref2Internal = toInternalNewRouteRef(ref2Converted);
-    const ref1sub1Internal = toInternalNewSubRouteRef(ref1sub1Converted);
-    const ref1sub2Internal = toInternalNewSubRouteRef(ref1sub2Converted);
-    const ref2sub1Internal = toInternalNewSubRouteRef(ref2sub1Converted);
-    const ref3Internal = toInternalNewExternalRouteRef(ref3Converted);
-    const ref4Internal = toInternalNewExternalRouteRef(ref4Converted);
+    const ref1Internal = OpaqueRouteRef.toInternal(ref1Converted);
+    const ref2Internal = OpaqueRouteRef.toInternal(ref2Converted);
+    const ref1sub1Internal = OpaqueSubRouteRef.toInternal(ref1sub1Converted);
+    const ref1sub2Internal = OpaqueSubRouteRef.toInternal(ref1sub2Converted);
+    const ref2sub1Internal = OpaqueSubRouteRef.toInternal(ref2sub1Converted);
+    const ref3Internal = OpaqueExternalRouteRef.toInternal(ref3Converted);
+    const ref4Internal = OpaqueExternalRouteRef.toInternal(ref4Converted);
 
-    expect(ref1Internal.getDescription()).toBe(
-      'routeRef{type=absolute,id=ref1}',
-    );
+    expect(ref1Internal.getDescription()).toBe('ref1');
     expect(ref1Internal.getParams()).toEqual([]);
-    expect(ref2Internal.getDescription()).toBe(
-      'routeRef{type=absolute,id=ref2}',
-    );
+    expect(ref2Internal.getDescription()).toBe('ref2');
     expect(ref2Internal.getParams()).toEqual(['p1', 'p2']);
 
     expect(ref1sub1Internal.getDescription()).toBe(
-      'routeRef{type=sub,id=sub1}',
+      'at /sub1 with parent routeRef{type=absolute,id=ref1}',
     );
     expect(ref1sub1Internal.getParams()).toEqual([]);
     expect(ref1sub1Internal.getParent()).toBe(ref1);
     expect(ref1sub2Internal.getDescription()).toBe(
-      'routeRef{type=sub,id=sub2}',
+      'at /sub2/:p3 with parent routeRef{type=absolute,id=ref1}',
     );
     expect(ref1sub2Internal.getParams()).toEqual(['p3']);
     expect(ref1sub2Internal.getParent()).toBe(ref1);
     expect(ref2sub1Internal.getDescription()).toBe(
-      'routeRef{type=sub,id=sub1}',
+      'at /sub1/:p3 with parent routeRef{type=absolute,id=ref2}',
     );
     expect(ref2sub1Internal.getParams()).toEqual(['p1', 'p2', 'p3']);
     expect(ref2sub1Internal.getParent()).toBe(ref2);
 
     expect(ref3Internal.getDefaultTarget()).toBe(undefined);
-    expect(ref3Internal.getDescription()).toBe(
-      'routeRef{type=external,id=ref3}',
-    );
+    expect(ref3Internal.getDescription()).toBe('ref3');
     expect(ref3Internal.getParams()).toEqual([]);
     expect(ref4Internal.getDefaultTarget()).toBe('ref2');
-    expect(ref4Internal.getDescription()).toBe(
-      'routeRef{type=external,id=ref4}',
-    );
+    expect(ref4Internal.getDescription()).toBe('ref4');
     expect(ref4Internal.getParams()).toEqual(['p1', 'p2']);
   });
 
@@ -168,34 +158,34 @@ describe('convertLegacyRouteRef', () => {
     expect(ref3).toBe(ref3Converted);
     expect(ref4).toBe(ref4Converted);
 
-    expect(String(ref1Converted)).toMatch(/^RouteRef\{created at '.*'\}$/);
+    expect(String(ref1Converted)).toMatch(/^routeRef\{id=undefined,at='.*'\}$/);
     expect(ref1Converted.params).toEqual([]);
-    expect(String(ref2Converted)).toMatch(/^RouteRef\{created at '.*'\}$/);
+    expect(String(ref2Converted)).toMatch(/^routeRef\{id=undefined,at='.*'\}$/);
     expect(ref2Converted.params).toEqual(['p1', 'p2']);
 
     expect(String(ref1sub1Converted)).toMatch(
-      /^SubRouteRef\{at \/sub1 with parent created at '.*'\}$/,
+      /^subRouteRef\{path='\/sub1',parent=routeRef\{id=undefined,at='.*'\}\}$/,
     );
     expect(ref1sub1Converted.params).toEqual([]);
     expect(ref1sub1Converted.parent).toBe(ref1);
     expect(String(ref1sub2Converted)).toMatch(
-      /^SubRouteRef\{at \/sub2\/:p3 with parent created at '.*'\}$/,
+      /^subRouteRef\{path='\/sub2\/:p3',parent=routeRef\{id=undefined,at='.*'\}\}$/,
     );
     expect(ref1sub2Converted.params).toEqual(['p3']);
     expect(ref1sub2Converted.parent).toBe(ref1);
     expect(String(ref2sub1Converted)).toMatch(
-      /^SubRouteRef\{at \/sub1\/:p3 with parent created at '.*'\}$/,
+      /^subRouteRef\{path='\/sub1\/:p3',parent=routeRef\{id=undefined,at='.*'\}\}$/,
     );
     expect(ref2sub1Converted.params).toEqual(['p1', 'p2', 'p3']);
     expect(ref2sub1Converted.parent).toBe(ref2);
 
     expect(String(ref3Converted)).toMatch(
-      /^ExternalRouteRef\{created at '.*'\}$/,
+      /^externalRouteRef\{id=undefined,at='.*'\}$/,
     );
     expect(ref3Converted.params).toEqual([]);
     expect(ref3Converted.optional).toBe(true);
     expect(String(ref4Converted)).toMatch(
-      /^ExternalRouteRef\{created at '.*'\}$/,
+      /^externalRouteRef\{id=undefined,at='.*'\}$/,
     );
     expect(ref4Converted.params).toEqual(['p1', 'p2']);
     expect(ref4Converted.optional).toBe(true);

@@ -4,5 +4,5 @@
 
 | Name                  | Location     | Severity |
 | :-------------------- | :----------- | :------- |
-| @backstage/create-app | package.json | error    |
+| @backstage/create-app | packages/e2e-test/package.json | error    |
 

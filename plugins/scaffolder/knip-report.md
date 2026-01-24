@@ -4,14 +4,14 @@
 
 | Name                | Location     | Severity |
 | :------------------ | :----------- | :------- |
-| json-schema-library | package.json | error    |
-| @rjsf/material-ui   | package.json | error    |
-| react-resizable     | package.json | error    |
-| git-url-parse       | package.json | error    |
+| json-schema-library | plugins/scaffolder/package.json | error    |
+| @rjsf/material-ui   | plugins/scaffolder/package.json | error    |
+| react-resizable     | plugins/scaffolder/package.json | error    |
+| git-url-parse       | plugins/scaffolder/package.json | error    |
 
 ## Unused devDependencies (1)
 
 | Name                   | Location     | Severity |
 | :--------------------- | :----------- | :------- |
-| @types/react-resizable | package.json | error    |
+| @types/react-resizable | plugins/scaffolder/package.json | error    |
 

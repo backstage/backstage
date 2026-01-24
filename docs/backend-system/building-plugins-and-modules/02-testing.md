@@ -2,7 +2,6 @@
 id: testing
 title: Testing Backend Plugins and Modules
 sidebar_label: Testing
-# prettier-ignore
 description: Learn how to test your backend plugins and modules
 ---
 
@@ -37,7 +36,7 @@ describe('myPlugin', () => {
       features: [
         myPlugin(),
         mockServices.rootConfig.factory({ data: fakeConfig }),
-        mockLogger,
+        mockLogger.factory,
       ],
     });
 
@@ -190,7 +189,7 @@ describe('MyDatabaseClass', () => {
   // "physical" databases to test against is much costlier than creating the
   // "logical" databases within them that the individual tests use.
   const databases = TestDatabases.create({
-    ids: ['POSTGRES_16', 'POSTGRES_12', 'SQLITE_3', 'MYSQL_8'],
+    ids: ['POSTGRES_18', 'POSTGRES_14', 'SQLITE_3', 'MYSQL_8'],
   });
 
   // Just an example of how to conveniently bundle up the setup code
@@ -236,8 +235,8 @@ your CI environment is able to supply databases natively, the `TestDatabases`
 support custom connection strings through the use of environment variables that
 it'll take into account when present.
 
+- `BACKSTAGE_TEST_DATABASE_POSTGRES17_CONNECTION_STRING`
 - `BACKSTAGE_TEST_DATABASE_POSTGRES13_CONNECTION_STRING`
-- `BACKSTAGE_TEST_DATABASE_POSTGRES9_CONNECTION_STRING`
 - `BACKSTAGE_TEST_DATABASE_MYSQL8_CONNECTION_STRING`
 
 ## Testing Service Factories

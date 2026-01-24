@@ -25,7 +25,7 @@ import { describePerformanceTest, performanceTraceEnabled } from './lib/env';
 jest.setTimeout(600_000);
 
 const databases = TestDatabases.create({
-  ids: [/* 'MYSQL_8', */ 'POSTGRES_16', /* 'POSTGRES_12',*/ 'SQLITE_3'],
+  ids: [/* 'MYSQL_8', */ 'POSTGRES_18', /* 'POSTGRES_14',*/ 'SQLITE_3'],
   disableDocker: false,
 });
 
@@ -79,6 +79,7 @@ describePerformanceTest('getProcessableEntities', () => {
         const sut = new DefaultProcessingDatabase({
           database: knex,
           logger: mockServices.logger.mock(),
+          events: mockServices.events.mock(),
           refreshInterval: () => 0,
         });
 

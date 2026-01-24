@@ -17,7 +17,6 @@ import { RELATION_OWNED_BY } from '@backstage/catalog-model';
 import { identityApiRef, useApi } from '@backstage/core-plugin-api';
 import TextField from '@material-ui/core/TextField';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import React from 'react';
 import useAsync from 'react-use/esm/useAsync';
 import { EntityPicker } from '../EntityPicker/EntityPicker';
 
@@ -25,6 +24,7 @@ import { OwnedEntityPickerProps } from './schema';
 import { EntityPickerProps } from '../EntityPicker/schema';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../../translation';
+import { ScaffolderField } from '@backstage/plugin-scaffolder-react/alpha';
 
 export { OwnedEntityPickerSchema } from './schema';
 
@@ -53,22 +53,30 @@ export const OwnedEntityPicker = (props: OwnedEntityPickerProps) => {
 
   if (loading)
     return (
-      <Autocomplete
-        loading={loading}
-        renderInput={params => (
-          <TextField
-            {...params}
-            label={title}
-            margin="dense"
-            helperText={description}
-            FormHelperTextProps={{ margin: 'dense', style: { marginLeft: 0 } }}
-            variant="outlined"
-            required={required}
-            InputProps={params.InputProps}
-          />
-        )}
-        options={[]}
-      />
+      <ScaffolderField
+        rawDescription={uiSchema['ui:description'] ?? description}
+        required={required}
+        disabled={uiSchema['ui:disabled']}
+      >
+        <Autocomplete
+          loading={loading}
+          renderInput={params => (
+            <TextField
+              {...params}
+              label={title}
+              margin="dense"
+              FormHelperTextProps={{
+                margin: 'dense',
+                style: { marginLeft: 0 },
+              }}
+              variant="outlined"
+              required={required}
+              InputProps={params.InputProps}
+            />
+          )}
+          options={[]}
+        />
+      </ScaffolderField>
     );
 
   const entityPickerUISchema = buildEntityPickerUISchema(
@@ -107,6 +115,7 @@ function buildEntityPickerUISchema(
       ...extraOptions,
       catalogFilter,
     },
+    'ui:disabled': uiSchema['ui:disabled'],
   };
 }
 

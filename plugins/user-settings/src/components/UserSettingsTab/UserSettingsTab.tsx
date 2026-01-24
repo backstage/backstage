@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { PropsWithChildren } from 'react';
+import { PropsWithChildren } from 'react';
 import { attachComponentData } from '@backstage/core-plugin-api';
 import {
   LAYOUT_ROUTE_DATA_KEY,

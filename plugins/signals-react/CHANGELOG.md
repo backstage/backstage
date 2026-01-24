@@ -1,5 +1,111 @@
 # @backstage/plugin-signals-react
 
+## 0.0.18
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.1
+
+## 0.0.18-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.1-next.0
+  - @backstage/types@1.2.2
+
+## 0.0.17
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.0
+
+## 0.0.17-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.11.2-next.0
+  - @backstage/types@1.2.2
+
+## 0.0.16
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.11.1
+
+## 0.0.16-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.11.1-next.0
+
+## 0.0.15
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.9
+
+## 0.0.15-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.9-next.0
+
+## 0.0.14
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.8
+  - @backstage/types@1.2.1
+
+## 0.0.13
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/types@1.2.1
+
+## 0.0.13-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.7-next.0
+  - @backstage/types@1.2.1
+
+## 0.0.12
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/types@1.2.1
+
+## 0.0.12-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.6-next.0
+  - @backstage/types@1.2.1
+
+## 0.0.11
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.5
+  - @backstage/types@1.2.1
+
 ## 0.0.10
 
 ### Patch Changes

@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { ResponseErrorPanel } from '../ResponseErrorPanel';
 import { ErrorPanelProps } from '../ErrorPanel';
 
 export default {
   title: 'Data Display/ResponseErrorPanel',
   component: ResponseErrorPanel,
+  tags: ['!manifest'],
 };
 
 export const Default = (args: ErrorPanelProps) => (

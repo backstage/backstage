@@ -23,7 +23,7 @@ import { ContentHeader, PageWithHeader } from '@backstage/core-components';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { renderInTestApp, TestApiRegistry } from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
-import React from 'react';
+import { PropsWithChildren } from 'react';
 import { TechDocsCustomHome, PanelType } from './TechDocsCustomHome';
 import { ApiProvider } from '@backstage/core-app-api';
 import { rootDocsRouteRef } from '../../routes';
@@ -159,7 +159,7 @@ describe('TechDocsCustomHome', () => {
       <ApiProvider apis={apiRegistry}>
         <TechDocsCustomHome
           tabsConfig={tabsConfig}
-          CustomPageWrapper={({ children }: React.PropsWithChildren<{}>) => (
+          CustomPageWrapper={({ children }: PropsWithChildren<{}>) => (
             <PageWithHeader
               title="Custom Title"
               subtitle="Custom Subtitle"

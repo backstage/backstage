@@ -35,6 +35,9 @@ import { entityRefToName } from './gitHelpers';
 
 const publicKey = '2Sg8iYjAxxmI2LvUXpJjkYrMxURPc8r+dB7TJyvvcCU=';
 
+import { Octokit } from 'octokit';
+
+const octokitMock = Octokit as unknown as jest.Mock;
 const mockOctokit = {
   rest: {
     users: {
@@ -54,6 +57,7 @@ const mockOctokit = {
       createRepoVariable: jest.fn(),
       createOrUpdateRepoSecret: jest.fn(),
       getRepoPublicKey: jest.fn(),
+      setWorkflowAccessToRepository: jest.fn(),
     },
     activity: {
       setRepoSubscription: jest.fn(),
@@ -62,11 +66,7 @@ const mockOctokit = {
   request: jest.fn(),
 };
 jest.mock('octokit', () => ({
-  Octokit: class {
-    constructor() {
-      return mockOctokit;
-    }
-  },
+  Octokit: jest.fn(),
 }));
 
 describe('github:repo:create', () => {
@@ -81,7 +81,7 @@ describe('github:repo:create', () => {
 
   const integrations = ScmIntegrations.fromConfig(config);
   let githubCredentialsProvider: GithubCredentialsProvider;
-  let action: TemplateAction<any>;
+  let action: TemplateAction<any, any, any>;
 
   const mockContext = createMockActionContext({
     input: {
@@ -93,6 +93,7 @@ describe('github:repo:create', () => {
   });
 
   beforeEach(() => {
+    octokitMock.mockImplementation(() => mockOctokit);
     githubCredentialsProvider =
       DefaultGithubCredentialsProvider.fromIntegrations(integrations);
     action = createGithubRepoCreateAction({
@@ -109,6 +110,20 @@ describe('github:repo:create', () => {
   });
 
   afterEach(jest.resetAllMocks);
+
+  it('should pass context logger to Octokit client', async () => {
+    mockOctokit.rest.users.getByUsername.mockResolvedValue({
+      data: { type: 'Organization' },
+    });
+
+    mockOctokit.rest.repos.createInOrg.mockResolvedValue({ data: {} });
+
+    await action.handler(mockContext);
+
+    expect(octokitMock).toHaveBeenCalledWith(
+      expect.objectContaining({ log: mockContext.logger }),
+    );
+  });
 
   it('should call the githubApis with the correct values for createInOrg', async () => {
     mockOctokit.rest.users.getByUsername.mockResolvedValue({
@@ -137,6 +152,7 @@ describe('github:repo:create', () => {
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
+      allow_update_branch: false,
       visibility: 'private',
     });
 
@@ -159,6 +175,7 @@ describe('github:repo:create', () => {
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
+      allow_update_branch: false,
       visibility: 'public',
     });
 
@@ -182,6 +199,7 @@ describe('github:repo:create', () => {
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
+      allow_update_branch: false,
       visibility: 'private',
     });
 
@@ -206,10 +224,9 @@ describe('github:repo:create', () => {
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
+      allow_update_branch: false,
       visibility: 'private',
-      has_wiki: true,
-      has_projects: true,
-      has_issues: true,
+      homepage: 'https://example.com',
     });
 
     await action.handler({
@@ -233,10 +250,8 @@ describe('github:repo:create', () => {
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
+      allow_update_branch: false,
       visibility: 'private',
-      has_wiki: false,
-      has_projects: false,
-      has_issues: false,
     });
 
     await action.handler({
@@ -245,7 +260,7 @@ describe('github:repo:create', () => {
         ...mockContext.input,
         customProperties: {
           foo: 'bar',
-          foo2: 'bar2',
+          foo2: ['bar2', 'bar3'],
         },
       },
     });
@@ -262,11 +277,59 @@ describe('github:repo:create', () => {
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
+      allow_update_branch: false,
+      homepage: 'https://example.com',
       visibility: 'private',
-      custom_properties: {
-        foo: 'bar',
-        foo2: 'bar2',
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        autoInit: true,
       },
+    });
+
+    expect(mockOctokit.rest.repos.createInOrg).toHaveBeenCalledWith({
+      description: 'description',
+      name: 'repo',
+      org: 'owner',
+      private: true,
+      delete_branch_on_merge: false,
+      allow_squash_merge: true,
+      squash_merge_commit_title: 'COMMIT_OR_PR_TITLE',
+      squash_merge_commit_message: 'COMMIT_MESSAGES',
+      allow_merge_commit: true,
+      allow_rebase_merge: true,
+      allow_auto_merge: false,
+      allow_update_branch: false,
+      visibility: 'private',
+      auto_init: true,
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        autoInit: false,
+      },
+    });
+
+    expect(mockOctokit.rest.repos.createInOrg).toHaveBeenCalledWith({
+      description: 'description',
+      name: 'repo',
+      org: 'owner',
+      private: true,
+      delete_branch_on_merge: false,
+      allow_squash_merge: true,
+      squash_merge_commit_title: 'COMMIT_OR_PR_TITLE',
+      squash_merge_commit_message: 'COMMIT_MESSAGES',
+      allow_merge_commit: true,
+      allow_rebase_merge: true,
+      allow_auto_merge: false,
+      allow_update_branch: false,
+      visibility: 'private',
+      auto_init: false,
     });
   });
 
@@ -293,6 +356,7 @@ describe('github:repo:create', () => {
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
+      allow_update_branch: false,
     });
 
     await action.handler({
@@ -315,6 +379,7 @@ describe('github:repo:create', () => {
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
+      allow_update_branch: false,
     });
 
     await action.handler({
@@ -338,6 +403,7 @@ describe('github:repo:create', () => {
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
+      allow_update_branch: false,
     });
 
     await action.handler({
@@ -362,9 +428,8 @@ describe('github:repo:create', () => {
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
-      has_wiki: true,
-      has_projects: true,
-      has_issues: true,
+      allow_update_branch: false,
+      homepage: 'https://example.com',
     });
 
     await action.handler({
@@ -389,9 +454,8 @@ describe('github:repo:create', () => {
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
-      has_wiki: false,
-      has_projects: false,
-      has_issues: false,
+      allow_update_branch: false,
+      homepage: 'https://example.com',
     });
 
     // Custom properties on user repos should be ignored
@@ -401,7 +465,7 @@ describe('github:repo:create', () => {
         ...mockContext.input,
         customProperties: {
           foo: 'bar',
-          foo2: 'bar2',
+          foo2: ['bar2', 'bar3'],
         },
       },
     });
@@ -419,6 +483,56 @@ describe('github:repo:create', () => {
       allow_merge_commit: true,
       allow_rebase_merge: true,
       allow_auto_merge: false,
+      allow_update_branch: false,
+      homepage: 'https://example.com',
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        autoInit: true,
+      },
+    });
+    expect(
+      mockOctokit.rest.repos.createForAuthenticatedUser,
+    ).toHaveBeenCalledWith({
+      description: 'description',
+      name: 'repo',
+      private: true,
+      delete_branch_on_merge: false,
+      allow_squash_merge: true,
+      squash_merge_commit_message: 'COMMIT_MESSAGES',
+      squash_merge_commit_title: 'COMMIT_OR_PR_TITLE',
+      allow_merge_commit: true,
+      allow_rebase_merge: true,
+      allow_auto_merge: false,
+      allow_update_branch: false,
+      auto_init: true,
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        ...mockContext.input,
+        autoInit: false,
+      },
+    });
+    expect(
+      mockOctokit.rest.repos.createForAuthenticatedUser,
+    ).toHaveBeenCalledWith({
+      description: 'description',
+      name: 'repo',
+      private: true,
+      delete_branch_on_merge: false,
+      allow_squash_merge: true,
+      squash_merge_commit_message: 'COMMIT_MESSAGES',
+      squash_merge_commit_title: 'COMMIT_OR_PR_TITLE',
+      allow_merge_commit: true,
+      allow_rebase_merge: true,
+      allow_auto_merge: false,
+      allow_update_branch: false,
+      auto_init: false,
     });
   });
 
@@ -779,4 +893,30 @@ describe('github:repo:create', () => {
       ignored: false,
     });
   });
+
+  it.each(['none', 'organization', 'user'])(
+    'should set workflow access level - %s',
+    async expected => {
+      mockOctokit.rest.users.getByUsername.mockResolvedValue({
+        data: { type: 'Organization' },
+      });
+      mockOctokit.rest.repos.createInOrg.mockResolvedValue({ data: {} });
+
+      await action.handler({
+        ...mockContext,
+        input: {
+          ...mockContext.input,
+          workflowAccess: expected,
+        },
+      });
+
+      expect(
+        mockOctokit.rest.actions.setWorkflowAccessToRepository,
+      ).toHaveBeenCalledWith({
+        access_level: expected,
+        owner: 'owner',
+        repo: 'repo',
+      });
+    },
+  );
 });

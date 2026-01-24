@@ -22,7 +22,7 @@ import Toolbar from '@material-ui/core/Toolbar';
 import { makeStyles } from '@material-ui/core/styles';
 import Clear from '@material-ui/icons/Clear';
 import Search from '@material-ui/icons/Search';
-import React, { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import useDebounce from 'react-use/lib/useDebounce';
 import { useEntityList } from '../../hooks/useEntityListProvider';
 import { EntityTextFilter } from '../../filters';

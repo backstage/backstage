@@ -4,9 +4,7 @@
 
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
-import { JsonObject } from '@backstage/types';
 import { NotificationService } from '@backstage/plugin-notifications-node';
-import { NotificationSeverity } from '@backstage/plugin-notifications-common';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 
 // @public (undocumented)
@@ -14,17 +12,20 @@ export function createSendNotificationAction(options: {
   notifications: NotificationService;
 }): TemplateAction<
   {
-    recipients: string;
-    entityRefs?: string[];
+    recipients: 'entity' | 'broadcast';
     title: string;
-    info?: string;
-    link?: string;
-    severity?: NotificationSeverity;
-    scope?: string;
-    optional?: boolean;
+    entityRefs?: string[] | undefined;
+    info?: string | undefined;
+    link?: string | undefined;
+    severity?: 'normal' | 'high' | 'low' | 'critical' | undefined;
+    scope?: string | undefined;
+    topic?: string | undefined;
+    optional?: boolean | undefined;
   },
-  JsonObject,
-  'v1'
+  {
+    [x: string]: any;
+  },
+  'v2'
 >;
 
 // @public

@@ -2,7 +2,6 @@
 id: backends
 title: Backend Instances
 sidebar_label: Backend
-# prettier-ignore
 description: Backend instances
 ---
 
@@ -39,3 +38,28 @@ Once you have added all desired features we call the `.start()` method. This cau
 Underneath the hood, `createBackend` calls `createSpecializedBackend` from `@backstage/backend-app-api` which is responsible for actually creating the backend instance, without any services or features. You can think of `createBackend` more of a 'batteries included' approach, while `createSpecializedBackend` is more low level.
 
 As mentioned previously there's also the ability to create multiple of these backends in your project so that you can split apart your backend and deploy different backends that can scale independently of each other. For instance you might choose to deploy a backend with only the catalog plugin enabled, and one with just the scaffolder plugin enabled.
+
+### Backend Startup Result
+
+The `Backend.start()` method returns a `BackendStartupResult` with detailed success/failure status and timing information for all plugins and modules. When startup fails, a `BackendStartupError` is thrown that includes the complete startup results, making it easier to diagnose which plugins or modules failed.
+
+```ts
+backend.start(
+  ({ result }) => {
+    console.log(`Backend startup result: ${JSON.stringify(result, null, 2)}`);
+  },
+  error => {
+    if (error instanceof BackendStartupError) {
+      console.error(
+        `Backend startup failed: ${JSON.stringify(error.result, null, 2)}`,
+      );
+    } else {
+      console.error(
+        `Unexpected error during backend startup: ${error.message}`,
+      );
+    }
+  },
+);
+```
+
+This information is mostly useful if you want to add additional monitoring or debugging tools to your backend. The information is a structured representation of what is already logged during startup.

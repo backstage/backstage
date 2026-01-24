@@ -17,12 +17,10 @@
 import { OpaqueType } from '@internal/opaque';
 import { z } from 'zod';
 
-import { FormFieldExtensionData } from '@backstage/plugin-scaffolder-react/alpha';
-
-/** @alpha */
-export interface FormField {
-  readonly $$type: '@backstage/scaffolder/FormField';
-}
+import {
+  FormFieldExtensionData,
+  FormField,
+} from '@backstage/plugin-scaffolder-react/alpha';
 
 /** @alpha */
 export const OpaqueFormField = OpaqueType.create<{

@@ -36,13 +36,23 @@ export interface Config {
 
         signIn?: {
           resolvers: Array<
-            | { resolver: 'emailMatchingUserEntityAnnotation' }
-            | { resolver: 'idMatchingUserEntityAnnotation' }
+            | {
+                resolver: 'emailMatchingUserEntityAnnotation';
+                dangerouslyAllowSignInWithoutUserInCatalog?: boolean;
+              }
+            | {
+                resolver: 'idMatchingUserEntityAnnotation';
+                dangerouslyAllowSignInWithoutUserInCatalog?: boolean;
+              }
             | {
                 resolver: 'emailLocalPartMatchingUserEntityName';
                 allowedDomains?: string[];
+                dangerouslyAllowSignInWithoutUserInCatalog?: boolean;
               }
-            | { resolver: 'emailMatchingUserEntityProfileEmail' }
+            | {
+                resolver: 'emailMatchingUserEntityProfileEmail';
+                dangerouslyAllowSignInWithoutUserInCatalog?: boolean;
+              }
           >;
         };
         sessionDuration?: HumanDuration | string;

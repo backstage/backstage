@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { CodeSnippet } from './CodeSnippet';
 import { InfoCard } from '../../layout/InfoCard';
 
 export default {
   title: 'Data Display/CodeSnippet',
   component: CodeSnippet,
+  tags: ['!manifest'],
 };
 
 const containerStyle = { width: 300 };

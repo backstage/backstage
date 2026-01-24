@@ -289,17 +289,27 @@ export class MicrosoftGraphOrgEntityProvider implements EntityProvider {
     return result;
   }
 
-  constructor(
-    private options: {
-      id: string;
-      provider: MicrosoftGraphProviderConfig;
-      logger: LoggerService;
-      userTransformer?: UserTransformer;
-      groupTransformer?: GroupTransformer;
-      organizationTransformer?: OrganizationTransformer;
-      providerConfigTransformer?: ProviderConfigTransformer;
-    },
-  ) {}
+  private options: {
+    id: string;
+    provider: MicrosoftGraphProviderConfig;
+    logger: LoggerService;
+    userTransformer?: UserTransformer;
+    groupTransformer?: GroupTransformer;
+    organizationTransformer?: OrganizationTransformer;
+    providerConfigTransformer?: ProviderConfigTransformer;
+  };
+
+  constructor(options: {
+    id: string;
+    provider: MicrosoftGraphProviderConfig;
+    logger: LoggerService;
+    userTransformer?: UserTransformer;
+    groupTransformer?: GroupTransformer;
+    organizationTransformer?: OrganizationTransformer;
+    providerConfigTransformer?: ProviderConfigTransformer;
+  }) {
+    this.options = options;
+  }
 
   /** {@inheritdoc @backstage/plugin-catalog-node#EntityProvider.getProviderName} */
   getProviderName() {
@@ -327,6 +337,7 @@ export class MicrosoftGraphOrgEntityProvider implements EntityProvider {
       : this.options.provider;
     const { markReadComplete } = trackProgress(logger);
     const client = MicrosoftGraphClient.create(this.options.provider);
+
     const { users, groups } = await readMicrosoftGraphOrg(
       client,
       provider.tenantId,
@@ -334,13 +345,16 @@ export class MicrosoftGraphOrgEntityProvider implements EntityProvider {
         userExpand: provider.userExpand,
         userFilter: provider.userFilter,
         userSelect: provider.userSelect,
+        userPath: provider.userPath,
         loadUserPhotos: provider.loadUserPhotos,
         userGroupMemberFilter: provider.userGroupMemberFilter,
         userGroupMemberSearch: provider.userGroupMemberSearch,
+        userGroupMemberPath: provider.userGroupMemberPath,
         groupExpand: provider.groupExpand,
         groupFilter: provider.groupFilter,
         groupSearch: provider.groupSearch,
         groupSelect: provider.groupSelect,
+        groupPath: provider.groupPath,
         groupIncludeSubGroups: provider.groupIncludeSubGroups,
         queryMode: provider.queryMode,
         groupTransformer: this.options.groupTransformer,

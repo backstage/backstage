@@ -30,12 +30,17 @@ export class SearchClient implements SearchApi {
     this.fetchApi = options.fetchApi;
   }
 
-  async query(query: SearchQuery): Promise<SearchResultSet> {
+  async query(
+    query: SearchQuery,
+    options?: { signal?: AbortSignal },
+  ): Promise<SearchResultSet> {
     const queryString = qs.stringify(query);
     const url = `${await this.discoveryApi.getBaseUrl(
       'search',
     )}/query?${queryString}`;
-    const response = await this.fetchApi.fetch(url);
+    const response = await this.fetchApi.fetch(url, {
+      signal: options?.signal,
+    });
 
     if (!response.ok) {
       throw await ResponseError.fromResponse(response);

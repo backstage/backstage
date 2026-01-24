@@ -35,14 +35,6 @@ const treeResponseFactory = DefaultReadTreeResponseFactory.create({
   config: new ConfigReader({}),
 });
 
-jest.mock('./git', () => ({
-  Git: {
-    fromAuth: () => ({
-      clone: jest.fn(() => Promise.resolve({})),
-    }),
-  },
-}));
-
 const giteaProcessor = new GiteaUrlReader(
   new GiteaIntegration(
     readGiteaConfig(
@@ -287,7 +279,7 @@ describe('GiteaUrlReader', () => {
                 'content-disposition',
                 'attachment; filename=backstage-mock.tar.gz',
               ),
-              ctx.body(repoBuffer),
+              ctx.body(new Uint8Array(repoBuffer)),
             );
           },
         ),

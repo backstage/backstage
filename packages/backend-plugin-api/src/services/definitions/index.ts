@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 export type {
   AuditorService,
   AuditorServiceCreateEventOptions,
@@ -86,4 +85,8 @@ export type {
   UrlReaderServiceSearchResponseFile,
 } from './UrlReaderService';
 export type { BackstageUserInfo, UserInfoService } from './UserInfoService';
+export type {
+  RootInstanceMetadataService,
+  RootInstanceMetadataServicePluginInfo,
+} from './RootInstanceMetadataService';
 export { coreServices } from './coreServices';

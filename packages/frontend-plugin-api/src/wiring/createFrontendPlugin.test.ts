@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { createElement } from 'react';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { createApp } from '../../../frontend-defaults/src/createApp';
 import { screen } from '@testing-library/react';
@@ -109,7 +109,7 @@ const outputExtension = createExtension({
   factory({ inputs }) {
     return [
       coreExtensionData.reactElement(
-        React.createElement('span', {}, [
+        createElement('span', {}, [
           `Names: ${inputs.names
             .map(n => n.get(nameExtensionDataRef))
             .join(', ')}`,
@@ -128,13 +128,15 @@ function createTestAppRoot({
 }) {
   return createApp({
     features: [...features],
-    configLoader: async () => ({ config: mockApis.config({ data: config }) }),
+    advanced: {
+      configLoader: async () => ({ config: mockApis.config({ data: config }) }),
+    },
   }).createRoot();
 }
 
 describe('createFrontendPlugin', () => {
   it('should create an empty plugin', () => {
-    const plugin = createFrontendPlugin({ id: 'test' });
+    const plugin = createFrontendPlugin({ pluginId: 'test' });
 
     expect(plugin).toBeDefined();
     expect(String(plugin)).toBe('Plugin{id=test}');
@@ -142,7 +144,7 @@ describe('createFrontendPlugin', () => {
 
   it('should create a plugin with extension instances', async () => {
     const plugin = createFrontendPlugin({
-      id: 'test',
+      pluginId: 'test',
       extensions: [Extension1, Extension2, outputExtension],
     });
     expect(plugin).toBeDefined();
@@ -189,7 +191,7 @@ describe('createFrontendPlugin', () => {
 
   it('should create a plugin with nested extension instances', async () => {
     const plugin = createFrontendPlugin({
-      id: 'test',
+      pluginId: 'test',
       extensions: [Extension1, Extension2, Extension3, Child, outputExtension],
     });
     expect(plugin).toBeDefined();
@@ -221,7 +223,7 @@ describe('createFrontendPlugin', () => {
 
   it('should create a plugin with nested extension instances and multiple children', async () => {
     const plugin = createFrontendPlugin({
-      id: 'test',
+      pluginId: 'test',
       extensions: [
         Extension1,
         Extension2,
@@ -254,14 +256,14 @@ describe('createFrontendPlugin', () => {
   it('should throw on duplicate extensions', async () => {
     expect(() =>
       createFrontendPlugin({
-        id: 'test',
+        pluginId: 'test',
         extensions: [Extension1, Extension1],
       }),
     ).toThrow("Plugin 'test' provided duplicate extensions: test/1");
 
     expect(() =>
       createFrontendPlugin({
-        id: 'test',
+        pluginId: 'test',
         extensions: [
           Extension1,
           Extension2,
@@ -274,10 +276,64 @@ describe('createFrontendPlugin', () => {
     ).toThrow("Plugin 'test' provided duplicate extensions: test/2, test/3");
   });
 
+  describe('info', () => {
+    it('should support reading info from package.json', async () => {
+      const plugin = createFrontendPlugin({
+        pluginId: 'test',
+        info: { packageJson: () => Promise.resolve({ name: '@test/test' }) },
+      });
+
+      await expect((plugin as any).infoOptions?.packageJson()).resolves.toEqual(
+        { name: '@test/test' },
+      );
+    });
+
+    it('should support reading info from actual package.json', async () => {
+      const plugin = createFrontendPlugin({
+        pluginId: 'test',
+        info: { packageJson: () => import('../../package.json') },
+      });
+
+      await expect(
+        (plugin as any).infoOptions?.packageJson(),
+      ).resolves.toMatchObject({ name: '@backstage/frontend-plugin-api' });
+    });
+
+    it('should support reading info from opaque manifest', async () => {
+      const plugin = createFrontendPlugin({
+        pluginId: 'test',
+        info: { manifest: () => Promise.resolve({ owner: 'me' }) },
+      });
+
+      await expect((plugin as any).infoOptions?.manifest()).resolves.toEqual({
+        owner: 'me',
+      });
+    });
+
+    it('should throw when trying to load info without installing in an app', async () => {
+      await expect(
+        createFrontendPlugin({
+          pluginId: 'test',
+        }).info(),
+      ).rejects.toThrow(
+        "Attempted to load plugin info for plugin 'test', but the plugin instance is not installed in an app",
+      );
+
+      await expect(
+        createFrontendPlugin({
+          pluginId: 'test',
+          info: { packageJson: () => Promise.resolve({ name: '@test/test' }) },
+        }).info(),
+      ).rejects.toThrow(
+        "Attempted to load plugin info for plugin 'test', but the plugin instance is not installed in an app",
+      );
+    });
+  });
+
   describe('overrides', () => {
     it('should return a plugin instance with the correct namespace', () => {
       const plugin = createFrontendPlugin({
-        id: 'test',
+        pluginId: 'test',
         extensions: [Extension1, Extension2],
       });
 
@@ -308,7 +364,7 @@ describe('createFrontendPlugin', () => {
 
     it('should allow overriding extensions that have a matching ID, while keeping old extensions that do not have overlapping IDs', async () => {
       const plugin = createFrontendPlugin({
-        id: 'test',
+        pluginId: 'test',
         extensions: [Extension1, Extension2, outputExtension],
       });
 

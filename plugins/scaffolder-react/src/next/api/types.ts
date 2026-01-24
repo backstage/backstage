@@ -23,3 +23,8 @@ import { FormFieldExtensionData } from '../blueprints';
 export interface ScaffolderFormFieldsApi {
   getFormFields(): Promise<FormFieldExtensionData[]>;
 }
+
+/** @alpha */
+export interface FormField {
+  readonly $$type: '@backstage/scaffolder/FormField';
+}

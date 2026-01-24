@@ -41,6 +41,9 @@ export type CommonListOptions = {
 interface ListProjectOptions extends CommonListOptions {
   archived?: boolean;
   group?: string;
+  membership?: boolean;
+  topics?: string;
+  simple?: boolean;
 }
 
 interface UserListOptions extends CommonListOptions {
@@ -188,9 +191,8 @@ export class GitLabClient {
     let endCursor: string | null = null;
 
     do {
-      const response: GitLabDescendantGroupsResponse = await fetch(
-        `${this.config.baseUrl}/api/graphql`,
-        {
+      const response: GitLabDescendantGroupsResponse =
+        await this.fetchWithRetry(`${this.config.baseUrl}/api/graphql`, {
           method: 'POST',
           headers: {
             ...getGitLabRequestOptions(this.config).headers,
@@ -221,8 +223,7 @@ export class GitLabClient {
               }
             `,
           }),
-        },
-      ).then(r => r.json());
+        }).then(r => r.json());
       if (response.errors) {
         throw new Error(`GraphQL errors: ${JSON.stringify(response.errors)}`);
       }
@@ -264,7 +265,7 @@ export class GitLabClient {
     let hasNextPage: boolean = false;
     let endCursor: string | null = null;
     do {
-      const response: GitLabGroupMembersResponse = await fetch(
+      const response: GitLabGroupMembersResponse = await this.fetchWithRetry(
         `${this.config.baseUrl}/api/graphql`,
         {
           method: 'POST',
@@ -341,23 +342,24 @@ export class GitLabClient {
 
   /**
    * General existence check.
+   * @see {@link https://docs.gitlab.com/api/repository_files/#get-file-from-repository | GitLab Repository Files API}
    *
-   * @param projectPath - The path to the project
+   * @param projectIdentifier - The identifier of the project, either the numeric ID or the namespaced path.
    * @param branch - The branch used to search
    * @param filePath - The path to the file
    */
   async hasFile(
-    projectPath: string,
+    projectIdentifier: string | number,
     branch: string,
     filePath: string,
   ): Promise<boolean> {
     const endpoint: string = `/projects/${encodeURIComponent(
-      projectPath,
+      projectIdentifier,
     )}/repository/files/${encodeURIComponent(filePath)}`;
     const request = new URL(`${this.config.apiBaseUrl}${endpoint}`);
     request.searchParams.append('ref', branch);
 
-    const response = await fetch(request.toString(), {
+    const response = await this.fetchWithRetry(request.toString(), {
       headers: getGitLabRequestOptions(this.config).headers,
       method: 'HEAD',
     });
@@ -404,7 +406,7 @@ export class GitLabClient {
     }
 
     this.logger.debug(`Fetching: ${request.toString()}`);
-    const response = await fetch(
+    const response = await this.fetchWithRetry(
       request.toString(),
       getGitLabRequestOptions(this.config),
     );
@@ -442,7 +444,7 @@ export class GitLabClient {
       }
     }
 
-    const response = await fetch(
+    const response = await this.fetchWithRetry(
       request.toString(),
       getGitLabRequestOptions(this.config),
     );
@@ -456,6 +458,48 @@ export class GitLabClient {
     }
 
     return response.json();
+  }
+
+  /**
+   * Performs a fetch request with retry logic for rate limiting (429 errors)
+   * @param url - The URL to fetch
+   * @param options - Fetch options
+   * @param retries - Maximum number of retries
+   * @param initialBackoff - Initial backoff time in ms
+   */
+  async fetchWithRetry(
+    url: string,
+    options: fetch.RequestInit,
+    retries = 5,
+    initialBackoff = 100,
+  ): Promise<fetch.Response> {
+    let currentRetry = 0;
+    let backoff = initialBackoff;
+
+    for (;;) {
+      const response = await fetch(url, options);
+
+      if (response.status !== 429 || currentRetry >= retries) {
+        return response;
+      }
+
+      // Get retry-after header if available, or use exponential backoff
+      const retryAfter = response.headers.get('Retry-After');
+      const waitTime = retryAfter ? parseInt(retryAfter, 10) * 1000 : backoff;
+
+      this.logger.warn(
+        `GitLab API rate limit exceeded, retrying in ${waitTime}ms (retry ${
+          currentRetry + 1
+        }/${retries})`,
+      );
+
+      // Wait before retrying
+      await new Promise(resolve => setTimeout(resolve, waitTime));
+
+      // Exponential backoff with jitter
+      backoff = backoff * 2 * (0.8 + Math.random() * 0.4);
+      currentRetry++;
+    }
   }
 }
 

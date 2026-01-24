@@ -20,7 +20,6 @@ import {
   SchedulerService,
   SchedulerServiceTaskRunner,
 } from '@backstage/backend-plugin-api';
-import { CatalogApi } from '@backstage/catalog-client';
 import { LocationEntity } from '@backstage/catalog-model';
 import { Config } from '@backstage/config';
 import {
@@ -33,6 +32,7 @@ import {
   Models,
 } from '@backstage/plugin-bitbucket-cloud-common';
 import {
+  CatalogService,
   DeferredEntity,
   EntityProvider,
   EntityProviderConnection,
@@ -48,6 +48,7 @@ import * as uuid from 'uuid';
 
 const DEFAULT_BRANCH = 'master';
 const TOPIC_REPO_PUSH = 'bitbucketCloud.repo:push';
+const TOPIC_REPO_UPDATED = 'bitbucketCloud.repo:updated';
 
 /** @public */
 export const ANNOTATION_BITBUCKET_CLOUD_REPO_URL = 'bitbucket.org/repo-url';
@@ -67,7 +68,7 @@ interface IngestionTarget {
  */
 export class BitbucketCloudEntityProvider implements EntityProvider {
   private readonly auth: AuthService;
-  private readonly catalogApi: CatalogApi;
+  private readonly catalog: CatalogService;
   private readonly client: BitbucketCloudClient;
   private readonly config: BitbucketCloudEntityProviderConfig;
   private readonly events: EventsService;
@@ -80,7 +81,7 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
     config: Config,
     options: {
       auth: AuthService;
-      catalogApi: CatalogApi;
+      catalog: CatalogService;
       events: EventsService;
       logger: LoggerService;
       schedule?: SchedulerServiceTaskRunner;
@@ -112,7 +113,7 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
 
       return new BitbucketCloudEntityProvider(
         options.auth,
-        options.catalogApi,
+        options.catalog,
         providerConfig,
         options.events,
         integration,
@@ -124,7 +125,7 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
 
   private constructor(
     auth: AuthService,
-    catalogApi: CatalogApi,
+    catalog: CatalogService,
     config: BitbucketCloudEntityProviderConfig,
     events: EventsService,
     integration: BitbucketCloudIntegration,
@@ -132,7 +133,7 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
     taskRunner: SchedulerServiceTaskRunner,
   ) {
     this.auth = auth;
-    this.catalogApi = catalogApi;
+    this.catalog = catalog;
     this.client = BitbucketCloudClient.fromConfig(integration.config);
     this.config = config;
     this.events = events;
@@ -186,13 +187,17 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
 
     await this.events.subscribe({
       id: this.getProviderName(),
-      topics: [TOPIC_REPO_PUSH],
+      topics: [TOPIC_REPO_PUSH, TOPIC_REPO_UPDATED],
       onEvent: async params => {
-        if (params.topic !== TOPIC_REPO_PUSH) {
-          return;
+        if (params.topic === TOPIC_REPO_PUSH) {
+          await this.onRepoPush(params.eventPayload as Events.RepoPushEvent);
         }
 
-        await this.onRepoPush(params.eventPayload as Events.RepoPushEvent);
+        if (params.topic === TOPIC_REPO_UPDATED) {
+          await this.onRepoUpdated(
+            params.eventPayload as Events.RepoUpdatedEvent,
+          );
+        }
       },
     });
   }
@@ -217,12 +222,12 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
     );
   }
 
-  private enhanceEvent(event: Events.RepoPushEvent): void {
+  private enhanceEvent(event: Events.RepoEvent): void {
     // add missing slug
     event.repository.slug = event.repository.full_name!.split('/', 2)[1];
   }
 
-  async onRepoPush(event: Events.RepoPushEvent): Promise<void> {
+  private shouldProcessEvent(event: Events.RepoEvent): boolean {
     if (!this.connection) {
       throw new Error('Not initialized');
     }
@@ -230,10 +235,18 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
     this.enhanceEvent(event);
 
     if (event.repository.workspace.slug !== this.config.workspace) {
-      return;
+      return false;
     }
 
     if (!this.matchesFilters(event.repository)) {
+      return false;
+    }
+
+    return true;
+  }
+
+  async onRepoPush(event: Events.RepoPushEvent): Promise<void> {
+    if (!this.shouldProcessEvent(event)) {
       return;
     }
 
@@ -248,12 +261,43 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
     // Hence, we will just trigger a refresh for catalog file(s) within the repository
     // if we get notified about changes there.
 
-    const targets = await this.findCatalogFiles(repoSlug);
-
+    const expected = await this.findCatalogFiles(repoSlug);
     const existing = await this.findExistingLocations(repoUrl);
 
+    await this.updateForChanges(expected, existing);
+  }
+
+  private async onRepoUpdated(event: Events.RepoUpdatedEvent): Promise<void> {
+    if (!this.shouldProcessEvent(event)) {
+      return;
+    }
+
+    // The event is triggered on every change to the repository.
+    // We are only interested in changes that affect the repository URL.
+    // This is the case when the repository name (slug), or the full name changes.
+    if (!event.changes.links?.old.html?.href) {
+      return;
+    }
+
+    const repoSlug = event.repository.slug!;
+    const repoUrl = event.repository.links!.html!.href!;
+    const oldRepoUrl = event.changes.links.old.html.href;
+    this.logger.info(
+      `handle repo:updated event for ${repoUrl}, previous: ${oldRepoUrl}`,
+    );
+
+    const expected = await this.findCatalogFiles(repoSlug);
+    const existing = await this.findExistingLocations(oldRepoUrl);
+
+    await this.updateForChanges(expected, existing);
+  }
+
+  private async updateForChanges(
+    expected: IngestionTarget[],
+    existing: LocationEntity[],
+  ): Promise<void> {
     const added: DeferredEntity[] = this.toDeferredEntities(
-      targets.filter(
+      expected.filter(
         // All Locations are managed by this provider and only have `target`, never `targets`.
         // All URLs (fileUrl, target) are created using `BitbucketCloudEntityProvider.toUrl`.
         // Hence, we can keep the comparison simple and don't need to handle different
@@ -265,7 +309,7 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
     const stillExisting: LocationEntity[] = [];
     const removed: DeferredEntity[] = [];
     existing.forEach(item => {
-      if (targets.find(value => value.fileUrl === item.spec.target)) {
+      if (expected.find(value => value.fileUrl === item.spec.target)) {
         stillExisting.push(item);
       } else {
         removed.push({
@@ -275,14 +319,17 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
       }
     });
 
-    const promises: Promise<void>[] = [
-      this.connection.refresh({
-        keys: stillExisting.map(entity => `url:${entity.spec.target}`),
-      }),
-    ];
+    const promises: Promise<void>[] =
+      stillExisting.length === 0
+        ? []
+        : [
+            this.connection!.refresh({
+              keys: stillExisting.map(entity => `url:${entity.spec.target}`),
+            }),
+          ];
 
     if (added.length > 0 || removed.length > 0) {
-      const connection = this.connection;
+      const connection = this.connection!;
       promises.push(
         connection.applyMutation({
           type: 'delta',
@@ -303,13 +350,11 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
     filter[`metadata.annotations.${ANNOTATION_BITBUCKET_CLOUD_REPO_URL}`] =
       repoUrl;
 
-    const { token } = await this.auth.getPluginRequestToken({
-      onBehalfOf: await this.auth.getOwnServiceCredentials(),
-      targetPluginId: 'catalog',
-    });
-
-    return this.catalogApi
-      .getEntities({ filter }, { token })
+    return this.catalog
+      .getEntities(
+        { filter },
+        { credentials: await this.auth.getOwnServiceCredentials() },
+      )
       .then(result => result.items) as Promise<LocationEntity[]>;
   }
 
@@ -325,6 +370,8 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
 
     const optRepoFilter = repoSlug ? ` repo:${repoSlug}` : '';
     const query = `"${catalogFilename}" path:${catalogPath}${optRepoFilter}`;
+
+    if (repoSlug) return this.processQuery(workspace, query);
 
     const projects = this.client
       .listProjectsByWorkspace(workspace)
@@ -362,7 +409,7 @@ export class BitbucketCloudEntityProvider implements EntityProvider {
     ].join(',');
 
     const searchResults = this.client
-      .searchCode(workspace, query, { fields })
+      .searchCode(workspace, query, { fields }, this.config.pagelen)
       .iterateResults();
 
     const result: IngestionTarget[] = [];

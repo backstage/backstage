@@ -17,8 +17,8 @@
 import { Content, Header, HeaderTabs, Page } from '@backstage/core-components';
 import { useApi } from '@backstage/core-plugin-api';
 import { appTreeApiRef } from '@backstage/frontend-plugin-api';
-import Box from '@material-ui/core/Box';
-import React, { useCallback, useEffect, useMemo } from 'react';
+import { Flex } from '@backstage/ui';
+import { useCallback, useEffect, useMemo } from 'react';
 import { DetailedVisualizer } from './DetailedVisualizer';
 import { TextVisualizer } from './TextVisualizer';
 import { TreeVisualizer } from './TreeVisualizer';
@@ -86,14 +86,14 @@ export function AppVisualizerPage() {
     <Page themeId="tool">
       <Header title="App Visualizer" />
       <Content noPadding stretch>
-        <Box display="flex" flexDirection="column" height="100%">
+        <Flex direction="column" style={{ height: '100%' }}>
           <HeaderTabs
             tabs={tabs}
             selectedIndex={currentTabIndex}
             onChange={handleTabChange}
           />
           {element}
-        </Box>
+        </Flex>
       </Content>
     </Page>
   );

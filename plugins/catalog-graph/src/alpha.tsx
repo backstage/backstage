@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import {
+  ApiBlueprint,
   createFrontendPlugin,
   PageBlueprint,
 } from '@backstage/frontend-plugin-api';
-import {
-  compatWrapper,
-  convertLegacyRouteRef,
-} from '@backstage/core-compat-api';
 import { EntityCardBlueprint } from '@backstage/plugin-catalog-react/alpha';
 import { catalogGraphRouteRef, catalogEntityRouteRef } from './routes';
-import { Direction } from '@backstage/plugin-catalog-graph';
+import {
+  catalogGraphApiRef,
+  DefaultCatalogGraphApi,
+  Direction,
+} from '@backstage/plugin-catalog-graph';
 
 const CatalogGraphEntityCard = EntityCardBlueprint.makeWithOverrides({
   name: 'relations',
@@ -49,9 +49,9 @@ const CatalogGraphEntityCard = EntityCardBlueprint.makeWithOverrides({
   factory(originalFactory, { config }) {
     return originalFactory({
       loader: async () =>
-        import('./components/CatalogGraphCard').then(m =>
-          compatWrapper(<m.CatalogGraphCard {...config} />),
-        ),
+        import('./components/CatalogGraphCard').then(m => (
+          <m.CatalogGraphCard {...config} />
+        )),
     });
   },
 });
@@ -76,23 +76,35 @@ const CatalogGraphPage = PageBlueprint.makeWithOverrides({
   },
   factory(originalFactory, { config }) {
     return originalFactory({
-      defaultPath: '/catalog-graph',
-      routeRef: convertLegacyRouteRef(catalogGraphRouteRef),
+      path: '/catalog-graph',
+      routeRef: catalogGraphRouteRef,
       loader: () =>
-        import('./components/CatalogGraphPage').then(m =>
-          compatWrapper(<m.CatalogGraphPage {...config} />),
-        ),
+        import('./components/CatalogGraphPage').then(m => (
+          <m.CatalogGraphPage {...config} />
+        )),
     });
   },
 });
 
+const CatalogGraphApi = ApiBlueprint.make({
+  params: defineParams =>
+    defineParams({
+      api: catalogGraphApiRef,
+      deps: {},
+      factory: () => new DefaultCatalogGraphApi(),
+    }),
+});
+
 export default createFrontendPlugin({
-  id: 'catalog-graph',
+  pluginId: 'catalog-graph',
+  info: { packageJson: () => import('../package.json') },
   routes: {
-    catalogGraph: convertLegacyRouteRef(catalogGraphRouteRef),
+    catalogGraph: catalogGraphRouteRef,
   },
   externalRoutes: {
-    catalogEntity: convertLegacyRouteRef(catalogEntityRouteRef),
+    catalogEntity: catalogEntityRouteRef,
   },
-  extensions: [CatalogGraphPage, CatalogGraphEntityCard],
+  extensions: [CatalogGraphPage, CatalogGraphEntityCard, CatalogGraphApi],
 });
+
+export { catalogGraphTranslationRef } from './translation';

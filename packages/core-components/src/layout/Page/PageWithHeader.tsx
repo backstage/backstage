@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { PropsWithChildren, ComponentProps } from 'react';
+import { PropsWithChildren, ComponentProps } from 'react';
 
 import { Header } from '../Header';
 import { Page } from './Page';

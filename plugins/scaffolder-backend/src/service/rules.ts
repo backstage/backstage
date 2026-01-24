@@ -15,15 +15,19 @@
  */
 
 import { makeCreatePermissionRule } from '@backstage/plugin-permission-node';
+
 import {
   RESOURCE_TYPE_SCAFFOLDER_TEMPLATE,
   RESOURCE_TYPE_SCAFFOLDER_ACTION,
+  RESOURCE_TYPE_SCAFFOLDER_TASK,
 } from '@backstage/plugin-scaffolder-common/alpha';
 
 import {
   TemplateEntityStepV1beta3,
   TemplateParametersV1beta3,
 } from '@backstage/plugin-scaffolder-common';
+
+import { SerializedTask, TaskFilter } from '@backstage/plugin-scaffolder-node';
 
 import { z } from 'zod';
 import { JsonObject, JsonPrimitive } from '@backstage/types';
@@ -129,6 +133,37 @@ function buildHasProperty<Schema extends z.ZodType<JsonPrimitive>>({
   });
 }
 
+export const createTaskPermissionRule = makeCreatePermissionRule<
+  SerializedTask,
+  TaskFilter,
+  typeof RESOURCE_TYPE_SCAFFOLDER_TASK
+>();
+
+export const isTaskOwner = createTaskPermissionRule({
+  name: 'IS_TASK_OWNER',
+  description: 'Allows tasks created by certain users to be accessible',
+  resourceType: RESOURCE_TYPE_SCAFFOLDER_TASK,
+  paramsSchema: z.object({
+    createdBy: z
+      .array(z.string())
+      .describe(
+        'List of creater entity refs; only tasks created by these users will be viewable',
+      ),
+  }),
+  apply: (resource, { createdBy }) => {
+    if (!resource.createdBy) {
+      return false;
+    }
+    return createdBy.includes(resource.createdBy);
+  },
+  toQuery: ({ createdBy }) => {
+    return {
+      key: 'created_by',
+      values: createdBy,
+    };
+  },
+});
+
 export const scaffolderTemplateRules = { hasTag };
 export const scaffolderActionRules = {
   hasActionId,
@@ -136,3 +171,4 @@ export const scaffolderActionRules = {
   hasNumberProperty,
   hasStringProperty,
 };
+export const scaffolderTaskRules = { isTaskOwner };

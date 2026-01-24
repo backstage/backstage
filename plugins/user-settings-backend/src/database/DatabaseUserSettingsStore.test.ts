@@ -28,7 +28,7 @@ import {
 jest.setTimeout(60_000);
 
 const databases = TestDatabases.create({
-  ids: ['POSTGRES_13', 'SQLITE_3'],
+  ids: ['POSTGRES_14', 'SQLITE_3'],
 });
 
 async function createStore(databaseId: TestDatabaseId) {

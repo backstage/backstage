@@ -15,10 +15,6 @@
  */
 
 import {
-  TokenManager,
-  createLegacyAuthAdapters,
-} from '@backstage/backend-common';
-import {
   AuthService,
   BackstageCredentials,
   BackstageServicePrincipal,
@@ -53,27 +49,13 @@ export class ServerPermissionClient implements PermissionsService {
     config: Config,
     options: {
       discovery: DiscoveryService;
-      /** @deprecated This option will be removed in the future, provide a the auth option instead */
-      tokenManager?: TokenManager;
-      auth?: AuthService;
+      auth: AuthService;
     },
   ) {
-    const { discovery, tokenManager } = options;
+    const { auth, discovery } = options;
     const permissionClient = new PermissionClient({ discovery, config });
     const permissionEnabled =
       config.getOptionalBoolean('permission.enabled') ?? false;
-
-    if (
-      permissionEnabled &&
-      tokenManager &&
-      (tokenManager as any).isInsecureServerTokenManager
-    ) {
-      throw new Error(
-        'Service-to-service authentication must be configured before enabling permissions. Read more here https://backstage.io/docs/auth/service-to-service-auth',
-      );
-    }
-
-    const { auth } = createLegacyAuthAdapters(options);
 
     return new ServerPermissionClient({
       auth,

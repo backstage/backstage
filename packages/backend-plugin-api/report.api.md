@@ -177,6 +177,7 @@ export interface BackstageUserInfo {
 export type BackstageUserPrincipal = {
   type: 'user';
   userEntityRef: string;
+  actor?: BackstageServicePrincipal;
 };
 
 // @public
@@ -231,6 +232,11 @@ export namespace coreServices {
   const rootLogger: ServiceRef<RootLoggerService, 'root', 'singleton'>;
   const scheduler: ServiceRef<SchedulerService, 'plugin', 'singleton'>;
   const urlReader: ServiceRef<UrlReaderService, 'plugin', 'singleton'>;
+  const rootInstanceMetadata: ServiceRef<
+    RootInstanceMetadataService,
+    'root',
+    'singleton'
+  >;
 }
 
 // @public
@@ -575,6 +581,24 @@ export interface RootHealthService {
 // @public
 export interface RootHttpRouterService {
   use(path: string, handler: Handler): void;
+}
+
+// @public (undocumented)
+export interface RootInstanceMetadataService {
+  // (undocumented)
+  getInstalledPlugins: () => Promise<
+    ReadonlyArray<RootInstanceMetadataServicePluginInfo>
+  >;
+}
+
+// @public (undocumented)
+export interface RootInstanceMetadataServicePluginInfo {
+  // (undocumented)
+  readonly modules: ReadonlyArray<{
+    moduleId: string;
+  }>;
+  // (undocumented)
+  readonly pluginId: string;
 }
 
 // @public

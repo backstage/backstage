@@ -19,7 +19,6 @@ import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { EntityRefLinks } from '@backstage/plugin-catalog-react';
 import Button from '@material-ui/core/Button';
 import { makeStyles, Theme } from '@material-ui/core/styles';
-import React from 'react';
 
 import { scaffolderReactTranslationRef } from '../../../translation';
 

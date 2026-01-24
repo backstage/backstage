@@ -9,7 +9,8 @@
     "types": "dist/index.d.ts"
   },
   "backstage": {
-    "role": "backend-plugin-module"
+    "role": "backend-plugin-module",
+    "pluginId": "scaffolder"
   },
   "scripts": {
     "start": "backstage-cli package start",
@@ -25,6 +26,7 @@
     "@backstage/plugin-scaffolder-node": "{{versionQuery '@backstage/plugin-scaffolder-node'}}"
   },
   "devDependencies": {
+    "@backstage/backend-test-utils": "{{versionQuery '@backstage/backend-test-utils'}}",
     "@backstage/cli": "{{versionQuery '@backstage/cli'}}",
     "@backstage/plugin-scaffolder-node-test-utils": "{{versionQuery '@backstage/plugin-scaffolder-node-test-utils'}}"
   },

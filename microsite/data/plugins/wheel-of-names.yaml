@@ -1,0 +1,10 @@
+---
+title: Wheel of Names
+author: intive
+authorUrl: https://www.intive.com/
+category: Utility
+description: This plugin provides a customizable spinning wheel that can be used for random selection, decision making, or just for fun in your Backstage instance.
+documentation: https://github.com/backstage/community-plugins/blob/main/workspaces/wheel-of-names/plugins/wheel-of-names/README.md
+iconUrl: /img/wheel-of-names.svg
+npmPackageName: '@backstage-community/plugin-wheel-of-names'
+addedDate: '2025-05-21'

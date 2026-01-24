@@ -1,6 +1,6 @@
 {
   "name": "example-app",
-  "version": "0.2.107-next.2",
+  "version": "0.2.117",
   "backstage": {
     "role": "frontend"
   },
@@ -56,6 +56,7 @@
     "@backstage/plugin-home": "workspace:^",
     "@backstage/plugin-kubernetes": "workspace:^",
     "@backstage/plugin-kubernetes-cluster": "workspace:^",
+    "@backstage/plugin-mui-to-bui": "workspace:^",
     "@backstage/plugin-notifications": "workspace:^",
     "@backstage/plugin-org": "workspace:^",
     "@backstage/plugin-permission-react": "workspace:^",
@@ -70,6 +71,7 @@
     "@backstage/plugin-techdocs-react": "workspace:^",
     "@backstage/plugin-user-settings": "workspace:^",
     "@backstage/theme": "workspace:^",
+    "@backstage/ui": "workspace:^",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.61",
@@ -93,8 +95,8 @@
     "@types/react": "*",
     "@types/react-dom": "*",
     "@types/zen-observable": "^0.8.0",
-    "axios": "^1.7.7",
-    "cross-env": "^7.0.0",
+    "axios": "^1.13.0",
+    "cross-env": "^10.0.0",
     "msw": "^1.0.0"
   },
   "bundled": true

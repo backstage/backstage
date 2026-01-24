@@ -17,7 +17,6 @@
 import { Entity } from '@backstage/catalog-model';
 import { renderInTestApp } from '@backstage/test-utils';
 import { waitFor, screen } from '@testing-library/react';
-import React from 'react';
 import { EntityTable } from './EntityTable';
 
 describe('<EntityTable />', () => {

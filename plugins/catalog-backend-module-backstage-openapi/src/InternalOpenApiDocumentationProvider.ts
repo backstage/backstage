@@ -171,14 +171,22 @@ const formatDefinition = (
 export class InternalOpenApiDocumentationProvider implements EntityProvider {
   private connection?: EntityProviderConnection;
   private readonly scheduleFn: () => Promise<void>;
+  public readonly config: Config;
+  public readonly discovery: DiscoveryService;
+  public readonly logger: LoggerService;
+  public readonly auth: AuthService;
 
   constructor(
-    public readonly config: Config,
-    public readonly discovery: DiscoveryService,
-    public readonly logger: LoggerService,
-    public readonly auth: AuthService,
+    config: Config,
+    discovery: DiscoveryService,
+    logger: LoggerService,
+    auth: AuthService,
     taskRunner: SchedulerServiceTaskRunner,
   ) {
+    this.config = config;
+    this.discovery = discovery;
+    this.logger = logger;
+    this.auth = auth;
     this.scheduleFn = this.createScheduleFn(taskRunner);
   }
 
@@ -232,11 +240,7 @@ export class InternalOpenApiDocumentationProvider implements EntityProvider {
             taskId,
             taskInstanceId: uuid.v4(),
           });
-          try {
-            await this.refresh(logger);
-          } catch (error) {
-            logger.error(`${this.getProviderName()} refresh failed`, error);
-          }
+          await this.refresh(logger);
         },
       });
     };
@@ -295,7 +299,7 @@ export class InternalOpenApiDocumentationProvider implements EntityProvider {
     // Overwrite baseConfig with options from config file.
     const mergedConfig = lodash.merge(baseConfig, configToMerge);
 
-    // Overwite mergedConfig with requiredConfig (i.e., spec.type and spec.definition) to avoid bad configuration.
+    // Overwrite mergedConfig with requiredConfig (i.e., spec.type and spec.definition) to avoid bad configuration.
     const documentationEntity = lodash.merge(
       mergedConfig,
       requiredConfig,

@@ -15,11 +15,8 @@
  */
 
 import { AppNode, AppTree } from '@backstage/frontend-plugin-api';
-import Box from '@material-ui/core/Box';
-import Checkbox from '@material-ui/core/Checkbox';
-import FormControlLabel from '@material-ui/core/FormControlLabel';
-import Paper from '@material-ui/core/Paper';
-import React, { ReactNode, useState } from 'react';
+import { Box, Checkbox } from '@backstage/ui';
+import { ReactNode, useState } from 'react';
 
 function mkDiv(
   children: ReactNode,
@@ -30,7 +27,7 @@ function mkDiv(
       key={options?.key}
       style={{
         color: options?.color,
-        marginLeft: options?.indent ? 16 : undefined,
+        marginLeft: options?.indent ? 'var(--bui-space-4)' : undefined,
       }}
     >
       {children}
@@ -63,15 +60,15 @@ function nodeToText(
           .filter(e => options?.showDisabled || e.instance)
           .sort((a, b) => a.spec.id.localeCompare(b.spec.id));
         if (children.length === 0) {
-          return mkDiv(`${key} []`, { indent: true });
+          return mkDiv(`${key} []`, { key, indent: true });
         }
         return mkDiv(
           [
-            mkDiv(`${key} [`),
+            mkDiv(`${key} [`, { key: 'start' }),
             ...children.map(e =>
-              mkDiv(nodeToText(e, options), { indent: true }),
+              mkDiv(nodeToText(e, options), { indent: true, key: e.spec.id }),
             ),
-            mkDiv(']'),
+            mkDiv(']', { key: 'end' }),
           ],
           { key, indent: true },
         );
@@ -87,30 +84,25 @@ export function TextVisualizer({ tree }: { tree: AppTree }) {
   return (
     <>
       <Box style={{ overflow: 'auto', flex: '1 0 0' }}>
-        <div style={{ margin: 16, width: 'max-content' }}>
+        <Box m="4" style={{ width: 'max-content' }}>
           {nodeToText(tree.root, { showOutputs, showDisabled })}
-        </div>
+        </Box>
       </Box>
-      <Paper style={{ padding: '8px 16px' }}>
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={showOutputs}
-              onChange={(_, value) => setShowOutputs(value)}
-            />
-          }
-          label="Show Outputs"
-        />
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={showDisabled}
-              onChange={(_, value) => setShowDisabled(value)}
-            />
-          }
-          label="Show Disabled"
-        />
-      </Paper>
+      <Box
+        py="2"
+        px="4"
+        style={{
+          background: 'var(--bui-bg-surface-1)',
+          borderTop: '1px solid var(--bui-border)',
+        }}
+      >
+        <Checkbox isSelected={showOutputs} onChange={setShowOutputs}>
+          Show Outputs
+        </Checkbox>
+        <Checkbox isSelected={showDisabled} onChange={setShowDisabled}>
+          Show Disabled
+        </Checkbox>
+      </Box>
     </>
   );
 }

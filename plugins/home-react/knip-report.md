@@ -4,5 +4,5 @@
 
 | Name                     | Location     | Severity |
 | :----------------------- | :----------- | :------- |
-| @types/react-grid-layout | package.json | error    |
+| @types/react-grid-layout | plugins/home-react/package.json | error    |
 

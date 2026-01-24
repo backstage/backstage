@@ -20,16 +20,21 @@ import {
 } from '@backstage/core-plugin-api';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
-import React, { useEffect, useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import useAsync from 'react-use/esm/useAsync';
 import { getTimeBasedGreeting } from './timeUtil';
+import { Variant } from '@material-ui/core/styles/createTypography';
 
 /** @public */
 export type WelcomeTitleLanguageProps = {
   language?: string[];
+  variant?: Variant | 'inherit';
 };
 
-export const WelcomeTitle = ({ language }: WelcomeTitleLanguageProps) => {
+export const WelcomeTitle = ({
+  language,
+  variant = 'inherit',
+}: WelcomeTitleLanguageProps) => {
   const identityApi = useApi(identityApiRef);
   const alertApi = useApi(alertApiRef);
   const greeting = useMemo(() => getTimeBasedGreeting(language), [language]);
@@ -49,7 +54,7 @@ export const WelcomeTitle = ({ language }: WelcomeTitleLanguageProps) => {
 
   return (
     <Tooltip title={greeting.language}>
-      <Typography component="span" variant="inherit">{`${greeting.greeting}${
+      <Typography component="span" variant={variant}>{`${greeting.greeting}${
         profile?.displayName ? `, ${profile?.displayName}` : ''
       }!`}</Typography>
     </Tooltip>

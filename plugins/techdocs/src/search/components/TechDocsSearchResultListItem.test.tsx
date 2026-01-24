@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { TechDocsSearchResultListItem } from './TechDocsSearchResultListItem';
 import { renderInTestApp } from '@backstage/test-utils';
 

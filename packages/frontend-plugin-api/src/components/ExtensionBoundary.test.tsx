@@ -14,21 +14,22 @@
  * limitations under the License.
  */
 
-import React, { useEffect } from 'react';
+import { useEffect, ReactNode } from 'react';
 import { act, screen, waitFor } from '@testing-library/react';
-import {
-  mockApis,
-  TestApiProvider,
-  withLogCollector,
-} from '@backstage/test-utils';
+import { TestApiProvider, withLogCollector } from '@backstage/test-utils';
 import { ExtensionBoundary } from './ExtensionBoundary';
 import { coreExtensionData, createExtension } from '../wiring';
-import { analyticsApiRef, useAnalytics } from '@backstage/core-plugin-api';
+import { analyticsApiRef } from '../apis/definitions/AnalyticsApi';
+import { useAnalytics } from '../analytics';
 import { createRouteRef } from '../routing';
 import {
   createExtensionTester,
   renderInTestApp,
 } from '@backstage/frontend-test-utils';
+import {
+  pluginWrapperApiRef,
+  PluginWrapperApi,
+} from '../apis/definitions/PluginWrapperApi';
 
 const wrapInBoundaryExtension = (element?: JSX.Element) => {
   const routeRef = createRouteRef();
@@ -93,7 +94,7 @@ describe('ExtensionBoundary', () => {
   it('should wrap children with analytics context', async () => {
     const action = 'render';
     const subject = 'analytics';
-    const analyticsApiMock = mockApis.analytics();
+    const analyticsApiMock = { captureEvent: jest.fn() };
 
     const AnalyticsComponent = () => {
       const analytics = useAnalytics();
@@ -124,6 +125,85 @@ describe('ExtensionBoundary', () => {
     });
   });
 
+  it('should wrap children with PluginWrapper when provided', async () => {
+    const text = 'Wrapped Content';
+    const TextComponent = () => {
+      return <p>{text}</p>;
+    };
+
+    const WrapperComponent = ({ children }: { children: ReactNode }) => {
+      return (
+        <div data-testid="plugin-wrapper">
+          <span>Wrapper</span>
+          {children}
+        </div>
+      );
+    };
+
+    const pluginWrapperApi: PluginWrapperApi = {
+      getPluginWrapper: jest.fn((pluginId: string) => {
+        if (pluginId === 'app') {
+          return WrapperComponent;
+        }
+        return undefined;
+      }),
+    };
+
+    renderInTestApp(
+      <TestApiProvider apis={[[pluginWrapperApiRef, pluginWrapperApi]]}>
+        {createExtensionTester(
+          wrapInBoundaryExtension(<TextComponent />),
+        ).reactElement()}
+      </TestApiProvider>,
+    );
+
+    expect(await screen.findByTestId('plugin-wrapper')).toBeInTheDocument();
+    expect(screen.getByText('Wrapper')).toBeInTheDocument();
+    expect(screen.getByText(text)).toBeInTheDocument();
+    expect(pluginWrapperApi.getPluginWrapper).toHaveBeenCalledWith('app');
+  });
+
+  it('should handle errors thrown by PluginWrapper with ErrorDisplayBoundary', async () => {
+    const errorMsg = 'PluginWrapper error';
+    const TextComponent = () => {
+      return <p>Content</p>;
+    };
+
+    const ThrowingWrapper = () => {
+      throw new Error(errorMsg);
+    };
+
+    const pluginWrapperApi: PluginWrapperApi = {
+      getPluginWrapper: jest.fn((pluginId: string) => {
+        if (pluginId === 'app') {
+          return ThrowingWrapper;
+        }
+        return undefined;
+      }),
+    };
+
+    const { error } = await withLogCollector(['error'], async () => {
+      renderInTestApp(
+        <TestApiProvider apis={[[pluginWrapperApiRef, pluginWrapperApi]]}>
+          {createExtensionTester(
+            wrapInBoundaryExtension(<TextComponent />),
+          ).reactElement()}
+        </TestApiProvider>,
+      );
+      await waitFor(() =>
+        expect(screen.getByText(errorMsg)).toBeInTheDocument(),
+      );
+    });
+
+    expect(error).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          message: expect.stringContaining(errorMsg),
+        }),
+      ]),
+    );
+  });
+
   // TODO(Rugvip): Need a way to be able to override APIs in the app to be able to test this properly
   // eslint-disable-next-line jest/no-disabled-tests
   it.skip('should emit analytics events if routable', async () => {
@@ -134,7 +214,7 @@ describe('ExtensionBoundary', () => {
       });
       return null;
     };
-    const analyticsApiMock = mockApis.analytics();
+    const analyticsApiMock = { captureEvent: jest.fn() };
 
     await act(async () => {
       renderInTestApp(

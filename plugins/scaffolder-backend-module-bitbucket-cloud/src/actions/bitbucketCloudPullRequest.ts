@@ -23,10 +23,12 @@ import {
   addFiles,
   cloneRepo,
   parseRepoUrl,
+  isNotGitDirectoryOrContents,
 } from '@backstage/plugin-scaffolder-node';
 import { Config } from '@backstage/config';
 import fs from 'fs-extra';
 import { getAuthorizationHeader } from './helpers';
+import { getBitbucketCloudOAuthToken } from '@backstage/integration';
 import { examples } from './bitbucketCloudPullRequest.examples';
 
 const createPullRequest = async (opts: {
@@ -82,7 +84,7 @@ const createPullRequest = async (opts: {
       data,
     );
   } catch (e) {
-    throw new Error(`Unable to create pull-reqeusts, ${e}`);
+    throw new Error(`Unable to create pull-requests, ${e}`);
   }
 
   if (response.status !== 201) {
@@ -138,6 +140,7 @@ const findBranches = async (opts: {
 
   return r.values[0];
 };
+
 const createBranch = async (opts: {
   workspace: string;
   repo: string;
@@ -189,6 +192,7 @@ const createBranch = async (opts: {
 
   return await response.json();
 };
+
 const getDefaultBranch = async (opts: {
   workspace: string;
   repo: string;
@@ -232,73 +236,60 @@ export function createPublishBitbucketCloudPullRequestAction(options: {
 }) {
   const { integrations, config } = options;
 
-  return createTemplateAction<{
-    repoUrl: string;
-    title: string;
-    description?: string;
-    targetBranch?: string;
-    sourceBranch: string;
-    token?: string;
-    gitAuthorName?: string;
-    gitAuthorEmail?: string;
-  }>({
+  return createTemplateAction({
     id: 'publish:bitbucketCloud:pull-request',
     examples,
     schema: {
       input: {
-        type: 'object',
-        required: ['repoUrl', 'title', 'sourceBranch'],
-        properties: {
-          repoUrl: {
-            title: 'Repository Location',
-            type: 'string',
-          },
-          title: {
-            title: 'Pull Request title',
-            type: 'string',
+        repoUrl: z =>
+          z.string({
+            description: 'Repository Location',
+          }),
+        title: z =>
+          z.string({
             description: 'The title for the pull request',
-          },
-          description: {
-            title: 'Pull Request Description',
-            type: 'string',
-            description: 'The description of the pull request',
-          },
-          targetBranch: {
-            title: 'Target Branch',
-            type: 'string',
-            description: `Branch of repository to apply changes to. The default value is 'master'`,
-          },
-          sourceBranch: {
-            title: 'Source Branch',
-            type: 'string',
+          }),
+        description: z =>
+          z
+            .string({
+              description: 'The description of the pull request',
+            })
+            .optional(),
+        targetBranch: z =>
+          z
+            .string({
+              description: `Branch of repository to apply changes to. The default value is 'master'`,
+            })
+            .optional(),
+        sourceBranch: z =>
+          z.string({
             description: 'Branch of repository to copy changes from',
-          },
-          token: {
-            title: 'Authorization Token',
-            type: 'string',
-            description:
-              'The token to use for authorization to BitBucket Cloud',
-          },
-          gitAuthorName: {
-            title: 'Author Name',
-            type: 'string',
-            description: `Sets the author name for the commit. The default value is 'Scaffolder'`,
-          },
-          gitAuthorEmail: {
-            title: 'Author Email',
-            type: 'string',
-            description: `Sets the author email for the commit.`,
-          },
-        },
+          }),
+        token: z =>
+          z
+            .string({
+              description:
+                'The token to use for authorization to BitBucket Cloud',
+            })
+            .optional(),
+        gitAuthorName: z =>
+          z
+            .string({
+              description: `Sets the author name for the commit. The default value is 'Scaffolder'`,
+            })
+            .optional(),
+        gitAuthorEmail: z =>
+          z
+            .string({
+              description: `Sets the author email for the commit.`,
+            })
+            .optional(),
       },
       output: {
-        type: 'object',
-        properties: {
-          pullRequestUrl: {
-            title: 'A URL to the pull request with the provider',
-            type: 'string',
-          },
-        },
+        pullRequestUrl: z =>
+          z.string({
+            description: 'A URL to the pull request with the provider',
+          }),
       },
     },
     async handler(ctx) {
@@ -327,7 +318,7 @@ export function createPublishBitbucketCloudPullRequestAction(options: {
         );
       }
 
-      const authorization = getAuthorizationHeader(
+      const authorization = await getAuthorizationHeader(
         ctx.input.token ? { token: ctx.input.token } : integrationConfig.config,
       );
 
@@ -375,6 +366,18 @@ export function createPublishBitbucketCloudPullRequestAction(options: {
             username: 'x-token-auth',
             password: ctx.input.token,
           };
+        } else if (
+          integrationConfig.config.clientId &&
+          integrationConfig.config.clientSecret
+        ) {
+          const token = await getBitbucketCloudOAuthToken(
+            integrationConfig.config.clientId,
+            integrationConfig.config.clientSecret,
+          );
+          auth = {
+            username: 'x-token-auth',
+            password: token,
+          };
         } else {
           if (
             !integrationConfig.config.username ||
@@ -413,9 +416,7 @@ export function createPublishBitbucketCloudPullRequestAction(options: {
         // copy files
         fs.cpSync(sourceDir, tempDir, {
           recursive: true,
-          filter: path => {
-            return !(path.indexOf('.git') > -1);
-          },
+          filter: isNotGitDirectoryOrContents,
         });
 
         await addFiles({

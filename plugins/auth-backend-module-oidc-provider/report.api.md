@@ -25,6 +25,7 @@ export const oidcAuthenticator: OAuthAuthenticator<
       client: BaseClient;
       strategy: Strategy<OidcAuthResult, BaseClient>;
     }>;
+    searchParams: Record<string, string>;
   },
   OidcAuthResult
 >;
@@ -41,12 +42,17 @@ export namespace oidcSignInResolvers {
     unknown,
     | {
         allowedDomains?: string[] | undefined;
+        dangerouslyAllowSignInWithoutUserInCatalog?: boolean | undefined;
       }
     | undefined
   >;
   const emailMatchingUserEntityProfileEmail: SignInResolverFactory<
     unknown,
-    unknown
+    | {
+        allowedDomains?: string[] | undefined;
+        dangerouslyAllowSignInWithoutUserInCatalog?: boolean | undefined;
+      }
+    | undefined
   >;
 }
 ```

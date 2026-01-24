@@ -36,6 +36,7 @@ export type {
   ElasticSearchClientOptions,
   ElasticSearchElasticSearchClientOptions,
   ElasticSearchHighlightConfig,
+  ElasticSearchQueryConfig,
   ElasticSearchHighlightOptions,
   ElasticSearchIndexAction,
   ElasticSearchQueryTranslator,

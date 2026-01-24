@@ -13,55 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { z } from 'zod';
-import { makeFieldSchemaFromZod } from '../utils';
-import { entityQueryFilterExpressionSchema } from '../EntityPicker/schema';
+import { EntityPickerFieldSchema } from '../EntityPicker';
 
 /**
  * @public
  */
-export const OwnedEntityPickerFieldSchema = makeFieldSchemaFromZod(
-  z.string(),
-  z.object({
-    allowedKinds: z
-      .array(z.string())
-      .optional()
-      .describe(
-        'DEPRECATED: Use `catalogFilter` instead. List of kinds of entities to derive options from',
-      ),
-    defaultKind: z
-      .string()
-      .optional()
-      .describe(
-        'The default entity kind. Options of this kind will not be prefixed.',
-      ),
-    allowArbitraryValues: z
-      .boolean()
-      .optional()
-      .describe('Whether to allow arbitrary user input. Defaults to true'),
-    defaultNamespace: z
-      .union([z.string(), z.literal(false)])
-      .optional()
-      .describe(
-        'The default namespace. Options with this namespace will not be prefixed.',
-      ),
-    catalogFilter: z
-      .array(entityQueryFilterExpressionSchema)
-      .or(entityQueryFilterExpressionSchema)
-      .optional()
-      .describe('List of key-value filter expression for entities'),
-  }),
-);
+export const OwnedEntityPickerFieldSchema = EntityPickerFieldSchema;
 
 /**
  * The input props that can be specified under `ui:options` for the
  * `OwnedEntityPicker` field extension.
- *
  * @public
  */
-export type OwnedEntityPickerUiOptions =
-  typeof OwnedEntityPickerFieldSchema.uiOptionsType;
+export type OwnedEntityPickerUiOptions = NonNullable<
+  (typeof OwnedEntityPickerFieldSchema.TProps.uiSchema)['ui:options']
+>;
 
-export type OwnedEntityPickerProps = typeof OwnedEntityPickerFieldSchema.type;
+export type OwnedEntityPickerProps = typeof OwnedEntityPickerFieldSchema.TProps;
 
 export const OwnedEntityPickerSchema = OwnedEntityPickerFieldSchema.schema;

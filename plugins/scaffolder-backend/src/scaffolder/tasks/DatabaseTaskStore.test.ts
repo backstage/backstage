@@ -14,14 +14,19 @@
  * limitations under the License.
  */
 
-import { DatabaseManager } from '@backstage/backend-common';
+import { DatabaseManager } from '@backstage/backend-defaults/database';
 import { ConfigReader } from '@backstage/config';
 import { DatabaseTaskStore, RawDbTaskEventRow } from './DatabaseTaskStore';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { ConflictError } from '@backstage/errors';
-import { createMockDirectory } from '@backstage/backend-test-utils';
+import {
+  mockServices,
+  createMockDirectory,
+} from '@backstage/backend-test-utils';
 import fs from 'fs-extra';
 import { EventsService } from '@backstage/plugin-events-node';
+import { PermissionCriteria } from '@backstage/plugin-permission-common';
+import { TaskFilters } from '@backstage/plugin-scaffolder-node';
 
 const createStore = async (events?: EventsService) => {
   const manager = DatabaseManager.fromConfig(
@@ -33,7 +38,10 @@ const createStore = async (events?: EventsService) => {
         },
       },
     }),
-  ).forPlugin('scaffolder');
+  ).forPlugin('scaffolder', {
+    logger: mockServices.logger.mock(),
+    lifecycle: mockServices.lifecycle.mock(),
+  });
   const store = await DatabaseTaskStore.create({
     database: manager,
     events,
@@ -229,6 +237,56 @@ describe('DatabaseTaskStore', () => {
     expect(tasks[0].createdBy).toBe('him');
     expect(tasks[0].status).toBe('open');
     expect(tasks[0].id).toBeDefined();
+  });
+
+  it('should filter tasks based on permissionFilters', async () => {
+    const { store } = await createStore();
+
+    await store.createTask({
+      spec: {} as TaskSpec,
+      createdBy: 'user:default/one',
+    });
+
+    await store.createTask({
+      spec: {} as TaskSpec,
+      createdBy: 'user:default/two',
+    });
+
+    await store.createTask({
+      spec: {} as TaskSpec,
+      createdBy: 'user:default/three',
+    });
+
+    await store.createTask({
+      spec: {} as TaskSpec,
+      createdBy: 'user:default/one',
+    });
+
+    await store.createTask({
+      spec: {} as TaskSpec,
+      createdBy: 'user:default/four',
+    });
+
+    const permissionFilters: PermissionCriteria<TaskFilters> = {
+      not: {
+        key: 'created_by',
+        values: ['user:default/three', 'user:default/four'],
+      },
+    };
+
+    const { tasks, totalTasks } = await store.list({
+      permissionFilters: permissionFilters,
+    });
+
+    expect(totalTasks).toBe(3);
+
+    const createdByList = tasks.map(task => task.createdBy);
+    expect(createdByList).toEqual(
+      expect.arrayContaining(['user:default/one', 'user:default/two']),
+    );
+    expect(createdByList).not.toEqual(
+      expect.arrayContaining(['user:default/three', 'user:default/four']),
+    );
   });
 
   it('should sent an event to start cancelling the task', async () => {

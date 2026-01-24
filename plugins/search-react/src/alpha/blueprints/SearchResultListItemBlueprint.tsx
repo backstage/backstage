@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { lazy } from 'react';
+import { lazy, JSX } from 'react';
 import {
   createExtensionBlueprint,
   ExtensionBoundary,
@@ -42,6 +42,11 @@ export interface SearchResultListItemBlueprintParams {
    * Defaults to a predicate that returns true, which means it renders all sorts of results.
    */
   predicate?: SearchResultItemExtensionPredicate;
+
+  /**
+   * The icon of the result item.
+   */
+  icon?: JSX.Element;
 }
 
 /**
@@ -77,7 +82,7 @@ export const SearchResultListItemBlueprint = createExtensionBlueprint({
             result={props.result}
             noTrack={config.noTrack}
           >
-            <ExtensionComponent {...props} />
+            <ExtensionComponent icon={params.icon} {...props} />
           </SearchResultListItemExtension>
         </ExtensionBoundary>
       ),

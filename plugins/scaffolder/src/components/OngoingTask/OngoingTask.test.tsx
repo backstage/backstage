@@ -15,7 +15,6 @@
  */
 
 import { OngoingTask } from './OngoingTask';
-import React from 'react';
 import {
   mockApis,
   renderInTestApp,
@@ -162,20 +161,43 @@ describe('OngoingTask', () => {
     await expect(rendered.findByText('Hide Logs')).resolves.toBeInTheDocument();
   });
 
-  it('should have cancel and start over buttons be disabled without the proper permissions', async () => {
+  it('should have cancel button be disabled when user has read permission but lacks cancel permission', async () => {
     const permissionApi = mockApis.permission({
-      authorize: AuthorizeResult.DENY,
+      authorize: request => {
+        if (request.permission.name === 'scaffolder.task.cancel') {
+          return AuthorizeResult.DENY;
+        }
+        return AuthorizeResult.ALLOW;
+      },
     });
     const rendered = await render(permissionApi);
 
     const { getByTestId } = rendered;
     expect(getByTestId('cancel-button')).toHaveClass('Mui-disabled');
-    expect(getByTestId('start-over-button')).toHaveClass('Mui-disabled');
 
     await act(async () => {
       fireEvent.click(getByTestId('menu-button'));
     });
     expect(getByTestId('cancel-task')).toHaveClass('Mui-disabled');
-    expect(getByTestId('start-over-task')).toHaveClass('Mui-disabled');
+  });
+
+  it('should have start over button be disabled when user has read permission but lacks create permission', async () => {
+    const permissionApi = mockApis.permission({
+      authorize: request => {
+        if (request.permission.name === 'scaffolder.task.create') {
+          return AuthorizeResult.DENY;
+        }
+        return AuthorizeResult.ALLOW;
+      },
+    });
+    const rendered = await render(permissionApi);
+
+    const { getByTestId } = rendered;
+    expect(getByTestId('start-over-button')).toHaveClass('Mui-disabled');
+
+    await act(async () => {
+      fireEvent.click(getByTestId('menu-button'));
+    });
+    expect(getByTestId('start-over-button')).toHaveClass('Mui-disabled');
   });
 });

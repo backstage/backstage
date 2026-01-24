@@ -26,7 +26,7 @@ import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { ReviewStepProps } from '@backstage/plugin-scaffolder-react';
 import { JsonValue } from '@backstage/types';
 import { makeStyles } from '@material-ui/core/styles';
-import React, { useCallback, useEffect } from 'react';
+import { ComponentType, useCallback, useEffect } from 'react';
 
 import { SecretsContextProvider } from '../../../secrets/SecretsContext';
 import { scaffolderReactTranslationRef } from '../../../translation';
@@ -56,7 +56,7 @@ export type WorkflowProps = {
   namespace: string;
   templateName: string;
   components?: {
-    ReviewStepComponent?: React.ComponentType<ReviewStepProps>;
+    ReviewStepComponent?: ComponentType<ReviewStepProps>;
   };
   onError(error: Error | undefined): JSX.Element | null;
 } & Pick<
@@ -97,13 +97,14 @@ export const Workflow = (workflowProps: WorkflowProps): JSX.Element | null => {
     async (formState: Record<string, JsonValue>) => {
       await onCreate(formState);
 
-      const name =
-        typeof formState.name === 'string' ? formState.name : undefined;
-      analytics.captureEvent('create', name ?? templateName ?? 'unknown', {
+      analytics.captureEvent('create', 'Task has been created', {
         value: minutesSaved,
+        attributes: {
+          templateSteps: sortedManifest?.steps?.length ?? 0,
+        },
       });
     },
-    [onCreate, analytics, templateName, minutesSaved],
+    [onCreate, analytics, minutesSaved, sortedManifest],
   );
 
   useEffect(() => {

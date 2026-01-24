@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { useState, useRef, useLayoutEffect } from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import { DependencyGraphTypes as Types } from './types';
 
@@ -37,11 +37,11 @@ const useStyles = makeStyles(
 /** @public */
 export function DefaultNode({ node: { id } }: Types.RenderNodeProps) {
   const classes = useStyles();
-  const [width, setWidth] = React.useState(0);
-  const [height, setHeight] = React.useState(0);
-  const idRef = React.useRef<SVGTextElement | null>(null);
+  const [width, setWidth] = useState(0);
+  const [height, setHeight] = useState(0);
+  const idRef = useRef<SVGTextElement | null>(null);
 
-  React.useLayoutEffect(() => {
+  useLayoutEffect(() => {
     // set the width to the length of the ID
     if (idRef.current) {
       let { height: renderedHeight, width: renderedWidth } =

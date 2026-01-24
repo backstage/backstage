@@ -57,7 +57,7 @@ export function useCookieAuthRefresh(options: {
     if (!response.ok) {
       // If we get a 404 from the cookie endpoint we assume that it does not
       // exist and cookie auth is not needed. For all active tabs we don't
-      // schedule another refresh for the forseeable future, but new tabs will
+      // schedule another refresh for the foreseeable future, but new tabs will
       // still check if cookie auth has been added to the deployment.
       // TODO(Rugvip): Once the legacy backend system is no longer supported we should remove this check
       if (response.status === 404) {

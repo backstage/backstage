@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { useState, useEffect } from 'react';
 import { HeaderLabel } from '@backstage/core-components';
 
 const timeFormat: Intl.DateTimeFormatOptions = {
@@ -117,9 +117,9 @@ export const HeaderWorldClock = (props: {
   const { clockConfigs, customTimeFormat } = props;
 
   const defaultTimes: TimeObj[] = [];
-  const [clocks, setTimes] = React.useState(defaultTimes);
+  const [clocks, setTimes] = useState(defaultTimes);
 
-  React.useEffect(() => {
+  useEffect(() => {
     setTimes(getTimes(clockConfigs, customTimeFormat));
 
     const intervalId = setInterval(() => {

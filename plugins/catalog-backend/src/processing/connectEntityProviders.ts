@@ -29,13 +29,14 @@ import {
 
 class Connection implements EntityProviderConnection {
   readonly validateEntityEnvelope = entityEnvelopeSchemaValidator();
+  private readonly config: {
+    id: string;
+    providerDatabase: ProviderDatabase;
+  };
 
-  constructor(
-    private readonly config: {
-      id: string;
-      providerDatabase: ProviderDatabase;
-    },
-  ) {}
+  constructor(config: { id: string; providerDatabase: ProviderDatabase }) {
+    this.config = config;
+  }
 
   async applyMutation(mutation: EntityProviderMutation): Promise<void> {
     const db = this.config.providerDatabase;

@@ -2,7 +2,6 @@
 id: discovery
 title: GitLab Discovery
 sidebar_label: Discovery
-# prettier-ignore
 description: Automatically discovering catalog entities from repositories in GitLab
 ---
 
@@ -28,7 +27,7 @@ yarn --cwd packages/backend add @backstage/plugin-catalog-backend-module-gitlab
 
 Then add the following to your backend initialization:
 
-```ts title="packages/backend/src/index.ts
+```ts title="packages/backend/src/index.ts"
 // optional if you want HTTP endpoints to receive external events
 // backend.add(import('@backstage/plugin-events-backend'));
 // optional if you want to use AWS SQS instead of HTTP endpoints to receive external events
@@ -44,13 +43,15 @@ You need to decide how you want to receive events from external sources like
 
 - [via HTTP endpoint](https://github.com/backstage/backstage/blob/master/plugins/events-backend/README.md#configuration)
 - [via an AWS SQS queue](https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-aws-sqs/README.md)
+- [via Google Pub/Sub](https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-google-pubsub/README.md)
+- [via a Kafka topic](https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-kafka/README.md)
 
 Further documentation:
 
 - [Events Plugin](https://github.com/backstage/backstage/tree/master/plugins/events-backend/README.md)
 - [GitLab Module for the Events Plugin](https://github.com/backstage/backstage/blob/master/plugins/events-backend-module-gitlab/README.md)
 
-### Installation with Legacy Backend System
+### Installation with Legacy Backend System (skip if you are using Backstage v1.31.0 or later)
 
 #### Installation without Events Support
 
@@ -93,6 +94,8 @@ Additionally, you need to decide how you want to receive events from external so
 
 - [via HTTP endpoint](https://github.com/backstage/backstage/tree/master/plugins/events-backend/README.md)
 - [via an AWS SQS queue](https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-aws-sqs/README.md)
+- [via Google Pub/Sub](https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-google-pubsub/README.md)
+- [via a Kafka topic](https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-kafka/README.md)
 
 Set up your provider
 
@@ -152,8 +155,11 @@ catalog:
         skipForkedRepos: false # Optional. If the project is a fork, skip repository
         includeArchivedRepos: false # Optional. If project is archived, include repository
         group: example-group # Optional. Group and subgroup (if needed) to look for repositories. If not present the whole instance will be scanned
+        groupPattern: # Optional. Filters for groups based on a list of RegEx. Default, no filters.
+          - '^somegroup$'
+          - 'anothergroup'
         entityFilename: catalog-info.yaml # Optional. Defaults to `catalog-info.yaml`
-        projectPattern: '[\s\S]*' # Optional. Filters found projects based on provided patter. Defaults to `[\s\S]*`, which means to not filter anything
+        projectPattern: '[\s\S]*' # Optional. Filters found projects based on provided pattern. Defaults to `[\s\S]*`, which means to not filter anything
         excludeRepos: [] # Optional. A list of project paths that should be excluded from discovery, e.g. group/subgroup/repo. Should not start or end with a slash.
         schedule: # Same options as in SchedulerServiceTaskScheduleDefinition. Optional for the Legacy Backend System
           # supports cron, ISO duration, "human duration" as used in code

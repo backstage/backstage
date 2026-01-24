@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-catalog-backend-module-aws",
-  "version": "0.4.9-next.2",
+  "version": "0.4.19",
   "description": "A Backstage catalog backend module that helps integrate towards AWS",
   "backstage": {
     "role": "backend-plugin-module",
@@ -54,7 +54,6 @@
     "@aws-sdk/client-eks": "^3.350.0",
     "@aws-sdk/client-organizations": "^3.350.0",
     "@aws-sdk/client-s3": "^3.350.0",
-    "@aws-sdk/credential-providers": "^3.350.0",
     "@aws-sdk/middleware-endpoint": "^3.347.0",
     "@aws-sdk/types": "^3.347.0",
     "@backstage/backend-defaults": "workspace:^",
@@ -68,8 +67,7 @@
     "@backstage/plugin-catalog-node": "workspace:^",
     "@backstage/plugin-kubernetes-common": "workspace:^",
     "p-limit": "^3.0.2",
-    "uuid": "^11.0.0",
-    "winston": "^3.2.1"
+    "uuid": "^11.0.0"
   },
   "devDependencies": {
     "@aws-sdk/util-stream-node": "^3.350.0",
@@ -77,7 +75,6 @@
     "@backstage/cli": "workspace:^",
     "aws-sdk-client-mock": "^4.0.0",
     "aws-sdk-client-mock-jest": "^4.0.0",
-    "luxon": "^3.0.0",
     "yaml": "^2.0.0"
   },
   "configSchema": "config.d.ts"

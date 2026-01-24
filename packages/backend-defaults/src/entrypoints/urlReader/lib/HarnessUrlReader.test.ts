@@ -35,14 +35,6 @@ const treeResponseFactory = DefaultReadTreeResponseFactory.create({
   config: new ConfigReader({}),
 });
 
-jest.mock('./git', () => ({
-  Git: {
-    fromAuth: () => ({
-      clone: jest.fn(() => Promise.resolve({})),
-    }),
-  },
-}));
-
 const harnessProcessor = new HarnessUrlReader(
   new HarnessIntegration(
     readHarnessConfig(
@@ -223,7 +215,7 @@ describe('HarnessUrlReader', () => {
                 'content-disposition',
                 'attachment; filename=backstage-mock.zip',
               ),
-              ctx.body(repoBuffer),
+              ctx.body(new Uint8Array(repoBuffer)),
             );
           },
         ),

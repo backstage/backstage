@@ -4,6 +4,7 @@
 
 ```ts
 import { AuditorService } from '@backstage/backend-plugin-api';
+import { AuthorizeResult } from '@backstage/plugin-permission-common';
 import { AuthService } from '@backstage/backend-plugin-api';
 import { Backend } from '@backstage/backend-app-api';
 import { BackendFeature } from '@backstage/backend-plugin-api';
@@ -34,6 +35,7 @@ import { PermissionsService } from '@backstage/backend-plugin-api';
 import { RootConfigService } from '@backstage/backend-plugin-api';
 import { RootHealthService } from '@backstage/backend-plugin-api';
 import { RootHttpRouterService } from '@backstage/backend-plugin-api';
+import { RootInstanceMetadataService } from '@backstage/backend-plugin-api';
 import { RootLifecycleService } from '@backstage/backend-plugin-api';
 import { RootLoggerService } from '@backstage/backend-plugin-api';
 import { SchedulerService } from '@backstage/backend-plugin-api';
@@ -88,6 +90,11 @@ export namespace mockCredentials {
   }
   export function user(
     userEntityRef?: string,
+    options?: {
+      actor?: {
+        subject: string;
+      };
+    },
   ): BackstageCredentials<BackstageUserPrincipal>;
   export namespace user {
     export function header(userEntityRef?: string): string;
@@ -95,7 +102,14 @@ export namespace mockCredentials {
     export function invalidHeader(): string;
     // (undocumented)
     export function invalidToken(): string;
-    export function token(userEntityRef?: string): string;
+    export function token(
+      userEntityRef?: string,
+      options?: {
+        actor?: {
+          subject: string;
+        };
+      },
+    ): string;
   }
 }
 
@@ -139,7 +153,10 @@ export interface MockDirectoryContentOptions {
 }
 
 // @public
-export function mockErrorHandler(): ErrorRequestHandler<
+export function mockErrorHandler(
+  _options?: {},
+  ..._args: never[]
+): ErrorRequestHandler<
   ParamsDictionary,
   any,
   any,
@@ -210,14 +227,13 @@ export namespace mockServices {
         partialImpl?: Partial<DiscoveryService> | undefined,
       ) => ServiceMock<DiscoveryService>;
   }
+  export function events(): EventsService;
   // (undocumented)
   export namespace events {
-    const // (undocumented)
-      factory: () => ServiceFactory<EventsService, 'plugin', 'singleton'>;
-    const // (undocumented)
-      mock: (
-        partialImpl?: Partial<EventsService> | undefined,
-      ) => ServiceMock<EventsService>;
+    const factory: () => ServiceFactory<EventsService, 'plugin', 'singleton'>;
+    const mock: (
+      partialImpl?: Partial<EventsService> | undefined,
+    ) => ServiceMock<EventsService>;
   }
   export function httpAuth(options?: {
     pluginId?: string;
@@ -260,14 +276,17 @@ export namespace mockServices {
         partialImpl?: Partial<LoggerService> | undefined,
       ) => ServiceMock<LoggerService>;
   }
+  export function permissions(options?: {
+    result: AuthorizeResult.ALLOW | AuthorizeResult.DENY;
+  }): PermissionsService;
   // (undocumented)
   export namespace permissions {
-    const // (undocumented)
-      factory: () => ServiceFactory<PermissionsService, 'plugin', 'singleton'>;
-    const // (undocumented)
-      mock: (
-        partialImpl?: Partial<PermissionsService> | undefined,
-      ) => ServiceMock<PermissionsService>;
+    const factory: (options?: {
+      result: AuthorizeResult.ALLOW | AuthorizeResult.DENY;
+    }) => ServiceFactory<PermissionsService, 'plugin', 'singleton'>;
+    const mock: (
+      partialImpl?: Partial<PermissionsService> | undefined,
+    ) => ServiceMock<PermissionsService>;
   }
   // (undocumented)
   export namespace permissionsRegistry {
@@ -283,7 +302,11 @@ export namespace mockServices {
       ) => ServiceMock<PermissionsRegistryService>;
   }
   // (undocumented)
-  export function rootConfig(options?: rootConfig.Options): RootConfigService;
+  export function rootConfig(
+    options?: rootConfig.Options,
+  ): RootConfigService & {
+    update(options: { data: JsonObject }): void;
+  };
   // (undocumented)
   export namespace rootConfig {
     // (undocumented)
@@ -293,7 +316,7 @@ export namespace mockServices {
     const // (undocumented)
       factory: (
         options?: Options | undefined,
-      ) => ServiceFactory<RootConfigService, 'root', 'singleton' | 'multiton'>;
+      ) => ServiceFactory<RootConfigService, 'root', 'singleton'>;
     const // (undocumented)
       mock: (
         partialImpl?: Partial<RootConfigService> | undefined,
@@ -318,6 +341,21 @@ export namespace mockServices {
       ) => ServiceMock<RootHttpRouterService>;
   }
   // (undocumented)
+  export function rootInstanceMetadata(): RootInstanceMetadataService;
+  // (undocumented)
+  export namespace rootInstanceMetadata {
+    const // (undocumented)
+      mock: (
+        partialImpl?: Partial<RootInstanceMetadataService> | undefined,
+      ) => ServiceMock<RootInstanceMetadataService>;
+    const // (undocumented)
+      factory: () => ServiceFactory<
+        RootInstanceMetadataService,
+        'root',
+        'singleton'
+      >;
+  }
+  // (undocumented)
   export namespace rootLifecycle {
     const // (undocumented)
       factory: () => ServiceFactory<RootLifecycleService, 'root', 'singleton'>;
@@ -327,7 +365,7 @@ export namespace mockServices {
       ) => ServiceMock<RootLifecycleService>;
   }
   // (undocumented)
-  export function rootLogger(options?: rootLogger.Options): LoggerService;
+  export function rootLogger(options?: rootLogger.Options): RootLoggerService;
   // (undocumented)
   export namespace rootLogger {
     // (undocumented)
@@ -337,16 +375,22 @@ export namespace mockServices {
     const // (undocumented)
       factory: (
         options?: Options | undefined,
-      ) => ServiceFactory<LoggerService, 'root', 'singleton' | 'multiton'>;
+      ) => ServiceFactory<RootLoggerService, 'root', 'singleton'>;
     const // (undocumented)
       mock: (
         partialImpl?: Partial<RootLoggerService> | undefined,
       ) => ServiceMock<RootLoggerService>;
   }
   // (undocumented)
+  export function scheduler(): SchedulerService;
+  // (undocumented)
   export namespace scheduler {
     const // (undocumented)
-      factory: () => ServiceFactory<SchedulerService, 'plugin', 'singleton'>;
+      factory: (options?: {
+        skipTaskRunOnStartup?: boolean;
+        includeManualTasksOnStartup?: boolean;
+        includeInitialDelayedTasksOnStartup?: boolean;
+      }) => ServiceFactory<SchedulerService, 'plugin', 'singleton'>;
     const // (undocumented)
       mock: (
         partialImpl?: Partial<SchedulerService> | undefined,
@@ -455,7 +499,7 @@ export interface TestBackendOptions<TExtensionPoints extends any[]> {
 }
 
 // @public
-export type TestCacheId = 'MEMORY' | 'REDIS_7' | 'MEMCACHED_1';
+export type TestCacheId = 'MEMORY' | 'REDIS_7' | 'VALKEY_8' | 'MEMCACHED_1';
 
 // @public
 export class TestCaches {
@@ -478,6 +522,8 @@ export class TestCaches {
 
 // @public
 export type TestDatabaseId =
+  | 'POSTGRES_18'
+  | 'POSTGRES_17'
   | 'POSTGRES_16'
   | 'POSTGRES_15'
   | 'POSTGRES_14'

@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-catalog-backend-module-openapi",
-  "version": "0.2.8-next.2",
+  "version": "0.2.18",
   "description": "A Backstage catalog backend module that helps with OpenAPI specifications",
   "backstage": {
     "role": "backend-plugin-module",
@@ -37,7 +37,7 @@
     "test": "backstage-cli package test"
   },
   "dependencies": {
-    "@apidevtools/json-schema-ref-parser": "^11.0.0",
+    "@apidevtools/json-schema-ref-parser": "^14.2.1",
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/catalog-model": "workspace:^",
     "@backstage/integration": "workspace:^",

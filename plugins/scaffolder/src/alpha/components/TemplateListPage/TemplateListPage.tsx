@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useCallback } from 'react';
+import { ComponentType, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { TemplateEntityV1beta3 } from '@backstage/plugin-scaffolder-common';
 import { useApp, useRouteRef } from '@backstage/core-plugin-api';
@@ -49,6 +49,7 @@ import {
   registerComponentRouteRef,
   scaffolderListTaskRouteRef,
   selectedTemplateRouteRef,
+  templatingExtensionsRouteRef,
   viewTechDocRouteRef,
 } from '../../../routes';
 import { parseEntityRef, stringifyEntityRef } from '@backstage/catalog-model';
@@ -58,12 +59,17 @@ import {
   useTranslationRef,
 } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../../translation';
+import { buildTechDocsURL } from '@backstage/plugin-techdocs-react';
+import {
+  TECHDOCS_ANNOTATION,
+  TECHDOCS_EXTERNAL_ANNOTATION,
+} from '@backstage/plugin-techdocs-common';
 
 /**
  * @alpha
  */
 export type TemplateListPageProps = {
-  TemplateCardComponent?: React.ComponentType<{
+  TemplateCardComponent?: ComponentType<{
     template: TemplateEntityV1beta3;
   }>;
   groups?: TemplateGroupFilter[];
@@ -72,6 +78,7 @@ export type TemplateListPageProps = {
     editor?: boolean;
     actions?: boolean;
     tasks?: boolean;
+    templatingExtensions?: boolean;
   };
   headerOptions?: {
     pageTitleOverride?: string;
@@ -108,6 +115,7 @@ export const TemplateListPage = (props: TemplateListPageProps) => {
   const tasksLink = useRouteRef(scaffolderListTaskRouteRef);
   const viewTechDocsLink = useRouteRef(viewTechDocRouteRef);
   const templateRoute = useRouteRef(selectedTemplateRouteRef);
+  const templatingExtensionsLink = useRouteRef(templatingExtensionsRouteRef);
   const app = useApp();
   const { t } = useTranslationRef(scaffolderTranslationRef);
 
@@ -133,22 +141,33 @@ export const TemplateListPage = (props: TemplateListPageProps) => {
       props?.contextMenu?.tasks !== false
         ? () => navigate(tasksLink())
         : undefined,
+    onTemplatingExtensionsClicked:
+      props?.contextMenu?.templatingExtensions !== false
+        ? () => navigate(templatingExtensionsLink())
+        : undefined,
   };
 
   const additionalLinksForEntity = useCallback(
     (template: TemplateEntityV1beta3) => {
-      const { kind, namespace, name } = parseEntityRef(
-        stringifyEntityRef(template),
-      );
-      return template.metadata.annotations?.['backstage.io/techdocs-ref'] &&
-        viewTechDocsLink
+      if (
+        !(
+          template.metadata.annotations?.[TECHDOCS_ANNOTATION] ||
+          template.metadata.annotations?.[TECHDOCS_EXTERNAL_ANNOTATION]
+        ) ||
+        !viewTechDocsLink
+      ) {
+        return [];
+      }
+
+      const url = buildTechDocsURL(template, viewTechDocsLink);
+      return url
         ? [
             {
               icon: app.getSystemIcon('docs') ?? DocsIcon,
               text: t(
                 'templateListPage.additionalLinksForEntity.viewTechDocsTitle',
               ),
-              url: viewTechDocsLink({ kind, namespace, name }),
+              url,
             },
           ]
         : [];

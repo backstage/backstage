@@ -1,5 +1,1028 @@
 # @backstage/frontend-plugin-api
 
+## 0.13.3
+
+### Patch Changes
+
+- 3bd2a1a: Updated documentation for `createApiRef` to clarify the role of the ID in specifying the owning plugin of an API.
+- 9ccf84e: The following blueprints are being restricted to only be used in app plugin overrides and modules. They are being moved to the `@backstage/plugin-app-react` package and have been deprecated:
+
+  - `AppRootWrapperBlueprint`
+  - `IconBundleBlueprint`
+  - `NavContentBlueprint`
+  - `RouterBlueprint`
+  - `SignInPageBlueprint`
+  - `SwappableComponentBlueprint`
+  - `ThemeBlueprint`
+  - `TranslationBlueprint`
+
+- 4554a4e: Added an alpha `PluginWrapperBlueprint` exported from `@backstage/frontend-plugin-api/alpha`, which can install components that will wrap all plugin elements.
+- 872eb91: Upgrade `zod-to-json-schema` to latest version
+
+## 0.13.2
+
+### Patch Changes
+
+- 75683ed: Added a new `errorPresentation` prop to `ExtensionBoundary` to control how errors are presented to the user. The default is `'error-display'`, which is the current behavior of showing the error in the `ErrorDisplay` component. The new option is `'error-api'`, posts errors to the `ErrorApi` and does not allow retries.
+
+  The `AppRootElementBlueprint` now wraps its element in an `ErrorBoundary` using the new `'error-api'` presentation mode.
+
+- 0bc1ce9: Fixed a versioning conflict that could result in a `.withContext` is not a function error.
+- f3f84f1: Made the return type of `.withOverrides` to be simplified.
+- 97cd16f: Reversed the relationship between the old `@backstage/core-plugin-api` and the new `@backstage/frontend-plugin-api`. Previously, the a lot of API definitions and utilities where defined in the old and re-exported from the old, but this change flips that around so that they now reside in the new package and are re-exported from the old. The external API of both packages remain the same, but this is a step towards being able to add further compatibility with the new frontend system built into the old.
+- 9b8bde4: Removed unnecessary dependencies on `@backstage/core-components`, `@backstage/config`, `@material-ui/core`, and `lodash`.
+
+## 0.13.2-next.1
+
+### Patch Changes
+
+- 75683ed: Added a new `errorPresentation` prop to `ExtensionBoundary` to control how errors are presented to the user. The default is `'error-display'`, which is the current behavior of showing the error in the `ErrorDisplay` component. The new option is `'error-api'`, posts errors to the `ErrorApi` and does not allow retries.
+
+  The `AppRootElementBlueprint` now wraps its element in an `ErrorBoundary` using the new `'error-api'` presentation mode.
+
+- f3f84f1: Made the return type of `.withOverrides` to be simplified.
+- Updated dependencies
+  - @backstage/core-components@0.18.4-next.2
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.11
+
+## 0.13.2-next.0
+
+### Patch Changes
+
+- 0bc1ce9: Fixed a versioning conflict that could result in a `.withContext` is not a function error.
+- 97cd16f: Reversed the relationship between the old `@backstage/core-plugin-api` and the new `@backstage/frontend-plugin-api`. Previously, the a lot of API definitions and utilities where defined in the old and re-exported from the old, but this change flips that around so that they now reside in the new package and are re-exported from the old. The external API of both packages remain the same, but this is a step towards being able to add further compatibility with the new frontend system built into the old.
+- Updated dependencies
+  - @backstage/core-components@0.18.4-next.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.11
+
+## 0.13.0
+
+### Minor Changes
+
+- 7d87b4f: Renamed `ExtensionDefinition` to `OverridableExtensionDefinition` and introduced a slimmer `ExtensionDefinition` type that does not include override methods. The overridable type is generally used as an output type, while plain `ExtensionDefinition`s are used for input. This reduces type conflicts across different of `@backstage/frontend-plugin-api`, improving long-term compatibility.
+
+### Patch Changes
+
+- 4d03f08: Internal refactor of route reference implementations with minor updates to the `toString` implementations.
+- 7c6a66d: Added support for plugin-relative `attachTo` declarations for extension definitions. This allows for the creation of extension and extension blueprints that attach to other extensions of a particular `kind` in the same plugin, rather than needing to provide the exact extension ID. This is particularly useful when wanting to provide extension blueprints with a built-in hierarchy where the extensions created from one blueprint attach to extensions created from the other blueprint, for example:
+
+  ```ts
+  // kind: 'tabbed-page'
+  const parentPage = TabbedPageBlueprint.make({
+    params: {....}
+  })
+  // attachTo: { kind: 'tabbed-page', input: 'tabs' }
+  const child1 = TabContentBlueprint.make({
+    name: 'tab1',
+    params: {....}
+  })
+  ```
+
+- 878c251: Updated to `ExtensionInput` to make all type parameters optional.
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/core-components@0.18.3
+  - @backstage/core-plugin-api@1.12.0
+
+## 0.12.2-next.2
+
+### Patch Changes
+
+- 7c6a66d: Added support for plugin-relative `attachTo` declarations for extension definitions. This allows for the creation of extension and extension blueprints that attach to other extensions of a particular `kind` in the same plugin, rather than needing to provide the exact extension ID. This is particularly useful when wanting to provide extension blueprints with a built-in hierarchy where the extensions created from one blueprint attach to extensions created from the other blueprint, for example:
+
+  ```ts
+  // kind: 'tabbed-page'
+  const parentPage = TabbedPageBlueprint.make({
+    params: {....}
+  })
+  // attachTo: { kind: 'tabbed-page', input: 'tabs' }
+  const child1 = TabContentBlueprint.make({
+    name: 'tab1',
+    params: {....}
+  })
+  ```
+
+- Updated dependencies
+  - @backstage/core-components@0.18.3-next.2
+
+## 0.12.2-next.1
+
+### Patch Changes
+
+- 878c251: Updated to `ExtensionInput` to make all type parameters optional.
+- Updated dependencies
+  - @backstage/core-components@0.18.3-next.1
+  - @backstage/core-plugin-api@1.11.2-next.1
+
+## 0.12.2-next.0
+
+### Patch Changes
+
+- 05f60e1: Refactored constructor parameter properties to explicit property declarations for compatibility with TypeScript's `erasableSyntaxOnly` setting. This internal refactoring maintains all existing functionality while ensuring TypeScript compilation compatibility.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.11.2-next.0
+  - @backstage/core-components@0.18.3-next.0
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.11
+
+## 0.12.1
+
+### Patch Changes
+
+- 8ed53eb: Added `coreExtensionData.title`, especially useful for creating extensible layout with tabbed pages, but available for use for other cases too.
+- Updated dependencies
+  - @backstage/core-components@0.18.2
+  - @backstage/core-plugin-api@1.11.1
+
+## 0.12.1-next.2
+
+### Patch Changes
+
+- 8ed53eb: Added `coreExtensionData.title`, especially useful for creating extensible layout with tabbed pages, but available for use for other cases too.
+- Updated dependencies
+  - @backstage/core-components@0.18.2-next.3
+
+## 0.12.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.2-next.1
+  - @backstage/core-plugin-api@1.11.1-next.0
+
+## 0.12.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.2-next.0
+  - @backstage/core-plugin-api@1.11.0
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.11
+
+## 0.12.0
+
+### Minor Changes
+
+- 894d514: Make `openshiftApiRef` available to the new frontend system.
+
+### Patch Changes
+
+- 2fb8b04: Improved the types of `createFrontendPlugin` and `createFrontendModule` so that errors due to incompatible options are indicated more clearly.
+- Updated dependencies
+  - @backstage/core-plugin-api@1.11.0
+  - @backstage/core-components@0.18.0
+  - @backstage/types@1.2.2
+
+## 0.11.1-next.0
+
+### Patch Changes
+
+- 2fb8b04: Improved the types of `createFrontendPlugin` and `createFrontendModule` so that errors due to incompatible options are indicated more clearly.
+- Updated dependencies
+  - @backstage/core-components@0.17.6-next.0
+
+## 0.11.0
+
+### Minor Changes
+
+- c5f88b5: **BREAKING**: Remove deprecated `source` property from the `AppNodeSpec` type, use `AppNodeSpec.plugin` instead.
+- e4ddf22: **BREAKING**: The `defaultPath` param of `PageBlueprint` has been renamed to `path`. This change does not affect the compatibility of extensions created with older versions of this blueprint.
+- fda1bbc: **BREAKING**: The component system has been overhauled to use `SwappableComponent` instead of `ComponentRef`. Several APIs have been removed and replaced:
+
+  - Removed: `createComponentRef`, `createComponentExtension`, `ComponentRef`, `ComponentsApi`, `componentsApiRef`, `useComponentRef`, `coreComponentRefs`
+  - Added: `createSwappableComponent`, `SwappableComponentBlueprint`, `SwappableComponentRef`, `SwappableComponentsApi`, `swappableComponentsApiRef`
+
+  **BREAKING**: The default `componentRefs` and exported `Core*Props` have been removed and have replacement `SwappableComponents` and revised type names instead.
+
+  - The `errorBoundaryFallback` component and `CoreErrorBoundaryFallbackProps` type have been replaced with `ErrorDisplay` swappable component and `CoreErrorDisplayProps` respectively.
+  - The `progress` component and `CoreProgressProps` type have been replaced with `Progress` swappable component and `ProgressProps` respectively.
+  - The `notFoundErrorPage` component and `CoreNotFoundErrorPageProps` type have been replaced with `NotFoundErrorPage` swappable component and `NotFoundErrorPageProps` respectively.
+
+  **Migration for creating swappable components:**
+
+  ```tsx
+  // OLD: Using createComponentRef and createComponentExtension
+  import {
+    createComponentRef,
+    createComponentExtension,
+  } from '@backstage/frontend-plugin-api';
+
+  const myComponentRef = createComponentRef<{ title: string }>({
+    id: 'my-plugin.my-component',
+  });
+
+  const myComponentExtension = createComponentExtension({
+    ref: myComponentRef,
+    loader: {
+      lazy: () => import('./MyComponent').then(m => m.MyComponent),
+    },
+  });
+
+  // NEW: Using createSwappableComponent and SwappableComponentBlueprint
+  import {
+    createSwappableComponent,
+    SwappableComponentBlueprint,
+  } from '@backstage/frontend-plugin-api';
+
+  const MySwappableComponent = createSwappableComponent({
+    id: 'my-plugin.my-component',
+    loader: () => import('./MyComponent').then(m => m.MyComponent),
+  });
+
+  const myComponentExtension = SwappableComponentBlueprint.make({
+    name: 'my-component',
+    params: {
+      component: MySwappableComponent,
+      loader: () => import('./MyComponent').then(m => m.MyComponent),
+    },
+  });
+  ```
+
+  **Migration for using components:**
+
+  ```tsx
+  // OLD: Using ComponentsApi and useComponentRef
+  import {
+    useComponentRef,
+    componentsApiRef,
+    useApi,
+    coreComponentRefs,
+  } from '@backstage/frontend-plugin-api';
+
+  const MyComponent = useComponentRef(myComponentRef);
+  const ProgressComponent = useComponentRef(coreComponentRefs.progress);
+
+
+  // NEW: Direct component usage
+  import { Progress } from '@backstage/frontend-plugin-api';
+
+  // Use directly as React Component
+  <Progress />
+  <MySwappableComponent title="Hello World" />
+  ```
+
+  **Migration for core component references:**
+
+  ```tsx
+  // OLD: Core component refs
+  import { coreComponentRefs } from '@backstage/frontend-plugin-api';
+
+  coreComponentRefs.progress
+  coreComponentRefs.notFoundErrorPage
+  coreComponentRefs.errorBoundaryFallback
+
+  // NEW: Direct swappable component imports
+  import { Progress, NotFoundErrorPage, ErrorDisplay } from '@backstage/frontend-plugin-api';
+
+  // Use directly as React components
+  <Progress />
+  <NotFoundErrorPage />
+  <ErrorDisplay plugin={plugin} error={error} resetError={resetError} />
+  ```
+
+- 6a75e00: **BREAKING**: Removed the deprecated `createFrontendPlugin` variant where the plugin ID is passed via an `id` option. To update existing code, switch to using the `pluginId` option instead.
+- 12b6db7: **BREAKING**: Added a new `OverridableFrontendPlugin` type that is used as the return value of `createFrontendPlugin`. This type includes the `withOverrides` and `.getExtension` methods that are helpful when creating plugin overrides, while the base `FrontendPlugin` type no longer includes these methods. This is a breaking change for the `AppTreeApi` and some other places where the `FrontendPlugin` type is still used, but also fixes some cases where the extra plugin methods were causing issues.
+- 37f2989: **BREAKING**: Removed the `routable` property from `ExtensionBoundary`. This property was never needed in practice and is instead inferred from whether or not the extension outputs a route reference. It can be safely removed.
+- 1e6410b: **BREAKING**: The `ResolveInputValueOverrides` type is no longer exported.
+- 29786f6: **BREAKING**: The `NavLogoBlueprint` has been removed and replaced by `NavContentBlueprint`, which instead replaces the entire navbar. The default navbar has also been switched to a more minimal implementation.
+
+  To use `NavContentBlueprint` to install new logos, you can use it as follows:
+
+  ```tsx
+  NavContentBlueprint.make({
+    params: {
+      component: ({ items }) => {
+        return compatWrapper(
+          <Sidebar>
+            <SidebarLogo />
+
+            {/* Other sidebar content */}
+
+            <SidebarScrollWrapper>
+              {items.map((item, index) => (
+                <SidebarItem {...item} key={index} />
+              ))}
+            </SidebarScrollWrapper>
+
+            {/* Other sidebar content */}
+          </Sidebar>,
+        );
+      },
+    },
+  });
+  ```
+
+- 3243fa6: **BREAKING**: Removed the ability to define a default extension `name` in blueprints. This option had no practical purpose as blueprints already use the `kind` to identity the source of the extension.
+- a082429: **BREAKING**: The separate `RouteResolutionApiResolveOptions` type has been removed.
+- 5d31d66: **BREAKING**: In an attempt to align some of the API's around providing components to `Blueprints`, we've renamed the parameters for both the `RouterBlueprint` and `AppRootWrapperBlueprint` from `Component` to `component`.
+
+  ```tsx
+  // old
+  RouterBlueprint.make({
+    params: {
+      Component: ({ children }) => <div>{children}</div>,
+    },
+  });
+
+  // new
+  RouterBlueprint.make({
+    params: {
+      component: ({ children }) => <div>{children}</div>,
+    },
+  });
+  ```
+
+  ```tsx
+  // old
+  AppRootWrapperBlueprint.make({
+    params: {
+      Component: ({ children }) => <div>{children}</div>,
+    },
+  });
+
+  // new
+  AppRootWrapperBlueprint.make({
+    params: {
+      component: ({ children }) => <div>{children}</div>,
+    },
+  });
+  ```
+
+  As part of this change, the type for `component` has also changed from `ComponentType<PropsWithChildren<{}>>` to `(props: { children: ReactNode }) => JSX.Element | null` which is not breaking, just a little more reflective of the actual expected component.
+
+- 45ead4a: **BREAKING**: The `AnyRoutes` and `AnyExternalRoutes` types have been removed and their usage has been inlined instead.
+
+  Existing usage can be replaced according to their previous definitions:
+
+  ```ts
+  type AnyRoutes = { [name in string]: RouteRef | SubRouteRef };
+  type AnyExternalRoutes = { [name in string]: ExternalRouteRef };
+  ```
+
+- 805c298: **BREAKING**: The `ApiBlueprint` has been updated to use the new advanced type parameters through the new `defineParams` blueprint option. This is an immediate breaking change that requires all existing usages of `ApiBlueprint` to switch to the new callback format. Existing extensions created with the old format are still compatible with the latest version of the plugin API however, meaning that this does not break existing plugins.
+
+  To update existing usages of `ApiBlueprint`, you remove the outer level of the `params` object and replace `createApiFactory(...)` with `defineParams => defineParams(...)`.
+
+  For example, the following old usage:
+
+  ```ts
+  ApiBlueprint.make({
+    name: 'error',
+    params: {
+      factory: createApiFactory({
+        api: errorApiRef,
+        deps: { alertApi: alertApiRef },
+        factory: ({ alertApi }) => {
+          return ...;
+        },
+      })
+    },
+  })
+  ```
+
+  is migrated to the following:
+
+  ```ts
+  ApiBlueprint.make({
+    name: 'error',
+    params: defineParams =>
+      defineParams({
+        api: errorApiRef,
+        deps: { alertApi: alertApiRef },
+        factory: ({ alertApi }) => {
+          return ...;
+        },
+      }),
+  })
+  ```
+
+- 805c298: Added support for advanced parameter types in extension blueprints. The primary purpose of this is to allow extension authors to use type inference in the definition of the blueprint parameters. This often removes the need for extra imports and improves discoverability of blueprint parameters.
+
+  This feature is introduced through the new `defineParams` option of `createExtensionBlueprint`, along with accompanying `createExtensionBlueprintParams` function to help implement the new format.
+
+  The following is an example of how to create an extension blueprint that uses the new option:
+
+  ```ts
+  const ExampleBlueprint = createExtensionBlueprint({
+    kind: 'example',
+    attachTo: { id: 'example', input: 'example' },
+    output: [exampleComponentDataRef, exampleFetcherDataRef],
+    defineParams<T>(params: {
+      component(props: ExampleProps<T>): JSX.Element | null;
+      fetcher(options: FetchOptions): Promise<FetchResult<T>>;
+    }) {
+      // The returned params must be wrapped with `createExtensionBlueprintParams`
+      return createExtensionBlueprintParams(params);
+    },
+    *factory(params) {
+      // These params are now inferred
+      yield exampleComponentDataRef(params.component);
+      yield exampleFetcherDataRef(params.fetcher);
+    },
+  });
+  ```
+
+  Usage of the above example looks as follows:
+
+  ```ts
+  const example = ExampleBlueprint.make({
+    params: defineParams => defineParams({
+      component: ...,
+      fetcher: ...,
+    }),
+  });
+  ```
+
+  This `defineParams => defineParams(<params>)` is also known as the "callback syntax" and is required if a blueprint is created with the new `defineParams` option. The callback syntax can also optionally be used for other blueprints too, which means that it is not a breaking change to remove the `defineParams` option, as long as the external parameter types remain compatible.
+
+- 121899a: **BREAKING**: The `element` param for `AppRootElementBlueprint` no longer accepts a component. If you are currently passing a component such as `element: () => <MyComponent />` or `element: MyComponent`, simply switch to `element: <MyComponent />`.
+- a321f3b: **BREAKING**: The `CommonAnalyticsContext` has been removed, and inlined into `AnalyticsContextValue` instead.
+
+### Patch Changes
+
+- d9e00e3: Add support for a new `aliasFor` option for `createRouteRef`. This allows for the creation of a new route ref that acts as an alias for an existing route ref that is installed in the app. This is particularly useful when creating modules that override existing plugin pages, without referring to the existing plugin. For example:
+
+  ```tsx
+  export default createFrontendModule({
+    pluginId: 'catalog',
+    extensions: [
+      PageBlueprint.make({
+        params: {
+          defaultPath: '/catalog',
+          routeRef: createRouteRef({ aliasFor: 'catalog.catalogIndex' }),
+          loader: () =>
+            import('./CustomCatalogIndexPage').then(m => (
+              <m.CustomCatalogIndexPage />
+            )),
+        },
+      }),
+    ],
+  });
+  ```
+
+- 93b5e38: Plugins should now use the new `AnalyticsImplementationBlueprint` to define and provide concrete analytics implementations. For example:
+
+  ```ts
+  import { AnalyticsImplementationBlueprint } from '@backstage/frontend-plugin-api';
+
+  const AcmeAnalytics = AnalyticsImplementationBlueprint.make({
+    name: 'acme-analytics',
+    params: define =>
+      define({
+        deps: { config: configApiRef },
+        factory: ({ config }) => AcmeAnalyticsImpl.fromConfig(config),
+      }),
+  });
+  ```
+
+- 948de17: Tweaked the return types from `createExtension` and `createExtensionBlueprint` to avoid the forwarding of `ConfigurableExtensionDataRef` into exported types.
+- 147482b: Updated the recommended naming of the blueprint param callback from `define` to `defineParams`, making the syntax `defineParams => defineParams(...)`.
+- 3c3c882: Added added defaults for all type parameters of `ExtensionDataRef` and deprecated `AnyExtensionDataRef`, as it is now redundant.
+- 9831f4e: Adjusted the dialog API types to have more sensible defaults
+- 1c2cc37: Improved runtime error message clarity when extension factories don't return an iterable object.
+- 24558f0: Added inline documentation for `createExtension`, `createExtensionBlueprint`, `createFrontendPlugin`, and `createFrontendModule`.
+- Updated dependencies
+  - @backstage/core-components@0.17.5
+
+## 0.11.0-next.2
+
+### Minor Changes
+
+- fda1bbc: **BREAKING**: The component system has been overhauled to use `SwappableComponent` instead of `ComponentRef`. Several APIs have been removed and replaced:
+
+  - Removed: `createComponentRef`, `createComponentExtension`, `ComponentRef`, `ComponentsApi`, `componentsApiRef`, `useComponentRef`, `coreComponentRefs`
+  - Added: `createSwappableComponent`, `SwappableComponentBlueprint`, `SwappableComponentRef`, `SwappableComponentsApi`, `swappableComponentsApiRef`
+
+  **BREAKING**: The default `componentRefs` and exported `Core*Props` have been removed and have replacement `SwappableComponents` and revised type names instead.
+
+  - The `errorBoundaryFallback` component and `CoreErrorBoundaryFallbackProps` type have been replaced with `ErrorDisplay` swappable component and `CoreErrorDisplayProps` respectively.
+  - The `progress` component and `CoreProgressProps` type have been replaced with `Progress` swappable component and `ProgressProps` respectively.
+  - The `notFoundErrorPage` component and `CoreNotFoundErrorPageProps` type have been replaced with `NotFoundErrorPage` swappable component and `NotFoundErrorPageProps` respectively.
+
+  **Migration for creating swappable components:**
+
+  ```tsx
+  // OLD: Using createComponentRef and createComponentExtension
+  import {
+    createComponentRef,
+    createComponentExtension,
+  } from '@backstage/frontend-plugin-api';
+
+  const myComponentRef = createComponentRef<{ title: string }>({
+    id: 'my-plugin.my-component',
+  });
+
+  const myComponentExtension = createComponentExtension({
+    ref: myComponentRef,
+    loader: {
+      lazy: () => import('./MyComponent').then(m => m.MyComponent),
+    },
+  });
+
+  // NEW: Using createSwappableComponent and SwappableComponentBlueprint
+  import {
+    createSwappableComponent,
+    SwappableComponentBlueprint,
+  } from '@backstage/frontend-plugin-api';
+
+  const MySwappableComponent = createSwappableComponent({
+    id: 'my-plugin.my-component',
+    loader: () => import('./MyComponent').then(m => m.MyComponent),
+  });
+
+  const myComponentExtension = SwappableComponentBlueprint.make({
+    name: 'my-component',
+    params: {
+      component: MySwappableComponent,
+      loader: () => import('./MyComponent').then(m => m.MyComponent),
+    },
+  });
+  ```
+
+  **Migration for using components:**
+
+  ```tsx
+  // OLD: Using ComponentsApi and useComponentRef
+  import {
+    useComponentRef,
+    componentsApiRef,
+    useApi,
+    coreComponentRefs,
+  } from '@backstage/frontend-plugin-api';
+
+  const MyComponent = useComponentRef(myComponentRef);
+  const ProgressComponent = useComponentRef(coreComponentRefs.progress);
+
+
+  // NEW: Direct component usage
+  import { Progress } from '@backstage/frontend-plugin-api';
+
+  // Use directly as React Component
+  <Progress />
+  <MySwappableComponent title="Hello World" />
+  ```
+
+  **Migration for core component references:**
+
+  ```tsx
+  // OLD: Core component refs
+  import { coreComponentRefs } from '@backstage/frontend-plugin-api';
+
+  coreComponentRefs.progress
+  coreComponentRefs.notFoundErrorPage
+  coreComponentRefs.errorBoundaryFallback
+
+  // NEW: Direct swappable component imports
+  import { Progress, NotFoundErrorPage, ErrorDisplay } from '@backstage/frontend-plugin-api';
+
+  // Use directly as React components
+  <Progress />
+  <NotFoundErrorPage />
+  <ErrorDisplay plugin={plugin} error={error} resetError={resetError} />
+  ```
+
+- 6a75e00: **BREAKING**: Removed the deprecated `createFrontendPlugin` variant where the plugin ID is passed via an `id` option. To update existing code, switch to using the `pluginId` option instead.
+- 1e6410b: **BREAKING**: The `ResolveInputValueOverrides` type is no longer exported.
+
+### Patch Changes
+
+- 9831f4e: Adjusted the dialog API types to have more sensible defaults
+- 1c2cc37: Improved runtime error message clarity when extension factories don't return an iterable object.
+- 24558f0: Added inline documentation for `createExtension`, `createExtensionBlueprint`, `createFrontendPlugin`, and `createFrontendModule`.
+- Updated dependencies
+  - @backstage/core-components@0.17.5-next.2
+
+## 0.11.0-next.1
+
+### Minor Changes
+
+- c5f88b5: **BREAKING**: Remove deprecated `source` property from the `AppNodeSpec` type, use `AppNodeSpec.plugin` instead.
+- e4ddf22: **BREAKING**: The `defaultPath` param of `PageBlueprint` has been renamed to `path`. This change does not affect the compatibility of extensions created with older versions of this blueprint.
+- 37f2989: **BREAKING**: Removed the `routable` property from `ExtensionBoundary`. This property was never needed in practice and is instead inferred from whether or not the extension outputs a route reference. It can be safely removed.
+- 3243fa6: **BREAKING**: Removed the ability to define a default extension `name` in blueprints. This option had no practical purpose as blueprints already use the `kind` to identity the source of the extension.
+- a082429: **BREAKING**: The separate `RouteResolutionApiResolveOptions` type has been removed.
+- 5d31d66: **BREAKING**: In an attempt to align some of the API's around providing components to `Blueprints`, we've renamed the parameters for both the `RouterBlueprint` and `AppRootWrapperBlueprint` from `Component` to `component`.
+
+  ```tsx
+  // old
+  RouterBlueprint.make({
+    params: {
+      Component: ({ children }) => <div>{children}</div>,
+    },
+  });
+
+  // new
+  RouterBlueprint.make({
+    params: {
+      component: ({ children }) => <div>{children}</div>,
+    },
+  });
+  ```
+
+  ```tsx
+  // old
+  AppRootWrapperBlueprint.make({
+    params: {
+      Component: ({ children }) => <div>{children}</div>,
+    },
+  });
+
+  // new
+  AppRootWrapperBlueprint.make({
+    params: {
+      component: ({ children }) => <div>{children}</div>,
+    },
+  });
+  ```
+
+  As part of this change, the type for `component` has also changed from `ComponentType<PropsWithChildren<{}>>` to `(props: { children: ReactNode }) => JSX.Element | null` which is not breaking, just a little more reflective of the actual expected component.
+
+- 45ead4a: **BREAKING**: The `AnyRoutes` and `AnyExternalRoutes` types have been removed and their usage has been inlined instead.
+
+  Existing usage can be replaced according to their previous definitions:
+
+  ```ts
+  type AnyRoutes = { [name in string]: RouteRef | SubRouteRef };
+  type AnyExternalRoutes = { [name in string]: ExternalRouteRef };
+  ```
+
+- 121899a: **BREAKING**: The `element` param for `AppRootElementBlueprint` no longer accepts a component. If you are currently passing a component such as `element: () => <MyComponent />` or `element: MyComponent`, simply switch to `element: <MyComponent />`.
+- a321f3b: **BREAKING**: The `CommonAnalyticsContext` has been removed, and inlined into `AnalyticsContextValue` instead.
+
+### Patch Changes
+
+- d9e00e3: Add support for a new `aliasFor` option for `createRouteRef`. This allows for the creation of a new route ref that acts as an alias for an existing route ref that is installed in the app. This is particularly useful when creating modules that override existing plugin pages, without referring to the existing plugin. For example:
+
+  ```tsx
+  export default createFrontendModule({
+    pluginId: 'catalog',
+    extensions: [
+      PageBlueprint.make({
+        params: {
+          defaultPath: '/catalog',
+          routeRef: createRouteRef({ aliasFor: 'catalog.catalogIndex' }),
+          loader: () =>
+            import('./CustomCatalogIndexPage').then(m => (
+              <m.CustomCatalogIndexPage />
+            )),
+        },
+      }),
+    ],
+  });
+  ```
+
+- 93b5e38: Plugins should now use the new `AnalyticsImplementationBlueprint` to define and provide concrete analytics implementations. For example:
+
+  ```ts
+  import { AnalyticsImplementationBlueprint } from '@backstage/frontend-plugin-api';
+
+  const AcmeAnalytics = AnalyticsImplementationBlueprint.make({
+    name: 'acme-analytics',
+    params: define =>
+      define({
+        deps: { config: configApiRef },
+        factory: ({ config }) => AcmeAnalyticsImpl.fromConfig(config),
+      }),
+  });
+  ```
+
+- 948de17: Tweaked the return types from `createExtension` and `createExtensionBlueprint` to avoid the forwarding of `ConfigurableExtensionDataRef` into exported types.
+- 147482b: Updated the recommended naming of the blueprint param callback from `define` to `defineParams`, making the syntax `defineParams => defineParams(...)`.
+- 3c3c882: Added added defaults for all type parameters of `ExtensionDataRef` and deprecated `AnyExtensionDataRef`, as it is now redundant.
+- Updated dependencies
+  - @backstage/core-components@0.17.5-next.1
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 0.11.0-next.0
+
+### Minor Changes
+
+- 29786f6: **BREAKING**: The `NavLogoBlueprint` has been removed and replaced by `NavContentBlueprint`, which instead replaces the entire navbar. The default navbar has also been switched to a more minimal implementation.
+
+  To use `NavContentBlueprint` to install new logos, you can use it as follows:
+
+  ```tsx
+  NavContentBlueprint.make({
+    params: {
+      component: ({ items }) => {
+        return compatWrapper(
+          <Sidebar>
+            <SidebarLogo />
+
+            {/* Other sidebar content */}
+
+            <SidebarScrollWrapper>
+              {items.map((item, index) => (
+                <SidebarItem {...item} key={index} />
+              ))}
+            </SidebarScrollWrapper>
+
+            {/* Other sidebar content */}
+          </Sidebar>,
+        );
+      },
+    },
+  });
+  ```
+
+- 805c298: **BREAKING**: The `ApiBlueprint` has been updated to use the new advanced type parameters through the new `defineParams` blueprint option. This is an immediate breaking change that requires all existing usages of `ApiBlueprint` to switch to the new callback format. Existing extensions created with the old format are still compatible with the latest version of the plugin API however, meaning that this does not break existing plugins.
+
+  To update existing usages of `ApiBlueprint`, you remove the outer level of the `params` object and replace `createApiFactory(...)` with `define => define(...)`.
+
+  For example, the following old usage:
+
+  ```ts
+  ApiBlueprint.make({
+    name: 'error',
+    params: {
+      factory: createApiFactory({
+        api: errorApiRef,
+        deps: { alertApi: alertApiRef },
+        factory: ({ alertApi }) => {
+          return ...;
+        },
+      })
+    },
+  })
+  ```
+
+  is migrated to the following:
+
+  ```ts
+  ApiBlueprint.make({
+    name: 'error',
+    params: define =>
+      define({
+        api: errorApiRef,
+        deps: { alertApi: alertApiRef },
+        factory: ({ alertApi }) => {
+          return ...;
+        },
+      }),
+  })
+  ```
+
+- 805c298: Added support for advanced parameter types in extension blueprints. The primary purpose of this is to allow extension authors to use type inference in the definition of the blueprint parameters. This often removes the need for extra imports and improves discoverability of blueprint parameters.
+
+  This feature is introduced through the new `defineParams` option of `createExtensionBlueprint`, along with accompanying `createExtensionBlueprintParams` function to help implement the new format.
+
+  The following is an example of how to create an extension blueprint that uses the new option:
+
+  ```ts
+  const ExampleBlueprint = createExtensionBlueprint({
+    kind: 'example',
+    attachTo: { id: 'example', input: 'example' },
+    output: [exampleComponentDataRef, exampleFetcherDataRef],
+    defineParams<T>(params: {
+      component(props: ExampleProps<T>): JSX.Element | null;
+      fetcher(options: FetchOptions): Promise<FetchResult<T>>;
+    }) {
+      // The returned params must be wrapped with `createExtensionBlueprintParams`
+      return createExtensionBlueprintParams(params);
+    },
+    *factory(params) {
+      // These params are now inferred
+      yield exampleComponentDataRef(params.component);
+      yield exampleFetcherDataRef(params.fetcher);
+    },
+  });
+  ```
+
+  Usage of the above example looks as follows:
+
+  ```ts
+  const example = ExampleBlueprint.make({
+    params: define => define({
+      component: ...,
+      fetcher: ...,
+    }),
+  });
+  ```
+
+  This `define => define(<params>)` is also known as the "callback syntax" and is required if a blueprint is created with the new `defineParams` option. The callback syntax can also optionally be used for other blueprints too, which means that it is not a breaking change to remove the `defineParams` option, as long as the external parameter types remain compatible.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.17.5-next.0
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 0.10.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.17.4
+  - @backstage/core-plugin-api@1.10.9
+
+## 0.10.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.17.4-next.1
+  - @backstage/core-plugin-api@1.10.9-next.0
+
+## 0.10.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.17.4-next.0
+  - @backstage/core-plugin-api@1.10.8
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 0.10.3
+
+### Patch Changes
+
+- 0169b23: Internal tweak to avoid circular dependencies
+- 9e3868f: Added a new optional `info` option to `createFrontendPlugin` that lets you provide a loaders for different sources of metadata information about the plugin.
+
+  There are two available loaders. The first one is `info.packageJson`, which can be used to point to a `package.json` file for the plugin. This is recommended for any plugin that is defined within its own package, especially all plugins that are published to a package registry. Typical usage looks like this:
+
+  ```ts
+  export default createFrontendPlugin({
+    pluginId: '...',
+    info: {
+      packageJson: () => import('../package.json'),
+    },
+  });
+  ```
+
+  The second loader is `info.manifest`, which can be used to point to an opaque plugin manifest. This **MUST ONLY** be used by plugins that are intended for use within a single organization. Plugins that are published to an open package registry should **NOT** use this loader. The loader is useful for adding additional internal metadata associated with the plugin, and it is up to the Backstage app to decide how these manifests are parsed and used. The default manifest parser in an app created with `createApp` from `@backstage/frontend-defaults` is able to parse the default `catalog-info.yaml` format and built-in fields such as `spec.owner`.
+
+  Typical usage looks like this:
+
+  ```ts
+  export default createFrontendPlugin({
+    pluginId: '...',
+    info: {
+      manifest: () => import('../catalog-info.yaml'),
+    },
+  });
+  ```
+
+- 6f48f71: Added a new `useAppNode` hook, which can be used to get a reference to the `AppNode` from by the closest `ExtensionBoundary`.
+- Updated dependencies
+  - @backstage/core-components@0.17.3
+  - @backstage/core-plugin-api@1.10.8
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 0.10.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.17.3-next.0
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 0.10.3-next.0
+
+### Patch Changes
+
+- 9e3868f: Added a new optional `info` option to `createFrontendPlugin` that lets you provide a loaders for different sources of metadata information about the plugin.
+
+  There are two available loaders. The first one is `info.packageJson`, which can be used to point to a `package.json` file for the plugin. This is recommended for any plugin that is defined within its own package, especially all plugins that are published to a package registry. Typical usage looks like this:
+
+  ```ts
+  export default createFrontendPlugin({
+    pluginId: '...',
+    info: {
+      packageJson: () => import('../package.json'),
+    },
+  });
+  ```
+
+  The second loader is `info.manifest`, which can be used to point to an opaque plugin manifest. This **MUST ONLY** be used by plugins that are intended for use within a single organization. Plugins that are published to an open package registry should **NOT** use this loader. The loader is useful for adding additional internal metadata associated with the plugin, and it is up to the Backstage app to decide how these manifests are parsed and used. The default manifest parser in an app created with `createApp` from `@backstage/frontend-defaults` is able to parse the default `catalog-info.yaml` format and built-in fields such as `spec.owner`.
+
+  Typical usage looks like this:
+
+  ```ts
+  export default createFrontendPlugin({
+    pluginId: '...',
+    info: {
+      manifest: () => import('../catalog-info.yaml'),
+    },
+  });
+  ```
+
+- 6f48f71: Added a new `useAppNode` hook, which can be used to get a reference to the `AppNode` from by the closest `ExtensionBoundary`.
+
+## 0.10.2
+
+### Patch Changes
+
+- 173db8f: The `source` property of `AppNodeSpec` has been renamed to `plugin`. The old property has been deprecated and will be removed in a future release.
+- fb58f20: The `id` option of `createFrontendPlugin` has been renamed to `pluginId` in order to better align with similar APIs in the frontend and backend systems.
+
+  The old `id` option is deprecated and will be removed in a future release.
+
+- 72d019d: Removed various typos
+- Updated dependencies
+  - @backstage/core-components@0.17.2
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 0.10.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.10.7-next.0
+  - @backstage/core-components@0.17.2-next.1
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 0.10.2-next.0
+
+### Patch Changes
+
+- fb58f20: The `id` option of `createFrontendPlugin` has been renamed to `pluginId` in order to better align with similar APIs in the frontend and backend systems.
+
+  The old `id` option is deprecated and will be removed in a future release.
+
+- 72d019d: Removed various typos
+- Updated dependencies
+  - @backstage/core-components@0.17.2-next.0
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 0.10.1
+
+### Patch Changes
+
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+- Updated dependencies
+  - @backstage/core-components@0.17.1
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 0.10.1-next.1
+
+### Patch Changes
+
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+- Updated dependencies
+  - @backstage/core-components@0.17.1-next.1
+  - @backstage/core-plugin-api@1.10.6-next.0
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 0.10.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.17.1-next.0
+  - @backstage/core-plugin-api@1.10.5
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 0.10.0
+
+### Minor Changes
+
+- 4823831: Introduced a `createFrontendFeatureLoader()` function, as well as a `FrontendFeatureLoader` interface, to gather several frontend plugins, modules or feature loaders in a single exported entrypoint and load them, possibly asynchronously. This new feature, very similar to the `createBackendFeatureLoader()` already available on the backend, supersedes the previous `CreateAppFeatureLoader` type which has been deprecated.
+- 8250ffe: **BREAKING**: Removed the deprecated `ExtensionOverrides` and `FrontendFeature` types.
+- 0d1a397: **BREAKING**: Removed deprecated variant of `createExtensionDataRef` where the ID is passed directly.
+
+### Patch Changes
+
+- 5aa7f2c: Added a new Utility API, `DialogApi`, which can be used to show dialogs in the React tree that can collect input from the user.
+- e23f5e0: Added new `ExtensionMiddlewareFactory` type.
+- a6cb67d: The extensions map for plugins created with `createFrontendPlugin` is now sorted alphabetically by ID in the TypeScript type.
+- de72253: Added a new `ExtensionBoundary.lazyComponent` helper in addition to the existing `ExtensionBoundary.lazy` helper.
+- Updated dependencies
+  - @backstage/core-components@0.17.0
+  - @backstage/core-plugin-api@1.10.5
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
 ## 0.10.0-next.2
 
 ### Minor Changes

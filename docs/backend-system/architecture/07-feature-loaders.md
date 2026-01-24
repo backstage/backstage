@@ -2,7 +2,6 @@
 id: feature-loaders
 title: Backend Feature Loaders
 sidebar_label: Feature Loaders
-# prettier-ignore
 description: Backend feature loaders
 ---
 

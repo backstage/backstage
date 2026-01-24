@@ -18,7 +18,6 @@ import { renderHook } from '@testing-library/react';
 import { useFilteredSchemaProperties } from './useFilteredSchemaProperties';
 import { TemplateParameterSchema } from '../../types';
 import { TestApiProvider } from '@backstage/test-utils';
-import React from 'react';
 import { featureFlagsApiRef } from '@backstage/core-plugin-api';
 
 const mockFeatureFlagApi = {

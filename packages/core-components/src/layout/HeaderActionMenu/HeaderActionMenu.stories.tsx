@@ -13,12 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
 import { HeaderActionMenu, HeaderActionMenuProps } from './HeaderActionMenu';
 
 export default {
   title: 'Layout/HeaderActionMenu',
   component: HeaderActionMenu,
+  tags: ['!manifest'],
 };
 
 export const Default = (args: HeaderActionMenuProps) => (

@@ -48,12 +48,14 @@ help [command]                   display help for command
 The `repo` command category, `yarn backstage-cli repo --help`:
 
 ```text
-build [options]              Build packages in the project, excluding bundled app and backend packages.
-lint [options]               Lint all packages in the project
-clean                        Delete cache and output directories
-list-deprecations [options]  List deprecations
-test [options]               Run tests, forwarding args to Jest, defaulting to watch mode
-help [command]               display help for command
+start [options] [packageName...]  Starts packages in the repo for local development
+build [options]                   Build packages in the project, excluding bundled app and backend packages.
+test [options]                    Run tests, forwarding args to Jest, defaulting to watch mode
+lint [options]                    Lint all packages in the project
+fix [options]                     Automatically fix packages in the project
+clean                             Delete cache and output directories
+list-deprecations [options]       List deprecations
+help [command]                    display help for command
 ```
 
 The `migrate` command category, `yarn backstage-cli migrate --help`:
@@ -65,6 +67,31 @@ package-exports       Synchronize package subpath export definitions
 package-lint-configs  Migrates all packages to use @backstage/cli/config/eslint-factory
 react-router-deps     Migrates the react-router dependencies for all packages to be peer dependencies
 help [command]        display help for command
+```
+
+## repo start
+
+Start a set of packages in the project for local development. If no explicit packages are listed via arguments or options, packages will instead be selected based on their [package role](./02-build-system.md#package-roles). If a single set of frontend and/or backend packages are found, they will be started. If there are multiple matches the directories 'packages/app' and 'packages/backend' will be preferred. If no matches are found the command will fall back to expecting a single plugin frontend and/or backend package to start instead.
+
+Any `--config` options in the `start` script in `package.json` of the selected packages will be picked up and used, unless a `--config` option is provided to this command, in which case it will be used instead.
+
+Any `--require` option in the `start` script in `package.json` of the selected backend package will be picked up and used.
+
+```text
+Usage: backstage-cli repo start [options] [packageNameOrPath...]
+
+Starts packages in the repo for local development
+
+Arguments:
+  packageNameOrPath     Run the specified packages instead of the defaults.
+
+Options:
+  --plugin <pluginId>   Start the dev entry-point for any matching plugin package in the repo (default: [])
+  --config <path>       Config files to load instead of app-config.yaml (default: [])
+  --inspect [host]      Enable debugger in Node.js environments. Applies to backend package only
+  --inspect-brk [host]  Enable debugger in Node.js environments, breaking before code starts. Applies to backend package only
+  --require <path...>   Add a --require argument to the node process. Applies to backend package only
+  --link <path>         Link an external workspace for module resolution
 ```
 
 ## repo build
@@ -150,11 +177,12 @@ Usage: backstage-cli package start [options]
 Start a package for local development
 
 Options:
-  --config <path>  Config files to load instead of app-config.yaml (default: [])
-  --role <name>    Run the command with an explicit package role
-  --check          Enable type checking and linting if available
-  --inspect        Enable debugger in Node.js environments
-  --inspect-brk    Enable debugger in Node.js environments, breaking before code starts
+  --config <path>      Config files to load instead of app-config.yaml (default: [])
+  --role <name>       Run the command with an explicit package role
+  --check             Enable type checking and linting if available
+  --inspect           Enable debugger in Node.js environments
+  --inspect-brk       Enable debugger in Node.js environments, breaking before code starts
+  --entrypoint <path> Entry directory path (uses index file) or entry file path (without extension). Defaults to "dev"
 ```
 
 ## package build
@@ -404,8 +432,79 @@ Usage: backstage-cli create-github-app <github-org>
 
 Outputs debug information which is useful when opening an issue. Outputs system
 information, node.js and npm versions, CLI version and type (inside backstage
-repo or a created app), all `@backstage/*` package dependency versions.
+repo or a created app), all `@backstage/*` package dependency versions, and any
+packages that contain a `backstage` field in their `package.json`.
+
+The command distinguishes between installed packages (from npm) and local
+workspace packages, making it easier to understand your Backstage setup.
 
 ```text
-Usage: backstage-cli info
+Usage: backstage-cli info [options]
+
+Options:
+  --include <patterns...>  Glob patterns for additional packages to include
+                           (e.g., @mycompany/backstage-*)
+  --format <text|json>     Output format (default: text)
+  -h, --help               display help for command
+```
+
+### Examples
+
+Output debug information to the console:
+
+```bash
+yarn backstage-cli info
+```
+
+Include additional packages matching a glob pattern:
+
+```bash
+yarn backstage-cli info --include "@mycompany/*"
+```
+
+Output as JSON:
+
+```bash
+yarn backstage-cli info --format json
+```
+
+Export JSON to a file for further processing:
+
+```bash
+yarn backstage-cli info --format json > backstage-info.json
+```
+
+Combine options to include custom packages and export to JSON:
+
+```bash
+yarn backstage-cli info --include "@mycompany/backstage-*" --include "@internal/*" --format json > debug-info.json
+```
+
+Export text output to a file:
+
+```bash
+yarn backstage-cli info --format text > backstage-info.txt
+```
+
+### JSON Output Format
+
+When using `--format json`, the output is structured as follows:
+
+```json
+{
+  "system": {
+    "os": "Darwin 23.0.0 - darwin/arm64",
+    "node": "v18.17.0",
+    "yarn": "3.6.0",
+    "cli": { "version": "0.27.0", "local": false },
+    "backstage": "1.20.0"
+  },
+  "dependencies": {
+    "@backstage/core-plugin-api": "1.8.0",
+    "@backstage/plugin-catalog": "1.15.0"
+  },
+  "local": {
+    "@mycompany/backstage-plugin-custom": "0.1.0"
+  }
+}
 ```

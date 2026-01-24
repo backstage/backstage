@@ -14,10 +14,27 @@
  * limitations under the License.
  */
 
-import React, { ComponentType, lazy } from 'react';
+import { ComponentType, lazy, ReactNode } from 'react';
 import { createExtensionBlueprint, createExtensionDataRef } from '../wiring';
-import { SignInPageProps } from '@backstage/core-plugin-api';
 import { ExtensionBoundary } from '../components';
+import { IdentityApi } from '../apis';
+
+/**
+ * Props for the `SignInPage` component.
+ *
+ * @public
+ */
+export type SignInPageProps = {
+  /**
+   * Set the IdentityApi on successful sign-in. This should only be called once.
+   */
+  onSignInSuccess(identityApi: IdentityApi): void;
+
+  /**
+   * The children to render.
+   */
+  children?: ReactNode;
+};
 
 const componentDataRef = createExtensionDataRef<
   ComponentType<SignInPageProps>
@@ -27,6 +44,7 @@ const componentDataRef = createExtensionDataRef<
  * Creates an extension that replaces the sign in page.
  *
  * @public
+ * @deprecated Use {@link @backstage/plugin-app-react#SignInPageBlueprint} instead.
  */
 export const SignInPageBlueprint = createExtensionBlueprint({
   kind: 'sign-in-page',
@@ -48,7 +66,7 @@ export const SignInPageBlueprint = createExtensionBlueprint({
     );
 
     yield componentDataRef(props => (
-      <ExtensionBoundary node={node} routable>
+      <ExtensionBoundary node={node}>
         <ExtensionComponent {...props} />
       </ExtensionBoundary>
     ));

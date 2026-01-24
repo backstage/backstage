@@ -14,29 +14,14 @@
  * limitations under the License.
  */
 
+// 'jest-runtime' is included with jest and should be kept in sync with the installed jest version
+// eslint-disable-next-line @backstage/no-undeclared-imports
 const { default: JestRuntime } = require('jest-runtime');
 
-const scriptTransformCache = new Map();
-
 module.exports = class CachingJestRuntime extends JestRuntime {
-  constructor(config, ...restAgs) {
-    super(config, ...restAgs);
+  constructor(config, ...restArgs) {
+    super(config, ...restArgs);
     this.allowLoadAsEsm = config.extensionsToTreatAsEsm.includes('.mts');
-  }
-
-  // This may or may not be a good idea. Theoretically I don't know why this would impact
-  // test correctness and flakiness, but it seems like it may introduce flakiness and strange failures.
-  // It does seem to speed up test execution by a fair amount though.
-  createScriptFromCode(scriptSource, filename) {
-    let script = scriptTransformCache.get(scriptSource);
-    if (!script) {
-      script = super.createScriptFromCode(scriptSource, filename);
-      // Tried to store the script object in a WeakRef here. It starts out at
-      // about 90% hit rate, but eventually drops all the way to 20%, and overall
-      // it seemed to increase memory usage by 20% or so.
-      scriptTransformCache.set(scriptSource, script);
-    }
-    return script;
   }
 
   // Unfortunately we need to use this unstable API to make sure that .js files

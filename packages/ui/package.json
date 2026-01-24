@@ -1,0 +1,75 @@
+{
+  "name": "@backstage/ui",
+  "version": "0.11.0",
+  "backstage": {
+    "role": "web-library"
+  },
+  "publishConfig": {
+    "access": "public",
+    "main": "dist/index.esm.js",
+    "types": "dist/index.d.ts"
+  },
+  "keywords": [
+    "backstage"
+  ],
+  "homepage": "https://ui.backstage.io",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/backstage/backstage",
+    "directory": "packages/ui"
+  },
+  "license": "Apache-2.0",
+  "sideEffects": [
+    "*.css"
+  ],
+  "main": "src/index.ts",
+  "types": "src/index.ts",
+  "files": [
+    "dist",
+    "css"
+  ],
+  "scripts": {
+    "build": "yarn build:app && yarn build:css",
+    "build:app": "backstage-cli package build",
+    "build:css": "node scripts/build-css.mjs",
+    "build:css:watch": "node scripts/build-css.mjs --watch",
+    "clean": "backstage-cli package clean",
+    "lint": "backstage-cli package lint",
+    "prepack": "backstage-cli package prepack",
+    "postpack": "backstage-cli package postpack",
+    "test": "backstage-cli package test"
+  },
+  "dependencies": {
+    "@backstage/version-bridge": "workspace:^",
+    "@remixicon/react": "^4.6.0",
+    "@tanstack/react-table": "^8.21.3",
+    "clsx": "^2.1.1",
+    "react-aria-components": "^1.13.0"
+  },
+  "devDependencies": {
+    "@backstage/cli": "workspace:^",
+    "@types/react": "^18.0.0",
+    "@types/react-dom": "^18.0.0",
+    "chalk": "^5.4.1",
+    "eslint-plugin-storybook": "^10.2.0-alpha.7",
+    "glob": "^11.0.1",
+    "globals": "^15.11.0",
+    "lightningcss": "^1.29.1",
+    "mini-css-extract-plugin": "^2.9.2",
+    "react": "^18.0.2",
+    "react-dom": "^18.0.2",
+    "react-router-dom": "^6.3.0",
+    "storybook": "^10.2.0-alpha.7"
+  },
+  "peerDependencies": {
+    "@types/react": "^17.0.0 || ^18.0.0",
+    "react": "^17.0.0 || ^18.0.0",
+    "react-dom": "^17.0.0 || ^18.0.0",
+    "react-router-dom": "^6.3.0"
+  },
+  "peerDependenciesMeta": {
+    "@types/react": {
+      "optional": true
+    }
+  }
+}

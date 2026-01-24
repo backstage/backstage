@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 import { createTransport } from 'nodemailer';
-import { SendRawEmailCommand, SES } from '@aws-sdk/client-ses';
+import { SendEmailCommand, SESv2Client } from '@aws-sdk/client-sesv2';
+
 import { Config } from '@backstage/config';
 import { AwsCredentialsManager } from '@backstage/integration-aws-node';
 
@@ -25,14 +26,17 @@ export const createSesTransport = async (
   const credentials = await credentialsManager.getCredentialProvider({
     accountId: config.getOptionalString('accountId'),
   });
-  const ses = new SES([
+
+  const sesClient = new SESv2Client([
     {
-      apiVersion: config.getOptionalString('apiVersion') ?? '2010-12-01',
-      credentials: credentials.sdkCredentialProvider,
+      apiVersion: config.getOptionalString('apiVersion'),
       region: config.getOptionalString('region'),
+      credentials: credentials.sdkCredentialProvider,
+      endpoint: config.getOptionalString('endpoint'),
     },
   ]);
+
   return createTransport({
-    SES: { ses, aws: { SendRawEmailCommand } },
+    SES: { sesClient, SendEmailCommand },
   });
 };

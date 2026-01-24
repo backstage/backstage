@@ -20,7 +20,7 @@ import {
   ClusterDetails,
   KubernetesCredential,
 } from '@backstage/plugin-kubernetes-node';
-import { KubeConfig, User } from '@kubernetes/client-node';
+import type { User } from '@kubernetes/client-node';
 import fs from 'fs-extra';
 
 /**
@@ -28,9 +28,16 @@ import fs from 'fs-extra';
  * @public
  */
 export class ServiceAccountStrategy implements AuthenticationStrategy {
+  // Only used in tests
+  private injectedKubernetesClient?: typeof import('@kubernetes/client-node');
+
   public async getCredential(
     clusterDetails: ClusterDetails,
   ): Promise<KubernetesCredential> {
+    const { KubeConfig } =
+      this.injectedKubernetesClient ??
+      (await import('@kubernetes/client-node'));
+
     const token = clusterDetails.authMetadata.serviceAccountToken;
     if (token) {
       return { type: 'bearer token', token };

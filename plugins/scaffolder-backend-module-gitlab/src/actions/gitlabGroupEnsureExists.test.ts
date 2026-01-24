@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import { ConfigReader } from '@backstage/core-app-api';
 import { ScmIntegrations } from '@backstage/integration';
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { createGitlabGroupEnsureExistsAction } from './gitlabGroupEnsureExists';
 import { getClient } from '../util';
+import { mockServices } from '@backstage/backend-test-utils';
 
 const mockGitlabClient = {
   Groups: {
@@ -45,15 +45,17 @@ describe('gitlab:group:ensureExists', () => {
     jest.clearAllMocks();
   });
 
-  const config = new ConfigReader({
-    integrations: {
-      gitlab: [
-        {
-          host: 'gitlab.com',
-          token: 'tokenlols',
-          apiBaseUrl: 'https://gitlab.com/api/v4',
-        },
-      ],
+  const config = mockServices.rootConfig({
+    data: {
+      integrations: {
+        gitlab: [
+          {
+            host: 'gitlab.com',
+            token: 'tokenlols',
+            apiBaseUrl: 'https://gitlab.com/api/v4',
+          },
+        ],
+      },
     },
   });
   const integrations = ScmIntegrations.fromConfig(config);
@@ -84,6 +86,38 @@ describe('gitlab:group:ensureExists', () => {
       input: {
         repoUrl: 'gitlab.com?repo=repo&owner=owner',
         path: ['foo', 'bar'],
+      },
+    });
+
+    expect(mockGitlabClient.Groups.create).toHaveBeenCalledWith('bar', 'bar', {
+      parentId: 2,
+    });
+
+    expect(mockContext.output).toHaveBeenCalledWith('groupId', 3);
+  });
+
+  it('should create a new group from pathstring if it does not exists', async () => {
+    mockGitlabClient.Groups.search.mockResolvedValue([
+      {
+        id: 1,
+        full_path: 'bar',
+      },
+      {
+        id: 2,
+        full_path: 'foo',
+      },
+    ]);
+
+    mockGitlabClient.Groups.create.mockResolvedValue({
+      id: 3,
+      full_path: 'foo/bar',
+    });
+
+    await action.handler({
+      ...mockContext,
+      input: {
+        repoUrl: 'gitlab.com?repo=repo&owner=owner',
+        path: ['foo/bar', 'baz'],
       },
     });
 

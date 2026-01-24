@@ -2,11 +2,8 @@
 id: creating
 title: Creating Utility APIs
 sidebar_label: Creating APIs
-# prettier-ignore
 description: Creating new utility APIs in your plugins and app
 ---
-
-> **NOTE: The new frontend system is in alpha and is only supported by a small number of plugins.**
 
 This section describes how to make a Utility API from scratch, or to add configurability and inputs to an existing one. If you are instead interested in migrating an existing Utility API from the old frontend system, check out the [Migrating APIs section](../building-plugins/05-migrating.md#migrating-apis).
 
@@ -39,6 +36,9 @@ export const workApiRef = createApiRef<WorkApi>({
 
 Both of these are properly exported publicly from the package, so that consumers can reach them.
 
+The frontend system infers the owning plugin for an API from the `ApiRef` id, so
+use the pattern `plugin.<plugin-id>.*` to make ownership explicit. This ensures that other plugins can't mistakenly override your API.
+
 ## Providing an extension through your plugin
 
 The plugin itself now wants to provide this API and its default implementation, in the form of an API extension. Doing so means that when users install the Example plugin, an instance of the Work utility API will also be automatically available in their apps - both to the Example plugin itself, and to others. We do this in the main plugin package, not the `-react` package.
@@ -46,7 +46,6 @@ The plugin itself now wants to provide this API and its default implementation, 
 ```tsx title="in @internal/plugin-example"
 import {
   ApiBlueprint,
-  createApiFactory,
   createFrontendPlugin,
   storageApiRef,
   StorageApi,
@@ -64,15 +63,14 @@ class WorkImpl implements WorkApi {
 
 const workApi = ApiBlueprint.make({
   name: 'work',
-  params: {
-    factory: createApiFactory({
+  params: defineParams =>
+    defineParams({
       api: workApiRef,
       deps: { storageApi: storageApiRef },
       factory: ({ storageApi }) => {
         return new WorkImpl({ storageApi });
       },
     }),
-  },
 });
 
 /**
@@ -80,7 +78,7 @@ const workApi = ApiBlueprint.make({
  * @public
  */
 export default createFrontendPlugin({
-  id: 'example',
+  pluginId: 'example',
   extensions: [exampleWorkApi],
 });
 ```
@@ -93,7 +91,7 @@ The extension ID of the work API will be the kind `api:` followed by the plugin 
 
 ## Adding configurability
 
-Here we will describe how to amend a utility API with the capability of having extension config, which is driven by [your app-config](../../conf/writing.md). You do this by giving an extension config schema to your API extension factory function. Let's refactory the example above to also accept configuration, which will require us to use the [override method of the blueprint](../architecture/23-extension-blueprints.md#creating-an-extension-from-a-blueprint-with-overrides).
+Here we will describe how to amend a utility API with the capability of having extension config, which is driven by [your app-config](../../conf/writing.md). You do this by giving an extension config schema to your API extension factory function. Let's refactor the example above to also accept configuration, which will require us to use the [override method of the blueprint](../architecture/23-extension-blueprints.md#creating-an-extension-from-a-blueprint-with-overrides).
 
 ```tsx title="in @internal/plugin-example"
 const exampleWorkApi = ApiBlueprint.makeWithOverrides({
@@ -123,7 +121,7 @@ We wanted users to be able to set a `goSlow` extension config parameter for our 
 
 Note that the expression "extension config" as used here, is _not_ the same thing as the `configApi` which gives you access to the full app-config. The extension config discussed here is instead the particular configuration settings given to your utility API instance. This is discussed more [in the Configuring section](./04-configuring.md).
 
-Note also that the extension config schema contained a default value fo the `goSlow` field. This is an important consideration. You want users of your API to be able to get maximum value out of it, without having to dive deep into how to configure it. For that reason you generally want to provide as many sane defaults as possible, while letting users override them rarely but with purpose, only when called for. If you have an extension config schema without defaults, the framework will refuse to instantiate the utility API on startup unless the user had configured those values explicitly. Since it had a default value, the TypeScript code and interfaces also don't have to defensively allow `undefined` - we know that it'll have either the default value or an overridden value when we start consuming the extension config data.
+Note also that the extension config schema contained a default value for the `goSlow` field. This is an important consideration. You want users of your API to be able to get maximum value out of it, without having to dive deep into how to configure it. For that reason you generally want to provide as many sane defaults as possible, while letting users override them rarely but with purpose, only when called for. If you have an extension config schema without defaults, the framework will refuse to instantiate the utility API on startup unless the user had configured those values explicitly. Since it had a default value, the TypeScript code and interfaces also don't have to defensively allow `undefined` - we know that it'll have either the default value or an overridden value when we start consuming the extension config data.
 
 ## Adding inputs
 

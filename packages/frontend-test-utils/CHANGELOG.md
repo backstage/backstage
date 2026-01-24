@@ -1,5 +1,382 @@
 # @backstage/frontend-test-utils
 
+## 0.4.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.3
+  - @backstage/plugin-app@0.3.4
+  - @backstage/frontend-app-api@0.14.0
+
+## 0.4.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-app@0.3.4-next.0
+  - @backstage/frontend-app-api@0.13.4-next.0
+  - @backstage/frontend-plugin-api@0.13.2
+
+## 0.4.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-app@0.3.3
+  - @backstage/frontend-plugin-api@0.13.2
+  - @backstage/test-utils@1.7.14
+  - @backstage/frontend-app-api@0.13.3
+
+## 0.4.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.2-next.0
+  - @backstage/test-utils@1.7.14-next.0
+  - @backstage/plugin-app@0.3.3-next.0
+  - @backstage/frontend-app-api@0.13.3-next.0
+  - @backstage/config@1.3.6
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.11
+
+## 0.4.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.0
+  - @backstage/frontend-app-api@0.13.2
+  - @backstage/config@1.3.6
+  - @backstage/plugin-app@0.3.2
+  - @backstage/test-utils@1.7.13
+
+## 0.4.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-app-api@0.13.2-next.0
+  - @backstage/config@1.3.6-next.0
+  - @backstage/frontend-plugin-api@0.12.2-next.0
+  - @backstage/test-utils@1.7.13-next.0
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-app@0.3.2-next.0
+
+## 0.4.0
+
+### Minor Changes
+
+- c41dd80: **BREAKING**: Removed the `extensions` option from `renderInTestApp`. If you need to pass extensions to the test app, use the new `renderTestApp` utility instead.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-app@0.3.1
+  - @backstage/frontend-plugin-api@0.12.1
+  - @backstage/config@1.3.5
+  - @backstage/frontend-app-api@0.13.1
+  - @backstage/test-utils@1.7.12
+
+## 0.3.7-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.4-next.0
+  - @backstage/frontend-app-api@0.13.1-next.1
+  - @backstage/test-utils@1.7.12-next.0
+  - @backstage/frontend-plugin-api@0.12.1-next.1
+  - @backstage/plugin-app@0.3.1-next.1
+
+## 0.3.7-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.12.1-next.0
+  - @backstage/plugin-app@0.3.1-next.0
+  - @backstage/config@1.3.3
+  - @backstage/frontend-app-api@0.13.1-next.0
+  - @backstage/test-utils@1.7.11
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.11
+
+## 0.3.6
+
+### Patch Changes
+
+- 6516c3d: Internal update to use and throw app errors.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.12.0
+  - @backstage/plugin-app@0.3.0
+  - @backstage/frontend-app-api@0.13.0
+  - @backstage/types@1.2.2
+
+## 0.3.6-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.11.1-next.0
+  - @backstage/frontend-app-api@0.12.1-next.0
+  - @backstage/plugin-app@0.2.1-next.0
+
+## 0.3.5
+
+### Patch Changes
+
+- df7bd3b: Updated import of the `FrontendFeature` type.
+- 5d31d66: Updated the usage of the `RouterBlueprint` and `AppRootWrapperBlueprint` to use the lowercase `component` parameter
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.11.0
+  - @backstage/frontend-app-api@0.12.0
+  - @backstage/plugin-app@0.2.0
+  - @backstage/test-utils@1.7.11
+
+## 0.3.5-next.2
+
+### Patch Changes
+
+- df7bd3b: Updated import of the `FrontendFeature` type.
+- 5d31d66: Updated the usage of the `RouterBlueprint` and `AppRootWrapperBlueprint` to use the lowercase `component` parameter
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.11.0-next.1
+  - @backstage/frontend-app-api@0.12.0-next.2
+  - @backstage/plugin-app@0.2.0-next.1
+  - @backstage/config@1.3.3
+  - @backstage/test-utils@1.7.11-next.0
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 0.3.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-app-api@0.11.5-next.1
+  - @backstage/plugin-app@0.2.0-next.0
+  - @backstage/frontend-plugin-api@0.11.0-next.0
+  - @backstage/test-utils@1.7.11-next.0
+  - @backstage/config@1.3.3
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 0.3.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-app-api@0.11.5-next.0
+  - @backstage/plugin-app@0.1.11
+  - @backstage/frontend-plugin-api@0.10.4
+
+## 0.3.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3
+  - @backstage/frontend-app-api@0.11.4
+  - @backstage/plugin-app@0.1.11
+  - @backstage/frontend-plugin-api@0.10.4
+  - @backstage/test-utils@1.7.10
+
+## 0.3.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3-next.0
+  - @backstage/frontend-app-api@0.11.4-next.1
+  - @backstage/test-utils@1.7.10-next.1
+  - @backstage/frontend-plugin-api@0.10.4-next.1
+  - @backstage/plugin-app@0.1.11-next.1
+
+## 0.3.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-app@0.1.11-next.0
+  - @backstage/test-utils@1.7.10-next.0
+  - @backstage/config@1.3.2
+  - @backstage/frontend-app-api@0.11.4-next.0
+  - @backstage/frontend-plugin-api@0.10.4-next.0
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 0.3.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-app@0.1.10
+  - @backstage/frontend-plugin-api@0.10.3
+  - @backstage/frontend-app-api@0.11.3
+  - @backstage/config@1.3.2
+  - @backstage/test-utils@1.7.9
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 0.3.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.3-next.1
+  - @backstage/plugin-app@0.1.10-next.1
+  - @backstage/config@1.3.2
+  - @backstage/frontend-app-api@0.11.3-next.1
+  - @backstage/test-utils@1.7.8
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 0.3.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-app@0.1.10-next.0
+  - @backstage/frontend-plugin-api@0.10.3-next.0
+  - @backstage/frontend-app-api@0.11.3-next.0
+
+## 0.3.2
+
+### Patch Changes
+
+- fb58f20: Internal update to use the new `pluginId` option of `createFrontendPlugin`.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.2
+  - @backstage/test-utils@1.7.8
+  - @backstage/frontend-app-api@0.11.2
+  - @backstage/plugin-app@0.1.9
+  - @backstage/config@1.3.2
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 0.3.2-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-app-api@0.11.2-next.3
+  - @backstage/test-utils@1.7.8-next.2
+  - @backstage/config@1.3.2
+  - @backstage/frontend-plugin-api@0.10.2-next.1
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-app@0.1.9-next.3
+
+## 0.3.2-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/test-utils@1.7.8-next.1
+  - @backstage/config@1.3.2
+  - @backstage/frontend-app-api@0.11.2-next.2
+  - @backstage/frontend-plugin-api@0.10.2-next.1
+  - @backstage/plugin-app@0.1.9-next.2
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 0.3.2-next.1
+
+### Patch Changes
+
+- fb58f20: Internal update to use the new `pluginId` option of `createFrontendPlugin`.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.2-next.0
+  - @backstage/plugin-app@0.1.9-next.1
+  - @backstage/frontend-app-api@0.11.2-next.1
+  - @backstage/test-utils@1.7.8-next.0
+  - @backstage/config@1.3.2
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 0.3.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.2
+  - @backstage/frontend-app-api@0.11.2-next.0
+  - @backstage/frontend-plugin-api@0.10.1
+  - @backstage/test-utils@1.7.7
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-app@0.1.9-next.0
+
+## 0.3.1
+
+### Patch Changes
+
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.1
+  - @backstage/frontend-app-api@0.11.1
+  - @backstage/test-utils@1.7.7
+  - @backstage/plugin-app@0.1.8
+  - @backstage/config@1.3.2
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 0.3.1-next.1
+
+### Patch Changes
+
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.1-next.1
+  - @backstage/frontend-app-api@0.11.1-next.1
+  - @backstage/test-utils@1.7.7-next.0
+  - @backstage/plugin-app@0.1.8-next.1
+  - @backstage/config@1.3.2
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 0.3.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.1-next.0
+  - @backstage/plugin-app@0.1.8-next.0
+  - @backstage/frontend-app-api@0.11.1-next.0
+  - @backstage/config@1.3.2
+  - @backstage/test-utils@1.7.6
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
+## 0.3.0
+
+### Minor Changes
+
+- bba525b: **BREAKING**: Removed deprecated `setupRequestMockHandlers` which was replaced by `registerMswTestHooks`.
+
+### Patch Changes
+
+- f861bfc: Added a `initialRouteEntries` option to `renderInTestApp`.
+- f861bfc: The `renderInTestApp` helper now provides a default mock config with mock values for both `app.baseUrl` and `backend.baseUrl`.
+- abcdf44: Internal refactor to match updated `createSpecializedApp`.
+- Updated dependencies
+  - @backstage/frontend-app-api@0.11.0
+  - @backstage/frontend-plugin-api@0.10.0
+  - @backstage/plugin-app@0.1.7
+  - @backstage/test-utils@1.7.6
+  - @backstage/config@1.3.2
+  - @backstage/types@1.2.1
+  - @backstage/version-bridge@1.0.11
+
 ## 0.3.0-next.2
 
 ### Minor Changes

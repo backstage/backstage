@@ -15,13 +15,13 @@
  */
 
 import { CommandGraph } from './CommandGraph';
-import { CliFeature, InternalCliFeature, InternalCliPlugin } from './types';
+import { CliFeature, OpaqueCliPlugin } from './types';
 import { CommandRegistry } from './CommandRegistry';
 import { Command } from 'commander';
 import { version } from '../lib/version';
 import chalk from 'chalk';
 import { exitWithError } from '../lib/errors';
-import { assertError } from '@backstage/errors';
+import { ForwardedError } from '@backstage/errors';
 import { isPromise } from 'util/types';
 
 type UninitializedFeature = CliFeature | Promise<{ default: CliFeature }>;
@@ -42,10 +42,11 @@ export class CliInitializer {
   }
 
   async #register(feature: CliFeature) {
-    if (isCliPlugin(feature)) {
-      await feature.init(this.commandRegistry);
+    if (OpaqueCliPlugin.isType(feature)) {
+      const internal = OpaqueCliPlugin.toInternal(feature);
+      await internal.init(this.commandRegistry);
     } else {
-      throw new Error(`Unsupported feature type: ${feature.$$type}`);
+      throw new Error(`Unsupported feature type: ${(feature as any).$$type}`);
     }
   }
 
@@ -62,9 +63,11 @@ export class CliInitializer {
   async run() {
     await this.#doInit();
 
+    const programName = 'backstage-cli';
+
     const program = new Command();
     program
-      .name('backstage-cli')
+      .name(programName)
       .version(version)
       .allowUnknownOption(true)
       .allowExcessArguments(true);
@@ -88,7 +91,7 @@ export class CliInitializer {
         );
       } else {
         argParser
-          .command(node.name)
+          .command(node.name, { hidden: !!node.command.deprecated })
           .description(node.command.description)
           .helpOption(false)
           .allowUnknownOption(true)
@@ -117,10 +120,13 @@ export class CliInitializer {
               }
               await node.command.execute({
                 args: [...positionalArgs, ...args.unknown],
+                info: {
+                  usage: [programName, ...node.command.path].join(' '),
+                  description: node.command.description,
+                },
               });
               process.exit(0);
-            } catch (error) {
-              assertError(error);
+            } catch (error: unknown) {
               exitWithError(error);
             }
           });
@@ -135,35 +141,11 @@ export class CliInitializer {
     });
 
     process.on('unhandledRejection', rejection => {
-      if (rejection instanceof Error) {
-        exitWithError(rejection);
-      } else {
-        exitWithError(new Error(`Unknown rejection: '${rejection}'`));
-      }
+      exitWithError(new ForwardedError('Unhandled rejection', rejection));
     });
 
     program.parse(process.argv);
   }
-}
-
-function toInternalCliFeature(feature: CliFeature): InternalCliFeature {
-  if (feature.$$type !== '@backstage/CliFeature') {
-    throw new Error(`Invalid CliFeature, bad type '${feature.$$type}'`);
-  }
-  const internal = feature as InternalCliFeature;
-  if (internal.version !== 'v1') {
-    throw new Error(`Invalid CliFeature, bad version '${internal.version}'`);
-  }
-  return internal;
-}
-
-function isCliPlugin(feature: CliFeature): feature is InternalCliPlugin {
-  const internal = toInternalCliFeature(feature);
-  if (internal.featureType === 'plugin') {
-    return true;
-  }
-  // Backwards compatibility for v1 registrations that use duck typing
-  return 'plugin' in internal;
 }
 
 /** @internal */

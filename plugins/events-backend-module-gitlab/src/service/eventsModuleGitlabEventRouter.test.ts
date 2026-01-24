@@ -18,7 +18,7 @@ import { createServiceFactory } from '@backstage/backend-plugin-api';
 import { startTestBackend } from '@backstage/backend-test-utils';
 import { TestEventsService } from '@backstage/plugin-events-backend-test-utils';
 import { eventsServiceRef } from '@backstage/plugin-events-node';
-import { eventsModuleGitlabEventRouter } from './eventsModuleGitlabEventRouter';
+import eventsModuleGitlabEventRouter from './eventsModuleGitlabEventRouter';
 
 describe('eventsModuleGitlabEventRouter', () => {
   it('should be correctly wired and set up', async () => {

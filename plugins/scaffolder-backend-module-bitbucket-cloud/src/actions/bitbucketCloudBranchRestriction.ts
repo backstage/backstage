@@ -30,13 +30,15 @@ const createBitbucketCloudBranchRestriction = async (opts: {
   branchMatchKind?: string;
   branchType?: string;
   pattern?: string;
-  value?: number;
+  value?: number | null;
   users?: { uuid: string; type: string }[];
   groups?: { slug: string; type: string }[];
   authorization: {
     token?: string;
     username?: string;
     appPassword?: string;
+    clientId?: string;
+    clientSecret?: string;
   };
 }) => {
   const {
@@ -52,7 +54,7 @@ const createBitbucketCloudBranchRestriction = async (opts: {
     authorization,
   } = opts;
 
-  const bitbucket = getBitbucketClient(authorization);
+  const bitbucket = await getBitbucketClient(authorization);
   return await bitbucket.branchrestrictions.create({
     _body: {
       groups: groups,
@@ -78,49 +80,36 @@ export function createBitbucketCloudBranchRestrictionAction(options: {
   integrations: ScmIntegrationRegistry;
 }) {
   const { integrations } = options;
-  return createTemplateAction<{
-    repoUrl: string;
-    kind: string;
-    branchMatchKind?: string;
-    branchType?: string;
-    pattern?: string;
-    value?: number;
-    users?: { uuid: string }[];
-    groups?: { slug: string }[];
-    token?: string;
-  }>({
+  return createTemplateAction({
     id: 'bitbucketCloud:branchRestriction:create',
     examples,
     description:
       'Creates branch restrictions for a Bitbucket Cloud repository.',
     schema: {
       input: {
-        type: 'object',
-        required: ['repoUrl', 'kind'],
-        properties: {
-          repoUrl: inputProps.repoUrl,
-          kind: inputProps.restriction.kind,
-          branchMatchKind: inputProps.restriction.branchMatchKind,
-          branchType: inputProps.restriction.branchType,
-          pattern: inputProps.restriction.pattern,
-          value: inputProps.restriction.value,
-          users: inputProps.restriction.users,
-          groups: inputProps.restriction.groups,
-          token: inputProps.token,
-        },
+        repoUrl: inputProps.repoUrl,
+        kind: inputProps.restriction.kind,
+        branchMatchKind: inputProps.restriction.branchMatchKind,
+        branchType: inputProps.restriction.branchType,
+        pattern: inputProps.restriction.pattern,
+        value: inputProps.restriction.value,
+        users: inputProps.restriction.users,
+        groups: inputProps.restriction.groups,
+        token: inputProps.token,
       },
       output: {
-        type: 'object',
-        properties: {
-          json: {
-            title: 'The response from bitbucket cloud',
-            type: 'string',
-          },
-          statusCode: {
-            title: 'The status code of the response',
-            type: 'number',
-          },
-        },
+        json: z =>
+          z
+            .string({
+              description: 'The response from bitbucket cloud',
+            })
+            .optional(),
+        statusCode: z =>
+          z
+            .number({
+              description: 'The status code of the response',
+            })
+            .optional(),
       },
     },
     async handler(ctx) {

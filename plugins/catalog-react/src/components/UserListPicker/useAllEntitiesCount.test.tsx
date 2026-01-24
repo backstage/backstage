@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React, { PropsWithChildren } from 'react';
+import { PropsWithChildren } from 'react';
 import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { useAllEntitiesCount } from './useAllEntitiesCount';
 import { renderHook, waitFor } from '@testing-library/react';
@@ -68,15 +68,15 @@ describe('useAllEntitiesCount', () => {
       ),
     });
 
-    await waitFor(() =>
+    await waitFor(() => {
       expect(mockCatalogApi.queryEntities).toHaveBeenCalledWith({
         filter: {
           'relations.ownedBy': ['user:default/owner'],
         },
         limit: 0,
-      }),
-    );
-    expect(result.current).toEqual({ count: 10, loading: false });
+      });
+      expect(result.current).toEqual({ count: 10, loading: false });
+    });
   });
 
   it(`shouldn't invoke the endpoint at startup, when filters are missing`, async () => {

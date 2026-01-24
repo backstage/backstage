@@ -73,17 +73,15 @@ describe('getCurrentBackstageVersion', () => {
   });
 
   it.each`
-    description              | content
-    ${'is missing'}          | ${{}}
-    ${'is invalid'}          | ${{ 'backstage.json': '}{' }}
-    ${'has missing version'} | ${{ 'backstage.json': '{"a":"b"}' }}
-    ${'has invalid version'} | ${{ 'backstage.json': '{"version":"foobar"}' }}
-  `('throws if backstage.json $description', ({ content }) => {
+    description              | content                                         | message
+    ${'is missing'}          | ${{}}                                           | ${/valid version string not found.*no such file/i}
+    ${'is invalid'}          | ${{ 'backstage.json': '}{' }}                   | ${/valid version string not found.*not valid json/i}
+    ${'has missing version'} | ${{ 'backstage.json': '{"a":"b"}' }}            | ${/valid version string not found.*version field is missing/i}
+    ${'has invalid version'} | ${{ 'backstage.json': '{"version":"foobar"}' }} | ${/valid version string not found.*exists but is not valid semver/i}
+  `('throws if backstage.json $description', ({ content, message }) => {
     mockDir.addContent(content);
 
-    expect(() => getCurrentBackstageVersion()).toThrow(
-      /valid version string not found/i,
-    );
+    expect(() => getCurrentBackstageVersion()).toThrow(message);
   });
 
   it('caches repeated calls', () => {

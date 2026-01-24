@@ -4,5 +4,5 @@
 
 | Name                       | Location     | Severity |
 | :------------------------- | :----------- | :------- |
-| @backstage/backend-app-api | package.json | error    |
+| @backstage/backend-app-api | plugins/events-backend/package.json | error    |
 

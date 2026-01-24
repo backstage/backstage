@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
 import { ErrorListTemplate } from './errorListTemplate';
 import { renderInTestApp } from '@backstage/test-utils';
 import { ErrorListProps } from '@rjsf/utils';

@@ -46,10 +46,12 @@ function verifyIndex(pkg: string, packageJson?: BackstagePackageJson) {
   console.log(`Verifying ${pkg}`);
   const tsPath = path.join(pkg, 'src/index.ts');
   const sourceFile = project.getSourceFile(tsPath);
+
   if (!sourceFile) {
     console.log(`Could not find ${tsPath}`);
     process.exit(1);
   }
+
   const symbols = sourceFile?.getExportSymbols();
 
   const exportCount = symbols?.length || 0;
@@ -69,15 +71,34 @@ function verifyIndex(pkg: string, packageJson?: BackstagePackageJson) {
     console.log('   ❌ Missing default export');
   }
   let createRouterDeprecated = undefined;
+  let routerCreateRouterDeprecated = undefined;
   if (createRouterExport) {
     createRouterDeprecated = createRouterExport
       .getJsDocTags()
       .find(tag => tag.getName() === 'deprecated');
+
+    const declarations = createRouterExport?.getDeclarations();
+    const firstDeclaration = declarations?.[0];
+    let resolvedSymbol = undefined;
+    if (firstDeclaration) {
+      // Try resolving to the definition directly
+      resolvedSymbol = createRouterExport.getAliasedSymbol();
+      if (resolvedSymbol) {
+        const resolvedDeclarations = resolvedSymbol.getDeclarations();
+        const resolvedDeclaration = resolvedDeclarations?.[0];
+        if (resolvedDeclaration) {
+          routerCreateRouterDeprecated = resolvedDeclaration
+            .getSymbol()
+            ?.getJsDocTags()
+            .find(tag => tag.getName() === 'deprecated');
+        }
+      }
+    }
   }
 
   if (createRouterExport) {
     console.log('   ❌ createRouter is exported');
-    if (!createRouterDeprecated)
+    if (!createRouterDeprecated && !routerCreateRouterDeprecated)
       console.log('   ❌ createRouter is NOT deprecated');
   }
 

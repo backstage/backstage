@@ -31,46 +31,61 @@ import { Config } from '@backstage/config';
 export function createSentryCreateProjectAction(options: { config: Config }) {
   const { config } = options;
 
-  return createTemplateAction<{
-    organizationSlug: string;
-    teamSlug: string;
-    name: string;
-    slug?: string;
-    authToken?: string;
-  }>({
+  return createTemplateAction({
     id: 'sentry:project:create',
     schema: {
       input: {
-        required: ['organizationSlug', 'teamSlug', 'name'],
-        type: 'object',
-        properties: {
-          organizationSlug: {
-            title: 'The slug of the organization the team belongs to',
-            type: 'string',
-          },
-          teamSlug: {
-            title: 'The slug of the team to create a new project for',
-            type: 'string',
-          },
-          name: {
-            title: 'The name for the new project',
-            type: 'string',
-          },
-          slug: {
-            title:
-              'Optional slug for the new project. If not provided a slug is generated from the name',
-            type: 'string',
-          },
-          authToken: {
-            title:
-              'authenticate via bearer auth token. Requires scope: project:write',
-            type: 'string',
-          },
-        },
+        organizationSlug: z =>
+          z.string({
+            description: 'The slug of the organization the team belongs to',
+          }),
+        teamSlug: z =>
+          z.string({
+            description: 'The slug of the team to create a new project for',
+          }),
+        name: z =>
+          z.string({
+            description: 'The name for the new project',
+          }),
+        slug: z =>
+          z
+            .string({
+              description:
+                'Optional slug for the new project. If not provided a slug is generated from the name',
+            })
+            .optional(),
+        platform: z =>
+          z
+            .string({
+              description: 'Optional sentry platform for the new project. ',
+            })
+            .optional(),
+        authToken: z =>
+          z
+            .string({
+              description:
+                'authenticate via bearer auth token. Requires scope: project:write',
+            })
+            .optional(),
+        apiBaseUrl: z =>
+          z
+            .string({
+              description:
+                'Optional base URL for the Sentry API. e.g. https://sentry.io/api/0',
+            })
+            .optional(),
       },
     },
     async handler(ctx) {
-      const { organizationSlug, teamSlug, name, slug, authToken } = ctx.input;
+      const {
+        organizationSlug,
+        teamSlug,
+        name,
+        slug,
+        platform,
+        authToken,
+        apiBaseUrl,
+      } = ctx.input;
 
       const body: any = {
         name: name,
@@ -78,6 +93,10 @@ export function createSentryCreateProjectAction(options: { config: Config }) {
 
       if (slug) {
         body.slug = slug;
+      }
+
+      if (platform) {
+        body.platform = platform;
       }
 
       const token = authToken
@@ -88,32 +107,46 @@ export function createSentryCreateProjectAction(options: { config: Config }) {
         throw new InputError(`No valid sentry token given`);
       }
 
-      const response = await fetch(
-        `https://sentry.io/api/0/teams/${organizationSlug}/${teamSlug}/projects/`,
-        {
-          method: 'POST',
-          headers: {
-            Authorization: `Bearer ${token}`,
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(body),
+      const baseUrl =
+        apiBaseUrl ||
+        config.getOptionalString('scaffolder.sentry.apiBaseUrl') ||
+        'https://sentry.io/api/0';
+
+      const { result } = await ctx.checkpoint({
+        key: `create.project.${organizationSlug}.${teamSlug}`,
+        fn: async () => {
+          const response = await fetch(
+            `${baseUrl}/teams/${organizationSlug}/${teamSlug}/projects/`,
+            {
+              method: 'POST',
+              headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json',
+              },
+              body: JSON.stringify(body),
+            },
+          );
+
+          const contentType = response.headers.get('content-type');
+
+          if (contentType !== 'application/json') {
+            throw new InputError(
+              `Unexpected Sentry Response Type: ${await response.text()}`,
+            );
+          }
+
+          const res = await response.json();
+
+          if (response.status !== 201) {
+            throw new InputError(`Sentry Response was: ${await res.detail}`);
+          }
+
+          return {
+            code: response.status,
+            result: res as { id: string },
+          };
         },
-      );
-
-      const contentType = response.headers.get('content-type');
-
-      if (contentType !== 'application/json') {
-        throw new InputError(
-          `Unexpected Sentry Response Type: ${await response.text()}`,
-        );
-      }
-
-      const code = response.status;
-      const result = await response.json();
-
-      if (code !== 201) {
-        throw new InputError(`Sentry Response was: ${await result.detail}`);
-      }
+      });
 
       ctx.output('id', result.id);
       ctx.output('result', result);

@@ -8,7 +8,8 @@
     "types": "dist/index.d.ts"
   },
   "backstage": {
-    "role": "backend-plugin"
+    "role": "backend-plugin",
+    "pluginId": "{{pluginId}}"
   },
   "scripts": {
     "start": "backstage-cli package start",
@@ -24,6 +25,7 @@
     "@backstage/backend-plugin-api": "{{versionQuery '@backstage/backend-plugin-api'}}",
     "@backstage/catalog-client": "{{versionQuery '@backstage/catalog-client'}}",
     "@backstage/errors": "{{versionQuery '@backstage/errors'}}",
+    "@backstage/types": "{{versionQuery '@backstage/types'}}",
     "@backstage/plugin-catalog-node": "{{versionQuery '@backstage/plugin-catalog-node'}}",
     "express": "{{versionQuery 'express' '4.17.1'}}",
     "express-promise-router": "{{versionQuery 'express-promise-router' '4.1.0'}}",

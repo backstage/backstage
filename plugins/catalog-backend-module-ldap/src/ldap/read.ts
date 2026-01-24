@@ -19,7 +19,7 @@ import {
   stringifyEntityRef,
   UserEntity,
 } from '@backstage/catalog-model';
-import { SearchEntry } from 'ldapjs';
+import { Entry } from 'ldapts';
 import lodashSet from 'lodash/set';
 import cloneDeep from 'lodash/cloneDeep';
 import { buildOrgHierarchy } from './org';
@@ -34,6 +34,7 @@ import { LdapVendor } from './vendors';
 import { GroupTransformer, UserTransformer } from './types';
 import { mapStringAttr } from './util';
 import { LoggerService } from '@backstage/backend-plugin-api';
+import { InputError } from '@backstage/errors';
 
 /**
  * The default implementation of the transformation from an LDAP entry to a
@@ -44,7 +45,7 @@ import { LoggerService } from '@backstage/backend-plugin-api';
 export async function defaultUserTransformer(
   vendor: LdapVendor,
   config: UserConfig,
-  entry: SearchEntry,
+  entry: Entry,
 ): Promise<UserEntity | undefined> {
   const { set, map } = config;
 
@@ -70,6 +71,13 @@ export async function defaultUserTransformer(
   mapStringAttr(entry, vendor, map.name, v => {
     entity.metadata.name = v;
   });
+
+  if (!entity.metadata.name) {
+    throw new InputError(
+      `User syncing failed: missing '${map.name}' attribute, consider applying a user filter to skip processing users with incomplete data.`,
+    );
+  }
+
   mapStringAttr(entry, vendor, map.description, v => {
     entity.metadata.description = v;
   });
@@ -128,18 +136,20 @@ export async function readLdapUsers(
 
   for (const cfg of userConfig) {
     const { dn, options, map } = cfg;
-    await client.searchStreaming(dn, options, async user => {
-      const entity = await transformer(vendor, cfg, user);
+    const searchResult = await client.search(dn, options);
+    for (const entry of searchResult.searchEntries) {
+      const entity = await transformer(vendor, cfg, entry);
 
       if (!entity) {
-        return;
+        continue;
       }
 
-      mapReferencesAttr(user, vendor, map.memberOf, (myDn, vs) => {
+      mapReferencesAttr(entry, vendor, map.memberOf, (myDn, vs) => {
         ensureItems(userMemberOf, myDn, vs);
       });
+
       entities.push(entity);
-    });
+    }
   }
 
   return { users: entities, userMemberOf };
@@ -154,7 +164,7 @@ export async function readLdapUsers(
 export async function defaultGroupTransformer(
   vendor: LdapVendor,
   config: GroupConfig,
-  entry: SearchEntry,
+  entry: Entry,
 ): Promise<GroupEntity | undefined> {
   const { set, map } = config;
   const entity: GroupEntity = {
@@ -180,6 +190,13 @@ export async function defaultGroupTransformer(
   mapStringAttr(entry, vendor, map.name, v => {
     entity.metadata.name = v;
   });
+
+  if (!entity.metadata.name) {
+    throw new InputError(
+      `Group syncing failed: missing '${map.name}' attribute, consider applying a group filter to skip processing groups with incomplete data.`,
+    );
+  }
+
   mapStringAttr(entry, vendor, map.description, v => {
     entity.metadata.description = v;
   });
@@ -247,27 +264,24 @@ export async function readLdapGroups(
 
   for (const cfg of groupConfig) {
     const { dn, map, options } = cfg;
-
-    await client.searchStreaming(dn, options, async entry => {
-      if (!entry) {
-        return;
-      }
-
+    const searchResult = await client.search(dn, options);
+    for (const entry of searchResult.searchEntries) {
       const entity = await transformer(vendor, cfg, entry);
 
       if (!entity) {
-        return;
+        continue;
       }
 
       mapReferencesAttr(entry, vendor, map.memberOf, (myDn, vs) => {
         ensureItems(groupMemberOf, myDn, vs);
       });
+
       mapReferencesAttr(entry, vendor, map.members, (myDn, vs) => {
         ensureItems(groupMember, myDn, vs);
       });
 
       groups.push(entity);
-    });
+    }
   }
 
   return {
@@ -332,9 +346,9 @@ export async function readLdapOrg(
 
 // Maps a multi-valued attribute of references to other objects, to a consumer
 function mapReferencesAttr(
-  entry: SearchEntry,
+  entry: Entry,
   vendor: LdapVendor,
-  attributeName: string | undefined,
+  attributeName: string | undefined | null,
   setter: (sourceDn: string, targets: string[]) => void,
 ) {
   if (attributeName) {

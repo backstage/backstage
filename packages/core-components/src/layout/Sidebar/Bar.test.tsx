@@ -21,7 +21,6 @@ import BuildRoundedIcon from '@material-ui/icons/BuildRounded';
 import MenuBookIcon from '@material-ui/icons/MenuBook';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import React from 'react';
 import { Sidebar } from './Bar';
 import { SidebarExpandButton, SidebarItem, SidebarSearchField } from './Items';
 import { SidebarPinStateProvider } from './SidebarPinStateContext';

@@ -80,7 +80,7 @@ export class DockerContainerRunner implements TechDocsContainerRunner {
           } else if (!stream) {
             reject(
               new Error(
-                'Unexpeected error: no stream returned from Docker while pulling image',
+                'Unexpected error: no stream returned from Docker while pulling image',
               ),
             );
           } else {

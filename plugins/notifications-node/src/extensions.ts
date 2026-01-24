@@ -101,11 +101,32 @@ export interface NotificationProcessor {
 }
 
 /**
+ * NotificationRecipientResolver interface is used to resolve the individual
+ * users to receive the notification.
+ *
+ * The `resolveNotificationRecipients` is used to resolve notifications sent for
+ * entity references, and it should return object with a list of user
+ * entity references that should receive the notification. In case the function
+ * returns other than user entity references, those are ignored.
+ *
+ * @public
+ */
+export interface NotificationRecipientResolver {
+  resolveNotificationRecipients(options: {
+    entityRefs: string[];
+    excludedEntityRefs?: string[];
+  }): Promise<{ userEntityRefs: string[] }>;
+}
+
+/**
  * @public
  */
 export interface NotificationsProcessingExtensionPoint {
   addProcessor(
     ...processors: Array<NotificationProcessor | Array<NotificationProcessor>>
+  ): void;
+  setNotificationRecipientResolver(
+    resolver: NotificationRecipientResolver,
   ): void;
 }
 

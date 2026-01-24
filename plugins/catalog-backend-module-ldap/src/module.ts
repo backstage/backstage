@@ -20,11 +20,8 @@ import {
   createExtensionPoint,
 } from '@backstage/backend-plugin-api';
 import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
-import {
-  GroupTransformer,
-  UserTransformer,
-} from '@backstage/plugin-catalog-backend-module-ldap';
 import { LdapOrgEntityProvider } from './processors';
+import { GroupTransformer, UserTransformer } from './ldap/types';
 
 /**
  * Interface for {@link LdapOrgEntityProviderTransformsExtensionPoint}.

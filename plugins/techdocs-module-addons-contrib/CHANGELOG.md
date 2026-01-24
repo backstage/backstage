@@ -1,5 +1,384 @@
 # @backstage/plugin-techdocs-module-addons-contrib
 
+## 1.1.32
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.3
+  - @backstage/core-components@0.18.5
+  - @backstage/integration@1.19.2
+  - @backstage/integration-react@1.2.14
+  - @backstage/plugin-techdocs-react@1.3.7
+
+## 1.1.32-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.5-next.0
+  - @backstage/integration-react@1.2.14-next.0
+  - @backstage/plugin-techdocs-react@1.3.7-next.0
+
+## 1.1.32-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.19.2-next.0
+  - @backstage/integration-react@1.2.14-next.0
+  - @backstage/frontend-plugin-api@0.13.2
+
+## 1.1.31
+
+### Patch Changes
+
+- 8d6709e: Updated tests to match test-utils change
+- Updated dependencies
+  - @backstage/integration@1.19.0
+  - @backstage/frontend-plugin-api@0.13.2
+  - @backstage/core-components@0.18.4
+  - @backstage/core-plugin-api@1.12.1
+  - @backstage/integration-react@1.2.13
+  - @backstage/plugin-techdocs-react@1.3.6
+
+## 1.1.31-next.1
+
+### Patch Changes
+
+- 8d6709e: Updated tests to match test-utils change
+- Updated dependencies
+  - @backstage/core-components@0.18.4-next.1
+
+## 1.1.31-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.2-next.0
+  - @backstage/integration@1.18.3-next.0
+  - @backstage/core-plugin-api@1.12.1-next.0
+  - @backstage/plugin-techdocs-react@1.3.6-next.0
+  - @backstage/integration-react@1.2.13-next.0
+  - @backstage/core-components@0.18.4-next.0
+
+## 1.1.30
+
+### Patch Changes
+
+- 6929480: ExpandableCollapse Techdocs Addon was breaking native sidebar collapse on Firefox
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.0
+  - @backstage/integration@1.18.2
+  - @backstage/core-components@0.18.3
+  - @backstage/core-plugin-api@1.12.0
+  - @backstage/plugin-techdocs-react@1.3.5
+  - @backstage/integration-react@1.2.12
+
+## 1.1.30-next.1
+
+### Patch Changes
+
+- 6929480: ExpandableCollapse Techdocs Addon was breaking native sidebar collapse on Firefox
+- Updated dependencies
+  - @backstage/core-components@0.18.3-next.1
+  - @backstage/core-plugin-api@1.11.2-next.1
+  - @backstage/frontend-plugin-api@0.12.2-next.1
+
+## 1.1.30-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-plugin-api@1.11.2-next.0
+  - @backstage/core-components@0.18.3-next.0
+  - @backstage/integration@1.18.2-next.0
+  - @backstage/frontend-plugin-api@0.12.2-next.0
+  - @backstage/integration-react@1.2.12-next.0
+  - @backstage/plugin-techdocs-react@1.3.5-next.0
+
+## 1.1.29
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.2
+  - @backstage/integration@1.18.1
+  - @backstage/frontend-plugin-api@0.12.1
+  - @backstage/plugin-techdocs-react@1.3.4
+  - @backstage/core-plugin-api@1.11.1
+  - @backstage/integration-react@1.2.11
+
+## 1.1.29-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.18.1-next.1
+  - @backstage/core-components@0.18.2-next.1
+  - @backstage/core-plugin-api@1.11.1-next.0
+  - @backstage/integration-react@1.2.11-next.1
+  - @backstage/plugin-techdocs-react@1.3.4-next.1
+  - @backstage/frontend-plugin-api@0.12.1-next.1
+
+## 1.1.29-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.2-next.0
+  - @backstage/integration@1.18.1-next.0
+  - @backstage/frontend-plugin-api@0.12.1-next.0
+  - @backstage/integration-react@1.2.11-next.0
+  - @backstage/plugin-techdocs-react@1.3.4-next.0
+  - @backstage/core-plugin-api@1.11.0
+
+## 1.1.28
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-techdocs-react@1.3.3
+  - @backstage/frontend-plugin-api@0.12.0
+  - @backstage/core-plugin-api@1.11.0
+  - @backstage/integration@1.18.0
+  - @backstage/core-components@0.18.0
+  - @backstage/integration-react@1.2.10
+
+## 1.1.28-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.11.1-next.0
+  - @backstage/integration@1.18.0-next.0
+  - @backstage/core-components@0.17.6-next.0
+  - @backstage/plugin-techdocs-react@1.3.3-next.0
+  - @backstage/integration-react@1.2.10-next.0
+
+## 1.1.27
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.17.5
+  - @backstage/frontend-plugin-api@0.11.0
+  - @backstage/plugin-techdocs-react@1.3.2
+
+## 1.1.27-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.11.0-next.0
+  - @backstage/plugin-techdocs-react@1.3.2-next.0
+  - @backstage/core-components@0.17.5-next.0
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/integration@1.17.1
+  - @backstage/integration-react@1.2.9
+
+## 1.1.26
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.17.4
+  - @backstage/core-plugin-api@1.10.9
+  - @backstage/integration@1.17.1
+  - @backstage/integration-react@1.2.9
+  - @backstage/frontend-plugin-api@0.10.4
+  - @backstage/plugin-techdocs-react@1.3.1
+
+## 1.1.26-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.17.1-next.1
+  - @backstage/core-components@0.17.4-next.1
+  - @backstage/core-plugin-api@1.10.9-next.0
+  - @backstage/integration-react@1.2.9-next.1
+  - @backstage/plugin-techdocs-react@1.3.1-next.1
+  - @backstage/frontend-plugin-api@0.10.4-next.1
+
+## 1.1.26-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.17.1-next.0
+  - @backstage/integration-react@1.2.9-next.0
+  - @backstage/core-components@0.17.4-next.0
+  - @backstage/plugin-techdocs-react@1.3.1-next.0
+  - @backstage/core-plugin-api@1.10.8
+  - @backstage/frontend-plugin-api@0.10.4-next.0
+
+## 1.1.25
+
+### Patch Changes
+
+- 9dde3ba: Improved Keyboard accessibility in techdocs.
+- Updated dependencies
+  - @backstage/core-components@0.17.3
+  - @backstage/core-plugin-api@1.10.8
+  - @backstage/frontend-plugin-api@0.10.3
+  - @backstage/plugin-techdocs-react@1.3.0
+  - @backstage/integration-react@1.2.8
+  - @backstage/integration@1.17.0
+
+## 1.1.25-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.17.3-next.0
+  - @backstage/frontend-plugin-api@0.10.3-next.1
+  - @backstage/integration-react@1.2.7
+  - @backstage/plugin-techdocs-react@1.3.0-next.1
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/integration@1.17.0
+
+## 1.1.25-next.1
+
+### Patch Changes
+
+- 9dde3ba: Improved Keyboard accessibility in techdocs.
+- Updated dependencies
+  - @backstage/core-components@0.17.2
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/frontend-plugin-api@0.10.3-next.0
+  - @backstage/integration@1.17.0
+  - @backstage/integration-react@1.2.7
+  - @backstage/plugin-techdocs-react@1.3.0-next.0
+
+## 1.1.25-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.3-next.0
+  - @backstage/plugin-techdocs-react@1.3.0-next.0
+  - @backstage/integration-react@1.2.7
+
+## 1.1.24
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.2
+  - @backstage/integration@1.17.0
+  - @backstage/core-components@0.17.2
+  - @backstage/plugin-techdocs-react@1.2.17
+  - @backstage/core-plugin-api@1.10.7
+  - @backstage/integration-react@1.2.7
+
+## 1.1.24-next.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.17.0-next.3
+  - @backstage/core-components@0.17.2-next.1
+  - @backstage/core-plugin-api@1.10.7-next.0
+  - @backstage/frontend-plugin-api@0.10.2-next.1
+  - @backstage/integration-react@1.2.7-next.3
+  - @backstage/plugin-techdocs-react@1.2.17-next.1
+
+## 1.1.24-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.17.0-next.2
+  - @backstage/core-plugin-api@1.10.7-next.0
+  - @backstage/core-components@0.17.2-next.1
+  - @backstage/frontend-plugin-api@0.10.2-next.1
+  - @backstage/integration-react@1.2.7-next.2
+  - @backstage/plugin-techdocs-react@1.2.17-next.1
+
+## 1.1.24-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.17.2-next.0
+  - @backstage/frontend-plugin-api@0.10.2-next.0
+  - @backstage/integration@1.16.4-next.1
+  - @backstage/plugin-techdocs-react@1.2.17-next.0
+  - @backstage/integration-react@1.2.7-next.1
+  - @backstage/core-plugin-api@1.10.6
+
+## 1.1.24-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.16.4-next.0
+  - @backstage/integration-react@1.2.7-next.0
+  - @backstage/core-components@0.17.1
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/frontend-plugin-api@0.10.1
+  - @backstage/plugin-techdocs-react@1.2.16
+
+## 1.1.23
+
+### Patch Changes
+
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+- 9c12a76: Fixed rendering issues in `ReportIssue` addon for unsupported repository types and improved shadow DOM event handling. The addon now properly prevents initialization when encountering unsupported repository types and correctly handles selection events within the shadow DOM.
+- Updated dependencies
+  - @backstage/plugin-techdocs-react@1.2.16
+  - @backstage/frontend-plugin-api@0.10.1
+  - @backstage/integration-react@1.2.6
+  - @backstage/core-components@0.17.1
+  - @backstage/core-plugin-api@1.10.6
+  - @backstage/integration@1.16.3
+
+## 1.1.23-next.1
+
+### Patch Changes
+
+- a47fd39: Removes instances of default React imports, a necessary update for the upcoming React 19 migration.
+
+  <https://legacy.reactjs.org/blog/2020/09/22/introducing-the-new-jsx-transform.html>
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.10.1-next.1
+  - @backstage/integration-react@1.2.6-next.1
+  - @backstage/core-components@0.17.1-next.1
+  - @backstage/core-plugin-api@1.10.6-next.0
+  - @backstage/plugin-techdocs-react@1.2.16-next.1
+  - @backstage/integration@1.16.3-next.0
+
+## 1.1.23-next.0
+
+### Patch Changes
+
+- 9c12a76: Fixed rendering issues in `ReportIssue` addon for unsupported repository types and improved shadow DOM event handling. The addon now properly prevents initialization when encountering unsupported repository types and correctly handles selection events within the shadow DOM.
+- Updated dependencies
+  - @backstage/plugin-techdocs-react@1.2.16-next.0
+  - @backstage/core-components@0.17.1-next.0
+  - @backstage/integration-react@1.2.6-next.0
+  - @backstage/integration@1.16.3-next.0
+  - @backstage/frontend-plugin-api@0.10.1-next.0
+  - @backstage/core-plugin-api@1.10.5
+
+## 1.1.22
+
+### Patch Changes
+
+- b5a8208: Added `TechDocsAddonsBlueprint` extension to allow adding of techdocs addons.
+- Updated dependencies
+  - @backstage/core-components@0.17.0
+  - @backstage/core-plugin-api@1.10.5
+  - @backstage/integration@1.16.2
+  - @backstage/frontend-plugin-api@0.10.0
+  - @backstage/plugin-techdocs-react@1.2.15
+  - @backstage/integration-react@1.2.5
+
 ## 1.1.22-next.2
 
 ### Patch Changes

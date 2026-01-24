@@ -21,7 +21,10 @@ import Divider from '@material-ui/core/Divider';
 import { makeStyles, withStyles } from '@material-ui/core/styles';
 import Tab, { TabProps } from '@material-ui/core/Tab';
 import Tabs from '@material-ui/core/Tabs';
-import React, {
+import {
+  ChangeEvent,
+  Children,
+  isValidElement,
   PropsWithChildren,
   ReactElement,
   ReactNode,
@@ -63,7 +66,7 @@ type Props = {
   slackChannel?: string;
   errorBoundaryProps?: ErrorBoundaryProps;
   children?: ReactElement<TabProps>[];
-  onChange?: (event: React.ChangeEvent<{}>, value: number | string) => void;
+  onChange?: (event: ChangeEvent<{}>, value: number | string) => void;
   title?: string;
   value?: number | string;
   deepLink?: BottomLinkProps;
@@ -88,17 +91,15 @@ export function TabbedCard(props: PropsWithChildren<Props>) {
 
   let selectedTabContent: ReactNode;
   if (!value) {
-    React.Children.map(children, (child, index) => {
-      if (React.isValidElement(child) && index === selectedIndex) {
+    Children.map(children, (child, index) => {
+      if (isValidElement(child) && index === selectedIndex) {
         selectedTabContent = child?.props.children;
       }
     });
   } else {
-    React.Children.map(children, child => {
+    Children.map(children, child => {
       if (
-        React.isValidElement<{ children?: ReactNode; value?: unknown }>(
-          child,
-        ) &&
+        isValidElement<{ children?: ReactNode; value?: unknown }>(child) &&
         child?.props.value === value
       ) {
         selectedTabContent = child?.props.children;

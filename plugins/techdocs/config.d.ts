@@ -19,7 +19,7 @@ export interface Config {
    * Configuration options for the techdocs plugin
    * @see http://backstage.io/docs/features/techdocs/configuration
    */
-  techdocs: {
+  techdocs?: {
     /**
      * Documentation building process depends on the builder attr
      * @visibility frontend
@@ -58,6 +58,16 @@ export interface Config {
        * @visibility frontend
        */
       allowedCustomElementAttributeNameRegExp?: string;
+      /**
+       * Allows listed protocols in attributes with URI values
+       * Example:
+       *  additionalAllowedURIProtocols: ['vscode']
+       *  this will allow all attributes with URI values to have `vscode` protocol like `vscode://some/path` in addition to the default protocols
+       *  matched by DOMPurify's IS_ALLOWED_URI RegExp:
+       *  @see: https://raw.githubusercontent.com/cure53/DOMPurify/master/src/regexp.ts
+       * @visibility frontend
+       */
+      additionalAllowedURIProtocols?: string[];
     };
   };
 }

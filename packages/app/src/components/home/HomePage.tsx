@@ -14,22 +14,37 @@
  * limitations under the License.
  */
 
+import { Page, Content, Header } from '@backstage/core-components';
 import {
-  ClockConfig,
-  CustomHomepageGrid,
-  HeaderWorldClock,
   HomePageCompanyLogo,
-  HomePageRandomJoke,
+  TemplateBackstageLogo,
   HomePageStarredEntities,
   HomePageToolkit,
   HomePageTopVisited,
   HomePageRecentlyVisited,
   WelcomeTitle,
+  HeaderWorldClock,
+  ClockConfig,
 } from '@backstage/plugin-home';
-import { Content, Header, Page } from '@backstage/core-components';
 import { HomePageSearchBar } from '@backstage/plugin-search';
-import React from 'react';
-import HomeIcon from '@material-ui/icons/Home';
+import { SearchContextProvider } from '@backstage/plugin-search-react';
+import Grid from '@material-ui/core/Grid';
+import { makeStyles } from '@material-ui/core/styles';
+
+import { tools, useLogoStyles } from './shared';
+
+const useStyles = makeStyles(theme => ({
+  searchBarInput: {
+    maxWidth: '60vw',
+    margin: 'auto',
+    backgroundColor: theme.palette.background.paper,
+    borderRadius: '50px',
+    boxShadow: theme.shadows[1],
+  },
+  searchBarOutline: {
+    borderStyle: 'none',
+  },
+}));
 
 const clockConfigs: ClockConfig[] = [
   {
@@ -56,60 +71,55 @@ const timeFormat: Intl.DateTimeFormatOptions = {
   hour12: false,
 };
 
-const defaultConfig = [
-  {
-    component: 'CompanyLogo',
-    x: 0,
-    y: 0,
-    width: 12,
-    height: 1,
-    movable: false,
-    resizable: false,
-    deletable: false,
-  },
-  {
-    component: 'WelcomeTitle',
-    x: 0,
-    y: 1,
-    width: 12,
-    height: 1,
-  },
-  {
-    component: 'HomePageSearchBar',
-    x: 0,
-    y: 2,
-    width: 12,
-    height: 2,
-  },
-];
+export const HomePage = () => {
+  const classes = useStyles();
+  const { svg, path, container } = useLogoStyles();
 
-export const homePage = (
-  <Page themeId="home">
-    <Header title={<WelcomeTitle />} pageTitleOverride="Home">
-      <HeaderWorldClock
-        clockConfigs={clockConfigs}
-        customTimeFormat={timeFormat}
-      />
-    </Header>
-    <Content>
-      <CustomHomepageGrid config={defaultConfig}>
-        <HomePageSearchBar />
-        <HomePageRandomJoke />
-        <HomePageStarredEntities />
-        <HomePageCompanyLogo />
-        <WelcomeTitle />
-        <HomePageToolkit
-          tools={[
-            {
-              url: 'https://backstage.io',
-              label: 'Backstage Homepage',
-              icon: <HomeIcon />,
-            },
-          ]}
-        />
-        <HomePageTopVisited />
-        <HomePageRecentlyVisited />
-      </CustomHomepageGrid>
-    </Content>
-  </Page>
-);
+  return (
+    <SearchContextProvider>
+      <Page themeId="home">
+        <Header title={<WelcomeTitle />} pageTitleOverride="Home">
+          <HeaderWorldClock
+            clockConfigs={clockConfigs}
+            customTimeFormat={timeFormat}
+          />
+        </Header>
+        <Content>
+          <Grid container justifyContent="center" spacing={2}>
+            <HomePageCompanyLogo
+              className={container}
+              logo={<TemplateBackstageLogo classes={{ svg, path }} />}
+            />
+            <Grid container item xs={12} justifyContent="center">
+              <HomePageSearchBar
+                InputProps={{
+                  classes: {
+                    root: classes.searchBarInput,
+                    notchedOutline: classes.searchBarOutline,
+                  },
+                }}
+                placeholder="Search"
+              />
+            </Grid>
+            <Grid container item xs={12}>
+              <Grid item xs={12} md={6}>
+                <HomePageTopVisited />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <HomePageRecentlyVisited />
+              </Grid>
+            </Grid>
+            <Grid container item xs={12}>
+              <Grid item xs={7}>
+                <HomePageStarredEntities />
+              </Grid>
+              <Grid item xs={5}>
+                <HomePageToolkit tools={tools} />
+              </Grid>
+            </Grid>
+          </Grid>
+        </Content>
+      </Page>
+    </SearchContextProvider>
+  );
+};

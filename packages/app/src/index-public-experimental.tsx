@@ -22,7 +22,6 @@ import {
   SignInPage,
 } from '@backstage/core-components';
 import { CookieAuthRedirect } from '@backstage/plugin-auth-react';
-import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { providers } from '../src/identityProviders';
 import {
@@ -31,6 +30,7 @@ import {
   discoveryApiRef,
 } from '@backstage/core-plugin-api';
 import { AuthProxyDiscoveryApi } from '../src/AuthProxyDiscoveryApi';
+import '@backstage/ui/css/styles.css';
 
 const app = createApp({
   apis: [

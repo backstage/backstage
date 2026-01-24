@@ -4,18 +4,19 @@
 
 ```ts
 import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
-import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
-import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
-import { FrontendPlugin } from '@backstage/frontend-plugin-api';
-import { default as React_2 } from 'react';
+import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
+import { JSX as JSX_2 } from 'react';
+import { JSX as JSX_3 } from 'react/jsx-runtime';
+import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
+import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 
 // @public (undocumented)
-const examplePlugin: FrontendPlugin<
+const examplePlugin: OverridableFrontendPlugin<
   {},
   {},
   {
-    'page:example': ExtensionDefinition<{
+    'page:example': OverridableExtensionDefinition<{
       kind: 'page';
       name: undefined;
       config: {
@@ -25,13 +26,9 @@ const examplePlugin: FrontendPlugin<
         path?: string | undefined;
       };
       output:
-        | ConfigurableExtensionDataRef<
-            React_2.JSX.Element,
-            'core.reactElement',
-            {}
-          >
-        | ConfigurableExtensionDataRef<string, 'core.routing.path', {}>
-        | ConfigurableExtensionDataRef<
+        | ExtensionDataRef<string, 'core.routing.path', {}>
+        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+        | ExtensionDataRef<
             RouteRef<AnyRouteRefParams>,
             'core.routing.ref',
             {
@@ -40,7 +37,8 @@ const examplePlugin: FrontendPlugin<
           >;
       inputs: {};
       params: {
-        defaultPath: string;
+        defaultPath?: [Error: `Use the 'path' param instead`];
+        path: string;
         loader: () => Promise<JSX.Element>;
         routeRef?: RouteRef;
       };
@@ -50,7 +48,7 @@ const examplePlugin: FrontendPlugin<
 export default examplePlugin;
 
 // @public (undocumented)
-export const ExampleSidebarItem: () => React_2.JSX.Element;
+export const ExampleSidebarItem: () => JSX_3.Element;
 
 // (No @packageDocumentation comment for this package)
 ```

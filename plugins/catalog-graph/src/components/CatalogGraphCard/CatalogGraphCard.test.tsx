@@ -31,10 +31,11 @@ import {
 } from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import React from 'react';
 import { catalogGraphRouteRef } from '../../routes';
 import { CatalogGraphCard } from './CatalogGraphCard';
 import Button from '@material-ui/core/Button';
+import { translationApiRef } from '@backstage/core-plugin-api/alpha';
+import { catalogGraphApiRef, DefaultCatalogGraphApi } from '../../api';
 
 describe('<CatalogGraphCard/>', () => {
   let entity: Entity;
@@ -53,7 +54,11 @@ describe('<CatalogGraphCard/>', () => {
         namespace: 'd',
       },
     };
-    apis = TestApiRegistry.from([catalogApiRef, catalog]);
+    apis = TestApiRegistry.from(
+      [catalogApiRef, catalog],
+      [translationApiRef, mockApis.translation()],
+      [catalogGraphApiRef, new DefaultCatalogGraphApi()],
+    );
 
     wrapper = (
       <ApiProvider apis={apis}>
@@ -214,7 +219,12 @@ describe('<CatalogGraphCard/>', () => {
 
     const analyticsApi = mockApis.analytics();
     await renderInTestApp(
-      <TestApiProvider apis={[[analyticsApiRef, analyticsApi]]}>
+      <TestApiProvider
+        apis={[
+          [analyticsApiRef, analyticsApi],
+          [translationApiRef, mockApis.translation()],
+        ]}
+      >
         {wrapper}
       </TestApiProvider>,
       {

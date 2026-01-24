@@ -20,7 +20,8 @@ import { FeatureFlag } from '@backstage/core-plugin-api';
 import { FrontendModule } from '@backstage/frontend-plugin-api';
 import { FrontendPlugin } from '@backstage/frontend-plugin-api';
 import { IconComponent } from '@backstage/core-plugin-api';
-import { default as React_2 } from 'react';
+import { JSX as JSX_2 } from 'react';
+import { JSX as JSX_3 } from 'react/jsx-runtime';
 import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { RouteRef as RouteRef_2 } from '@backstage/frontend-plugin-api';
@@ -28,18 +29,13 @@ import { SubRouteRef } from '@backstage/core-plugin-api';
 import { SubRouteRef as SubRouteRef_2 } from '@backstage/frontend-plugin-api';
 
 // @public
-export function compatWrapper(element: ReactNode): React_2.JSX.Element;
+export function compatWrapper(element: ReactNode): JSX_3.Element;
 
-// @public (undocumented)
-export function convertLegacyApp(
-  rootElement: React_2.JSX.Element,
-  options?: ConvertLegacyAppOptions,
-): (FrontendPlugin | FrontendModule)[];
+// @public @deprecated (undocumented)
+export const convertLegacyApp: typeof convertLegacyAppRoot;
 
-// @public (undocumented)
-export interface ConvertLegacyAppOptions {
-  entityPage?: React_2.JSX.Element;
-}
+// @public @deprecated (undocumented)
+export type ConvertLegacyAppOptions = ConvertLegacyAppRootOptions;
 
 // @public (undocumented)
 export function convertLegacyAppOptions(options?: {
@@ -54,11 +50,23 @@ export function convertLegacyAppOptions(options?: {
 }): FrontendModule;
 
 // @public (undocumented)
+export function convertLegacyAppRoot(
+  rootElement: JSX_2.Element,
+  options?: ConvertLegacyAppRootOptions,
+): (FrontendPlugin | FrontendModule)[];
+
+// @public (undocumented)
+export interface ConvertLegacyAppRootOptions {
+  entityPage?: JSX_2.Element;
+}
+
+// @public (undocumented)
 export function convertLegacyPageExtension(
   LegacyExtension: ComponentType<{}>,
   overrides?: {
     name?: string;
-    defaultPath?: string;
+    path?: string;
+    defaultPath?: [Error: `Use the 'path' override instead`];
   },
 ): ExtensionDefinition;
 

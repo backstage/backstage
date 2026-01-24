@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { HeaderIconLinkRow } from '../HeaderIconLinkRow';
 import { IconLinkVerticalProps } from './IconLinkVertical';
 
@@ -25,6 +24,7 @@ type Props = {
 export default {
   title: 'Data Display/HeaderIconLinkRow',
   component: HeaderIconLinkRow,
+  tags: ['!manifest'],
 };
 
 export const Default = (args: Props) => <HeaderIconLinkRow {...args} />;

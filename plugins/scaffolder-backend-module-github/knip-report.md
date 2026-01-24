@@ -2,7 +2,7 @@
 
 ## Unlisted dependencies (1)
 
-| Name          | Location               | Severity |
-| :------------ | :--------------------- | :------- |
-| @octokit/core | src/actions/helpers.ts | error    |
+| Name          | Location    | Severity |
+| :------------ | :---------- | :------- |
+| @octokit/core | plugins/scaffolder-backend-module-github/src/util.ts | error    |
 

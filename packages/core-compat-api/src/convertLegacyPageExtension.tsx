@@ -25,7 +25,6 @@ import {
 import kebabCase from 'lodash/kebabCase';
 import { convertLegacyRouteRef } from './convertLegacyRouteRef';
 import { ComponentType } from 'react';
-import React from 'react';
 import { compatWrapper } from './compatWrapper';
 
 /** @public */
@@ -33,7 +32,11 @@ export function convertLegacyPageExtension(
   LegacyExtension: ComponentType<{}>,
   overrides?: {
     name?: string;
-    defaultPath?: string;
+    path?: string;
+    /**
+     * @deprecated Use the `path` param instead.
+     */
+    defaultPath?: [Error: `Use the 'path' override instead`];
   },
 ): ExtensionDefinition {
   const element = <LegacyExtension />;
@@ -56,7 +59,7 @@ export function convertLegacyPageExtension(
   return PageBlueprint.make({
     name: overrides?.name ?? kebabName,
     params: {
-      defaultPath: overrides?.defaultPath ?? `/${kebabName}`,
+      path: overrides?.path ?? `/${kebabName}`,
       routeRef: mountPoint && convertLegacyRouteRef(mountPoint),
       loader: async () => compatWrapper(element),
     },

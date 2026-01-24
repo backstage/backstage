@@ -15,13 +15,14 @@
  */
 
 import TextField from '@material-ui/core/TextField';
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { SimpleStepper, StepperProps } from './SimpleStepper';
 import { SimpleStepperStep } from './SimpleStepperStep';
 
 export default {
   title: 'Navigation/SimpleStepper',
   component: SimpleStepper,
+  tags: ['!manifest'],
 };
 
 const defaultArgs = {

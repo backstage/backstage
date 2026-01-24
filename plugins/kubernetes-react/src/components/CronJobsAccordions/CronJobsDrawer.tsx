@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
-import { V1CronJob } from '@kubernetes/client-node';
+import type { V1CronJob } from '@kubernetes/client-node';
 import { KubernetesStructuredMetadataTableDrawer } from '../KubernetesDrawer';
 import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import Chip from '@material-ui/core/Chip';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { kubernetesReactTranslationRef } from '../../translation';
 
 export const CronJobDrawer = ({
   cronJob,
@@ -27,6 +28,7 @@ export const CronJobDrawer = ({
   cronJob: V1CronJob;
   expanded?: boolean;
 }) => {
+  const { t } = useTranslationRef(kubernetesReactTranslationRef);
   const namespace = cronJob.metadata?.namespace;
   return (
     <KubernetesStructuredMetadataTableDrawer
@@ -60,7 +62,10 @@ export const CronJobDrawer = ({
         </Grid>
         {namespace && (
           <Grid item>
-            <Chip size="small" label={`namespace: ${namespace}`} />
+            <Chip
+              size="small"
+              label={t('namespace.labelWithValue', { namespace })}
+            />
           </Grid>
         )}
       </Grid>

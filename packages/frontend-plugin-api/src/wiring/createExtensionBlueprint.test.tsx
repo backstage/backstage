@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { coreExtensionData } from './coreExtensionData';
-import { createExtensionBlueprint } from './createExtensionBlueprint';
+import {
+  createExtensionBlueprint,
+  createExtensionBlueprintParams,
+  ExtensionBlueprintParams,
+} from './createExtensionBlueprint';
 import {
   createExtensionTester,
   renderInTestApp,
@@ -27,7 +30,7 @@ import {
 } from './createExtensionDataRef';
 import { createExtensionInput } from './createExtensionInput';
 import { RouteRef } from '../routing';
-import { ExtensionDefinition } from './createExtension';
+import { createExtension, ExtensionDefinition } from './createExtension';
 import {
   createExtensionDataContainer,
   OpaqueExtensionDefinition,
@@ -388,7 +391,7 @@ describe('createExtensionBlueprint', () => {
     });
 
     const mockInput = (node: string, ...data: ExtensionDataValue<any, any>[]) =>
-      Object.assign(createExtensionDataContainer(data), {
+      Object.assign(createExtensionDataContainer(data, 'mock'), {
         node,
       });
     const mockParentInputs = {
@@ -877,6 +880,21 @@ describe('createExtensionBlueprint', () => {
       test2: 'orig-2',
     });
 
+    const extensionDef = blueprint.make({
+      // Using defineParams is optional in this case
+      params: defineParams =>
+        defineParams({
+          test1: 'orig-1',
+          test2: 'orig-2',
+        }),
+    });
+
+    expect(getOutputs(extensionDef)).toEqual({
+      test1: 'orig-1',
+      test2: 'orig-2',
+    });
+
+    // Plain override
     expect(
       getOutputs(
         extension.override({
@@ -897,11 +915,65 @@ describe('createExtensionBlueprint', () => {
         extension.override({
           params: {
             test2: 'override-2',
+            // @ts-expect-error
+            test3: 'nonexistent',
           },
         }),
       ),
     ).toEqual({
       test1: 'orig-1',
+      test2: 'override-2',
+    });
+
+    // Partial override with original defineParams
+    expect(
+      getOutputs(
+        extensionDef.override({
+          params: {
+            test2: 'override-2',
+            // @ts-expect-error
+            test3: 'nonexistent',
+          },
+        }),
+      ),
+    ).toEqual({
+      test1: 'orig-1',
+      test2: 'override-2',
+    });
+
+    // Override with defineParams
+    expect(
+      getOutputs(
+        extension.override({
+          params: defineParams =>
+            defineParams({
+              test1: 'override-1',
+              test2: 'override-2',
+              // @ts-expect-error
+              test3: 'nonexistent',
+            }),
+        }),
+      ),
+    ).toEqual({
+      test1: 'override-1',
+      test2: 'override-2',
+    });
+
+    // Override with defineParams with original defineParams
+    expect(
+      getOutputs(
+        extensionDef.override({
+          params: defineParams =>
+            defineParams({
+              test1: 'override-1',
+              test2: 'override-2',
+              // @ts-expect-error
+              test3: 'nonexistent',
+            }),
+        }),
+      ),
+    ).toEqual({
+      test1: 'override-1',
       test2: 'override-2',
     });
 
@@ -931,6 +1003,8 @@ describe('createExtensionBlueprint', () => {
             return origFactory({
               params: {
                 test2: 'override-2',
+                // @ts-expect-error
+                test3: 'nonexistent',
               },
             });
           },
@@ -938,6 +1012,70 @@ describe('createExtensionBlueprint', () => {
       ),
     ).toEqual({
       test1: 'orig-1',
+      test2: 'override-2',
+    });
+
+    // Partial override via factory with original defineParams
+    expect(
+      getOutputs(
+        extensionDef.override({
+          factory(origFactory) {
+            return origFactory({
+              params: {
+                test2: 'override-2',
+                // @ts-expect-error
+                test3: 'nonexistent',
+              },
+            });
+          },
+        }),
+      ),
+    ).toEqual({
+      test1: 'orig-1',
+      test2: 'override-2',
+    });
+
+    // Override via factory with defineParams
+    expect(
+      getOutputs(
+        extension.override({
+          factory(origFactory) {
+            return origFactory({
+              params: defineParams =>
+                defineParams({
+                  test1: 'override-1',
+                  test2: 'override-2',
+                  // @ts-expect-error
+                  test3: 'nonexistent',
+                }),
+            });
+          },
+        }),
+      ),
+    ).toEqual({
+      test1: 'override-1',
+      test2: 'override-2',
+    });
+
+    // Override via factory with defineParams with original defineParams
+    expect(
+      getOutputs(
+        extensionDef.override({
+          factory(origFactory) {
+            return origFactory({
+              params: defineParams =>
+                defineParams({
+                  test1: 'override-1',
+                  test2: 'override-2',
+                  // @ts-expect-error
+                  test3: 'nonexistent',
+                }),
+            });
+          },
+        }),
+      ),
+    ).toEqual({
+      test1: 'override-1',
       test2: 'override-2',
     });
 
@@ -992,6 +1130,21 @@ describe('createExtensionBlueprint', () => {
       test2: 'orig-2',
     });
 
+    const extensionDef = blueprint.make({
+      // Using defineParams is optional in this case
+      params: defineParams =>
+        defineParams({
+          test1: 'orig-1',
+          test2: 'orig-2',
+        }),
+    });
+
+    expect(getOutputs(extensionDef)).toEqual({
+      test1: 'orig-1',
+      test2: 'orig-2',
+    });
+
+    // Plain override
     expect(
       getOutputs(
         extension.override({
@@ -1012,6 +1165,8 @@ describe('createExtensionBlueprint', () => {
         extension.override({
           params: {
             test2: 'override-2',
+            // @ts-expect-error
+            test3: 'nonexistent',
           },
         }),
       ),
@@ -1020,6 +1175,59 @@ describe('createExtensionBlueprint', () => {
       test2: 'override-2',
     });
 
+    // Partial override with original defineParams
+    expect(
+      getOutputs(
+        extensionDef.override({
+          params: {
+            test2: 'override-2',
+            // @ts-expect-error
+            test3: 'nonexistent',
+          },
+        }),
+      ),
+    ).toEqual({
+      test1: 'orig-1',
+      test2: 'override-2',
+    });
+
+    // Override with defineParams
+    expect(
+      getOutputs(
+        extension.override({
+          params: defineParams =>
+            defineParams({
+              test1: 'override-1',
+              test2: 'override-2',
+              // @ts-expect-error
+              test3: 'nonexistent',
+            }),
+        }),
+      ),
+    ).toEqual({
+      test1: 'override-1',
+      test2: 'override-2',
+    });
+
+    // Override with defineParams with original defineParams
+    expect(
+      getOutputs(
+        extensionDef.override({
+          params: defineParams =>
+            defineParams({
+              test1: 'override-1',
+              test2: 'override-2',
+              // @ts-expect-error
+              test3: 'nonexistent',
+            }),
+        }),
+      ),
+    ).toEqual({
+      test1: 'override-1',
+      test2: 'override-2',
+    });
+
+    // Override via factory
     expect(
       getOutputs(
         extension.override({
@@ -1046,6 +1254,8 @@ describe('createExtensionBlueprint', () => {
             return origFactory({
               params: {
                 test2: 'override-2',
+                // @ts-expect-error
+                test3: 'nonexistent',
               },
             });
           },
@@ -1053,6 +1263,70 @@ describe('createExtensionBlueprint', () => {
       ),
     ).toEqual({
       test1: 'orig-1',
+      test2: 'override-2',
+    });
+
+    // Partial override via factory with original defineParams
+    expect(
+      getOutputs(
+        extensionDef.override({
+          factory(origFactory) {
+            return origFactory({
+              params: {
+                test2: 'override-2',
+                // @ts-expect-error
+                test3: 'nonexistent',
+              },
+            });
+          },
+        }),
+      ),
+    ).toEqual({
+      test1: 'orig-1',
+      test2: 'override-2',
+    });
+
+    // Override via factory with defineParams
+    expect(
+      getOutputs(
+        extension.override({
+          factory(origFactory) {
+            return origFactory({
+              params: defineParams =>
+                defineParams({
+                  test1: 'override-1',
+                  test2: 'override-2',
+                  // @ts-expect-error
+                  test3: 'nonexistent',
+                }),
+            });
+          },
+        }),
+      ),
+    ).toEqual({
+      test1: 'override-1',
+      test2: 'override-2',
+    });
+
+    // Override via factory with defineParams with original defineParams
+    expect(
+      getOutputs(
+        extensionDef.override({
+          factory(origFactory) {
+            return origFactory({
+              params: defineParams =>
+                defineParams({
+                  test1: 'override-1',
+                  test2: 'override-2',
+                  // @ts-expect-error
+                  test3: 'nonexistent',
+                }),
+            });
+          },
+        }),
+      ),
+    ).toEqual({
+      test1: 'override-1',
       test2: 'override-2',
     });
 
@@ -1069,5 +1343,502 @@ describe('createExtensionBlueprint', () => {
         }),
       ),
     ).toThrow('Refused to override params and factory at the same time');
+  });
+
+  describe('with relative attachment points', () => {
+    const dataRef = createExtensionDataRef<string>().with({ id: 'test.data' });
+
+    it('should create an extension with relative attachment points', () => {
+      const blueprint = createExtensionBlueprint({
+        kind: 'test',
+        attachTo: [
+          { relative: {}, input: 'tabs' },
+          { relative: { kind: 'page' }, input: 'tabs' },
+          { relative: { name: 'index' }, input: 'tabs' },
+          { relative: { kind: 'page', name: 'index' }, input: 'tabs' },
+        ],
+        output: [dataRef],
+        factory: () => [dataRef('bar')],
+      });
+
+      expect(String(blueprint.make({ params: {} }))).toBe(
+        'ExtensionDefinition{kind=test,attachTo=<plugin>@tabs+page:<plugin>@tabs+<plugin>/index@tabs+page:<plugin>/index@tabs}',
+      );
+      expect(
+        String(
+          blueprint.make({
+            attachTo: [
+              { relative: { kind: 'page' }, input: 'tabs' },
+              { relative: { name: 'index' }, input: 'tabs' },
+              { relative: { kind: 'page', name: 'index' }, input: 'tabs' },
+            ],
+            params: {},
+          }),
+        ),
+      ).toBe(
+        'ExtensionDefinition{kind=test,attachTo=page:<plugin>@tabs+<plugin>/index@tabs+page:<plugin>/index@tabs}',
+      );
+      expect(
+        String(
+          blueprint.makeWithOverrides({
+            attachTo: {
+              relative: { kind: 'page', name: 'index' },
+              input: 'tabs',
+            },
+            factory: orig => orig({}),
+          }),
+        ),
+      ).toBe(
+        'ExtensionDefinition{kind=test,attachTo=page:<plugin>/index@tabs}',
+      );
+    });
+
+    it('should create an extension with relative attachment points by reference', () => {
+      const baseOpts = {
+        attachTo: { id: 'root', input: 'children' },
+        inputs: {
+          tabs: createExtensionInput([dataRef]),
+        },
+        output: [],
+        factory: () => [],
+      };
+      const parent1 = createExtension({
+        ...baseOpts,
+      });
+      const parent2 = createExtension({
+        ...baseOpts,
+        kind: 'page',
+      });
+      const parent3 = createExtension({
+        ...baseOpts,
+        name: 'index',
+      });
+      const parent4 = createExtension({
+        ...baseOpts,
+        inputs: {},
+        kind: 'page',
+        name: 'index',
+      }).override({
+        inputs: {
+          otherTabs: createExtensionInput([dataRef]),
+        },
+        factory: () => [],
+      });
+      const blueprint = createExtensionBlueprint({
+        kind: 'test',
+        attachTo: [
+          parent1.inputs.tabs,
+          parent2.inputs.tabs,
+          parent3.inputs.tabs,
+          parent4.inputs.otherTabs,
+        ],
+        output: [dataRef],
+        factory: () => [dataRef('bar')],
+      });
+      expect(String(blueprint.make({ params: {} }))).toBe(
+        'ExtensionDefinition{kind=test,attachTo=<plugin>@tabs+page:<plugin>@tabs+<plugin>/index@tabs+page:<plugin>/index@otherTabs}',
+      );
+      expect(
+        String(
+          blueprint.make({
+            attachTo: [
+              parent2.inputs.tabs,
+              parent3.inputs.tabs,
+              parent4.inputs.otherTabs,
+            ],
+            params: {},
+          }),
+        ),
+      ).toBe(
+        'ExtensionDefinition{kind=test,attachTo=page:<plugin>@tabs+<plugin>/index@tabs+page:<plugin>/index@otherTabs}',
+      );
+      expect(
+        String(
+          blueprint.makeWithOverrides({
+            attachTo: parent4.inputs.otherTabs,
+            factory: orig => orig({}),
+          }),
+        ),
+      ).toBe(
+        'ExtensionDefinition{kind=test,attachTo=page:<plugin>/index@otherTabs}',
+      );
+    });
+
+    it('should provide type safe attachments by reference', () => {
+      const stringDataRef = createExtensionDataRef<string>().with({
+        id: 'test.string',
+      });
+      const numberDataRef = createExtensionDataRef<number>().with({
+        id: 'test.number',
+      });
+
+      const parent = createExtensionBlueprint({
+        kind: 'test-parent',
+        attachTo: { id: 'root', input: 'children' },
+        inputs: {
+          string: createExtensionInput([stringDataRef]),
+          stringOpt: createExtensionInput([stringDataRef.optional()]),
+          number: createExtensionInput([numberDataRef]),
+          numberOpt: createExtensionInput([numberDataRef.optional()]),
+          both: createExtensionInput([stringDataRef, numberDataRef]),
+          bothOptString: createExtensionInput([
+            stringDataRef.optional(),
+            numberDataRef,
+          ]),
+          bothOptNumber: createExtensionInput([
+            stringDataRef,
+            numberDataRef.optional(),
+          ]),
+          bothOpt: createExtensionInput([
+            stringDataRef.optional(),
+            numberDataRef.optional(),
+          ]),
+        },
+        output: [],
+        factory: () => [],
+      }).make({ params: {} });
+      const strOutExt = createExtensionBlueprint({
+        kind: 'test',
+        attachTo: parent.inputs.string,
+        output: [stringDataRef],
+        factory: () => [stringDataRef('str')],
+      });
+      strOutExt.make({
+        attachTo: parent.inputs.string,
+        params: {},
+      });
+      strOutExt.makeWithOverrides({
+        attachTo: parent.inputs.stringOpt,
+        factory: orig => orig({}),
+      });
+      strOutExt.make({
+        // @ts-expect-error
+        attachTo: parent.inputs.number,
+        params: {},
+      });
+      strOutExt.makeWithOverrides({
+        attachTo: parent.inputs.numberOpt,
+        factory: orig => orig({}),
+      });
+      strOutExt.make({
+        // @ts-expect-error
+        attachTo: parent.inputs.both,
+        params: {},
+      });
+      strOutExt.make({
+        attachTo: parent.inputs.bothOptNumber,
+        params: {},
+      });
+      strOutExt.make({
+        // @ts-expect-error
+        attachTo: parent.inputs.bothOptString,
+        params: {},
+      });
+      strOutExt.make({
+        attachTo: parent.inputs.bothOpt,
+        params: {},
+      });
+      const numberOutExt = createExtensionBlueprint({
+        kind: 'test',
+        // @ts-expect-error
+        attachTo: parent.inputs.string,
+        output: [numberDataRef],
+        factory: () => [numberDataRef(1)],
+      });
+      numberOutExt.make({
+        // @ts-expect-error
+        attachTo: parent.inputs.string,
+        params: {},
+      });
+      numberOutExt.makeWithOverrides({
+        attachTo: parent.inputs.number,
+        factory: orig => orig({}),
+      });
+      const bothOutExt = createExtensionBlueprint({
+        kind: 'test',
+        attachTo: parent.inputs.both,
+        output: [numberDataRef, stringDataRef],
+        factory: () => [numberDataRef(1), stringDataRef('str')],
+      });
+      bothOutExt.makeWithOverrides({
+        output: [numberDataRef.optional(), stringDataRef],
+        factory: orig => orig({}),
+      });
+      bothOutExt.makeWithOverrides({
+        // @ts-expect-error
+        attachTo: parent.inputs.both,
+        output: [numberDataRef.optional(), stringDataRef],
+        factory: orig => orig({}),
+      });
+      expect('types').not.toBe('broken');
+    });
+  });
+
+  describe('with advanced parameter types', () => {
+    const testDataRef = createExtensionDataRef<string>().with({ id: 'test' });
+
+    const TestExtensionBlueprint = createExtensionBlueprint({
+      kind: 'test-extension',
+      attachTo: { id: 'test', input: 'default' },
+      output: [testDataRef],
+      defineParams<const A extends string, const B extends A>(params: {
+        a: A;
+        b: B;
+      }) {
+        return createExtensionBlueprintParams(params);
+      },
+      factory(params) {
+        return [testDataRef(`${params.a} ${params.b}`)];
+      },
+    });
+
+    it('should allow creation of extension blueprints', () => {
+      TestExtensionBlueprint.make({
+        // @ts-expect-error not using define func
+        params: {
+          a: 'x',
+          b: 'y',
+        },
+      });
+
+      TestExtensionBlueprint.make({
+        params: defineParams =>
+          defineParams({
+            a: 'x',
+            // @ts-expect-error b doesn't match a
+            b: 'y',
+          }),
+      });
+
+      TestExtensionBlueprint.make({
+        params: defineParams =>
+          defineParams({
+            a: 'x',
+            b: 'x',
+            // @ts-expect-error extra param
+            c: 'y',
+          }),
+      });
+
+      const extension = TestExtensionBlueprint.make({
+        params: defineParams =>
+          defineParams({
+            a: 'x',
+            b: 'x',
+          }),
+      });
+
+      expect(extension).toEqual({
+        $$type: '@backstage/ExtensionDefinition',
+        T: undefined,
+        attachTo: {
+          id: 'test',
+          input: 'default',
+        },
+        configSchema: undefined,
+        disabled: false,
+        inputs: {},
+        kind: 'test-extension',
+        name: undefined,
+        namespace: undefined,
+        output: [testDataRef],
+        factory: expect.any(Function),
+        toString: expect.any(Function),
+        override: expect.any(Function),
+        version: 'v2',
+      });
+
+      expect(createExtensionTester(extension).get(testDataRef)).toBe('x x');
+
+      extension.override({
+        // @ts-expect-error not using define func
+        params: {
+          a: 'z',
+          b: 'w',
+        },
+      });
+
+      extension.override({
+        params: defineParams =>
+          defineParams({
+            a: 'z',
+            // @ts-expect-error b doesn't match a
+            b: 'w',
+          }),
+      });
+
+      extension.override({
+        params: defineParams =>
+          defineParams({
+            a: 'z',
+            b: 'z',
+            // @ts-expect-error extra param
+            c: 'w',
+          }),
+      });
+
+      const override = extension.override({
+        params: defineParams =>
+          defineParams({
+            a: 'z',
+            b: 'z',
+          }),
+      });
+
+      expect(createExtensionTester(override).get(testDataRef)).toBe('z z');
+    });
+
+    it('should allow overriding of the default factory', () => {
+      TestExtensionBlueprint.makeWithOverrides({
+        factory(originalFactory) {
+          // @ts-expect-error not using define func
+          return originalFactory({
+            a: 'x',
+            b: 'y',
+          });
+        },
+      });
+
+      TestExtensionBlueprint.makeWithOverrides({
+        factory(originalFactory) {
+          return originalFactory(defineParams =>
+            defineParams({
+              a: 'x',
+              // @ts-expect-error b doesn't match a
+              b: 'y',
+            }),
+          );
+        },
+      });
+
+      const extension = TestExtensionBlueprint.makeWithOverrides({
+        factory(originalFactory) {
+          return originalFactory(defineParams =>
+            defineParams({
+              a: 'x',
+              b: 'x',
+            }),
+          );
+        },
+      });
+
+      expect(extension).toEqual({
+        $$type: '@backstage/ExtensionDefinition',
+        T: undefined,
+        attachTo: {
+          id: 'test',
+          input: 'default',
+        },
+        configSchema: undefined,
+        disabled: false,
+        inputs: {},
+        kind: 'test-extension',
+        name: undefined,
+        namespace: undefined,
+        output: [testDataRef],
+        factory: expect.any(Function),
+        toString: expect.any(Function),
+        override: expect.any(Function),
+        version: 'v2',
+      });
+
+      expect(createExtensionTester(extension).get(testDataRef)).toBe('x x');
+
+      extension.override({
+        // @ts-expect-error not using define func
+        params: {
+          a: 'z',
+          b: 'w',
+        },
+      });
+
+      extension.override({
+        params: defineParams =>
+          defineParams({
+            a: 'z',
+            // @ts-expect-error b doesn't match a
+            b: 'w',
+          }),
+      });
+
+      const override = extension.override({
+        params: defineParams =>
+          defineParams({
+            a: 'z',
+            b: 'z',
+          }),
+      });
+
+      expect(createExtensionTester(override).get(testDataRef)).toBe('z z');
+    });
+
+    it('should allow the params definer to transform the params', () => {
+      const TestTransformExtensionBlueprint = createExtensionBlueprint({
+        kind: 'test-extension',
+        attachTo: { id: 'test', input: 'default' },
+        output: [testDataRef],
+        defineParams(params: { a: number; b: number }) {
+          return createExtensionBlueprintParams({
+            x: params.a + 1,
+            y: params.b + 1,
+          });
+        },
+        factory(params) {
+          return [testDataRef(`${params.x} ${params.y}`)];
+        },
+      });
+
+      const extension = TestTransformExtensionBlueprint.make({
+        params: defineParams =>
+          defineParams({
+            a: 0,
+            b: 10,
+          }),
+      });
+
+      expect(createExtensionTester(extension).get(testDataRef)).toBe(`1 11`);
+
+      expect(
+        createExtensionTester(
+          extension.override({
+            params: defineParams =>
+              defineParams({
+                a: 20,
+                b: 30,
+              }),
+          }),
+        ).get(testDataRef),
+      ).toBe(`21 31`);
+    });
+
+    it('should support overloads', () => {
+      const TestTransformExtensionBlueprint = createExtensionBlueprint({
+        kind: 'test-extension',
+        attachTo: { id: 'test', input: 'default' },
+        output: [testDataRef],
+        defineParams: (params => createExtensionBlueprintParams(params)) as {
+          (params: { x: 1 }): ExtensionBlueprintParams<{ x: number }>;
+          (params: { x: 2 }): ExtensionBlueprintParams<{ x: number }>;
+        },
+        factory(params) {
+          return [testDataRef(`x: ${params.x}`)];
+        },
+      });
+
+      const extension = TestTransformExtensionBlueprint.make({
+        params: defineParams => defineParams({ x: 1 }),
+      });
+
+      expect(createExtensionTester(extension).get(testDataRef)).toBe(`x: 1`);
+
+      TestTransformExtensionBlueprint.make({
+        params: defineParams => defineParams({ x: 2 }),
+      });
+
+      TestTransformExtensionBlueprint.make({
+        // @ts-expect-error doesn't match any overload
+        params: defineParams => defineParams({ x: 3 }),
+      });
+    });
   });
 });

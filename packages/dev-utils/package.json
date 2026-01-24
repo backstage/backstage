@@ -1,6 +1,6 @@
 {
   "name": "@backstage/dev-utils",
-  "version": "1.1.8-next.2",
+  "version": "1.1.19",
   "description": "Utilities for developing Backstage plugins.",
   "backstage": {
     "role": "web-library"
@@ -44,6 +44,7 @@
     "@backstage/integration-react": "workspace:^",
     "@backstage/plugin-catalog-react": "workspace:^",
     "@backstage/theme": "workspace:^",
+    "@backstage/ui": "workspace:^",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
     "react-use": "^17.2.4"

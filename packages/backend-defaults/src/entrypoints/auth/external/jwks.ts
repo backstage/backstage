@@ -15,51 +15,40 @@
  */
 
 import { jwtVerify, createRemoteJWKSet, JWTVerifyGetKey } from 'jose';
-import { Config } from '@backstage/config';
 import {
+  createExternalTokenHandler,
   readAccessRestrictionsFromConfig,
   readStringOrStringArrayFromConfig,
 } from './helpers';
-import { AccessRestriptionsMap, TokenHandler } from './types';
+import { AccessRestrictionsMap } from './types';
 
-/**
- * Handles `type: jwks` access.
- *
- * @internal
- */
-export class JWKSHandler implements TokenHandler {
-  #entries: Array<{
-    algorithms?: string[];
-    audiences?: string[];
-    issuers?: string[];
-    subjectPrefix?: string;
-    url: URL;
-    jwks: JWTVerifyGetKey;
-    allAccessRestrictions?: AccessRestriptionsMap;
-  }> = [];
+type JWKSTokenContext = {
+  algorithms?: string[];
+  audiences?: string[];
+  issuers?: string[];
+  subjectPrefix?: string;
+  url: URL;
+  jwks: JWTVerifyGetKey;
+  allAccessRestrictions?: AccessRestrictionsMap;
+};
 
-  add(config: Config) {
-    if (!config.getString('options.url').match(/^\S+$/)) {
+export const jwksTokenHandler = createExternalTokenHandler<JWKSTokenContext>({
+  type: 'jwks',
+  initialize({ options }): JWKSTokenContext {
+    if (!options.getString('url').match(/^\S+$/)) {
       throw new Error(
         'Illegal JWKS URL, must be a set of non-space characters',
       );
     }
 
-    const algorithms = readStringOrStringArrayFromConfig(
-      config,
-      'options.algorithm',
-    );
-    const issuers = readStringOrStringArrayFromConfig(config, 'options.issuer');
-    const audiences = readStringOrStringArrayFromConfig(
-      config,
-      'options.audience',
-    );
-    const subjectPrefix = config.getOptionalString('options.subjectPrefix');
-    const url = new URL(config.getString('options.url'));
+    const algorithms = readStringOrStringArrayFromConfig(options, 'algorithm');
+    const issuers = readStringOrStringArrayFromConfig(options, 'issuer');
+    const audiences = readStringOrStringArrayFromConfig(options, 'audience');
+    const subjectPrefix = options.getOptionalString('subjectPrefix');
+    const url = new URL(options.getString('url'));
     const jwks = createRemoteJWKSet(url);
-    const allAccessRestrictions = readAccessRestrictionsFromConfig(config);
-
-    this.#entries.push({
+    const allAccessRestrictions = readAccessRestrictionsFromConfig(options);
+    return {
       algorithms,
       audiences,
       issuers,
@@ -67,33 +56,30 @@ export class JWKSHandler implements TokenHandler {
       subjectPrefix,
       url,
       allAccessRestrictions,
-    });
-  }
+    };
+  },
 
-  async verifyToken(token: string) {
-    for (const entry of this.#entries) {
-      try {
-        const {
-          payload: { sub },
-        } = await jwtVerify(token, entry.jwks, {
-          algorithms: entry.algorithms,
-          issuer: entry.issuers,
-          audience: entry.audiences,
-        });
+  async verifyToken(token: string, context: JWKSTokenContext) {
+    try {
+      const {
+        payload: { sub },
+      } = await jwtVerify(token, context.jwks, {
+        algorithms: context.algorithms,
+        issuer: context.issuers,
+        audience: context.audiences,
+      });
 
-        if (sub) {
-          const prefix = entry.subjectPrefix
-            ? `external:${entry.subjectPrefix}:`
-            : 'external:';
-          return {
-            subject: `${prefix}${sub}`,
-            allAccessRestrictions: entry.allAccessRestrictions,
-          };
-        }
-      } catch {
-        continue;
+      if (sub) {
+        const prefix = context.subjectPrefix
+          ? `external:${context.subjectPrefix}:`
+          : 'external:';
+        return {
+          subject: `${prefix}${sub}`,
+        };
       }
+    } catch {
+      return undefined;
     }
     return undefined;
-  }
-}
+  },
+});

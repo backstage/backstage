@@ -10,10 +10,12 @@ import { BackstageUserIdentity } from '@backstage/core-plugin-api';
 import { BottomNavigationActionProps } from '@material-ui/core/BottomNavigationAction';
 import { ButtonProps as ButtonProps_2 } from '@material-ui/core/Button';
 import { CardHeaderProps } from '@material-ui/core/CardHeader';
+import { ChangeEvent } from 'react';
 import { Column } from '@material-table/core';
 import { ComponentClass } from 'react';
 import { ComponentProps } from 'react';
 import { ComponentType } from 'react';
+import { Context } from 'react';
 import { default as CSS_2 } from 'csstype';
 import { CSSProperties } from 'react';
 import { ElementType } from 'react';
@@ -22,12 +24,16 @@ import IconButton from '@material-ui/core/IconButton';
 import { IconComponent } from '@backstage/core-plugin-api';
 import { Icons } from '@material-table/core';
 import { IdentityApi } from '@backstage/core-plugin-api';
+import { JSX as JSX_2 } from 'react/jsx-runtime';
 import { LinearProgressProps } from '@material-ui/core/LinearProgress';
 import { LinkProps as LinkProps_2 } from '@material-ui/core/Link';
 import { LinkProps as LinkProps_3 } from 'react-router-dom';
 import { ListItemTextProps } from '@material-ui/core/ListItemText';
 import MaterialBreadcrumbs from '@material-ui/core/Breadcrumbs';
 import { MaterialTableProps } from '@material-table/core';
+import { MouseEvent as MouseEvent_2 } from 'react';
+import { MouseEventHandler } from 'react';
+import { MutableRefObject } from 'react';
 import { NavLinkProps } from 'react-router-dom';
 import { Options } from 'react-markdown';
 import { Options as Options_2 } from '@material-table/core';
@@ -35,8 +41,6 @@ import { Overrides } from '@material-ui/core/styles/overrides';
 import { ProfileInfo } from '@backstage/core-plugin-api';
 import { ProfileInfoApi } from '@backstage/core-plugin-api';
 import { PropsWithChildren } from 'react';
-import { default as React_2 } from 'react';
-import * as React_3 from 'react';
 import { ReactElement } from 'react';
 import { ReactNode } from 'react';
 import { SessionApi } from '@backstage/core-plugin-api';
@@ -46,15 +50,14 @@ import { SparklinesProps } from 'react-sparklines';
 import { StyledComponentProps } from '@material-ui/core/styles/withStyles';
 import { StyleRules } from '@material-ui/styles';
 import { StyleRules as StyleRules_2 } from '@material-ui/core/styles/withStyles';
+import { SVGProps } from 'react';
 import { TabProps } from '@material-ui/core/Tab';
 import { Theme } from '@material-ui/core/styles';
 import { TooltipProps } from '@material-ui/core/Tooltip';
 import { WithStyles } from '@material-ui/core/styles';
 
 // @public
-export function AlertDisplay(
-  props: AlertDisplayProps,
-): React_2.JSX.Element | null;
+export function AlertDisplay(props: AlertDisplayProps): JSX_2.Element | null;
 
 // @public
 export type AlertDisplayProps = {
@@ -66,7 +69,7 @@ export type AlertDisplayProps = {
 };
 
 // @public
-export function AppIcon(props: AppIconProps): React_2.JSX.Element;
+export function AppIcon(props: AppIconProps): JSX_2.Element;
 
 // @public
 export type AppIconProps = IconComponentProps & {
@@ -87,7 +90,7 @@ export type AutoLogoutProps = {
 };
 
 // @public
-export function Avatar(props: AvatarProps): React_2.JSX.Element;
+export function Avatar(props: AvatarProps): JSX_2.Element;
 
 // @public (undocumented)
 export type AvatarClassKey = 'avatar';
@@ -119,7 +122,7 @@ export type BackstageOverrides = Overrides & {
 export type BoldHeaderClassKey = 'root' | 'title' | 'subheader';
 
 // @public
-export function BottomLink(props: BottomLinkProps): React_2.JSX.Element;
+export function BottomLink(props: BottomLinkProps): JSX_2.Element;
 
 // @public (undocumented)
 export type BottomLinkClassKey = 'root' | 'boxTitle' | 'arrow';
@@ -128,13 +131,13 @@ export type BottomLinkClassKey = 'root' | 'boxTitle' | 'arrow';
 export type BottomLinkProps = {
   link: string;
   title: string;
-  onClick?: (event: React_2.MouseEvent<HTMLAnchorElement>) => void;
+  onClick?: (event: MouseEvent_2<HTMLAnchorElement>) => void;
 };
 
 // Warning: (ae-forgotten-export) The symbol "Props_18" needs to be exported by the entry point index.d.ts
 //
 // @public
-export function Breadcrumbs(props: Props_18): React_2.JSX.Element;
+export function Breadcrumbs(props: Props_18): JSX_2.Element;
 
 // @public (undocumented)
 export type BreadcrumbsClickableTextClassKey = 'root';
@@ -146,7 +149,7 @@ export type BreadcrumbsCurrentPageClassKey = 'root';
 export type BreadcrumbsStyledBoxClassKey = 'root';
 
 // @public
-export function BrokenImageIcon(props: IconComponentProps): React_2.JSX.Element;
+export function BrokenImageIcon(props: IconComponentProps): JSX_2.Element;
 
 // @public @deprecated (undocumented)
 export const Button: (props: LinkButtonProps) => JSX.Element;
@@ -160,24 +163,22 @@ export type CardActionsTopRightClassKey = 'root';
 // Warning: (ae-forgotten-export) The symbol "CardTabProps" needs to be exported by the entry point index.d.ts
 //
 // @public
-export function CardTab(
-  props: PropsWithChildren<CardTabProps>,
-): React_2.JSX.Element;
+export function CardTab(props: PropsWithChildren<CardTabProps>): JSX_2.Element;
 
 // @public (undocumented)
 export type CardTabClassKey = 'root' | 'selected';
 
 // @public (undocumented)
-export function CatalogIcon(props: IconComponentProps): React_2.JSX.Element;
+export function CatalogIcon(props: IconComponentProps): JSX_2.Element;
 
 // @public (undocumented)
-export function ChatIcon(props: IconComponentProps): React_2.JSX.Element;
+export function ChatIcon(props: IconComponentProps): JSX_2.Element;
 
 // @public (undocumented)
 export type ClosedDropdownClassKey = 'icon';
 
 // @public
-export function CodeSnippet(props: CodeSnippetProps): React_2.JSX.Element;
+export function CodeSnippet(props: CodeSnippetProps): JSX_2.Element;
 
 // @public
 export interface CodeSnippetProps {
@@ -187,21 +188,20 @@ export interface CodeSnippetProps {
   showCopyCodeButton?: boolean;
   showLineNumbers?: boolean;
   text: string;
+  wrapLongLines?: boolean;
 }
 
 // Warning: (ae-forgotten-export) The symbol "Props_12" needs to be exported by the entry point index.d.ts
 //
 // @public
-export function Content(
-  props: PropsWithChildren<Props_12>,
-): React_2.JSX.Element;
+export function Content(props: PropsWithChildren<Props_12>): JSX_2.Element;
 
 // Warning: (ae-forgotten-export) The symbol "ContentHeaderProps" needs to be exported by the entry point index.d.ts
 //
 // @public
 export function ContentHeader(
   props: PropsWithChildren<ContentHeaderProps>,
-): React_2.JSX.Element;
+): JSX_2.Element;
 
 // @public (undocumented)
 export type ContentHeaderClassKey =
@@ -212,7 +212,7 @@ export type ContentHeaderClassKey =
   | 'title';
 
 // @public
-export function CopyTextButton(props: CopyTextButtonProps): React_2.JSX.Element;
+export function CopyTextButton(props: CopyTextButtonProps): JSX_2.Element;
 
 // @public
 export interface CopyTextButtonProps {
@@ -223,9 +223,7 @@ export interface CopyTextButtonProps {
 }
 
 // @public
-export function CreateButton(
-  props: CreateButtonProps,
-): React_2.JSX.Element | null;
+export function CreateButton(props: CreateButtonProps): JSX_2.Element | null;
 
 // @public
 export type CreateButtonProps = {
@@ -236,12 +234,12 @@ export type CreateButtonProps = {
 export type CustomProviderClassKey = 'form' | 'button';
 
 // @public (undocumented)
-export function DashboardIcon(props: IconComponentProps): React_2.JSX.Element;
+export function DashboardIcon(props: IconComponentProps): JSX_2.Element;
 
 // @public
 export function DependencyGraph<NodeData, EdgeData>(
   props: DependencyGraphProps<NodeData, EdgeData>,
-): React_2.JSX.Element;
+): JSX_2.Element;
 
 // @public (undocumented)
 export type DependencyGraphDefaultLabelClassKey = 'text';
@@ -257,9 +255,10 @@ export type DependencyGraphNodeClassKey = 'node';
 
 // @public
 export interface DependencyGraphProps<NodeData, EdgeData>
-  extends React_2.SVGProps<SVGSVGElement> {
+  extends SVGProps<SVGSVGElement> {
   acyclicer?: 'greedy';
   align?: DependencyGraphTypes.Alignment;
+  allowFullscreen?: boolean;
   curve?: 'curveStepBefore' | 'curveMonotoneX';
   defs?: JSX.Element | JSX.Element[];
   direction?: DependencyGraphTypes.Direction;
@@ -276,6 +275,7 @@ export interface DependencyGraphProps<NodeData, EdgeData>
   paddingY?: number;
   ranker?: DependencyGraphTypes.Ranker;
   rankMargin?: number;
+  renderEdge?: DependencyGraphTypes.RenderEdgeFunction<EdgeData>;
   renderLabel?: DependencyGraphTypes.RenderLabelFunction<EdgeData>;
   renderNode?: DependencyGraphTypes.RenderNodeFunction<NodeData>;
   showArrowHeads?: boolean;
@@ -284,48 +284,122 @@ export interface DependencyGraphProps<NodeData, EdgeData>
 
 // @public
 export namespace DependencyGraphTypes {
-  export enum Alignment {
-    DOWN_LEFT = 'DL',
-    DOWN_RIGHT = 'DR',
-    UP_LEFT = 'UL',
-    UP_RIGHT = 'UR',
+  // (undocumented)
+  export type Alignment = (typeof Alignment)[keyof typeof Alignment];
+  // (undocumented)
+  export namespace Alignment {
+    // (undocumented)
+    export type DOWN_LEFT = typeof Alignment.DOWN_LEFT;
+    // (undocumented)
+    export type DOWN_RIGHT = typeof Alignment.DOWN_RIGHT;
+    // (undocumented)
+    export type UP_LEFT = typeof Alignment.UP_LEFT;
+    // (undocumented)
+    export type UP_RIGHT = typeof Alignment.UP_RIGHT;
   }
   export type DependencyEdge<T = {}> = T & {
     from: string;
     to: string;
     label?: string;
+    distance?: number;
   };
   export type DependencyNode<T = {}> = T & {
     id: string;
   };
-  export enum Direction {
-    BOTTOM_TOP = 'BT',
-    LEFT_RIGHT = 'LR',
-    RIGHT_LEFT = 'RL',
-    TOP_BOTTOM = 'TB',
-  }
-  export enum LabelPosition {
+  // (undocumented)
+  export type Direction = (typeof Direction)[keyof typeof Direction];
+  // (undocumented)
+  export namespace Direction {
     // (undocumented)
-    CENTER = 'c',
+    export type BOTTOM_TOP = typeof Direction.BOTTOM_TOP;
     // (undocumented)
-    LEFT = 'l',
+    export type LEFT_RIGHT = typeof Direction.LEFT_RIGHT;
     // (undocumented)
-    RIGHT = 'r',
+    export type RIGHT_LEFT = typeof Direction.RIGHT_LEFT;
+    // (undocumented)
+    export type TOP_BOTTOM = typeof Direction.TOP_BOTTOM;
   }
-  export enum Ranker {
-    LONGEST_PATH = 'longest-path',
-    NETWORK_SIMPLEX = 'network-simplex',
-    TIGHT_TREE = 'tight-tree',
+  // (undocumented)
+  export type LabelPosition =
+    (typeof LabelPosition)[keyof typeof LabelPosition];
+  // (undocumented)
+  export namespace LabelPosition {
+    // (undocumented)
+    export type CENTER = typeof LabelPosition.CENTER;
+    // (undocumented)
+    export type LEFT = typeof LabelPosition.LEFT;
+    // (undocumented)
+    export type RIGHT = typeof LabelPosition.RIGHT;
   }
+  const Direction: {
+    readonly TOP_BOTTOM: 'TB';
+    readonly BOTTOM_TOP: 'BT';
+    readonly LEFT_RIGHT: 'LR';
+    readonly RIGHT_LEFT: 'RL';
+  };
+  // (undocumented)
+  export type Ranker = (typeof Ranker)[keyof typeof Ranker];
+  // (undocumented)
+  export namespace Ranker {
+    // (undocumented)
+    export type LONGEST_PATH = typeof Ranker.LONGEST_PATH;
+    // (undocumented)
+    export type NETWORK_SIMPLEX = typeof Ranker.NETWORK_SIMPLEX;
+    // (undocumented)
+    export type TIGHT_TREE = typeof Ranker.TIGHT_TREE;
+  }
+  const Alignment: {
+    readonly UP_LEFT: 'UL';
+    readonly UP_RIGHT: 'UR';
+    readonly DOWN_LEFT: 'DL';
+    readonly DOWN_RIGHT: 'DR';
+  };
+  export type RenderEdgeFunction<T = {}> = (
+    props: RenderEdgeProps<T>,
+  ) => ReactNode;
+  export type RenderEdgeProps<T = {}> = {
+    edge: T & {
+      points: {
+        x: number;
+        y: number;
+      }[];
+      label?: string;
+      labeloffset?: number;
+      labelpos?: string;
+      width?: number;
+      height?: number;
+      weight?: number;
+      minlen?: number;
+      showArrowHeads?: boolean;
+      from?: string;
+      to?: string;
+      relations?: string[];
+    };
+    id: {
+      v: string;
+      w: string;
+      name?: string | undefined;
+    };
+  };
+  const Ranker: {
+    readonly NETWORK_SIMPLEX: 'network-simplex';
+    readonly TIGHT_TREE: 'tight-tree';
+    readonly LONGEST_PATH: 'longest-path';
+  };
   export type RenderLabelFunction<T = {}> = (
     props: RenderLabelProps<T>,
-  ) => React_2.ReactNode;
+  ) => ReactNode;
   export type RenderLabelProps<T = unknown> = {
     edge: DependencyEdge<T>;
   };
+  const LabelPosition: {
+    readonly LEFT: 'l';
+    readonly RIGHT: 'r';
+    readonly CENTER: 'c';
+  };
   export type RenderNodeFunction<T = {}> = (
     props: RenderNodeProps<T>,
-  ) => React_2.ReactNode;
+  ) => ReactNode;
   export type RenderNodeProps<T = unknown> = {
     node: DependencyNode<T>;
   };
@@ -334,7 +408,7 @@ export namespace DependencyGraphTypes {
 // Warning: (ae-forgotten-export) The symbol "Props" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
-export const DismissableBanner: (props: Props) => React_2.JSX.Element;
+export const DismissableBanner: (props: Props) => JSX_2.Element;
 
 // @public (undocumented)
 export type DismissableBannerClassKey =
@@ -350,15 +424,15 @@ export type DismissableBannerClassKey =
 export type DismissbleBannerClassKey = DismissableBannerClassKey;
 
 // @public (undocumented)
-export function DocsIcon(props: IconComponentProps): React_2.JSX.Element;
+export function DocsIcon(props: IconComponentProps): JSX_2.Element;
 
 // @public (undocumented)
-export function EmailIcon(props: IconComponentProps): React_2.JSX.Element;
+export function EmailIcon(props: IconComponentProps): JSX_2.Element;
 
 // Warning: (ae-forgotten-export) The symbol "Props_2" needs to be exported by the entry point index.d.ts
 //
 // @public
-export function EmptyState(props: Props_2): React_2.JSX.Element;
+export function EmptyState(props: Props_2): JSX_2.Element;
 
 // @public (undocumented)
 export type EmptyStateClassKey = 'root' | 'action' | 'imageContainer';
@@ -372,7 +446,7 @@ export type EmptyStateImageClassKey = 'generalImg';
 export const ErrorBoundary: ComponentClass<ErrorBoundaryProps, State>;
 
 // @public (undocumented)
-export type ErrorBoundaryProps = React_2.PropsWithChildren<{
+export type ErrorBoundaryProps = PropsWithChildren<{
   slackChannel?: string | SlackChannel;
   onError?: (error: Error, errorInfo: string) => null;
 }>;
@@ -380,7 +454,7 @@ export type ErrorBoundaryProps = React_2.PropsWithChildren<{
 // Warning: (ae-forgotten-export) The symbol "IErrorPageProps" needs to be exported by the entry point index.d.ts
 //
 // @public
-export function ErrorPage(props: IErrorPageProps): React_2.JSX.Element;
+export function ErrorPage(props: IErrorPageProps): JSX_2.Element;
 
 // @public (undocumented)
 export type ErrorPageClassKey = 'container' | 'title' | 'subtitle';
@@ -388,7 +462,7 @@ export type ErrorPageClassKey = 'container' | 'title' | 'subtitle';
 // @public
 export function ErrorPanel(
   props: PropsWithChildren<ErrorPanelProps>,
-): React_2.JSX.Element;
+): JSX_2.Element;
 
 // @public (undocumented)
 export type ErrorPanelClassKey = 'text' | 'divider';
@@ -402,22 +476,23 @@ export type ErrorPanelProps = {
 };
 
 // @public
-export function FavoriteToggle(
-  props: ComponentProps<typeof IconButton> & {
-    id: string;
-    title: string;
-    isFavorite: boolean;
-    onToggle: (value: boolean) => void;
-  },
-): React_2.JSX.Element;
+export function FavoriteToggle(props: FavoriteToggleProps): JSX_2.Element;
 
 // @public
 export function FavoriteToggleIcon(props: {
   isFavorite: boolean;
-}): React_2.JSX.Element;
+}): JSX_2.Element;
 
 // @public (undocumented)
 export type FavoriteToggleIconClassKey = 'icon' | 'iconBorder';
+
+// @public
+export type FavoriteToggleProps = ComponentProps<typeof IconButton> & {
+  id: string;
+  title: string;
+  isFavorite: boolean;
+  onToggle: (value: boolean) => void;
+};
 
 // @public (undocumented)
 export type FeatureCalloutCircleClassKey =
@@ -434,18 +509,18 @@ export type FeatureCalloutCircleClassKey =
 // @public
 export function FeatureCalloutCircular(
   props: PropsWithChildren<Props_4>,
-): React_2.JSX.Element;
+): JSX_2.Element;
 
 // @public (undocumented)
 export type FiltersContainerClassKey = 'root' | 'title';
 
 // @public
-export function Gauge(props: GaugeProps): React_2.JSX.Element;
+export function Gauge(props: GaugeProps): JSX_2.Element;
 
 // Warning: (ae-forgotten-export) The symbol "Props_10" needs to be exported by the entry point index.d.ts
 //
 // @public
-export function GaugeCard(props: Props_10): React_2.JSX.Element;
+export function GaugeCard(props: Props_10): JSX_2.Element;
 
 // @public (undocumented)
 export type GaugeCardClassKey = 'root';
@@ -484,20 +559,18 @@ export type GaugePropsGetColorOptions = {
 };
 
 // @public (undocumented)
-export function GitHubIcon(props: IconComponentProps): React_2.JSX.Element;
+export function GitHubIcon(props: IconComponentProps): JSX_2.Element;
 
 // @public (undocumented)
-export function GroupIcon(props: IconComponentProps): React_2.JSX.Element;
+export function GroupIcon(props: IconComponentProps): JSX_2.Element;
 
 // Warning: (ae-forgotten-export) The symbol "Props_13" needs to be exported by the entry point index.d.ts
 //
 // @public
-export function Header(props: PropsWithChildren<Props_13>): React_2.JSX.Element;
+export function Header(props: PropsWithChildren<Props_13>): JSX_2.Element;
 
 // @public (undocumented)
-export function HeaderActionMenu(
-  props: HeaderActionMenuProps,
-): React_2.JSX.Element;
+export function HeaderActionMenu(props: HeaderActionMenuProps): JSX_2.Element;
 
 // @public (undocumented)
 export type HeaderActionMenuItem = {
@@ -505,7 +578,7 @@ export type HeaderActionMenuItem = {
   secondaryLabel?: ListItemTextProps['secondary'];
   icon?: ReactElement;
   disabled?: boolean;
-  onClick?: (event: React_2.MouseEvent<HTMLElement>) => void;
+  onClick?: (event: MouseEvent_2<HTMLElement>) => void;
 };
 
 // @public (undocumented)
@@ -528,7 +601,7 @@ export type HeaderClassKey =
 // Warning: (ae-forgotten-export) The symbol "Props_5" needs to be exported by the entry point index.d.ts
 //
 // @public
-export function HeaderIconLinkRow(props: Props_5): React_2.JSX.Element;
+export function HeaderIconLinkRow(props: Props_5): JSX_2.Element;
 
 // @public (undocumented)
 export type HeaderIconLinkRowClassKey = 'links';
@@ -536,7 +609,7 @@ export type HeaderIconLinkRowClassKey = 'links';
 // Warning: (ae-forgotten-export) The symbol "HeaderLabelProps" needs to be exported by the entry point index.d.ts
 //
 // @public
-export function HeaderLabel(props: HeaderLabelProps): React_2.JSX.Element;
+export function HeaderLabel(props: HeaderLabelProps): JSX_2.Element;
 
 // @public (undocumented)
 export type HeaderLabelClassKey = 'root' | 'label' | 'value';
@@ -544,7 +617,7 @@ export type HeaderLabelClassKey = 'root' | 'label' | 'value';
 // Warning: (ae-forgotten-export) The symbol "HeaderTabsProps" needs to be exported by the entry point index.d.ts
 //
 // @public
-export function HeaderTabs(props: HeaderTabsProps): React_2.JSX.Element;
+export function HeaderTabs(props: HeaderTabsProps): JSX_2.Element;
 
 // @public (undocumented)
 export type HeaderTabsClassKey =
@@ -554,14 +627,14 @@ export type HeaderTabsClassKey =
   | 'tabRoot';
 
 // @public (undocumented)
-export function HelpIcon(props: IconComponentProps): React_2.JSX.Element;
+export function HelpIcon(props: IconComponentProps): JSX_2.Element;
 
 // Warning: (ae-forgotten-export) The symbol "Props_6" needs to be exported by the entry point index.d.ts
 //
 // @public
 export function HorizontalScrollGrid(
   props: PropsWithChildren<Props_6>,
-): React_2.JSX.Element;
+): JSX_2.Element;
 
 // @public (undocumented)
 export type HorizontalScrollGridClassKey =
@@ -587,7 +660,7 @@ export function IconLinkVertical({
   label,
   onClick,
   title,
-}: IconLinkVerticalProps): React_2.JSX.Element;
+}: IconLinkVerticalProps): JSX_2.Element;
 
 // @public (undocumented)
 export type IconLinkVerticalClassKey =
@@ -604,9 +677,9 @@ export type IconLinkVerticalProps = {
   color?: 'primary' | 'secondary';
   disabled?: boolean;
   href?: string;
-  icon?: React_2.ReactNode;
+  icon?: ReactNode;
   label: string;
-  onClick?: React_2.MouseEventHandler<HTMLAnchorElement>;
+  onClick?: MouseEventHandler<HTMLAnchorElement>;
   title?: string;
 };
 
@@ -635,10 +708,10 @@ export type InfoCardVariants = 'flex' | 'fullHeight' | 'gridItem';
 // Warning: (ae-missing-release-tag) "ItemCard" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public @deprecated
-export function ItemCard(props: ItemCardProps): React_2.JSX.Element;
+export function ItemCard(props: ItemCardProps): JSX_2.Element;
 
 // @public
-export function ItemCardGrid(props: ItemCardGridProps): React_2.JSX.Element;
+export function ItemCardGrid(props: ItemCardGridProps): JSX_2.Element;
 
 // @public (undocumented)
 export type ItemCardGridClassKey = 'root';
@@ -647,11 +720,11 @@ export type ItemCardGridClassKey = 'root';
 //
 // @public (undocumented)
 export type ItemCardGridProps = Partial<WithStyles<typeof styles>> & {
-  children?: React_2.ReactNode;
+  children?: ReactNode;
 };
 
 // @public
-export function ItemCardHeader(props: ItemCardHeaderProps): React_2.JSX.Element;
+export function ItemCardHeader(props: ItemCardHeaderProps): JSX_2.Element;
 
 // @public (undocumented)
 export type ItemCardHeaderClassKey = 'root';
@@ -660,16 +733,16 @@ export type ItemCardHeaderClassKey = 'root';
 //
 // @public (undocumented)
 export type ItemCardHeaderProps = Partial<WithStyles<typeof styles_2>> & {
-  title?: React_2.ReactNode;
-  subtitle?: React_2.ReactNode;
-  children?: React_2.ReactNode;
+  title?: ReactNode;
+  subtitle?: ReactNode;
+  children?: ReactNode;
 };
 
 // Warning: (ae-forgotten-export) The symbol "Props_7" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "Lifecycle" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export function Lifecycle(props: Props_7): React_2.JSX.Element;
+export function Lifecycle(props: Props_7): JSX_2.Element;
 
 // Warning: (ae-missing-release-tag) "LifecycleClassKey" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -680,7 +753,7 @@ export type LifecycleClassKey = 'alpha' | 'beta';
 // Warning: (ae-missing-release-tag) "LinearGauge" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export function LinearGauge(props: Props_11): React_2.JSX.Element | null;
+export function LinearGauge(props: Props_11): JSX_2.Element | null;
 
 // Warning: (ae-missing-release-tag) "Link" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -714,7 +787,7 @@ export type LinkProps = Omit<LinkProps_2, 'to'> &
 export type LoginRequestListItemClassKey = 'root';
 
 // @public
-export function LogViewer(props: LogViewerProps): React_2.JSX.Element;
+export function LogViewer(props: LogViewerProps): JSX_2.Element;
 
 // @public
 export type LogViewerClassKey =
@@ -755,13 +828,14 @@ export interface LogViewerProps {
     root?: string;
   };
   text: string;
+  textWrap?: boolean;
 }
 
 // Warning: (ae-forgotten-export) The symbol "Props_8" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "MarkdownContent" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public
-export function MarkdownContent(props: Props_8): React_2.JSX.Element;
+export function MarkdownContent(props: Props_8): JSX_2.Element;
 
 // Warning: (ae-missing-release-tag) "MarkdownContentClassKey" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -796,24 +870,20 @@ export type MicDropClassKey = 'micDrop';
 // Warning: (ae-forgotten-export) The symbol "Props_3" needs to be exported by the entry point index.d.ts
 //
 // @public @deprecated (undocumented)
-export function MissingAnnotationEmptyState(
-  props: Props_3,
-): React_2.JSX.Element;
+export function MissingAnnotationEmptyState(props: Props_3): JSX_2.Element;
 
 // @public
-export const MobileSidebar: (
-  props: MobileSidebarProps,
-) => React_2.JSX.Element | null;
+export const MobileSidebar: (props: MobileSidebarProps) => JSX_2.Element | null;
 
 // @public
 export type MobileSidebarProps = {
-  children?: React_2.ReactNode;
+  children?: ReactNode;
 };
 
 // Warning: (ae-missing-release-tag) "OAuthRequestDialog" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export function OAuthRequestDialog(_props: {}): React_2.JSX.Element;
+export function OAuthRequestDialog(_props: {}): JSX_2.Element;
 
 // Warning: (ae-missing-release-tag) "OAuthRequestDialogClassKey" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -833,7 +903,7 @@ export type OpenedDropdownClassKey = 'icon';
 // Warning: (ae-missing-release-tag) "OverflowTooltip" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export function OverflowTooltip(props: Props_9): React_2.JSX.Element;
+export function OverflowTooltip(props: Props_9): JSX_2.Element;
 
 // Warning: (ae-missing-release-tag) "OverflowTooltipClassKey" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -844,7 +914,7 @@ export type OverflowTooltipClassKey = 'container';
 // Warning: (ae-missing-release-tag) "Page" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export function Page(props: Props_15): React_2.JSX.Element;
+export function Page(props: Props_15): JSX_2.Element;
 
 // Warning: (ae-missing-release-tag) "PageClassKey" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -857,19 +927,19 @@ export type PageClassKey = 'root';
 // @public (undocumented)
 export function PageWithHeader(
   props: PropsWithChildren<PageWithHeaderProps>,
-): React_2.JSX.Element;
+): JSX_2.Element;
 
 // Warning: (ae-missing-release-tag) "Progress" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
 export function Progress(
   props: PropsWithChildren<LinearProgressProps>,
-): React_2.JSX.Element;
+): JSX_2.Element;
 
 // @public
 export const ProxiedSignInPage: (
   props: ProxiedSignInPageProps,
-) => React_2.JSX.Element | null;
+) => JSX_2.Element | null;
 
 // @public
 export type ProxiedSignInPageProps = SignInPageProps & {
@@ -883,7 +953,7 @@ export type ProxiedSignInPageProps = SignInPageProps & {
 // Warning: (ae-missing-release-tag) "ResponseErrorPanel" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public
-export function ResponseErrorPanel(props: ErrorPanelProps): React_2.JSX.Element;
+export function ResponseErrorPanel(props: ErrorPanelProps): JSX_2.Element;
 
 // Warning: (ae-missing-release-tag) "ResponseErrorPanelClassKey" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -893,14 +963,12 @@ export type ResponseErrorPanelClassKey = 'text' | 'divider';
 // Warning: (ae-missing-release-tag) "RoutedTabs" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export function RoutedTabs(props: {
-  routes: SubRoute_2[];
-}): React_2.JSX.Element;
+export function RoutedTabs(props: { routes: SubRoute_2[] }): JSX_2.Element;
 
 // Warning: (ae-forgotten-export) The symbol "SelectProps" needs to be exported by the entry point index.d.ts
 //
 // @public (undocumented)
-export function Select(props: SelectProps): React_2.JSX.Element;
+export function Select(props: SelectProps): JSX_2.Element;
 
 // @public (undocumented)
 export type SelectClassKey =
@@ -924,7 +992,7 @@ export type SelectItem = {
 };
 
 // @public
-export const Sidebar: (props: SidebarProps) => React_2.JSX.Element;
+export const Sidebar: (props: SidebarProps) => JSX_2.Element;
 
 // Warning: (ae-missing-release-tag) "SIDEBAR_INTRO_LOCAL_STORAGE" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -955,7 +1023,7 @@ export const sidebarConfig: {
 };
 
 // @public @deprecated
-export const SidebarContext: React_2.Context<SidebarContextType>;
+export const SidebarContext: Context<SidebarContextType>;
 
 // @public @deprecated
 export type SidebarContextType = {
@@ -976,14 +1044,14 @@ export const SidebarDivider: ComponentType<
 export type SidebarDividerClassKey = 'root';
 
 // @public
-export const SidebarExpandButton: () => React_2.JSX.Element | null;
+export const SidebarExpandButton: () => JSX_2.Element | null;
 
 // @public
-export const SidebarGroup: (props: SidebarGroupProps) => React_2.JSX.Element;
+export const SidebarGroup: (props: SidebarGroupProps) => JSX_2.Element;
 
 // @public
 export interface SidebarGroupProps extends BottomNavigationActionProps {
-  children?: React_2.ReactNode;
+  children?: ReactNode;
   priority?: number;
   to?: string;
 }
@@ -1025,7 +1093,7 @@ export type SidebarOpenState = {
 export function SidebarOpenStateProvider(props: {
   children: ReactNode;
   value: SidebarOpenState;
-}): React_2.JSX.Element;
+}): JSX_2.Element;
 
 // @public (undocumented)
 export type SidebarOptions = {
@@ -1036,7 +1104,7 @@ export type SidebarOptions = {
 // Warning: (ae-missing-release-tag) "SidebarPage" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export function SidebarPage(props: SidebarPageProps): React_2.JSX.Element;
+export function SidebarPage(props: SidebarPageProps): JSX_2.Element;
 
 // Warning: (ae-missing-release-tag) "SidebarPageClassKey" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -1045,7 +1113,7 @@ export type SidebarPageClassKey = 'root';
 
 // @public
 export type SidebarPageProps = {
-  children?: React_2.ReactNode;
+  children?: ReactNode;
 };
 
 // @public
@@ -1056,7 +1124,7 @@ export type SidebarPinState = {
 };
 
 // @public @deprecated
-export const SidebarPinStateContext: React_2.Context<SidebarPinStateContextType>;
+export const SidebarPinStateContext: Context<SidebarPinStateContextType>;
 
 // @public @deprecated
 export type SidebarPinStateContextType = {
@@ -1069,7 +1137,7 @@ export type SidebarPinStateContextType = {
 export function SidebarPinStateProvider(props: {
   children: ReactNode;
   value: SidebarPinStateContextType;
-}): React_2.JSX.Element;
+}): JSX_2.Element;
 
 // @public (undocumented)
 export type SidebarProps = {
@@ -1078,7 +1146,7 @@ export type SidebarProps = {
   sidebarOptions?: SidebarOptions;
   submenuOptions?: SubmenuOptions;
   disableExpandOnHover?: boolean;
-  children?: React_2.ReactNode;
+  children?: ReactNode;
 };
 
 // Warning: (ae-missing-release-tag) "SidebarScrollWrapper" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
@@ -1094,7 +1162,7 @@ export const SidebarScrollWrapper: ComponentType<
 // @public (undocumented)
 export function SidebarSearchField(
   props: SidebarSearchFieldProps,
-): React_2.JSX.Element;
+): JSX_2.Element;
 
 // Warning: (ae-missing-release-tag) "SidebarSpace" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -1121,9 +1189,7 @@ export const SidebarSpacer: ComponentType<
 export type SidebarSpacerClassKey = 'root';
 
 // @public
-export const SidebarSubmenu: (
-  props: SidebarSubmenuProps,
-) => React_2.JSX.Element;
+export const SidebarSubmenu: (props: SidebarSubmenuProps) => JSX_2.Element;
 
 // @public (undocumented)
 export type SidebarSubmenuClassKey = 'root' | 'drawer' | 'drawerOpen' | 'title';
@@ -1131,7 +1197,7 @@ export type SidebarSubmenuClassKey = 'root' | 'drawer' | 'drawerOpen' | 'title';
 // @public
 export const SidebarSubmenuItem: (
   props: SidebarSubmenuItemProps,
-) => React_2.JSX.Element;
+) => JSX_2.Element;
 
 // @public (undocumented)
 export type SidebarSubmenuItemClassKey =
@@ -1172,7 +1238,7 @@ export type SidebarSubmenuProps = {
 // Warning: (ae-missing-release-tag) "SignInPage" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export function SignInPage(props: Props_16): React_2.JSX.Element;
+export function SignInPage(props: Props_16): JSX_2.Element;
 
 // Warning: (ae-missing-release-tag) "SignInPageClassKey" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -1195,7 +1261,7 @@ export type SignInProviderConfig = {
 // @public (undocumented)
 export function SimpleStepper(
   props: PropsWithChildren<StepperProps>,
-): React_2.JSX.Element;
+): JSX_2.Element;
 
 // Warning: (ae-missing-release-tag) "SimpleStepperFooterClassKey" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -1208,7 +1274,7 @@ export type SimpleStepperFooterClassKey = 'root';
 // @public (undocumented)
 export function SimpleStepperStep(
   props: PropsWithChildren<StepProps>,
-): React_2.JSX.Element;
+): JSX_2.Element;
 
 // Warning: (ae-missing-release-tag) "SimpleStepperStepClassKey" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -1219,14 +1285,12 @@ export type SimpleStepperStepClassKey = 'end';
 export type StackDetailsClassKey = 'title';
 
 // @public (undocumented)
-export function StarIcon(props: IconComponentProps): React_2.JSX.Element;
+export function StarIcon(props: IconComponentProps): JSX_2.Element;
 
 // Warning: (ae-missing-release-tag) "StatusAborted" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export function StatusAborted(
-  props: PropsWithChildren<{}>,
-): React_2.JSX.Element;
+export function StatusAborted(props: PropsWithChildren<{}>): JSX_2.Element;
 
 // Warning: (ae-missing-release-tag) "StatusClassKey" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -1243,38 +1307,32 @@ export type StatusClassKey =
 // Warning: (ae-missing-release-tag) "StatusError" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export function StatusError(props: PropsWithChildren<{}>): React_2.JSX.Element;
+export function StatusError(props: PropsWithChildren<{}>): JSX_2.Element;
 
 // Warning: (ae-missing-release-tag) "StatusOK" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export function StatusOK(props: PropsWithChildren<{}>): React_2.JSX.Element;
+export function StatusOK(props: PropsWithChildren<{}>): JSX_2.Element;
 
 // Warning: (ae-missing-release-tag) "StatusPending" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export function StatusPending(
-  props: PropsWithChildren<{}>,
-): React_2.JSX.Element;
+export function StatusPending(props: PropsWithChildren<{}>): JSX_2.Element;
 
 // Warning: (ae-missing-release-tag) "StatusRunning" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export function StatusRunning(
-  props: PropsWithChildren<{}>,
-): React_2.JSX.Element;
+export function StatusRunning(props: PropsWithChildren<{}>): JSX_2.Element;
 
 // Warning: (ae-missing-release-tag) "StatusWarning" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export function StatusWarning(
-  props: PropsWithChildren<{}>,
-): React_2.JSX.Element;
+export function StatusWarning(props: PropsWithChildren<{}>): JSX_2.Element;
 
 // @public (undocumented)
 export function StructuredMetadataTable(
   props: StructuredMetadataTableProps,
-): React_2.JSX.Element;
+): JSX_2.Element;
 
 // Warning: (ae-missing-release-tag) "StructuredMetadataTableListClassKey" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -1311,7 +1369,7 @@ export type SubmenuOptions = {
 // Warning: (ae-missing-release-tag) "SubvalueCell" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export function SubvalueCell(props: SubvalueCellProps): React_2.JSX.Element;
+export function SubvalueCell(props: SubvalueCellProps): JSX_2.Element;
 
 // Warning: (ae-missing-release-tag) "SubvalueCellClassKey" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -1322,9 +1380,7 @@ export type SubvalueCellClassKey = 'value' | 'subvalue';
 // Warning: (ae-missing-release-tag) "SupportButton" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export function SupportButton(
-  props: SupportButtonProps,
-): React_2.JSX.Element | null;
+export function SupportButton(props: SupportButtonProps): JSX_2.Element | null;
 
 // Warning: (ae-missing-release-tag) "SupportButtonClassKey" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -1363,9 +1419,9 @@ export type Tab = {
   id: string;
   label: string;
   tabProps?: TabProps<
-    React_2.ElementType,
+    ElementType,
     {
-      component?: React_2.ElementType;
+      component?: ElementType;
     }
   >;
 };
@@ -1374,9 +1430,7 @@ export type Tab = {
 // Warning: (ae-missing-release-tag) "TabbedCard" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public (undocumented)
-export function TabbedCard(
-  props: PropsWithChildren<Props_17>,
-): React_2.JSX.Element;
+export function TabbedCard(props: PropsWithChildren<Props_17>): JSX_2.Element;
 
 // Warning: (ae-missing-release-tag) "TabbedCardClassKey" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -1387,7 +1441,7 @@ export type TabbedCardClassKey = 'root' | 'indicator';
 // Warning: (ae-missing-release-tag) "TabbedLayout" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public
-export function TabbedLayout(props: PropsWithChildren<{}>): React_2.JSX.Element;
+export function TabbedLayout(props: PropsWithChildren<{}>): JSX_2.Element;
 
 // @public (undocumented)
 export namespace TabbedLayout {
@@ -1402,7 +1456,7 @@ export namespace TabbedLayout {
 // @public (undocumented)
 export function Table<T extends object = {}>(
   props: TableProps<T>,
-): React_2.JSX.Element;
+): JSX_2.Element;
 
 // @public (undocumented)
 export namespace Table {
@@ -1491,15 +1545,15 @@ export function TrendLine(
     Pick<SparklinesLineProps, 'color'> & {
       title?: string;
     },
-): React_2.JSX.Element | null;
+): JSX_2.Element | null;
 
 // @public (undocumented)
-export function UnstarredIcon(props: IconComponentProps): React_2.JSX.Element;
+export function UnstarredIcon(props: IconComponentProps): JSX_2.Element;
 
 // @public
 export function useContent(): {
   focusContent: () => void;
-  contentRef: React_2.MutableRefObject<HTMLElement | null> | undefined;
+  contentRef: MutableRefObject<HTMLElement | null> | undefined;
 };
 
 // Warning: (ae-forgotten-export) The symbol "SetQueryParams" needs to be exported by the entry point index.d.ts
@@ -1512,7 +1566,7 @@ export function useQueryParamState<T>(
 ): [T | undefined, SetQueryParams<T>];
 
 // @public (undocumented)
-export function UserIcon(props: IconComponentProps): React_2.JSX.Element;
+export function UserIcon(props: IconComponentProps): JSX_2.Element;
 
 // @public
 export class UserIdentity implements IdentityApi {
@@ -1551,13 +1605,13 @@ export const useSidebarPinState: () => SidebarPinState;
 export function useSupportConfig(): SupportConfig;
 
 // @public (undocumented)
-export function WarningIcon(props: IconComponentProps): React_2.JSX.Element;
+export function WarningIcon(props: IconComponentProps): JSX_2.Element;
 
 // Warning: (ae-forgotten-export) The symbol "WarningProps" needs to be exported by the entry point index.d.ts
 // Warning: (ae-missing-release-tag) "WarningPanel" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
 // @public
-export function WarningPanel(props: WarningProps): React_2.JSX.Element;
+export function WarningPanel(props: WarningProps): JSX_2.Element;
 
 // Warning: (ae-missing-release-tag) "WarningPanelClassKey" is part of the package's API, but it is missing a release tag (@alpha, @beta, @public, or @internal)
 //
@@ -1573,7 +1627,7 @@ export type WarningPanelClassKey =
 //
 // src/components/DependencyGraph/types.d.ts:22:9 - (ae-unresolved-link) The @link reference could not be resolved: The package "@backstage/core-components" does not have an export "DependencyNode"
 // src/components/DependencyGraph/types.d.ts:26:9 - (ae-unresolved-link) The @link reference could not be resolved: The package "@backstage/core-components" does not have an export "DependencyNode"
-// src/components/TabbedLayout/RoutedTabs.d.ts:9:5 - (ae-forgotten-export) The symbol "SubRoute_2" needs to be exported by the entry point index.d.ts
+// src/components/TabbedLayout/RoutedTabs.d.ts:8:5 - (ae-forgotten-export) The symbol "SubRoute_2" needs to be exported by the entry point index.d.ts
 // src/components/Table/Table.d.ts:20:5 - (ae-forgotten-export) The symbol "SelectedFilters" needs to be exported by the entry point index.d.ts
 // src/layout/ErrorBoundary/ErrorBoundary.d.ts:8:5 - (ae-forgotten-export) The symbol "SlackChannel" needs to be exported by the entry point index.d.ts
 ```

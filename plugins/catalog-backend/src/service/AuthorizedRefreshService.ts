@@ -21,10 +21,13 @@ import { RefreshOptions, RefreshService } from './types';
 import { PermissionsService } from '@backstage/backend-plugin-api';
 
 export class AuthorizedRefreshService implements RefreshService {
-  constructor(
-    private readonly service: RefreshService,
-    private readonly permissionApi: PermissionsService,
-  ) {}
+  private readonly service: RefreshService;
+  private readonly permissionApi: PermissionsService;
+
+  constructor(service: RefreshService, permissionApi: PermissionsService) {
+    this.service = service;
+    this.permissionApi = permissionApi;
+  }
 
   async refresh(options: RefreshOptions) {
     const authorizeDecision = (

@@ -15,11 +15,11 @@
  */
 
 /**
- * Common analytics context attributes.
+ * Analytics context envelope.
  *
  * @public
  */
-export type CommonAnalyticsContext = {
+export interface AnalyticsContextValue {
   /**
    * The nearest known parent plugin where the event was captured.
    */
@@ -29,13 +29,6 @@ export type CommonAnalyticsContext = {
    * The nearest known parent extension where the event was captured.
    */
   extensionId: string;
-};
 
-/**
- * Analytics context envelope.
- *
- * @public
- */
-export type AnalyticsContextValue = CommonAnalyticsContext & {
-  [param in string]: string | boolean | number | undefined;
-};
+  [key: string]: string | boolean | number | undefined;
+}

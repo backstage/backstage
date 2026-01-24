@@ -18,7 +18,7 @@ import { errorApiRef, useApi } from '@backstage/core-plugin-api';
 import IconButton from '@material-ui/core/IconButton';
 import Tooltip from '@material-ui/core/Tooltip';
 import CopyIcon from '@material-ui/icons/FileCopy';
-import React, { MouseEventHandler, useEffect, useState } from 'react';
+import { MouseEventHandler, useEffect, useState } from 'react';
 import useCopyToClipboard from 'react-use/esm/useCopyToClipboard';
 import { coreComponentsTranslationRef } from '../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';

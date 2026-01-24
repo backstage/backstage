@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { SearchResultListItemBlueprint } from './SearchResultListItemBlueprint';
 import {
   createExtensionTester,
@@ -92,7 +91,7 @@ describe('SearchResultListItemBlueprint', () => {
       },
       factory(originalFactory, { inputs }) {
         return originalFactory({
-          defaultPath: '/',
+          path: '/',
           loader: async () => {
             const items = inputs.items.map(i =>
               i.get(searchResultListItemDataRef),

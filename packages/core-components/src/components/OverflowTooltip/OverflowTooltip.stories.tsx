@@ -14,12 +14,12 @@
  * limitations under the License.
  */
 import Box from '@material-ui/core/Box';
-import React from 'react';
 import { OverflowTooltip } from './OverflowTooltip';
 
 export default {
   title: 'Data Display/OverflowTooltip',
   component: OverflowTooltip,
+  tags: ['!manifest'],
 };
 
 const text =

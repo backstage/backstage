@@ -69,4 +69,121 @@ describe('auditorServiceFactory', () => {
       status: 'initiated',
     });
   });
+
+  it('should log with custom log level mapping', async () => {
+    const mockLogger = mockServices.logger.mock();
+    mockLogger.child.mockReturnValue(mockLogger);
+
+    const auditor = await ServiceFactoryTester.from(auditorServiceFactory, {
+      dependencies: [
+        mockLogger.factory,
+        mockServices.rootConfig.factory({
+          data: {
+            backend: {
+              auditor: {
+                severityLogLevelMappings: {
+                  low: 'info',
+                  medium: 'debug',
+                  high: 'warn',
+                  critical: 'error',
+                },
+              },
+            },
+          },
+        }),
+      ],
+    }).getSubject();
+
+    await auditor.createEvent({
+      eventId: 'test1',
+      severityLevel: 'low',
+    });
+    await auditor.createEvent({
+      eventId: 'test2',
+    });
+    await auditor.createEvent({
+      eventId: 'test3',
+      severityLevel: 'medium',
+    });
+    await auditor.createEvent({
+      eventId: 'test4',
+      severityLevel: 'high',
+    });
+    await auditor.createEvent({
+      eventId: 'test5',
+      severityLevel: 'critical',
+    });
+
+    expect(mockLogger.info).toHaveBeenCalledWith('test.test1', {
+      eventId: 'test1',
+      severityLevel: 'low',
+      actor: {
+        actorId: 'plugin:test',
+      },
+      plugin: 'test',
+      status: 'initiated',
+    });
+    expect(mockLogger.info).toHaveBeenCalledWith('test.test2', {
+      eventId: 'test2',
+      severityLevel: 'low',
+      actor: {
+        actorId: 'plugin:test',
+      },
+      plugin: 'test',
+      status: 'initiated',
+    });
+    expect(mockLogger.debug).toHaveBeenCalledWith('test.test3', {
+      eventId: 'test3',
+      severityLevel: 'medium',
+      actor: {
+        actorId: 'plugin:test',
+      },
+      plugin: 'test',
+      status: 'initiated',
+    });
+    expect(mockLogger.warn).toHaveBeenCalledWith('test.test4', {
+      eventId: 'test4',
+      severityLevel: 'high',
+      actor: {
+        actorId: 'plugin:test',
+      },
+      plugin: 'test',
+      status: 'initiated',
+    });
+    expect(mockLogger.error).toHaveBeenCalledWith('test.test5', {
+      eventId: 'test5',
+      severityLevel: 'critical',
+      actor: {
+        actorId: 'plugin:test',
+      },
+      plugin: 'test',
+      status: 'initiated',
+    });
+  });
+
+  it('should throw an error given an incorrect custom level', async () => {
+    const mockLogger = mockServices.logger.mock();
+    mockLogger.child.mockReturnValue(mockLogger);
+
+    await expect(
+      ServiceFactoryTester.from(auditorServiceFactory, {
+        dependencies: [
+          mockLogger.factory,
+          mockServices.rootConfig.factory({
+            data: {
+              backend: {
+                auditor: {
+                  severityLogLevelMappings: {
+                    low: 'invalidloglevel',
+                  },
+                },
+              },
+            },
+          }),
+        ],
+      }).getSubject(),
+    ).rejects.toThrow(
+      "Failed to instantiate service 'core.auditor' for 'test' because the factory function threw an error, InputError: The configuration value for 'backend.auditor.severityLogLevelMappings.low' was given an invalid value: 'invalidloglevel'. Expected one of the following valid values: 'debug, info, warn, error'.",
+    );
+  });
 });

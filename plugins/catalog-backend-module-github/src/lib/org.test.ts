@@ -15,7 +15,12 @@
  */
 
 import { GroupEntity, UserEntity } from '@backstage/catalog-model';
-import { assignGroupsToUsers, buildMemberOf, buildOrgHierarchy } from './org';
+import {
+  assignGroupsToUsers,
+  assignGroupsToUser,
+  buildMemberOf,
+  buildOrgHierarchy,
+} from './org';
 
 function u(name: string, memberOf: string[] = []): UserEntity {
   return {
@@ -112,6 +117,42 @@ describe('assignGroupsToUsers', () => {
 
     expect(users[0].spec.memberOf).toEqual(['g1']);
     expect(users[1].spec.memberOf).toEqual(['g1', 'g2']);
+  });
+});
+
+describe('assignGroupsToUser', () => {
+  it('should assign the correct groups to a user', () => {
+    const user: UserEntity = u('u1');
+    const groups: GroupEntity[] = [
+      {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Group',
+        metadata: { name: 'g1' },
+        spec: { type: 'team', children: [], members: ['default/u1'] },
+      },
+      {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Group',
+        metadata: { name: 'g2' },
+        spec: { type: 'team', children: [], members: ['u2'] },
+      },
+    ];
+    assignGroupsToUser(user, groups);
+    expect(user.spec.memberOf).toEqual(['g1']);
+  });
+
+  it('should not assign any groups if user is not a member', () => {
+    const user: UserEntity = u('u3');
+    const groups: GroupEntity[] = [
+      {
+        apiVersion: 'backstage.io/v1alpha1',
+        kind: 'Group',
+        metadata: { name: 'g1' },
+        spec: { type: 'team', children: [], members: ['u1'] },
+      },
+    ];
+    assignGroupsToUser(user, groups);
+    expect(user.spec.memberOf).toEqual([]);
   });
 });
 

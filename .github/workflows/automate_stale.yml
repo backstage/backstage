@@ -15,28 +15,44 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@cb605e52c26070c328afc4562f0b4ada7618a84e # v2.10.4
+        uses: step-security/harden-runner@df199fb7be9f65074067a9eb93f12bb4c5547cf2 # v2.13.3
         with:
           egress-policy: audit
 
-      - uses: actions/stale@5bef64f19d7facfb25b37b414482c7164d639639 # v9.1.0
-        id: stale
+      - name: Stale check - base
+        uses: actions/stale@997185467fa4f803885201cee163a9f38240193d # v10.1.1
         with:
           stale-issue-message: >
             This issue has been automatically marked as stale because it has not had
             recent activity. It will be closed if no further activity occurs. Thank you
             for your contributions.
           days-before-issue-stale: 60
-          days-before-issue-close: 7
-          exempt-issue-labels: plugin,after-vacations,will-fix,bep
+          days-before-issue-close: 14
+          exempt-issue-labels: after vacations,no stale
           stale-issue-label: stale
           stale-pr-message: >
             This PR has been automatically marked as stale because it has not had
             recent activity from the author. It will be closed if no further activity occurs.
             If the PR was closed and you want it re-opened, let us know
             and we'll re-open the PR so that you can continue the contribution!
-          days-before-pr-stale: 14
-          days-before-pr-close: 7
-          exempt-pr-labels: after-vacations,will-fix
+          days-before-pr-stale: 30
+          days-before-pr-close: 14
+          exempt-pr-labels: after vacations,no stale
           stale-pr-label: stale
           operations-per-run: 100
+
+      - name: Stale check - bugs without repro
+        uses: actions/stale@997185467fa4f803885201cee163a9f38240193d # v10.1.1
+        with:
+          stale-issue-message: >
+            This bug report has been automatically marked as stale because it has not had
+            recent activity and does not have valid steps to reproduce. It will be closed
+            if no further activity occurs. If the PR was closed and you want it re-opened,
+            let us know and we'll re-open the PR so that you can continue the contribution!
+          days-before-stale: 30
+          days-before-close: 7
+          days-before-pr-stale: -1
+          exempt-issue-labels: after vacations,no stale
+          only-labels: type:bug,needs:repro
+          stale-issue-label: stale
+          operations-per-run: 50

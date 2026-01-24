@@ -1,0 +1,6 @@
+{
+  "name": "@internal/frontend-plugin-pkg",
+  "backstage": {
+    "role": "frontend-plugin"
+  }
+}

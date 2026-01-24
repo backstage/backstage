@@ -15,8 +15,8 @@
  */
 
 import { makeStyles } from '@material-ui/core/styles';
-import React, { useEffect, useState } from 'react';
-import SwaggerUI, { SwaggerUIProps } from 'swagger-ui-react';
+import { useEffect, useState } from 'react';
+import SwaggerUI from 'swagger-ui-react';
 import 'swagger-ui-react/swagger-ui.css';
 
 const useStyles = makeStyles(theme => ({
@@ -179,7 +179,7 @@ const useStyles = makeStyles(theme => ({
 
 export type OpenApiDefinitionProps = {
   definition: string;
-} & Omit<SwaggerUIProps, 'spec'>;
+} & Omit<React.ComponentProps<typeof SwaggerUI>, 'spec'>;
 
 export const OpenApiDefinition = ({
   definition,

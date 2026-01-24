@@ -28,7 +28,6 @@ import {
   renderInTestApp,
 } from '@backstage/test-utils';
 import { screen } from '@testing-library/react';
-import React from 'react';
 import { rootDocsRouteRef } from '../../routes';
 import { DefaultTechDocsHome } from './DefaultTechDocsHome';
 

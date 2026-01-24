@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { identityApiRef, useApi } from '@backstage/core-plugin-api';
 import { useAsync, useMountEffect } from '@react-hookz/web';
 

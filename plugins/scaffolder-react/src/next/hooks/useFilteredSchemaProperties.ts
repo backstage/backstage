@@ -16,6 +16,7 @@
 import cloneDeep from 'lodash/cloneDeep';
 import { useApi, featureFlagsApiRef } from '@backstage/core-plugin-api';
 import { TemplateParameterSchema } from '@backstage/plugin-scaffolder-react';
+import { useMemo } from 'react';
 
 /**
  * Returns manifest of software templates with steps without a featureFlag tag.
@@ -28,49 +29,51 @@ export const useFilteredSchemaProperties = (
   const featureFlagKey = 'backstage:featureFlag';
   const featureFlagApi = useApi(featureFlagsApiRef);
 
-  if (!manifest) {
-    return undefined;
-  }
-
-  const filteredSteps = manifest?.steps
-    .filter(step => {
-      const featureFlag = step.schema[featureFlagKey];
-      return (
-        typeof featureFlag !== 'string' || featureFlagApi.isActive(featureFlag)
-      );
-    })
-    .map(step => {
-      const filteredStep = cloneDeep(step);
-      const removedPropertyKeys: Array<string> = [];
-      if (filteredStep.schema.properties) {
-        filteredStep.schema.properties = Object.fromEntries(
-          Object.entries(filteredStep.schema.properties).filter(
-            ([key, value]) => {
-              if (value[featureFlagKey]) {
-                if (featureFlagApi.isActive(value[featureFlagKey])) {
-                  return true;
-                }
-
-                removedPropertyKeys.push(key);
-                return false;
-              }
-              return true;
-            },
-          ),
+  return useMemo(() => {
+    if (!manifest) {
+      return undefined;
+    }
+    const filteredSteps = manifest?.steps
+      .filter(step => {
+        const featureFlag = step.schema[featureFlagKey];
+        return (
+          typeof featureFlag !== 'string' ||
+          featureFlagApi.isActive(featureFlag)
         );
+      })
+      .map(step => {
+        const filteredStep = cloneDeep(step);
+        const removedPropertyKeys: Array<string> = [];
+        if (filteredStep.schema.properties) {
+          filteredStep.schema.properties = Object.fromEntries(
+            Object.entries(filteredStep.schema.properties).filter(
+              ([key, value]) => {
+                if (value[featureFlagKey]) {
+                  if (featureFlagApi.isActive(value[featureFlagKey])) {
+                    return true;
+                  }
 
-        // remove the feature flag property key from required if they are not active
-        filteredStep.schema.required = Array.isArray(
-          filteredStep.schema.required,
-        )
-          ? filteredStep.schema.required?.filter(
-              r => !removedPropertyKeys.includes(r as string),
-            )
-          : filteredStep.schema.required;
-      }
+                  removedPropertyKeys.push(key);
+                  return false;
+                }
+                return true;
+              },
+            ),
+          );
 
-      return filteredStep;
-    });
+          // remove the feature flag property key from required if they are not active
+          filteredStep.schema.required = Array.isArray(
+            filteredStep.schema.required,
+          )
+            ? filteredStep.schema.required?.filter(
+                r => !removedPropertyKeys.includes(r as string),
+              )
+            : filteredStep.schema.required;
+        }
 
-  return { ...manifest, steps: filteredSteps };
+        return filteredStep;
+      });
+
+    return { ...manifest, steps: filteredSteps };
+  }, [manifest, featureFlagApi]);
 };

@@ -17,8 +17,8 @@
 import { Isolate } from 'isolated-vm';
 import { resolvePackagePath } from '@backstage/backend-plugin-api';
 import {
-  TemplateFilter as _TemplateFilter,
-  TemplateGlobal as _TemplateGlobal,
+  TemplateFilter,
+  TemplateGlobal,
 } from '@backstage/plugin-scaffolder-node';
 import fs from 'fs-extra';
 import { JsonValue } from '@backstage/types';
@@ -95,18 +95,6 @@ const { render, renderCompat } = (() => {
   return { render, renderCompat };
 })();
 `;
-
-/**
- * @public
- * @deprecated Import from `@backstage/plugin-scaffolder-node` instead.
- */
-export type TemplateFilter = _TemplateFilter;
-
-/**
- * @public
- * @deprecated Import from `@backstage/plugin-scaffolder-node` instead.
- */
-export type TemplateGlobal = _TemplateGlobal;
 
 interface SecureTemplaterOptions {
   /* Enables jinja compatibility and the "jsonify" filter */

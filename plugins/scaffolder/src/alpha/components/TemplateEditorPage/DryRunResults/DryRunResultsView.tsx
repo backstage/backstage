@@ -23,7 +23,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import Tab from '@material-ui/core/Tab';
 import Tabs from '@material-ui/core/Tabs';
 import CodeMirror from '@uiw/react-codemirror';
-import React, { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { useDryRun } from '../DryRunContext';
 import { DryRunResultsSplitView } from './DryRunResultsSplitView';
 import { FileBrowser } from '../../../../components/FileBrowser';

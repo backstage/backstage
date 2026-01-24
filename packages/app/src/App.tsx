@@ -14,20 +14,8 @@
  * limitations under the License.
  */
 
-import {
-  RELATION_API_CONSUMED_BY,
-  RELATION_API_PROVIDED_BY,
-  RELATION_CONSUMES_API,
-  RELATION_DEPENDENCY_OF,
-  RELATION_DEPENDS_ON,
-  RELATION_HAS_PART,
-  RELATION_OWNED_BY,
-  RELATION_OWNER_OF,
-  RELATION_PART_OF,
-  RELATION_PROVIDES_API,
-} from '@backstage/catalog-model';
 import { createApp } from '@backstage/app-defaults';
-import { AppRouter, FlatRoutes } from '@backstage/core-app-api';
+import { AppRouter, FeatureFlagged, FlatRoutes } from '@backstage/core-app-api';
 import {
   AlertDisplay,
   OAuthRequestDialog,
@@ -63,11 +51,9 @@ import {
 } from '@backstage/plugin-user-settings';
 import { AdvancedSettings } from './components/advancedSettings';
 import AlarmIcon from '@material-ui/icons/Alarm';
-import React from 'react';
 import { Navigate, Route } from 'react-router-dom';
 import { apis } from './apis';
 import { entityPage } from './components/catalog/EntityPage';
-import { homePage } from './components/home/HomePage';
 import { Root } from './components/Root';
 import { DelayingComponentFieldExtension } from './components/scaffolder/customScaffolderExtensions';
 import { defaultPreviewTemplate } from './components/scaffolder/defaultPreviewTemplate';
@@ -85,6 +71,9 @@ import {
   NotificationsPage,
   UserNotificationSettingsCard,
 } from '@backstage/plugin-notifications';
+import { CustomizableHomePage } from './components/home/CustomizableHomePage';
+import { HomePage } from './components/home/HomePage';
+import { BuiThemerPage } from '@backstage/plugin-mui-to-bui';
 
 const app = createApp({
   apis,
@@ -116,10 +105,20 @@ const app = createApp({
 const routes = (
   <FlatRoutes>
     <Route path="/" element={<Navigate to="catalog" />} />
+
     {/* TODO(rubenl): Move this to / once its more mature and components exist */}
-    <Route path="/home" element={<HomepageCompositionRoot />}>
-      {homePage}
-    </Route>
+
+    <FeatureFlagged with="customizable-home-page-preview">
+      <Route path="/home" element={<HomepageCompositionRoot />}>
+        <CustomizableHomePage />
+      </Route>
+    </FeatureFlagged>
+    <FeatureFlagged without="customizable-home-page-preview">
+      <Route path="/home" element={<HomepageCompositionRoot />}>
+        <HomePage />
+      </Route>
+    </FeatureFlagged>
+
     <Route
       path="/catalog"
       element={<CatalogIndexPage pagination={{ mode: 'offset', limit: 20 }} />}
@@ -148,18 +147,6 @@ const routes = (
         <CatalogGraphPage
           initialState={{
             selectedKinds: ['component', 'domain', 'system', 'api', 'group'],
-            selectedRelations: [
-              RELATION_OWNER_OF,
-              RELATION_OWNED_BY,
-              RELATION_CONSUMES_API,
-              RELATION_API_CONSUMED_BY,
-              RELATION_PROVIDES_API,
-              RELATION_API_PROVIDED_BY,
-              RELATION_HAS_PART,
-              RELATION_PART_OF,
-              RELATION_DEPENDS_ON,
-              RELATION_DEPENDENCY_OF,
-            ],
           }}
         />
       }
@@ -222,6 +209,7 @@ const routes = (
       {customDevToolsPage}
     </Route>
     <Route path="/notifications" element={<NotificationsPage />} />
+    <Route path="/mui-to-bui" element={<BuiThemerPage />} />
   </FlatRoutes>
 );
 

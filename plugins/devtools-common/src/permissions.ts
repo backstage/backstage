@@ -49,6 +49,22 @@ export const devToolsExternalDependenciesReadPermission = createPermission({
 });
 
 /**
+ * @alpha
+ */
+export const devToolsTaskSchedulerReadPermission = createPermission({
+  name: 'devtools.scheduler.read',
+  attributes: { action: 'read' },
+});
+
+/**
+ * @alpha
+ */
+export const devToolsTaskSchedulerCreatePermission = createPermission({
+  name: 'devtools.scheduler.trigger',
+  attributes: { action: 'update' },
+});
+
+/**
  * List of all Devtools permissions
  *
  * @public

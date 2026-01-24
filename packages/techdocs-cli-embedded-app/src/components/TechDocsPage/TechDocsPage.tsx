@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 import { makeStyles } from '@material-ui/core/styles';
 import { Theme } from '@material-ui/core/styles/createTheme';
@@ -49,15 +49,15 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
 }));
 
-enum Themes {
-  LIGHT = 'light',
-  DARK = 'dark',
-}
+const Themes = {
+  LIGHT: 'light',
+  DARK: 'dark',
+} as const;
 
 export const TechDocsThemeToggle = () => {
   const appThemeApi = useApi(appThemeApiRef);
   const classes = useStyles();
-  const [theme, setTheme] = useState<Themes>(
+  const [theme, setTheme] = useState<(typeof Themes)[keyof typeof Themes]>(
     appThemeApi.getActiveThemeId() === Themes.DARK ? Themes.DARK : Themes.LIGHT,
   );
 

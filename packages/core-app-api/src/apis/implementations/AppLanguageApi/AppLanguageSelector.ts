@@ -44,11 +44,9 @@ export class AppLanguageSelector implements AppLanguageApi {
         )}'`,
       );
     }
-    if (!languages.includes(DEFAULT_LANGUAGE)) {
-      throw new Error(`Supported languages must include '${DEFAULT_LANGUAGE}'`);
-    }
 
     const initialLanguage = options?.defaultLanguage ?? DEFAULT_LANGUAGE;
+
     if (!languages.includes(initialLanguage)) {
       throw new Error(
         `Initial language must be one of the supported languages, got '${initialLanguage}'`,

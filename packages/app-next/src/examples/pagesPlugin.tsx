@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { Link } from '@backstage/core-components';
 import {
   createFrontendPlugin,
@@ -22,7 +21,10 @@ import {
   createExternalRouteRef,
   useRouteRef,
   PageBlueprint,
+  FrontendPluginInfo,
+  useAppNode,
 } from '@backstage/frontend-plugin-api';
+import { useEffect, useState } from 'react';
 import { Route, Routes } from 'react-router-dom';
 
 const indexRouteRef = createRouteRef();
@@ -37,10 +39,26 @@ export const pageXRouteRef = createRouteRef();
 //   path: '/page2',
 // });
 
+function PluginInfo() {
+  const node = useAppNode();
+  const [info, setInfo] = useState<FrontendPluginInfo | undefined>(undefined);
+
+  useEffect(() => {
+    node?.spec.plugin?.info().then(setInfo);
+  }, [node]);
+
+  return (
+    <div>
+      <h3>Plugin Info</h3>
+      <pre>{JSON.stringify(info, null, 2)}</pre>
+    </div>
+  );
+}
+
 const IndexPage = PageBlueprint.make({
   name: 'index',
   params: {
-    defaultPath: '/',
+    path: '/',
     routeRef: indexRouteRef,
     loader: async () => {
       const Component = () => {
@@ -65,6 +83,7 @@ const IndexPage = PageBlueprint.make({
             <div>
               <Link to="/settings">Settings</Link>
             </div>
+            <PluginInfo />
           </div>
         );
       };
@@ -76,7 +95,7 @@ const IndexPage = PageBlueprint.make({
 const Page1 = PageBlueprint.make({
   name: 'page1',
   params: {
-    defaultPath: '/page1',
+    path: '/page1',
     routeRef: page1RouteRef,
     loader: async () => {
       const Component = () => {
@@ -112,7 +131,7 @@ const Page1 = PageBlueprint.make({
 const ExternalPage = PageBlueprint.make({
   name: 'pageX',
   params: {
-    defaultPath: '/pageX',
+    path: '/pageX',
     routeRef: pageXRouteRef,
     loader: async () => {
       const Component = () => {
@@ -132,7 +151,7 @@ const ExternalPage = PageBlueprint.make({
 });
 
 export const pagesPlugin = createFrontendPlugin({
-  id: 'pages',
+  pluginId: 'pages',
   // routes: {
   //   index: indexRouteRef,
   //   // reference in config:
@@ -140,6 +159,10 @@ export const pagesPlugin = createFrontendPlugin({
   //   //     OR
   //   //   'page1'
   // },
+  info: {
+    packageJson: () => import('../../package.json'),
+    manifest: () => import('../../catalog-info.yaml'),
+  },
   routes: {
     page1: page1RouteRef,
     pageX: pageXRouteRef,

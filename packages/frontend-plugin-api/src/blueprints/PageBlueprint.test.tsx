@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
 import { createRouteRef } from '../routing';
 import { PageBlueprint } from './PageBlueprint';
 import {
@@ -35,7 +34,7 @@ describe('PageBlueprint', () => {
       name: 'test-page',
       params: {
         loader: () => Promise.resolve(<div>Test</div>),
-        defaultPath: '/test',
+        path: '/test',
         routeRef: mockRouteRef,
       },
     });
@@ -91,7 +90,7 @@ describe('PageBlueprint', () => {
       name: 'test-page',
       params: {
         loader: () => Promise.resolve(<div data-testid="test">Test</div>),
-        defaultPath: '/test',
+        path: '/test',
         routeRef: mockRouteRef,
       },
     });
@@ -124,7 +123,7 @@ describe('PageBlueprint', () => {
               {inputs.cards.map(c => c.get(coreExtensionData.reactElement))}
             </div>
           ),
-          defaultPath: '/test',
+          path: '/test',
           routeRef: mockRouteRef,
         });
       },

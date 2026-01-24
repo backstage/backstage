@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
 import { HeaderLabel } from '../HeaderLabel';
 import { Page } from '../Page';
 import { Header } from './Header';
@@ -37,6 +36,7 @@ export default {
       control: { type: 'select' },
     },
   },
+  tags: ['!manifest'],
 };
 
 const labels = (

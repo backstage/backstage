@@ -1,7 +1,7 @@
 {
   "name": "@backstage/plugin-catalog-backend-module-logs",
-  "version": "0.1.8-next.2",
-  "description": "A module that subscribes to catalog releated events and logs them.",
+  "version": "0.1.18",
+  "description": "A module that subscribes to catalog related events and logs them.",
   "backstage": {
     "role": "backend-plugin-module",
     "pluginId": "catalog",

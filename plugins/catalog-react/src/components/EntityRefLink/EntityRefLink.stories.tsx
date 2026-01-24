@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import React, { ComponentType, PropsWithChildren } from 'react';
+import { ComponentType, PropsWithChildren } from 'react';
 import { EntityRefLink, EntityRefLinkProps } from './EntityRefLink';
 import { wrapInTestApp } from '@backstage/test-utils';
 import { entityRouteRef } from '../../routes';
@@ -33,6 +33,7 @@ export default {
         },
       }),
   ],
+  tags: ['!manifest'],
 };
 
 export const Default = (args: EntityRefLinkProps) => (

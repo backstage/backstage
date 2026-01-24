@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import {
   DEFAULT_NAMESPACE,
   stringifyEntityRef,
@@ -33,12 +32,10 @@ import {
 import useAsync from 'react-use/esm/useAsync';
 import {
   catalogApiRef,
-  CatalogApi,
   entityRouteRef,
+  entityPresentationApiRef,
 } from '@backstage/plugin-catalog-react';
 import { getCompoundEntityRef } from '@backstage/catalog-model';
-
-import { entityPresentationApiRef } from '@backstage/plugin-catalog-react';
 
 /**
  * MyGroupsSidebarItem can be added to your sidebar providing quick access to groups the logged in user is a member of
@@ -54,7 +51,7 @@ export const MyGroupsSidebarItem = (props: {
   const { singularTitle, pluralTitle, icon, filter } = props;
 
   const identityApi = useApi(identityApiRef);
-  const catalogApi: CatalogApi = useApi(catalogApiRef);
+  const catalogApi = useApi(catalogApiRef);
   const catalogEntityRoute = useRouteRef(entityRouteRef);
   const entityPresentationApi = useApi(entityPresentationApiRef);
 
@@ -69,7 +66,7 @@ export const MyGroupsSidebarItem = (props: {
           ...(filter ?? {}),
         },
       ],
-      fields: ['metadata', 'kind'],
+      fields: ['metadata', 'kind', 'spec.profile'],
     });
     return response.items;
   }, []);

@@ -84,21 +84,28 @@ function addProcessorAttributes(
   );
 }
 
-/** @public */
 export class DefaultCatalogProcessingOrchestrator
   implements CatalogProcessingOrchestrator
 {
-  constructor(
-    private readonly options: {
-      processors: CatalogProcessor[];
-      integrations: ScmIntegrationRegistry;
-      logger: LoggerService;
-      parser: CatalogProcessorParser;
-      policy: EntityPolicy;
-      rulesEnforcer: CatalogRulesEnforcer;
-      legacySingleProcessorValidation: boolean;
-    },
-  ) {}
+  private readonly options: {
+    processors: CatalogProcessor[];
+    integrations: ScmIntegrationRegistry;
+    logger: LoggerService;
+    parser: CatalogProcessorParser;
+    policy: EntityPolicy;
+    rulesEnforcer: CatalogRulesEnforcer;
+  };
+
+  constructor(options: {
+    processors: CatalogProcessor[];
+    integrations: ScmIntegrationRegistry;
+    logger: LoggerService;
+    parser: CatalogProcessorParser;
+    policy: EntityPolicy;
+    rulesEnforcer: CatalogRulesEnforcer;
+  }) {
+    this.options = options;
+  }
 
   async process(
     request: EntityProcessingRequest,
@@ -310,9 +317,6 @@ export class DefaultCatalogProcessingOrchestrator
             );
             if (thisValid) {
               valid = true;
-              if (this.options.legacySingleProcessorValidation) {
-                break;
-              }
             }
           } catch (e) {
             throw new InputError(

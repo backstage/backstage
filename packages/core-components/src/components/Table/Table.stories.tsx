@@ -15,7 +15,7 @@
  */
 
 import { makeStyles } from '@material-ui/core/styles';
-import React from 'react';
+import { ReactNode } from 'react';
 import { Link } from '../Link';
 import { SubvalueCell } from './SubvalueCell';
 import { Table, TableColumn, TableFilter } from './Table';
@@ -23,6 +23,7 @@ import { Table, TableColumn, TableFilter } from './Table';
 export default {
   title: 'Data Display/Table',
   component: Table,
+  tags: ['!manifest'],
 };
 
 const useStyles = makeStyles(theme => ({
@@ -254,7 +255,7 @@ export const SubvalueTable = () => {
           .includes(query.toLocaleUpperCase('en-US')),
       field: 'col1',
       highlight: true,
-      render: (row: any): React.ReactNode => (
+      render: (row: any): ReactNode => (
         <SubvalueCell value={row.col1} subvalue={row.subvalue} />
       ),
     },

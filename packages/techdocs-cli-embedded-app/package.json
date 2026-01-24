@@ -1,6 +1,6 @@
 {
   "name": "techdocs-cli-embedded-app",
-  "version": "0.2.106-next.2",
+  "version": "0.2.116",
   "backstage": {
     "role": "frontend"
   },
@@ -45,6 +45,7 @@
     "@backstage/plugin-techdocs-react": "workspace:^",
     "@backstage/test-utils": "workspace:^",
     "@backstage/theme": "workspace:^",
+    "@backstage/ui": "workspace:^",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
     "history": "^5.0.0",
@@ -61,7 +62,7 @@
     "@testing-library/user-event": "^14.0.0",
     "@types/react": "*",
     "@types/react-dom": "*",
-    "cross-env": "^7.0.0"
+    "cross-env": "^10.0.0"
   },
   "bundled": true
 }

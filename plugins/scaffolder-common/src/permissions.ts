@@ -31,6 +31,13 @@ export const RESOURCE_TYPE_SCAFFOLDER_TEMPLATE = 'scaffolder-template';
 export const RESOURCE_TYPE_SCAFFOLDER_ACTION = 'scaffolder-action';
 
 /**
+ * Permission resource type which corresponds to scaffolder tasks
+ *
+ * @alpha
+ */
+export const RESOURCE_TYPE_SCAFFOLDER_TASK = 'scaffolder-task';
+
+/**
  * This permission is used to authorize actions that involve executing
  * an action from a template.
  *
@@ -89,6 +96,7 @@ export const taskReadPermission = createPermission({
   attributes: {
     action: 'read',
   },
+  resourceType: RESOURCE_TYPE_SCAFFOLDER_TASK,
 });
 
 /**
@@ -111,6 +119,7 @@ export const taskCreatePermission = createPermission({
 export const taskCancelPermission = createPermission({
   name: 'scaffolder.task.cancel',
   attributes: {},
+  resourceType: RESOURCE_TYPE_SCAFFOLDER_TASK,
 });
 
 /**

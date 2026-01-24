@@ -134,11 +134,43 @@ search:
         timeout: { minutes: 3 }
 ```
 
+### Filtering through the catalog collator
+
+The TechDocs collator by default filters through catalog entities where the annotation `metadata.annotations.backstage.io/techdocs-ref` exists. If you wish to further filter out entities, there are two ways to do so through the `techDocsCollatorEntityFilterExtensionPoint`.
+
+```typescript
+export const exampleCustomCatalogFiltering = createBackendModule({
+  pluginId: 'search',
+  moduleId: 'search-techdocs-collator-entity-filter',
+  register(reg) {
+    reg.registerInit({
+      deps: {
+        customCollatorFilter: techDocsCollatorEntityFilterExtensionPoint,
+      },
+      async init({ customCollatorFilter }) {
+        /* filtering by catalog params */
+        customCollatorFilter.setCustomCatalogApiFilters([
+          { kind: ['API', 'Component', ...] },
+          { metadata: ['...more filters'] },
+        ]);
+
+        /* filtering by a custom function */
+        customCollatorFilter.setEntityFilterFunction((entities: Entity[]) =>
+          entities.filter(
+            entity => entity.metadata?.annotations?.abc === 'xyz',
+          ),
+        );
+      },
+    });
+  },
+});
+```
+
 ## Community Collators
 
 Here are some of the known Search Collators available in from the Backstage Community:
 
-- [`@backstage/plugin-search-backend-module-explore`](https://github.com/backstage/backstage/tree/master/plugins/search-backend-module-explore): will index content from the [Explore plugin](https://github.com/backstage/community-plugins/tree/main/workspaces/explore/plugins/explore).
+- [`@backstage-community/plugin-search-backend-module-explore`](https://github.com/backstage/community-plugins/tree/main/workspaces/explore/plugins/search-backend-module-explore): will index content from the [Explore plugin](https://github.com/backstage/community-plugins/tree/main/workspaces/explore/plugins/explore).
 - [`@backstage/plugin-search-backend-module-stack-overflow-collator`](https://github.com/backstage/backstage/tree/master/plugins/search-backend-module-stack-overflow-collator): will index content from Stack Overflow.
 - [`@backstage-community/search-backend-module-adr`](https://github.com/backstage/community-plugins/tree/main/workspaces/adr/plugins/search-backend-module-adr): will index content from the [ADR plugin](https://github.com/backstage/community-plugins/tree/main/workspaces/adr/plugins/adr).
 

@@ -14,22 +14,26 @@
  * limitations under the License.
  */
 
-import { render, waitFor, screen, within } from '@testing-library/react';
+import { waitFor, screen, within } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
-import React from 'react';
 import { CurveFilter } from './CurveFilter';
+import { renderInTestApp } from '@backstage/test-utils';
 
 describe('<CurveFilter/>', () => {
-  test('should display current curve label', () => {
+  test('should display current curve label', async () => {
     const onChange = jest.fn();
-    render(<CurveFilter value="curveMonotoneX" onChange={onChange} />);
+    await renderInTestApp(
+      <CurveFilter value="curveMonotoneX" onChange={onChange} />,
+    );
 
     expect(screen.getByText('Monotone X')).toBeInTheDocument();
   });
 
   test('should select an alternative curve factory', async () => {
     const onChange = jest.fn();
-    render(<CurveFilter value="curveStepBefore" onChange={onChange} />);
+    await renderInTestApp(
+      <CurveFilter value="curveStepBefore" onChange={onChange} />,
+    );
 
     expect(screen.getByText('Step Before')).toBeInTheDocument();
 

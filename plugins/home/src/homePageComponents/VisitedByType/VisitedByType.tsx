@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { VisitList } from '../../components/VisitList';
+import { VisitList } from '../../components/VisitList/VisitList';
 import { useContext } from './Context';
 
 export const VisitedByType = () => {

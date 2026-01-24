@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-scaffolder-common",
-  "version": "1.5.10-next.0",
+  "version": "1.7.5",
   "description": "Common functionalities for the scaffolder, to be shared between scaffolder and scaffolder-backend plugin",
   "backstage": {
     "role": "common-library",
@@ -61,10 +61,20 @@
   },
   "dependencies": {
     "@backstage/catalog-model": "workspace:^",
+    "@backstage/errors": "workspace:^",
+    "@backstage/integration": "workspace:^",
     "@backstage/plugin-permission-common": "workspace:^",
-    "@backstage/types": "workspace:^"
+    "@backstage/types": "workspace:^",
+    "@microsoft/fetch-event-source": "^2.0.1",
+    "@types/json-schema": "^7.0.9",
+    "cross-fetch": "^4.0.0",
+    "json-schema": "^0.4.0",
+    "uri-template": "^2.0.0",
+    "zen-observable": "^0.10.0"
   },
   "devDependencies": {
-    "@backstage/cli": "workspace:^"
+    "@backstage/cli": "workspace:^",
+    "@backstage/test-utils": "workspace:^",
+    "msw": "^1.0.0"
   }
 }

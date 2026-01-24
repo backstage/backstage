@@ -14,11 +14,21 @@
  * limitations under the License.
  */
 
+import {
+  createExtensionDataRef,
+  createExtensionInput,
+} from '@backstage/frontend-plugin-api';
 import { ExtensionDefinition } from './createExtension';
 import {
   ResolveExtensionId,
   resolveExtensionDefinition,
 } from './resolveExtensionDefinition';
+import {
+  OpaqueExtensionDefinition,
+  OpaqueExtensionInput,
+} from '@internal/frontend';
+
+const testDataRef = createExtensionDataRef<string>().with({ id: 'test' });
 
 describe('resolveExtensionDefinition', () => {
   const baseDef = {
@@ -26,6 +36,7 @@ describe('resolveExtensionDefinition', () => {
     T: undefined as any,
     version: 'v2',
     attachTo: { id: '', input: '' },
+    inputs: {},
     disabled: false,
     override: () => ({} as ExtensionDefinition),
   };
@@ -60,6 +71,111 @@ describe('resolveExtensionDefinition', () => {
       'Extension must declare an explicit namespace or name as it could not be resolved from context, kind=undefined namespace=undefined name=undefined',
     );
   });
+
+  it('should resolve extension input references', () => {
+    const baseInpuf = OpaqueExtensionInput.toInternal(
+      createExtensionInput([testDataRef]),
+    );
+    expect(
+      resolveExtensionDefinition(
+        OpaqueExtensionDefinition.toInternal({
+          ...baseDef,
+          attachTo: baseInpuf.withContext?.({
+            kind: 'parent',
+            name: 'example',
+            input: 'children',
+          }),
+        }),
+        { namespace: 'test' },
+      ).attachTo,
+    ).toEqual({
+      id: 'parent:test/example',
+      input: 'children',
+    });
+
+    expect(
+      resolveExtensionDefinition(
+        OpaqueExtensionDefinition.toInternal({
+          ...baseDef,
+          attachTo: baseInpuf.withContext?.({
+            name: 'example',
+            input: 'children',
+          }),
+        }),
+        { namespace: 'test' },
+      ).attachTo,
+    ).toEqual({
+      id: 'test/example',
+      input: 'children',
+    });
+
+    expect(
+      resolveExtensionDefinition(
+        OpaqueExtensionDefinition.toInternal({
+          ...baseDef,
+          attachTo: baseInpuf.withContext?.({
+            kind: 'parent',
+            input: 'children',
+          }),
+        }),
+        { namespace: 'test' },
+      ).attachTo,
+    ).toEqual({
+      id: 'parent:test',
+      input: 'children',
+    });
+
+    expect(
+      resolveExtensionDefinition(
+        OpaqueExtensionDefinition.toInternal({
+          ...baseDef,
+          attachTo: baseInpuf.withContext?.({
+            input: 'children',
+          }),
+        }),
+        { namespace: 'test' },
+      ).attachTo,
+    ).toEqual({
+      id: 'test',
+      input: 'children',
+    });
+
+    expect(
+      resolveExtensionDefinition(
+        OpaqueExtensionDefinition.toInternal({
+          ...baseDef,
+          attachTo: [
+            baseInpuf.withContext?.({
+              kind: 'k1',
+              input: 'children',
+            }),
+            baseInpuf.withContext?.({
+              kind: 'k2',
+              input: 'children',
+            }),
+            baseInpuf.withContext?.({
+              kind: 'k3',
+              input: 'children',
+            }),
+          ],
+        }),
+        { namespace: 'test' },
+      ).attachTo,
+    ).toEqual([
+      {
+        id: 'k1:test',
+        input: 'children',
+      },
+      {
+        id: 'k2:test',
+        input: 'children',
+      },
+      {
+        id: 'k3:test',
+        input: 'children',
+      },
+    ]);
+  });
 });
 
 describe('old resolveExtensionDefinition', () => {
@@ -68,6 +184,7 @@ describe('old resolveExtensionDefinition', () => {
     T: undefined as any,
     version: 'v1',
     attachTo: { id: '', input: '' },
+    inputs: {},
     disabled: false,
     override: () => ({} as ExtensionDefinition),
   };
@@ -113,6 +230,7 @@ describe('ResolveExtensionId', () => {
       kind: TKind;
       name: TName;
       output: any;
+      params: never;
     }>;
     const id1: 'k:ns' = {} as ResolveExtensionId<
       NamedExtension<'k', undefined>,

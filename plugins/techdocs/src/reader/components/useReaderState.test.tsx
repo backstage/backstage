@@ -17,7 +17,7 @@
 import { NotFoundError } from '@backstage/errors';
 import { TestApiProvider } from '@backstage/test-utils';
 import { act, renderHook, waitFor } from '@testing-library/react';
-import React from 'react';
+import { PropsWithChildren, ComponentType, ReactNode } from 'react';
 import { techdocsStorageApiRef } from '../../api';
 import {
   calculateDisplayState,
@@ -26,7 +26,7 @@ import {
 } from './useReaderState';
 
 describe('useReaderState', () => {
-  let Wrapper: React.ComponentType<React.PropsWithChildren<{}>>;
+  let Wrapper: ComponentType<PropsWithChildren<{}>>;
 
   const techdocsStorageApi: jest.Mocked<typeof techdocsStorageApiRef.T> = {
     getApiOrigin: jest.fn(),
@@ -38,7 +38,7 @@ describe('useReaderState', () => {
   };
 
   beforeEach(() => {
-    Wrapper = ({ children }: { children?: React.ReactNode }) => (
+    Wrapper = ({ children }: { children?: ReactNode }) => (
       <TestApiProvider apis={[[techdocsStorageApiRef, techdocsStorageApi]]}>
         {children}
       </TestApiProvider>

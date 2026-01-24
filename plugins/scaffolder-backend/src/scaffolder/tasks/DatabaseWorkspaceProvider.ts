@@ -19,11 +19,15 @@ import { TaskStore } from './types';
 import { WorkspaceProvider } from '@backstage/plugin-scaffolder-node/alpha';
 
 export class DatabaseWorkspaceProvider implements WorkspaceProvider {
+  private readonly storage: TaskStore;
+
   static create(storage: TaskStore) {
     return new DatabaseWorkspaceProvider(storage);
   }
 
-  private constructor(private readonly storage: TaskStore) {}
+  private constructor(storage: TaskStore) {
+    this.storage = storage;
+  }
 
   public async serializeWorkspace(options: {
     path: string;

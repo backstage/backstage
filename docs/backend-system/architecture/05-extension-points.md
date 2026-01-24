@@ -2,7 +2,6 @@
 id: extension-points
 title: Backend Plugin Extension Points
 sidebar_label: Extension Points
-# prettier-ignore
 description: Extension points of backend plugins
 ---
 

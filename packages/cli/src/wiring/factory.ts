@@ -14,19 +14,18 @@
  * limitations under the License.
  */
 
-import { CommandRegistry } from './CommandRegistry';
-import { InternalCliPlugin } from './types';
+import { describeParentCallSite } from './describeParentCallSite';
+import { BackstageCommand, CliPlugin, OpaqueCliPlugin } from './types';
 
 export function createCliPlugin(options: {
   pluginId: string;
-  init: (registry: CommandRegistry) => Promise<void>;
-}): InternalCliPlugin {
-  return {
-    id: options.pluginId,
+  init: (registry: {
+    addCommand: (command: BackstageCommand) => void;
+  }) => Promise<void>;
+}): CliPlugin {
+  return OpaqueCliPlugin.createInstance('v1', {
+    pluginId: options.pluginId,
     init: options.init,
-    $$type: '@backstage/CliFeature',
-    version: 'v1',
-    featureType: 'plugin',
-    description: 'A Backstage CLI plugin',
-  };
+    description: `created at '${describeParentCallSite()}'`,
+  });
 }

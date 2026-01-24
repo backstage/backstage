@@ -87,7 +87,25 @@ describe('MicrosoftGraphClient', () => {
     expect(response.status).toBe(200);
     expect(await response.json()).toEqual({
       queryString:
-        '?$filter=test%20eq%20true&$select=id,children&$expand=children&$top=471',
+        '?%24filter=test%20eq%20true&%24select=id%2Cchildren&%24expand=children&%24top=471',
+    });
+  });
+
+  it('should correctly encode filter with special characters like "&"', async () => {
+    worker.use(
+      rest.get('https://example.com/users', (req, res, ctx) =>
+        res(ctx.status(200), ctx.json({ queryString: req.url.search })),
+      ),
+    );
+
+    const response = await client.requestApi('users', {
+      filter: "department eq 'research & development'",
+    });
+
+    expect(response.status).toBe(200);
+    expect(await response.json()).toEqual({
+      queryString:
+        '?%24filter=department%20eq%20%27research%20%26%20development%27',
     });
   });
 
@@ -326,7 +344,7 @@ describe('MicrosoftGraphClient', () => {
 
   it('should load organization', async () => {
     worker.use(
-      rest.get('https://example.com/organization/tentant-id', (_, res, ctx) =>
+      rest.get('https://example.com/organization/tenant-id', (_, res, ctx) =>
         res(
           ctx.status(200),
           ctx.json({
@@ -336,7 +354,7 @@ describe('MicrosoftGraphClient', () => {
       ),
     );
 
-    const organization = await client.getOrganization('tentant-id');
+    const organization = await client.getOrganization('tenant-id');
 
     expect(organization).toEqual({ displayName: 'Example' });
   });

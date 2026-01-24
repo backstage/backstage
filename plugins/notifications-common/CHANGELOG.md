@@ -1,5 +1,86 @@
 # @backstage/plugin-notifications-common
 
+## 0.2.0
+
+### Minor Changes
+
+- 87e597c: Adds support for default configuration for an entire notification channel.
+  This setting will also be inherited down to origins and topics while still respecting the users individual choices.
+
+  This will be handy if you want to use a "opt-in" strategy.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.6
+
+## 0.2.0-next.1
+
+### Minor Changes
+
+- 87e597c: Adds support for default configuration for an entire notification channel.
+  This setting will also be inherited down to origins and topics while still respecting the users individual choices.
+
+  This will be handy if you want to use a "opt-in" strategy.
+
+## 0.1.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.6-next.0
+  - @backstage/types@1.2.2
+
+## 0.1.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.5
+
+## 0.1.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.4-next.0
+
+## 0.1.0
+
+### Minor Changes
+
+- 9152ba8: Add an optional generic object `metadata` field to `NotificationPayload`. Metadata can be used to store additional unstructured data for the notification and are available to use by processors.
+
+## 0.0.10
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3
+
+## 0.0.10-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/config@1.3.3-next.0
+
+## 0.0.9
+
+### Patch Changes
+
+- 1fb5f06: Adds ability for user to turn on/off notifications for specific topics within an origin.
+- Updated dependencies
+  - @backstage/config@1.3.2
+
+## 0.0.9-next.0
+
+### Patch Changes
+
+- 1fb5f06: Adds ability for user to turn on/off notifications for specific topics within an origin.
+- Updated dependencies
+  - @backstage/config@1.3.2
+
 ## 0.0.8
 
 ### Patch Changes

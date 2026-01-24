@@ -2,11 +2,8 @@
 id: routes
 title: Frontend Routes
 sidebar_label: Routes
-# prettier-ignore
 description: Frontend routes
 ---
-
-> **NOTE: The new frontend system is in alpha and is only supported by a small number of plugins.**
 
 ## Introduction
 
@@ -40,7 +37,6 @@ Route refs do not have any behavior themselves. They are an opaque value that re
 The code snippet in the previous section does not indicate which plugin the route belongs to. To do so, you have to use it in the creation of any kind of routable extension, such as a page extension:
 
 ```tsx title="plugins/catalog/src/plugin.tsx"
-import React from 'react';
 import {
   createFrontendPlugin,
   createPageExtension,
@@ -49,14 +45,14 @@ import { indexRouteRef } from './routes';
 
 const catalogIndexPage = createPageExtension({
   // The `name` option is omitted because this is an index page
-  defaultPath: '/entities',
+  path: '/entities',
   // highlight-next-line
   routeRef: indexRouteRef,
   loader: () => import('./components').then(m => <m.IndexPage />),
 });
 
 export default createFrontendPlugin({
-  id: 'catalog',
+  pluginId: 'catalog',
   // highlight-start
   routes: {
     index: indexRouteRef,
@@ -91,7 +87,6 @@ Route references can be used to link to page in the same plugin, or to pages in 
 Suppose we are creating a plugin that renders a Catalog index page with a link to a "Foo" component details page. Here is the code for the index page:
 
 ```tsx title="plugins/catalog/src/components/IndexPage.tsx"
-import React from 'react';
 import { useRouteRef } from '@backstage/frontend-plugin-api';
 import { detailsRouteRef } from '../routes';
 
@@ -125,7 +120,6 @@ We use the `useRouteRef` hook to create a link generator function that returns t
 Let's see how the details page can get the parameters from the URL:
 
 ```tsx title="plugins/catalog/src/components/DetailsPage.tsx"
-import React from 'react';
 import { useRouteRefParams } from '@backstage/frontend-plugin-api';
 import { detailsRouteRef } from '../routes';
 
@@ -169,7 +163,6 @@ export const createComponentExternalRouteRef = createExternalRouteRef();
 External routes are also used in a similar way as regular routes:
 
 ```tsx title="plugins/catalog/src/components/IndexPage.tsx"
-import React from 'react';
 import { useRouteRef } from '@backstage/frontend-plugin-api';
 import { createComponentExternalRouteRef } from '../routes';
 
@@ -194,7 +187,6 @@ Given the above binding, using `useRouteRef(createComponentExternalRouteRef)` wi
 Now the only thing left is to provide the page and external route via a plugin:
 
 ```tsx title="plugins/catalog/src/plugin.tsx"
-import React from 'react';
 import {
   createFrontendPlugin,
   createPageExtension,
@@ -203,13 +195,13 @@ import {
 import { indexRouteRef, createComponentExternalRouteRef } from './routes';
 
 const catalogIndexPage = createPageExtension({
-  defaultPath: '/entities',
+  path: '/entities',
   routeRef: indexRouteRef,
   loader: () => import('./components').then(m => <m.IndexPage />),
 });
 
 export default createFrontendPlugin({
-  id: 'catalog',
+  pluginId: 'catalog',
   routes: {
     index: indexRouteRef,
   },
@@ -285,7 +277,7 @@ Another thing to note is that this indirection in the routing is particularly us
 
 ### Default Targets for External Route References
 
-It is possible to define a default target for an external route reference, potentially removing the need to bind the route in the app. This reduces the need for configuration when installing new plugins through providing a sensible default. It is of course still possible to override the route binding in the app.
+It is possible to define a default target for an external route reference, potentially removing the need to bind the route in the app. This reduces the need for configuration when installing new plugins through providing a sensible default. It is of course still possible to override the route binding in the app, as long as the external route ref is exported via the `externalRoutes` property of the plugin instance.
 
 The default target uses the same syntax as the route binding configuration, and will only be used if the target plugin and route exist. For example, this is how the catalog can define a default target for the create component external route in a way that removes the need for the binding in the previous example:
 
@@ -333,7 +325,6 @@ export const detailsSubRouteRef = createSubRouteRef({
 Using subroutes in a page extension is as simple as this:
 
 ```tsx title="plugins/catalog/src/components/IndexPage.tsx"
-import React from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
 import { useRouteRef } from '@backstage/frontend-plugin-api';
 import { indexRouteRef, detailsSubRouteRef } from '../routes';
@@ -381,7 +372,6 @@ export const IndexPage = () => {
 This is how you can get the parameters of a sub route URL:
 
 ```tsx title="plugins/catalog/src/components/DetailsPage.tsx"
-import React from 'react';
 import { useParams } from 'react-router-dom';
 
 export const DetailsPage = () => {
@@ -405,7 +395,6 @@ export const DetailsPage = () => {
 Finally, see how a plugin can provide subroutes:
 
 ```tsx title="plugins/catalog/src/plugin.tsx"
-import React from 'react';
 import {
   createFrontendPlugin,
   createPageExtension,
@@ -413,13 +402,13 @@ import {
 import { indexRouteRef, detailsSubRouteRef } from './routes';
 
 const catalogIndexPage = createPageExtension({
-  defaultPath: '/entities',
+  path: '/entities',
   routeRef: indexRouteRef,
   loader: () => import('./components').then(m => <m.IndexPage />),
 });
 
 export default createFrontendPlugin({
-  id: 'catalog',
+  pluginId: 'catalog',
   routes: {
     index: indexRouteRef,
     // highlight-next-line
@@ -427,4 +416,43 @@ export default createFrontendPlugin({
   },
   extensions: [catalogIndexPage],
 });
+```
+
+## Route Aliases - Overriding Routed Extensions in Modules
+
+It is possible to [override extensions of a plugin using a module](./25-extension-overrides.md#creating-a-frontend-module). In some cases the extension you're overriding may require a route reference. You could import the plugin instance and access the it via the `routes` property, but this creates a direct dependency on the plugin and risks leading to package duplication issues that would also break the route reference.
+
+Instead of accessing the route reference directly, you can create a new route reference that acts as an alias for the original one from the plugin. For example, you can override the catalog index page with a custom one like this:
+
+```tsx
+const indexRouteRef = createRouteRef({ aliasFor: 'catalog.catalogIndex' });
+
+export default createFrontendModule({
+  pluginId: 'catalog',
+  extensions: [
+    PageBlueprint.make({
+      params: {
+        defaultPath: '/catalog',
+        routeRef: indexRouteRef,
+        loader: () =>
+          import('./CustomCatalogIndexPage').then(m => (
+            <m.CustomCatalogIndexPage />
+          )),
+      },
+    }),
+  ],
+});
+```
+
+Aliases are limited to the plugin that they are defined in. These aliases can also be imported and used as usual with for example `useRouteRef`, but they must always be registered in the app via an extension for this to work. For example, the following will not work:
+
+```tsx
+function MyInvalidComponent() {
+  // This is NOT valid
+  const link = useRouteRef(
+    createRouteRef({ aliasFor: 'catalog.catalogIndex' }),
+  );
+
+  // ...
+}
 ```

@@ -23,8 +23,10 @@ import CheckBoxIcon from '@material-ui/icons/CheckBox';
 import CheckBoxOutlineBlankIcon from '@material-ui/icons/CheckBoxOutlineBlank';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import React, { useCallback, useMemo } from 'react';
-import { RelationPairs } from '../EntityRelationsGraph';
+import { useCallback, useMemo } from 'react';
+import { useTranslationRef } from '@backstage/frontend-plugin-api';
+import { catalogGraphTranslationRef } from '../../translation';
+import { useRelations } from '../../hooks';
 
 /** @public */
 export type SelectedRelationsFilterClassKey = 'formControl';
@@ -39,24 +41,31 @@ const useStyles = makeStyles(
 );
 
 export type Props = {
-  relationPairs: RelationPairs;
+  relations?: string[];
   value: string[] | undefined;
   onChange: (value: string[] | undefined) => void;
 };
 
-export const SelectedRelationsFilter = ({
-  relationPairs,
-  value,
-  onChange,
-}: Props) => {
+export const SelectedRelationsFilter = (props: Props) => {
+  const { relations: incomingRelations, value, onChange } = props;
+
   const classes = useStyles();
-  const relations = useMemo(() => relationPairs.flat(), [relationPairs]);
+
+  const { relations, includeRelation } = useRelations({
+    relations: incomingRelations,
+  });
+
+  const defaultValue = useMemo(
+    () => relations.filter(rel => includeRelation(rel)),
+    [relations, includeRelation],
+  );
+  const { t } = useTranslationRef(catalogGraphTranslationRef);
 
   const handleChange = useCallback(
     (_: unknown, v: string[]) => {
-      onChange(relations.every(r => v.includes(r)) ? undefined : v);
+      onChange(v);
     },
-    [relations, onChange],
+    [onChange],
   );
 
   const handleEmpty = useCallback(() => {
@@ -65,15 +74,17 @@ export const SelectedRelationsFilter = ({
 
   return (
     <Box pb={1} pt={1}>
-      <Typography variant="button">Relations</Typography>
+      <Typography variant="button">
+        {t('catalogGraphPage.selectedRelationsFilter.title')}
+      </Typography>
       <Autocomplete
         className={classes.formControl}
         multiple
         limitTags={4}
         disableCloseOnSelect
-        aria-label="Relations"
+        aria-label={t('catalogGraphPage.selectedRelationsFilter.title')}
         options={relations}
-        value={value ?? relations}
+        value={value ?? defaultValue}
         onChange={handleChange}
         onBlur={handleEmpty}
         renderOption={(option, { selected }) => (

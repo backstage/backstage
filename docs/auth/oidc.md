@@ -1,88 +1,75 @@
 ---
 id: oidc
 title: OIDC provider from scratch
-description: This section shows how to use an OIDC provider from scratch, same steps apply for custom providers.
+description: This section shows how to enable and use the Backstage OIDC provider.
 ---
 
 :::info
 This documentation is written for [the new backend system](../backend-system/index.md) which is the default since Backstage
 [version 1.24](../releases/v1.24.0.md). If you are still on the old backend
-system, you may want to read [its own article](./oidc--old.md)
+system, you may want to read [its own article](https://github.com/backstage/backstage/blob/v1.37.0/docs/auth/oidc--old.md)
 instead, and [consider migrating](../backend-system/building-backends/08-migrating.md)!
 :::
 
-This section shows how to use an OIDC provider from scratch, same steps apply for custom
-providers. Please note these steps are for using a provider, not how to implement one,
-and Backstage recommends creating custom providers specific to the IDP, so we'll use a
-`azureOIDC` provider throughout this example, feel free to change any of those refs
-to your provider name.
+This section shows how to enable and use the Backstage OIDC provider.
 
 ## Summary
 
-To add providers not enabled by default like OIDC, we need to follow some steps, we
-assume you already have a sign-in page to which we'll add the provider so users can
-sign in through the provider. In simple steps here's how you enable the provider:
+OIDC is a protocol which has numerous implementations. It's likely that many of your users won't know what the OIDC **protocol** is, but they will recognise your OIDC **implementation**. Backstage supplies a generic `oidc` authorization strategy. You should re-badge this with the name and branding of your OIDC implementation, so that your users will recognise it on the Backstage sign-in page.
+
+For example, if your organization uses [Keycloak](https://www.keycloak.org), you would re-badge the OIDC provider as `Keycloak` and tell users to `Sign In using Keycloak`.
+
+## Steps
+
+The Backstage OIDC provider is not enabled by default. You need to manually enable the provider, and tell it which OIDC server you want to use.
+
+To enable the Backstage OIDC provider:
 
 - Create an API reference to identify the provider.
 - Create the API factory that will handle the authentication.
 - Add or reuse an auth provider so you can authenticate.
 - Add or reuse a resolver to handle the result from the authentication.
 - Configure the provider to access your 3rd party auth solution.
-- Add the provider to sign in page so users can login with it.
+- Add the provider to the Backstage sign-in page.
+
+For simplicity, we assume that you only have a single OIDC provider in your Backstage installation. (If you need to have multiple OIDC providers in Backstage, the steps will be different.)
 
 We'll explain each step more in detail next.
 
-### The API reference
+### The API Reference
 
-An API reference exist for the sake of **Dependency Injection**, check [Utility APIs][4]
-for extended explanation.
+An API reference exists to enable **Dependency Injection**. (See [Utility APIs][4] for an extended explanation.)
 
-In this OIDC example, we'll create the API reference directly in the
-`packages/app/src/apis.ts` file, it is not a requirement to put the reference in this
-file. Any location will do as long as it's available to be imported to where the API
-factory is, as well as easily accessible to the rest of the application so any package
-and plugin can inject the API instance when necessary.
-
-An example of such would be when you use an auth provider from a library installed with
-NPM, or any other library repository, you would import the API ref from the library.
+In this example, we'll create the API ref directly in the `packages/app/src/apis.ts` file. It is not a requirement to put the ref in this file. Any location will do as long as it's available to be imported to where the API factory is, as well as easily accessible to the rest of the application so any package and plugin can inject the API instance when necessary.
 
 ```ts
-export const azureOIDCAuthApiRef: ApiRef<
+export const keycloakAuthApiRef: ApiRef<
   OpenIdConnectApi & ProfileInfoApi & BackstageIdentityApi & SessionApi
 > = createApiRef({
-  id: 'auth.my-custom-provider',
+  id: 'auth.keycloak',
 });
 ```
 
-Please note a few things, the ID can be anything you want as long as it doesn't conflict
-with other refs, backstage recommends to use a custom name that references your custom
-provider, for example we are using OIDC protocol with Azure, so we could use something
-like `auth.azure.oidc` as well.
+The `id` of the API ref can be anything you want, as long as it doesn't conflict with other refs. Backstage recommends to use a custom name that references your custom provider.
 
-Also we're exporting this reference, as well as the `typings`, we need to
-be able to import this reference anywhere in the app, and the `typings` will tell typescript
+:::note TypeScript Note
+As we're exporting this API reference, as well as the TypeScript types, we need to
+be able to import this reference anywhere in the app. The types will tell TypeScript
 what instance we're getting from DI when injecting the API. In this case we are defining
 an API for authentication, so we tell TS that this instance complies with 4 API
 interfaces:
 
-- The OICD API that will handle authentication.
+- The OIDC API that will handle authentication.
 - Profile API for requesting user profile info from the auth provider in question.
 - Backstage identity API to handle and associate the user profile with backstage identity.
-- Session API, to handle the session the user will have while logged in.
+- Session API, to handle the session the user will have while signed in.
+  :::
 
-### The API Factory
+### The API Factory (and auth provider)
 
-A factory is a function that can take some parameters or dependencies and return an
-instance of something, in our case it will be a function that requests some backstage
-APIs and use them to create an instance of an OIDC API provider.
+The Backstage API factories are part of the Backstage Dependency Injection system. The factory function runs once, when something in your Backstage app first attempts to use an instance of the API it provides. The instance is then cached by the DI system for subsequent lookups.
 
-Please note that this function only runs (creates the instance) when somewhere else in
-the app you request the DI to give you an instance of the OIDC provider using the API ref
-defined above, and the DI will only run this function the first time, from then on any
-other DI injection will just receive the same instance created the first time, basically
-the instance is cached by the DI library, a singleton.
-
-Let's add our OIDC API factory to the APIs array in the `packages/app/src/apis.ts` file:
+Let's add a new API factory to the `apis` array in the `packages/app/src/apis.ts` file. We will tell it to use the OIDC auth provider internally.
 
 ```ts title="packages/app/src/apis.ts"
 /* highlight-add-next-line */
@@ -91,26 +78,29 @@ import { OAuth2 } from '@backstage/core-app-api';
 export const apis: AnyApiFactory[] = [
   /* highlight-add-start */
   createApiFactory({
-    api: azureOIDCAuthApiRef,
+    api: keycloakAuthApiRef,
     deps: {
       discoveryApi: discoveryApiRef,
       oauthRequestApi: oauthRequestApiRef,
       configApi: configApiRef,
     },
     factory: ({ discoveryApi, oauthRequestApi, configApi }) =>
+      // delegate auth to the OAuth2 strategy
       OAuth2.create({
         configApi,
         discoveryApi,
         oauthRequestApi,
         provider: {
-          id: 'my-auth-provider',
-          title: 'My custom auth provider',
+          // this value MUST be 'oidc'
+          // it maps our Keycloak-branded sign-in provider onto Backstage's generic OIDC auth strategy
+          id: 'oidc',
+          title: 'Keycloak',
           icon: () => null,
         },
         environment: configApi.getOptionalString('auth.environment'),
         defaultScopes: ['openid', 'profile', 'email'],
         popupOptions: {
-          // optional, used to customize login in popup size
+          // optional, used to customize sign-in window size
           size: {
             fullscreen: true,
           },
@@ -125,27 +115,14 @@ export const apis: AnyApiFactory[] = [
       }),
   }),
   /* highlight-add-end */
-  // ..
 ];
 ```
 
-Please note we're importing the `OAuth2` class from `@backstage/core-app-api` effectively
-delegating the authentication to it. Also we're using the `my-auth-provider` ID to tell
-`OAuth2` to use the auth provider we'll define in the next section, and added the default
-scopes to request ID, profile, email and user read permissions.
-
-## The Auth Provider
-
-The Auth Provider is responsible for authenticating with the 3rd party service, and give
-us back the credentials, here's where you pick which protocol to use, be it Auth0, OAuth2,
-OIDC, SAML or any other that your 3rd party IDP provider supports.
-
 ### The Resolver
 
-Resolvers exist to map user identity from the 3rd party (in this case an azure IDP
-provider) to the backstage user identity.
+Resolvers exist to map the user identity from the 3rd party (in this case Keycloak) to the Backstage user identity.
 
-The default OIDC provider has built-in resolvers, here is how you configure them:
+The default OIDC provider has a choice of built-in resolvers, here is how you configure them:
 
 ```yaml title="app-config.yaml"
 auth:
@@ -159,7 +136,7 @@ auth:
             - resolver: emailMatchingUserEntityProfileEmail
 ```
 
-But you can also write a custom resolver as well, see an example below:
+If none of the built-in resolvers are suitable, you can alternatively write a custom resolver. See an example below:
 
 ```ts title="in packages/backend/src/index.ts"
 /* highlight-add-start */
@@ -174,15 +151,15 @@ const myAuthProviderModule = createBackendModule({
   // This ID must be exactly "auth" because that's the plugin it targets
   pluginId: 'auth',
   // This ID must be unique, but can be anything
-  moduleId: 'my-auth-provider',
+  moduleId: 'keycloak-auth-provider',
   register(reg) {
     reg.registerInit({
       deps: { providers: authProvidersExtensionPoint },
       async init({ providers }) {
         providers.registerProvider({
           // This ID must match the actual provider config, e.g. addressing
-          // auth.providers.azure means that this must be "azure".
-          providerId: 'my-auth-provider',
+          // auth.providers.keycloak means that this must be "keycloak".
+          providerId: 'keycloak',
           // Use createProxyAuthProviderFactory instead if it's one of the proxy
           // based providers rather than an OAuth based one
           factory: createOAuthProviderFactory({
@@ -215,76 +192,91 @@ backend.add(myAuthProviderModule);
 //...
 ```
 
-For a more a detailed explanation about resolvers check the
-[Identity Resolver][1] page.
+For a more detailed explanation about resolvers check the [Identity Resolver][1] page.
 
-### The configuration
+### The Configuration
 
-Since we are using our custom OIDC Auth Provider, we need to add a configuration based
-on the provider used, in this case based on OIDC protocol (remember the 3rd party has to
-support the protocol).
+We will now configure our Keycloak-branded OIDC Auth Provider in Backstage, so that it can talk to our Keycloak server.
 
-In this example we'll configure OIDC with `my-auth-provider`, to do so we need to
-[Create app registration][2] in the Azure console, the only difference is that the
-`http://localhost:7007/api/auth/microsoft/handler/frame` URL needs to change to
-`http://localhost:7007/api/auth/my-auth-provider/handler/frame`.
+The first step is to register an OIDC client app for Backstage in your Keycloak server.
 
-Then we need to configure the env variables for the provider, based on the provider's code
-in `plugins/auth-backend/src/providers/oidc/provider.ts` we need the following variables
-in the `app-config.yaml`:
+Then we need to configure the provider. Based on the provider's code in `plugins/auth-backend/src/providers/oidc/provider.ts` we need the following parameters in the `app-config.yaml`:
 
 ```yaml title="app-config.yaml"
 auth:
   environment: development
-  ### Providing an auth.session.secret will enable session support in the auth-backend
   session:
-    secret: ${SESSION_SECRET}
+    secret: ${AUTH_SESSION_SECRET}
   providers:
-    my-auth-provider:
+    oidc:
       development:
         metadataUrl: https://example.com/.well-known/openid-configuration
-        clientId: ${AUTH_MY_CLIENT_ID}
-        clientSecret: ${AUTH_MY_CLIENT_SECRET}
+        clientId: ${AUTH_OIDC_CLIENT_ID}
+        clientSecret: ${AUTH_OIDC_CLIENT_SECRET}
 ```
 
-Anything enclosed in `${}` can be replaced directly in the yaml, or provided as
-environment variables, the way you obtain all these except `scope` and `prompt` is to
-check the App Registration you created:
+Anything enclosed in `${}` can be replaced directly in the YAML, or provided as environment variables.
+
+#### Required Parameters
+
+These parameters must always be set.
 
 - `clientId`: Grab from the Overview page.
 - `clientSecret`: Can only be seen when creating the secret, if you lose it you'll need a
   new secret.
 - `metadataUrl`: In Overview > Endpoints tab, grab OpenID Connect metadata document URL.
+
+The OIDC provider **also** requires the `auth.session.secret` to be set.
+
+#### Optional Parameters
+
+These parameters have implicit default values. Don't override them unless you know what you're doing.
+
 - `authorizationUrl` and `tokenUrl`: Open the `metadataUrl` in a browser, that json will
   hold these 2 urls somewhere in there.
-- `tokenEndpointAuthMethod`: Don't define it, use the default unless you know what it does.
-- `tokenSignedResponseAlg`: Don't define it, use the default unless you know what it does.
+- `tokenEndpointAuthMethod`
+- `tokenSignedResponseAlg`
 - `scope`: Only used if we didn't specify `defaultScopes` in the provider's factory,
   basically the same thing.
-- `prompt`: Recommended to use `auto` so the browser will request login to the IDP if the
+- `prompt`: Recommended to use `auto` so the browser will request sign-in to the IDP if the
   user has no active session.
-- `sessionDuration` (optional): Lifespan of the user session.
+- `sessionDuration`: Lifespan of the user session.
+- `startUrlSearchParams`: This is a dictionary of search (query) parameters for the OIDC
+  authorization start URL. Don't define it unless you want to change the identity
+  provider's behavior. (For example, you could set the `organization` parameter to guide
+  users towards a particular sign-in option that your organization prefers.) **Note:** the
+  start URL is controlled by the browser, so this feature is only for improving the
+  Backstage user experience.
 
-Note that for the time being, any change in this yaml file requires a restart of the app,
-also you need to have the `session.secret` part to use OIDC (some other providers might
-need this as well) to support user sessions.
+:::note Config Reloading
+Backstage does not yet support hot reloading of auth provider configuration. Any changes to this YAML file require a restart of Backstage.
+:::
 
-### The Sign In provider
+### The Sign-In Page
 
-The last step is to add the provider to the `SignInPage` so users can sign in with your
-new provider, please follow the [Sign In Configuration][3] docs, here's where you import
-and use the API reference we defined earlier.
+The last step is to add the provider to the sign-in page, so users can sign in with your new provider.
+
+If you are using the standard Backstage [`SignInPage`][3] component, you can just add it to the `providers` array like this:
+
+```ts title="in packages/app/src/identityProviders.ts"
+export const providers = [
+  // other providers...
+  {
+    id: 'keycloak-auth-provider',
+    title: 'Keycloak',
+    message: 'Sign In using Keycloak',
+    apiRef: keycloakAuthApiRef,
+  },
+];
+```
 
 :::note Note
-
-These steps apply to most if not all the providers, including custom providers, the main
-difference between different providers will be the contents of the API factory, the code
+These steps apply to most auth providers. The main
+difference between providers will be the contents of the API factory, the code
 in the Auth Provider Factory, the resolver, and the different variables each provider
 needs in the YAML config or env variables.
-
 :::
 
 [1]: https://backstage.io/docs/auth/identity-resolver
-[2]: https://backstage.io/docs/auth/microsoft/provider#create-an-app-registration-on-azure
 [3]: https://backstage.io/docs/auth/#sign-in-configuration
 [4]: https://backstage.io/docs/api/utility-apis

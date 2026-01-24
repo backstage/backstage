@@ -24,7 +24,14 @@ import Typography from '@material-ui/core/Typography';
 import CloseIcon from '@material-ui/icons/Close';
 import MenuIcon from '@material-ui/icons/Menu';
 import { orderBy } from 'lodash';
-import React, { useEffect, useState, useContext, ReactNode } from 'react';
+import {
+  useEffect,
+  useState,
+  useContext,
+  ReactNode,
+  ReactElement,
+  createElement,
+} from 'react';
 import { useLocation } from 'react-router-dom';
 import { SidebarOpenStateProvider } from './SidebarOpenStateContext';
 import { SidebarGroup } from './SidebarGroup';
@@ -37,7 +44,7 @@ import { MobileSidebarContext } from './MobileSidebarContext';
  * @public
  */
 export type MobileSidebarProps = {
-  children?: React.ReactNode;
+  children?: ReactNode;
 };
 
 /**
@@ -47,7 +54,7 @@ type OverlayMenuProps = {
   label?: string;
   onClose: () => void;
   open: boolean;
-  children?: React.ReactNode;
+  children?: ReactNode;
 };
 
 const useStyles = makeStyles<Theme, { sidebarConfig: SidebarConfig }>(
@@ -94,14 +101,14 @@ const useStyles = makeStyles<Theme, { sidebarConfig: SidebarConfig }>(
   }),
 );
 
-const sortSidebarGroupsForPriority = (children: React.ReactElement[]) =>
+const sortSidebarGroupsForPriority = (children: ReactElement[]) =>
   orderBy(
     children,
     ({ props: { priority } }) => (Number.isInteger(priority) ? priority : -1),
     'desc',
   );
 
-const sidebarGroupType = React.createElement(SidebarGroup).type;
+const sidebarGroupType = createElement(SidebarGroup).type;
 
 const OverlayMenu = ({
   children,

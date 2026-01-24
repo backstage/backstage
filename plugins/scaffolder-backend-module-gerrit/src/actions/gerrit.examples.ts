@@ -136,7 +136,7 @@ export const examples: TemplateExample[] = [
   },
   {
     description:
-      'Initializes a Gerrit repository with all proporties being set',
+      'Initializes a Gerrit repository with all properties being set',
     example: yaml.stringify({
       steps: [
         {

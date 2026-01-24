@@ -149,6 +149,8 @@ describe('entityPredicateToFilterFunction', () => {
     ['s,w,g,a', Object.create({ kind: 'component' })],
     ['', { 'metadata.tags': { $contains: 'go' } }],
     ['', { 'metadata.tags.0': 'java' }],
+    ['s,w,g', { kind: { $in: ['component', 'group'] } }],
+    ['a', { $not: { kind: { $in: ['component', 'group'] } } }],
     ['w,g,a', { $not: { 'metadata.tags': { $contains: 'java' } } }],
     [
       's,g',

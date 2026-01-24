@@ -41,73 +41,68 @@ export function createPublishGerritReviewAction(options: {
 }) {
   const { integrations, config } = options;
 
-  return createTemplateAction<{
-    repoUrl: string;
-    branch?: string;
-    sourcePath?: string;
-    gitCommitMessage?: string;
-    gitAuthorName?: string;
-    gitAuthorEmail?: string;
-    signCommit?: boolean;
-  }>({
+  return createTemplateAction({
     id: 'publish:gerrit:review',
     description: 'Creates a new Gerrit review.',
     examples,
     schema: {
       input: {
-        type: 'object',
-        required: ['repoUrl', 'gitCommitMessage'],
-        properties: {
-          repoUrl: {
-            title: 'Repository Location',
-            type: 'string',
-          },
-          branch: {
-            title: 'Repository branch',
-            type: 'string',
-            description:
-              'Branch of the repository the review will be created on',
-          },
-          sourcePath: {
-            type: 'string',
-            title: 'Working Subdirectory',
-            description:
-              'Subdirectory of working directory containing the repository',
-          },
-          gitCommitMessage: {
-            title: 'Git Commit Message',
-            type: 'string',
-            description: `Sets the commit message on the repository.`,
-          },
-          gitAuthorName: {
-            title: 'Default Author Name',
-            type: 'string',
-            description: `Sets the default author name for the commit. The default value is 'Scaffolder'`,
-          },
-          gitAuthorEmail: {
-            title: 'Default Author Email',
-            type: 'string',
-            description: `Sets the default author email for the commit.`,
-          },
-          signCommit: {
-            title: 'Sign commit',
-            type: 'boolean',
-            description: 'Sign commit with configured PGP private key',
-          },
-        },
+        repoUrl: z =>
+          z.string({
+            description: 'Repository Location',
+          }),
+        branch: z =>
+          z
+            .string({
+              description:
+                'Branch of the repository the review will be created on',
+            })
+            .optional(),
+        sourcePath: z =>
+          z
+            .string({
+              description:
+                'Subdirectory of working directory containing the repository',
+            })
+            .optional(),
+        gitCommitMessage: z =>
+          z
+            .string({
+              description: `Sets the commit message on the repository.`,
+            })
+            .optional(),
+        gitAuthorName: z =>
+          z
+            .string({
+              description: `Sets the default author name for the commit. The default value is 'Scaffolder'`,
+            })
+            .optional(),
+        gitAuthorEmail: z =>
+          z
+            .string({
+              description: `Sets the default author email for the commit.`,
+            })
+            .optional(),
+        signCommit: z =>
+          z
+            .boolean({
+              description: 'Sign commit with configured PGP private key',
+            })
+            .optional(),
       },
       output: {
-        type: 'object',
-        properties: {
-          reviewUrl: {
-            title: 'A URL to the review',
-            type: 'string',
-          },
-          repoContentsUrl: {
-            title: 'A URL to the root of the repository',
-            type: 'string',
-          },
-        },
+        reviewUrl: z =>
+          z
+            .string({
+              description: 'A URL to the review',
+            })
+            .optional(),
+        repoContentsUrl: z =>
+          z
+            .string({
+              description: 'A URL to the root of the repository',
+            })
+            .optional(),
       },
     },
     async handler(ctx) {

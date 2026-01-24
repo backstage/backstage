@@ -2,12 +2,11 @@
 id: org
 title: GitHub Organizational Data
 sidebar_label: Org Data
-# prettier-ignore
 description: Importing users and groups from a GitHub organization into Backstage
 ---
 
 :::info
-This documentation is written for [the new backend system](../../backend-system/index.md) which is the default since Backstage [version 1.24](../../releases/v1.24.0.md). If you are still on the old backend system, you may want to read [its own article](./org--old.md) instead, and [consider migrating](../../backend-system/building-backends/08-migrating.md)!
+This documentation is written for [the new backend system](../../backend-system/index.md) which is the default since Backstage [version 1.24](../../releases/v1.24.0.md). If you are still on the old backend system, you may want to read [its own article](https://github.com/backstage/backstage/blob/v1.37.0/docs/integrations/github/org--old.md) instead, and [consider migrating](../../backend-system/building-backends/08-migrating.md)!
 :::
 
 The Backstage catalog can be set up to ingest organizational data - users and
@@ -80,6 +79,10 @@ catalog:
           initialDelay: { seconds: 30 }
           frequency: { hours: 1 }
           timeout: { minutes: 50 }
+        pageSizes:
+          teams: 25
+          teamMembers: 50
+          organizationMembers: 50
       - id: ghe
         githubUrl: https://ghe.mycompany.com
         orgs: ['internal-1', 'internal-2', 'internal-3']
@@ -87,6 +90,7 @@ catalog:
           initialDelay: { seconds: 30 }
           frequency: { hours: 1 }
           timeout: { minutes: 50 }
+        excludeSuspendedUsers: true
 ```
 
 Directly under the `githubOrg` is a list of configurations, each entry is a structure with the following elements:
@@ -95,6 +99,15 @@ Directly under the `githubOrg` is a list of configurations, each entry is a stru
 - `githubUrl`: The target that this provider should consume
 - `orgs` (optional): The list of the GitHub orgs to consume. If you only list a single org the generated group entities will use the `default` namespace, otherwise they will use the org name as the namespace. By default the provider will consume all accessible orgs on the given GitHub instance (support for GitHub App integration only).
 - `schedule`: The refresh schedule to use, matches the structure of [`SchedulerServiceTaskScheduleDefinitionConfig`](https://backstage.io/docs/reference/backend-plugin-api.schedulerservicetaskscheduledefinitionconfig/)
+- `pageSizes` (optional): Configure page sizes for GitHub GraphQL API queries to prevent `RESOURCE_LIMITS_EXCEEDED` errors. You can configure the following page sizes:
+
+  - `teams`: Number of teams to fetch per page when querying organization teams (default: 25)
+  - `teamMembers`: Number of team members to fetch per page when querying team members (default: 50)
+  - `organizationMembers`: Number of organization members to fetch per page (default: 50)
+
+  Reducing page sizes will result in more API calls and slightly longer sync times, but will prevent API resource limits for organizations with large number of teams and members.
+
+- `excludeSuspendedUsers` (optional): Whether to exclude suspended users when querying organization users. Only for GitHub Enterprise instances. Will error if used against GitHub.com API.
 
 ### Events Support
 
@@ -119,6 +132,8 @@ You can decide between the following options (extensible):
 
 - [via HTTP endpoint](https://github.com/backstage/backstage/tree/master/plugins/events-backend/README.md)
 - [via an AWS SQS queue](https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-aws-sqs/README.md)
+- [via Google Pub/Sub](https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-google-pubsub/README.md)
+- [via a Kafka topic](https://github.com/backstage/backstage/tree/master/plugins/events-backend-module-kafka/README.md)
 
 You can check the official docs to [configure your webhook](https://docs.github.com/en/developers/webhooks-and-events/webhooks/creating-webhooks) and to [secure your request](https://docs.github.com/en/developers/webhooks-and-events/webhooks/securing-your-webhooks).
 The webhook will need to be configured to forward `organization`,`team` and `membership` events.
@@ -169,6 +184,7 @@ const backend = createBackend();
 
 backend.add(import('@backstage/plugin-catalog-backend'));
 
+backend.add(import('@backstage/plugin-catalog-backend-module-github-org'));
 backend.add(githubOrgModule);
 
 backend.start();

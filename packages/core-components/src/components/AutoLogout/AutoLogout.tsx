@@ -21,7 +21,7 @@ import {
   identityApiRef,
   useApi,
 } from '@backstage/core-plugin-api';
-import React, { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   EventsType,
   IIdleTimer,
@@ -42,7 +42,7 @@ type AutoLogoutTrackableEvent = EventsType;
 export type AutoLogoutProps = {
   /**
    * Enable/disable the AutoLogoutMechanism.
-   * defauls to true.
+   * defaults to true.
    */
   enabled?: boolean;
   /**

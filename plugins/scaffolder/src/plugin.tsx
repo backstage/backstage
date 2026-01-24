@@ -71,6 +71,7 @@ import {
   editorRouteRef,
   customFieldsRouteRef,
   templateFormRouteRef,
+  templatingExtensionsRouteRef,
 } from './routes';
 import {
   MyGroupsPicker,
@@ -81,6 +82,10 @@ import { RepoBranchPickerSchema } from './components/fields/RepoBranchPicker/sch
 import { formDecoratorsApiRef } from './alpha/api/ref';
 import { DefaultScaffolderFormDecoratorsApi } from './alpha/api/FormDecoratorsApi';
 import { formFieldsApiRef } from '@backstage/plugin-scaffolder-react/alpha';
+import {
+  RepoOwnerPicker,
+  RepoOwnerPickerSchema,
+} from './components/fields/RepoOwnerPicker';
 
 /**
  * The main plugin export for the scaffolder.
@@ -126,6 +131,7 @@ export const scaffolderPlugin = createPlugin({
     editor: editorRouteRef,
     customFields: customFieldsRouteRef,
     templateForm: templateFormRouteRef,
+    templatingExtensions: templatingExtensionsRouteRef,
   },
   externalRoutes: {
     registerComponent: registerComponentRouteRef,
@@ -263,5 +269,18 @@ export const RepoBranchPickerFieldExtension = scaffolderPlugin.provide(
     component: RepoBranchPicker,
     name: 'RepoBranchPicker',
     schema: RepoBranchPickerSchema,
+  }),
+);
+
+/**
+ * A field extension to select an owner from a repository.
+ *
+ * @public
+ */
+export const RepoOwnerPickerFieldExtension = scaffolderPlugin.provide(
+  createScaffolderFieldExtension({
+    component: RepoOwnerPicker,
+    name: 'RepoOwnerPicker',
+    schema: RepoOwnerPickerSchema,
   }),
 );

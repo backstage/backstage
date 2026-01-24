@@ -20,11 +20,13 @@ import type {
   HttpAuthService,
   PluginMetadataService,
 } from '@backstage/backend-plugin-api';
+import { Config } from '@backstage/config';
 import type { JsonObject } from '@backstage/types';
 import type { Format } from 'logform';
 import * as winston from 'winston';
 import { WinstonLogger } from '../rootLogger';
 import { DefaultAuditorService } from './DefaultAuditorService';
+import { getSeverityLogLevelMappings } from './utils';
 
 /** @public */
 export const defaultFormatter = winston.format.combine(
@@ -79,7 +81,11 @@ export type WinstonRootAuditorServiceOptions = {
  * ```
  */
 export class WinstonRootAuditorService {
-  private constructor(private readonly winstonLogger: WinstonLogger) {}
+  private readonly winstonLogger: WinstonLogger;
+
+  private constructor(winstonLogger: WinstonLogger) {
+    this.winstonLogger = winstonLogger;
+  }
 
   /**
    * Creates a {@link WinstonRootAuditorService} instance.
@@ -108,12 +114,28 @@ export class WinstonRootAuditorService {
 
   forPlugin(deps: {
     auth: AuthService;
+    config: Config;
     httpAuth: HttpAuthService;
     plugin: PluginMetadataService;
   }): AuditorService {
-    return DefaultAuditorService.create(
-      e => this.winstonLogger.info(`${e.plugin}.${e.eventId}`, e),
-      deps,
-    );
+    const severityLogLevelMappings = getSeverityLogLevelMappings(deps.config);
+
+    return DefaultAuditorService.create(event => {
+      if ('error' in event) {
+        const { error, ...rest } = event;
+        const childAuditLogger = this.winstonLogger.child(rest);
+
+        childAuditLogger[severityLogLevelMappings[event.severityLevel]](
+          `${event.plugin}.${event.eventId}`,
+          error,
+        );
+      } else {
+        // the else statement is required for typechecking
+        this.winstonLogger[severityLogLevelMappings[event.severityLevel]](
+          `${event.plugin}.${event.eventId}`,
+          event,
+        );
+      }
+    }, deps);
   }
 }

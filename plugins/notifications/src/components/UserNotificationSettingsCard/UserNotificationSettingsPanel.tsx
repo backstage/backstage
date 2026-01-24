@@ -14,10 +14,10 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { useState } from 'react';
 import {
-  isNotificationsEnabledFor,
   NotificationSettings,
+  OriginSetting,
 } from '@backstage/plugin-notifications-common';
 import Table from '@material-ui/core/Table';
 import MuiTableCell from '@material-ui/core/TableCell';
@@ -26,9 +26,8 @@ import TableHead from '@material-ui/core/TableHead';
 import Typography from '@material-ui/core/Typography';
 import TableBody from '@material-ui/core/TableBody';
 import TableRow from '@material-ui/core/TableRow';
-import Switch from '@material-ui/core/Switch';
-import { capitalize } from 'lodash';
-import Tooltip from '@material-ui/core/Tooltip';
+import { TopicRow } from './TopicRow';
+import { OriginRow } from './OriginRow';
 
 const TableCell = withStyles({
   root: {
@@ -40,19 +39,26 @@ export const UserNotificationSettingsPanel = (props: {
   settings: NotificationSettings;
   onChange: (settings: NotificationSettings) => void;
   originNames?: Record<string, string>;
+  topicNames?: Record<string, string>;
 }) => {
   const { settings, onChange } = props;
-  const allOrigins = [
-    ...new Set(
-      settings.channels.flatMap(channel =>
-        channel.origins.map(origin => origin.id),
-      ),
-    ),
-  ];
+  const [expandedRows, setExpandedRows] = useState<Set<string>>(new Set());
 
+  const handleRowToggle = (originId: string) => {
+    setExpandedRows(prevState => {
+      const newExpandedRows = new Set(prevState);
+      if (newExpandedRows.has(originId)) {
+        newExpandedRows.delete(originId);
+      } else {
+        newExpandedRows.add(originId);
+      }
+      return newExpandedRows;
+    });
+  };
   const handleChange = (
     channelId: string,
     originId: string,
+    topicId: string | null,
     enabled: boolean,
   ) => {
     const updatedSettings = {
@@ -66,9 +72,30 @@ export const UserNotificationSettingsPanel = (props: {
             if (origin.id !== originId) {
               return origin;
             }
+
+            if (topicId === null) {
+              return {
+                ...origin,
+                enabled,
+                topics:
+                  origin.topics?.map(topic => {
+                    return { ...topic, enabled };
+                  }) ?? [],
+              };
+            }
+
             return {
               ...origin,
-              enabled,
+              topics:
+                origin.topics?.map(topic => {
+                  if (topic.id === topicId) {
+                    return {
+                      ...topic,
+                      enabled: origin.enabled ? enabled : origin.enabled,
+                    };
+                  }
+                  return topic;
+                }) ?? [],
             };
           }),
         };
@@ -77,14 +104,7 @@ export const UserNotificationSettingsPanel = (props: {
     onChange(updatedSettings);
   };
 
-  const formatOriginName = (originId: string) => {
-    if (props.originNames && originId in props.originNames) {
-      return props.originNames[originId];
-    }
-    return capitalize(originId.replaceAll(/[_:]/g, ' '));
-  };
-
-  if (settings.channels.length === 0 || allOrigins.length === 0) {
+  if (settings.channels.length === 0) {
     return (
       <Typography variant="body1">
         No notification settings available, check back later
@@ -92,48 +112,60 @@ export const UserNotificationSettingsPanel = (props: {
     );
   }
 
+  const uniqueOriginsMap = settings.channels
+    .flatMap(channel => channel.origins)
+    .reduce((map, origin) => {
+      if (!map.has(origin.id)) {
+        map.set(origin.id, origin);
+      }
+      return map;
+    }, new Map<string, OriginSetting>())
+    .values();
+
+  const uniqueOrigins = Array.from(uniqueOriginsMap);
+
   return (
     <Table>
       <TableHead>
         <TableRow>
+          <TableCell />
           <TableCell>
             <Typography variant="subtitle1">Origin</Typography>
           </TableCell>
+          <TableCell>
+            <Typography variant="subtitle1">Topic</Typography>
+          </TableCell>
           {settings.channels.map(channel => (
-            <TableCell>
-              <Typography variant="subtitle1">{channel.id}</Typography>
+            <TableCell key={channel.id}>
+              <Typography variant="subtitle1" align="center">
+                {channel.id}
+              </Typography>
             </TableCell>
           ))}
         </TableRow>
       </TableHead>
       <TableBody>
-        {allOrigins.map(origin => (
-          <TableRow>
-            <TableCell>{formatOriginName(origin)}</TableCell>
-            {settings.channels.map(channel => (
-              <TableCell>
-                <Tooltip
-                  title={`Enable or disable ${channel.id.toLocaleLowerCase(
-                    'en-US',
-                  )} notifications from ${formatOriginName(
-                    origin,
-                  ).toLocaleLowerCase('en-US')}`}
-                >
-                  <Switch
-                    checked={isNotificationsEnabledFor(
-                      settings,
-                      channel.id,
-                      origin,
-                    )}
-                    onChange={(event: React.ChangeEvent<HTMLInputElement>) => {
-                      handleChange(channel.id, origin, event.target.checked);
-                    }}
-                  />
-                </Tooltip>
-              </TableCell>
-            ))}
-          </TableRow>
-        ))}
+        {uniqueOrigins.flatMap(origin => [
+          <OriginRow
+            key={origin.id}
+            origin={origin}
+            settings={settings}
+            open={expandedRows.has(origin.id)}
+            handleChange={handleChange}
+            handleRowToggle={handleRowToggle}
+          />,
+          ...(expandedRows.has(origin.id)
+            ? origin.topics?.map(topic => (
+                <TopicRow
+                  key={`${origin.id}-${topic.id}`}
+                  topic={topic}
+                  origin={origin}
+                  settings={settings}
+                  handleChange={handleChange}
+                />
+              )) || []
+            : []),
+        ])}
       </TableBody>
     </Table>
   );

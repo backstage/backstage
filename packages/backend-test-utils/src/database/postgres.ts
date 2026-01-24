@@ -77,7 +77,11 @@ export async function startPostgresContainer(image: string): Promise<{
 
   const container = await new GenericContainer(image)
     .withExposedPorts(5432)
-    .withEnvironment({ POSTGRES_PASSWORD: password })
+    .withEnvironment({
+      // Since postgres 18, the default directory changed - so we pin it here
+      PGDATA: '/var/lib/postgresql/data',
+      POSTGRES_PASSWORD: password,
+    })
     .withTmpFs({ '/var/lib/postgresql/data': 'rw' })
     .start();
 

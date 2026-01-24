@@ -4,12 +4,10 @@
 
 ```ts
 import { GroupEntity } from '@backstage/catalog-model';
-import { default as React_2 } from 'react';
+import { JSX as JSX_2 } from 'react/jsx-runtime';
 
 // @public (undocumented)
-export const GroupListPicker: (
-  props: GroupListPickerProps,
-) => React_2.JSX.Element;
+export const GroupListPicker: (props: GroupListPickerProps) => JSX_2.Element;
 
 // @public
 export type GroupListPickerProps = {

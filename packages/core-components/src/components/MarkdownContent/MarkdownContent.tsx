@@ -17,9 +17,12 @@
 import { makeStyles } from '@material-ui/core/styles';
 import ReactMarkdown, { Options } from 'react-markdown';
 import gfm from 'remark-gfm';
-import React from 'react';
+import { Children, createElement } from 'react';
 import { CodeSnippet } from '../CodeSnippet';
 import { HeadingProps } from 'react-markdown/lib/ast-to-react';
+import rehypeRaw from 'rehype-raw';
+import rehypeSanitize, { defaultSchema } from 'rehype-sanitize';
+import type { PluggableList } from 'react-markdown/lib/react-markdown';
 
 export type MarkdownContentClassKey = 'markdown';
 
@@ -78,14 +81,14 @@ const flatten = (text: string, child: any): string => {
 
   return typeof child === 'string'
     ? text + child
-    : React.Children.toArray(child.props.children).reduce(flatten, text);
+    : Children.toArray(child.props.children).reduce(flatten, text);
 };
 
 const headingRenderer = ({ level, children }: HeadingProps) => {
-  const childrenArray = React.Children.toArray(children);
+  const childrenArray = Children.toArray(children);
   const text = childrenArray.reduce(flatten, '');
   const slug = text.toLocaleLowerCase('en-US').replace(/\W/g, '-');
-  return React.createElement(`h${level}`, { id: slug }, children);
+  return createElement(`h${level}`, { id: slug }, children);
 };
 
 const components: Options['components'] = {
@@ -108,6 +111,30 @@ const components: Options['components'] = {
   h6: headingRenderer,
 };
 
+const gfmRehypePlugins: PluggableList = [
+  [
+    rehypeRaw,
+    {
+      tagFiter: true,
+    },
+  ],
+  [
+    rehypeSanitize,
+    {
+      ...defaultSchema,
+      attributes: {
+        ...defaultSchema.attributes,
+        code: [
+          ...(defaultSchema.attributes?.code ?? []),
+          // for syntax highlighting classes in code blocks
+          // breaks the codesnippet component override above if omitted
+          ['className'],
+        ],
+      },
+    },
+  ],
+];
+
 /**
  * Renders markdown with the default dialect {@link https://github.github.com/gfm/ | gfm - GitHub flavored Markdown} to backstage theme styled HTML.
  *
@@ -127,6 +154,7 @@ export function MarkdownContent(props: Props) {
   return (
     <ReactMarkdown
       remarkPlugins={dialect === 'gfm' ? [gfm] : []}
+      rehypePlugins={dialect === 'gfm' ? gfmRehypePlugins : []}
       className={`${classes.markdown} ${className ?? ''}`.trim()}
       children={content}
       components={components}

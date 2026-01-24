@@ -214,13 +214,25 @@ export function buildMiddleware(
     ].map(h => h.toLocaleLowerCase()),
   );
 
-  // only forward the allowed headers in backend->client
-  fullConfig.onProxyRes = (proxyRes: http.IncomingMessage) => {
+  fullConfig.onProxyRes = (
+    proxyRes: http.IncomingMessage,
+    _,
+    res: express.Response,
+  ) => {
+    // only forward the allowed headers in backend->client
     const headerNames = Object.keys(proxyRes.headers);
 
     headerNames.forEach(h => {
       if (!responseHeaderAllowList.has(h.toLocaleLowerCase())) {
         delete proxyRes.headers[h];
+      }
+    });
+
+    // handle SSE connections closed by the backend
+    // https://github.com/chimurai/http-proxy-middleware/discussions/765
+    proxyRes.on('close', () => {
+      if (!res.writableEnded) {
+        res.end();
       }
     });
   };
@@ -280,8 +292,7 @@ export async function createRouter(
     logger: options.logger,
   };
 
-  const externalUrl = await options.discovery.getExternalBaseUrl('proxy');
-  const { pathname: pathPrefix } = new URL(externalUrl);
+  const pathPrefix = '/api/proxy';
 
   const proxyConfig: ProxyConfig = {
     ...(options.additionalEndpoints ?? {}),

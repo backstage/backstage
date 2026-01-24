@@ -47,14 +47,13 @@ import {
 } from '../processing/DefaultCatalogProcessingEngine';
 import { DefaultCatalogProcessingOrchestrator } from '../processing/DefaultCatalogProcessingOrchestrator';
 import { connectEntityProviders } from '../processing/connectEntityProviders';
-import { CatalogProcessingEngine } from '../processing';
+import { CatalogProcessingEngine } from '../processing/types';
 import { DefaultEntitiesCatalog } from '../service/DefaultEntitiesCatalog';
 import { DefaultRefreshService } from '../service/DefaultRefreshService';
 import { RefreshOptions, RefreshService } from '../service/types';
 import { DefaultStitcher } from '../stitching/DefaultStitcher';
-import { mockServices } from '@backstage/backend-test-utils';
+import { mockServices, TestDatabases } from '@backstage/backend-test-utils';
 import { LoggerService } from '@backstage/backend-plugin-api';
-import { DatabaseManager } from '@backstage/backend-common';
 import { entitiesResponseToObjects } from '../service/response';
 import { deleteOrphanedEntities } from '../database/operations/util/deleteOrphanedEntities';
 
@@ -130,8 +129,10 @@ class WaitingProgressTracker implements ProgressTrackerWithErrorReports {
   #counts = new Map<string, number>();
   #errors = new Map<string, Error[]>();
   #inFlight = new Array<Promise<void>>();
+  private readonly entityRefs?: Set<string>;
 
-  constructor(private readonly entityRefs?: Set<string>) {
+  constructor(entityRefs?: Set<string>) {
+    this.entityRefs = entityRefs;
     let resolve: (errors: Record<string, Error[]>) => void;
     this.#promise = new Promise<Record<string, Error[]>>(_resolve => {
       resolve = _resolve;
@@ -205,10 +206,10 @@ class TestHarness {
   readonly #proxyProgressTracker: ProxyProgressTracker;
   readonly #db: Knex;
 
-  static async create(options?: {
-    disableRelationsCompatibility?: boolean;
+  static async create(options: {
+    enableRelationsCompatibility?: boolean;
     logger?: LoggerService;
-    db?: Knex;
+    db: Knex;
     permissions?: PermissionEvaluator;
     additionalProviders?: EntityProvider[];
     processEntity?(
@@ -231,25 +232,21 @@ class TestHarness {
       },
     });
     const logger = options?.logger ?? mockServices.logger.mock();
-    const db =
-      options?.db ??
-      (await DatabaseManager.fromConfig(config, { logger })
-        .forPlugin('catalog')
-        .getClient());
 
-    await applyDatabaseMigrations(db);
+    await applyDatabaseMigrations(options.db);
 
     const catalogDatabase = new DefaultCatalogDatabase({
-      database: db,
+      database: options.db,
       logger,
     });
     const providerDatabase = new DefaultProviderDatabase({
-      database: db,
+      database: options.db,
       logger,
     });
     const processingDatabase = new DefaultProcessingDatabase({
-      database: db,
+      database: options.db,
       logger,
+      events: mockServices.events.mock(),
       refreshInterval: () => 0.05,
     });
 
@@ -279,14 +276,16 @@ class TestHarness {
       logger,
       parser: defaultEntityDataParser,
       policy: EntityPolicies.allOf([]),
-      legacySingleProcessorValidation: false,
     });
-    const stitcher = DefaultStitcher.fromConfig(config, { knex: db, logger });
+    const stitcher = DefaultStitcher.fromConfig(config, {
+      knex: options.db,
+      logger,
+    });
     const catalog = new DefaultEntitiesCatalog({
-      database: db,
+      database: options.db,
       logger,
       stitcher,
-      disableRelationsCompatibility: options?.disableRelationsCompatibility,
+      enableRelationsCompatibility: options?.enableRelationsCompatibility,
     });
     const proxyProgressTracker = new ProxyProgressTracker(
       new NoopProgressTracker(),
@@ -296,15 +295,17 @@ class TestHarness {
       config: new ConfigReader({}),
       logger,
       processingDatabase,
-      knex: db,
+      knex: options.db,
       orchestrator,
       stitcher,
+      scheduler: mockServices.scheduler(),
       createHash: () => createHash('sha1'),
       pollingIntervalMs: 50,
       onProcessingError: event => {
         proxyProgressTracker.reportError(event.unprocessedEntity, event.errors);
       },
       tracker: proxyProgressTracker,
+      events: mockServices.events.mock(),
     });
 
     const refresh = new DefaultRefreshService({ database: catalogDatabase });
@@ -333,7 +334,7 @@ class TestHarness {
       refresh,
       provider,
       proxyProgressTracker,
-      db,
+      options.db,
     );
   }
 
@@ -444,10 +445,13 @@ class TestHarness {
 }
 
 describe('Catalog Backend Integration', () => {
+  const databases = TestDatabases.create({ ids: ['SQLITE_3'] });
+
   it('should add entities and update errors', async () => {
     let triggerError = false;
 
     const harness = await TestHarness.create({
+      db: await databases.init('SQLITE_3'),
       async processEntity(entity: Entity) {
         if (triggerError) {
           throw new Error('NOPE');
@@ -525,6 +529,7 @@ describe('Catalog Backend Integration', () => {
     const generatedApis = ['api-1', 'api-2'];
 
     const harness = await TestHarness.create({
+      db: await databases.init('SQLITE_3'),
       async processEntity(
         entity: Entity,
         location: LocationSpec,
@@ -609,7 +614,9 @@ describe('Catalog Backend Integration', () => {
   });
 
   it('should not replace matching provided entities', async () => {
-    const harness = await TestHarness.create();
+    const harness = await TestHarness.create({
+      db: await databases.init('SQLITE_3'),
+    });
 
     const entityA = {
       apiVersion: 'backstage.io/v1alpha1',
@@ -669,6 +676,7 @@ describe('Catalog Backend Integration', () => {
     }
 
     const harness = await TestHarness.create({
+      db: await databases.init('SQLITE_3'),
       async processEntity(
         entity: Entity,
         location: LocationSpec,
@@ -788,7 +796,9 @@ describe('Catalog Backend Integration', () => {
   });
 
   it('should reject insecure URLs', async () => {
-    const harness = await TestHarness.create();
+    const harness = await TestHarness.create({
+      db: await databases.init('SQLITE_3'),
+    });
 
     await harness.setInputEntities([
       {
@@ -827,7 +837,9 @@ describe('Catalog Backend Integration', () => {
   });
 
   it('should reject insecure location URLs', async () => {
-    const harness = await TestHarness.create();
+    const harness = await TestHarness.create({
+      db: await databases.init('SQLITE_3'),
+    });
 
     await harness.setInputEntities([
       {
@@ -854,7 +866,7 @@ describe('Catalog Backend Integration', () => {
 
   it('should return valid responses in raw JSON mode', async () => {
     const harness = await TestHarness.create({
-      disableRelationsCompatibility: true,
+      db: await databases.init('SQLITE_3'),
     });
 
     const entityA = {
@@ -910,6 +922,7 @@ describe('Catalog Backend Integration', () => {
     const secondProvider = new TestProvider('second');
 
     const harness = await TestHarness.create({
+      db: await databases.init('SQLITE_3'),
       additionalProviders: [firstProvider, secondProvider],
     });
 
@@ -1066,7 +1079,10 @@ describe('Catalog Backend Integration', () => {
         _emit: CatalogProcessorEmit,
       ) => entity,
     );
-    const harness = await TestHarness.create({ processEntity });
+    const harness = await TestHarness.create({
+      db: await databases.init('SQLITE_3'),
+      processEntity,
+    });
 
     processEntity.mockImplementation(async (entity, location, emit) => {
       if (entity.metadata.name === entityA.metadata.name) {
@@ -1189,7 +1205,10 @@ describe('Catalog Backend Integration', () => {
         _emit: CatalogProcessorEmit,
       ) => entity,
     );
-    const harness = await TestHarness.create({ processEntity });
+    const harness = await TestHarness.create({
+      db: await databases.init('SQLITE_3'),
+      processEntity,
+    });
 
     processEntity.mockImplementation(async (entity, location, emit) => {
       if (entity.metadata.name === entityA.metadata.name) {
@@ -1246,7 +1265,10 @@ describe('Catalog Backend Integration', () => {
         _emit: CatalogProcessorEmit,
       ) => entity,
     );
-    const harness = await TestHarness.create({ processEntity });
+    const harness = await TestHarness.create({
+      db: await databases.init('SQLITE_3'),
+      processEntity,
+    });
 
     processEntity.mockImplementation(async (entity, location, emit) => {
       if (entity.metadata.name === entityA.metadata.name) {

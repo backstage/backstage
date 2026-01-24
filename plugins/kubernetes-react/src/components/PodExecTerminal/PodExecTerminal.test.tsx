@@ -24,7 +24,6 @@ import {
 import '@testing-library/jest-dom';
 import { screen } from '@testing-library/react';
 import WS from 'jest-websocket-mock';
-import React from 'react';
 import './matchMedia.mock';
 import { PodExecTerminal } from './PodExecTerminal';
 

@@ -28,9 +28,9 @@ export interface Config {
       azureDevOps?: {
         [name: string]: {
           /**
-           * (Optional) The DevOps host; leave empty for `dev.azure.com`, otherwise set to your self-hosted instance host.
+           * (Optional) The DevOps host; defaults to `dev.azure.com` if left empty, otherwise set to your self-hosted instance host.
            */
-          host: string;
+          host?: string;
           /**
            * (Required) Your organization slug.
            */
@@ -55,6 +55,40 @@ export interface Config {
           schedule?: SchedulerServiceTaskScheduleDefinitionConfig;
         };
       };
+      /**
+       * AzureBlobEntityProvider configuration
+       */
+      azureBlob?:
+        | {
+            [name: string]: {
+              /**
+               * (Required) The Azure Blob Storage container name.
+               */
+              containerName: string;
+              /**
+               * (Required) The Azure Storage account name.
+               */
+              accountName: string;
+              /**
+               * (Optional) TaskScheduleDefinition for the refresh.
+               */
+              schedule?: SchedulerServiceTaskScheduleDefinitionConfig;
+            };
+          }
+        | {
+            /**
+             * (Required) The Azure Blob Storage container name.
+             */
+            containerName: string;
+            /**
+             * (Required) The Azure Storage account name.
+             */
+            accountName: string;
+            /**
+             * (Optional) TaskScheduleDefinition for the refresh.
+             */
+            schedule?: SchedulerServiceTaskScheduleDefinitionConfig;
+          };
     };
   };
 }

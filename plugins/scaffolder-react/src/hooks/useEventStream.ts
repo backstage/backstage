@@ -19,12 +19,12 @@ import { useEffect } from 'react';
 import { useApi } from '@backstage/core-plugin-api';
 import { Subscription } from '@backstage/types';
 import {
-  LogEvent,
-  scaffolderApiRef,
-  ScaffolderTask,
-  ScaffolderTaskOutput,
   ScaffolderTaskStatus,
-} from '../api';
+  ScaffolderTaskOutput,
+  ScaffolderTask,
+  LogEvent,
+} from '@backstage/plugin-scaffolder-common';
+import { scaffolderApiRef } from '../api';
 
 /**
  * The status of the step being processed
@@ -85,7 +85,6 @@ function reducer(draft: TaskStream, action: ReducerAction) {
         current[next.id] = [];
         return current;
       }, {} as { [stepId in string]: string[] });
-      draft.loading = false;
       draft.error = undefined;
       draft.completed = false;
       draft.task = action.data;
@@ -95,6 +94,12 @@ function reducer(draft: TaskStream, action: ReducerAction) {
     case 'LOGS': {
       const entries = action.data;
       const logLines = [];
+
+      // only set loading as false once we have logs,
+      // otherwise things flicker from pending to loaded.
+      if (draft.loading && entries.length > 0) {
+        draft.loading = false;
+      }
 
       for (const entry of entries) {
         const logLine = `${entry.createdAt} ${entry.body.message}`;

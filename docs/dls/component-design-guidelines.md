@@ -103,6 +103,4 @@ accessibility.
 [7]: https://v4.mui.com/components/cards/
 [8]: https://v4.mui.com/customization/palette/#default-values
 [9]: https://v4.mui.com/customization/typography/
-[10]: https://backstage.io/docs/getting-started/app-custom-theme
-[11]: https://backstage.io/docs/getting-started/app-custom-theme#overriding-backstage-and-material-ui-components-styles
-[12]: https://v4.mui.com/customization/default-theme/#explore
+[10]: https://backstage.io/docs/conf/user-interface

@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import React from 'react';
-import { CatalogFilterBlueprint } from './blueprints';
+import { CatalogFilterBlueprint } from '@backstage/plugin-catalog-react/alpha';
 
 const catalogTagCatalogFilter = CatalogFilterBlueprint.make({
   name: 'tag',
@@ -134,13 +133,14 @@ const catalogListCatalogFilter = CatalogFilterBlueprint.makeWithOverrides({
   },
 });
 
+// this is the default order that the filters will be applied in
 export default [
-  catalogTagCatalogFilter,
   catalogKindCatalogFilter,
   catalogTypeCatalogFilter,
-  catalogModeCatalogFilter,
-  catalogNamespaceCatalogFilter,
-  catalogLifecycleCatalogFilter,
-  catalogProcessingStatusCatalogFilter,
   catalogListCatalogFilter,
+  catalogModeCatalogFilter,
+  catalogLifecycleCatalogFilter,
+  catalogTagCatalogFilter,
+  catalogProcessingStatusCatalogFilter,
+  catalogNamespaceCatalogFilter,
 ];

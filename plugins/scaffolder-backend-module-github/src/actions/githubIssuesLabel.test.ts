@@ -31,6 +31,9 @@ jest.mock('../util', () => {
   };
 });
 
+import { Octokit } from 'octokit';
+
+const octokitMock = Octokit as unknown as jest.Mock;
 const mockOctokit = {
   rest: {
     issues: {
@@ -39,11 +42,7 @@ const mockOctokit = {
   },
 };
 jest.mock('octokit', () => ({
-  Octokit: class {
-    constructor() {
-      return mockOctokit;
-    }
-  },
+  Octokit: jest.fn(),
 }));
 
 describe('github:issues:label', () => {
@@ -59,7 +58,7 @@ describe('github:issues:label', () => {
   const getOctokitOptionsMock = getOctokitOptions as jest.Mock;
   const integrations = ScmIntegrations.fromConfig(config);
   let githubCredentialsProvider: GithubCredentialsProvider;
-  let action: TemplateAction<any>;
+  let action: TemplateAction<any, any, any>;
 
   const mockContext = createMockActionContext({
     input: {
@@ -71,12 +70,21 @@ describe('github:issues:label', () => {
 
   beforeEach(() => {
     jest.resetAllMocks();
+    octokitMock.mockImplementation(() => mockOctokit);
     githubCredentialsProvider =
       DefaultGithubCredentialsProvider.fromIntegrations(integrations);
     action = createGithubIssuesLabelAction({
       integrations,
       githubCredentialsProvider,
     });
+  });
+
+  it('should pass context logger to Octokit client', async () => {
+    await action.handler(mockContext);
+
+    expect(octokitMock).toHaveBeenCalledWith(
+      expect.objectContaining({ log: mockContext.logger }),
+    );
   });
 
   it('should call the githubApi for adding labels', async () => {

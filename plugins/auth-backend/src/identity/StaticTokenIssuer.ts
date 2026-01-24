@@ -15,14 +15,14 @@
  */
 
 import { AnyJWK, TokenIssuer } from './types';
-import { SignJWT, importJWK, JWK } from 'jose';
-import { parseEntityRef } from '@backstage/catalog-model';
-import { AuthenticationError } from '@backstage/errors';
+import { JWK } from 'jose';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { StaticKeyStore } from './StaticKeyStore';
-import { TokenParams } from '@backstage/plugin-auth-node';
-
-const MS_IN_S = 1000;
+import {
+  BackstageSignInResult,
+  TokenParams,
+} from '@backstage/plugin-auth-node';
+import { issueUserToken } from './issueUserToken';
 
 export type Config = {
   publicKeyFile: string;
@@ -37,6 +37,10 @@ export type Options = {
   issuer: string;
   /** Expiration time of the JWT in seconds */
   sessionExpirationSeconds: number;
+  /**
+   * A list of claims to omit from issued tokens and only store in the user info database
+   */
+  omitClaimsFromToken?: string[];
 };
 
 /**
@@ -48,47 +52,29 @@ export class StaticTokenIssuer implements TokenIssuer {
   private readonly logger: LoggerService;
   private readonly keyStore: StaticKeyStore;
   private readonly sessionExpirationSeconds: number;
+  private readonly omitClaimsFromToken?: string[];
 
   public constructor(options: Options, keyStore: StaticKeyStore) {
     this.issuer = options.issuer;
     this.logger = options.logger;
     this.sessionExpirationSeconds = options.sessionExpirationSeconds;
     this.keyStore = keyStore;
+    this.omitClaimsFromToken = options.omitClaimsFromToken;
   }
 
-  public async issueToken(params: TokenParams): Promise<string> {
+  public async issueToken(
+    params: TokenParams & { claims: { ent: string[] } },
+  ): Promise<BackstageSignInResult> {
     const key = await this.getSigningKey();
 
-    // TODO: code shared with TokenFactory.ts
-    const iss = this.issuer;
-    const { sub, ent, ...additionalClaims } = params.claims;
-    const aud = 'backstage';
-    const iat = Math.floor(Date.now() / MS_IN_S);
-    const exp = iat + this.sessionExpirationSeconds;
-
-    // Validate that the subject claim is a valid EntityRef
-    try {
-      parseEntityRef(sub);
-    } catch (error) {
-      throw new Error(
-        '"sub" claim provided by the auth resolver is not a valid EntityRef.',
-      );
-    }
-
-    this.logger.info(`Issuing token for ${sub}, with entities ${ent ?? []}`);
-
-    if (!key.alg) {
-      throw new AuthenticationError('No algorithm was provided in the key');
-    }
-
-    return new SignJWT({ ...additionalClaims, iss, sub, ent, aud, iat, exp })
-      .setProtectedHeader({ alg: key.alg, kid: key.kid })
-      .setIssuer(iss)
-      .setAudience(aud)
-      .setSubject(sub)
-      .setIssuedAt(iat)
-      .setExpirationTime(exp)
-      .sign(await importJWK(key));
+    return issueUserToken({
+      issuer: this.issuer,
+      key,
+      keyDurationSeconds: this.sessionExpirationSeconds,
+      logger: this.logger,
+      omitClaimsFromToken: this.omitClaimsFromToken,
+      params,
+    });
   }
 
   private async getSigningKey(): Promise<JWK> {

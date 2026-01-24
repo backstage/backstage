@@ -15,6 +15,7 @@
  */
 
 import {
+  resolveSafeChildPath,
   UrlReaderServiceReadTreeResponse,
   UrlReaderServiceReadTreeResponseDirOptions,
   UrlReaderServiceReadTreeResponseFile,
@@ -24,7 +25,7 @@ import platformPath, { dirname } from 'path';
 import getRawBody from 'raw-body';
 import fs from 'fs-extra';
 import { promisify } from 'util';
-import tar from 'tar';
+import * as tar from 'tar';
 import { pipeline as pipelineCb, Readable } from 'stream';
 import { FromReadableArrayOptions } from '../types';
 
@@ -35,12 +36,13 @@ const pipeline = promisify(pipelineCb);
  */
 export class ReadableArrayResponse implements UrlReaderServiceReadTreeResponse {
   private read = false;
+  private readonly stream: FromReadableArrayOptions;
+  private readonly workDir: string;
+  public readonly etag: string;
 
-  constructor(
-    private readonly stream: FromReadableArrayOptions,
-    private readonly workDir: string,
-    public readonly etag: string,
-  ) {
+  constructor(stream: FromReadableArrayOptions, workDir: string, etag: string) {
+    this.stream = stream;
+    this.workDir = workDir;
     this.etag = etag;
   }
 
@@ -97,7 +99,7 @@ export class ReadableArrayResponse implements UrlReaderServiceReadTreeResponse {
 
     for (let i = 0; i < this.stream.length; i++) {
       if (!this.stream[i].path.endsWith('/')) {
-        const filePath = platformPath.join(dir, this.stream[i].path);
+        const filePath = resolveSafeChildPath(dir, this.stream[i].path);
         await fs.mkdir(dirname(filePath), { recursive: true });
         await pipeline(this.stream[i].data, fs.createWriteStream(filePath));
       }

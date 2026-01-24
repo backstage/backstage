@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 The Backstage Authors
+ * Copyright 2024 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,13 +13,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
+import yargs from 'yargs';
+import { createCliPlugin } from '../../wiring/factory';
 import { lazy } from '../../lib/lazy';
-import { Command } from 'commander';
 
-export function registerCommands(program: Command) {
-  program
-    .command('info')
-    .description('Show helpful information for debugging and reporting bugs')
-    .action(lazy(() => import('./commands/info'), 'default'));
-}
+export default createCliPlugin({
+  pluginId: 'info',
+  init: async reg => {
+    reg.addCommand({
+      path: ['info'],
+      description: 'Show helpful information for debugging and reporting bugs',
+      execute: async ({ args }) => {
+        const argv = await yargs()
+          .options({
+            include: {
+              type: 'string',
+              array: true,
+              default: [],
+              description:
+                'Glob patterns for additional packages to include (e.g., @spotify/backstage*)',
+            },
+            format: {
+              type: 'string',
+              choices: ['text', 'json'],
+              default: 'text',
+              description: 'Output format (text or json)',
+            },
+          })
+          .help()
+          .parse(args);
+        await lazy(() => import('./commands/info'), 'default')(argv);
+      },
+    });
+  },
+});

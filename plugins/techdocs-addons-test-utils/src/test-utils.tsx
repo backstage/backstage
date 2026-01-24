@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import React, { ReactElement } from 'react';
+import { cloneElement, ReactElement } from 'react';
 
 // Shadow DOM support for the simple and complete DOM testing utilities
 // https://github.com/testing-library/dom-testing-library/issues/742#issuecomment-674987855
-import { screen } from 'testing-library__dom';
+import { screen } from 'shadow-dom-testing-library';
 import { Route } from 'react-router-dom';
 import { act, render } from '@testing-library/react';
 
@@ -39,10 +39,12 @@ import {
 } from '@backstage/plugin-techdocs-react';
 import { TechDocsReaderPage, techdocsPlugin } from '@backstage/plugin-techdocs';
 import {
+  catalogApiRef,
   EntityPresentationApi,
   entityPresentationApiRef,
   entityRouteRef,
 } from '@backstage/plugin-catalog-react';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { searchApiRef } from '@backstage/plugin-search-react';
 import { scmIntegrationsApiRef } from '@backstage/integration-react';
 
@@ -235,8 +237,19 @@ export class TechDocsAddonTester {
       }),
     };
 
+    const catalogApi = catalogApiMock({
+      entities: [
+        {
+          apiVersion: 'backstage.io/v1alpha1',
+          kind: 'Component',
+          metadata: { namespace: 'default', name: 'docs' },
+        },
+      ],
+    });
+
     const apis: TechdocsAddonTesterApis<any[]> = [
       [fetchApiRef, fetchApi],
+      [catalogApiRef, catalogApi],
       [entityPresentationApiRef, entityPresentationApi],
       [discoveryApiRef, discoveryApi],
       [techdocsApiRef, techdocsApi],
@@ -282,7 +295,7 @@ export class TechDocsAddonTester {
             >
               <TechDocsAddons>
                 {this.addons.map((addon, index) =>
-                  React.cloneElement(addon, { key: index }),
+                  cloneElement(addon, { key: index }),
                 )}
               </TechDocsAddons>
             </Route>
@@ -307,6 +320,25 @@ export class TechDocsAddonTester {
    * Render the Addon within a fully configured and mocked TechDocs reader.
    *
    * @remarks
+   *
+   * Note that to make assertions on the shadow dom, add a dependency on
+   * [the `shadow-dom-testing-library` package](https://github.com/konnorrogers/shadow-dom-testing-library/)
+   * and use its screen as follows:
+   *
+   * ```ts
+   * import { screen } from 'shadow-dom-testing-library';
+   *
+   * // ... render the addon ...
+   * await TechDocsAddonTester.buildAddonsInTechDocs([<AnAddon />])
+   *   .withDom(<body>TEST_CONTENT</body>)
+   *   .renderWithEffects();
+   *
+   * expect(screen.getByShadowText('TEST_CONTENT')).toBeInTheDocument();
+   * ```
+   *
+   * For items outside of the shadow dom, you can still use the regular screen
+   * from `@testing-library/react`.
+   *
    * Components using useEffect to perform an asynchronous action (such as
    * fetch) must be rendered within an async act call to properly get the final
    * state, even with mocked responses. This utility method makes the signature
@@ -316,17 +348,16 @@ export class TechDocsAddonTester {
    * @see https://github.com/testing-library/react-testing-library/issues/281
    * @see https://github.com/facebook/react/pull/14853
    */
-  async renderWithEffects(): Promise<
-    typeof screen & { shadowRoot: ShadowRoot | null }
-  > {
+  async renderWithEffects(): Promise<{ shadowRoot: ShadowRoot | null }> {
     await act(async () => {
       render(this.build());
     });
 
-    const shadowHost = await screen.findByTestId('techdocs-native-shadowroot');
+    const shadowHost = await screen.findByShadowTestId(
+      'techdocs-native-shadowroot',
+    );
 
     return {
-      ...screen,
       shadowRoot: shadowHost?.shadowRoot || null,
     };
   }

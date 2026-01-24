@@ -16,7 +16,6 @@
 
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { fireEvent, screen, waitFor } from '@testing-library/react';
-import React from 'react';
 import {
   MockEntityListContextProvider,
   catalogApiMock,
@@ -361,6 +360,76 @@ describe('<EntityOwnerPicker mode="all" />', () => {
     );
     expect(updateFilters).toHaveBeenLastCalledWith({
       owners: new EntityOwnerFilter(['group:default/team-b']),
+    });
+  });
+
+  it('calls fetch with lowercased input and displays results', async () => {
+    const updateFilters = jest.fn();
+    const someOwnerEntities: Entity[] = [
+      {
+        apiVersion: '1',
+        kind: 'Group',
+        metadata: {
+          name: 'some-owner',
+        },
+      },
+      {
+        apiVersion: '1',
+        kind: 'Group',
+        metadata: {
+          name: 'some-owner-2',
+        },
+        spec: {
+          profile: {
+            displayName: 'Some Owner 2',
+          },
+        },
+      },
+    ];
+    mockCatalogApi.queryEntities.mockImplementation(async _request => {
+      const totalItems = 2;
+      return {
+        items: someOwnerEntities,
+        pageInfo: {
+          nextCursor: '',
+        },
+        totalItems,
+      };
+    });
+    await renderInTestApp(
+      <ApiProvider apis={mockApis}>
+        <MockEntityListContextProvider
+          value={{
+            updateFilters,
+          }}
+        >
+          <EntityOwnerPicker mode="all" />
+        </MockEntityListContextProvider>
+      </ApiProvider>,
+    );
+
+    expect(mockCatalogApi.getEntitiesByRefs).not.toHaveBeenCalled();
+    expect(updateFilters).toHaveBeenLastCalledWith({
+      owners: undefined,
+    });
+
+    const input = screen.getByRole('textbox');
+    fireEvent.change(input, { target: { value: 'Some-Owner' } });
+
+    await waitFor(() =>
+      expect(screen.getByText('some-owner')).toBeInTheDocument(),
+    );
+    expect(mockCatalogApi.queryEntities).toHaveBeenLastCalledWith(
+      expect.objectContaining({
+        fullTextFilter: expect.objectContaining({
+          term: 'some-owner',
+        }),
+      }),
+    );
+
+    fireEvent.click(screen.getByText('some-owner'));
+    expect(updateFilters).toHaveBeenLastCalledWith({
+      owners: new EntityOwnerFilter(['group:default/some-owner']),
     });
   });
 });

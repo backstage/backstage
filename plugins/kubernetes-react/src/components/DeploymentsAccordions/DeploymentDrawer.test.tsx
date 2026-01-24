@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import * as deployments from '../../__fixtures__/2-deployments.json';
 import {
   renderInTestApp,

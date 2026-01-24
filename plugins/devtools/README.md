@@ -34,6 +34,12 @@ Lists the configuration being used by your current running Backstage instance.
 
 ![Example of Config tab](./docs/devtools-config-tab.png)
 
+### Scheduled Tasks
+
+Scheduled tasks can be viewed and triggered under the `Scheduled Tasks` tab. [See below to configure](#scheduled-tasks-configuration).
+
+![Example of Scheduled Tasks tab](./docs/devtools-scheduled-tasks-tab.png)
+
 ## Optional Features
 
 The DevTools plugin can be setup with other tabs with additional helpful features.
@@ -95,7 +101,7 @@ To setup the DevTools frontend you'll need to do the following steps:
    <SidebarItem icon={BuildIcon} to="devtools" text="DevTools" />
    ```
 
-8. Now run `yarn dev` from the root of your project and you should see the DevTools option show up just below Settings in your sidebar and clicking on it will get you to the [Info tab](#info)
+8. Now run `yarn start` from the root of your project and you should see the DevTools option show up just below Settings in your sidebar and clicking on it will get you to the [Info tab](#info)
 
 ## Customizing
 
@@ -112,7 +118,6 @@ The DevTools plugin has been designed so that you can customize the tabs to suit
      InfoContent,
    } from '@backstage/plugin-devtools';
    import { DevToolsLayout } from '@backstage/plugin-devtools';
-   import React from 'react';
 
    export const DevToolsPage = () => {
      return (
@@ -151,7 +156,7 @@ The DevTools plugin has been designed so that you can customize the tabs to suit
    +    </Route>
    ```
 
-6. Now run `yarn dev` from the root of your project. When you go to the DevTools you'll now see you have a third tab for [External Dependencies](#external-dependencies)
+6. Now run `yarn start` from the root of your project. When you go to the DevTools you'll now see you have a third tab for [External Dependencies](#external-dependencies)
 
 With this setup you can add or remove the tabs as you'd like or add your own simply by editing your `CustomDevToolsPage.tsx` file
 
@@ -160,6 +165,39 @@ With this setup you can add or remove the tabs as you'd like or add your own sim
 You can also add tabs to show content from other plugins that fit well with the other DevTools content.
 
 #### Catalog Unprocessed Entities Tab
+
+##### New Frontend System
+
+Create an extension and/or load a 3rd party extension to add additional tabs.
+
+```shell
+yarn --cwd plugins/<your-plugin> add @backstage/plugin-devtools-react
+```
+
+```tsx
+import { DevToolsContentBlueprint } from '@backstage/plugin-devtools-react';
+
+export const unprocessedEntitiesDevToolsContent = DevToolsContentBlueprint.make(
+  {
+    disabled: true,
+    params: {
+      path: 'unprocessed-entities',
+      title: 'Unprocessed Entities',
+      loader: () =>
+        import('../components/UnprocessedEntities').then(m => (
+          <m.UnprocessedEntitiesContent />
+        )),
+    },
+  },
+);
+
+const appFeature = createFrontendModule({
+  pluginId: 'catalog-unprocessed-entities',
+  extensions: [unprocessedEntitiesDevToolsContent],
+});
+```
+
+##### Old System
 
 Here's how to add the Catalog Unprocessed Entities tab:
 
@@ -190,7 +228,7 @@ Here's how to add the Catalog Unprocessed Entities tab:
      </DevToolsLayout>
    ```
 
-4. Now run `yarn dev` and navigate to the DevTools you'll see a new tab for Unprocessed Entities
+4. Now run `yarn start` and navigate to the DevTools you'll see a new tab for Unprocessed Entities
 
 ## Permissions
 
@@ -374,7 +412,6 @@ import {
   devToolsInfoReadPermission,
 } from '@backstage/plugin-devtools-common';
 import { RequirePermission } from '@backstage/plugin-permission-react';
-import React from 'react';
 
 const DevToolsPage = () => {
   return (
@@ -457,4 +494,15 @@ RUN --mount=type=cache,target=/var/cache/apt,sharing=locked \
     --mount=type=cache,target=/var/lib/apt,sharing=locked \
     apt-get update && \
     apt-get install -y  ... iputils-ping
+```
+
+### Scheduled Tasks Configuration
+
+Scheduled tasks can be viewed and triggered under the `Scheduled Tasks` tab. You first must add the list of plugins for scheduled tasks to your config:
+
+```yaml
+devTools:
+  scheduledTasks:
+    plugins:
+      - catalog
 ```

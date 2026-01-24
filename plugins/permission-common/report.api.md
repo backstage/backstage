@@ -37,10 +37,24 @@ export type AuthorizeRequestOptions = {
 };
 
 // @public
-export enum AuthorizeResult {
-  ALLOW = 'ALLOW',
-  CONDITIONAL = 'CONDITIONAL',
-  DENY = 'DENY',
+export const AuthorizeResult: {
+  readonly DENY: 'DENY';
+  readonly ALLOW: 'ALLOW';
+  readonly CONDITIONAL: 'CONDITIONAL';
+};
+
+// @public (undocumented)
+export type AuthorizeResult =
+  (typeof AuthorizeResult)[keyof typeof AuthorizeResult];
+
+// @public (undocumented)
+export namespace AuthorizeResult {
+  // (undocumented)
+  export type ALLOW = typeof AuthorizeResult.ALLOW;
+  // (undocumented)
+  export type CONDITIONAL = typeof AuthorizeResult.CONDITIONAL;
+  // (undocumented)
+  export type DENY = typeof AuthorizeResult.DENY;
 }
 
 // @public
@@ -83,7 +97,7 @@ export type EvaluatePermissionRequest = {
   resourceRef?: string;
 };
 
-// @public
+// @public @deprecated
 export type EvaluatePermissionRequestBatch =
   PermissionMessageBatch<EvaluatePermissionRequest>;
 

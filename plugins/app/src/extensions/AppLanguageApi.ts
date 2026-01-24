@@ -17,14 +17,27 @@
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { AppLanguageSelector } from '../../../../packages/core-app-api/src/apis/implementations/AppLanguageApi';
 import { appLanguageApiRef } from '@backstage/core-plugin-api/alpha';
-import { ApiBlueprint, createApiFactory } from '@backstage/frontend-plugin-api';
+import { ApiBlueprint } from '@backstage/frontend-plugin-api';
 
-export const AppLanguageApi = ApiBlueprint.make({
+export const AppLanguageApi = ApiBlueprint.makeWithOverrides({
   name: 'app-language',
-  params: {
-    factory: createApiFactory(
-      appLanguageApiRef,
-      AppLanguageSelector.createWithStorage(),
-    ),
+  config: {
+    schema: {
+      defaultLanguage: z => z.string().optional(),
+      availableLanguages: z => z.array(z.string()).optional(),
+    },
+  },
+  factory(originalFactory, { config }) {
+    return originalFactory(defineParams =>
+      defineParams({
+        api: appLanguageApiRef,
+        deps: {},
+        factory: () =>
+          AppLanguageSelector.createWithStorage({
+            defaultLanguage: config.defaultLanguage,
+            availableLanguages: config.availableLanguages,
+          }),
+      }),
+    );
   },
 });

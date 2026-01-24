@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
 import { IconLinkVertical, IconLinkVerticalProps } from './IconLinkVertical';
 import LinkIcon from '@material-ui/icons/Link';
 
 export default {
   title: 'Core/IconLinkVertical',
   component: IconLinkVertical,
+  tags: ['!manifest'],
 };
 
 export const Primary = (args: IconLinkVerticalProps) => (

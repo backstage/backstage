@@ -28,6 +28,8 @@ export interface Engine {
  * @public
  */
 export type TestDatabaseId =
+  | 'POSTGRES_18'
+  | 'POSTGRES_17'
   | 'POSTGRES_16'
   | 'POSTGRES_15'
   | 'POSTGRES_14'
@@ -47,6 +49,20 @@ export type TestDatabaseProperties = {
 
 export const allDatabases: Record<TestDatabaseId, TestDatabaseProperties> =
   Object.freeze({
+    POSTGRES_18: {
+      name: 'Postgres 18.x',
+      driver: 'pg',
+      dockerImageName: getDockerImageForName('postgres:18'),
+      connectionStringEnvironmentVariableName:
+        'BACKSTAGE_TEST_DATABASE_POSTGRES18_CONNECTION_STRING',
+    },
+    POSTGRES_17: {
+      name: 'Postgres 17.x',
+      driver: 'pg',
+      dockerImageName: getDockerImageForName('postgres:17'),
+      connectionStringEnvironmentVariableName:
+        'BACKSTAGE_TEST_DATABASE_POSTGRES17_CONNECTION_STRING',
+    },
     POSTGRES_16: {
       name: 'Postgres 16.x',
       driver: 'pg',

@@ -27,7 +27,10 @@ import {
 } from '@backstage/plugin-scaffolder-node';
 import { Octokit } from 'octokit';
 import { CustomErrorBase, InputError } from '@backstage/errors';
-import { createPullRequest } from 'octokit-plugin-create-pull-request';
+import {
+  createPullRequest,
+  DELETE_FILE,
+} from 'octokit-plugin-create-pull-request';
 import { getOctokitOptions } from '../util';
 import { examples } from './githubPullRequest.examples';
 import {
@@ -35,6 +38,7 @@ import {
   resolveSafeChildPath,
 } from '@backstage/backend-plugin-api';
 import { Config } from '@backstage/config';
+import { JsonValue } from '@backstage/types';
 
 export type Encoding = 'utf-8' | 'base64';
 
@@ -127,165 +131,154 @@ export const createPublishGithubPullRequestAction = (
     config,
   } = options;
 
-  return createTemplateAction<{
-    title: string;
-    branchName: string;
-    targetBranchName?: string;
-    description: string;
-    repoUrl: string;
-    draft?: boolean;
-    targetPath?: string;
-    sourcePath?: string;
-    token?: string;
-    reviewers?: string[];
-    teamReviewers?: string[];
-    commitMessage?: string;
-    update?: boolean;
-    forceFork?: boolean;
-    gitAuthorName?: string;
-    gitAuthorEmail?: string;
-    forceEmptyGitAuthor?: boolean;
-    createWhenEmpty?: boolean;
-  }>({
+  return createTemplateAction({
     id: 'publish:github:pull-request',
     examples,
     supportsDryRun: true,
     schema: {
       input: {
-        required: ['repoUrl', 'title', 'description', 'branchName'],
-        type: 'object',
-        properties: {
-          repoUrl: {
-            title: 'Repository Location',
+        repoUrl: z =>
+          z.string({
             description:
               'Accepts the format `github.com?repo=reponame&owner=owner` where `reponame` is the repository name and `owner` is an organization or username',
-            type: 'string',
-          },
-          branchName: {
-            type: 'string',
-            title: 'Branch Name',
+          }),
+        branchName: z =>
+          z.string({
             description: 'The name for the branch',
-          },
-          targetBranchName: {
-            type: 'string',
-            title: 'Target Branch Name',
-            description: 'The target branch name of the pull request',
-          },
-          title: {
-            type: 'string',
-            title: 'Pull Request Name',
+          }),
+        filesToDelete: z =>
+          z
+            .array(z.string(), {
+              description: 'List of files that will be deleted',
+            })
+            .optional(),
+        targetBranchName: z =>
+          z
+            .string({
+              description: 'The target branch name of the pull request',
+            })
+            .optional(),
+        title: z =>
+          z.string({
             description: 'The name for the pull request',
-          },
-          description: {
-            type: 'string',
-            title: 'Pull Request Description',
+          }),
+        description: z =>
+          z.string({
             description: 'The description of the pull request',
-          },
-          draft: {
-            type: 'boolean',
-            title: 'Create as Draft',
-            description: 'Create a draft pull request',
-          },
-          sourcePath: {
-            type: 'string',
-            title: 'Working Subdirectory',
-            description:
-              'Subdirectory of working directory to copy changes from',
-          },
-          targetPath: {
-            type: 'string',
-            title: 'Repository Subdirectory',
-            description: 'Subdirectory of repository to apply changes to',
-          },
-          token: {
-            title: 'Authentication Token',
-            type: 'string',
-            description: 'The token to use for authorization to GitHub',
-          },
-          reviewers: {
-            title: 'Pull Request Reviewers',
-            type: 'array',
-            items: {
-              type: 'string',
-            },
-            description:
-              'The users that will be added as reviewers to the pull request',
-          },
-          teamReviewers: {
-            title: 'Pull Request Team Reviewers',
-            type: 'array',
-            items: {
-              type: 'string',
-            },
-            description:
-              'The teams that will be added as reviewers to the pull request',
-          },
-          commitMessage: {
-            type: 'string',
-            title: 'Commit Message',
-            description: 'The commit message for the pull request commit',
-          },
-          update: {
-            type: 'boolean',
-            title: 'Update',
-            description: 'Update pull request if already exists',
-          },
-          forceFork: {
-            type: 'boolean',
-            title: 'Force Fork',
-            description: 'Create pull request from a fork',
-          },
-          gitAuthorName: {
-            type: 'string',
-            title: 'Default Author Name',
-            description:
-              'Sets the default author name for the commit. The default value is the authenticated user or `Scaffolder`',
-          },
-          gitAuthorEmail: {
-            type: 'string',
-            title: 'Default Author Email',
-            description:
-              'Sets the default author email for the commit. The default value is the authenticated user or `scaffolder@backstage.io`',
-          },
-          forceEmptyGitAuthor: {
-            type: 'boolean',
-            title: 'Force Empty Git Author',
-            description:
-              'Forces the author to be empty. This is useful when using a Github App, it permit the commit to be verified on Github',
-          },
-          createWhenEmpty: {
-            type: 'boolean',
-            title: 'Create When Empty',
-            description:
-              'Set whether to create pull request when there are no changes to commit. The default value is true. If set to false, remoteUrl is no longer a required output.',
-          },
-        },
+          }),
+        draft: z =>
+          z
+            .boolean({
+              description: 'Create a draft pull request',
+            })
+            .optional(),
+        sourcePath: z =>
+          z
+            .string({
+              description:
+                'Subdirectory of working directory to copy changes from',
+            })
+            .optional(),
+        targetPath: z =>
+          z
+            .string({
+              description: 'Subdirectory of repository to apply changes to',
+            })
+            .optional(),
+        token: z =>
+          z
+            .string({
+              description: 'The token to use for authorization to GitHub',
+            })
+            .optional(),
+        reviewers: z =>
+          z
+            .array(z.string(), {
+              description:
+                'The users that will be added as reviewers to the pull request',
+            })
+            .optional(),
+        assignees: z =>
+          z
+            .array(z.string(), {
+              description:
+                'The users that will be added as assignees to the pull request',
+            })
+            .optional(),
+        teamReviewers: z =>
+          z
+            .array(z.string(), {
+              description:
+                'The teams that will be added as reviewers to the pull request',
+            })
+            .optional(),
+        commitMessage: z =>
+          z
+            .string({
+              description: 'The commit message for the pull request commit',
+            })
+            .optional(),
+        update: z =>
+          z
+            .boolean({
+              description: 'Update pull request if already exists',
+            })
+            .optional(),
+        forceFork: z =>
+          z
+            .boolean({
+              description: 'Create pull request from a fork',
+            })
+            .optional(),
+        gitAuthorName: z =>
+          z
+            .string({
+              description:
+                'Sets the default author name for the commit. The default value is the authenticated user or `Scaffolder`',
+            })
+            .optional(),
+        gitAuthorEmail: z =>
+          z
+            .string({
+              description:
+                'Sets the default author email for the commit. The default value is the authenticated user or `scaffolder@backstage.io`',
+            })
+            .optional(),
+        forceEmptyGitAuthor: z =>
+          z
+            .boolean({
+              description:
+                'Forces the author to be empty. This is useful when using a Github App, it permit the commit to be verified on Github',
+            })
+            .optional(),
+        createWhenEmpty: z =>
+          z
+            .boolean({
+              description:
+                'Set whether to create pull request when there are no changes to commit. The default value is true. If set to false, remoteUrl is no longer a required output.',
+            })
+            .optional(),
       },
       output: {
-        required: [],
-        type: 'object',
-        properties: {
-          targetBranchName: {
-            title: 'Target branch name of the merge request',
-            type: 'string',
-          },
-          remoteUrl: {
-            type: 'string',
-            title: 'Pull Request URL',
+        targetBranchName: z =>
+          z.string({
+            description: 'Target branch name of the merge request',
+          }),
+        remoteUrl: z =>
+          z.string({
             description: 'Link to the pull request in Github',
-          },
-          pullRequestNumber: {
-            type: 'number',
-            title: 'Pull Request Number',
+          }),
+        pullRequestNumber: z =>
+          z.number({
             description: 'The pull request number',
-          },
-        },
+          }),
       },
     },
     async handler(ctx) {
       const {
         repoUrl,
         branchName,
+        filesToDelete,
         targetBranchName,
         title,
         description,
@@ -294,6 +287,7 @@ export const createPublishGithubPullRequestAction = (
         sourcePath,
         token: providedToken,
         reviewers,
+        assignees,
         teamReviewers,
         commitMessage,
         update,
@@ -339,8 +333,8 @@ export const createPublishGithubPullRequestAction = (
         file: SerializedFile,
       ): 'utf-8' | 'base64' => (file.symlink ? 'utf-8' : 'base64');
 
-      const files = Object.fromEntries(
-        directoryContents.map(file => [
+      const files = Object.fromEntries([
+        ...directoryContents.map(file => [
           targetPath ? path.posix.join(targetPath, file.path) : file.path,
           {
             // See the properties of tree items
@@ -357,7 +351,13 @@ export const createPublishGithubPullRequestAction = (
             content: file.content.toString(determineFileEncoding(file)),
           },
         ]),
-      );
+        // order of arrays is important so filesToDelete will overwrite
+        // changes from files above
+        ...(filesToDelete || []).map(filePath => [
+          targetPath ? path.posix.join(targetPath, filePath) : filePath,
+          DELETE_FILE,
+        ]),
+      ]);
 
       // If this is a dry run, log and return
       if (ctx.isDryRun) {
@@ -425,32 +425,63 @@ export const createPublishGithubPullRequestAction = (
         if (targetBranchName) {
           createOptions.base = targetBranchName;
         }
-        const response = await client.createPullRequest(createOptions);
 
-        if (createWhenEmpty === false && !response) {
+        const pr = await ctx.checkpoint({
+          key: `create.pr.${owner}.${repo}.${branchName}`,
+          fn: async () => {
+            const response = await client.createPullRequest(createOptions);
+            if (!response) {
+              return null;
+            }
+
+            return {
+              base: response?.data.base,
+              html_url: response?.data.html_url,
+              number: response?.data.number,
+            };
+          },
+        });
+
+        if (createWhenEmpty === false && !pr) {
           ctx.logger.info('No changes to commit, pull request was not created');
           return;
         }
 
-        if (!response) {
+        if (!pr) {
           throw new GithubResponseError('null response from Github');
         }
 
-        const pullRequestNumber = response.data.number;
+        const pullRequestNumber = pr.number;
+        const pullRequest = { owner, repo, number: pullRequestNumber };
         if (reviewers || teamReviewers) {
-          const pullRequest = { owner, repo, number: pullRequestNumber };
           await requestReviewersOnPullRequest(
             pullRequest,
             reviewers,
             teamReviewers,
             client,
             ctx.logger,
+            ctx.checkpoint,
           );
         }
 
-        const targetBranch = response.data.base.ref;
+        if (assignees) {
+          if (assignees.length > 10) {
+            ctx.logger.warn(
+              'Assignees list is too long, only the first 10 will be used.',
+            );
+          }
+          await addAssigneesToPullRequest(
+            pullRequest,
+            assignees,
+            client,
+            ctx.logger,
+            ctx.checkpoint,
+          );
+        }
+
+        const targetBranch = pr.base.ref;
         ctx.output('targetBranchName', targetBranch);
-        ctx.output('remoteUrl', response.data.html_url);
+        ctx.output('remoteUrl', pr.html_url);
         ctx.output('pullRequestNumber', pullRequestNumber);
       } catch (e) {
         throw new GithubResponseError('Pull request creation failed', e);
@@ -458,26 +489,75 @@ export const createPublishGithubPullRequestAction = (
     },
   });
 
+  async function addAssigneesToPullRequest(
+    pr: GithubPullRequest,
+    assignees: string[],
+    client: Octokit,
+    logger: LoggerService,
+    checkpoint: <T extends JsonValue | void>(opts: {
+      key: string;
+      fn: () => Promise<T> | T;
+    }) => Promise<T>,
+  ) {
+    try {
+      await checkpoint({
+        key: `add.assignees.${pr.owner}.${pr.repo}.${pr.number}`,
+        fn: async () => {
+          const result = await client.rest.issues.addAssignees({
+            owner: pr.owner,
+            repo: pr.repo,
+            issue_number: pr.number,
+            assignees,
+          });
+
+          const addedAssignees = result.data.assignees?.join(', ') ?? '';
+
+          logger.info(
+            `Added assignees [${addedAssignees}] to Pull request ${pr.number}`,
+          );
+        },
+      });
+    } catch (e) {
+      logger.error(
+        `Failure when adding assignees to Pull request ${pr.number}`,
+        e,
+      );
+    }
+  }
+
   async function requestReviewersOnPullRequest(
     pr: GithubPullRequest,
     reviewers: string[] | undefined,
     teamReviewers: string[] | undefined,
     client: Octokit,
     logger: LoggerService,
+    checkpoint: <T extends JsonValue | void>(opts: {
+      key: string;
+      fn: () => Promise<T> | T;
+    }) => Promise<T>,
   ) {
     try {
-      const result = await client.rest.pulls.requestReviewers({
-        owner: pr.owner,
-        repo: pr.repo,
-        pull_number: pr.number,
-        reviewers,
-        team_reviewers: teamReviewers ? [...new Set(teamReviewers)] : undefined,
+      await checkpoint({
+        key: `request.reviewers.${pr.owner}.${pr.repo}.${pr.number}`,
+        fn: async () => {
+          const result = await client.rest.pulls.requestReviewers({
+            owner: pr.owner,
+            repo: pr.repo,
+            pull_number: pr.number,
+            reviewers,
+            team_reviewers: teamReviewers
+              ? [...new Set(teamReviewers)]
+              : undefined,
+          });
+
+          const addedUsers = result.data.requested_reviewers?.join(', ') ?? '';
+          const addedTeams = result.data.requested_teams?.join(', ') ?? '';
+
+          logger.info(
+            `Added users [${addedUsers}] and teams [${addedTeams}] as reviewers to Pull request ${pr.number}`,
+          );
+        },
       });
-      const addedUsers = result.data.requested_reviewers?.join(', ') ?? '';
-      const addedTeams = result.data.requested_teams?.join(', ') ?? '';
-      logger.info(
-        `Added users [${addedUsers}] and teams [${addedTeams}] as reviewers to Pull request ${pr.number}`,
-      );
     } catch (e) {
       logger.error(
         `Failure when adding reviewers to Pull request ${pr.number}`,

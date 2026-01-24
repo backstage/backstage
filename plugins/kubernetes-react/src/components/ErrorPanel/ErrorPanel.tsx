@@ -14,26 +14,41 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { ReactNode } from 'react';
 import Typography from '@material-ui/core/Typography';
 import { ClusterObjects } from '@backstage/plugin-kubernetes-common';
 import { WarningPanel } from '@backstage/core-components';
+import {
+  useTranslationRef,
+  TranslationFunction,
+} from '@backstage/core-plugin-api/alpha';
+import { kubernetesReactTranslationRef } from '../../translation';
 
 const clustersWithErrorsToErrorMessage = (
   clustersWithErrors: ClusterObjects[],
-): React.ReactNode => {
+  t: TranslationFunction<typeof kubernetesReactTranslationRef.T>,
+): ReactNode => {
   return clustersWithErrors.map((c, i) => {
     return (
       <div key={i}>
-        <Typography variant="body2">{`Cluster: ${
-          c.cluster.title || c.cluster.name
-        }`}</Typography>
+        <Typography variant="body2">
+          {t('errorPanel.clusterLabelValue', {
+            cluster: c.cluster.title || c.cluster.name,
+          })}
+        </Typography>
         {c.errors.map((e, j) => {
           return (
             <Typography variant="body2" key={j}>
               {e.errorType === 'FETCH_ERROR'
-                ? `Error communicating with Kubernetes: ${e.errorType}, message: ${e.message}`
-                : `Error fetching Kubernetes resource: '${e.resourcePath}', error: ${e.errorType}, status code: ${e.statusCode}`}
+                ? t('errorPanel.fetchError', {
+                    errorType: e.errorType,
+                    message: e.message,
+                  })
+                : t('errorPanel.resourceError', {
+                    resourcePath: e.resourcePath ?? '',
+                    errorType: e.errorType,
+                    statusCode: String(e.statusCode ?? ''),
+                  })}
             </Typography>
           );
         })}
@@ -52,7 +67,7 @@ export type ErrorPanelProps = {
   entityName: string;
   errorMessage?: string;
   clustersWithErrors?: ClusterObjects[];
-  children?: React.ReactNode;
+  children?: ReactNode;
 };
 
 /**
@@ -64,16 +79,24 @@ export const ErrorPanel = ({
   entityName,
   errorMessage,
   clustersWithErrors,
-}: ErrorPanelProps) => (
-  <WarningPanel
-    title="There was a problem retrieving Kubernetes objects"
-    message={`There was a problem retrieving some Kubernetes resources for the entity: ${entityName}. This could mean that the Error Reporting card is not completely accurate.`}
-  >
-    {clustersWithErrors && (
-      <div>Errors: {clustersWithErrorsToErrorMessage(clustersWithErrors)}</div>
-    )}
-    {errorMessage && (
-      <Typography variant="body2">Errors: {errorMessage}</Typography>
-    )}
-  </WarningPanel>
-);
+}: ErrorPanelProps) => {
+  const { t } = useTranslationRef(kubernetesReactTranslationRef);
+  return (
+    <WarningPanel
+      title={t('errorPanel.title')}
+      message={t('errorPanel.message', { entityName })}
+    >
+      {clustersWithErrors && (
+        <div>
+          {t('errorPanel.errorsLabel')}:{' '}
+          {clustersWithErrorsToErrorMessage(clustersWithErrors, t)}
+        </div>
+      )}
+      {errorMessage && (
+        <Typography variant="body2">
+          {t('errorPanel.errorsLabel')}: {errorMessage}
+        </Typography>
+      )}
+    </WarningPanel>
+  );
+};

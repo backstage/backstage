@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-search-backend-module-techdocs",
-  "version": "0.3.7-next.2",
+  "version": "0.4.10",
   "description": "A module for the search backend that exports techdocs modules",
   "backstage": {
     "role": "backend-plugin-module",
@@ -48,7 +48,6 @@
     "test": "backstage-cli package test"
   },
   "dependencies": {
-    "@backstage/backend-common": "^0.25.0",
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/catalog-client": "workspace:^",
     "@backstage/catalog-model": "workspace:^",

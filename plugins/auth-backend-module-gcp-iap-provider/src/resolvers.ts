@@ -19,6 +19,7 @@ import {
   SignInInfo,
 } from '@backstage/plugin-auth-node';
 import { GcpIapResult } from './types';
+import { z } from 'zod';
 
 /**
  * Available sign-in resolvers for the Google auth provider.
@@ -30,7 +31,12 @@ export namespace gcpIapSignInResolvers {
    * Looks up the user by matching their email to the `google.com/email` annotation.
    */
   export const emailMatchingUserEntityAnnotation = createSignInResolverFactory({
-    create() {
+    optionsSchema: z
+      .object({
+        dangerouslyAllowSignInWithoutUserInCatalog: z.boolean().optional(),
+      })
+      .optional(),
+    create(options = {}) {
       return async (info: SignInInfo<GcpIapResult>, ctx) => {
         const email = info.result.iapToken.email;
 
@@ -38,11 +44,19 @@ export namespace gcpIapSignInResolvers {
           throw new Error('Google IAP sign-in result is missing email');
         }
 
-        return ctx.signInWithCatalogUser({
-          annotations: {
-            'google.com/email': email,
+        return ctx.signInWithCatalogUser(
+          {
+            annotations: {
+              'google.com/email': email,
+            },
           },
-        });
+          {
+            dangerousEntityRefFallback:
+              options?.dangerouslyAllowSignInWithoutUserInCatalog
+                ? { entityRef: { name: email } }
+                : undefined,
+          },
+        );
       };
     },
   });
@@ -51,15 +65,28 @@ export namespace gcpIapSignInResolvers {
    * Looks up the user by matching their user ID to the `google.com/user-id` annotation.
    */
   export const idMatchingUserEntityAnnotation = createSignInResolverFactory({
-    create() {
+    optionsSchema: z
+      .object({
+        dangerouslyAllowSignInWithoutUserInCatalog: z.boolean().optional(),
+      })
+      .optional(),
+    create(options = {}) {
       return async (info: SignInInfo<GcpIapResult>, ctx) => {
         const userId = info.result.iapToken.sub.split(':')[1];
 
-        return ctx.signInWithCatalogUser({
-          annotations: {
-            'google.com/user-id': userId,
+        return ctx.signInWithCatalogUser(
+          {
+            annotations: {
+              'google.com/user-id': userId,
+            },
           },
-        });
+          {
+            dangerousEntityRefFallback:
+              options?.dangerouslyAllowSignInWithoutUserInCatalog
+                ? { entityRef: { name: userId } }
+                : undefined,
+          },
+        );
       };
     },
   });

@@ -122,7 +122,7 @@ export type AnalyticsApi = {
 };
 
 /**
- * The {@link ApiRef} of {@link AnalyticsApi}.
+ * The `ApiRef` of {@link AnalyticsApi}.
  *
  * @public
  */

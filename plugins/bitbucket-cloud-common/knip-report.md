@@ -4,6 +4,6 @@
 
 | Name                                | Location     | Severity |
 | :---------------------------------- | :----------- | :------- |
-| @openapitools/openapi-generator-cli | package.json | error    |
-| ts-morph                            | package.json | error    |
+| @openapitools/openapi-generator-cli | plugins/bitbucket-cloud-common/package.json | error    |
+| ts-morph                            | plugins/bitbucket-cloud-common/package.json | error    |
 

@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import { renderInTestApp } from '@backstage/test-utils';
 import { MarkdownContent } from './MarkdownContent';
 import { screen } from '@testing-library/react';
@@ -163,5 +162,53 @@ describe('<MarkdownContent />', () => {
     ).toEqual(
       'the-fitnessgram-pacer-test-is-a-multistage-aerobic-capacity-test',
     );
+  });
+
+  it('render MarkdownContent component with br tags for new lines in GFM dialect', async () => {
+    await renderInTestApp(
+      <MarkdownContent
+        content="<p>Line 1</p><br /><p>Line 2</p><br><p>Line 3</p><br />"
+        dialect="gfm"
+      />,
+    );
+
+    const line1 = screen.getByText(/Line 1/);
+    const line2 = screen.getByText(/Line 2/);
+    const line3 = screen.getByText(/Line 3/);
+
+    expect(line1.nextSibling?.nodeName).toBe('BR');
+    expect(line2.previousSibling?.nodeName).toBe('BR');
+    expect(line2.nextSibling?.nodeName).toBe('BR');
+    expect(line3.previousSibling?.nodeName).toBe('BR');
+  });
+
+  it('render MarkdownContent component without allowing inline styles in GFM dialect', async () => {
+    await renderInTestApp(
+      <MarkdownContent
+        content='<div style="color: blue; border: 1px solid black; padding: 10px;">This is a custom HTML block with inline styles.</div>'
+        dialect="gfm"
+      />,
+    );
+
+    const divElement = screen.getByText(
+      'This is a custom HTML block with inline styles.',
+    );
+    expect(divElement).toBeInTheDocument();
+    expect(divElement).not.toHaveStyle('color: blue');
+    expect(divElement).not.toHaveStyle('border: 1px solid black');
+    expect(divElement).not.toHaveStyle('padding: 10px');
+  });
+
+  it('render MarkdownContent component without disallowed elements in GFM dialect', async () => {
+    const { container } = await renderInTestApp(
+      <MarkdownContent
+        content='<script>alert("XSS Attack!");</script><style>body { background-color: red; }</style><p>Safe Content</p>'
+        dialect="gfm"
+      />,
+    );
+
+    expect(screen.getByText('Safe Content')).toBeInTheDocument();
+    expect(container.querySelector('script')).toBeNull();
+    expect(container.querySelector('style')).toBeNull();
   });
 });

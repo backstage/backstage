@@ -149,65 +149,55 @@ export function createFetchCookiecutterAction(options: {
 }) {
   const { reader, containerRunner, integrations } = options;
 
-  return createTemplateAction<{
-    url: string;
-    targetPath?: string;
-    values: JsonObject;
-    copyWithoutRender?: string[];
-    extensions?: string[];
-    imageName?: string;
-  }>({
+  return createTemplateAction({
     id: 'fetch:cookiecutter',
     description:
       'Downloads a template from the given URL into the workspace, and runs cookiecutter on it.',
     examples,
     schema: {
       input: {
-        type: 'object',
-        required: ['url'],
-        properties: {
-          url: {
-            title: 'Fetch URL',
+        url: z =>
+          z.string({
             description:
               'Relative path or absolute URL pointing to the directory tree to fetch',
-            type: 'string',
-          },
-          targetPath: {
-            title: 'Target Path',
-            description:
-              'Target path within the working directory to download the contents to.',
-            type: 'string',
-          },
-          values: {
-            title: 'Template Values',
-            description: 'Values to pass on to cookiecutter for templating',
-            type: 'object',
-          },
-          copyWithoutRender: {
-            title: 'Copy Without Render',
-            description:
-              'Avoid rendering directories and files in the template',
-            type: 'array',
-            items: {
-              type: 'string',
-            },
-          },
-          extensions: {
-            title: 'Template Extensions',
-            description:
-              "Jinja2 extensions to add filters, tests, globals or extend the parser. Extensions must be installed in the container or on the host where Cookiecutter executes. See the contrib directory in Backstage's repo for more information",
-            type: 'array',
-            items: {
-              type: 'string',
-            },
-          },
-          imageName: {
-            title: 'Cookiecutter Docker image',
-            description:
-              "Specify a custom Docker image to run cookiecutter, to override the default: 'spotify/backstage-cookiecutter'. This can be used to execute cookiecutter with Template Extensions. Used only when a local cookiecutter is not found.",
-            type: 'string',
-          },
-        },
+          }),
+        targetPath: z =>
+          z
+            .string({
+              description:
+                'Target path within the working directory to download the contents to.',
+            })
+            .optional(),
+        values: z =>
+          z
+            .object(
+              {},
+              {
+                description: 'Values to pass on to cookiecutter for templating',
+              },
+            )
+            .passthrough(),
+        copyWithoutRender: z =>
+          z
+            .array(z.string(), {
+              description:
+                'Avoid rendering directories and files in the template',
+            })
+            .optional(),
+        extensions: z =>
+          z
+            .array(z.string(), {
+              description:
+                "Jinja2 extensions to add filters, tests, globals or extend the parser. Extensions must be installed in the container or on the host where Cookiecutter executes. See the contrib directory in Backstage's repo for more information",
+            })
+            .optional(),
+        imageName: z =>
+          z
+            .string({
+              description:
+                "Specify a custom Docker image to run cookiecutter, to override the default: 'spotify/backstage-cookiecutter'. This can be used to execute cookiecutter with Template Extensions. Used only when a local cookiecutter is not found.",
+            })
+            .optional(),
       },
     },
     async handler(ctx) {

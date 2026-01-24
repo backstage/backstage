@@ -27,11 +27,11 @@ import { errorApiRef, useApi } from '@backstage/core-plugin-api';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import { makeStyles, useTheme } from '@material-ui/core/styles';
 import classNames from 'classnames';
-import React, { MouseEvent, useEffect, useMemo } from 'react';
+import { MouseEvent, useEffect, useMemo } from 'react';
 import { DefaultRenderLabel } from './DefaultRenderLabel';
 import { DefaultRenderNode } from './DefaultRenderNode';
-import { ALL_RELATION_PAIRS, RelationPairs } from './relations';
-import { Direction, EntityEdge, EntityNode } from './types';
+import { RelationPairs } from '../../lib/types';
+import { Direction, EntityEdge, EntityNode } from '../../lib/types';
 import { useEntityRelationNodesAndEdges } from './useEntityRelationNodesAndEdges';
 
 /** @public */
@@ -89,8 +89,10 @@ export type EntityRelationsGraphProps = {
   zoom?: 'enabled' | 'disabled' | 'enable-on-click';
   renderNode?: DependencyGraphTypes.RenderNodeFunction<EntityNode>;
   renderLabel?: DependencyGraphTypes.RenderLabelFunction<EntityEdge>;
+  renderEdge?: DependencyGraphTypes.RenderEdgeFunction<EntityEdge>;
   curve?: 'curveStepBefore' | 'curveMonotoneX';
   showArrowHeads?: boolean;
+  allowFullscreen?: boolean;
 };
 
 /**
@@ -109,13 +111,15 @@ export const EntityRelationsGraph = (props: EntityRelationsGraphProps) => {
     entityFilter,
     direction = Direction.LEFT_RIGHT,
     onNodeClick,
-    relationPairs = ALL_RELATION_PAIRS,
+    relationPairs,
     className,
     zoom = 'enabled',
     renderNode,
     renderLabel,
+    renderEdge,
     curve,
     showArrowHeads,
+    allowFullscreen,
   } = props;
 
   const theme = useTheme();
@@ -156,8 +160,10 @@ export const EntityRelationsGraph = (props: EntityRelationsGraphProps) => {
           edges={edges}
           renderNode={renderNode || DefaultRenderNode}
           renderLabel={renderLabel || DefaultRenderLabel}
+          renderEdge={renderEdge}
           direction={direction}
           className={classes.graph}
+          fit="contain"
           paddingX={theme.spacing(4)}
           paddingY={theme.spacing(4)}
           labelPosition={DependencyGraphTypes.LabelPosition.RIGHT}
@@ -165,6 +171,7 @@ export const EntityRelationsGraph = (props: EntityRelationsGraphProps) => {
           zoom={zoom}
           curve={curve}
           showArrowHeads={showArrowHeads}
+          allowFullscreen={allowFullscreen}
         />
       )}
     </div>

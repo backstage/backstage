@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import React from 'react';
 import {
   PageBlueprint,
   createExtensionInput,
@@ -78,7 +77,7 @@ describe('SearchFilterResultTypeBlueprint', () => {
       },
       factory(originalFactory, { inputs }) {
         return originalFactory({
-          defaultPath: '/',
+          path: '/',
           loader: async () => {
             const resultTypes = inputs.resultTypes.map(t =>
               t.get(searchResultTypeDataRef),

@@ -4,5 +4,5 @@
 
 | Name             | Location     | Severity |
 | :--------------- | :----------- | :------- |
-| @playwright/test | package.json | error    |
+| @playwright/test | packages/e2e-test-utils/package.json | error    |
 

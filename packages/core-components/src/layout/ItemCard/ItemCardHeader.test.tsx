@@ -18,7 +18,6 @@ import { renderInTestApp } from '@backstage/test-utils';
 import Card from '@material-ui/core/Card';
 import CardMedia from '@material-ui/core/CardMedia';
 import { screen } from '@testing-library/react';
-import React from 'react';
 import { ItemCardHeader } from './ItemCardHeader';
 
 describe('<ItemCardHeader />', () => {

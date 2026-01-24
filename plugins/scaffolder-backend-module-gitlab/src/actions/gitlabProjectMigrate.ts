@@ -34,66 +34,42 @@ export const createGitlabProjectMigrateAction = (options: {
 }) => {
   const { integrations } = options;
 
-  return createTemplateAction<{
-    destinationAccessToken: string;
-    destinationUrl: string;
-    sourceAccessToken: string;
-    sourceFullPath: string;
-    sourceUrl: string;
-  }>({
+  return createTemplateAction({
     id: 'gitlab:group:migrate',
     examples,
     schema: {
       input: {
-        required: [
-          'destinationAccessToken',
-          'destinationUrl',
-          'sourceAccessToken',
-          'sourceFullPath',
-          'sourceUrl',
-        ],
-        type: 'object',
-        properties: {
-          destinationAccessToken: {
-            type: 'string',
-            title: 'Target Repository Access Token',
+        destinationAccessToken: z =>
+          z.string({
             description: `The token to use for authorization to the target GitLab'`,
-          },
-          destinationUrl: {
-            type: 'string',
-            title: 'Target Project Location',
+          }),
+        destinationUrl: z =>
+          z.string({
             description: `Accepts the format 'gitlab.com?repo=project_name&owner=group_name' where 'project_name' is the repository name and 'group_name' is a group or username`,
-          },
-          sourceAccessToken: {
-            type: 'string',
-            title: 'Source Group Access Token',
+          }),
+        sourceAccessToken: z =>
+          z.string({
             description: `The token to use for authorization to the source GitLab'`,
-          },
-          sourceFullPath: {
-            type: 'string',
-            title: 'Group Full Path',
+          }),
+        sourceFullPath: z =>
+          z.string({
             description:
               'Full path to the project in the source Gitlab instance',
-          },
-          sourceUrl: {
-            type: 'string',
-            title: 'Source URL Location',
+          }),
+        sourceUrl: z =>
+          z.string({
             description: `Accepts the format 'https://gitlab.com/'`,
-          },
-        },
+          }),
       },
       output: {
-        type: 'object',
-        properties: {
-          importedRepoUrl: {
-            title: 'URL to the newly imported repo',
-            type: 'string',
-          },
-          migrationId: {
-            title: 'Id of the migration that imports the project',
-            type: 'number',
-          },
-        },
+        importedRepoUrl: z =>
+          z.string({
+            description: 'URL to the newly imported repo',
+          }),
+        migrationId: z =>
+          z.number({
+            description: 'Id of the migration that imports the project',
+          }),
       },
     },
 
@@ -139,10 +115,16 @@ export const createGitlabProjectMigrateAction = (options: {
       };
 
       try {
-        const { id: migrationId } = await api.Migrations.create(
-          sourceConfig,
-          migrationEntity,
-        );
+        const migrationId = await ctx.checkpoint({
+          key: `create.migration.${sourceUrl}`,
+          fn: async () => {
+            const migrationStatus = await api.Migrations.create(
+              sourceConfig,
+              migrationEntity,
+            );
+            return migrationStatus.id;
+          },
+        });
 
         ctx.output(
           'importedRepoUrl',

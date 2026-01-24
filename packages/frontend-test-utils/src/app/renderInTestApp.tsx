@@ -14,12 +14,9 @@
  * limitations under the License.
  */
 
-import React from 'react';
+import { Fragment } from 'react';
 import { Link, MemoryRouter } from 'react-router-dom';
-import {
-  createSpecializedApp,
-  FrontendFeature,
-} from '@backstage/frontend-app-api';
+import { createSpecializedApp } from '@backstage/frontend-app-api';
 import { RenderResult, render } from '@testing-library/react';
 import { ConfigReader } from '@backstage/config';
 import { JsonObject } from '@backstage/types';
@@ -30,10 +27,12 @@ import {
   RouteRef,
   useRouteRef,
   IconComponent,
-  RouterBlueprint,
   NavItemBlueprint,
   createFrontendPlugin,
+  FrontendFeature,
+  createFrontendModule,
 } from '@backstage/frontend-plugin-api';
+import { RouterBlueprint } from '@backstage/plugin-app-react';
 import appPlugin from '@backstage/plugin-app';
 
 const DEFAULT_MOCK_CONFIG = {
@@ -70,11 +69,6 @@ export type TestAppOptions = {
   config?: JsonObject;
 
   /**
-   * Additional extensions to add to the test app.
-   */
-  extensions?: ExtensionDefinition<any>[];
-
-  /**
    * Additional features to add to the test app.
    */
   features?: FrontendFeature[];
@@ -107,6 +101,12 @@ const NavItem = (props: {
 const appPluginOverride = appPlugin.withOverrides({
   extensions: [
     appPlugin.getExtension('sign-in-page:app').override({
+      disabled: true,
+    }),
+    appPlugin.getExtension('app/layout').override({
+      disabled: true,
+    }),
+    appPlugin.getExtension('app/routes').override({
       disabled: true,
     }),
     appPlugin.getExtension('app/nav').override({
@@ -149,22 +149,10 @@ export function renderInTestApp(
 ): RenderResult {
   const extensions: Array<ExtensionDefinition> = [
     createExtension({
-      attachTo: { id: 'app/routes', input: 'routes' },
-      output: [coreExtensionData.reactElement, coreExtensionData.routePath],
+      attachTo: { id: 'app/root', input: 'children' },
+      output: [coreExtensionData.reactElement],
       factory: () => {
-        return [
-          coreExtensionData.reactElement(element),
-          coreExtensionData.routePath('/'),
-        ];
-      },
-    }),
-    RouterBlueprint.make({
-      params: {
-        Component: ({ children }) => (
-          <MemoryRouter initialEntries={options?.initialRouteEntries}>
-            {children}
-          </MemoryRouter>
-        ),
+        return [coreExtensionData.reactElement(element)];
       },
     }),
   ];
@@ -183,7 +171,7 @@ export function renderInTestApp(
             coreExtensionData.routeRef,
           ],
           factory: () => [
-            coreExtensionData.reactElement(<React.Fragment />),
+            coreExtensionData.reactElement(<Fragment />),
             coreExtensionData.routePath(path),
             coreExtensionData.routeRef(routeRef),
           ],
@@ -192,13 +180,23 @@ export function renderInTestApp(
     }
   }
 
-  if (options?.extensions) {
-    extensions.push(...options.extensions);
-  }
-
   const features: FrontendFeature[] = [
+    createFrontendModule({
+      pluginId: 'app',
+      extensions: [
+        RouterBlueprint.make({
+          params: {
+            component: ({ children }) => (
+              <MemoryRouter initialEntries={options?.initialRouteEntries}>
+                {children}
+              </MemoryRouter>
+            ),
+          },
+        }),
+      ],
+    }),
     createFrontendPlugin({
-      id: 'test',
+      pluginId: 'test',
       extensions,
     }),
     appPluginOverride,

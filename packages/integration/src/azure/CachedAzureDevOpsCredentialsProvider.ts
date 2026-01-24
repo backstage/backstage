@@ -15,6 +15,7 @@
  */
 import { AzureDevOpsCredential, PersonalAccessTokenCredential } from './config';
 import {
+  ClientAssertionCredential,
   ClientSecretCredential,
   ManagedIdentityCredential,
   TokenCredential,
@@ -23,6 +24,7 @@ import {
   AzureDevOpsCredentials,
   AzureDevOpsCredentialsProvider,
 } from './types';
+import { ManagedIdentityClientAssertion } from './ManagedIdentityClientAssertion';
 
 type CachedAzureDevOpsCredentials = AzureDevOpsCredentials & {
   expiresAt?: number;
@@ -59,9 +61,26 @@ export class CachedAzureDevOpsCredentialsProvider
             credential.clientSecret,
           ),
         );
+
+      case 'ManagedIdentityClientAssertion': {
+        const clientAssertion = new ManagedIdentityClientAssertion({
+          clientId: credential.managedIdentityClientId,
+        });
+
+        return CachedAzureDevOpsCredentialsProvider.fromTokenCredential(
+          new ClientAssertionCredential(
+            credential.tenantId,
+            credential.clientId,
+            () => clientAssertion.getSignedAssertion(),
+          ),
+        );
+      }
+
       case 'ManagedIdentity':
         return CachedAzureDevOpsCredentialsProvider.fromTokenCredential(
-          new ManagedIdentityCredential(credential.clientId),
+          credential.clientId === 'system-assigned'
+            ? new ManagedIdentityCredential()
+            : new ManagedIdentityCredential(credential.clientId),
         );
       default:
         exhaustiveCheck(credential);

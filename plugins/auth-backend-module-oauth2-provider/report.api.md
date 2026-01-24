@@ -24,7 +24,10 @@ export const oauth2Authenticator: OAuthAuthenticator<
 export namespace oauth2SignInResolvers {
   const usernameMatchingUserEntityName: SignInResolverFactory<
     OAuthAuthenticatorResult<PassportProfile>,
-    unknown
+    | {
+        dangerouslyAllowSignInWithoutUserInCatalog?: boolean | undefined;
+      }
+    | undefined
   >;
 }
 ```

@@ -22,3 +22,4 @@
 
 export * from './providers';
 export * from './puppet';
+export { default } from './module';

@@ -19,8 +19,8 @@ import { SchedulerServiceTaskFunction } from '@backstage/backend-plugin-api';
 import { ConflictError } from '@backstage/errors';
 import { CronTime } from 'cron';
 import { DateTime, Duration } from 'luxon';
-import { TaskSettingsV2 } from './types';
-import { delegateAbortController, sleep } from './util';
+import { TaskSettingsV2, TaskApiTasksResponse } from './types';
+import { delegateAbortController, serializeError, sleep } from './util';
 
 /**
  * Implements tasks that run locally without cross-host collaboration.
@@ -29,28 +29,37 @@ import { delegateAbortController, sleep } from './util';
  */
 export class LocalTaskWorker {
   private abortWait: AbortController | undefined;
+  #taskState: Exclude<TaskApiTasksResponse['taskState'], null> = {
+    status: 'idle',
+  };
+  #workerState: TaskApiTasksResponse['workerState'] = {
+    status: 'idle',
+  };
+
+  private readonly taskId: string;
+  private readonly fn: SchedulerServiceTaskFunction;
+  private readonly logger: LoggerService;
 
   constructor(
-    private readonly taskId: string,
-    private readonly fn: SchedulerServiceTaskFunction,
-    private readonly logger: LoggerService,
-  ) {}
+    taskId: string,
+    fn: SchedulerServiceTaskFunction,
+    logger: LoggerService,
+  ) {
+    this.taskId = taskId;
+    this.fn = fn;
+    this.logger = logger;
+  }
 
   start(settings: TaskSettingsV2, options: { signal: AbortSignal }) {
     this.logger.info(
-      `Task worker starting: ${this.taskId}, ${JSON.stringify(settings)}`,
+      `Registered scheduled task: ${this.taskId}, ${JSON.stringify(settings)}`,
     );
 
     (async () => {
       let attemptNum = 1;
       for (;;) {
         try {
-          if (settings.initialDelayDuration) {
-            await this.sleep(
-              Duration.fromISO(settings.initialDelayDuration),
-              options.signal,
-            );
-          }
+          await this.performInitialWait(settings, options.signal);
 
           while (!options.signal.aborted) {
             const startTime = process.hrtime();
@@ -84,6 +93,38 @@ export class LocalTaskWorker {
     this.abortWait.abort();
   }
 
+  taskState(): TaskApiTasksResponse['taskState'] {
+    return this.#taskState;
+  }
+
+  workerState(): TaskApiTasksResponse['workerState'] {
+    return this.#workerState;
+  }
+
+  /**
+   * Does the once-at-startup initial wait, if configured.
+   */
+  private async performInitialWait(
+    settings: TaskSettingsV2,
+    signal: AbortSignal,
+  ): Promise<void> {
+    if (settings.initialDelayDuration) {
+      const parsedDuration = Duration.fromISO(settings.initialDelayDuration);
+
+      this.#taskState = {
+        status: 'idle',
+        startsAt: DateTime.utc().plus(parsedDuration).toISO()!,
+        lastRunEndedAt: this.#taskState.lastRunEndedAt,
+        lastRunError: this.#taskState.lastRunError,
+      };
+      this.#workerState = {
+        status: 'initial-wait',
+      };
+
+      await this.sleep(parsedDuration, signal);
+    }
+  }
+
   /**
    * Makes a single attempt at running the task to completion.
    */
@@ -94,14 +135,29 @@ export class LocalTaskWorker {
     // Abort the task execution either if the worker is stopped, or if the
     // task timeout is hit
     const taskAbortController = delegateAbortController(signal);
+    const timeoutDuration = Duration.fromISO(settings.timeoutAfterDuration);
     const timeoutHandle = setTimeout(() => {
       taskAbortController.abort();
-    }, Duration.fromISO(settings.timeoutAfterDuration).as('milliseconds'));
+    }, timeoutDuration.as('milliseconds'));
+
+    this.#taskState = {
+      status: 'running',
+      startedAt: DateTime.utc().toISO()!,
+      timesOutAt: DateTime.utc().plus(timeoutDuration).toISO()!,
+      lastRunEndedAt: this.#taskState.lastRunEndedAt,
+      lastRunError: this.#taskState.lastRunError,
+    };
+    this.#workerState = {
+      status: 'running',
+    };
 
     try {
       await this.fn(taskAbortController.signal);
+      this.#taskState.lastRunEndedAt = DateTime.utc().toISO()!;
+      this.#taskState.lastRunError = undefined;
     } catch (e) {
-      // ignore intentionally
+      this.#taskState.lastRunEndedAt = DateTime.utc().toISO()!;
+      this.#taskState.lastRunError = serializeError(e);
     }
 
     // release resources
@@ -133,11 +189,20 @@ export class LocalTaskWorker {
     }
 
     dt = Math.max(dt, 0);
+    const startsAt = DateTime.now().plus(Duration.fromMillis(dt));
+
+    this.#taskState = {
+      status: 'idle',
+      startsAt: startsAt.toISO()!,
+      lastRunEndedAt: this.#taskState.lastRunEndedAt,
+      lastRunError: this.#taskState.lastRunError,
+    };
+    this.#workerState = {
+      status: 'idle',
+    };
 
     this.logger.debug(
-      `task: ${this.taskId} will next occur around ${DateTime.now().plus(
-        Duration.fromMillis(dt),
-      )}`,
+      `task: ${this.taskId} will next occur around ${startsAt}`,
     );
 
     await this.sleep(Duration.fromMillis(dt), signal);

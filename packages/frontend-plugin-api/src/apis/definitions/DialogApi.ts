@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { createApiRef } from '@backstage/core-plugin-api';
+import { createApiRef } from '../system';
 
 /**
  * A handle for an open dialog that can be used to interact with it.
@@ -25,7 +25,7 @@ import { createApiRef } from '@backstage/core-plugin-api';
  *
  * @public
  */
-export interface DialogApiDialog<TResult = unknown> {
+export interface DialogApiDialog<TResult = void> {
   /**
    * Closes the dialog with that provided result.
    *
@@ -109,7 +109,7 @@ export interface DialogApi {
    * @param elementOrComponent - The element or component to render in the dialog. If a component is provided, it will be provided with a `dialog` prop that contains the dialog handle.
    * @public
    */
-  show<TResult = {}>(
+  show<TResult = void>(
     elementOrComponent:
       | JSX.Element
       | ((props: {
@@ -161,7 +161,7 @@ export interface DialogApi {
    * @param elementOrComponent - The element or component to render in the dialog. If a component is provided, it will be provided with a `dialog` prop that contains the dialog handle.
    * @public
    */
-  showModal<TResult = {}>(
+  showModal<TResult = void>(
     elementOrComponent:
       | JSX.Element
       | ((props: { dialog: DialogApiDialog<TResult> }) => JSX.Element),

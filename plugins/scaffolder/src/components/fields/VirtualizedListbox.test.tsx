@@ -13,7 +13,6 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import React from 'react';
 import { VirtualizedListbox } from './VirtualizedListbox';
 import { renderInTestApp } from '@backstage/test-utils';
 
@@ -34,7 +33,7 @@ describe('<VirtualizedListbox />', () => {
             aria-expanded="true"
             class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
             role="combobox"
-            style="position: relative; height: 18px; width: 100%; overflow: auto; will-change: transform; direction: ltr;"
+            style="position: relative; height: 18px; width: 100%; overflow: auto; -webkit-overflow-scrolling: touch; will-change: transform; direction: ltr;"
           >
             <div
               style="height: 0px; width: 100%;"
@@ -51,7 +50,7 @@ describe('<VirtualizedListbox />', () => {
       <div>
         <div>
           <div
-            style="position: relative; height: 18px; width: 100%; overflow: auto; will-change: transform; direction: ltr;"
+            style="position: relative; height: 18px; width: 100%; overflow: auto; -webkit-overflow-scrolling: touch; will-change: transform; direction: ltr;"
           >
             <div
               style="height: 0px; width: 100%;"
@@ -72,7 +71,7 @@ describe('<VirtualizedListbox />', () => {
       <div>
         <div>
           <div
-            style="position: relative; height: 54px; width: 100%; overflow: auto; will-change: transform; direction: ltr;"
+            style="position: relative; height: 54px; width: 100%; overflow: auto; -webkit-overflow-scrolling: touch; will-change: transform; direction: ltr;"
           >
             <div
               style="height: 36px; width: 100%;"
@@ -101,7 +100,7 @@ describe('<VirtualizedListbox />', () => {
       <div>
         <div>
           <div
-            style="position: relative; height: 378px; width: 100%; overflow: auto; will-change: transform; direction: ltr;"
+            style="position: relative; height: 378px; width: 100%; overflow: auto; -webkit-overflow-scrolling: touch; will-change: transform; direction: ltr;"
           >
             <div
               style="height: 360px; width: 100%;"
@@ -185,7 +184,7 @@ describe('<VirtualizedListbox />', () => {
       <div>
         <div>
           <div
-            style="position: relative; height: 378px; width: 100%; overflow: auto; will-change: transform; direction: ltr;"
+            style="position: relative; height: 378px; width: 100%; overflow: auto; -webkit-overflow-scrolling: touch; will-change: transform; direction: ltr;"
           >
             <div
               style="height: 3600px; width: 100%;"

@@ -65,6 +65,10 @@ export interface Config {
                */
               accountId?: string;
               /**
+               * AWS endpoint to use, defaults to standard AWS endpoint based on region
+               */
+              endpoint?: string;
+              /**
                * AWS region to use
                */
               region?: string;
@@ -127,6 +131,19 @@ export interface Config {
            * Broadcast notification receivers when receiver is set to config
            */
           receiverEmails?: string[];
+        };
+        /**
+         * Optional SES config for mail options. Allows for delegated sender
+         */
+        sesConfig?: {
+          /**
+           * ARN of the identity to use for the "From"/sender address of the email
+           */
+          fromArn?: string;
+          /**
+           * Name of the configuration set to use when sending email via ses
+           */
+          configurationSetName?: string;
         };
         cache?: {
           /**

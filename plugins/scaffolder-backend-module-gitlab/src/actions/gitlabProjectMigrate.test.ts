@@ -37,7 +37,7 @@ jest.mock('@gitbeaker/rest', () => ({
 }));
 
 describe('createGitlabRepoMigrate', () => {
-  let instance: TemplateAction<any>;
+  let instance: TemplateAction<any, any, any>;
 
   beforeEach(() => {
     jest.clearAllMocks();

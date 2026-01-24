@@ -1,0 +1,159 @@
+/*
+ * Copyright 2025 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@layer tokens, base, components, utilities;
+
+@layer components {
+  .bui-Table {
+    width: 100%;
+    caption-side: bottom;
+    border-collapse: collapse;
+    table-layout: fixed;
+    transition: opacity 0.2s ease-in-out;
+
+    &[data-stale='true'] {
+      opacity: 0.6;
+    }
+  }
+
+  .bui-TableHeader {
+    border-bottom: 1px solid var(--bui-border);
+    transition: color 0.2s ease-in-out;
+  }
+
+  .bui-TableHead {
+    text-align: left;
+    padding: var(--bui-space-3);
+    font-size: var(--bui-font-size-3);
+    color: var(--bui-fg-primary);
+  }
+
+  .bui-TableHeadSelection {
+    width: 40px;
+  }
+
+  .bui-TableHeadContent {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--bui-space-1);
+  }
+
+  .bui-TableHeadSortButton {
+    cursor: pointer;
+    user-select: none;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--bui-space-1);
+    opacity: 0;
+    transition: opacity 0.1s ease-in-out;
+    color: var(--bui-fg-secondary);
+
+    .bui-TableHead:hover &,
+    [data-sort-direction='ascending'] &,
+    [data-sort-direction='descending'] & {
+      opacity: 1;
+    }
+
+    & svg {
+      transition: transform 0.1s ease-in-out;
+    }
+    [data-sort-direction='descending'] & svg {
+      transform: rotate(180deg);
+    }
+  }
+
+  .bui-TableBody {
+    color: var(--bui-fg-primary);
+  }
+
+  .bui-TableRow {
+    border-bottom: 1px solid var(--bui-border);
+    transition: color 0.2s ease-in-out;
+
+    &:hover {
+      background-color: var(--bui-bg-tint-hover);
+    }
+
+    &[data-selected] {
+      background-color: var(--bui-bg-tint-pressed);
+    }
+
+    &[data-pressed] {
+      background-color: var(--bui-bg-tint-pressed);
+    }
+
+    &[data-disabled] {
+      background-color: var(--bui-bg-tint-disabled);
+    }
+
+    &[data-react-aria-pressable='true'] {
+      cursor: pointer;
+    }
+  }
+
+  .bui-TableCell {
+    padding: var(--bui-space-3);
+    font-size: var(--bui-font-size-3);
+    font-family: var(--bui-font-regular);
+    font-weight: var(--bui-font-weight-regular);
+    min-width: 0;
+    overflow: hidden;
+  }
+
+  .bui-TableCellSelection {
+    width: 40px;
+  }
+
+  .bui-TableCellContentWrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: var(--bui-space-2);
+    min-width: 0;
+    width: 100%;
+    max-width: 100%;
+  }
+
+  .bui-TableCellIcon,
+  .bui-TableCellIcon svg {
+    display: inline-flex;
+    align-items: center;
+    color: var(--bui-fg-primary);
+  }
+
+  .bui-TableCellContent {
+    display: flex;
+    flex-direction: column;
+    gap: var(--bui-space-0_5);
+    min-width: 0;
+    flex: 1;
+    overflow: hidden;
+    max-width: 100%;
+  }
+
+  .bui-TableCellContent > * {
+    min-width: 0;
+    max-width: 100%;
+  }
+
+  .bui-TableCellProfile {
+    display: flex;
+    flex-direction: row;
+    gap: var(--bui-space-2);
+    align-items: center;
+  }
+}

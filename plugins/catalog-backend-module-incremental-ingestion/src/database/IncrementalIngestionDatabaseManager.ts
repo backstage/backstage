@@ -322,7 +322,7 @@ export class IncrementalIngestionDatabaseManager {
         .join('ingestions', 'ingestions.id', 'ingestion_marks.ingestion_id')
         .where('ingestions.id', ingestionId);
 
-      const total = count.reduce((acc, cur) => acc + (cur.total as number), 0);
+      const total = count.reduce((acc, cur) => acc + Number(cur.total), 0);
 
       const removed: { entityRef: string }[] = [];
       if (previousIngestion) {

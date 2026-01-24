@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { InputError } from '@backstage/errors';
+import {
+  InputError,
+  serializeError as internalSerializeError,
+} from '@backstage/errors';
 import { Knex } from 'knex';
 import { DateTime, Duration } from 'luxon';
 
@@ -110,4 +113,12 @@ export function delegateAbortController(parent?: AbortSignal): AbortController {
   }
 
   return delegate;
+}
+
+export function serializeError(error: Error): string {
+  return JSON.stringify(
+    internalSerializeError(error, {
+      includeStack: process.env.NODE_ENV === 'development',
+    }),
+  );
 }

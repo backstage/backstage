@@ -19,6 +19,7 @@ import { EntityFilter } from '../types';
 import {
   EntityLifecycleFilter,
   EntityNamespaceFilter,
+  EntityOrderFilter,
   EntityOrphanFilter,
   EntityOwnerFilter,
   EntityTagFilter,
@@ -26,16 +27,22 @@ import {
   EntityUserFilter,
   UserListFilter,
 } from '../filters';
+import { EntityOrderQuery } from '@backstage/catalog-client';
 
 export interface CatalogFilters {
   filter: Record<string, string | symbol | (string | symbol)[]>;
   fullTextFilter?: {
     term: string;
   };
+  orderFields?: EntityOrderQuery;
 }
 
 function isEntityTextFilter(t: EntityFilter): t is EntityTextFilter {
   return !!(t as EntityTextFilter).getFullTextFilters;
+}
+
+function isEntityOrderFilter(t: EntityFilter): t is EntityOrderFilter {
+  return !!(t as EntityOrderFilter).getOrderFilters;
 }
 
 export function reduceCatalogFilters(filters: EntityFilter[]): CatalogFilters {
@@ -50,7 +57,14 @@ export function reduceCatalogFilters(filters: EntityFilter[]): CatalogFilters {
   );
 
   const fullTextFilter = filters.find(isEntityTextFilter)?.getFullTextFilters();
-  return { filter: condensedFilters, fullTextFilter };
+
+  const orderFields = filters.find(isEntityOrderFilter)?.getOrderFilters() || [
+    {
+      field: 'metadata.name',
+      order: 'asc',
+    },
+  ];
+  return { filter: condensedFilters, fullTextFilter, orderFields };
 }
 
 /**

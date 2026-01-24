@@ -16,7 +16,7 @@ You should have already [have a standalone app](./index.md) and completed the Gi
 
 ## 1. Login to Backstage
 
-Run your Backstage app with `yarn dev`. Navigate to `http://localhost:3000`.
+Run your Backstage app with `yarn start`. Navigate to `http://localhost:3000`.
 
 If you're not already logged in, you should see a login screen like this,
 
