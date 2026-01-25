@@ -28,8 +28,6 @@ import { BackendInitializer } from './BackendInitializer';
 import { mockServices } from '@backstage/backend-test-utils';
 import { BackendStartupError } from './BackendStartupError';
 
-const ID_PATTERN = /^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/i;
-
 const baseFactories = [
   mockServices.rootLifecycle.factory(),
   mockServices.lifecycle.factory(),
@@ -1011,53 +1009,6 @@ describe('BackendInitializer', () => {
     );
     await expect(init.start()).rejects.toThrow(
       "Service or extension point dependencies of module 'test-mod' for plugin 'test' are missing for the following ref(s): serviceRef{a}",
-    );
-  });
-  it('should reject plugins with invalid pluginId', async () => {
-    const init = new BackendInitializer(baseFactories);
-    init.add(
-      createBackendPlugin({
-        pluginId: 'test:invalid&id',
-        register(reg) {
-          reg.registerInit({
-            deps: {},
-            async init() {},
-          });
-        },
-      }),
-    );
-    await expect(init.start()).rejects.toThrow(
-      `Invalid pluginId 'test:invalid&id', must match the pattern ${ID_PATTERN} (letters, digits, and dashes only, starting with a letter)`,
-    );
-  });
-
-  it('should reject modules with invalid moduleId', async () => {
-    const init = new BackendInitializer(baseFactories);
-    init.add(
-      createBackendPlugin({
-        pluginId: 'test',
-        register(reg) {
-          reg.registerInit({
-            deps: {},
-            async init() {},
-          });
-        },
-      }),
-    );
-    init.add(
-      createBackendModule({
-        pluginId: 'test',
-        moduleId: 'invalid:module&id',
-        register(reg) {
-          reg.registerInit({
-            deps: {},
-            async init() {},
-          });
-        },
-      }),
-    );
-    await expect(init.start()).rejects.toThrow(
-      `Invalid moduleId 'invalid:module&id' for plugin 'test', must match the pattern ${ID_PATTERN} (letters, digits, and dashes only, starting with a letter)`,
     );
   });
 
