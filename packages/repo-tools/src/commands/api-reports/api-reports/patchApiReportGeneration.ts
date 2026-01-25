@@ -17,7 +17,8 @@
 import { ExtractorMessage } from '@microsoft/api-extractor';
 import { AstDeclaration } from '@microsoft/api-extractor/lib/analyzer/AstDeclaration';
 import { Program } from 'typescript';
-import { tryRunPrettier } from '../common';
+import { tryRunPrettier } from '../common/tryRunPrettier';
+import { paths as cliPaths } from '../../../lib/paths';
 
 let applied = false;
 
@@ -152,12 +153,17 @@ export function patchApiReportGeneration() {
        * the middle of the process as API Extractor does a comparison of the contents of the old
        * and new files during generation. This inserts the formatting just before that comparison.
        */
+
       const content = originalGenerateReviewFileContent.call(
         this,
         collector,
         ...moreArgs,
       );
-
-      return tryRunPrettier(content);
+      return tryRunPrettier(content, {
+        parser: 'markdown',
+        // We need a real-looking filepath for proper config resolution, not just a directory
+        // Ideally, the real filepath would be better, but it would require too much patching, for very little gain.
+        filepath: `${cliPaths.targetRoot}/report.api.md`,
+      });
     };
 }
