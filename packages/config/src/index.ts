@@ -29,4 +29,3 @@ export type {
 export { readDurationFromConfig } from './readDurationFromConfig';
 export { ConfigReader } from './reader';
 export type { AppConfig, Config } from './types';
-export { CONFIG_KEY_PART_PATTERN } from './constants';

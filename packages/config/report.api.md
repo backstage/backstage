@@ -44,9 +44,6 @@ export type Config = {
 };
 
 // @public
-export const CONFIG_KEY_PART_PATTERN: RegExp;
-
-// @public
 export class ConfigReader implements Config {
   constructor(
     data: JsonObject_2 | undefined,

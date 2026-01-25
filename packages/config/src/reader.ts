@@ -17,7 +17,8 @@
 import { JsonObject, JsonValue } from '@backstage/types';
 import { AppConfig, Config } from './types';
 
-import { CONFIG_KEY_PART_PATTERN } from './constants';
+// Update the same pattern in config-loader package if this is changed
+const CONFIG_KEY_PART_PATTERN = /^[a-z][a-z0-9]*(?:[-_:][a-z0-9]+)*$/i;
 
 function isObject(value: JsonValue | undefined): value is JsonObject {
   return typeof value === 'object' && value !== null && !Array.isArray(value);
