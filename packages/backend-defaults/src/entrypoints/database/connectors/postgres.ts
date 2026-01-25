@@ -137,26 +137,24 @@ export type AzureTokenCredentialConfig = {
   tenantId?: string;
 };
 
-export async function buildAzurePgConfig(
-  configReader: ConfigReader,
-): Promise<Knex.Config> {
+export async function buildAzurePgConfig(config: Config): Promise<Knex.Config> {
   const {
     DefaultAzureCredential,
     ManagedIdentityCredential,
     ClientSecretCredential,
   } = require('@azure/identity');
 
-  let tokenRenewalOffsetMs = 300_000;
-  if (configReader.has('connection.tokenCredential.tokenRenewalOffsetTime')) {
-    tokenRenewalOffsetMs = durationToMilliseconds(
-      readDurationFromConfig(configReader, {
-        key: 'connection.tokenCredential.tokenRenewalOffsetTime',
-      }),
-    );
-  }
+  const tokenConfig = config.getOptionalConfig('connection.tokenCredential');
 
-  const tokenConfig = (configReader.getOptional('connection.tokenCredential') ??
-    {}) as AzureTokenCredentialConfig;
+  const tokenRenewalOffsetMs = durationToMilliseconds(
+    tokenConfig?.has('tokenRenewalOffsetTime')
+      ? readDurationFromConfig(tokenConfig, { key: 'tokenRenewalOffsetTime' })
+      : { minutes: 5 },
+  );
+
+  const clientId = tokenConfig?.getOptionalString('clientId');
+  const tenantId = tokenConfig?.getOptionalString('tenantId');
+  const clientSecret = tokenConfig?.getOptionalString('clientSecret');
   let credential: TokenCredential;
 
   /**
@@ -165,23 +163,15 @@ export async function buildAzurePgConfig(
    * 2. If only clientId is provided, use ManagedIdentityCredential with user-assigned identity
    * 3. Otherwise, use DefaultAzureCredential (which may use system-assigned identity among other methods)
    */
-  if (
-    tokenConfig.clientId &&
-    tokenConfig.tenantId &&
-    tokenConfig.clientSecret
-  ) {
-    credential = new ClientSecretCredential(
-      tokenConfig.tenantId,
-      tokenConfig.clientId,
-      tokenConfig.clientSecret,
-    );
-  } else if (tokenConfig.clientId) {
-    credential = new ManagedIdentityCredential(tokenConfig.clientId);
+  if (clientId && tenantId && clientSecret) {
+    credential = new ClientSecretCredential(tenantId, clientId, clientSecret);
+  } else if (clientId) {
+    credential = new ManagedIdentityCredential(clientId);
   } else {
     credential = new DefaultAzureCredential();
   }
 
-  const rawConfig = configReader.get() as Record<string, unknown>;
+  const rawConfig = config.get() as Record<string, unknown>;
 
   const normalized = normalizeConnection(rawConfig.connection as any);
   const sanitizedConnection = omit(normalized, [
@@ -213,15 +203,15 @@ export async function buildAzurePgConfig(
 }
 
 export async function buildCloudSqlConfig(
-  configReader: ConfigReader,
+  config: Config,
 ): Promise<Knex.Config> {
-  const client = configReader.getOptionalString('client');
+  const client = config.getOptionalString('client');
 
   if (client && client !== 'pg') {
     throw new Error('Cloud SQL only supports the pg client');
   }
 
-  const instance = configReader.getOptionalString('connection.instance');
+  const instance = config.getOptionalString('connection.instance');
   if (!instance) {
     throw new Error('Missing instance connection name for Cloud SQL');
   }
@@ -234,7 +224,7 @@ export async function buildCloudSqlConfig(
   const connector = new CloudSqlConnector();
 
   type IpType = (typeof IpAddressTypes)[keyof typeof IpAddressTypes];
-  const ipTypeRaw = configReader.getOptionalString('connection.ipAddressType');
+  const ipTypeRaw = config.getOptionalString('connection.ipAddressType');
 
   let ipType: IpType | undefined;
   if (ipTypeRaw !== undefined) {
@@ -258,7 +248,7 @@ export async function buildCloudSqlConfig(
     authType: AuthTypes.IAM,
   });
 
-  const rawConfig = configReader.get() as Record<string, unknown>;
+  const rawConfig = config.get() as Record<string, unknown>;
   const normalized = normalizeConnection(rawConfig.connection as any);
   const sanitizedConnection = omit(normalized, [
     'type',
