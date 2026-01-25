@@ -110,7 +110,7 @@ To deploy a separate backend, you can either deploy the same backend package, bu
 
 ### With the same backend package
 
-Using the [backend package discovery](./backend-package-discovery) feature, you can deploy the same backend package with different plugin configurations. This allows you to split your backend into multiple deployments without maintaining separate backend packages or building multiple Docker images.
+Using the [backend package discovery](./02-backend-package-discovery.md) feature, you can deploy the same backend package with different plugin configurations. This allows you to split your backend into multiple deployments without maintaining separate backend packages or building multiple Docker images.
 
 The key is to use different `app-config.yaml` files (or environment-specific configs) that specify which plugins to load:
 
@@ -134,7 +134,7 @@ backend:
 
 Both deployments use the same backend package (and can use the same container image), but load different plugins based on the configuration file passed at runtime. This approach is simpler to maintain than creating separate backend packages, as you only need to manage one codebase and build process.
 
-See the [backend package discovery documentation](./backend-package-discovery) for more details on integration options, and the [writing config guide](../../conf/writing) to load different configurations.
+See the [backend package discovery documentation](./02-backend-package-discovery.md) for more details on integration options, and the [writing config guide](../../conf/writing.md) to load different configurations.
 
 ### With dedicated backend packages
 

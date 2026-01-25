@@ -25,7 +25,6 @@ import {
 import { BackstagePackageJson } from '@backstage/cli-node';
 import { isError } from '@backstage/errors';
 
-// XXX(GabDug): Is this a supported/used pattern to backend.add() another backend or a node-library? Use-cases?
 const DETECTED_PACKAGE_ROLES = [
   'node-library',
   'backend',
@@ -90,7 +89,7 @@ async function findClosestPackageDir(
 export interface PackageDiscoveryServiceOptions {
   alwaysExcludedPackages?: string[];
 }
-// XXX(GabDug): Should we make PackageDiscoveryService public?
+
 /** @internal */
 export class PackageDiscoveryService {
   private readonly config: RootConfigService;
@@ -182,7 +181,6 @@ export class PackageDiscoveryService {
 
     const candidateNames = dependencyNames.filter(isBackendPackageName);
 
-    // XXX(GabDug): We ignore packages order from package.json
     for (const name of candidateNames) {
       let depPkg: BackstagePackageJson;
       try {
@@ -198,7 +196,6 @@ export class PackageDiscoveryService {
         throw error;
       }
 
-      // XXX(GabDug): If we can skip loading modules when the plugin is not detected, we can avoid expensive require() of modules that are not used (can be behind a flag?)
       if (
         !depPkg?.backstage?.role ||
         !DETECTED_PACKAGE_ROLES.includes(depPkg.backstage.role)

@@ -13,11 +13,11 @@ The `loader` function can be defined in many different ways, with the main requi
 
 :::info Built-in package discovery loader
 
-Backstage provides a [dynamic package discovery loader](../building-backends/backend-package-discovery), that uses `createBackendFeatureLoader` internally.
+Backstage provides a [dynamic package discovery loader](../building-backends/02-backend-package-discovery.md), that uses `createBackendFeatureLoader` internally.
 
 This loader automatically reads the backend dependencies, and loads packages according to your configuration. This may be enough for you to dynamically load plugins, without developing your own feature loaders.
 
-See the [discovery feature loader documentation](../building-backends/backend-package-discovery) for details.
+See the [discovery feature loader documentation](../building-backends/02-backend-package-discovery.md) for details.
 
 :::
 
