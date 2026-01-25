@@ -11,10 +11,10 @@ As a rule, all names should be camel case, with the exceptions of plugin and mod
 
 ### Plugins
 
-| Description | Pattern           | Examples                              | Notes                                              |
-| ----------- | ----------------- | ------------------------------------- | -------------------------------------------------- |
-| export      | `<camelId>Plugin` | `catalogPlugin`, `userSettingsPlugin` |                                                    |
-| ID          | `'<kebab-id>'`    | `'catalog'`, `'user-settings'`        | letters, digits,and dashes, starting with a letter |
+| Description | Pattern           | Examples                              | Notes                                               |
+| ----------- | ----------------- | ------------------------------------- | --------------------------------------------------- |
+| export      | `<camelId>Plugin` | `catalogPlugin`, `userSettingsPlugin` |                                                     |
+| ID          | `'<kebab-id>'`    | `'catalog'`, `'user-settings'`        | letters, digits, and dashes, starting with a letter |
 
 Example:
 

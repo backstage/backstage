@@ -15,7 +15,7 @@
  */
 
 // NOTE: changing any of these constants need to be reflected in
-// @backstage/frontend-plugin-api/src/wiring/constants.ts as well
+// @backstage/backend-plugin-api/src/wiring/constants.ts as well
 
 /**
  * The pattern that IDs must match.
@@ -28,4 +28,3 @@
  * @public
  */
 export const ID_PATTERN = /^[a-z][a-z0-9]*(?:-[a-z0-9]+)*$/i;
-export const ID_PATTERN_OLD = /^[a-z][a-z0-9]*(?:[-_][a-z0-9]+)*$/i;
