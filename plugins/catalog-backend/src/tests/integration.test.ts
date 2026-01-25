@@ -30,7 +30,7 @@ import {
   processingResult,
 } from '@backstage/plugin-catalog-node';
 import { PermissionEvaluator } from '@backstage/plugin-permission-common';
-import { createHash } from 'crypto';
+import { createHash } from 'node:crypto';
 import { Knex } from 'knex';
 import merge from 'lodash/merge';
 import { EntitiesCatalog } from '../catalog/types';

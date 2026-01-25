@@ -18,7 +18,7 @@ import {
   registerMswTestHooks,
   startTestBackend,
 } from '@backstage/backend-test-utils';
-import { Server } from 'http';
+import { Server } from 'node:http';
 import { JWK, SignJWT, exportJWK, generateKeyPair } from 'jose';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';

@@ -19,7 +19,7 @@ import {
   ResolverOptions,
 } from '@apidevtools/json-schema-ref-parser';
 import { parse, stringify } from 'yaml';
-import * as path from 'path';
+import * as path from 'node:path';
 
 const protocolPattern = /^(\w{2,}):\/\//i;
 const getProtocol = (refPath: string) => {

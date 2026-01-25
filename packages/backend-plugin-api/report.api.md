@@ -22,7 +22,7 @@ import { PermissionRule } from '@backstage/plugin-permission-node';
 import { PermissionRuleset } from '@backstage/plugin-permission-node';
 import { QueryPermissionRequest } from '@backstage/plugin-permission-common';
 import { QueryPermissionResponse } from '@backstage/plugin-permission-common';
-import { Readable } from 'stream';
+import { Readable } from 'node:stream';
 import type { Request as Request_2 } from 'express';
 import type { Response as Response_2 } from 'express';
 

@@ -19,7 +19,7 @@ import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-
 import { ConfigReader } from '@backstage/config';
 import { ActionContext } from '@backstage/plugin-scaffolder-node';
 import { JsonObject } from '@backstage/types';
-import { randomBytes } from 'crypto';
+import { randomBytes } from 'node:crypto';
 import { setupServer } from 'msw/node';
 import { HttpResponse, http } from 'msw';
 import { createSentryCreateProjectAction } from './createProject';

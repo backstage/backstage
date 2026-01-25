@@ -10,12 +10,12 @@ import { BatchSearchEngineIndexer } from '@backstage/plugin-search-backend-node'
 import { BulkHelper } from '@elastic/elasticsearch/lib/Helpers';
 import { BulkStats } from '@elastic/elasticsearch/lib/Helpers';
 import { Config } from '@backstage/config';
-import type { ConnectionOptions } from 'tls';
+import type { ConnectionOptions } from 'node:tls';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { IndexableDocument } from '@backstage/plugin-search-common';
 import { IndexableResultSet } from '@backstage/plugin-search-common';
 import { LoggerService } from '@backstage/backend-plugin-api';
-import { Readable } from 'stream';
+import { Readable } from 'node:stream';
 import { SearchEngine } from '@backstage/plugin-search-backend-node';
 import { SearchQuery } from '@backstage/plugin-search-common';
 import { TransportRequestPromise } from '@opensearch-project/opensearch/lib/Transport.js';

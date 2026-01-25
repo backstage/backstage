@@ -22,7 +22,7 @@ import {
   DocumentCollatorFactory,
   DocumentDecoratorFactory,
 } from '@backstage/plugin-search-common';
-import { Readable, Transform } from 'stream';
+import { Readable, Transform } from 'node:stream';
 import { IndexBuilder } from './IndexBuilder';
 import { LunrSearchEngine, SearchEngine } from './index';
 import { mockServices } from '@backstage/backend-test-utils';

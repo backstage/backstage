@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import fs from 'fs';
+import fs from 'node:fs';
 
 /**
  * Removes duplicate import and export statements from TypeScript/JavaScript files.

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Readable } from 'stream';
+import { Readable } from 'node:stream';
 
 /**
  * A generic interface for fetching plain data from URLs.

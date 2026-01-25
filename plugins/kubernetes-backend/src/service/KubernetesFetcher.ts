@@ -30,7 +30,7 @@ import {
   PodStatusFetchResponse,
 } from '@backstage/plugin-kubernetes-common';
 import fetch, { RequestInit, Response } from 'node-fetch';
-import * as https from 'https';
+import * as https from 'node:https';
 import fs from 'fs-extra';
 import { JsonObject } from '@backstage/types';
 import {

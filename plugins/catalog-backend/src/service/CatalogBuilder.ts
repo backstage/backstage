@@ -26,7 +26,7 @@ import {
   Validators,
 } from '@backstage/catalog-model';
 import { ScmIntegrations } from '@backstage/integration';
-import { createHash } from 'crypto';
+import { createHash } from 'node:crypto';
 import { Router } from 'express';
 import lodash from 'lodash';
 

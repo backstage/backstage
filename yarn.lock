@@ -30253,6 +30253,15 @@ __metadata:
   languageName: node
   linkType: hard
 
+"eslint-plugin-node-import@npm:^1.0.5":
+  version: 1.0.5
+  resolution: "eslint-plugin-node-import@npm:1.0.5"
+  peerDependencies:
+    eslint: ">=7"
+  checksum: 10/d77c03871c3397d09db18d5242030b8490769077a488d4267c6c3f38ceffb9b86d162b32c8d5fbafe92ff4bc7668a1a5971f2020e6edab38c37b0a2e6155a591
+  languageName: node
+  linkType: hard
+
 "eslint-plugin-notice@npm:^1.0.0":
   version: 1.0.0
   resolution: "eslint-plugin-notice@npm:1.0.0"
@@ -45507,6 +45516,7 @@ __metadata:
     cross-env: "npm:^10.0.0"
     e2e-test: "workspace:*"
     eslint: "npm:^8.6.0"
+    eslint-plugin-node-import: "npm:^1.0.5"
     eslint-plugin-notice: "npm:^1.0.0"
     eslint-plugin-react: "npm:^7.28.0"
     eslint-plugin-testing-library: "npm:^7.0.0"
