@@ -17,7 +17,7 @@
 import { ExtractorMessage } from '@microsoft/api-extractor';
 import { AstDeclaration } from '@microsoft/api-extractor/lib/analyzer/AstDeclaration';
 import { Program } from 'typescript';
-import { tryRunPrettier } from '../common/tryRunPrettier';
+import { tryRunPrettier } from '../common';
 import { paths as cliPaths } from '../../../lib/paths';
 
 let applied = false;
@@ -153,7 +153,6 @@ export function patchApiReportGeneration() {
        * the middle of the process as API Extractor does a comparison of the contents of the old
        * and new files during generation. This inserts the formatting just before that comparison.
        */
-
       const content = originalGenerateReviewFileContent.call(
         this,
         collector,
