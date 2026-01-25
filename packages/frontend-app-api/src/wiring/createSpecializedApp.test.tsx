@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { Fragment } from 'react';
 import {
   AppTreeApi,
   appTreeApiRef,
@@ -29,14 +30,35 @@ import {
   useRouteRef,
   analyticsApiRef,
   createExtensionDataRef,
+  routerApiRef,
 } from '@backstage/frontend-plugin-api';
 import { screen, render } from '@testing-library/react';
 import { createSpecializedApp } from './createSpecializedApp';
 import { mockApis, TestApiRegistry } from '@backstage/test-utils';
 import { configApiRef, featureFlagsApiRef } from '@backstage/core-plugin-api';
-import { MemoryRouter } from 'react-router-dom';
+import {
+  MockMemoryRouterApi,
+  MockMemoryRouterApiOptions,
+  TestMemoryRouterProvider,
+} from '@backstage/frontend-test-utils';
 import { ApiProvider, ConfigReader } from '@backstage/core-app-api';
-import { Fragment } from 'react';
+
+function mockRouterApiExtension(options?: MockMemoryRouterApiOptions) {
+  return createFrontendPlugin({
+    pluginId: 'test-router',
+    extensions: [
+      ApiBlueprint.make({
+        name: 'router',
+        params: defineParams =>
+          defineParams({
+            api: routerApiRef,
+            deps: {},
+            factory: () => new MockMemoryRouterApi(options),
+          }),
+      }),
+    ],
+  });
+}
 
 function makeAppPlugin(label: string = 'Test') {
   return createFrontendPlugin({
@@ -53,7 +75,7 @@ function makeAppPlugin(label: string = 'Test') {
 describe('createSpecializedApp', () => {
   it('should render the root app', () => {
     const app = createSpecializedApp({
-      features: [makeAppPlugin()],
+      features: [mockRouterApiExtension(), makeAppPlugin()],
     });
 
     render(app.tree.root.instance!.getData(coreExtensionData.reactElement));
@@ -63,7 +85,11 @@ describe('createSpecializedApp', () => {
 
   it('should deduplicate features keeping the last received one', () => {
     const app = createSpecializedApp({
-      features: [makeAppPlugin('Test 1'), makeAppPlugin('Test 2')],
+      features: [
+        mockRouterApiExtension(),
+        makeAppPlugin('Test 1'),
+        makeAppPlugin('Test 2'),
+      ],
     });
 
     render(app.tree.root.instance!.getData(coreExtensionData.reactElement));
@@ -75,6 +101,7 @@ describe('createSpecializedApp', () => {
     const app = createSpecializedApp({
       config: mockApis.config({ data: { test: 'foo' } }),
       features: [
+        mockRouterApiExtension(),
         createFrontendPlugin({
           pluginId: 'test',
           extensions: [
@@ -101,6 +128,7 @@ describe('createSpecializedApp', () => {
     const flags = new Array<{ name: string; pluginId: string }>();
     const app = createSpecializedApp({
       features: [
+        mockRouterApiExtension(),
         createFrontendPlugin({
           pluginId: 'test',
           featureFlags: [{ name: 'a' }, { name: 'b' }],
@@ -168,6 +196,18 @@ describe('createSpecializedApp', () => {
               },
               "priority": 10,
             },
+            "core.router" => {
+              "factory": {
+                "api": ApiRefImpl {
+                  "config": {
+                    "id": "core.router",
+                  },
+                },
+                "deps": {},
+                "factory": [Function],
+              },
+              "priority": 10,
+            },
             "core.app-tree" => {
               "factory": {
                 "api": ApiRefImpl {
@@ -227,6 +267,7 @@ describe('createSpecializedApp', () => {
 
     const app = createSpecializedApp({
       features: [
+        mockRouterApiExtension(),
         makeAppPlugin(),
         createFrontendModule({
           pluginId: 'app',
@@ -294,6 +335,7 @@ describe('createSpecializedApp', () => {
 
     const app = createSpecializedApp({
       features: [
+        mockRouterApiExtension(),
         makeAppPlugin(),
         createFrontendPlugin({
           pluginId: 'other-before',
@@ -356,6 +398,7 @@ describe('createSpecializedApp', () => {
 
     const app = createSpecializedApp({
       features: [
+        mockRouterApiExtension(),
         makeAppPlugin(),
         createFrontendPlugin({
           pluginId: 'test',
@@ -399,6 +442,7 @@ describe('createSpecializedApp', () => {
         ]),
       },
       features: [
+        mockRouterApiExtension(),
         createFrontendPlugin({
           pluginId: 'test',
           extensions: [
@@ -446,6 +490,7 @@ describe('createSpecializedApp', () => {
 
     const { tree } = createSpecializedApp({
       features: [
+        mockRouterApiExtension(),
         createFrontendPlugin({
           pluginId: 'test',
           extensions: [
@@ -464,6 +509,9 @@ describe('createSpecializedApp', () => {
 
     expect(String(appTreeApi!.getTree().tree.root)).toMatchInlineSnapshot(`
       "<root out=[core.reactElement]>
+        apis [
+          <api:test-router/router out=[core.api.factory] />
+        ]
         app [
           <test out=[core.reactElement] />
         ]
@@ -473,6 +521,13 @@ describe('createSpecializedApp', () => {
     expect(tree).toMatchInlineSnapshot(`
       {
         "nodes": Map {
+          "api:test-router/router" => {
+            "attachments": undefined,
+            "id": "api:test-router/router",
+            "output": [
+              "core.api.factory",
+            ],
+          },
           "test" => {
             "attachments": undefined,
             "id": "test",
@@ -482,6 +537,15 @@ describe('createSpecializedApp', () => {
           },
           "root" => {
             "attachments": {
+              "apis": [
+                {
+                  "attachments": undefined,
+                  "id": "api:test-router/router",
+                  "output": [
+                    "core.api.factory",
+                  ],
+                },
+              ],
               "app": [
                 {
                   "attachments": undefined,
@@ -501,6 +565,15 @@ describe('createSpecializedApp', () => {
         "orphans": [],
         "root": {
           "attachments": {
+            "apis": [
+              {
+                "attachments": undefined,
+                "id": "api:test-router/router",
+                "output": [
+                  "core.api.factory",
+                ],
+              },
+            ],
             "app": [
               {
                 "attachments": undefined,
@@ -541,13 +614,13 @@ describe('createSpecializedApp', () => {
             return [
               coreExtensionData.reactElement(
                 <ApiProvider apis={apis}>
-                  <MemoryRouter>
+                  <TestMemoryRouterProvider>
                     {inputs.children.map(i => (
                       <Fragment key={i.node.spec.id}>
                         {i.get(coreExtensionData.reactElement)}
                       </Fragment>
                     ))}
-                  </MemoryRouter>
+                  </TestMemoryRouterProvider>
                 </ApiProvider>,
               ),
             ];
@@ -594,7 +667,7 @@ describe('createSpecializedApp', () => {
 
     render(
       createSpecializedApp({
-        features: [pluginA, pluginB],
+        features: [mockRouterApiExtension(), pluginA, pluginB],
         bindRoutes({ bind }) {
           bind(pluginA.externalRoutes, { ext: pluginB.routes.root });
         },
@@ -609,6 +682,7 @@ describe('createSpecializedApp', () => {
 
     createSpecializedApp({
       features: [
+        mockRouterApiExtension(),
         createFrontendPlugin({
           pluginId: 'test',
           extensions: [
@@ -664,6 +738,9 @@ describe('createSpecializedApp', () => {
 
     expect(String(appTreeApi!.getTree().tree.root)).toMatchInlineSnapshot(`
       "<root out=[core.reactElement]>
+        apis [
+          <api:test-router/router out=[core.api.factory] />
+        ]
         app [
           <test/root out=[core.reactElement]>
             children [
@@ -689,6 +766,7 @@ describe('createSpecializedApp', () => {
 
     const app = createSpecializedApp({
       features: [
+        mockRouterApiExtension(),
         createFrontendPlugin({
           pluginId: 'test',
           extensions: [
@@ -770,7 +848,9 @@ describe('createSpecializedApp', () => {
         "Attempted to load plugin info for plugin 'test', but the plugin instance is not installed in an app";
       await expect(plugin.info()).rejects.toThrow(errorMsg);
 
-      const app = createSpecializedApp({ features: [plugin] });
+      const app = createSpecializedApp({
+        features: [mockRouterApiExtension(), plugin],
+      });
 
       await expect(plugin.info()).rejects.toThrow(errorMsg);
 
@@ -789,7 +869,9 @@ describe('createSpecializedApp', () => {
         extensions: [testExtension],
       });
 
-      const app = createSpecializedApp({ features: [plugin] });
+      const app = createSpecializedApp({
+        features: [mockRouterApiExtension(), plugin],
+      });
       const info = await app.tree.nodes.get('test')?.spec.plugin?.info();
       expect(info).toMatchObject({
         packageName: '@backstage/frontend-app-api',
@@ -812,7 +894,9 @@ describe('createSpecializedApp', () => {
         },
       });
 
-      const app = createSpecializedApp({ features: [overriddenPlugin] });
+      const app = createSpecializedApp({
+        features: [mockRouterApiExtension(), overriddenPlugin],
+      });
       const info = await app.tree.nodes.get('test')?.spec.plugin?.info();
       expect(info).toMatchObject({
         packageName: 'test-override',
@@ -836,7 +920,9 @@ describe('createSpecializedApp', () => {
         extensions: [testExtension],
       });
 
-      const app = createSpecializedApp({ features: [plugin] });
+      const app = createSpecializedApp({
+        features: [mockRouterApiExtension(), plugin],
+      });
       const info = await app.tree.nodes.get('test')?.spec.plugin?.info();
       expect(info).toEqual({
         packageName: '@backstage/frontend-app-api',
@@ -856,7 +942,7 @@ describe('createSpecializedApp', () => {
       });
 
       const app = createSpecializedApp({
-        features: [plugin],
+        features: [mockRouterApiExtension(), plugin],
         advanced: {
           pluginInfoResolver: async ctx => {
             const { info } = await ctx.defaultResolver({

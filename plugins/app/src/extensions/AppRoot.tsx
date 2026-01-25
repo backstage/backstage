@@ -32,6 +32,7 @@ import {
   createExtension,
   createExtensionInput,
   routeResolutionApiRef,
+  routerApiRef,
 } from '@backstage/frontend-plugin-api';
 import {
   DiscoveryApi,
@@ -46,7 +47,6 @@ import {
 } from '@backstage/core-plugin-api';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { isProtectedApp } from '../../../../packages/core-app-api/src/app/isProtectedApp';
-import { BrowserRouter } from 'react-router-dom';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { RouteTracker } from '../../../../packages/frontend-app-api/src/routing/RouteTracker';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
@@ -208,14 +208,17 @@ type RouteResolverProxy = {
 export interface AppRouterProps {
   children?: ReactNode;
   SignInPageComponent?: ComponentType<SignInPageProps>;
-  RouterComponent?: (props: { children: ReactNode }) => JSX.Element | null;
+  RouterComponent?: (props: {
+    children: ReactNode;
+    basePath: string;
+  }) => JSX.Element | null;
   extraElements?: Array<JSX.Element>;
 }
 
-function DefaultRouter(props: PropsWithChildren<{}>) {
-  const configApi = useApi(configApiRef);
-  const basePath = getBasePath(configApi);
-  return <BrowserRouter basename={basePath}>{props.children}</BrowserRouter>;
+function DefaultRouter(props: PropsWithChildren<{ basePath: string }>) {
+  const routerApi = useApi(routerApiRef);
+  const { Router } = routerApi;
+  return <Router basePath={props.basePath}>{props.children}</Router>;
 }
 
 /**
@@ -275,7 +278,7 @@ export function AppRouter(props: AppRouterProps) {
     );
 
     return (
-      <RouterComponent>
+      <RouterComponent basePath={basePath}>
         {...extraElements}
         <RouteTracker routeObjects={routeObjects} />
         {children}
@@ -284,7 +287,7 @@ export function AppRouter(props: AppRouterProps) {
   }
 
   return (
-    <RouterComponent>
+    <RouterComponent basePath={basePath}>
       {...extraElements}
       <RouteTracker routeObjects={routeObjects} />
       <SignInPageWrapper

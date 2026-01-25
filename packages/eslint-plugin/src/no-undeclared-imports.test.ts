@@ -135,30 +135,6 @@ ruleTester.run(RULE, rule, {
       ],
     },
     {
-      code: `import 'react-router'`,
-      filename: joinPath(FIXTURE, 'packages/bar/src/index.ts'),
-      errors: [
-        ERR_SWITCHED(
-          'react-router',
-          'dependencies',
-          'peerDependencies',
-          joinPath('packages', 'bar'),
-        ),
-      ],
-    },
-    {
-      code: `import 'react-router-dom'`,
-      filename: joinPath(FIXTURE, 'packages/bar/src/index.ts'),
-      errors: [
-        ERR_SWITCHED(
-          'react-router-dom',
-          'devDependencies',
-          'peerDependencies',
-          joinPath('packages', 'bar'),
-        ),
-      ],
-    },
-    {
       code: `import 'lodash'`,
       output: `import 'directive:add-import:dependencies:lodash'`,
       filename: joinPath(FIXTURE, 'packages/bar/src/index.ts'),
