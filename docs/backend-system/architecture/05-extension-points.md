@@ -67,7 +67,7 @@ Note that we create a closure that adds to a shared `actions` structure when `ad
 
 ## Factory-Based Extension Points
 
-In some cases, you may want to be able to attribute startup failures to modules that provided an extension, rather than failing the plugin startup entirely. To do this, you can use a variant of `registerExtensionPoint` that instead of providing a direct implementation, registers a factory function that produces the implementation. This factory receives a `ExtensionPointFactoryContext` with a `reportModuleStartupFailure` method that lets you report startup failures and attribute them to the module.
+In some cases, you may want to be able to attribute startup failures to modules that provided an extension, rather than failing the plugin startup entirely. To do this, you can use a variant of `registerExtensionPoint` that instead of providing a direct implementation, registers a factory function that produces the implementation. This factory receives an `ExtensionPointFactoryContext` with a `reportModuleStartupFailure` method that lets you report startup failures and attribute them to the module.
 
 Here's an example of registering an extension point using a factory:
 
