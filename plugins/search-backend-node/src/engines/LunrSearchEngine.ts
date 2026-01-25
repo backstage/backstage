@@ -53,14 +53,26 @@ export type LunrQueryTranslator = (query: SearchQuery) => ConcreteLunrQuery;
  */
 export class LunrSearchEngine implements SearchEngine {
   protected lunrIndices: Record<string, lunr.Index> = {};
-  protected docStore: Record<string, IndexableDocument>;
+  protected docStores: Record<string, Record<string, IndexableDocument>> = {};
   protected logger: LoggerService;
   protected highlightPreTag: string;
   protected highlightPostTag: string;
 
+  /** @deprecated Use docStores instead */
+  protected get docStore(): Record<string, IndexableDocument> {
+    return Object.values(this.docStores).reduce(
+      (acc, store) => ({ ...acc, ...store }),
+      {},
+    );
+  }
+
+  /** @deprecated Use docStores instead */
+  protected set docStore(value: Record<string, IndexableDocument>) {
+    this.docStores.__legacy__ = value;
+  }
+
   constructor(options: { logger: LoggerService }) {
     this.logger = options.logger;
-    this.docStore = {};
     const uuidTag = uuid();
     this.highlightPreTag = `<${uuidTag}>`;
     this.highlightPostTag = `</${uuidTag}>`;
@@ -171,7 +183,7 @@ export class LunrSearchEngine implements SearchEngine {
       // case of transient issues in underlying collators.
       if (!errorThrown && documentsIndexed > 0) {
         this.lunrIndices[type] = indexer.buildIndex();
-        this.docStore = { ...this.docStore, ...newDocuments };
+        this.docStores[type] = newDocuments;
       } else {
         indexerLogger.warn(
           `Index for ${type} was not ${
