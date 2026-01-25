@@ -1,5 +1,25 @@
 # @backstage/plugin-auth-node
 
+## 0.6.11
+
+### Patch Changes
+
+- 4eeba9e: Upgrade `zod-validation-error` to version 4
+- 872eb91: Upgrade `zod-to-json-schema` to latest version
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.1
+
+## 0.6.10
+
+### Patch Changes
+
+- 2389358: remove leading dot in auth cookie cleanup call
+- de96a60: chore(deps): bump `express` from 4.21.2 to 4.22.0
+- b35f8b2: Fixed chunked cookie replacing edge case in OAuthCookieManager class where some of the old chunks would not get removed if new chunked cookie would have fewer chunks.
+- e9dd634: fix flawed cookie removal logic with chunked tokens
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.0
+
 ## 0.6.10-next.1
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-scaffolder-backend-module-sentry",
-  "version": "0.2.16-next.1",
+  "version": "0.3.0",
   "backstage": {
     "role": "backend-plugin-module",
     "pluginId": "scaffolder",
@@ -30,7 +30,8 @@
     }
   },
   "files": [
-    "dist"
+    "dist",
+    "config.d.ts"
   ],
   "scripts": {
     "build": "backstage-cli package build",
@@ -54,5 +55,6 @@
     "@backstage/plugin-scaffolder-node-test-utils": "workspace:^",
     "@backstage/types": "workspace:^",
     "msw": "^2.0.0"
-  }
+  },
+  "configSchema": "config.d.ts"
 }

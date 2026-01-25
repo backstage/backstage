@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-auth-node",
-  "version": "0.6.10-next.1",
+  "version": "0.6.11",
   "backstage": {
     "role": "node-library",
     "pluginId": "auth",
@@ -51,8 +51,8 @@
     "lodash": "^4.17.21",
     "passport": "^0.7.0",
     "zod": "^3.22.4",
-    "zod-to-json-schema": "^3.21.4",
-    "zod-validation-error": "^3.4.0"
+    "zod-to-json-schema": "^3.25.1",
+    "zod-validation-error": "^4.0.2"
   },
   "devDependencies": {
     "@backstage/backend-defaults": "workspace:^",

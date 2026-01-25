@@ -27,6 +27,9 @@ const componentDataRef = createExtensionDataRef<
  * and similar.
  *
  * @public
+ * @deprecated Use {@link @backstage/plugin-app-react#AppRootWrapperBlueprint} instead.
+ * If you were using this blueprint to provide a context for your plugin,
+ * use `PluginWrapperBlueprint` from `@backstage/frontend-plugin-api/alpha` instead.
  */
 export const AppRootWrapperBlueprint = createExtensionBlueprint({
   kind: 'app-root-wrapper',

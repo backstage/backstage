@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-api-docs",
-  "version": "0.13.2-next.1",
+  "version": "0.13.3",
   "description": "A Backstage plugin that helps represent API entities in the frontend",
   "backstage": {
     "role": "frontend-plugin",
@@ -83,7 +83,7 @@
     "@testing-library/user-event": "^14.0.0",
     "@types/highlightjs": "^10.1.0",
     "@types/react": "^18.0.0",
-    "@types/swagger-ui-react": "^4.18.0",
+    "@types/swagger-ui-react": "^5.0.0",
     "react": "^18.0.2",
     "react-dom": "^18.0.2",
     "react-router-dom": "^6.3.0"

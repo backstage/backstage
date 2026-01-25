@@ -85,10 +85,61 @@ describe('readBitbucketCloudIntegrationConfig', () => {
     ).toThrow(/token/);
   });
 
+  it('reads OAuth configuration', () => {
+    const output = readBitbucketCloudIntegrationConfig(
+      buildConfig({
+        clientId: 'my-client-id',
+        clientSecret: 'my-client-secret',
+      }),
+    );
+    expect(output).toEqual({
+      host: BITBUCKET_CLOUD_HOST,
+      apiBaseUrl: BITBUCKET_CLOUD_API_BASE_URL,
+      clientId: 'my-client-id',
+      clientSecret: 'my-client-secret',
+    });
+  });
+
+  it('rejects incomplete OAuth configuration', () => {
+    expect(() =>
+      readBitbucketCloudIntegrationConfig(
+        buildConfig({
+          clientId: 'my-client-id',
+        }),
+      ),
+    ).toThrow(/incomplete OAuth configuration/);
+
+    expect(() =>
+      readBitbucketCloudIntegrationConfig(
+        buildConfig({
+          clientSecret: 'my-client-secret',
+        }),
+      ),
+    ).toThrow(/incomplete OAuth configuration/);
+  });
+
   it('credentials hidden on the frontend', async () => {
     const frontendConfig = await buildFrontendConfig({
       token: 't',
       username: 'u',
+    });
+    expect(
+      readBitbucketCloudIntegrationConfigs(
+        frontendConfig.getOptionalConfigArray('integrations.bitbucketCloud') ??
+          [],
+      ),
+    ).toEqual([
+      {
+        host: BITBUCKET_CLOUD_HOST,
+        apiBaseUrl: BITBUCKET_CLOUD_API_BASE_URL,
+      },
+    ]);
+  });
+
+  it('OAuth credentials hidden on the frontend', async () => {
+    const frontendConfig = await buildFrontendConfig({
+      clientId: 'my-client-id',
+      clientSecret: 'my-client-secret',
     });
     expect(
       readBitbucketCloudIntegrationConfigs(

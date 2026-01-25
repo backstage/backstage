@@ -1,5 +1,131 @@
 # @backstage/plugin-scaffolder-backend
 
+## 3.1.1
+
+### Patch Changes
+
+- 5012852: Remove unused abort controller in debug:wait action
+- c641c14: Wrap some of the action logic with `resolveSafeChildPath` and improve symlink handling when fetching remote and local files
+- 27f9061: REwrite]
+- 872eb91: Upgrade `zod-to-json-schema` to latest version
+- Updated dependencies
+  - @backstage/backend-defaults@0.15.0
+  - @backstage/backend-plugin-api@1.6.1
+  - @backstage/plugin-scaffolder-node@0.12.3
+  - @backstage/integration@1.19.2
+  - @backstage/backend-openapi-utils@0.6.5
+  - @backstage/plugin-scaffolder-backend-module-github@0.9.4
+  - @backstage/plugin-auth-node@0.6.11
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.17
+  - @backstage/plugin-permission-common@0.9.4
+  - @backstage/plugin-permission-node@0.10.8
+  - @backstage/plugin-bitbucket-cloud-common@0.3.6
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.16
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.18
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.3.1
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.17
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.17
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.17
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.11.1
+  - @backstage/plugin-scaffolder-common@1.7.5
+
+## 3.1.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.15.0-next.2
+  - @backstage/plugin-scaffolder-backend-module-github@0.9.4-next.1
+  - @backstage/plugin-auth-node@0.6.10
+  - @backstage/plugin-permission-node@0.10.7
+
+## 3.1.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.14.1-next.1
+  - @backstage/integration@1.19.2-next.0
+  - @backstage/plugin-bitbucket-cloud-common@0.3.6-next.0
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.17-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.18-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.3.1-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.17-next.0
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.17-next.0
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.17-next.0
+  - @backstage/plugin-scaffolder-backend-module-github@0.9.4-next.0
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.11.1-next.0
+  - @backstage/plugin-scaffolder-common@1.7.5-next.0
+  - @backstage/plugin-scaffolder-node@0.12.3-next.0
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.16-next.0
+
+## 3.1.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-openapi-utils@0.6.5-next.0
+  - @backstage/backend-defaults@0.14.1-next.0
+  - @backstage/backend-plugin-api@1.6.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.19.0
+  - @backstage/types@1.2.2
+  - @backstage/plugin-auth-node@0.6.10
+  - @backstage/plugin-bitbucket-cloud-common@0.3.5
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.15
+  - @backstage/plugin-catalog-node@1.20.1
+  - @backstage/plugin-events-node@0.4.18
+  - @backstage/plugin-permission-common@0.9.3
+  - @backstage/plugin-permission-node@0.10.7
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.16
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.17
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.3.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.16
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.16
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.16
+  - @backstage/plugin-scaffolder-backend-module-github@0.9.3
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.11.0
+  - @backstage/plugin-scaffolder-common@1.7.4
+  - @backstage/plugin-scaffolder-node@0.12.2
+
+## 3.1.0
+
+### Minor Changes
+
+- a4cd405: Add `defaultEnvironment` config to scaffolder to enable more flexible and custom templates. Now it's possible enable access to default parameters and secrets in templates, improving security and reducing complexity.
+
+### Patch Changes
+
+- be5972b: Fixed a bug where config was not passed to NunjucksWorkflowRunner, causing defaultEnvironment to be undefined
+- de96a60: chore(deps): bump `express` from 4.21.2 to 4.22.0
+- 2bae83a: Updated `isolated-vm` to `6.0.1`
+- 25b560e: Internal change to support new versions of the `logform` library
+- 8f4aded: Fixing OpenAPI definition
+- 1226647: Updated dependency `esbuild` to `^0.27.0`.
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.11.0
+  - @backstage/integration@1.19.0
+  - @backstage/plugin-auth-node@0.6.10
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.3.0
+  - @backstage/plugin-bitbucket-cloud-common@0.3.5
+  - @backstage/backend-defaults@0.14.0
+  - @backstage/backend-openapi-utils@0.6.4
+  - @backstage/plugin-events-node@0.4.18
+  - @backstage/plugin-permission-node@0.10.7
+  - @backstage/backend-plugin-api@1.6.0
+  - @backstage/plugin-scaffolder-backend-module-github@0.9.3
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.16
+  - @backstage/plugin-scaffolder-backend-module-bitbucket@0.3.17
+  - @backstage/plugin-catalog-backend-module-scaffolder-entity-model@0.2.15
+  - @backstage/plugin-catalog-node@1.20.1
+  - @backstage/plugin-scaffolder-backend-module-azure@0.2.16
+  - @backstage/plugin-scaffolder-backend-module-gerrit@0.2.16
+  - @backstage/plugin-scaffolder-backend-module-gitea@0.2.16
+  - @backstage/plugin-scaffolder-common@1.7.4
+  - @backstage/plugin-scaffolder-node@0.12.2
+
 ## 3.1.0-next.1
 
 ### Patch Changes

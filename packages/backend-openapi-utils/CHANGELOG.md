@@ -1,5 +1,31 @@
 # @backstage/backend-openapi-utils
 
+## 0.6.5
+
+### Patch Changes
+
+- 6678b78: Internal update to use native feature from our request validation library for handling base path determination.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.1
+
+## 0.6.5-next.0
+
+### Patch Changes
+
+- 6678b78: Internal update to use native feature from our request validation library for handling base path determination.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.0
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+
+## 0.6.4
+
+### Patch Changes
+
+- de96a60: chore(deps): bump `express` from 4.21.2 to 4.22.0
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.0
+
 ## 0.6.4-next.1
 
 ### Patch Changes

@@ -86,12 +86,55 @@ export class KafkaConsumingEventPublisher {
           await consumer.subscribe(config.consumerSubscribeTopics);
 
           await consumer.run({
-            eachMessage: async ({ message }) => {
-              this.events.publish({
-                topic: config.backstageTopic,
-                eventPayload: JSON.parse(message.value?.toString()!),
-                metadata: convertHeadersToMetadata(message.headers),
-              });
+            autoCommit: config.autoCommit,
+            eachMessage: async ({
+              topic,
+              partition,
+              message,
+              heartbeat,
+              pause,
+            }) => {
+              try {
+                await this.events.publish({
+                  topic: config.backstageTopic,
+                  eventPayload: JSON.parse(message.value?.toString()!),
+                  metadata: convertHeadersToMetadata(message.headers),
+                });
+
+                // Only commit offset manually if autoCommit is disabled
+                if (!config.autoCommit) {
+                  await consumer.commitOffsets([
+                    {
+                      topic,
+                      partition,
+                      offset: (parseInt(message.offset, 10) + 1).toString(),
+                    },
+                  ]);
+                }
+
+                await heartbeat();
+              } catch (error: any) {
+                consumerLogger.error(
+                  `Failed to process message at offset ${message.offset} on partition ${partition} of topic ${topic}`,
+                  error,
+                );
+
+                if (config.pauseOnError) {
+                  pause();
+                  throw error;
+                }
+
+                // Skip the failed message by committing its offset if autoCommit is disabled
+                if (!config.autoCommit) {
+                  await consumer.commitOffsets([
+                    {
+                      topic,
+                      partition,
+                      offset: (parseInt(message.offset, 10) + 1).toString(),
+                    },
+                  ]);
+                }
+              }
             },
           });
         } catch (error: any) {

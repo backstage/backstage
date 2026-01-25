@@ -1,5 +1,60 @@
 # @backstage/plugin-catalog-backend
 
+## 3.3.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.1
+  - @backstage/integration@1.19.2
+  - @backstage/backend-openapi-utils@0.6.5
+  - @backstage/plugin-permission-common@0.9.4
+  - @backstage/plugin-permission-node@0.10.8
+
+## 3.3.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.19.2-next.0
+
+## 3.3.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-openapi-utils@0.6.5-next.0
+  - @backstage/backend-plugin-api@1.6.0
+  - @backstage/catalog-client@1.12.1
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.19.0
+  - @backstage/types@1.2.2
+  - @backstage/plugin-catalog-common@1.1.7
+  - @backstage/plugin-catalog-node@1.20.1
+  - @backstage/plugin-events-node@0.4.18
+  - @backstage/plugin-permission-common@0.9.3
+  - @backstage/plugin-permission-node@0.10.7
+
+## 3.3.0
+
+### Minor Changes
+
+- dce1824: Added `ActionsRegistry` actions for `register-entity` and `unregister-entity`
+
+### Patch Changes
+
+- de96a60: chore(deps): bump `express` from 4.21.2 to 4.22.0
+- 8101ec1: Fixed default refresh service to go through the whole ancestry of the entity.
+- Updated dependencies
+  - @backstage/integration@1.19.0
+  - @backstage/backend-openapi-utils@0.6.4
+  - @backstage/plugin-events-node@0.4.18
+  - @backstage/plugin-permission-node@0.10.7
+  - @backstage/backend-plugin-api@1.6.0
+  - @backstage/plugin-catalog-node@1.20.1
+
 ## 3.2.1-next.1
 
 ### Patch Changes

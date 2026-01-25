@@ -1,5 +1,50 @@
 # @backstage/integration
 
+## 1.19.2
+
+### Patch Changes
+
+- 3afeab4: Implementing `ScmIntegration` for `GoogleGcs`
+- 9083273: Rollback the lowercase replacing in GitHub integration config
+
+## 1.19.2-next.0
+
+### Patch Changes
+
+- 3afeab4: Implementing `ScmIntegration` for `GoogleGcs`
+- 9083273: Rollback the lowercase replacing in GitHub integration config
+
+## 1.19.0
+
+### Minor Changes
+
+- 37fba1d: Added support for Bitbucket Cloud OAuth. This introduces an alternative authentication method using a workspace OAuth consumer, alongside App Passwords (deprecated) and API tokens. OAuth does not require a bot or service account and avoids token expiry issues.
+
+  **BREAKING CHANGES**
+
+  - **@backstage/integration** (`src/bitbucketCloud/core.ts`)
+
+    - `getBitbucketCloudRequestOptions` now returns a `Promise` and **must** be awaited.
+
+  - **@backstage/plugin-scaffolder-backend-module-bitbucket-cloud** (`src/actions/helpers.ts`)
+    - `getBitbucketClient` now returns a `Promise` and **must** be awaited.
+    - `getAuthorizationHeader` now returns a `Promise` and **must** be awaited.
+
+  **OAuth usage example**
+
+  ```yaml
+  integrations:
+    bitbucketCloud:
+      - clientId: client-id
+        clientSecret: client-secret
+  ```
+
+### Patch Changes
+
+- a26a322: Added support for using a GitHub App installation to generate tokens for public repository access when the `publicAccess` option is enabled. When all other authentication methods fail (e.g., the app is not installed in that organization), the provider will now use an available installation to generate a token that can be used to access public repositories as read only.
+- fb029b6: Updated luxon types
+- e15fdae: Made the github urls case insensitive.
+
 ## 1.18.3-next.1
 
 ### Patch Changes

@@ -1,5 +1,45 @@
 # @backstage/plugin-auth-backend-module-oidc-provider
 
+## 0.4.11
+
+### Patch Changes
+
+- e54fcb2: Added support for custom start URL search parameters (with the new `startUrlSearchParams` config property)
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.1
+  - @backstage/plugin-auth-backend@0.26.0
+  - @backstage/plugin-auth-node@0.6.11
+
+## 0.4.11-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-backend@0.26.0-next.0
+  - @backstage/plugin-auth-node@0.6.10
+
+## 0.4.11-next.0
+
+### Patch Changes
+
+- e54fcb2: Added support for custom start URL search parameters (with the new `startUrlSearchParams` config property)
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.0
+  - @backstage/config@1.3.6
+  - @backstage/types@1.2.2
+  - @backstage/plugin-auth-backend@0.25.7
+  - @backstage/plugin-auth-node@0.6.10
+
+## 0.4.10
+
+### Patch Changes
+
+- de96a60: chore(deps): bump `express` from 4.21.2 to 4.22.0
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.10
+  - @backstage/plugin-auth-backend@0.25.7
+  - @backstage/backend-plugin-api@1.6.0
+
 ## 0.4.10-next.1
 
 ### Patch Changes

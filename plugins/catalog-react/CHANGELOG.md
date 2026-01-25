@@ -1,5 +1,52 @@
 # @backstage/plugin-catalog-react
 
+## 1.21.5
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.3
+  - @backstage/core-components@0.18.5
+  - @backstage/plugin-permission-common@0.9.4
+  - @backstage/core-compat-api@0.5.6
+  - @backstage/frontend-test-utils@0.4.3
+  - @backstage/integration-react@1.2.14
+
+## 1.21.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.5-next.0
+  - @backstage/integration-react@1.2.14-next.0
+
+## 1.21.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration-react@1.2.14-next.0
+  - @backstage/frontend-test-utils@0.4.3-next.0
+  - @backstage/core-compat-api@0.5.6-next.0
+  - @backstage/frontend-plugin-api@0.13.2
+
+## 1.21.4
+
+### Patch Changes
+
+- 6d39141: Fixed an issue where `EntityOwnerPicker` failed to filter options when the input text contained uppercase characters.
+- b3c0594: Use a versioned context for `useEntityList`, to better work with mixed `@backstage/plugin-catalog-react` versions.
+- c51c901: $contains may have string value in an entity filter. Typescript type and Zod parser were not the same.
+- d02db50: Remove unnecessary use of `compatWrapper` and `convertLegacyRouteRef`(s) for the new frontend system.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.2
+  - @backstage/core-components@0.18.4
+  - @backstage/core-plugin-api@1.12.1
+  - @backstage/core-compat-api@0.5.5
+  - @backstage/frontend-test-utils@0.4.2
+  - @backstage/integration-react@1.2.13
+  - @backstage/plugin-permission-react@0.4.39
+
 ## 1.21.4-next.2
 
 ### Patch Changes

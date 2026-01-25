@@ -1,5 +1,70 @@
 # @backstage/plugin-catalog
 
+## 1.32.2
+
+### Patch Changes
+
+- 7ca91e8: Header in EntityLayout should always be shown.
+  Monitoring the loading status caused flickering when the refresh() method of the Async Entity was invoked.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.3
+  - @backstage/core-components@0.18.5
+  - @backstage/core-compat-api@0.5.6
+  - @backstage/plugin-search-react@1.10.2
+  - @backstage/integration-react@1.2.14
+  - @backstage/plugin-catalog-react@1.21.5
+  - @backstage/plugin-scaffolder-common@1.7.5
+  - @backstage/plugin-techdocs-react@1.3.7
+
+## 1.32.2-next.2
+
+### Patch Changes
+
+- 7ca91e8: Header in EntityLayout should always be shown.
+  Monitoring the loading status caused flickering when the refresh() method of the Async Entity was invoked.
+
+## 1.32.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.5-next.0
+  - @backstage/integration-react@1.2.14-next.0
+  - @backstage/plugin-catalog-react@1.21.5-next.1
+  - @backstage/plugin-search-react@1.10.2-next.0
+  - @backstage/plugin-techdocs-react@1.3.7-next.0
+
+## 1.32.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration-react@1.2.14-next.0
+  - @backstage/plugin-scaffolder-common@1.7.5-next.0
+  - @backstage/plugin-catalog-react@1.21.5-next.0
+  - @backstage/core-compat-api@0.5.6-next.0
+  - @backstage/frontend-plugin-api@0.13.2
+  - @backstage/plugin-search-react@1.10.1
+
+## 1.32.1
+
+### Patch Changes
+
+- f3f84f1: Minor extension type updates after frontend API bump
+- d02db50: Remove unnecessary use of `compatWrapper` and `convertLegacyRouteRef`(s) for the new frontend system.
+- 91f5ed8: Fixed `catalogAboutEntityCard` to filter icon links before calling useProps(), preventing side effects from hooks in filtered-out links
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.2
+  - @backstage/core-components@0.18.4
+  - @backstage/plugin-catalog-react@1.21.4
+  - @backstage/plugin-search-react@1.10.1
+  - @backstage/core-plugin-api@1.12.1
+  - @backstage/core-compat-api@0.5.5
+  - @backstage/integration-react@1.2.13
+  - @backstage/plugin-permission-react@0.4.39
+  - @backstage/plugin-scaffolder-common@1.7.4
+  - @backstage/plugin-techdocs-react@1.3.6
+
 ## 1.32.1-next.1
 
 ### Patch Changes

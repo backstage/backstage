@@ -1,5 +1,25 @@
 # @backstage/plugin-kubernetes-backend
 
+## 0.21.0
+
+### Minor Changes
+
+- 7f9846f: Add possibility to extends Kubernetes REST API. Add fetcher to parameters for custom objects provider
+
+### Patch Changes
+
+- de96a60: chore(deps): bump `express` from 4.21.2 to 4.22.0
+- fb029b6: Updated luxon types
+- e9589d9: Replace `@aws-sdk/signature-v4` with `@smithy/signature-v4`,
+  as stated in the [package documentation](https://www.npmjs.com/package/@aws-sdk/signature-v4?activeTab=readme)
+- 8fa8d87: Add Kubernetes Plugin Secrets Accordion with masked secret datas
+- Updated dependencies
+  - @backstage/plugin-permission-node@0.10.7
+  - @backstage/backend-plugin-api@1.6.0
+  - @backstage/plugin-kubernetes-node@0.4.0
+  - @backstage/plugin-kubernetes-common@0.9.9
+  - @backstage/plugin-catalog-node@1.20.1
+
 ## 0.21.0-next.2
 
 ### Minor Changes

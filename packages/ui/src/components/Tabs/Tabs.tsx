@@ -17,13 +17,16 @@
 import {
   useRef,
   useState,
+  useMemo,
   Children,
   cloneElement,
   isValidElement,
-  ReactNode,
   createContext,
   useContext,
+  useEffect,
+  useCallback,
 } from 'react';
+import type { ReactNode } from 'react';
 import type {
   TabsProps,
   TabListProps,
@@ -31,20 +34,26 @@ import type {
   TabsContextValue,
   TabProps,
 } from './types';
-import { useLocation, useNavigate, useHref } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import { TabsIndicators } from './TabsIndicators';
 import {
   Tabs as AriaTabs,
   TabList as AriaTabList,
   Tab as AriaTab,
   TabPanel as AriaTabPanel,
-  RouterProvider,
   TabProps as AriaTabProps,
 } from 'react-aria-components';
 import { useStyles } from '../../hooks/useStyles';
 import { TabsDefinition } from './definition';
+import {
+  isInternalLink,
+  createRoutingRegistration,
+} from '../InternalLinkProvider';
 import styles from './Tabs.module.css';
 import clsx from 'clsx';
+
+const { RoutingProvider, useRoutingRegistrationEffect } =
+  createRoutingRegistration();
 
 const TabsContext = createContext<TabsContextValue | undefined>(undefined);
 
@@ -55,6 +64,17 @@ const useTabsContext = () => {
   }
   return context;
 };
+
+type TabSelectionContextValue = {
+  registerRoutedTab: (id: string) => void;
+  unregisterRoutedTab: (id: string) => void;
+  registerActiveTab: (id: string, segmentCount: number) => void;
+  unregisterActiveTab: (id: string) => void;
+};
+
+const TabSelectionContext = createContext<TabSelectionContextValue | null>(
+  null,
+);
 
 /**
  * Utility function to determine if a tab should be active based on the matching strategy.
@@ -91,8 +111,14 @@ export const Tabs = (props: TabsProps) => {
   const tabRefs = useRef<Map<string, HTMLDivElement>>(new Map());
   const [hoveredKey, setHoveredKey] = useState<string | null>(null);
   const prevHoveredKey = useRef<string | null>(null);
-  let navigate = useNavigate();
-  const location = useLocation();
+
+  // State for tracking routed tabs (tabs with hrefs)
+  const [routedTabs, setRoutedTabs] = useState<Set<string>>(() => new Set());
+
+  // State for tracking active tabs reported by TabRouteRegistration components
+  const [activeTabs, setActiveTabs] = useState<Map<string, number>>(
+    () => new Map(),
+  );
 
   const setTabRef = (key: string, element: HTMLDivElement | null) => {
     if (element) {
@@ -102,42 +128,59 @@ export const Tabs = (props: TabsProps) => {
     }
   };
 
-  // If selectedKey is not provided, try to determine it from the current route
-  const computedSelectedKey = (() => {
-    const childrenArray = Children.toArray(children as ReactNode);
-    for (const child of childrenArray) {
-      if (isValidElement(child) && child.type === TabList) {
-        const tabListChildren = Children.toArray(child.props.children);
-        for (const tabChild of tabListChildren) {
-          if (isValidElement(tabChild) && tabChild.props.href) {
-            // Use tab-specific strategy, defaulting to 'exact'
-            const strategy = tabChild.props.matchStrategy || 'exact';
-            if (isTabActive(tabChild.props.href, location.pathname, strategy)) {
-              return tabChild.props.id;
-            }
-          }
-        }
-
-        //No route matches - check if all tabs have hrefs (pure navigation)
-        const allTabsHaveHref = tabListChildren.every(
-          child => isValidElement(child) && child.props.href,
-        );
-
-        if (allTabsHaveHref) {
-          // Pure navigation tabs, no route match
-          return null;
-        } else {
-          // Mixed tabs or pure local state
-          return undefined;
-        }
-      }
+  // Compute the selected tab based on active tabs with highest segment count
+  const selectedTabId = useMemo(() => {
+    // No routed tabs - let React Aria handle selection (uncontrolled mode)
+    if (routedTabs.size === 0) {
+      return undefined;
     }
-    return undefined;
-  })();
+
+    // Has routed tabs but none are active - controlled mode with no selection
+    if (activeTabs.size === 0) {
+      return null;
+    }
+
+    let selectedId: string | null = null;
+    let maxSegments = -1;
+
+    activeTabs.forEach((segmentCount, id) => {
+      // Pick tab with highest segment count, first one wins on tie
+      if (segmentCount > maxSegments) {
+        maxSegments = segmentCount;
+        selectedId = id;
+      }
+    });
+
+    return selectedId;
+  }, [routedTabs, activeTabs]);
+
+  const registerRoutedTab = useCallback((id: string) => {
+    setRoutedTabs(prev => new Set(prev).add(id));
+  }, []);
+
+  const unregisterRoutedTab = useCallback((id: string) => {
+    setRoutedTabs(prev => {
+      const next = new Set(prev);
+      next.delete(id);
+      return next;
+    });
+  }, []);
+
+  const registerActiveTab = useCallback((id: string, segmentCount: number) => {
+    setActiveTabs(prev => new Map(prev).set(id, segmentCount));
+  }, []);
+
+  const unregisterActiveTab = useCallback((id: string) => {
+    setActiveTabs(prev => {
+      const next = new Map(prev);
+      next.delete(id);
+      return next;
+    });
+  }, []);
 
   if (!children) return null;
 
-  const contextValue: TabsContextValue = {
+  const tabsContextValue: TabsContextValue = {
     tabsRef,
     tabRefs,
     hoveredKey,
@@ -146,20 +189,41 @@ export const Tabs = (props: TabsProps) => {
     setTabRef,
   };
 
+  const selectionContextValue: TabSelectionContextValue = useMemo(
+    () => ({
+      registerRoutedTab,
+      unregisterRoutedTab,
+      registerActiveTab,
+      unregisterActiveTab,
+    }),
+    [
+      registerRoutedTab,
+      unregisterRoutedTab,
+      registerActiveTab,
+      unregisterActiveTab,
+    ],
+  );
+
   return (
-    <TabsContext.Provider value={contextValue}>
-      <RouterProvider navigate={navigate} useHref={useHref}>
-        <AriaTabs
-          className={clsx(classNames.tabs, styles[classNames.tabs], className)}
-          keyboardActivation="manual"
-          selectedKey={computedSelectedKey}
-          ref={tabsRef}
-          {...rest}
-        >
-          {children as ReactNode}
-        </AriaTabs>
-      </RouterProvider>
-    </TabsContext.Provider>
+    <RoutingProvider>
+      <TabsContext.Provider value={tabsContextValue}>
+        <TabSelectionContext.Provider value={selectionContextValue}>
+          <AriaTabs
+            className={clsx(
+              classNames.tabs,
+              styles[classNames.tabs],
+              className,
+            )}
+            keyboardActivation="manual"
+            selectedKey={selectedTabId}
+            ref={tabsRef}
+            {...rest}
+          >
+            {children as ReactNode}
+          </AriaTabs>
+        </TabSelectionContext.Provider>
+      </TabsContext.Provider>
+    </RoutingProvider>
   );
 };
 
@@ -215,32 +279,80 @@ export const TabList = (props: TabListProps) => {
 };
 
 /**
+ * Internal component for tabs with internal hrefs.
+ * Handles routing registration and active tab tracking.
+ * Separated to avoid conditional hook usage in Tab component.
+ * @internal
+ */
+function RoutedTabEffects({
+  id,
+  href,
+  matchStrategy = 'exact',
+}: {
+  id: string;
+  href: string;
+  matchStrategy?: 'exact' | 'prefix';
+}) {
+  const selectionCtx = useContext(TabSelectionContext);
+  const location = useLocation();
+
+  // Register with RoutingProvider for conditional RouterProvider wrapping
+  useRoutingRegistrationEffect(href);
+
+  // Register as a routed tab (for controlled vs uncontrolled mode)
+  useEffect(() => {
+    if (selectionCtx) {
+      selectionCtx.registerRoutedTab(id);
+      return () => selectionCtx.unregisterRoutedTab(id);
+    }
+    return undefined;
+  }, [id, selectionCtx]);
+
+  // Register as active tab when URL matches (for tab selection)
+  const isActive = isTabActive(href, location.pathname, matchStrategy);
+  const segmentCount = href.split('/').filter(Boolean).length;
+
+  useEffect(() => {
+    if (isActive && selectionCtx) {
+      selectionCtx.registerActiveTab(id, segmentCount);
+      return () => selectionCtx.unregisterActiveTab(id);
+    }
+    return undefined;
+  }, [isActive, id, segmentCount, selectionCtx]);
+
+  return null;
+}
+
+/**
  * A component that renders a tab.
  *
  * @public
  */
 export const Tab = (props: TabProps) => {
   const { classNames, cleanedProps } = useStyles(TabsDefinition, props);
-  const {
-    className,
-    href,
-    children,
-    id,
-    matchStrategy: _matchStrategy,
-    ...rest
-  } = cleanedProps;
+  const { className, href, children, id, matchStrategy, ...rest } =
+    cleanedProps;
   const { setTabRef } = useTabsContext();
 
   return (
-    <AriaTab
-      id={id}
-      className={clsx(classNames.tab, styles[classNames.tab], className)}
-      ref={el => setTabRef(id as string, el as HTMLDivElement)}
-      href={href}
-      {...rest}
-    >
-      {children}
-    </AriaTab>
+    <>
+      {isInternalLink(href) && (
+        <RoutedTabEffects
+          id={id as string}
+          href={href}
+          matchStrategy={matchStrategy}
+        />
+      )}
+      <AriaTab
+        id={id}
+        className={clsx(classNames.tab, styles[classNames.tab], className)}
+        ref={el => setTabRef(id as string, el as HTMLDivElement)}
+        href={href}
+        {...rest}
+      >
+        {children}
+      </AriaTab>
+    </>
   );
 };
 

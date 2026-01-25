@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 import { RELATION_MEMBER_OF } from '@backstage/catalog-model';
 import { renderHook, waitFor } from '@testing-library/react';
-import { ReactNode } from 'react';
-import { act } from 'react-dom/test-utils';
+import { ReactNode, act } from 'react';
 import { BrowserRouter } from 'react-router-dom';
 import { Direction } from '../../lib/types';
 import { useCatalogGraphPage } from './useCatalogGraphPage';

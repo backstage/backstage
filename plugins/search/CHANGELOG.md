@@ -1,5 +1,48 @@
 # @backstage/plugin-search
 
+## 1.5.3
+
+### Patch Changes
+
+- 5c49a00: Update for the `qs` library bump: the old array limit setting has changed to be more strict; you can no longer just give a zero to mean unlimited. So we choose an arbitrary high value, to at least go higher than the default 20.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.3
+  - @backstage/core-components@0.18.5
+  - @backstage/plugin-search-react@1.10.2
+  - @backstage/plugin-catalog-react@1.21.5
+
+## 1.5.2-next.1
+
+### Patch Changes
+
+- 5c49a00: Update for the `qs` library bump: the old array limit setting has changed to be more strict; you can no longer just give a zero to mean unlimited. So we choose an arbitrary high value, to at least go higher than the default 20.
+- Updated dependencies
+  - @backstage/core-components@0.18.5-next.0
+  - @backstage/plugin-catalog-react@1.21.5-next.1
+  - @backstage/plugin-search-react@1.10.2-next.0
+
+## 1.5.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-react@1.21.5-next.0
+  - @backstage/frontend-plugin-api@0.13.2
+  - @backstage/plugin-search-react@1.10.1
+
+## 1.5.1
+
+### Patch Changes
+
+- f3f84f1: Minor extension type updates after frontend API bump
+- d02db50: Remove unnecessary use of `compatWrapper` and `convertLegacyRouteRef`(s) for the new frontend system.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.2
+  - @backstage/core-components@0.18.4
+  - @backstage/plugin-catalog-react@1.21.4
+  - @backstage/plugin-search-react@1.10.1
+  - @backstage/core-plugin-api@1.12.1
+
 ## 1.5.1-next.1
 
 ### Patch Changes

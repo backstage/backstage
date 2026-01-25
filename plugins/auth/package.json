@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-auth",
-  "version": "0.1.3-next.0",
+  "version": "0.1.4",
   "backstage": {
     "role": "frontend-plugin",
     "pluginId": "auth",

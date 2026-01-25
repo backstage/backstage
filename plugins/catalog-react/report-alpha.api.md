@@ -549,7 +549,7 @@ export type EntityPredicateValue =
       $in: EntityPredicatePrimitive[];
     }
   | {
-      $contains: EntityPredicateExpression;
+      $contains: EntityPredicate;
     };
 
 // @alpha (undocumented)

@@ -22,7 +22,19 @@
 exports.up = async function up(knex) {
   await knex.schema.alterTable('user_info', table => {
     table.renameColumn('exp', 'updated_at');
-    table.timestamp('created_at').notNullable().defaultTo(knex.fn.now());
+    table.timestamp('created_at').nullable();
+  });
+
+  await knex('user_info').update({
+    created_at: knex.fn.now(),
+  });
+
+  await knex.schema.alterTable('user_info', table => {
+    table
+      .timestamp('created_at')
+      .notNullable()
+      .defaultTo(knex.fn.now())
+      .alter();
   });
 };
 

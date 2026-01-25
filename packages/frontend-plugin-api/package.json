@@ -1,6 +1,6 @@
 {
   "name": "@backstage/frontend-plugin-api",
-  "version": "0.13.2-next.1",
+  "version": "0.13.3",
   "backstage": {
     "role": "web-library"
   },
@@ -16,12 +16,16 @@
   "sideEffects": false,
   "exports": {
     ".": "./src/index.ts",
+    "./alpha": "./src/alpha.ts",
     "./package.json": "./package.json"
   },
   "main": "src/index.ts",
   "types": "src/index.ts",
   "typesVersions": {
     "*": {
+      "alpha": [
+        "src/alpha.ts"
+      ],
       "package.json": [
         "package.json"
       ]
@@ -44,7 +48,7 @@
     "@backstage/types": "workspace:^",
     "@backstage/version-bridge": "workspace:^",
     "zod": "^3.22.4",
-    "zod-to-json-schema": "^3.21.4"
+    "zod-to-json-schema": "^3.25.1"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",

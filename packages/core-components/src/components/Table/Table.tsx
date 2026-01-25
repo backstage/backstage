@@ -186,6 +186,7 @@ const useFilterStyles = makeStyles(
       display: 'flex',
       alignItems: 'center',
       justifyContent: 'space-between',
+      flexWrap: 'wrap',
     },
     title: {
       fontWeight: theme.typography.fontWeightBold,

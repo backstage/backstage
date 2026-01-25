@@ -20,14 +20,6 @@ import { MockFileSystemAccess } from '../../../lib/filesystem/MockFileSystemAcce
 import { DirectoryEditorProvider } from './DirectoryEditorContext';
 import { TemplateEditorBrowser } from './TemplateEditorBrowser';
 
-Blob.prototype.text = async function text() {
-  return new Promise(resolve => {
-    const reader = new FileReader();
-    reader.onload = () => resolve(reader.result as string);
-    reader.readAsText(this);
-  });
-};
-
 describe('TemplateEditorBrowser', () => {
   it('should render files and expand dirs without exploding', async () => {
     await renderInTestApp(

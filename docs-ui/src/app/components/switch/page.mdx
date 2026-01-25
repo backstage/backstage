@@ -1,0 +1,43 @@
+import { PropsTable } from '@/components/PropsTable';
+import { Snippet } from '@/components/Snippet';
+import { CodeBlock } from '@/components/CodeBlock';
+import { switchPropDefs } from './props-definition';
+import { snippetUsage, defaultSnippet, disabledSnippet } from './snippets';
+import { Default, Disabled } from './components';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+import { SwitchDefinition } from '../../../utils/definitions';
+
+<PageTitle
+  title="Switch"
+  description="A control that indicates whether a setting is on or off."
+/>
+
+<Snippet align="center" py={4} preview={<Default />} code={defaultSnippet} />
+
+## Usage
+
+<CodeBlock code={snippetUsage} />
+
+## API reference
+
+<PropsTable data={switchPropDefs} />
+
+## Examples
+
+### Disabled
+
+A switch can be disabled using the `isDisabled` prop.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<Disabled />}
+  code={disabledSnippet}
+/>
+
+<Theming definition={SwitchDefinition} />
+
+<ChangelogComponent component="switch" />

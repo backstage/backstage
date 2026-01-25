@@ -99,6 +99,7 @@ dataflow
 dataloader
 dayjs
 debounce
+debounced
 debounces
 debuggability
 declaratively
@@ -268,6 +269,7 @@ maintainer's
 maintainership
 makefile
 Matomo
+matchers
 md
 memcache
 memoization
@@ -523,6 +525,7 @@ transpile
 transpiled
 transpiler
 transpilers
+trixie
 truthy
 tsconfig
 TSDoc
@@ -577,3 +580,4 @@ zoomable
 zsh
 resizable
 enums
+LLMs

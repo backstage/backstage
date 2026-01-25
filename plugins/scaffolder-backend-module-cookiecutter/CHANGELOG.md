@@ -1,5 +1,54 @@
 # @backstage/plugin-scaffolder-backend-module-cookiecutter
 
+## 0.3.19
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.15.0
+  - @backstage/backend-plugin-api@1.6.1
+  - @backstage/plugin-scaffolder-node@0.12.3
+  - @backstage/integration@1.19.2
+
+## 0.3.19-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.15.0-next.2
+
+## 0.3.19-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.14.1-next.1
+  - @backstage/integration@1.19.2-next.0
+  - @backstage/plugin-scaffolder-node@0.12.3-next.0
+
+## 0.3.19-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.14.1-next.0
+  - @backstage/backend-plugin-api@1.6.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/integration@1.19.0
+  - @backstage/types@1.2.2
+  - @backstage/plugin-scaffolder-node@0.12.2
+
+## 0.3.18
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.19.0
+  - @backstage/backend-defaults@0.14.0
+  - @backstage/backend-plugin-api@1.6.0
+  - @backstage/plugin-scaffolder-node@0.12.2
+
 ## 0.3.18-next.1
 
 ### Patch Changes

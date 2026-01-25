@@ -20,6 +20,6 @@
  * @packageDocumentation
  */
 
-export { githubAuthenticator } from './authenticator';
+export { githubAuthenticator, type GithubProfile } from './authenticator';
 export { authModuleGithubProvider as default } from './module';
 export { githubSignInResolvers } from './resolvers';

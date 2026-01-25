@@ -95,9 +95,7 @@ export function replaceGithubUrlType(
   return url.replace(
     /\/\/([^/]+)\/([^/]+)\/([^/]+)\/(blob|tree|edit)\//,
     (_, host, owner, repo) => {
-      return `//${host.toLocaleLowerCase('en-US')}/${owner.toLocaleLowerCase(
-        'en-US',
-      )}/${repo.toLocaleLowerCase('en-US')}/${type}/`;
+      return `//${host}/${owner}/${repo}/${type}/`;
     },
   );
 }

@@ -1,5 +1,14 @@
 # @backstage/plugin-auth-backend-module-azure-easyauth-provider
 
+## 0.2.15
+
+### Patch Changes
+
+- de96a60: chore(deps): bump `express` from 4.21.2 to 4.22.0
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.10
+  - @backstage/backend-plugin-api@1.6.0
+
 ## 0.2.15-next.1
 
 ### Patch Changes

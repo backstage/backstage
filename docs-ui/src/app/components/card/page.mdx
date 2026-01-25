@@ -1,0 +1,87 @@
+import { PropsTable } from '@/components/PropsTable';
+import { Snippet } from '@/components/Snippet';
+import { CodeBlock } from '@/components/CodeBlock';
+import {
+  cardPropDefs,
+  cardHeaderPropDefs,
+  cardBodyPropDefs,
+  cardFooterPropDefs,
+} from './props-definition';
+import {
+  cardUsageSnippet,
+  defaultSnippet,
+  customSizeSnippet,
+  withLongBodySnippet,
+} from './snippets';
+import { Default, CustomSize, WithLongBody } from './components';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { CardDefinition } from '../../../utils/definitions';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+
+<PageTitle
+  title="Card"
+  description="A card component that can be used to display content in a box."
+/>
+
+<Snippet align="center" py={4} preview={<Default />} code={defaultSnippet} />
+
+## Usage
+
+<CodeBlock code={cardUsageSnippet} />
+
+## API reference
+
+### Card
+
+A card component that can be used to display content in a box.
+
+<PropsTable data={cardPropDefs} />
+
+### CardHeader
+
+To display a header in a card, use the `CardHeader` component. This will be fixed at the top of the card.
+
+<PropsTable data={cardHeaderPropDefs} />
+
+### CardBody
+
+To display content in a card, use the `CardBody` component. This will automatically fill the card.
+
+<PropsTable data={cardBodyPropDefs} />
+
+### CardFooter
+
+To display a footer in a card, use the `CardFooter` component. This will be fixed at the bottom of the card.
+
+<PropsTable data={cardFooterPropDefs} />
+
+## Examples
+
+### Custom size
+
+Here's a view when card has a custom size.
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<CustomSize />}
+  code={customSizeSnippet}
+  open
+/>
+
+### With long body
+
+Here's a view when card has a long body.
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<WithLongBody />}
+  code={withLongBodySnippet}
+  open
+/>
+
+<Theming definition={CardDefinition} />
+
+<ChangelogComponent component="card" />

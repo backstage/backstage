@@ -99,6 +99,7 @@ export default {
         },
       }),
   ],
+  tags: ['!manifest'],
 };
 
 const extraDetailsEntity: UserEntity = {

@@ -1,5 +1,38 @@
 # @backstage/plugin-auth-backend
 
+## 0.26.0
+
+### Minor Changes
+
+- 7ffc873: Fix `user_created_at` migration causing `SQLiteError` regarding use of non-constants for defaults
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.1
+  - @backstage/plugin-auth-node@0.6.11
+
+## 0.26.0-next.0
+
+### Minor Changes
+
+- 7ffc873: Fix `user_created_at` migration causing `SQLiteError` regarding use of non-constants for defaults
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.10
+
+## 0.25.7
+
+### Patch Changes
+
+- de96a60: chore(deps): bump `express` from 4.21.2 to 4.22.0
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.10
+  - @backstage/backend-plugin-api@1.6.0
+  - @backstage/plugin-catalog-node@1.20.1
+
 ## 0.25.7-next.1
 
 ### Patch Changes

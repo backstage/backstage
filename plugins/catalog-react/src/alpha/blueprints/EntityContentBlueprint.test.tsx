@@ -62,19 +62,74 @@ describe('EntityContentBlueprint', () => {
                       {
                         "anyOf": [
                           {
-                            "type": [
-                              "string",
-                              "number",
-                              "boolean",
-                            ],
+                            "additionalProperties": {
+                              "anyOf": [
+                                {
+                                  "type": [
+                                    "string",
+                                    "number",
+                                    "boolean",
+                                  ],
+                                },
+                                {
+                                  "additionalProperties": false,
+                                  "properties": {
+                                    "$exists": {
+                                      "type": "boolean",
+                                    },
+                                  },
+                                  "required": [
+                                    "$exists",
+                                  ],
+                                  "type": "object",
+                                },
+                                {
+                                  "additionalProperties": false,
+                                  "properties": {
+                                    "$in": {
+                                      "items": {
+                                        "$ref": "#/properties/filter/anyOf/1/anyOf/0/anyOf/0/additionalProperties/anyOf/0",
+                                      },
+                                      "type": "array",
+                                    },
+                                  },
+                                  "required": [
+                                    "$in",
+                                  ],
+                                  "type": "object",
+                                },
+                                {
+                                  "additionalProperties": false,
+                                  "properties": {
+                                    "$contains": {
+                                      "$ref": "#/properties/filter/anyOf/1",
+                                    },
+                                  },
+                                  "required": [
+                                    "$contains",
+                                  ],
+                                  "type": "object",
+                                },
+                              ],
+                            },
+                            "propertyNames": {
+                              "pattern": "^(?!\\$).*$",
+                            },
+                            "type": "object",
                           },
                           {
-                            "items": {
-                              "$ref": "#/properties/filter/anyOf/1/anyOf/0/anyOf/0",
+                            "additionalProperties": {
+                              "not": {},
                             },
-                            "type": "array",
+                            "propertyNames": {
+                              "pattern": "^\\$",
+                            },
+                            "type": "object",
                           },
                         ],
+                      },
+                      {
+                        "$ref": "#/properties/filter/anyOf/1/anyOf/0/anyOf/0/additionalProperties/anyOf/0",
                       },
                       {
                         "additionalProperties": false,
@@ -116,58 +171,6 @@ describe('EntityContentBlueprint', () => {
                         "required": [
                           "$not",
                         ],
-                        "type": "object",
-                      },
-                      {
-                        "additionalProperties": {
-                          "anyOf": [
-                            {
-                              "$ref": "#/properties/filter/anyOf/1/anyOf/0",
-                            },
-                            {
-                              "additionalProperties": false,
-                              "properties": {
-                                "$exists": {
-                                  "type": "boolean",
-                                },
-                              },
-                              "required": [
-                                "$exists",
-                              ],
-                              "type": "object",
-                            },
-                            {
-                              "additionalProperties": false,
-                              "properties": {
-                                "$in": {
-                                  "items": {
-                                    "$ref": "#/properties/filter/anyOf/1/anyOf/0/anyOf/0",
-                                  },
-                                  "type": "array",
-                                },
-                              },
-                              "required": [
-                                "$in",
-                              ],
-                              "type": "object",
-                            },
-                            {
-                              "additionalProperties": false,
-                              "properties": {
-                                "$contains": {
-                                  "$ref": "#/properties/filter/anyOf/1",
-                                },
-                              },
-                              "required": [
-                                "$contains",
-                              ],
-                              "type": "object",
-                            },
-                          ],
-                        },
-                        "propertyNames": {
-                          "pattern": "^(?!\\$).*$",
-                        },
                         "type": "object",
                       },
                     ],

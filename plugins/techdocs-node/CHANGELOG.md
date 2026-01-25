@@ -1,5 +1,50 @@
 # @backstage/plugin-techdocs-node
 
+## 1.14.0
+
+### Minor Changes
+
+- 63c459c: **BREAKING:** It's now possible to use the credentials from the `integrations.awsS3` config to authenticate with AWS S3. The new priority is:
+
+  1. `aws.accounts`
+  2. `techdocs.publisher.awsS3.credentials`
+  3. `integrations.awsS3`
+  4. Default credential chain
+
+  In case of multiple `integrations.awsS3` are present, the target integration is determined by the `accessKeyId` in `techdocs.publisher.awsS3.credentials` if provided. Otherwise, the default credential chain is used.
+
+  This means that depending on your setup, this feature may break your existing setup.
+  In general:
+
+  - if you are configuring `aws.accounts`, no action is required
+  - if you are configuring `techdocs.publisher.awsS3.credentials`, no action is required
+  - if you are configuring multiple integrations under `integrations.awsS3`, no action is required
+  - if you are configuring a single integration under `integrations.awsS3`, make sure that the integration has access to the bucket you are using for TechDocs
+
+### Patch Changes
+
+- f0951aa: Updated the `defaultDockerImage` to reflect the latest TechDocs Container version of v1.2.8
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.1
+  - @backstage/integration@1.19.2
+
+## 1.13.11-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.19.2-next.0
+
+## 1.13.10
+
+### Patch Changes
+
+- de96a60: chore(deps): bump `express` from 4.21.2 to 4.22.0
+- 703f8c0: There was an issue in the uploading of large size files to the AWS S3. We have modified the logic by adding retry along with multipart uploading functionality.
+- Updated dependencies
+  - @backstage/integration@1.19.0
+  - @backstage/backend-plugin-api@1.6.0
+
 ## 1.13.10-next.1
 
 ### Patch Changes

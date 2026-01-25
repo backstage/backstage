@@ -23,7 +23,16 @@ import {
 } from '@backstage/plugin-auth-node';
 
 /** @public */
-export const gitlabAuthenticator = createOAuthAuthenticator({
+export type GitlabProfile = PassportProfile & {
+  id?: string;
+  profileUrl?: string;
+};
+
+/** @public */
+export const gitlabAuthenticator = createOAuthAuthenticator<
+  PassportOAuthAuthenticatorHelper,
+  GitlabProfile
+>({
   defaultProfileTransform:
     PassportOAuthAuthenticatorHelper.defaultProfileTransform,
   scopes: {
@@ -55,7 +64,7 @@ export const gitlabAuthenticator = createOAuthAuthenticator({
         ) => {
           done(
             undefined,
-            { fullProfile, params, accessToken },
+            { fullProfile: fullProfile as GitlabProfile, params, accessToken },
             { refreshToken },
           );
         },

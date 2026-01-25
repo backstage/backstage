@@ -17,10 +17,11 @@
 import {
   createSignInResolverFactory,
   OAuthAuthenticatorResult,
-  PassportProfile,
   SignInInfo,
 } from '@backstage/plugin-auth-node';
 import { z } from 'zod';
+
+import { GithubProfile } from './authenticator';
 
 /**
  * Available sign-in resolvers for the GitHub auth provider.
@@ -39,7 +40,7 @@ export namespace githubSignInResolvers {
       .optional(),
     create(options = {}) {
       return async (
-        info: SignInInfo<OAuthAuthenticatorResult<PassportProfile>>,
+        info: SignInInfo<OAuthAuthenticatorResult<GithubProfile>>,
         ctx,
       ) => {
         const { fullProfile } = info.result;
@@ -63,4 +64,44 @@ export namespace githubSignInResolvers {
       };
     },
   });
+
+  /**
+   * Looks up the user by matching their GitHub user ID to the github.com/user-id annotation.
+   */
+  export const userIdMatchingUserEntityAnnotation = createSignInResolverFactory(
+    {
+      optionsSchema: z
+        .object({
+          dangerouslyAllowSignInWithoutUserInCatalog: z.boolean().optional(),
+        })
+        .optional(),
+      create(options = {}) {
+        return async (
+          info: SignInInfo<OAuthAuthenticatorResult<GithubProfile>>,
+          ctx,
+        ) => {
+          const { fullProfile } = info.result;
+
+          const userId = fullProfile.nodeId;
+          if (!userId) {
+            throw new Error(`GitHub user profile does not contain a user ID`);
+          }
+
+          return ctx.signInWithCatalogUser(
+            {
+              annotations: {
+                'github.com/user-id': userId,
+              },
+            },
+            {
+              dangerousEntityRefFallback:
+                options?.dangerouslyAllowSignInWithoutUserInCatalog
+                  ? { entityRef: { name: userId } }
+                  : undefined,
+            },
+          );
+        };
+      },
+    },
+  );
 }

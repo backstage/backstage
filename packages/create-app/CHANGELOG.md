@@ -1,5 +1,53 @@
 # @backstage/create-app
 
+## 0.7.8
+
+### Patch Changes
+
+- fea3e39: Bumped create-app version.
+- 9f1ee3e: Bumped create-app version.
+- 880310b: Bumped create-app version.
+- f1fe6fe: Updated Dockerfile to use Node 24 and Debian Trixie
+- Updated dependencies
+  - @backstage/cli-common@0.1.17
+
+## 0.7.8-next.3
+
+### Patch Changes
+
+- Bumped create-app version.
+
+## 0.7.8-next.2
+
+### Patch Changes
+
+- f1fe6fe: Updated Dockerfile to use Node 24 and Debian Trixie
+
+## 0.7.8-next.1
+
+### Patch Changes
+
+- Bumped create-app version.
+
+## 0.7.8-next.0
+
+### Patch Changes
+
+- Bumped create-app version.
+- Updated dependencies
+  - @backstage/cli-common@0.1.16
+
+## 0.7.7
+
+### Patch Changes
+
+- 336db00: Bumped create-app version.
+- 2bae83a: Updated engines to support Node 22 or 24
+- c8c2329: Add proxy configuration from env-vars to create-app tasks
+- 2bae83a: Bumped dev dependencies `@types/node`
+- Updated dependencies
+  - @backstage/cli-common@0.1.16
+
 ## 0.7.7-next.2
 
 ### Patch Changes

@@ -29,7 +29,7 @@ jobs:
         with:
           egress-policy: audit
 
-      - uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
       - name: Monitor and Synchronize Snyk Policies
         uses: snyk/actions/node@9adf32b1121593767fc3c057af55b55db032dc04 # master
         with:
@@ -58,6 +58,6 @@ jobs:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
           NODE_OPTIONS: --max-old-space-size=7168
       - name: Upload Snyk report
-        uses: github/codeql-action/upload-sarif@497990dfed22177a82ba1bbab381bc8f6d27058f # v3.31.6
+        uses: github/codeql-action/upload-sarif@4bdb89f48054571735e3792627da6195c57459e2 # v3.31.10
         with:
           sarif_file: snyk.sarif

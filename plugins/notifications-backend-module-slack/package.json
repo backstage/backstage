@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-notifications-backend-module-slack",
-  "version": "0.2.2-next.1",
+  "version": "0.3.0",
   "description": "The slack backend module for the notifications plugin.",
   "backstage": {
     "role": "backend-plugin-module",
@@ -54,7 +54,7 @@
     "@backstage/cli": "workspace:^",
     "@backstage/plugin-catalog-node": "workspace:^",
     "@backstage/test-utils": "workspace:^",
-    "@faker-js/faker": "^8.4.1",
+    "@faker-js/faker": "^10.0.0",
     "msw": "^2.0.0"
   },
   "configSchema": "config.d.ts"

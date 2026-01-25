@@ -1,13 +1,14 @@
 {
   "name": "@backstage/plugin-app",
-  "version": "0.3.3-next.1",
+  "version": "0.3.4",
   "backstage": {
     "role": "frontend-plugin",
     "pluginId": "app",
     "pluginPackages": [
       "@backstage/plugin-app",
       "@backstage/plugin-app-backend",
-      "@backstage/plugin-app-node"
+      "@backstage/plugin-app-node",
+      "@backstage/plugin-app-react"
     ]
   },
   "publishConfig": {
@@ -54,6 +55,7 @@
     "@backstage/core-plugin-api": "workspace:^",
     "@backstage/frontend-plugin-api": "workspace:^",
     "@backstage/integration-react": "workspace:^",
+    "@backstage/plugin-app-react": "workspace:^",
     "@backstage/plugin-permission-react": "workspace:^",
     "@backstage/theme": "workspace:^",
     "@backstage/types": "workspace:^",

@@ -1,5 +1,12 @@
 # @internal/plugin-todo-list-backend
 
+## 1.0.46
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.0
+
 ## 1.0.46-next.1
 
 ### Patch Changes

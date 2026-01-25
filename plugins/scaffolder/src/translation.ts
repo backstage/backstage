@@ -137,6 +137,10 @@ export const scaffolderTranslationRef = createTranslationRef({
           description: 'The name of the repository',
         },
       },
+      repoOwnerPicker: {
+        title: 'Owner',
+        description: 'The owner of the repository',
+      },
     },
     listTaskPage: {
       title: 'List template tasks',

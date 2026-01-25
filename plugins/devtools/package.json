@@ -1,13 +1,14 @@
 {
   "name": "@backstage/plugin-devtools",
-  "version": "0.1.34-next.0",
+  "version": "0.1.35",
   "backstage": {
     "role": "frontend-plugin",
     "pluginId": "devtools",
     "pluginPackages": [
       "@backstage/plugin-devtools",
       "@backstage/plugin-devtools-backend",
-      "@backstage/plugin-devtools-common"
+      "@backstage/plugin-devtools-common",
+      "@backstage/plugin-devtools-react"
     ]
   },
   "publishConfig": {
@@ -58,6 +59,7 @@
     "@backstage/errors": "workspace:^",
     "@backstage/frontend-plugin-api": "workspace:^",
     "@backstage/plugin-devtools-common": "workspace:^",
+    "@backstage/plugin-devtools-react": "workspace:^",
     "@backstage/plugin-permission-react": "workspace:^",
     "@material-ui/core": "^4.9.13",
     "@material-ui/icons": "^4.9.1",

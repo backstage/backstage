@@ -1,5 +1,53 @@
 # @backstage/plugin-search-backend
 
+## 2.0.10
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.15.0
+  - @backstage/backend-plugin-api@1.6.1
+  - @backstage/backend-openapi-utils@0.6.5
+  - @backstage/plugin-permission-common@0.9.4
+  - @backstage/plugin-permission-node@0.10.8
+
+## 2.0.10-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.15.0-next.2
+  - @backstage/plugin-permission-node@0.10.7
+  - @backstage/plugin-search-backend-node@1.4.0
+
+## 2.0.10-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-openapi-utils@0.6.5-next.0
+  - @backstage/backend-defaults@0.14.1-next.0
+  - @backstage/backend-plugin-api@1.6.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-permission-common@0.9.3
+  - @backstage/plugin-permission-node@0.10.7
+  - @backstage/plugin-search-backend-node@1.4.0
+  - @backstage/plugin-search-common@1.2.21
+
+## 2.0.9
+
+### Patch Changes
+
+- de96a60: chore(deps): bump `express` from 4.21.2 to 4.22.0
+- Updated dependencies
+  - @backstage/plugin-search-backend-node@1.4.0
+  - @backstage/backend-defaults@0.14.0
+  - @backstage/backend-openapi-utils@0.6.4
+  - @backstage/plugin-permission-node@0.10.7
+  - @backstage/backend-plugin-api@1.6.0
+
 ## 2.0.9-next.1
 
 ### Patch Changes

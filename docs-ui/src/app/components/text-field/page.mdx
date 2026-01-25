@@ -1,0 +1,59 @@
+import { PropsTable } from '@/components/PropsTable';
+import { Snippet } from '@/components/Snippet';
+import { inputPropDefs } from './props-definition';
+import {
+  textFieldUsageSnippet,
+  withLabelSnippet,
+  sizesSnippet,
+  withDescriptionSnippet,
+} from './snippets';
+import { WithLabel, Sizes, WithDescription } from './components';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { TextFieldDefinition } from '../../../utils/definitions';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+import { CodeBlock } from '@/components/CodeBlock';
+
+<PageTitle
+  title="TextField"
+  description="A text field component for your forms."
+/>
+
+<Snippet
+  align="center"
+  py={4}
+  preview={<WithLabel />}
+  code={withLabelSnippet}
+/>
+
+## Usage
+
+<CodeBlock code={textFieldUsageSnippet} />
+
+## API reference
+
+<PropsTable data={inputPropDefs} />
+
+## Examples
+
+### Sizes
+
+We support two different sizes: `small`, `medium`.
+
+<Snippet align="center" py={4} open preview={<Sizes />} code={sizesSnippet} />
+
+### With description
+
+Here's a simple TextField with a description.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<WithDescription />}
+  code={withDescriptionSnippet}
+/>
+
+<Theming definition={TextFieldDefinition} />
+
+<ChangelogComponent component="text-field" />

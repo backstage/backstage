@@ -1,5 +1,69 @@
 # @backstage/plugin-scaffolder-backend-module-github
 
+## 0.9.4
+
+### Patch Changes
+
+- bb7088b: Added options to set [workflow access level][access-level] for repositories to `github:repo:create`
+
+  This is useful when creating repositories for GitHub Actions to manage access
+  to the workflows during creation.
+
+  ```diff
+   - action: github:repo:create
+      id: create-repo
+      input:
+        repoUrl: github.com?owner=owner&repo=repo
+        visibility: private
+  +     workflowAccess: organization
+  ```
+
+  [access-level]: https://docs.github.com/en/rest/actions/permissions?apiVersion=2022-11-28#set-the-level-of-access-for-workflows-outside-of-the-repository
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.1
+  - @backstage/plugin-scaffolder-node@0.12.3
+  - @backstage/integration@1.19.2
+
+## 0.9.4-next.1
+
+### Patch Changes
+
+- bb7088b: Added options to set [workflow access level][access-level] for repositories to `github:repo:create`
+
+  This is useful when creating repositories for GitHub Actions to manage access
+  to the workflows during creation.
+
+  ```diff
+   - action: github:repo:create
+      id: create-repo
+      input:
+        repoUrl: github.com?owner=owner&repo=repo
+        visibility: private
+  +     workflowAccess: organization
+  ```
+
+  [access-level]: https://docs.github.com/en/rest/actions/permissions?apiVersion=2022-11-28#set-the-level-of-access-for-workflows-outside-of-the-repository
+
+## 0.9.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.19.2-next.0
+  - @backstage/plugin-scaffolder-node@0.12.3-next.0
+
+## 0.9.3
+
+### Patch Changes
+
+- dab3d3f: Added autocompletion resource `owners` for retrieving GitHub repository owners.
+- Updated dependencies
+  - @backstage/integration@1.19.0
+  - @backstage/backend-plugin-api@1.6.0
+  - @backstage/plugin-catalog-node@1.20.1
+  - @backstage/plugin-scaffolder-node@0.12.2
+
 ## 0.9.3-next.1
 
 ### Patch Changes

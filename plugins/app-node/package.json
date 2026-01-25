@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-app-node",
-  "version": "0.1.40-next.1",
+  "version": "0.1.41",
   "description": "Node.js library for the app plugin",
   "backstage": {
     "role": "node-library",
@@ -8,7 +8,8 @@
     "pluginPackages": [
       "@backstage/plugin-app",
       "@backstage/plugin-app-backend",
-      "@backstage/plugin-app-node"
+      "@backstage/plugin-app-node",
+      "@backstage/plugin-app-react"
     ]
   },
   "publishConfig": {

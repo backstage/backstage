@@ -50,7 +50,7 @@ describe('<Link />', () => {
       <Link to="http://something.external">External Link</Link>,
     );
     const externalLink = screen.getByRole('link', {
-      name: 'External Link , Opens in a new window',
+      name: 'External Link, Opens in a new window',
     });
     const externalLinkIcon = container.querySelector('svg');
     expect(externalLink).not.toContainElement(externalLinkIcon);
@@ -62,6 +62,7 @@ describe('<Link />', () => {
         External Link
       </Link>,
     );
+    // Note: when externalLinkIcon is present, the SVG adds whitespace to the accessible name
     const externalLink = screen.getByRole('link', {
       name: 'External Link , Opens in a new window',
     });

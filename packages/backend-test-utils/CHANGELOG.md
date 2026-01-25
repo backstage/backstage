@@ -1,5 +1,55 @@
 # @backstage/backend-test-utils
 
+## 1.10.3
+
+### Patch Changes
+
+- 872eb91: Upgrade `zod-to-json-schema` to latest version
+- Updated dependencies
+  - @backstage/backend-defaults@0.15.0
+  - @backstage/backend-plugin-api@1.6.1
+  - @backstage/backend-app-api@1.4.1
+  - @backstage/plugin-auth-node@0.6.11
+  - @backstage/plugin-permission-common@0.9.4
+
+## 1.10.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.15.0-next.2
+  - @backstage/backend-app-api@1.4.0
+  - @backstage/plugin-auth-node@0.6.10
+
+## 1.10.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.14.1-next.0
+  - @backstage/backend-app-api@1.4.0
+  - @backstage/backend-plugin-api@1.6.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-auth-node@0.6.10
+  - @backstage/plugin-events-node@0.4.18
+  - @backstage/plugin-permission-common@0.9.3
+
+## 1.10.2
+
+### Patch Changes
+
+- de96a60: chore(deps): bump `express` from 4.21.2 to 4.22.0
+- 8be23a4: Switched `textextensions` dependency for `text-extensions`.
+- 5a737e1: Fix PostgreSQL 18 `TestDatabases` by pinning the data directory
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.10
+  - @backstage/backend-defaults@0.14.0
+  - @backstage/plugin-events-node@0.4.18
+  - @backstage/backend-app-api@1.4.0
+  - @backstage/backend-plugin-api@1.6.0
+
 ## 1.10.2-next.1
 
 ### Patch Changes

@@ -211,13 +211,13 @@ You can run Postgres in a Docker container, this is great for local development 
 First we need to pull down the container image, we'll use Postgres 17, check out the [Postgres Version Policy](../../overview/versioning-policy.md#postgresql-releases) to learn which versions are supported.
 
 ```shell
-docker pull postgres:17.0-bookworm
+docker pull postgres:17.0-trixie
 ```
 
 Then we just need to start up the container.
 
 ```shell
-docker run -d --name postgres --restart=always -p 5432:5432 -e POSTGRES_PASSWORD=<secret> postgres:17.0-bookworm
+docker run -d --name postgres --restart=always -p 5432:5432 -e POSTGRES_PASSWORD=<secret> postgres:17.0-trixie
 ```
 
 This will run Postgres in the background for you, but remember to start it up again when you reboot your system.
@@ -231,7 +231,7 @@ version: '4'
 
 services:
   postgres:
-    image: postgres:17.0-bookworm
+    image: postgres:17.0-trixie
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: <secret>

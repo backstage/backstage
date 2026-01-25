@@ -1,5 +1,17 @@
 # @backstage/plugin-kubernetes-node
 
+## 0.4.0
+
+### Minor Changes
+
+- 7f9846f: Add possibility to extends Kubernetes REST API. Add fetcher to parameters for custom objects provider
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.0
+  - @backstage/plugin-kubernetes-common@0.9.9
+
 ## 0.4.0-next.2
 
 ### Minor Changes

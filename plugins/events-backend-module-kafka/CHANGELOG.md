@@ -1,5 +1,37 @@
 # @backstage/plugin-events-backend-module-kafka
 
+## 0.3.0
+
+### Minor Changes
+
+- ef5bbd8: Add support for Kafka offset configuration (`fromBeginning`) and `autoCommit`
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.1
+
+## 0.3.0-next.0
+
+### Minor Changes
+
+- ef5bbd8: Add support for Kafka offset configuration (`fromBeginning`) and `autoCommit`
+
+## 0.2.0
+
+### Minor Changes
+
+- 2c74ea9: Added support for multiple named instances in `kafkaConsumingEventPublisher` configuration. The previous single configuration format is still supported for backward compatibility.
+- 2c74ea9: Added `KafkaPublishingEventConsumer` to support sending Backstage events to Kafka topics.
+
+  This addition enables Backstage to publish events to external Kafka systems, complementing the existing ability to receive events from Kafka. This allows for better integration with external systems that rely on Kafka for event streaming.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-events-node@0.4.18
+  - @backstage/backend-plugin-api@1.6.0
+
 ## 0.1.6-next.1
 
 ### Patch Changes

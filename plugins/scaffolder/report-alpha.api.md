@@ -350,6 +350,21 @@ const _default: OverridableFrontendPlugin<
         field: () => Promise<FormField>;
       };
     }>;
+    'scaffolder-form-field:scaffolder/repo-owner-picker': OverridableExtensionDefinition<{
+      kind: 'scaffolder-form-field';
+      name: 'repo-owner-picker';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<
+        () => Promise<FormField>,
+        'scaffolder.form-field-loader',
+        {}
+      >;
+      inputs: {};
+      params: {
+        field: () => Promise<FormField>;
+      };
+    }>;
     'scaffolder-form-field:scaffolder/repo-url-picker': OverridableExtensionDefinition<{
       kind: 'scaffolder-form-field';
       name: 'repo-url-picker';
@@ -499,6 +514,8 @@ export const scaffolderTranslationRef: TranslationRef<
     readonly 'fields.repoUrlPicker.repository.title': 'Repositories Available';
     readonly 'fields.repoUrlPicker.repository.description': 'The name of the repository';
     readonly 'fields.repoUrlPicker.repository.inputTitle': 'Repository';
+    readonly 'fields.repoOwnerPicker.title': 'Owner';
+    readonly 'fields.repoOwnerPicker.description': 'The owner of the repository';
     readonly 'aboutCard.launchTemplate': 'Launch Template';
     readonly 'actionsPage.content.emptyState.title': 'No information to display';
     readonly 'actionsPage.content.emptyState.description': 'There are no actions installed or there was an issue communicating with backend.';

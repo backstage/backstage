@@ -1,5 +1,40 @@
 # @backstage/core-components
 
+## 0.18.5
+
+### Patch Changes
+
+- a723b8a: The MarkdownContent component now handles HTML content the same way as GitHub when rendering GitHub-flavored Markdown
+- c671db9: Fixed bug in Table component where the toolbar layout would break when both a title and filters were present.
+- 55a9dc2: Update colour token again in ItemCardHeader to respect theme definition.
+
+## 0.18.5-next.0
+
+### Patch Changes
+
+- a723b8a: The MarkdownContent component now handles HTML content the same way as GitHub when rendering GitHub-flavored Markdown
+
+## 0.18.4
+
+### Patch Changes
+
+- 9a942a4: Fixed bug in the `LogViewer` component where shift + click always opened a new window instead of just changing the selection.
+
+  In addition, improved the `LogViewer` component by a few usability enhancements:
+
+  - Added support for multiple selections using cmd/ctrl + click
+  - Improved the generated hash that is added to the URL to also support ranges & multiple selections
+  - Added an hover effect & info tooltip to the "Copy to clipboard" button to indicate its functionality
+  - Added some color and a separator to the line numbers to improve readability
+
+- 207c3c8: long words like urls now breaks to new line on warning panels instead of overflowing the container
+- 4c00303: Add `tooltipClasses` prop to `OverflowTooltip` component to allow customisation of the tooltip
+- 5d52dab: Add i18n support for LogViewer search control
+- f6b49ce: added support for wrapLongLines option in CodeSnippet
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.1
+  - @backstage/theme@0.7.1
+
 ## 0.18.4-next.2
 
 ### Patch Changes

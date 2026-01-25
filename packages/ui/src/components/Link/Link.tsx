@@ -16,18 +16,14 @@
 
 import { forwardRef, useRef } from 'react';
 import { useLink } from 'react-aria';
-import { RouterProvider } from 'react-aria-components';
 import clsx from 'clsx';
 import { useStyles } from '../../hooks/useStyles';
 import { LinkDefinition } from './definition';
 import type { LinkProps } from './types';
-import { useNavigate, useHref } from 'react-router-dom';
-import { isExternalLink } from '../../utils/isExternalLink';
+import { InternalLinkProvider } from '../InternalLinkProvider';
 import styles from './Link.module.css';
 
-/** @public */
-export const Link = forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
-  const navigate = useNavigate();
+const LinkInternal = forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
   const { classNames, dataAttributes, cleanedProps } = useStyles(
     LinkDefinition,
     {
@@ -52,11 +48,11 @@ export const Link = forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
     ...restProps
   } = cleanedProps;
 
-  const isExternal = isExternalLink(href);
   const internalRef = useRef<HTMLAnchorElement>(null);
   const linkRef = (ref || internalRef) as React.RefObject<HTMLAnchorElement>;
 
   // Use useLink hook to get link props
+  // For internal links, this will use the RouterProvider's navigate function
   const { linkProps } = useLink(
     {
       href,
@@ -66,7 +62,7 @@ export const Link = forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
     linkRef,
   );
 
-  const anchorElement = (
+  return (
     <a
       {...linkProps}
       {...dataAttributes}
@@ -79,17 +75,16 @@ export const Link = forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
       {children}
     </a>
   );
+});
 
-  // If it's an external link, render without RouterProvider
-  if (isExternal) {
-    return anchorElement;
-  }
+LinkInternal.displayName = 'LinkInternal';
 
-  // For internal links, use RouterProvider
+/** @public */
+export const Link = forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
   return (
-    <RouterProvider navigate={navigate} useHref={useHref}>
-      {anchorElement}
-    </RouterProvider>
+    <InternalLinkProvider href={props.href}>
+      <LinkInternal {...props} ref={ref} />
+    </InternalLinkProvider>
   );
 });
 

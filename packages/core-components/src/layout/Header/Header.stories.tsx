@@ -36,6 +36,7 @@ export default {
       control: { type: 'select' },
     },
   },
+  tags: ['!manifest'],
 };
 
 const labels = (

@@ -1,5 +1,17 @@
 # @backstage/plugin-auth-backend-module-github-provider
 
+## 0.4.0
+
+### Minor Changes
+
+- b3286d5: Added the `github.com/user-id` annotation to store GitHub's user ID (immutable) in user entities. Also includes addition of the `userIdMatchingUserEntityAnnotation` sign-in resolver that matches users by the new ID.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.10
+  - @backstage/backend-plugin-api@1.6.0
+
 ## 0.3.10-next.1
 
 ### Patch Changes

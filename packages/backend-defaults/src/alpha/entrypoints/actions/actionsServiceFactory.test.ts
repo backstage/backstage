@@ -115,6 +115,476 @@ describe('actionsServiceFactory', () => {
         expect(mockActionsListEndpoint).toHaveBeenCalledTimes(1);
         expect(mockNotFoundActionsListEndpoint).toHaveBeenCalledTimes(1);
       });
+
+      it('should filter actions based on include patterns', async () => {
+        const multipleActions: ActionsServiceAction[] = [
+          {
+            ...mockActionsDefinition,
+            id: 'my-plugin:get-entity',
+            name: 'get-entity',
+          },
+          {
+            ...mockActionsDefinition,
+            id: 'my-plugin:delete-entity',
+            name: 'delete-entity',
+          },
+          {
+            ...mockActionsDefinition,
+            id: 'other-plugin:get-thing',
+            name: 'get-thing',
+          },
+        ];
+
+        server.use(
+          rest.get(
+            'http://localhost:0/api/my-plugin/.backstage/actions/v1/actions',
+            (_req, res, ctx) =>
+              res(
+                ctx.json({
+                  actions: multipleActions.filter(a =>
+                    a.id.startsWith('my-plugin:'),
+                  ),
+                }),
+              ),
+          ),
+          rest.get(
+            'http://localhost:0/api/other-plugin/.backstage/actions/v1/actions',
+            (_req, res, ctx) =>
+              res(
+                ctx.json({
+                  actions: multipleActions.filter(a =>
+                    a.id.startsWith('other-plugin:'),
+                  ),
+                }),
+              ),
+          ),
+        );
+
+        const subject = await ServiceFactoryTester.from(actionsServiceFactory, {
+          dependencies: [
+            mockServices.rootConfig.factory({
+              data: {
+                backend: {
+                  actions: {
+                    pluginSources: ['my-plugin', 'other-plugin'],
+                    filter: {
+                      include: [{ id: 'my-plugin:*' }],
+                    },
+                  },
+                },
+              },
+            }),
+            actionsServiceFactory,
+            httpRouterServiceFactory,
+            mockServices.httpAuth.factory({
+              defaultCredentials: mockCredentials.service('user:default/mock'),
+            }),
+            mockServices.discovery.factory(),
+            actionsRegistryServiceFactory,
+          ],
+        }).getSubject();
+
+        const { actions } = await subject.list({
+          credentials: mockCredentials.service('user:default/mock'),
+        });
+
+        expect(actions.map(a => a.id)).toEqual([
+          'my-plugin:get-entity',
+          'my-plugin:delete-entity',
+        ]);
+      });
+
+      it('should filter actions based on exclude patterns', async () => {
+        const multipleActions: ActionsServiceAction[] = [
+          {
+            ...mockActionsDefinition,
+            id: 'my-plugin:get-entity',
+            name: 'get-entity',
+          },
+          {
+            ...mockActionsDefinition,
+            id: 'my-plugin:delete-entity',
+            name: 'delete-entity',
+          },
+        ];
+
+        server.use(
+          rest.get(
+            'http://localhost:0/api/my-plugin/.backstage/actions/v1/actions',
+            (_req, res, ctx) => res(ctx.json({ actions: multipleActions })),
+          ),
+        );
+
+        const subject = await ServiceFactoryTester.from(actionsServiceFactory, {
+          dependencies: [
+            mockServices.rootConfig.factory({
+              data: {
+                backend: {
+                  actions: {
+                    pluginSources: ['my-plugin'],
+                    filter: {
+                      exclude: [{ id: '*:delete-*' }],
+                    },
+                  },
+                },
+              },
+            }),
+            actionsServiceFactory,
+            httpRouterServiceFactory,
+            mockServices.httpAuth.factory({
+              defaultCredentials: mockCredentials.service('user:default/mock'),
+            }),
+            mockServices.discovery.factory(),
+            actionsRegistryServiceFactory,
+          ],
+        }).getSubject();
+
+        const { actions } = await subject.list({
+          credentials: mockCredentials.service('user:default/mock'),
+        });
+
+        expect(actions.map(a => a.id)).toEqual(['my-plugin:get-entity']);
+      });
+
+      it('should have exclude take precedence over include', async () => {
+        const multipleActions: ActionsServiceAction[] = [
+          {
+            ...mockActionsDefinition,
+            id: 'my-plugin:get-entity',
+            name: 'get-entity',
+          },
+          {
+            ...mockActionsDefinition,
+            id: 'my-plugin:delete-entity',
+            name: 'delete-entity',
+          },
+        ];
+
+        server.use(
+          rest.get(
+            'http://localhost:0/api/my-plugin/.backstage/actions/v1/actions',
+            (_req, res, ctx) => res(ctx.json({ actions: multipleActions })),
+          ),
+        );
+
+        const subject = await ServiceFactoryTester.from(actionsServiceFactory, {
+          dependencies: [
+            mockServices.rootConfig.factory({
+              data: {
+                backend: {
+                  actions: {
+                    pluginSources: ['my-plugin'],
+                    filter: {
+                      include: [{ id: 'my-plugin:*' }],
+                      exclude: [{ id: 'my-plugin:delete-entity' }],
+                    },
+                  },
+                },
+              },
+            }),
+            actionsServiceFactory,
+            httpRouterServiceFactory,
+            mockServices.httpAuth.factory({
+              defaultCredentials: mockCredentials.service('user:default/mock'),
+            }),
+            mockServices.discovery.factory(),
+            actionsRegistryServiceFactory,
+          ],
+        }).getSubject();
+
+        const { actions } = await subject.list({
+          credentials: mockCredentials.service('user:default/mock'),
+        });
+
+        expect(actions.map(a => a.id)).toEqual(['my-plugin:get-entity']);
+      });
+
+      it('should always apply exclude rules even when action matches include', async () => {
+        // This tests that exclude is checked FIRST and always wins,
+        // regardless of whether the action would match an include rule
+        const multipleActions: ActionsServiceAction[] = [
+          {
+            ...mockActionsDefinition,
+            id: 'my-plugin:safe-action',
+            name: 'safe-action',
+            attributes: {
+              destructive: false,
+              readOnly: true,
+              idempotent: true,
+            },
+          },
+          {
+            ...mockActionsDefinition,
+            id: 'my-plugin:dangerous-action',
+            name: 'dangerous-action',
+            attributes: {
+              destructive: true,
+              readOnly: false,
+              idempotent: false,
+            },
+          },
+        ];
+
+        server.use(
+          rest.get(
+            'http://localhost:0/api/my-plugin/.backstage/actions/v1/actions',
+            (_req, res, ctx) => res(ctx.json({ actions: multipleActions })),
+          ),
+        );
+
+        const subject = await ServiceFactoryTester.from(actionsServiceFactory, {
+          dependencies: [
+            mockServices.rootConfig.factory({
+              data: {
+                backend: {
+                  actions: {
+                    pluginSources: ['my-plugin'],
+                    filter: {
+                      // Include all my-plugin actions
+                      include: [{ id: 'my-plugin:*' }],
+                      // But exclude any destructive ones
+                      exclude: [{ attributes: { destructive: true } }],
+                    },
+                  },
+                },
+              },
+            }),
+            actionsServiceFactory,
+            httpRouterServiceFactory,
+            mockServices.httpAuth.factory({
+              defaultCredentials: mockCredentials.service('user:default/mock'),
+            }),
+            mockServices.discovery.factory(),
+            actionsRegistryServiceFactory,
+          ],
+        }).getSubject();
+
+        const { actions } = await subject.list({
+          credentials: mockCredentials.service('user:default/mock'),
+        });
+
+        // dangerous-action matches include (my-plugin:*) but is excluded due to destructive: true
+        expect(actions.map(a => a.id)).toEqual(['my-plugin:safe-action']);
+      });
+
+      it('should filter actions based on attribute constraints', async () => {
+        const multipleActions: ActionsServiceAction[] = [
+          {
+            ...mockActionsDefinition,
+            id: 'my-plugin:read-action',
+            name: 'read-action',
+            attributes: {
+              destructive: false,
+              readOnly: true,
+              idempotent: true,
+            },
+          },
+          {
+            ...mockActionsDefinition,
+            id: 'my-plugin:write-action',
+            name: 'write-action',
+            attributes: {
+              destructive: true,
+              readOnly: false,
+              idempotent: false,
+            },
+          },
+        ];
+
+        server.use(
+          rest.get(
+            'http://localhost:0/api/my-plugin/.backstage/actions/v1/actions',
+            (_req, res, ctx) => res(ctx.json({ actions: multipleActions })),
+          ),
+        );
+
+        const subject = await ServiceFactoryTester.from(actionsServiceFactory, {
+          dependencies: [
+            mockServices.rootConfig.factory({
+              data: {
+                backend: {
+                  actions: {
+                    pluginSources: ['my-plugin'],
+                    filter: {
+                      include: [
+                        {
+                          attributes: {
+                            readOnly: true,
+                          },
+                        },
+                      ],
+                    },
+                  },
+                },
+              },
+            }),
+            actionsServiceFactory,
+            httpRouterServiceFactory,
+            mockServices.httpAuth.factory({
+              defaultCredentials: mockCredentials.service('user:default/mock'),
+            }),
+            mockServices.discovery.factory(),
+            actionsRegistryServiceFactory,
+          ],
+        }).getSubject();
+
+        const { actions } = await subject.list({
+          credentials: mockCredentials.service('user:default/mock'),
+        });
+
+        expect(actions.map(a => a.id)).toEqual(['my-plugin:read-action']);
+      });
+
+      it('should combine pattern and attribute filtering with AND logic', async () => {
+        const multipleActions: ActionsServiceAction[] = [
+          {
+            ...mockActionsDefinition,
+            id: 'my-plugin:safe-read',
+            name: 'safe-read',
+            attributes: {
+              destructive: false,
+              readOnly: true,
+              idempotent: true,
+            },
+          },
+          {
+            ...mockActionsDefinition,
+            id: 'my-plugin:dangerous-read',
+            name: 'dangerous-read',
+            attributes: {
+              destructive: true,
+              readOnly: true,
+              idempotent: false,
+            },
+          },
+          {
+            ...mockActionsDefinition,
+            id: 'other-plugin:safe-read',
+            name: 'safe-read',
+            attributes: {
+              destructive: false,
+              readOnly: true,
+              idempotent: true,
+            },
+          },
+        ];
+
+        server.use(
+          rest.get(
+            'http://localhost:0/api/my-plugin/.backstage/actions/v1/actions',
+            (_req, res, ctx) =>
+              res(
+                ctx.json({
+                  actions: multipleActions.filter(a =>
+                    a.id.startsWith('my-plugin:'),
+                  ),
+                }),
+              ),
+          ),
+          rest.get(
+            'http://localhost:0/api/other-plugin/.backstage/actions/v1/actions',
+            (_req, res, ctx) =>
+              res(
+                ctx.json({
+                  actions: multipleActions.filter(a =>
+                    a.id.startsWith('other-plugin:'),
+                  ),
+                }),
+              ),
+          ),
+        );
+
+        const subject = await ServiceFactoryTester.from(actionsServiceFactory, {
+          dependencies: [
+            mockServices.rootConfig.factory({
+              data: {
+                backend: {
+                  actions: {
+                    pluginSources: ['my-plugin', 'other-plugin'],
+                    filter: {
+                      include: [
+                        {
+                          id: 'my-plugin:*',
+                          attributes: {
+                            destructive: false,
+                          },
+                        },
+                      ],
+                    },
+                  },
+                },
+              },
+            }),
+            actionsServiceFactory,
+            httpRouterServiceFactory,
+            mockServices.httpAuth.factory({
+              defaultCredentials: mockCredentials.service('user:default/mock'),
+            }),
+            mockServices.discovery.factory(),
+            actionsRegistryServiceFactory,
+          ],
+        }).getSubject();
+
+        const { actions } = await subject.list({
+          credentials: mockCredentials.service('user:default/mock'),
+        });
+
+        // Only my-plugin:safe-read matches: my-plugin:* pattern AND destructive: false
+        expect(actions.map(a => a.id)).toEqual(['my-plugin:safe-read']);
+      });
+
+      it('should return all actions when no filter config is provided', async () => {
+        const multipleActions: ActionsServiceAction[] = [
+          {
+            ...mockActionsDefinition,
+            id: 'my-plugin:action-one',
+            name: 'action-one',
+          },
+          {
+            ...mockActionsDefinition,
+            id: 'my-plugin:action-two',
+            name: 'action-two',
+          },
+        ];
+
+        server.use(
+          rest.get(
+            'http://localhost:0/api/my-plugin/.backstage/actions/v1/actions',
+            (_req, res, ctx) => res(ctx.json({ actions: multipleActions })),
+          ),
+        );
+
+        const subject = await ServiceFactoryTester.from(actionsServiceFactory, {
+          dependencies: [
+            mockServices.rootConfig.factory({
+              data: {
+                backend: {
+                  actions: {
+                    pluginSources: ['my-plugin'],
+                    // No filter config
+                  },
+                },
+              },
+            }),
+            actionsServiceFactory,
+            httpRouterServiceFactory,
+            mockServices.httpAuth.factory({
+              defaultCredentials: mockCredentials.service('user:default/mock'),
+            }),
+            mockServices.discovery.factory(),
+            actionsRegistryServiceFactory,
+          ],
+        }).getSubject();
+
+        const { actions } = await subject.list({
+          credentials: mockCredentials.service('user:default/mock'),
+        });
+
+        expect(actions.map(a => a.id)).toEqual([
+          'my-plugin:action-one',
+          'my-plugin:action-two',
+        ]);
+      });
     });
 
     describe('invoke', () => {

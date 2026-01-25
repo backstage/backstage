@@ -17,6 +17,13 @@
 import { useShadowRootElements } from '@backstage/plugin-techdocs-react';
 import { useEffect, useRef } from 'react';
 
+/** @internal Exported for testing - allows spying on reloads without spying
+ * on window.location.
+ */
+export const utils = {
+  reloadPage: () => window.location.reload(),
+};
+
 interface TechDocsLiveReloadProps {
   /** Whether to enable livereload (default: true in development) */
   enabled?: boolean;
@@ -69,7 +76,7 @@ export const TechDocsLiveReload = ({
       reqRef.current = new XMLHttpRequest();
       reqRef.current.onloadend = function handleLoadEnd(this: XMLHttpRequest) {
         if (parseFloat(this.responseText) > epoch) {
-          window.location.reload();
+          utils.reloadPage();
         } else {
           timeoutRef.current = setTimeout(poll, this.status === 200 ? 0 : 3000);
         }

@@ -1,5 +1,38 @@
 # @backstage/plugin-notifications
 
+## 0.5.13
+
+### Patch Changes
+
+- 4452d15: Added i18n support.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.3
+  - @backstage/core-components@0.18.5
+
+## 0.5.13-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.5-next.0
+
+## 0.5.12
+
+### Patch Changes
+
+- d02db50: Remove unnecessary use of `compatWrapper` and `convertLegacyRouteRef`(s) for the new frontend system.
+- 53347cc: Move long notification descriptions behind `Show more/less` button.
+
+  This improves readability of the notifications list by preventing long descriptions from taking up too much space
+  or rendering very small scrollable areas.
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.2
+  - @backstage/core-components@0.18.4
+  - @backstage/core-plugin-api@1.12.1
+  - @backstage/theme@0.7.1
+  - @backstage/plugin-signals-react@0.0.18
+
 ## 0.5.12-next.0
 
 ### Patch Changes

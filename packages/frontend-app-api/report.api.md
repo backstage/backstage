@@ -109,6 +109,14 @@ export type AppErrorTypes = {
       node: AppNode;
     };
   };
+  API_FACTORY_CONFLICT: {
+    context: {
+      node: AppNode;
+      apiRefId: string;
+      pluginId: string;
+      existingPluginId: string;
+    };
+  };
   ROUTE_DUPLICATE: {
     context: {
       routeId: string;

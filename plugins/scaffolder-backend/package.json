@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-scaffolder-backend",
-  "version": "3.1.0-next.1",
+  "version": "3.1.1",
   "description": "The Backstage backend plugin that helps you create new things",
   "backstage": {
     "role": "backend-plugin",
@@ -104,7 +104,6 @@
     "p-limit": "^3.1.0",
     "p-queue": "^6.6.2",
     "prom-client": "^15.0.0",
-    "tar": "^6.1.12",
     "triple-beam": "^1.4.1",
     "uuid": "^11.0.0",
     "winston": "^3.2.1",
@@ -112,7 +111,7 @@
     "yaml": "^2.0.0",
     "zen-observable": "^0.10.0",
     "zod": "^3.22.4",
-    "zod-to-json-schema": "^3.20.4"
+    "zod-to-json-schema": "^3.25.1"
   },
   "devDependencies": {
     "@backstage/backend-app-api": "workspace:^",

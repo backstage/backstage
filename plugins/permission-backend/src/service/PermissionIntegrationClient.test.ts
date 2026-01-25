@@ -148,9 +148,7 @@ describe('PermissionIntegrationClient', () => {
         ],
       );
 
-      expect(response).toEqual(
-        expect.objectContaining([{ id: '123', result: AuthorizeResult.ALLOW }]),
-      );
+      expect(response).toEqual([{ id: '123', result: AuthorizeResult.ALLOW }]);
     });
 
     it('should not include authorization headers if no token is supplied', async () => {

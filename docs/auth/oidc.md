@@ -241,6 +241,12 @@ These parameters have implicit default values. Don't override them unless you kn
 - `prompt`: Recommended to use `auto` so the browser will request sign-in to the IDP if the
   user has no active session.
 - `sessionDuration`: Lifespan of the user session.
+- `startUrlSearchParams`: This is a dictionary of search (query) parameters for the OIDC
+  authorization start URL. Don't define it unless you want to change the identity
+  provider's behavior. (For example, you could set the `organization` parameter to guide
+  users towards a particular sign-in option that your organization prefers.) **Note:** the
+  start URL is controlled by the browser, so this feature is only for improving the
+  Backstage user experience.
 
 :::note Config Reloading
 Backstage does not yet support hot reloading of auth provider configuration. Any changes to this YAML file require a restart of Backstage.

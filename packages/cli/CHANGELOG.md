@@ -1,5 +1,99 @@
 # @backstage/cli
 
+## 0.35.2
+
+### Patch Changes
+
+- 320c6a9: Bump `@swc/core` to support `ES2023` and `ES2024`
+- c0d7bf6: Added `--include` and `--format` options to `backstage-cli info` command for including additional packages via glob patterns and outputting as JSON or Text.
+- f6a5d2f: Fixed CSS module class name collisions when running multiple versions of packages simultaneously by using content-based hashing for class name generation.
+- 140cbc2: Added `@backstage/backend-test-utils` to backend package templates.
+- 4eeba9e: Upgrade `zod-validation-error` to version 4
+- 9ee5996: Bump minimum required `@swc/core` to avoid transpilation bug
+- Updated dependencies
+  - @backstage/cli-common@0.1.17
+  - @backstage/integration@1.19.2
+
+## 0.35.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.19.2-next.0
+
+## 0.35.2-next.0
+
+### Patch Changes
+
+- 320c6a9: Bump `@swc/core` to support `ES2023` and `ES2024`
+- 9ee5996: Bump minimum required `@swc/core` to avoid transpilation bug
+- Updated dependencies
+  - @backstage/catalog-model@1.7.6
+  - @backstage/cli-common@0.1.16
+  - @backstage/cli-node@0.2.16
+  - @backstage/config@1.3.6
+  - @backstage/config-loader@1.10.7
+  - @backstage/errors@1.2.7
+  - @backstage/eslint-plugin@0.2.0
+  - @backstage/integration@1.19.0
+  - @backstage/release-manifests@0.0.13
+  - @backstage/types@1.2.2
+
+## 0.35.0
+
+### Minor Changes
+
+- f6f22a9: Provide `--no-node-snapshot` by default when running the `package start` or `package test`. You can disable this behavior by providing `NODE_OPTIONS='--node-snapshot'`.
+- f8dff94: Switched the default module resolution to `bundler` and the `module` setting to `ES2020`.
+
+  You may need to bump some dependencies as part of this change and fix imports in code. The most common source of this is that type checking will now consider the `exports` field in `package.json` when resolving imports. This in turn can break older versions of packages that had incompatible `exports` fields. Generally these issues will have already been fixed in the upstream packages.
+
+  You might be tempted to use `--skipLibCheck` to hide issues due to this change, but it will weaken the type safety of your project. If you run into a large number of issues and want to keep the old behavior, you can reset the `moduleResolution` and `module` settings your own `tsconfig.json` file to `node` and `ESNext` respectively. But keep in mind that the `node` option will be removed in future versions of TypeScript.
+
+  A future version of Backstage will make these new settings mandatory, as we move to rely on the `exports` field for type resolution in packages, rather than the `typesVersions` field.
+
+- cd0b8a1: **BREAKING**: `jest` is now a peer dependency. If you run tests using Backstage CLI, you must add Jest and its environment dependencies as `devDependencies` in your project.
+
+  You can choose to install either Jest 29 or Jest 30. The built-in Jest version before this change was Jest 29, however, we recommend that you switch to Jest 30. Upgrading will solve the `Could not parse CSS stylesheet` errors, allow you to use MSW v2 in web packages, and ensure that you remain compatible with future versions of the Backstage CLI. Support for Jest 29 is temporary, with the purpose of allowing you to upgrade at your own pace, but it will eventually be removed.
+
+  - **Jest 29**: Install `jest@^29` and `jest-environment-jsdom@^29`. No migration needed, but you may see `Could not parse CSS stylesheet` warnings/errors when testing components from `@backstage/ui` or other packages using CSS `@layer` declarations.
+  - **Jest 30**: Install `jest@^30`, `@jest/environment-jsdom-abstract@^30`, and `jsdom@^27`. Fixes the stylesheet parsing warnings/errors, but requires migration steps.
+
+  See the [Jest 30 migration guide](https://backstage.io/docs/tutorials/jest30-migration) for detailed migration instructions.
+
+### Patch Changes
+
+- de96a60: chore(deps): bump `express` from 4.21.2 to 4.22.0
+- e7db290: Add missing peer/dev dependencies to the frontend plugin template.
+
+  `react-dom` was not declared as a peer dependency, causing module resolution
+  errors when generating plugins outside a Backstage monorepo. This adds
+  `react-dom` to `peerDependencies` (for consuming apps) and `devDependencies`
+  (for local development). `react-router-dom` is also added to `peerDependencies` (for consuming apps) and `devDependencies`
+  to support routing during plugin development.
+
+  Fixes:
+
+  - Module not found: Can't resolve 'react-dom'
+  - Module not found: Can't resolve 'react-router-dom'
+
+- 1226647: Updated dependency `esbuild` to `^0.27.0`.
+- f89a074: Updated dependency `@pmmmwh/react-refresh-webpack-plugin` to `^0.6.0`.
+- 2b81751: Updated dependency `webpack` to `~5.103.0`.
+- fafd9e1: Fixed internal usage of `yargs`.
+- c8c2329: Add proxy configuration from env-vars to create-app tasks
+- 2bae83a: Switched compilation target to ES2022 in order to match the new set of supported Node.js versions, which are 22 and 24.
+
+  The TypeScript compilation target has been set to ES2022, because setting it to a higher target will break projects on older TypeScript versions. If you use a newer TypeScript version in your own project, you can bump `compilerOptions.target` to ES2023 or ES2024 in your own `tsconfig.json` file.
+
+- 7fbac5c: Updated to use new utilities from `@backstage/cli-common`.
+- 2bae83a: Bumped dev dependencies `@types/node`
+- Updated dependencies
+  - @backstage/cli-node@0.2.16
+  - @backstage/integration@1.19.0
+  - @backstage/cli-common@0.1.16
+  - @backstage/config-loader@1.10.7
+
 ## 0.35.0-next.2
 
 ### Minor Changes

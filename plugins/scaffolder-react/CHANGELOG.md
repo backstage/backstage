@@ -1,5 +1,53 @@
 # @backstage/plugin-scaffolder-react
 
+## 1.19.5
+
+### Patch Changes
+
+- 872eb91: Upgrade `zod-to-json-schema` to latest version
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.3
+  - @backstage/core-components@0.18.5
+  - @backstage/plugin-catalog-react@1.21.5
+  - @backstage/plugin-scaffolder-common@1.7.5
+
+## 1.19.5-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.5-next.0
+  - @backstage/plugin-catalog-react@1.21.5-next.1
+
+## 1.19.5-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-scaffolder-common@1.7.5-next.0
+  - @backstage/plugin-catalog-react@1.21.5-next.0
+  - @backstage/frontend-plugin-api@0.13.2
+
+## 1.19.4
+
+### Patch Changes
+
+- fb029b6: Updated luxon types
+- 5ca461e: Fixed bug where custom `review.name` values were incorrectly formatted by `startCase`, preserving them exactly as written.
+- be21c5c: Updated dependency `@rjsf/utils` to `5.24.13`.
+  Updated dependency `@rjsf/core` to `5.24.13`.
+  Updated dependency `@rjsf/material-ui` to `5.24.13`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.24.13`.
+- 9b38f22: Updated dependency `use-immer` to `^0.11.0`.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.2
+  - @backstage/core-components@0.18.4
+  - @backstage/plugin-catalog-react@1.21.4
+  - @backstage/core-plugin-api@1.12.1
+  - @backstage/theme@0.7.1
+  - @backstage/plugin-permission-react@0.4.39
+  - @backstage/plugin-scaffolder-common@1.7.4
+
 ## 1.19.4-next.2
 
 ### Patch Changes

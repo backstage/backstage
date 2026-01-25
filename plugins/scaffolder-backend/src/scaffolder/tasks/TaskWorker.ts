@@ -134,6 +134,7 @@ export class TaskWorker {
       additionalTemplateFilters,
       additionalTemplateGlobals,
       permissions,
+      config,
     });
 
     return new TaskWorker({

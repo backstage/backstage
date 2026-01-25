@@ -48,6 +48,7 @@ export default {
     (Story: ComponentType<PropsWithChildren<{}>>) =>
       wrapInTestApp(<Story />, { mountedRoutes: { '/': routeRef } }),
   ],
+  tags: ['!manifest'],
 };
 
 const handleSearch = (input: string) => {

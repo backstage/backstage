@@ -96,13 +96,13 @@ paths:
     `;
 
     const requestInterceptor = (req: any) => req;
-    const supportedSubmitMethods = ['get', 'post', 'put', 'delete'];
+    const supportedSubmitMethods = ['get', 'post', 'put', 'delete'] as const;
 
     const { findByRole, getByRole, getByLabelText } = await renderInTestApp(
       <OpenApiDefinition
         definition={definition}
         requestInterceptor={requestInterceptor}
-        supportedSubmitMethods={supportedSubmitMethods}
+        supportedSubmitMethods={supportedSubmitMethods as any}
       />,
     );
 

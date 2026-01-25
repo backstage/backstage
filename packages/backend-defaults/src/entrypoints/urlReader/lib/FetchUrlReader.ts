@@ -30,6 +30,10 @@ import {
 import { ReaderFactory } from './types';
 import path from 'path';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
+import { Config } from '@backstage/config';
+
+const REDIRECT_STATUS_CODES = [301, 302, 307, 308];
+const MAX_REDIRECTS = 5;
 
 const isInRange = (num: number, [start, end]: [number, number]) => {
   return num >= start && num <= end;
@@ -66,6 +70,37 @@ const parsePortPredicate = (port: string | undefined) => {
   return (url: URL) => !url.port;
 };
 
+function predicateFromConfig(config: Config): (url: URL) => boolean {
+  const allow = config
+    .getOptionalConfigArray('backend.reading.allow')
+    ?.map(allowConfig => {
+      const paths = allowConfig.getOptionalStringArray('paths');
+      const checkPath = paths
+        ? (url: URL) => {
+            const targetPath = path.posix.normalize(url.pathname);
+            return paths.some(allowedPath =>
+              targetPath.startsWith(allowedPath),
+            );
+          }
+        : (_url: URL) => true;
+      const host = allowConfig.getString('host');
+      const [hostname, port] = host.split(':');
+
+      const checkPort = parsePortPredicate(port);
+
+      if (hostname.startsWith('*.')) {
+        const suffix = hostname.slice(1);
+        return (url: URL) =>
+          url.hostname.endsWith(suffix) && checkPath(url) && checkPort(url);
+      }
+
+      return (url: URL) =>
+        url.hostname === hostname && checkPath(url) && checkPort(url);
+    });
+
+  return allow?.length ? url => allow.some(p => p(url)) : () => false;
+}
+
 /**
  * A {@link @backstage/backend-plugin-api#UrlReaderService} that does a plain fetch of the URL.
  *
@@ -85,37 +120,20 @@ export class FetchUrlReader implements UrlReaderService {
    *   An optional list of paths which are allowed. If the list is omitted all paths are allowed.
    */
   static factory: ReaderFactory = ({ config }) => {
-    const predicates =
-      config
-        .getOptionalConfigArray('backend.reading.allow')
-        ?.map(allowConfig => {
-          const paths = allowConfig.getOptionalStringArray('paths');
-          const checkPath = paths
-            ? (url: URL) => {
-                const targetPath = path.posix.normalize(url.pathname);
-                return paths.some(allowedPath =>
-                  targetPath.startsWith(allowedPath),
-                );
-              }
-            : (_url: URL) => true;
-          const host = allowConfig.getString('host');
-          const [hostname, port] = host.split(':');
-
-          const checkPort = parsePortPredicate(port);
-
-          if (hostname.startsWith('*.')) {
-            const suffix = hostname.slice(1);
-            return (url: URL) =>
-              url.hostname.endsWith(suffix) && checkPath(url) && checkPort(url);
-          }
-          return (url: URL) =>
-            url.hostname === hostname && checkPath(url) && checkPort(url);
-        }) ?? [];
-
-    const reader = new FetchUrlReader();
-    const predicate = (url: URL) => predicates.some(p => p(url));
+    const predicate = predicateFromConfig(config);
+    const reader = new FetchUrlReader({ predicate });
     return [{ reader, predicate }];
   };
+
+  static fromConfig(config: Config): FetchUrlReader {
+    return new FetchUrlReader({ predicate: predicateFromConfig(config) });
+  }
+
+  readonly #predicate: (url: URL) => boolean;
+
+  private constructor(options: { predicate: (url: URL) => boolean }) {
+    this.#predicate = options.predicate;
+  }
 
   async read(url: string): Promise<Buffer> {
     const response = await this.readUrl(url);
@@ -126,41 +144,69 @@ export class FetchUrlReader implements UrlReaderService {
     url: string,
     options?: UrlReaderServiceReadUrlOptions,
   ): Promise<UrlReaderServiceReadUrlResponse> {
-    let response: Response;
-    try {
-      response = await fetch(url, {
-        headers: {
-          ...(options?.etag && { 'If-None-Match': options.etag }),
-          ...(options?.lastModifiedAfter && {
-            'If-Modified-Since': options.lastModifiedAfter.toUTCString(),
-          }),
-          ...(options?.token && { Authorization: `Bearer ${options.token}` }),
-        },
-        // TODO(freben): The signal cast is there because pre-3.x versions of
-        // node-fetch have a very slightly deviating AbortSignal type signature.
-        // The difference does not affect us in practice however. The cast can
-        // be removed after we support ESM for CLI dependencies and migrate to
-        // version 3 of node-fetch.
-        // https://github.com/backstage/backstage/issues/8242
-        signal: options?.signal as any,
-      });
-    } catch (e) {
-      throw new Error(`Unable to read ${url}, ${e}`);
+    let currentUrl = url;
+
+    for (
+      let redirectCount = 0;
+      redirectCount < MAX_REDIRECTS;
+      redirectCount += 1
+    ) {
+      // Validate URL against predicate if configured
+      const parsedUrl = new URL(currentUrl);
+      if (!this.#predicate(parsedUrl)) {
+        throw new Error(
+          `URL not allowed by backend.reading.allow configuration: ${currentUrl}`,
+        );
+      }
+
+      let response: Response;
+      try {
+        response = await fetch(currentUrl, {
+          headers: {
+            ...(options?.etag && { 'If-None-Match': options.etag }),
+            ...(options?.lastModifiedAfter && {
+              'If-Modified-Since': options.lastModifiedAfter.toUTCString(),
+            }),
+            ...(options?.token && { Authorization: `Bearer ${options.token}` }),
+          },
+          // Handle redirects manually to validate targets against the allowlist
+          redirect: 'manual',
+          // TODO(freben): The signal cast is there because pre-3.x versions of
+          // node-fetch have a very slightly deviating AbortSignal type signature.
+          // The difference does not affect us in practice however. The cast can
+          // be removed after we support ESM for CLI dependencies and migrate to
+          // version 3 of node-fetch.
+          // https://github.com/backstage/backstage/issues/8242
+          signal: options?.signal as any,
+        });
+      } catch (e) {
+        throw new Error(`Unable to read ${currentUrl}, ${e}`);
+      }
+
+      if (response.ok) {
+        return ReadUrlResponseFactory.fromResponse(response);
+      }
+
+      if (response.status === 304) {
+        throw new NotModifiedError();
+      }
+
+      const location = response.headers.get('location');
+      if (!REDIRECT_STATUS_CODES.includes(response.status) || !location) {
+        const message = `could not read ${currentUrl}, ${response.status} ${response.statusText}`;
+        if (response.status === 404) {
+          throw new NotFoundError(message);
+        }
+        throw new Error(message);
+      }
+
+      // Follow the redirect
+      currentUrl = new URL(location, currentUrl).toString();
     }
 
-    if (response.status === 304) {
-      throw new NotModifiedError();
-    }
-
-    if (response.ok) {
-      return ReadUrlResponseFactory.fromResponse(response);
-    }
-
-    const message = `could not read ${url}, ${response.status} ${response.statusText}`;
-    if (response.status === 404) {
-      throw new NotFoundError(message);
-    }
-    throw new Error(message);
+    throw new Error(
+      `Too many redirects (max ${MAX_REDIRECTS}) when reading ${url}`,
+    );
   }
 
   async readTree(): Promise<UrlReaderServiceReadTreeResponse> {

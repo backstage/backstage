@@ -54,12 +54,12 @@ jobs:
           result-encoding: string
 
       - name: checkout latest release
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           ref: refs/tags/${{ steps.find-release.outputs.result }}
 
       - name: Use Node.js 22.x
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
         with:
           node-version: 22.x
           registry-url: https://registry.npmjs.org/ # Needed for auth
@@ -68,17 +68,6 @@ jobs:
         uses: backstage/actions/yarn-install@b3c1841fd69e1658ac631afafd0fb140a2309024 # v0.6.17
         with:
           cache-prefix: ${{ runner.os }}-v22.x
-
-      - name: build API reference
-        run: yarn build:api-docs
-
-      - name: upload API reference
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
-        with:
-          name: stable-reference
-          path: docs/reference/
-          if-no-files-found: error
-          retention-days: 1
 
       # Use the lower-level cache actions for the success cache, so that we can store the cache even on failed builds
       - name: restore package-docs cache
@@ -89,13 +78,13 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-v${{ matrix.node-version }}-package-docs-stable-
 
-      - name: build API reference (beta)
+      - name: build API reference
         run: yarn backstage-repo-tools package-docs
 
-      - name: upload API reference (beta)
+      - name: upload API reference
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: stable-reference-beta
+          name: stable-reference
           path: type-docs/
           if-no-files-found: error
           retention-days: 1
@@ -140,10 +129,10 @@ jobs:
           egress-policy: audit
 
       - name: checkout master
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: Use Node.js 22.x
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
         with:
           node-version: 22.x
           registry-url: https://registry.npmjs.org/ # Needed for auth
@@ -152,17 +141,6 @@ jobs:
         uses: backstage/actions/yarn-install@b3c1841fd69e1658ac631afafd0fb140a2309024 # v0.6.17
         with:
           cache-prefix: ${{ runner.os }}-v22.x
-
-      - name: build API reference
-        run: yarn build:api-docs
-
-      - name: upload API reference
-        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
-        with:
-          name: next-reference
-          path: docs/reference/
-          if-no-files-found: error
-          retention-days: 1
 
       # Use the lower-level cache actions for the success cache, so that we can store the cache even on failed builds
       - name: restore package-docs cache
@@ -173,13 +151,13 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-v${{ matrix.node-version }}-package-docs-
 
-      - name: build API reference (beta)
+      - name: build API reference
         run: yarn backstage-repo-tools package-docs
 
-      - name: upload API reference (beta)
+      - name: upload API reference
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
         with:
-          name: next-reference-beta
+          name: next-reference
           path: type-docs/
           if-no-files-found: error
           retention-days: 1
@@ -245,26 +223,20 @@ jobs:
           egress-policy: audit
 
       - name: Use Node.js 22.x
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
         with:
           node-version: 22.x
           registry-url: https://registry.npmjs.org/ # Needed for auth
 
       # Stable docs
       - name: checkout latest release
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           ref: refs/tags/${{ needs.stable.outputs.release }}
 
       - name: microsite yarn install
         run: yarn install --immutable
         working-directory: microsite
-
-      - name: download stable reference
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
-        with:
-          name: stable-reference
-          path: docs/reference
 
       - name: download stable OpenAPI API docs
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
@@ -286,19 +258,13 @@ jobs:
 
       # Next docs
       - name: checkout master
-        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           clean: false
 
       - name: microsite yarn install
         run: yarn install --immutable
         working-directory: microsite
-
-      - name: download next reference
-        uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
-        with:
-          name: next-reference
-          path: docs/reference
 
       - name: download next OpenAPI API docs
         uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
@@ -317,19 +283,19 @@ jobs:
 
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
-          name: stable-reference-beta
+          name: stable-reference
           path: microsite/build/api/stable/
 
       - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093 # v4
         with:
-          name: next-reference-beta
+          name: next-reference
           path: microsite/build/api/next/
 
       - name: Check the build output
         run: ls microsite/build && ls microsite/build/storybook && ls microsite/build/api/stable && ls microsite/build/api/next
 
       - name: Deploy both microsite and storybook to gh-pages
-        uses: JamesIves/github-pages-deploy-action@4a3abc783e1a24aeb44c16e869ad83caf6b4cc23 # v4.7.4
+        uses: JamesIves/github-pages-deploy-action@9d877eea73427180ae43cf98e8914934fe157a1a # v4.7.6
         with:
           branch: gh-pages
           folder: microsite/build

@@ -1,5 +1,24 @@
 # @backstage/plugin-permission-node
 
+## 0.10.8
+
+### Patch Changes
+
+- 872eb91: Upgrade `zod-to-json-schema` to latest version
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.1
+  - @backstage/plugin-auth-node@0.6.11
+  - @backstage/plugin-permission-common@0.9.4
+
+## 0.10.7
+
+### Patch Changes
+
+- de96a60: chore(deps): bump `express` from 4.21.2 to 4.22.0
+- Updated dependencies
+  - @backstage/plugin-auth-node@0.6.10
+  - @backstage/backend-plugin-api@1.6.0
+
 ## 0.10.7-next.1
 
 ### Patch Changes

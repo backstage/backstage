@@ -1,5 +1,35 @@
 # @backstage/plugin-catalog-backend-module-github-org
 
+## 0.3.18
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.1
+  - @backstage/plugin-catalog-backend-module-github@0.12.1
+
+## 0.3.18-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog-backend-module-github@0.12.1-next.0
+
+## 0.3.17
+
+### Patch Changes
+
+- ed5a7a3: Introduce new configuration option to exclude suspended users from GitHub Enterprise instances.
+
+  When it’s set to true, suspended users won’t be returned when querying the organization users for GitHub Enterprise instances.
+  Note that this option should be used only against GitHub Enterprise instances, the property does not exist in the github.com GraphQL schema, setting it will cause a schema validation error and the syncing of users will fail.
+
+- Updated dependencies
+  - @backstage/plugin-events-node@0.4.18
+  - @backstage/plugin-catalog-backend-module-github@0.12.0
+  - @backstage/backend-plugin-api@1.6.0
+  - @backstage/plugin-catalog-node@1.20.1
+
 ## 0.3.17-next.2
 
 ### Patch Changes

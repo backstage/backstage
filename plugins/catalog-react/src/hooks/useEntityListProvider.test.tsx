@@ -222,6 +222,27 @@ describe('<EntityListProvider />', () => {
     });
   });
 
+  it('resolves query param filter values with large arrays', async () => {
+    const largeArray = Array.from({ length: 50 }, (_, i) => `owner-${i}`);
+    const query = qs.stringify({
+      filters: { kind: 'component', owners: largeArray },
+    });
+    const { result } = renderHook(() => useEntityList(), {
+      wrapper: createWrapper({
+        location: `/catalog?${query}`,
+        pagination,
+      }),
+    });
+
+    await waitFor(() => {
+      expect(result.current.queryParameters).toBeTruthy();
+    });
+    expect(result.current.queryParameters).toEqual({
+      kind: 'component',
+      owners: largeArray,
+    });
+  });
+
   it('does not fetch when only frontend filters change', async () => {
     const { result } = renderHook(() => useEntityList(), {
       wrapper: createWrapper({ pagination }),

@@ -1,5 +1,32 @@
 # @backstage/plugin-scaffolder-backend-module-azure
 
+## 0.2.17
+
+### Patch Changes
+
+- 88abcc6: Improved README with clearer setup and usage guidance.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.1
+  - @backstage/plugin-scaffolder-node@0.12.3
+  - @backstage/integration@1.19.2
+
+## 0.2.17-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.19.2-next.0
+  - @backstage/plugin-scaffolder-node@0.12.3-next.0
+
+## 0.2.16
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.19.0
+  - @backstage/backend-plugin-api@1.6.0
+  - @backstage/plugin-scaffolder-node@0.12.2
+
 ## 0.2.16-next.1
 
 ### Patch Changes

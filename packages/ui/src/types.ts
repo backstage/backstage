@@ -173,3 +173,31 @@ export interface ComponentDefinition {
   dataAttributes?: DataAttributesMap;
   utilityProps?: string[];
 }
+
+/**
+ * Surface type
+ *
+ * Supports absolute levels ('0'-'3'), intent surfaces ('danger', 'warning', 'success'),
+ * and 'auto' which increments from the parent surface context.
+ *
+ * @public
+ */
+export type Surface =
+  | '0'
+  | '1'
+  | '2'
+  | '3'
+  | 'danger'
+  | 'warning'
+  | 'success'
+  | 'auto';
+
+/** @public */
+export interface LeafSurfaceProps {
+  onSurface?: Responsive<Surface>;
+}
+
+/** @public */
+export interface ContainerSurfaceProps {
+  surface?: Responsive<Surface>;
+}

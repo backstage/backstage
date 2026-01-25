@@ -1,0 +1,92 @@
+import { PropsTable } from '@/components/PropsTable';
+import { Snippet } from '@/components/Snippet';
+import { CodeBlock } from '@/components/CodeBlock';
+import { linkPropDefs } from './props-definition';
+import {
+  linkUsageSnippet,
+  defaultSnippet,
+  externalLinkSnippet,
+  allVariantsSnippet,
+  allColorsSnippet,
+  underlineSnippet,
+} from './snippets';
+import {
+  Default,
+  ExternalLink,
+  AllVariants,
+  AllColors,
+  Underline,
+} from './components';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+import { LinkDefinition } from '../../../utils/definitions';
+
+<PageTitle
+  title="Link"
+  description="A link component that renders a `<a>` element."
+/>
+
+<Snippet align="center" py={4} preview={<Default />} code={defaultSnippet} />
+
+## Usage
+
+<CodeBlock code={linkUsageSnippet} />
+
+## API reference
+
+<PropsTable data={linkPropDefs} />
+
+## Examples
+
+### External Link
+
+Here's how to create an external link that opens in a new tab.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<ExternalLink />}
+  code={externalLinkSnippet}
+/>
+
+### Variants
+
+Here's a view when links have different variants.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<AllVariants />}
+  code={allVariantsSnippet}
+/>
+
+### Colors
+
+Here's a view when links have different colors.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<AllColors />}
+  code={allColorsSnippet}
+/>
+
+### Underline
+
+Here's a view when links have different underline styles.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<Underline />}
+  code={underlineSnippet}
+/>
+
+<Theming definition={LinkDefinition} />
+
+<ChangelogComponent component="link" />

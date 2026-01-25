@@ -21,7 +21,10 @@ const componentDataRef = createExtensionDataRef<
   (props: { children: ReactNode }) => JSX.Element | null
 >().with({ id: 'app.router.wrapper' });
 
-/** @public */
+/**
+ * @public
+ * @deprecated Use {@link @backstage/plugin-app-react#RouterBlueprint} instead.
+ */
 export const RouterBlueprint = createExtensionBlueprint({
   kind: 'app-router-component',
   attachTo: { id: 'app/root', input: 'router' },
