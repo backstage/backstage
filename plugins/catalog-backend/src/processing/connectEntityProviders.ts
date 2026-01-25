@@ -27,7 +27,7 @@ import {
   EntityProviderMutation,
 } from '@backstage/plugin-catalog-node';
 import type { ExtensionPointFactoryContext } from '@backstage/backend-plugin-api';
-import { assertError } from '@backstage/errors';
+import { ForwardedError } from '@backstage/errors';
 
 export type EntityProviderEntry = {
   provider: EntityProvider;
@@ -118,8 +118,12 @@ export async function connectEntityProviders(
         await provider.connect(connection);
       } catch (error: unknown) {
         if (context) {
-          assertError(error);
-          context.reportModuleStartupFailure({ error });
+          context.reportModuleStartupFailure({
+            error: new ForwardedError(
+              `Failed to connect entity provider '${provider.getProviderName()}'`,
+              error,
+            ),
+          });
           return;
         }
         throw error;

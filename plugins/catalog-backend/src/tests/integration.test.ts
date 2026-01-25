@@ -20,7 +20,7 @@ import {
   stringifyEntityRef,
 } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
-import { InputError } from '@backstage/errors';
+import { InputError, NotImplementedError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
 import {
@@ -321,7 +321,11 @@ class TestHarness {
       providerDatabase,
       providers.map(p => ({
         provider: p,
-        context: { reportModuleStartupFailure: jest.fn() },
+        context: {
+          reportModuleStartupFailure: () => {
+            throw new NotImplementedError();
+          },
+        },
       })),
     );
 
@@ -557,7 +561,11 @@ describe('Catalog Backend Integration', () => {
         },
       ]),
     ).resolves.toBeUndefined();
-    expect(reportFailure).toHaveBeenCalledWith({ error });
+    expect(reportFailure).toHaveBeenCalledWith({
+      error: new Error(
+        "Failed to connect entity provider 'failing'; caused by Error: NOPE",
+      ),
+    });
   });
 
   it('should orphan entities', async () => {

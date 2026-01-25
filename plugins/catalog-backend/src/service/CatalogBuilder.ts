@@ -151,6 +151,8 @@ export type CatalogEnvironment = {
  * - Processors can be added or replaced. These implement the functionality of
  *   reading, parsing, validating, and processing the entity data before it is
  *   persisted in the catalog.
+ *
+ * @internal
  */
 export class CatalogBuilder {
   private readonly env: CatalogEnvironment;
