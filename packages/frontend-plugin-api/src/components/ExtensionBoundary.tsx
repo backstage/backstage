@@ -90,7 +90,7 @@ export function ExtensionBoundary(props: ExtensionBoundaryProps) {
   );
 
   const plugin = node.spec.plugin;
-  const pluginId = plugin.id ?? 'app';
+  const pluginId = plugin.pluginId ?? plugin.id ?? 'app';
 
   const pluginWrapperApi = useOptionalPluginWrapperApi();
 

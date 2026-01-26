@@ -40,7 +40,11 @@ function AppErrorItem(props: { error: AppError }): JSX.Element {
   useEffect(() => {
     plugin?.info().then(setInfo, error => {
       // eslint-disable-next-line no-console
-      console.error(`Failed to load info for plugin ${plugin.id}: ${error}`);
+      console.error(
+        `Failed to load info for plugin ${
+          plugin.pluginId ?? plugin.id
+        }: ${error}`,
+      );
     });
   }, [plugin]);
 

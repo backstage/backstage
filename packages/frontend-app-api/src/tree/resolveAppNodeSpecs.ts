@@ -57,7 +57,11 @@ export function resolveAppNodeSpecs(options: {
     if (forbidden.has(extension.id)) {
       collector.report({
         code: 'EXTENSION_IGNORED',
-        message: `It is forbidden to override the '${extension.id}' extension, attempted by the '${extension.plugin.id}' plugin`,
+        message: `It is forbidden to override the '${
+          extension.id
+        }' extension, attempted by the '${
+          extension.plugin.pluginId ?? extension.plugin.id
+        }' plugin`,
         context: {
           plugin: extension.plugin,
           extensionId: extension.id,
@@ -91,7 +95,7 @@ export function resolveAppNodeSpecs(options: {
   );
 
   const appPlugin =
-    plugins.find(plugin => plugin.id === 'app') ??
+    plugins.find(plugin => (plugin.pluginId ?? plugin.id) === 'app') ??
     createFrontendPlugin({
       pluginId: 'app',
     });
@@ -159,7 +163,9 @@ export function resolveAppNodeSpecs(options: {
       if (seenExtensionIds.has(extension.id)) {
         collector.report({
           code: 'EXTENSION_IGNORED',
-          message: `The '${extension.id}' extension from the '${params.plugin.id}' plugin is a duplicate and will be ignored`,
+          message: `The '${extension.id}' extension from the '${
+            params.plugin.pluginId ?? params.plugin.id
+          }' plugin is a duplicate and will be ignored`,
           context: {
             plugin: params.plugin,
             extensionId: extension.id,
