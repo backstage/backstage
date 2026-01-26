@@ -1,0 +1,9 @@
+---
+title: DORA Metrics Scorecard
+author: zc149
+authorUrl: https://github.com/zc149
+category: Monitoring
+description: Track and visualize DORA (DevOps Research and Assessment) metrics with automated data collection from GitHub. Displays Deployment Frequency, Lead Time, Change Failure Rate, and MTTR with performance tier classification.
+documentation: https://github.com/zc149/backstage-plugin-dora-scorecard
+npmPackageName: '@jikwan/backstage-plugin-dora-scorecard'
+addedDate: '2025-12-29'
