@@ -23,6 +23,7 @@ import { CatalogProcessingOrchestrator } from './types';
 import { Stitcher } from '../stitching/types';
 import { ConfigReader } from '@backstage/config';
 import { mockServices } from '@backstage/backend-test-utils';
+import { metricsServiceMock } from '@backstage/backend-test-utils/alpha';
 
 describe('DefaultCatalogProcessingEngine', () => {
   const db = {
@@ -72,6 +73,7 @@ describe('DefaultCatalogProcessingEngine', () => {
       createHash: () => hash,
       scheduler: mockServices.scheduler(),
       events: mockServices.events.mock(),
+      metrics: metricsServiceMock.mock(),
     });
 
     db.transaction.mockImplementation(cb => cb((() => {}) as any));
@@ -141,6 +143,7 @@ describe('DefaultCatalogProcessingEngine', () => {
       scheduler: mockServices.scheduler(),
       createHash: () => hash,
       events: mockServices.events.mock(),
+      metrics: metricsServiceMock.mock(),
     });
 
     db.transaction.mockImplementation(cb => cb((() => {}) as any));
@@ -226,6 +229,7 @@ describe('DefaultCatalogProcessingEngine', () => {
       scheduler: mockServices.scheduler(),
       createHash: () => hash,
       events: mockServices.events.mock(),
+      metrics: metricsServiceMock.mock(),
     });
 
     db.transaction.mockImplementation(cb => cb((() => {}) as any));
@@ -305,6 +309,7 @@ describe('DefaultCatalogProcessingEngine', () => {
       scheduler: mockServices.scheduler(),
       createHash: () => hash,
       events: mockServices.events.mock(),
+      metrics: metricsServiceMock.mock(),
     });
 
     db.transaction.mockImplementation(cb => cb((() => {}) as any));
@@ -367,6 +372,7 @@ describe('DefaultCatalogProcessingEngine', () => {
       createHash: () => hash,
       pollingIntervalMs: 100,
       events: mockServices.events.mock(),
+      metrics: metricsServiceMock.mock(),
     });
 
     db.transaction.mockImplementation(cb => cb((() => {}) as any));
@@ -484,6 +490,7 @@ describe('DefaultCatalogProcessingEngine', () => {
       createHash: () => hash,
       pollingIntervalMs: 100,
       events: mockServices.events.mock(),
+      metrics: metricsServiceMock.mock(),
     });
 
     db.transaction.mockImplementation(cb => cb((() => {}) as any));
@@ -591,6 +598,7 @@ describe('DefaultCatalogProcessingEngine', () => {
       createHash: () => hash,
       pollingIntervalMs: 100,
       events: mockServices.events.mock(),
+      metrics: metricsServiceMock.mock(),
     });
 
     db.transaction.mockImplementation(cb => cb((() => {}) as any));
@@ -676,6 +684,7 @@ describe('DefaultCatalogProcessingEngine', () => {
       createHash: () => hash,
       pollingIntervalMs: 100,
       events: mockServices.events.mock(),
+      metrics: metricsServiceMock.mock(),
     });
 
     db.transaction.mockImplementation(cb => cb((() => {}) as any));
@@ -766,6 +775,7 @@ describe('DefaultCatalogProcessingEngine', () => {
       createHash: () => hash,
       pollingIntervalMs: 100,
       events: mockServices.events.mock(),
+      metrics: metricsServiceMock.mock(),
     });
 
     db.transaction.mockImplementation(cb => cb((() => {}) as any));
