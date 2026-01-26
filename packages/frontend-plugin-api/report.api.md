@@ -13,7 +13,6 @@ import { ExpandRecursive } from '@backstage/types';
 import { ExtensionBlueprint as ExtensionBlueprint_2 } from '@backstage/frontend-plugin-api';
 import { ExtensionBlueprintParams as ExtensionBlueprintParams_2 } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef as ExtensionDataRef_2 } from '@backstage/frontend-plugin-api';
-import { IconComponent as IconComponent_2 } from '@backstage/frontend-plugin-api';
 import { JsonObject } from '@backstage/types';
 import { JsonValue } from '@backstage/types';
 import { JSX as JSX_2 } from 'react/jsx-runtime';
@@ -21,7 +20,6 @@ import { JSX as JSX_3 } from 'react';
 import { Observable } from '@backstage/types';
 import { PropsWithChildren } from 'react';
 import { ReactNode } from 'react';
-import { RouteRef as RouteRef_2 } from '@backstage/frontend-plugin-api';
 import { SwappableComponentRef as SwappableComponentRef_2 } from '@backstage/frontend-plugin-api';
 import type { z } from 'zod';
 
@@ -269,30 +267,6 @@ export const AppRootElementBlueprint: ExtensionBlueprint_2<{
   config: {};
   configInput: {};
   dataRefs: never;
-}>;
-
-// @public @deprecated
-export const AppRootWrapperBlueprint: ExtensionBlueprint_2<{
-  kind: 'app-root-wrapper';
-  params: {
-    Component?: [error: 'Use the `component` parameter instead'];
-    component: (props: { children: ReactNode }) => JSX.Element | null;
-  };
-  output: ExtensionDataRef_2<
-    (props: { children: ReactNode }) => JSX.Element | null,
-    'app.root.wrapper',
-    {}
-  >;
-  inputs: {};
-  config: {};
-  configInput: {};
-  dataRefs: {
-    component: ConfigurableExtensionDataRef_2<
-      (props: { children: ReactNode }) => JSX.Element | null,
-      'app.root.wrapper',
-      {}
-    >;
-  };
 }>;
 
 // @public
@@ -604,7 +578,7 @@ export function createExtensionDataRef<TData>(): {
   }): ConfigurableExtensionDataRef<TData, TId>;
 };
 
-// @public (undocumented)
+// @public
 export function createExtensionInput<
   UExtensionData extends ExtensionDataRef<
     unknown,
@@ -616,6 +590,7 @@ export function createExtensionInput<
   TConfig extends {
     singleton?: boolean;
     optional?: boolean;
+    internal?: boolean;
   },
 >(
   extensionData: Array<UExtensionData>,
@@ -630,6 +605,7 @@ export function createExtensionInput<
   {
     singleton: TConfig['singleton'] extends true ? true : false;
     optional: TConfig['optional'] extends true ? true : false;
+    internal: TConfig['internal'] extends true ? true : false;
   }
 >;
 
@@ -1288,9 +1264,11 @@ export interface ExtensionInput<
   TConfig extends {
     singleton: boolean;
     optional: boolean;
+    internal?: boolean;
   } = {
     singleton: boolean;
     optional: boolean;
+    internal?: boolean;
   },
 > {
   // (undocumented)
@@ -1457,33 +1435,6 @@ export const googleAuthApiRef: ApiRef<
     SessionApi
 >;
 
-// @public @deprecated (undocumented)
-export const IconBundleBlueprint: ExtensionBlueprint_2<{
-  kind: 'icon-bundle';
-  params: {
-    icons: { [key in string]: IconComponent };
-  };
-  output: ExtensionDataRef_2<
-    {
-      [x: string]: IconComponent;
-    },
-    'core.icons',
-    {}
-  >;
-  inputs: {};
-  config: {};
-  configInput: {};
-  dataRefs: {
-    icons: ConfigurableExtensionDataRef_2<
-      {
-        [x: string]: IconComponent;
-      },
-      'core.icons',
-      {}
-    >;
-  };
-}>;
-
 // @public
 export type IconComponent = ComponentType<{
   fontSize?: 'medium' | 'large' | 'small' | 'inherit';
@@ -1521,45 +1472,6 @@ export const microsoftAuthApiRef: ApiRef<
     BackstageIdentityApi &
     SessionApi
 >;
-
-// @public @deprecated
-export const NavContentBlueprint: ExtensionBlueprint_2<{
-  kind: 'nav-content';
-  params: {
-    component: NavContentComponent;
-  };
-  output: ExtensionDataRef_2<
-    NavContentComponent,
-    'core.nav-content.component',
-    {}
-  >;
-  inputs: {};
-  config: {};
-  configInput: {};
-  dataRefs: {
-    component: ConfigurableExtensionDataRef_2<
-      NavContentComponent,
-      'core.nav-content.component',
-      {}
-    >;
-  };
-}>;
-
-// @public
-export type NavContentComponent = (
-  props: NavContentComponentProps,
-) => JSX.Element | null;
-
-// @public
-export interface NavContentComponentProps {
-  items: Array<{
-    icon: IconComponent_2;
-    title: string;
-    routeRef: RouteRef_2<undefined>;
-    to: string;
-    text: string;
-  }>;
-}
 
 // @public
 export const NavItemBlueprint: ExtensionBlueprint_2<{
@@ -1923,30 +1835,6 @@ export type RouteFunc<TParams extends AnyRouteRefParams> = (
     : readonly [params: TParams]
 ) => string;
 
-// @public @deprecated (undocumented)
-export const RouterBlueprint: ExtensionBlueprint_2<{
-  kind: 'app-router-component';
-  params: {
-    Component?: [error: 'Use the `component` parameter instead'];
-    component: (props: { children: ReactNode }) => JSX.Element | null;
-  };
-  output: ExtensionDataRef_2<
-    (props: { children: ReactNode }) => JSX.Element | null,
-    'app.router.wrapper',
-    {}
-  >;
-  inputs: {};
-  config: {};
-  configInput: {};
-  dataRefs: {
-    component: ConfigurableExtensionDataRef_2<
-      (props: { children: ReactNode }) => JSX.Element | null,
-      'app.router.wrapper',
-      {}
-    >;
-  };
-}>;
-
 // @public
 export interface RouteRef<
   TParams extends AnyRouteRefParams = AnyRouteRefParams,
@@ -1998,35 +1886,6 @@ export namespace SessionState {
   export type SignedOut = typeof SessionState.SignedOut;
 }
 
-// @public @deprecated
-export const SignInPageBlueprint: ExtensionBlueprint_2<{
-  kind: 'sign-in-page';
-  params: {
-    loader: () => Promise<ComponentType<SignInPageProps>>;
-  };
-  output: ExtensionDataRef_2<
-    ComponentType<SignInPageProps>,
-    'core.sign-in-page.component',
-    {}
-  >;
-  inputs: {};
-  config: {};
-  configInput: {};
-  dataRefs: {
-    component: ConfigurableExtensionDataRef_2<
-      ComponentType<SignInPageProps>,
-      'core.sign-in-page.component',
-      {}
-    >;
-  };
-}>;
-
-// @public
-export type SignInPageProps = {
-  onSignInSuccess(identityApi: IdentityApi): void;
-  children?: ReactNode;
-};
-
 // @public
 export interface StorageApi {
   forBucket(name: string): StorageApi;
@@ -2066,65 +1925,6 @@ export interface SubRouteRef<
   readonly T: TParams;
 }
 
-// @public @deprecated
-export const SwappableComponentBlueprint: ExtensionBlueprint_2<{
-  kind: 'component';
-  params: <Ref extends SwappableComponentRef<any>>(params: {
-    component: Ref extends SwappableComponentRef<
-      any,
-      infer IExternalComponentProps
-    >
-      ? {
-          ref: Ref;
-        } & ((props: IExternalComponentProps) => JSX.Element | null)
-      : never;
-    loader: Ref extends SwappableComponentRef<infer IInnerComponentProps, any>
-      ?
-          | (() => (props: IInnerComponentProps) => JSX.Element | null)
-          | (() => Promise<(props: IInnerComponentProps) => JSX.Element | null>)
-      : never;
-  }) => ExtensionBlueprintParams_2<{
-    component: Ref extends SwappableComponentRef<
-      any,
-      infer IExternalComponentProps
-    >
-      ? {
-          ref: Ref;
-        } & ((props: IExternalComponentProps) => JSX.Element | null)
-      : never;
-    loader: Ref extends SwappableComponentRef<infer IInnerComponentProps, any>
-      ?
-          | (() => (props: IInnerComponentProps) => JSX.Element | null)
-          | (() => Promise<(props: IInnerComponentProps) => JSX.Element | null>)
-      : never;
-  }>;
-  output: ExtensionDataRef_2<
-    {
-      ref: SwappableComponentRef;
-      loader:
-        | (() => (props: {}) => JSX.Element | null)
-        | (() => Promise<(props: {}) => JSX.Element | null>);
-    },
-    'core.swappableComponent',
-    {}
-  >;
-  inputs: {};
-  config: {};
-  configInput: {};
-  dataRefs: {
-    component: ConfigurableExtensionDataRef_2<
-      {
-        ref: SwappableComponentRef;
-        loader:
-          | (() => (props: {}) => JSX.Element | null)
-          | (() => Promise<(props: {}) => JSX.Element | null>);
-      },
-      'core.swappableComponent',
-      {}
-    >;
-  };
-}>;
-
 // @public (undocumented)
 export type SwappableComponentRef<
   TInnerComponentProps extends {} = {},
@@ -2150,21 +1950,6 @@ export interface SwappableComponentsApi {
 // @public
 export const swappableComponentsApiRef: ApiRef_2<SwappableComponentsApi>;
 
-// @public @deprecated
-export const ThemeBlueprint: ExtensionBlueprint_2<{
-  kind: 'theme';
-  params: {
-    theme: AppTheme;
-  };
-  output: ExtensionDataRef_2<AppTheme, 'core.theme.theme', {}>;
-  inputs: {};
-  config: {};
-  configInput: {};
-  dataRefs: {
-    theme: ConfigurableExtensionDataRef_2<AppTheme, 'core.theme.theme', {}>;
-  };
-}>;
-
 // @public (undocumented)
 export type TranslationApi = {
   getTranslation<
@@ -2185,43 +1970,6 @@ export type TranslationApi = {
 
 // @public (undocumented)
 export const translationApiRef: ApiRef<TranslationApi>;
-
-// @public @deprecated
-export const TranslationBlueprint: ExtensionBlueprint_2<{
-  kind: 'translation';
-  params: {
-    resource: TranslationResource | TranslationMessages;
-  };
-  output: ExtensionDataRef_2<
-    | TranslationResource<string>
-    | TranslationMessages<
-        string,
-        {
-          [x: string]: string;
-        },
-        boolean
-      >,
-    'core.translation.translation',
-    {}
-  >;
-  inputs: {};
-  config: {};
-  configInput: {};
-  dataRefs: {
-    translation: ConfigurableExtensionDataRef_2<
-      | TranslationResource<string>
-      | TranslationMessages<
-          string,
-          {
-            [x: string]: string;
-          },
-          boolean
-        >,
-      'core.translation.translation',
-      {}
-    >;
-  };
-}>;
 
 // @public (undocumented)
 export type TranslationFunction<

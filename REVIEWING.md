@@ -62,6 +62,37 @@ Some things that changeset should NOT contain are:
 - Documentation - changesets can describe new features, but it should not be relied on for documenting them. Documentation should either be placed in [TSDoc](https://tsdoc.org) comments, package README, or [./docs/](./docs/).
 - Diffs of internal code, for example mirroring what the pull request changes _inside_ a plugin rather than public surfaces. This is not of interest to the reader of a package changelog. Sometimes, however, a small and concise diff can be used in a changeset to illustrate changes that the user will have to make in _their own_ Backstage installation as part of an upgrade, specifically when breaking changes are made to a package.
 
+### Backstage UI Changeset Format
+
+Changesets for `@backstage/ui` must follow a standardized format to enable proper documentation generation. See [`.changeset/README.md`](.changeset/README.md#backstage-ui-changeset-format) for the complete guide.
+
+**Required structure:**
+
+```markdown
+---
+'@backstage/ui': patch
+---
+
+Brief one-line summary of the change
+
+Optional detailed description with any markdown content.
+
+**Migration:**
+
+Migration instructions (only for breaking changes)
+
+**Affected components:** Button, ButtonIcon
+```
+
+**Key requirements:**
+
+1. **Affected components marker** - Must end with `**Affected components:**` followed by comma-separated component names
+2. **Migration marker** - Use `**Migration:**` (bold, with colon) for breaking changes only
+3. **No headings** - Never use `##`, `###`, or `####` inside changeset entries (these break semantic structure when the entry becomes a list item in CHANGELOG.md)
+4. **Bold markers** - Use bold text markers, not plain text, for reliable parsing
+
+These markers enable the documentation system to extract metadata for per-component changelogs and separate migration guides.
+
 ### When is a changeset needed?
 
 In general our changeset feedback bot will take care of informing whether a changeset is needed or not, but there are some edge cases. Whether a changeset is needed depends mostly on what files have been changed, but sometimes also on the kind of change that has been made.

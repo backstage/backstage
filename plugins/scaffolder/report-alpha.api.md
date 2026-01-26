@@ -91,6 +91,7 @@ const _default: OverridableFrontendPlugin<
           {
             singleton: false;
             optional: false;
+            internal: false;
           }
         >;
       };
@@ -118,6 +119,7 @@ const _default: OverridableFrontendPlugin<
           {
             singleton: false;
             optional: false;
+            internal: false;
           }
         >;
       };
@@ -218,6 +220,7 @@ const _default: OverridableFrontendPlugin<
           {
             singleton: false;
             optional: false;
+            internal: false;
           }
         >;
       };
@@ -411,6 +414,7 @@ export const formDecoratorsApi: OverridableExtensionDefinition<{
       {
         singleton: false;
         optional: false;
+        internal: false;
       }
     >;
   };

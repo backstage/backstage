@@ -33,11 +33,12 @@
   "dependencies": {
     "@backstage/core-plugin-api": "workspace:^",
     "@backstage/frontend-plugin-api": "workspace:^",
+    "@backstage/plugin-app-react": "workspace:^",
     "@backstage/plugin-catalog-react": "workspace:^",
     "@backstage/types": "workspace:^",
     "@backstage/version-bridge": "workspace:^",
     "lodash": "^4.17.21",
-    "zod": "^3.22.4"
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
@@ -53,7 +54,7 @@
     "react": "^18.0.2",
     "react-dom": "^18.0.2",
     "react-router-dom": "^6.3.0",
-    "zod": "^3.22.4"
+    "zod": "^3.25.76"
   },
   "peerDependencies": {
     "@types/react": "^17.0.0 || ^18.0.0",

@@ -174,6 +174,8 @@ const navigationExtension = createExtension({
 
 The input (see [1] above) is an object that we create using `createExtensionInput`. The first argument is the set of extension data that we accept via this input, and works just like the `output` option. The second argument is optional, and it allows us to put constraints on the extensions that are attached to our input. If the `singleton: true` option is set, only a single extension can be attached at a time, and unless the `optional: true` option is set it will also be required that there is exactly one attached extension.
 
+Another option that can be used when creating an extension input is the `internal: true` option, which restricts the input to only accept extensions from the same plugin as the extension defining the input. Extensions from other plugins that attempt to attach to an internal input will be ignored, and a warning will be reported. This is useful when you want to limit extensibility to overrides and modules of your plugin, rather than letting it be open to any plugin.
+
 So how can we now attach the output to the parent extension's input? If we think about a navigation component, like the Sidebar in Backstage, there might be plugins that want to attach a link to their plugin to this navigation component. In this case the plugin only needs to know the extension `id` and the name of the extension `input` to attach the extension `output` returned by the `factory` to the specified extension:
 
 ```tsx

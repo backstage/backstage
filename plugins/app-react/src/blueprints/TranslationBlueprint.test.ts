@@ -17,7 +17,7 @@ import { createExtensionTester } from '@backstage/frontend-test-utils';
 import {
   createTranslationMessages,
   createTranslationRef,
-} from '../translation';
+} from '@backstage/frontend-plugin-api';
 import { TranslationBlueprint } from './TranslationBlueprint';
 
 describe('TranslationBlueprint', () => {

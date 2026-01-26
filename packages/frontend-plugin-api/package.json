@@ -47,7 +47,7 @@
     "@backstage/errors": "workspace:^",
     "@backstage/types": "workspace:^",
     "@backstage/version-bridge": "workspace:^",
-    "zod": "^3.22.4",
+    "zod": "^3.25.76",
     "zod-to-json-schema": "^3.25.1"
   },
   "devDependencies": {
