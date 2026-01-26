@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+'use client';
+
 import { forwardRef, Ref, isValidElement, ReactElement } from 'react';
 import { ProgressBar } from 'react-aria-components';
 import {
@@ -131,25 +133,27 @@ export const Alert = forwardRef(
         {...dataAttributes}
         {...restProps}
       >
-        {loading ? (
-          <div className={classes.icon}>
-            <ProgressBar
-              aria-label="Loading"
-              isIndeterminate
-              className={classes.spinner}
-            >
-              <RiLoader4Line aria-hidden="true" />
-            </ProgressBar>
-          </div>
-        ) : (
-          statusIcon && <div className={classes.icon}>{statusIcon}</div>
-        )}
-
-        <div className={classes.content}>
-          {title && <div className={classes.title}>{title}</div>}
-          {description && (
-            <div className={classes.description}>{description}</div>
+        <div className={classes.contentWrapper}>
+          {loading ? (
+            <div className={classes.icon}>
+              <ProgressBar
+                aria-label="Loading"
+                isIndeterminate
+                className={classes.spinner}
+              >
+                <RiLoader4Line aria-hidden="true" />
+              </ProgressBar>
+            </div>
+          ) : (
+            statusIcon && <div className={classes.icon}>{statusIcon}</div>
           )}
+
+          <div className={classes.content}>
+            {title && <div className={classes.title}>{title}</div>}
+            {description && (
+              <div className={classes.description}>{description}</div>
+            )}
+          </div>
         </div>
 
         {customActions && (

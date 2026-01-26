@@ -22,8 +22,7 @@
     --alert-fg: var(--bui-fg-primary);
 
     display: flex;
-    align-items: flex-start;
-    gap: var(--bui-space-2);
+    gap: var(--bui-space-6);
     padding: var(--bui-space-3) var(--bui-space-3);
     border-radius: var(--bui-radius-3);
     border: 1px solid var(--alert-border);
@@ -34,11 +33,6 @@
     /* Apply variables */
     background-color: var(--alert-bg);
     color: var(--alert-fg);
-
-    /* Center align when there's no description */
-    &[data-has-description='false'] {
-      align-items: center;
-    }
   }
 
   .bui-Alert[data-status='info'] {
@@ -75,6 +69,20 @@
     /* Add slight top margin when there's a description for better alignment */
     .bui-Alert[data-has-description='true'] & {
       margin-top: 0.125rem;
+    }
+  }
+
+  .bui-AlertContentWrapper {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    gap: var(--bui-space-3);
+    flex: 1;
+    min-width: 0;
+
+    /* Center align when there's no description */
+    .bui-Alert[data-has-description='false'] & {
+      align-items: center;
     }
   }
 

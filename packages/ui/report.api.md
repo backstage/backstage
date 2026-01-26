@@ -136,7 +136,10 @@ export const AlertDefinition: {
   };
   readonly classNames: {
     readonly root: 'bui-Alert';
+    readonly contentWrapper: 'bui-AlertContentWrapper';
     readonly content: 'bui-AlertContent';
+    readonly title: 'bui-AlertTitle';
+    readonly description: 'bui-AlertDescription';
     readonly icon: 'bui-AlertIcon';
     readonly spinner: 'bui-AlertSpinner';
     readonly actions: 'bui-AlertActions';
@@ -152,27 +155,13 @@ export const AlertDefinition: {
     };
     readonly icon: {};
     readonly customActions: {};
+    readonly title: {};
+    readonly description: {};
     readonly surface: {};
-    readonly children: {};
     readonly className: {};
     readonly style: {};
   };
-  readonly utilityProps: readonly [
-    'm',
-    'mb',
-    'ml',
-    'mr',
-    'mt',
-    'mx',
-    'my',
-    'p',
-    'pb',
-    'pl',
-    'pr',
-    'pt',
-    'px',
-    'py',
-  ];
+  readonly utilityProps: readonly ['m', 'mb', 'ml', 'mr', 'mt', 'mx', 'my'];
 };
 
 // @public (undocumented)
@@ -181,7 +170,8 @@ export type AlertOwnProps = ContainerSurfaceProps & {
   icon?: boolean | ReactElement;
   loading?: boolean;
   customActions?: ReactNode;
-  children?: ReactNode;
+  title?: ReactNode;
+  description?: ReactNode;
   className?: string;
   style?: CSSProperties;
 };

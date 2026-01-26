@@ -158,7 +158,7 @@ export const CustomIcon = meta.story({
 });
 
 export const WithActions = meta.story({
-  render: () => (
+  render: args => (
     <Flex direction="column" gap="4">
       <Alert
         status="info"
@@ -169,6 +169,7 @@ export const WithActions = meta.story({
             Dismiss
           </Button>
         }
+        {...args}
       />
       <Alert
         status="success"
@@ -184,6 +185,7 @@ export const WithActions = meta.story({
             </Button>
           </>
         }
+        {...args}
       />
       <Alert
         status="danger"
@@ -194,9 +196,16 @@ export const WithActions = meta.story({
             Retry
           </Button>
         }
+        {...args}
       />
     </Flex>
   ),
+});
+
+export const WithActionsAndDescriptions = WithActions.extend({
+  args: {
+    description: 'This is a description of the alert.',
+  },
 });
 
 export const LoadingVariants = meta.story({

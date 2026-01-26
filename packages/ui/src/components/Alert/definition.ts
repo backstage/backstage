@@ -26,6 +26,7 @@ export const AlertDefinition = defineComponent<AlertOwnProps>()({
   styles,
   classNames: {
     root: 'bui-Alert',
+    contentWrapper: 'bui-AlertContentWrapper',
     content: 'bui-AlertContent',
     title: 'bui-AlertTitle',
     description: 'bui-AlertDescription',
