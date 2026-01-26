@@ -954,7 +954,7 @@ src: string</code></pre>
             <pre><code>Props:</code></pre>
             <pre><code>as?: JSX.IntrinsicElements
 
-children?: React.ReactNode
+children?: ReactNode
 
 className?: string
 
@@ -1000,7 +1000,7 @@ px?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;
 
 py?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;
 
-style?: React.CSSProperties
+style?: CSSProperties
 
 surface?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;
 
@@ -1407,7 +1407,7 @@ width?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Button</h2>
       <div class="badges">
-        <label for="c-3-backstage-ui-button-props" class="badge ok as-toggle">7 prop types</label>
+        <label for="c-3-backstage-ui-button-props" class="badge ok as-toggle">9 prop types</label>
         
         <label for="c-3-backstage-ui-button-stories" class="badge ok as-toggle">10 stories</label>
       </div>
@@ -1432,11 +1432,13 @@ width?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;</code></pre>
           <div class="note ok">
             <div class="row">
               <span class="ex-name">Prop types</span>
-              <span class="badge ok">7 prop types</span>
+              <span class="badge ok">9 prop types</span>
             </div>
             <pre><code>Component: packages/ui/src/components/Button/Button.tsx::Button</code></pre>
             <pre><code>Props:</code></pre>
             <pre><code>children?: ReactNode
+
+className?: string
 
 iconEnd?: ReactElement
 
@@ -1444,17 +1446,13 @@ iconStart?: ReactElement
 
 loading?: boolean
 
-/**
- * Surface the button is placed on. Defaults to context surface if available
- */
 onSurface?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;
 
-size?: &#39;small&#39; | &#39;medium&#39; | Partial&lt;Record&lt;Breakpoint, &#39;small&#39; | &#39;medium&#39;&gt;&gt;
+size?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;
 
-variant?: | &#39;primary&#39;
-| &#39;secondary&#39;
-| &#39;tertiary&#39;
-| Partial&lt;Record&lt;Breakpoint, &#39;primary&#39; | &#39;secondary&#39; | &#39;tertiary&#39;&gt;&gt;</code></pre>
+style?: CSSProperties
+
+variant?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;</code></pre>
           </div>
         </div>
     
@@ -1799,7 +1797,7 @@ import { RiArrowRightSLine, RiCloudLine } from "@remixicon/react";</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> ButtonIcon</h2>
       <div class="badges">
-        <label for="c-4-backstage-ui-buttonicon-props" class="badge ok as-toggle">4 prop types</label>
+        <label for="c-4-backstage-ui-buttonicon-props" class="badge ok as-toggle">7 prop types</label>
         <label for="c-4-backstage-ui-buttonicon-info" class="badge info as-toggle">1 info</label>
         <label for="c-4-backstage-ui-buttonicon-stories" class="badge ok as-toggle">7 stories</label>
       </div>
@@ -1831,20 +1829,23 @@ import { RiArrowRightSLine, RiCloudLine } from "@remixicon/react";</code></pre>
           <div class="note ok">
             <div class="row">
               <span class="ex-name">Prop types</span>
-              <span class="badge ok">4 prop types</span>
+              <span class="badge ok">7 prop types</span>
             </div>
             <pre><code>Component: packages/ui/src/components/ButtonIcon/ButtonIcon.tsx::ButtonIcon</code></pre>
             <pre><code>Props:</code></pre>
-            <pre><code>icon?: ReactElement
+            <pre><code>className?: string
+
+icon?: ReactElement
 
 loading?: boolean
 
-size?: &#39;small&#39; | &#39;medium&#39; | Partial&lt;Record&lt;Breakpoint, &#39;small&#39; | &#39;medium&#39;&gt;&gt;
+onSurface?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;
 
-variant?: | &#39;primary&#39;
-| &#39;secondary&#39;
-| &#39;tertiary&#39;
-| Partial&lt;Record&lt;Breakpoint, &#39;primary&#39; | &#39;secondary&#39; | &#39;tertiary&#39;&gt;&gt;</code></pre>
+size?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;
+
+style?: CSSProperties
+
+variant?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;</code></pre>
           </div>
         </div>
     
@@ -2044,7 +2045,7 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> ButtonLink</h2>
       <div class="badges">
-        <label for="c-5-backstage-ui-buttonlink-props" class="badge ok as-toggle">5 prop types</label>
+        <label for="c-5-backstage-ui-buttonlink-props" class="badge ok as-toggle">8 prop types</label>
         <label for="c-5-backstage-ui-buttonlink-info" class="badge info as-toggle">1 info</label>
         <label for="c-5-backstage-ui-buttonlink-stories" class="badge ok as-toggle">7 stories</label>
       </div>
@@ -2076,22 +2077,25 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
           <div class="note ok">
             <div class="row">
               <span class="ex-name">Prop types</span>
-              <span class="badge ok">5 prop types</span>
+              <span class="badge ok">8 prop types</span>
             </div>
             <pre><code>Component: packages/ui/src/components/ButtonLink/ButtonLink.tsx::ButtonLink</code></pre>
             <pre><code>Props:</code></pre>
             <pre><code>children?: ReactNode
 
+className?: string
+
 iconEnd?: ReactElement
 
 iconStart?: ReactElement
 
-size?: &#39;small&#39; | &#39;medium&#39; | Partial&lt;Record&lt;Breakpoint, &#39;small&#39; | &#39;medium&#39;&gt;&gt;
+onSurface?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;
 
-variant?: | &#39;primary&#39;
-| &#39;secondary&#39;
-| &#39;tertiary&#39;
-| Partial&lt;Record&lt;Breakpoint, &#39;primary&#39; | &#39;secondary&#39; | &#39;tertiary&#39;&gt;&gt;</code></pre>
+size?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;
+
+style?: CSSProperties
+
+variant?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;</code></pre>
           </div>
         </div>
     
@@ -5330,20 +5334,27 @@ import { RiCloudy2Line, RiEmotionHappyLine, RiHeartLine, RiMore2Line } from "@re
           },
         ]} /&gt;
     &lt;Container&gt;
-        &lt;Text&gt;
+        &lt;Text as=&quot;p&quot;&gt;
             &lt;strong&gt;Current URL:&lt;/strong&gt;/catalog/users/john/details
                     &lt;/Text&gt;
         &lt;br /&gt;
-        &lt;Text&gt;Both &quot;Catalog&quot; and &quot;Users&quot; tabs are active because:&lt;/Text&gt;
-        &lt;Text&gt;• &lt;strong&gt;Catalog&lt;/strong&gt;: URL starts with /catalog
+        &lt;Text as=&quot;p&quot;&gt;Active tab is &lt;strong&gt;Users&lt;/strong&gt;because:
                     &lt;/Text&gt;
-        &lt;Text&gt;• &lt;strong&gt;Users&lt;/strong&gt;: URL starts with /catalog/users
-                    &lt;/Text&gt;
-        &lt;Text&gt;• &lt;strong&gt;Components&lt;/strong&gt;: not active (URL doesn&#39;t start with
-                      /catalog/components)
-                    &lt;/Text&gt;
-        &lt;br /&gt;
-        &lt;Text&gt;This demonstrates how prefix matching works with deeply nested routes.
+        &lt;ul&gt;
+            &lt;li&gt;
+                &lt;strong&gt;Catalog&lt;/strong&gt;: Matches since URL starts with /catalog
+                          &lt;/li&gt;
+            &lt;li&gt;
+                &lt;strong&gt;Users&lt;/strong&gt;: Is active since URL starts with
+                            /catalog/users, and is more specific (has more url segments) than
+                            &quot;Catalog&quot;
+                          &lt;/li&gt;
+            &lt;li&gt;
+                &lt;strong&gt;Components&lt;/strong&gt;: not active (URL doesn&#39;t start with
+                            /catalog/components)
+                          &lt;/li&gt;
+        &lt;/ul&gt;
+        &lt;Text as=&quot;p&quot;&gt;This demonstrates how prefix matching works with deeply nested routes.
                     &lt;/Text&gt;
     &lt;/Container&gt;
 &lt;/MemoryRouter&gt;;</code></pre>
@@ -5653,20 +5664,27 @@ import { RiMore2Line } from "@remixicon/react";</code></pre>
           },
         ]} /&gt;
     &lt;Container&gt;
-        &lt;Text&gt;
+        &lt;Text as=&quot;p&quot;&gt;
             &lt;strong&gt;Current URL:&lt;/strong&gt;/catalog/users/john/details
                     &lt;/Text&gt;
         &lt;br /&gt;
-        &lt;Text&gt;Both &quot;Catalog&quot; and &quot;Users&quot; tabs are active because:&lt;/Text&gt;
-        &lt;Text&gt;• &lt;strong&gt;Catalog&lt;/strong&gt;: URL starts with /catalog
+        &lt;Text as=&quot;p&quot;&gt;Active tab is &lt;strong&gt;Users&lt;/strong&gt;because:
                     &lt;/Text&gt;
-        &lt;Text&gt;• &lt;strong&gt;Users&lt;/strong&gt;: URL starts with /catalog/users
-                    &lt;/Text&gt;
-        &lt;Text&gt;• &lt;strong&gt;Components&lt;/strong&gt;: not active (URL doesn&#39;t start with
-                      /catalog/components)
-                    &lt;/Text&gt;
-        &lt;br /&gt;
-        &lt;Text&gt;This demonstrates how prefix matching works with deeply nested routes.
+        &lt;ul&gt;
+            &lt;li&gt;
+                &lt;strong&gt;Catalog&lt;/strong&gt;: Matches since URL starts with /catalog
+                          &lt;/li&gt;
+            &lt;li&gt;
+                &lt;strong&gt;Users&lt;/strong&gt;: Is active since URL starts with
+                            /catalog/users, and is more specific (has more url segments) than
+                            &quot;Catalog&quot;
+                          &lt;/li&gt;
+            &lt;li&gt;
+                &lt;strong&gt;Components&lt;/strong&gt;: not active (URL doesn&#39;t start with
+                            /catalog/components)
+                          &lt;/li&gt;
+        &lt;/ul&gt;
+        &lt;Text as=&quot;p&quot;&gt;This demonstrates how prefix matching works with deeply nested routes.
                     &lt;/Text&gt;
     &lt;/Container&gt;
 &lt;/MemoryRouter&gt;;</code></pre>
