@@ -20,7 +20,6 @@
   .bui-Alert {
     --alert-bg: var(--bui-bg-surface-1);
     --alert-fg: var(--bui-fg-primary);
-    --alert-border: var(--bui-border);
 
     display: flex;
     align-items: flex-start;
@@ -45,25 +44,21 @@
   .bui-Alert[data-status='info'] {
     --alert-bg: var(--bui-bg-info);
     --alert-fg: var(--bui-fg-info);
-    --alert-border: var(--bui-border-info);
   }
 
   .bui-Alert[data-status='success'] {
     --alert-bg: var(--bui-bg-success);
     --alert-fg: var(--bui-fg-success);
-    --alert-border: var(--bui-border-success);
   }
 
   .bui-Alert[data-status='warning'] {
     --alert-bg: var(--bui-bg-warning);
     --alert-fg: var(--bui-fg-warning);
-    --alert-border: var(--bui-border-warning);
   }
 
   .bui-Alert[data-status='danger'] {
     --alert-bg: var(--bui-bg-danger);
     --alert-fg: var(--bui-fg-danger);
-    --alert-border: var(--bui-border-danger);
   }
 
   .bui-AlertIcon {
