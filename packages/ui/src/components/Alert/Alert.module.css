@@ -1,0 +1,143 @@
+/*
+ * Copyright 2025 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@layer tokens, base, components, utilities;
+
+@layer components {
+  .bui-Alert {
+    --loading-duration: 200ms;
+    --alert-bg: var(--bui-bg-surface-1);
+    --alert-fg: var(--bui-fg-primary);
+
+    position: relative;
+    display: flex;
+    align-items: flex-start;
+    gap: var(--bui-space-3);
+    padding: var(--bui-space-3) var(--bui-space-4);
+    border-radius: var(--bui-radius-2);
+    font-family: var(--bui-font-regular);
+    font-size: var(--bui-font-size-3);
+    line-height: 1.5;
+    transition: opacity var(--loading-duration) ease-out;
+
+    /* Apply variables */
+    background-color: var(--alert-bg);
+    color: var(--alert-fg);
+
+    &[data-loading='true'] {
+      opacity: 0.7;
+    }
+  }
+
+  .bui-Alert[data-status='info'] {
+    --alert-bg: var(--bui-bg-surface-1);
+    --alert-fg: var(--bui-fg-primary);
+  }
+
+  .bui-Alert[data-status='success'] {
+    --alert-bg: var(--bui-bg-success);
+    --alert-fg: var(--bui-fg-success);
+  }
+
+  .bui-Alert[data-status='warning'] {
+    --alert-bg: var(--bui-bg-warning);
+    --alert-fg: var(--bui-fg-warning);
+  }
+
+  .bui-Alert[data-status='danger'] {
+    --alert-bg: var(--bui-bg-danger);
+    --alert-fg: var(--bui-fg-danger);
+  }
+
+  .bui-AlertIcon {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 0.125rem;
+    transition: opacity var(--loading-duration) ease-out;
+
+    svg {
+      width: 1.25rem;
+      height: 1.25rem;
+    }
+
+    .bui-Alert[data-loading='true'] & {
+      opacity: 0;
+    }
+  }
+
+  .bui-AlertContent {
+    flex: 1;
+    min-width: 0;
+    word-wrap: break-word;
+  }
+
+  .bui-AlertSpinner {
+    position: absolute;
+    top: var(--bui-space-3);
+    left: var(--bui-space-4);
+    display: flex;
+    opacity: 0;
+    transition: opacity var(--loading-duration) ease-in;
+
+    .bui-Alert[data-loading='true'] & {
+      opacity: 1;
+    }
+
+    & svg {
+      width: 1.25rem;
+      height: 1.25rem;
+      animation: bui-spin 1s linear infinite;
+    }
+  }
+
+  .bui-AlertActions {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    gap: var(--bui-space-2);
+    margin-left: auto;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .bui-Alert {
+      transition-duration: 50ms;
+    }
+
+    .bui-AlertIcon {
+      transition-duration: 50ms;
+    }
+
+    .bui-AlertSpinner {
+      transition-duration: 50ms;
+    }
+
+    .bui-AlertSpinner svg {
+      animation: none;
+    }
+  }
+
+  @keyframes bui-spin {
+    from {
+      transform: rotate(0deg);
+    }
+
+    to {
+      transform: rotate(360deg);
+    }
+  }
+}

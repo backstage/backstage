@@ -124,6 +124,71 @@ export interface AccordionTriggerProps extends HeadingProps {
   title?: string;
 }
 
+// @public
+export const Alert: ForwardRefExoticComponent<
+  AlertProps & RefAttributes<HTMLDivElement>
+>;
+
+// @public
+export const AlertDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-Alert';
+    readonly content: 'bui-AlertContent';
+    readonly icon: 'bui-AlertIcon';
+    readonly spinner: 'bui-AlertSpinner';
+    readonly actions: 'bui-AlertActions';
+  };
+  readonly surface: 'container';
+  readonly propDefs: {
+    readonly status: {
+      readonly dataAttribute: true;
+      readonly default: 'info';
+    };
+    readonly loading: {
+      readonly dataAttribute: true;
+    };
+    readonly icon: {};
+    readonly customActions: {};
+    readonly surface: {};
+    readonly children: {};
+    readonly className: {};
+    readonly style: {};
+  };
+  readonly utilityProps: readonly [
+    'm',
+    'mb',
+    'ml',
+    'mr',
+    'mt',
+    'mx',
+    'my',
+    'p',
+    'pb',
+    'pl',
+    'pr',
+    'pt',
+    'px',
+    'py',
+  ];
+};
+
+// @public (undocumented)
+export type AlertOwnProps = ContainerSurfaceProps & {
+  status?: Responsive<'info' | 'success' | 'warning' | 'danger'>;
+  icon?: boolean | ReactElement;
+  loading?: boolean;
+  customActions?: ReactNode;
+  children?: ReactNode;
+  className?: string;
+  style?: CSSProperties;
+};
+
+// @public
+export interface AlertProps extends SpaceProps, AlertOwnProps {}
+
 // @public (undocumented)
 export type AlignItems = 'stretch' | 'start' | 'center' | 'end';
 
