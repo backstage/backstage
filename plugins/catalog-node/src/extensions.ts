@@ -32,7 +32,7 @@ import {
 import { PermissionRule } from '@backstage/plugin-permission-node';
 
 /**
- * @alpha
+ * @public
  */
 export interface CatalogLocationsExtensionPoint {
   /**
@@ -43,7 +43,7 @@ export interface CatalogLocationsExtensionPoint {
 }
 
 /**
- * @alpha
+ * @public
  */
 export const catalogLocationsExtensionPoint =
   createExtensionPoint<CatalogLocationsExtensionPoint>({
@@ -51,7 +51,7 @@ export const catalogLocationsExtensionPoint =
   });
 
 /**
- * @alpha
+ * @public
  */
 export interface CatalogProcessingExtensionPoint {
   /**
@@ -97,7 +97,7 @@ export interface CatalogProcessingExtensionPoint {
   ): void;
 }
 
-/** @alpha */
+/** @public */
 export interface CatalogModelExtensionPoint {
   /**
    * Sets the validator function to use for one or more special fields of an
@@ -116,7 +116,7 @@ export interface CatalogModelExtensionPoint {
 }
 
 /**
- * @alpha
+ * @public
  */
 export const catalogProcessingExtensionPoint =
   createExtensionPoint<CatalogProcessingExtensionPoint>({
@@ -124,7 +124,7 @@ export const catalogProcessingExtensionPoint =
   });
 
 /**
- * @alpha
+ * @public
  */
 export interface CatalogAnalysisExtensionPoint {
   /**
@@ -151,14 +151,14 @@ export interface CatalogAnalysisExtensionPoint {
 }
 
 /**
- * @alpha
+ * @public
  */
 export const catalogAnalysisExtensionPoint =
   createExtensionPoint<CatalogAnalysisExtensionPoint>({
     id: 'catalog.analysis',
   });
 
-/** @alpha */
+/** @public */
 export const catalogModelExtensionPoint =
   createExtensionPoint<CatalogModelExtensionPoint>({
     id: 'catalog.model',

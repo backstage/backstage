@@ -166,7 +166,7 @@ This is an example of relaxing the format rules of the `metadata.name` field:
 ```ts
 import { createBackend } from '@backstage/backend-defaults';
 import { createBackendModule } from '@backstage/backend-plugin-api';
-import { catalogModelExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
+import { catalogModelExtensionPoint } from '@backstage/plugin-catalog-node';
 
 const myCatalogCustomizations = createBackendModule({
   pluginId: 'catalog',

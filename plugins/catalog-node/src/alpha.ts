@@ -53,14 +53,65 @@ export const catalogServiceRef = createServiceRef<CatalogApi>({
     }),
 });
 
-export type { CatalogLocationsExtensionPoint } from './extensions';
-export { catalogLocationsExtensionPoint } from './extensions';
-export type { CatalogProcessingExtensionPoint } from './extensions';
-export { catalogProcessingExtensionPoint } from './extensions';
-export type { CatalogAnalysisExtensionPoint } from './extensions';
-export { catalogAnalysisExtensionPoint } from './extensions';
+import {
+  CatalogLocationsExtensionPoint as _CatalogLocationsExtensionPoint,
+  CatalogProcessingExtensionPoint as _CatalogProcessingExtensionPoint,
+  CatalogAnalysisExtensionPoint as _CatalogAnalysisExtensionPoint,
+  CatalogModelExtensionPoint as _CatalogModelExtensionPoint,
+  catalogLocationsExtensionPoint as _catalogLocationsExtensionPoint,
+  catalogProcessingExtensionPoint as _catalogProcessingExtensionPoint,
+  catalogAnalysisExtensionPoint as _catalogAnalysisExtensionPoint,
+  catalogModelExtensionPoint as _catalogModelExtensionPoint,
+} from '@backstage/plugin-catalog-node';
+
+/**
+ * @alpha
+ * @deprecated Use {@link @backstage/plugin-catalog-node#CatalogLocationsExtensionPoint} instead
+ */
+export type CatalogLocationsExtensionPoint = _CatalogLocationsExtensionPoint;
+
+/**
+ * @alpha
+ * @deprecated Use {@link @backstage/plugin-catalog-node#catalogLocationsExtensionPoint} instead
+ */
+export const catalogLocationsExtensionPoint = _catalogLocationsExtensionPoint;
+
+/**
+ * @alpha
+ * @deprecated Use {@link @backstage/plugin-catalog-node#CatalogProcessingExtensionPoint} instead
+ */
+export type CatalogProcessingExtensionPoint = _CatalogProcessingExtensionPoint;
+
+/**
+ * @alpha
+ * @deprecated Use {@link @backstage/plugin-catalog-node#catalogProcessingExtensionPoint} instead
+ */
+export const catalogProcessingExtensionPoint = _catalogProcessingExtensionPoint;
+
+/**
+ * @alpha
+ * @deprecated Use {@link @backstage/plugin-catalog-node#CatalogAnalysisExtensionPoint} instead
+ */
+export type CatalogAnalysisExtensionPoint = _CatalogAnalysisExtensionPoint;
+
+/**
+ * @alpha
+ * @deprecated Use {@link @backstage/plugin-catalog-node#catalogAnalysisExtensionPoint} instead
+ */
+export const catalogAnalysisExtensionPoint = _catalogAnalysisExtensionPoint;
+
+/**
+ * @alpha
+ * @deprecated Use {@link @backstage/plugin-catalog-node#CatalogModelExtensionPoint} instead
+ */
+export type CatalogModelExtensionPoint = _CatalogModelExtensionPoint;
+
+/**
+ * @alpha
+ * @deprecated Use {@link @backstage/plugin-catalog-node#catalogModelExtensionPoint} instead
+ */
+export const catalogModelExtensionPoint = _catalogModelExtensionPoint;
+
 export type { CatalogPermissionRuleInput } from './extensions';
 export type { CatalogPermissionExtensionPoint } from './extensions';
 export { catalogPermissionExtensionPoint } from './extensions';
-export type { CatalogModelExtensionPoint } from './extensions';
-export { catalogModelExtensionPoint } from './extensions';

@@ -9,8 +9,12 @@ import { AnalyzeLocationExistingEntity } from '@backstage/plugin-catalog-common'
 import { AnalyzeLocationRequest } from '@backstage/plugin-catalog-common';
 import { AnalyzeLocationResponse } from '@backstage/plugin-catalog-common';
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
+import { CatalogProcessor as CatalogProcessor_2 } from '@backstage/plugin-catalog-node';
+import { CatalogProcessorParser as CatalogProcessorParser_2 } from '@backstage/plugin-catalog-node';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Entity } from '@backstage/catalog-model';
+import { EntityProvider as EntityProvider_2 } from '@backstage/plugin-catalog-node';
+import { ExtensionPoint } from '@backstage/backend-plugin-api';
 import { GetEntitiesByRefsRequest } from '@backstage/catalog-client';
 import { GetEntitiesByRefsResponse } from '@backstage/catalog-client';
 import { GetEntitiesRequest } from '@backstage/catalog-client';
@@ -22,19 +26,78 @@ import { GetEntityFacetsResponse } from '@backstage/catalog-client';
 import { GetLocationsResponse } from '@backstage/catalog-client';
 import { JsonValue } from '@backstage/types';
 import { Location as Location_2 } from '@backstage/catalog-client';
+import { LocationAnalyzer as LocationAnalyzer_2 } from '@backstage/plugin-catalog-node';
 import { LocationEntityV1alpha1 } from '@backstage/catalog-model';
 import { LocationSpec as LocationSpec_2 } from '@backstage/plugin-catalog-common';
+import { PlaceholderResolver as PlaceholderResolver_2 } from '@backstage/plugin-catalog-node';
 import { QueryEntitiesRequest } from '@backstage/catalog-client';
 import { QueryEntitiesResponse } from '@backstage/catalog-client';
+import { ScmLocationAnalyzer as ScmLocationAnalyzer_2 } from '@backstage/plugin-catalog-node';
 import { ServiceRef } from '@backstage/backend-plugin-api';
 import { StreamEntitiesRequest } from '@backstage/catalog-client';
 import { ValidateEntityResponse } from '@backstage/catalog-client';
+import { Validators } from '@backstage/catalog-model';
 
 // @public (undocumented)
 export type AnalyzeOptions = {
   url: string;
   catalogFilename?: string;
 };
+
+// @public (undocumented)
+export interface CatalogAnalysisExtensionPoint {
+  addScmLocationAnalyzer(analyzer: ScmLocationAnalyzer_2): void;
+  setLocationAnalyzer(
+    analyzerOrFactory:
+      | LocationAnalyzer_2
+      | ((options: {
+          scmLocationAnalyzers: ScmLocationAnalyzer_2[];
+        }) => Promise<{
+          locationAnalyzer: LocationAnalyzer_2;
+        }>),
+  ): void;
+}
+
+// @public (undocumented)
+export const catalogAnalysisExtensionPoint: ExtensionPoint<CatalogAnalysisExtensionPoint>;
+
+// @public (undocumented)
+export interface CatalogLocationsExtensionPoint {
+  setAllowedLocationTypes(locationTypes: Array<string>): void;
+}
+
+// @public (undocumented)
+export const catalogLocationsExtensionPoint: ExtensionPoint<CatalogLocationsExtensionPoint>;
+
+// @public (undocumented)
+export interface CatalogModelExtensionPoint {
+  setEntityDataParser(parser: CatalogProcessorParser_2): void;
+  setFieldValidators(validators: Partial<Validators>): void;
+}
+
+// @public (undocumented)
+export const catalogModelExtensionPoint: ExtensionPoint<CatalogModelExtensionPoint>;
+
+// @public (undocumented)
+export interface CatalogProcessingExtensionPoint {
+  addEntityProvider(
+    ...providers: Array<EntityProvider_2 | Array<EntityProvider_2>>
+  ): void;
+  addPlaceholderResolver(key: string, resolver: PlaceholderResolver_2): void;
+  addProcessor(
+    ...processors: Array<CatalogProcessor_2 | Array<CatalogProcessor_2>>
+  ): void;
+  // (undocumented)
+  setOnProcessingErrorHandler(
+    handler: (event: {
+      unprocessedEntity: Entity;
+      errors: Error[];
+    }) => Promise<void> | void,
+  ): void;
+}
+
+// @public (undocumented)
+export const catalogProcessingExtensionPoint: ExtensionPoint<CatalogProcessingExtensionPoint>;
 
 // @public (undocumented)
 export type CatalogProcessor = {

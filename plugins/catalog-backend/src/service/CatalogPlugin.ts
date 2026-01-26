@@ -33,10 +33,12 @@ import {
   catalogLocationsExtensionPoint,
   CatalogModelExtensionPoint,
   catalogModelExtensionPoint,
+  catalogProcessingExtensionPoint,
+} from '@backstage/plugin-catalog-node';
+import {
   CatalogPermissionExtensionPoint,
   catalogPermissionExtensionPoint,
   CatalogPermissionRuleInput,
-  catalogProcessingExtensionPoint,
 } from '@backstage/plugin-catalog-node/alpha';
 import { eventsServiceRef } from '@backstage/plugin-events-node';
 import { Permission } from '@backstage/plugin-permission-common';

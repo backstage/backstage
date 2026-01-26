@@ -294,7 +294,7 @@ import {
   coreServices,
   createBackendModule,
 } from '@backstage/backend-plugin-api';
-import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
+import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
 import { FrobsProvider } from './path/to/class';
 
 export const catalogModuleFrobsProvider = createBackendModule({
@@ -737,7 +737,7 @@ import {
   coreServices,
   createBackendModule,
 } from '@backstage/backend-plugin-api';
-import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
+import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
 import { SystemXReaderProcessor } from '../path/to/class';
 
 export const catalogModuleSystemXReaderProcessor = createBackendModule({
@@ -998,7 +998,7 @@ import {
   coreServices,
   createBackendModule,
 } from '@backstage/backend-plugin-api';
-import { catalogModelExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
+import { catalogModelExtensionPoint } from '@backstage/plugin-catalog-node';
 import { customEntityDataParser } from '../lib/customEntityDataParser';
 
 export const catalogModuleCustomDataParser = createBackendModule({
