@@ -188,7 +188,9 @@ async function parseChangelogMd(changelogPath, sinceVersion, validComponents) {
       // Skip headings that are just markdown content within changelog entries
       if (/^\d+\.\d+\.\d+/.test(versionText)) {
         // Skip pre-release versions (e.g., 0.11.0-next.1, 0.9.0-alpha.2) to avoid duplicates
-        // Pre-release commits are included in the final release version
+        // While normalizeVersion() strips the suffix when writing entries, we need to skip
+        // pre-release sections entirely during parsing, otherwise we'd process the same
+        // commits twice: once from 0.11.0-next.1 and again from 0.11.0
         if (/^\d+\.\d+\.\d+-/.test(versionText)) {
           currentVersion = null;
           currentSection = null;
@@ -328,7 +330,8 @@ async function parseListItem(
       .replace(/\n*\*\*Affected components:\*\*[ \t]*[^\n]+/g, '')
       .trim();
   } else {
-    // Fallback: try old format without bold markers
+    // Fallback: try old format without bold markers for backwards compatibility
+    // Some older changelog entries may not have been migrated to the new format
     const oldFormatMatch = description.match(
       /Affected components?:\s*([^\n]+)/i,
     );
@@ -385,18 +388,13 @@ async function parseListItem(
 }
 
 /**
- * Infer change type from section and description
+ * Determine if a change is breaking based on semver rules
  * Breaking change rules (semver):
  * - version >= 1.0.0: Major changes are breaking
  * - version < 1.0.0: Major and Minor changes are breaking
  */
 function isBreakingChange(section, description, version) {
-  // Mark as breaking if explicitly mentioned in description
-  if (description.includes('BREAKING')) {
-    return true;
-  }
-
-  // Parse version to determine breaking change rules
+  // Parse version to determine breaking change rules based on semver
   const normalizedVersion = normalizeVersion(version);
   const [major] = normalizedVersion.split('.').map(Number);
 

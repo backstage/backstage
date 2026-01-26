@@ -326,7 +326,7 @@ import { Disclosure, Button, DisclosurePanel } from 'react-aria-components';
     components: [],
     version: '0.9.0',
     prs: ['31432'],
-    description: `Fix default font wight and font family in Backstage UI.`,
+    description: `Fix default font weight and font family in Backstage UI.`,
 
     commitSha: '00bfb83',
   },

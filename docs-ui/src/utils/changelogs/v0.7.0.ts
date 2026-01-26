@@ -78,7 +78,7 @@ export const changelog_0_7_0: ChangelogProps[] = [
     version: '0.7.0',
     prs: ['30701'],
     description: `**BREAKING**: Move breadcrumb to fit in the \`HeaderPage\` instead of the \`Header\` in Backstage UI.`,
-    breaking: true,
+
     commitSha: '230b410',
   },
   {

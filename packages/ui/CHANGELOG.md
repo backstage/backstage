@@ -711,7 +711,7 @@
 - dac851f: Fix the default font size in Backstage UI.
 - 3c0ea67: Fix CSS layer ordering in Backstage UI to make sure component styles are loaded after tokens and base declarations.
 - 4eb455c: Fix font smoothing as default in Backstage UI.
-- 00bfb83: Fix default font wight and font family in Backstage UI.
+- 00bfb83: Fix default font weight and font family in Backstage UI.
 
 ## 0.8.0
 
