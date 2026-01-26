@@ -27,6 +27,8 @@ import { SyntheticEvent, useState } from 'react';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { scaffolderTranslationRef } from '../../../translation';
 import { Link } from '@backstage/core-components';
+import VisibilityOffIcon from '@material-ui/icons/VisibilityOff';
+import VisibilityIcon from '@material-ui/icons/Visibility';
 
 const useStyles = makeStyles(theme => ({
   button: {
@@ -36,17 +38,27 @@ const useStyles = makeStyles(theme => ({
 
 export type TemplateWizardPageContextMenuProps = {
   editUrl?: string;
+  hasDescription: boolean;
+  showDescription: boolean;
+  onShowDescription: () => void;
+  onHideDescription: () => void;
 };
 
 export function TemplateWizardPageContextMenu(
   props: TemplateWizardPageContextMenuProps,
 ) {
-  const { editUrl } = props;
+  const {
+    editUrl,
+    hasDescription,
+    showDescription,
+    onShowDescription,
+    onHideDescription,
+  } = props;
   const classes = useStyles();
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>();
   const { t } = useTranslationRef(scaffolderTranslationRef);
 
-  if (!editUrl) {
+  if (!editUrl && !hasDescription) {
     return null;
   }
 
@@ -83,16 +95,51 @@ export function TemplateWizardPageContextMenu(
         transformOrigin={{ vertical: 'top', horizontal: 'right' }}
       >
         <MenuList>
-          <MenuItem component={Link} to={editUrl}>
-            <ListItemIcon>
-              <Edit fontSize="small" />
-            </ListItemIcon>
-            <ListItemText
-              primary={t(
-                'templateWizardPage.pageContextMenu.editConfigurationTitle',
-              )}
-            />
-          </MenuItem>
+          {editUrl && (
+            <MenuItem
+              component={Link}
+              to={editUrl}
+              data-testid="edit-menu-item"
+            >
+              <ListItemIcon>
+                <Edit fontSize="small" />
+              </ListItemIcon>
+              <ListItemText
+                primary={t(
+                  'templateWizardPage.pageContextMenu.editConfigurationTitle',
+                )}
+              />
+            </MenuItem>
+          )}
+          {hasDescription && (
+            <MenuItem
+              data-testid="description-menu-item"
+              onClick={() => {
+                if (showDescription) {
+                  onHideDescription();
+                } else {
+                  onShowDescription();
+                }
+                onClose();
+              }}
+            >
+              <ListItemIcon>
+                {showDescription ? <VisibilityOffIcon /> : <VisibilityIcon />}
+              </ListItemIcon>
+
+              <ListItemText
+                primary={
+                  showDescription
+                    ? t(
+                        'templateWizardPage.pageContextMenu.hideDescriptionTitle',
+                      )
+                    : t(
+                        'templateWizardPage.pageContextMenu.showDescriptionTitle',
+                      )
+                }
+              />
+            </MenuItem>
+          )}
         </MenuList>
       </Popover>
     </>

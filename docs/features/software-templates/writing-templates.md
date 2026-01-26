@@ -840,7 +840,11 @@ The custom field explorer allows you to select any custom field loaded on the ba
 
 ## Presentation
 
-You can configure the text of the "Back", "Review", and "Create" buttons using the `spec.presentation` field of your Software Template. You might want have a Template that doesn't "Create" something but rather "Updates" it. This feature will allow you to change it as needed. Here's an example of how to use this:
+You can use `spec.presentation` to customize the template wizard.
+
+### Customizing Button Labels
+
+You can configure the text of the "Back", "Review", and "Create" buttons using the `spec.presentation.buttonLabels` field of your Software Template. You might want to have a Template that doesn't "Create" something but rather "Updates" it. This feature will allow you to change it as needed. Here's an example of how to use this:
 
 ```yaml
 ---
@@ -852,4 +856,16 @@ spec:
       backButtonText: 'Return'
       createButtonText: 'Update'
       reviewButtonText: 'Verify'
+```
+
+### Showing or Hiding the Template Description
+
+By default, the template description is shown next to the template wizard if it's longer than 140 characters. You can override this behavior using the `spec.presentation.showDescription` field of your template to always show or hide the description. The user can still toggle the description visibility in the context menu of the template wizard. Here's an example of how to use this:
+
+```yaml
+spec:
+  owner: scaffolder/maintainers
+  type: website
+  presentation:
+    showDescription: true|false
 ```

@@ -345,6 +345,7 @@ export const scaffolderReactTranslationRef: TranslationRef<
   'scaffolder-react',
   {
     readonly 'workflow.noDescription': 'No description';
+    readonly 'workflow.hideDescriptionButtonTitle': 'Hide description';
     readonly 'passwordWidget.content': 'This widget is insecure. Please use [`ui:field: Secret`](https://backstage.io/docs/features/software-templates/writing-templates/#using-secrets) instead of `ui:widget: password`';
     readonly 'scaffolderPageContextMenu.createLabel': 'Create';
     readonly 'scaffolderPageContextMenu.moreLabel': 'more';
@@ -517,6 +518,8 @@ export type WorkflowProps = {
   description?: string;
   namespace: string;
   templateName: string;
+  showDescription?: boolean;
+  onHideDescription?: () => void;
   components?: {
     ReviewStepComponent?: ComponentType<ReviewStepProps>;
   };
