@@ -1206,6 +1206,9 @@ export type ExtensionDefinitionAttachTo<
       id?: never;
     }
   | ExtensionInput<UParentInputs>
+  /**
+   * @deprecated Multiple attachment points are deprecated and will be removed in a future release. Use a Utility API instead to share functionality across multiple locations. See https://backstage.io/docs/frontend-system/architecture/27-sharing-extensions for migration guidance.
+   */
   | Array<
       | {
           id: string;
