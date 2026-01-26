@@ -102,7 +102,9 @@ export class WinstonLogger implements RootLoggerService {
           return obj;
         }
 
-        obj[MESSAGE] = obj[MESSAGE]?.replace?.(redactionPattern, '***');
+        if (typeof obj[MESSAGE] === 'string') {
+          obj[MESSAGE] = obj[MESSAGE].replace(redactionPattern, '***');
+        }
 
         return obj;
       })(),
@@ -157,8 +159,11 @@ export class WinstonLogger implements RootLoggerService {
       format.printf((info: TransformableInfo) => {
         const { timestamp, level, message, plugin, service, ...fields } = info;
         const prefix = plugin || service;
-        const timestampColor = colorizer.colorize('timestamp', timestamp);
-        const prefixColor = colorizer.colorize('prefix', prefix);
+        const timestampColor = colorizer.colorize(
+          'timestamp',
+          String(timestamp),
+        );
+        const prefixColor = colorizer.colorize('prefix', String(prefix));
 
         const extraFields = Object.entries(fields)
           .map(([key, value]) => {

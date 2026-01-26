@@ -89,15 +89,20 @@ export const useStyles = makeStyles(
       position: 'absolute',
       paddingTop: 0,
       paddingBottom: 0,
+      '&:hover': {
+        color: theme.palette.linkHover,
+      },
     },
     lineNumber: {
       display: 'inline-block',
       textAlign: 'end',
       width: 60,
+      paddingRight: theme.spacing(1),
       marginRight: theme.spacing(1),
       cursor: 'pointer',
       flexShrink: 0,
-      userSelect: 'none',
+      color: colors.blue[300],
+      borderRight: `1px solid ${colors.blue[700]}`,
     },
     textHighlight: {
       background: alpha(theme.palette.info.main, 0.15),

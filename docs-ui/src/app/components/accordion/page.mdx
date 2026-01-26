@@ -1,0 +1,139 @@
+import { PropsTable } from '@/components/PropsTable';
+import { Snippet } from '@/components/Snippet';
+import { CodeBlock } from '@/components/CodeBlock';
+import {
+  accordionPropDefs,
+  accordionTriggerPropDefs,
+  accordionPanelPropDefs,
+  accordionGroupPropDefs,
+} from './props-definition';
+import {
+  accordionUsageSnippet,
+  defaultSnippet,
+  withSubtitleSnippet,
+  customTriggerSnippet,
+  defaultExpandedSnippet,
+  groupSingleOpenSnippet,
+  groupMultipleOpenSnippet,
+} from './snippets';
+import {
+  Default,
+  WithSubtitle,
+  CustomTrigger,
+  DefaultExpanded,
+  GroupSingleOpen,
+  GroupMultipleOpen,
+} from './components';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { AccordionDefinition } from '../../../utils/definitions';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+
+<PageTitle
+  title="Accordion"
+  description="A component for showing and hiding content with animation."
+/>
+
+<Snippet
+  align="center"
+  py={4}
+  height={240}
+  preview={<Default />}
+  code={defaultSnippet}
+/>
+
+## Usage
+
+<CodeBlock code={accordionUsageSnippet} />
+
+## API reference
+
+### Accordion
+
+Root container for the accordion. Renders a `<div>` element.
+
+<PropsTable data={accordionPropDefs} />
+
+### AccordionTrigger
+
+Trigger component with built-in animated chevron icon. Renders a heading element (defaults to `<h3>`, configurable via `level` prop) wrapping a `<button>`.
+
+<PropsTable data={accordionTriggerPropDefs} />
+
+### AccordionPanel
+
+Panel with the accordion content. Renders a `<div>` element.
+
+<PropsTable data={accordionPanelPropDefs} />
+
+### AccordionGroup
+
+Container for managing multiple accordions. Renders a `<div>` element.
+
+<PropsTable data={accordionGroupPropDefs} />
+
+## Examples
+
+### With Subtitle
+
+Here's a view when using both title and subtitle props.
+
+<Snippet
+  align="center"
+  py={4}
+  height={240}
+  preview={<WithSubtitle />}
+  code={withSubtitleSnippet}
+/>
+
+### Custom Trigger
+
+Here's a view when providing custom multi-line content as children.
+
+<Snippet
+  align="center"
+  py={4}
+  height={280}
+  preview={<CustomTrigger />}
+  code={customTriggerSnippet}
+/>
+
+### Default Expanded
+
+Here's a view when the panel is expanded by default.
+
+<Snippet
+  align="center"
+  py={4}
+  height={280}
+  preview={<DefaultExpanded />}
+  code={defaultExpandedSnippet}
+/>
+
+### Group Single Open
+
+Here's a view when only one accordion can be open at a time.
+
+<Snippet
+  align="center"
+  py={4}
+  height={280}
+  preview={<GroupSingleOpen />}
+  code={groupSingleOpenSnippet}
+/>
+
+### Group Multiple Open
+
+Here's a view when multiple accordions can be open simultaneously.
+
+<Snippet
+  align="center"
+  py={4}
+  height={280}
+  preview={<GroupMultipleOpen />}
+  code={groupMultipleOpenSnippet}
+/>
+
+<Theming definition={AccordionDefinition} />
+
+<ChangelogComponent component="accordion" />

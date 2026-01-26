@@ -40,24 +40,25 @@
     }
 
     &[data-startCollapsed='true'] {
-      transition: flex-basis 0.3s ease-in-out;
+      transition: flex-basis 0.3s ease-in-out, width 0.3s ease-in-out,
+        max-width 0.3s ease-in-out;
       padding: 0;
       flex: 0 1 auto;
 
       &[data-collapsed='true'] {
-        flex-basis: 200px;
-      }
-
-      &[data-collapsed='false'] {
         cursor: pointer;
 
         &[data-size='medium'] {
           flex-basis: 2.5rem;
+          width: 2.5rem;
+          max-width: 2.5rem;
           height: 2.5rem;
         }
 
         &[data-size='small'] {
           flex-basis: 2rem;
+          width: 2rem;
+          max-width: 2rem;
           height: 2rem;
         }
 
@@ -78,6 +79,12 @@
             padding-right: 0px;
           }
         }
+      }
+
+      &[data-collapsed='false'] {
+        flex-basis: 200px;
+        width: 200px;
+        max-width: 200px;
       }
     }
   }

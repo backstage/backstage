@@ -46,7 +46,7 @@ describe('TaskWorker', () => {
       const settings: TaskSettingsV2 = {
         version: 2,
         cadence: '*/2 * * * * *',
-        initialDelayDuration: Duration.fromObject({ seconds: 1 }).toISO()!,
+        initialDelayDuration: Duration.fromObject({ seconds: 3 }).toISO()!, // over 1 second, to cover for 1-second granularity in some database timestamps
         timeoutAfterDuration: Duration.fromObject({ minutes: 1 }).toISO()!,
       };
 
@@ -65,7 +65,7 @@ describe('TaskWorker', () => {
       expect(JSON.parse(row.settings_json)).toEqual({
         version: 2,
         cadence: '*/2 * * * * *',
-        initialDelayDuration: 'PT1S',
+        initialDelayDuration: 'PT3S',
         timeoutAfterDuration: 'PT1M',
       });
       await expect(TaskWorker.taskStates(knex)).resolves.toEqual(
@@ -80,6 +80,10 @@ describe('TaskWorker', () => {
         ]),
       );
 
+      // Note that this is timing sensitive - if things take too long between
+      // persistTask and findReadyTask, this test will fail. We set some margin
+      // of initialDelayDuration to cover for this, but if this turns out to be
+      // flaky, we may have to revisit how this test is written.
       await expect(worker.findReadyTask()).resolves.toEqual({
         result: 'not-ready-yet',
       });

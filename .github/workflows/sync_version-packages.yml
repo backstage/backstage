@@ -12,20 +12,28 @@ jobs:
   create-release-pr:
     name: Create Changeset PR
     runs-on: ubuntu-latest
+
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@95d9a5deda9de15063e7595e9719c11c38c90ae2 # v2.13.2
+        uses: step-security/harden-runner@df199fb7be9f65074067a9eb93f12bb4c5547cf2 # v2.13.3
         with:
           egress-policy: audit
 
-      - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
           fetch-depth: 20000
           fetch-tags: true
           token: ${{ secrets.GH_SERVICE_ACCOUNT_TOKEN }}
 
+      - name: Use Node.js 22.x
+        uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
+        with:
+          node-version: 22.x
+          registry-url: https://registry.npmjs.org/ # Needed for auth
+
       - name: Install Dependencies
         run: yarn --immutable
+
       - name: Create Release Pull Request
         uses: backstage/changesets-action@a39baf18913e669734ffb00c2fd9900472cfa240 # v2.3.2
         with:

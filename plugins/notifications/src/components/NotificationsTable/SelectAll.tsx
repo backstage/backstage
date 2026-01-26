@@ -16,6 +16,7 @@
 import Checkbox from '@material-ui/core/Checkbox';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import { makeStyles } from '@material-ui/core/styles';
+import Tooltip from '@material-ui/core/Tooltip';
 
 const useStyles = makeStyles({
   label: {
@@ -23,6 +24,7 @@ const useStyles = makeStyles({
     maxWidth: '2rem',
     '& span': {
       paddingRight: '0px',
+      marginRight: '2px',
     },
   },
 });
@@ -43,13 +45,15 @@ export const SelectAll = ({
       label={count > 0 ? `(${count})` : undefined}
       className={classes.label}
       control={
-        <Checkbox
-          color="primary"
-          disabled={!totalCount}
-          checked={count > 0}
-          indeterminate={count > 0 && totalCount !== count}
-          onChange={onSelectAll}
-        />
+        <Tooltip title="Select all">
+          <Checkbox
+            color="primary"
+            disabled={!totalCount}
+            checked={count > 0}
+            indeterminate={count > 0 && totalCount !== count}
+            onChange={onSelectAll}
+          />
+        </Tooltip>
       }
     />
   );

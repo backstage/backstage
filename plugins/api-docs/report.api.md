@@ -4,7 +4,7 @@
 
 ```ts
 import { ApiEntity } from '@backstage/catalog-model';
-import { ApiRef } from '@backstage/core-plugin-api';
+import { ApiRef } from '@backstage/frontend-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { CatalogTableRow } from '@backstage/plugin-catalog';
 import { ComponentEntity } from '@backstage/catalog-model';

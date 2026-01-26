@@ -1,5 +1,35 @@
 # @backstage/backend-app-api
 
+## 1.4.1
+
+### Patch Changes
+
+- 04db26b: Clean up process event listeners on backend stop to prevent leaks
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.1
+
+## 1.4.0
+
+### Minor Changes
+
+- 5a2d538: Introduced backend startup result tracking and error handling. The `Backend.start()` method now returns a `BackendStartupResult` with detailed success/failure status and timing information for all plugins and modules. When startup fails, a `BackendStartupError` is thrown that includes the complete startup results, making it easier to diagnose which plugins or modules failed.
+
+  This also improves the default error message when backend startup fails, and of course makes it possible to craft your own custom error reporting based on the startup results.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.0
+
+## 1.4.0-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.0-next.1
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+
 ## 1.4.0-next.0
 
 ### Minor Changes

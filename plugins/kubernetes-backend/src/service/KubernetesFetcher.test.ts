@@ -1263,5 +1263,160 @@ describe('KubernetesFetcher', () => {
       ]);
       expect(result.responses).toMatchObject(POD_METRICS_FIXTURE);
     });
+    it('should mask secret data values with ***', async () => {
+      worker.use(
+        rest.get('http://localhost:9999/api/v1/secrets', (req, res, ctx) =>
+          res(
+            checkToken(req, ctx, 'token'),
+            withLabels(req, ctx, {
+              items: [
+                {
+                  metadata: { name: 'secret-name' },
+                  data: {
+                    username: 'dXNlcm5hbWU=',
+                    password: 'cGFzc3dvcmQ=',
+                    apiKey: 'YXBpS2V5',
+                  },
+                },
+              ],
+            }),
+          ),
+        ),
+      );
+
+      const result = await sut.fetchObjectsForService({
+        serviceId: 'some-service',
+        clusterDetails: {
+          name: 'cluster1',
+          url: 'http://localhost:9999',
+          authMetadata: {},
+        },
+        credential: { type: 'bearer token', token: 'token' },
+        objectTypesToFetch: new Set([
+          {
+            group: '',
+            apiVersion: 'v1',
+            plural: 'secrets',
+            objectType: 'secrets',
+          },
+        ]),
+        labelSelector: '',
+        customResources: [],
+      });
+
+      expect(result).toStrictEqual({
+        errors: [],
+        responses: [
+          {
+            type: 'secrets',
+            resources: [
+              {
+                metadata: {
+                  name: 'secret-name',
+                  labels: {},
+                },
+                data: {
+                  username: '***',
+                  password: '***',
+                  apiKey: '***',
+                },
+              },
+            ],
+          },
+        ],
+      });
+    });
+
+    it('should handle secrets without data field', async () => {
+      worker.use(
+        rest.get('http://localhost:9999/api/v1/secrets', (req, res, ctx) =>
+          res(
+            checkToken(req, ctx, 'token'),
+            withLabels(req, ctx, {
+              items: [
+                {
+                  metadata: { name: 'secret-without-data' },
+                },
+              ],
+            }),
+          ),
+        ),
+      );
+
+      const result = await sut.fetchObjectsForService({
+        serviceId: 'some-service',
+        clusterDetails: {
+          name: 'cluster1',
+          url: 'http://localhost:9999',
+          authMetadata: {},
+        },
+        credential: { type: 'bearer token', token: 'token' },
+        objectTypesToFetch: new Set([
+          {
+            group: '',
+            apiVersion: 'v1',
+            plural: 'secrets',
+            objectType: 'secrets',
+          },
+        ]),
+        labelSelector: '',
+        customResources: [],
+      });
+
+      expect(result).toStrictEqual({
+        errors: [],
+        responses: [
+          {
+            type: 'secrets',
+            resources: [
+              {
+                metadata: {
+                  name: 'secret-without-data',
+                  labels: {},
+                },
+              },
+            ],
+          },
+        ],
+      });
+    });
+  });
+
+  describe('transformResources', () => {
+    let fetcher: KubernetesClientBasedFetcher;
+
+    beforeEach(() => {
+      fetcher = new KubernetesClientBasedFetcher({
+        logger: mockServices.logger.mock(),
+      });
+    });
+
+    it('removes List suffix from custom resource kinds', () => {
+      const result = (fetcher as any).transformResources(
+        'customresources',
+        'HelloWorldList',
+        [{ name: 'foo' }],
+      );
+      expect(result[0].kind).toBe('HelloWorld');
+    });
+
+    it('masks secret data values', () => {
+      const result = (fetcher as any).transformResources(
+        'secrets',
+        'SecretList',
+        [{ data: { password: 'secret123' } }],
+      );
+      expect(result[0].data.password).toBe('***');
+    });
+
+    it('returns other types unchanged', () => {
+      const items = [{ name: 'pod' }];
+      const result = (fetcher as any).transformResources(
+        'pods',
+        'PodList',
+        items,
+      );
+      expect(result).toBe(items);
+    });
   });
 });

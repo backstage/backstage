@@ -1,5 +1,32 @@
 # @backstage/plugin-catalog-backend-module-msgraph
 
+## 0.8.4
+
+### Patch Changes
+
+- 115b378: Changed the logger level from 'warning' to 'debug' when we are unable to load the user's photo.
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.1
+
+## 0.8.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.0
+  - @backstage/plugin-catalog-node@1.20.1
+
+## 0.8.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.0-next.1
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config@1.3.6
+  - @backstage/plugin-catalog-common@1.1.7
+  - @backstage/plugin-catalog-node@1.20.1-next.1
+
 ## 0.8.3-next.0
 
 ### Patch Changes

@@ -40,6 +40,9 @@ export const groupResponses = (
         case 'configmaps':
           prev.configMaps.push(...next.resources);
           break;
+        case 'secrets':
+          prev.secrets.push(...next.resources);
+          break;
         case 'horizontalpodautoscalers':
           prev.horizontalPodAutoscalers.push(...next.resources);
           break;
@@ -71,6 +74,7 @@ export const groupResponses = (
       deployments: [],
       services: [],
       configMaps: [],
+      secrets: [],
       horizontalPodAutoscalers: [],
       ingresses: [],
       jobs: [],

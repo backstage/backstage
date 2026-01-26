@@ -1,5 +1,41 @@
 # @backstage/plugin-kubernetes-react
 
+## 0.5.15
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.5
+
+## 0.5.15-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.5-next.0
+
+## 0.5.14
+
+### Patch Changes
+
+- f966a85: Enabled a pod terminal at GKE
+- 8fa8d87: Add Kubernetes Plugin Secrets Accordion with masked secret datas
+- f15d5f1: add missing i18n support for kubernetes and kubernetes-react
+- Updated dependencies
+  - @backstage/core-components@0.18.4
+  - @backstage/plugin-kubernetes-common@0.9.9
+  - @backstage/core-plugin-api@1.12.1
+
+## 0.5.14-next.1
+
+### Patch Changes
+
+- f966a85: Enabled a pod terminal at GKE
+- 8fa8d87: Add Kubernetes Plugin Secrets Accordion with masked secret datas
+- Updated dependencies
+  - @backstage/core-components@0.18.4-next.1
+  - @backstage/plugin-kubernetes-common@0.9.9-next.0
+
 ## 0.5.14-next.0
 
 ### Patch Changes

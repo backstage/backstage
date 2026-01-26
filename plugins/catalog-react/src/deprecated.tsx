@@ -15,10 +15,12 @@
  */
 
 import { PropsWithChildren, useCallback, useMemo, useState } from 'react';
+import { createVersionedValueMap } from '@backstage/version-bridge';
 import {
   DefaultEntityFilters,
-  EntityListContext,
   EntityListContextProps,
+  NewEntityListContext,
+  OldEntityListContext,
 } from './hooks/useEntityListProvider';
 
 /**
@@ -81,8 +83,18 @@ export function MockEntityListContextProvider<
   );
 
   return (
-    <EntityListContext.Provider value={resolvedValue}>
+    <NewEntityListContext.Provider
+      value={createVersionedValueMap({ 1: resolvedValue })}
+    >
       {children}
-    </EntityListContext.Provider>
+    </NewEntityListContext.Provider>
   );
 }
+
+/**
+ * Creates new context for entity listing and filtering.
+ *
+ * @public
+ * @deprecated Please use `EntityListProvider` and `EntityListProvider` instead.
+ */
+export const EntityListContext = OldEntityListContext;

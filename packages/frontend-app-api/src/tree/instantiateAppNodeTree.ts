@@ -38,21 +38,22 @@ const INSTANTIATION_FAILED = new Error('Instantiation failed');
 function mapWithFailures<T, U>(
   iterable: Iterable<T>,
   callback: (item: T) => U,
+  options?: { ignoreFailures?: boolean },
 ): U[] {
   let failed = false;
-  const results = Array.from(iterable).map(item => {
+  const results = [];
+  for (const item of iterable) {
     try {
-      return callback(item);
+      results.push(callback(item));
     } catch (error) {
       if (error === INSTANTIATION_FAILED) {
         failed = true;
       } else {
         throw error;
       }
-      return null as any;
     }
-  });
-  if (failed) {
+  }
+  if (failed && !options?.ignoreFailures) {
     throw INSTANTIATION_FAILED;
   }
   return results;
@@ -119,7 +120,7 @@ function resolveInputDataContainer(
         .map(r => `'${r.id}'`)
         .join(', ');
 
-      collector.report({
+      collector.child({ node: attachment }).report({
         code: 'EXTENSION_INPUT_DATA_MISSING',
         message: `extension '${attachment.spec.id}' could not be attached because its output data (${provided}) does not match what the input '${inputName}' requires (${expected})`,
       });
@@ -271,21 +272,37 @@ function resolveV2Inputs(
         }
         return undefined;
       }
-      return resolveInputDataContainer(
-        input.extensionData,
-        attachedNodes[0],
-        inputName,
-        collector,
-      );
+      try {
+        return resolveInputDataContainer(
+          input.extensionData,
+          attachedNodes[0],
+          inputName,
+          collector,
+        );
+      } catch (error) {
+        if (error === INSTANTIATION_FAILED) {
+          if (input.config.optional) {
+            return undefined;
+          }
+          collector.report({
+            code: 'EXTENSION_ATTACHMENT_MISSING',
+            message: `input '${inputName}' is required but it failed to be instantiated`,
+          });
+        }
+        throw error;
+      }
     }
 
-    return mapWithFailures(attachedNodes, attachment =>
-      resolveInputDataContainer(
-        input.extensionData,
-        attachment,
-        inputName,
-        collector,
-      ),
+    return mapWithFailures(
+      attachedNodes,
+      attachment =>
+        resolveInputDataContainer(
+          input.extensionData,
+          attachment,
+          inputName,
+          collector,
+        ),
+      { ignoreFailures: true },
     );
   }) as ResolvedExtensionInputs<{ [inputName in string]: ExtensionInput }>;
 }

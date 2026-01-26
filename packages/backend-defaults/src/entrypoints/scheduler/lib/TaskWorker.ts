@@ -280,8 +280,10 @@ export class TaskWorker {
         .sendAt()
         .minus({ seconds: 1 }) // immediately, if "* * * * * *"
         .toUTC();
+      // We make a conversion here to make typescript happy, because the luxon versions of the cron library and here may not be the same
+      const timeConverted = DateTime.fromJSDate(time.toJSDate());
 
-      nextStartAt = this.nextRunAtRaw(time);
+      nextStartAt = this.nextRunAtRaw(timeConverted);
       startAt ||= nextStartAt;
     } else if (isManual) {
       nextStartAt = this.knex.raw('null');
@@ -418,8 +420,10 @@ export class TaskWorker {
     if (isCron) {
       const time = new CronTime(settings.cadence).sendAt().toUTC();
       this.logger.debug(`task: ${this.taskId} will next occur around ${time}`);
+      // We make a conversion here to make typescript happy, because the luxon versions of the cron library and here may not be the same
+      const timeConverted = DateTime.fromJSDate(time.toJSDate());
 
-      nextRun = this.nextRunAtRaw(time);
+      nextRun = this.nextRunAtRaw(timeConverted);
     } else if (isManual) {
       nextRun = this.knex.raw('null');
     } else {

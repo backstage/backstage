@@ -19,17 +19,38 @@ import {
   ReactNode,
   Suspense,
   useEffect,
+  useMemo,
   lazy as reactLazy,
 } from 'react';
 import { AnalyticsContext, useAnalytics } from '../analytics';
-import { ErrorBoundary } from './ErrorBoundary';
+import { ErrorDisplayBoundary } from './ErrorDisplayBoundary';
+import { ErrorApiBoundary } from './ErrorApiBoundary';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { routableExtensionRenderedEvent } from '../../../core-plugin-api/src/analytics/Tracker';
-import { AppNode } from '../apis';
+import { AppNode, ErrorApi, errorApiRef, useApi } from '../apis';
+import {
+  PluginWrapperApi,
+  pluginWrapperApiRef,
+} from '../apis/definitions/PluginWrapperApi';
 import { coreExtensionData } from '../wiring';
 import { AppNodeProvider } from './AppNodeProvider';
 import { Progress } from './DefaultSwappableComponents';
 
+function useOptionalErrorApi(): ErrorApi | undefined {
+  try {
+    return useApi(errorApiRef);
+  } catch {
+    return undefined;
+  }
+}
+
+function useOptionalPluginWrapperApi(): PluginWrapperApi | undefined {
+  try {
+    return useApi(pluginWrapperApiRef);
+  } catch {
+    return undefined;
+  }
+}
 type RouteTrackerProps = PropsWithChildren<{
   enabled?: boolean;
 }>;
@@ -53,6 +74,7 @@ const RouteTracker = (props: RouteTrackerProps) => {
 
 /** @public */
 export interface ExtensionBoundaryProps {
+  errorPresentation?: 'error-api' | 'error-display';
   node: AppNode;
   children: ReactNode;
 }
@@ -61,27 +83,52 @@ export interface ExtensionBoundaryProps {
 export function ExtensionBoundary(props: ExtensionBoundaryProps) {
   const { node, children } = props;
 
+  const errorApi = useOptionalErrorApi();
+
   const hasRoutePathOutput = Boolean(
     node.instance?.getData(coreExtensionData.routePath),
   );
 
   const plugin = node.spec.plugin;
+  const pluginId = plugin.id ?? 'app';
+
+  const pluginWrapperApi = useOptionalPluginWrapperApi();
+
+  const PluginWrapper = useMemo(() => {
+    return pluginWrapperApi?.getPluginWrapper(pluginId);
+  }, [pluginWrapperApi, pluginId]);
 
   // Skipping "routeRef" attribute in the new system, the extension "id" should provide more insight
   const attributes = {
     extensionId: node.spec.id,
-    pluginId: node.spec.plugin?.id ?? 'app',
+    pluginId,
   };
+
+  let content = (
+    <AnalyticsContext attributes={attributes}>
+      <RouteTracker enabled={hasRoutePathOutput}>{children}</RouteTracker>
+    </AnalyticsContext>
+  );
+
+  if (PluginWrapper) {
+    content = <PluginWrapper>{content}</PluginWrapper>;
+  }
+
+  if (props.errorPresentation === 'error-api') {
+    content = (
+      <ErrorApiBoundary node={node} errorApi={errorApi}>
+        {content}
+      </ErrorApiBoundary>
+    );
+  } else {
+    content = (
+      <ErrorDisplayBoundary plugin={plugin}>{content}</ErrorDisplayBoundary>
+    );
+  }
 
   return (
     <AppNodeProvider node={node}>
-      <Suspense fallback={<Progress />}>
-        <ErrorBoundary plugin={plugin}>
-          <AnalyticsContext attributes={attributes}>
-            <RouteTracker enabled={hasRoutePathOutput}>{children}</RouteTracker>
-          </AnalyticsContext>
-        </ErrorBoundary>
-      </Suspense>
+      <Suspense fallback={<Progress />}>{content}</Suspense>
     </AppNodeProvider>
   );
 }

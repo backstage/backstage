@@ -18,23 +18,23 @@ jobs:
 
     steps:
       - name: Harden Runner
-        uses: step-security/harden-runner@95d9a5deda9de15063e7595e9719c11c38c90ae2 # v2.13.2
+        uses: step-security/harden-runner@df199fb7be9f65074067a9eb93f12bb4c5547cf2 # v2.13.3
         with:
           egress-policy: audit
 
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
 
       - name: Setup Node.js
-        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
+        uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
         with:
-          node-version: 20.x
+          node-version: 22.x
           registry-url: https://registry.npmjs.org/ # Needed for auth
 
       - name: yarn install
         uses: backstage/actions/yarn-install@b3c1841fd69e1658ac631afafd0fb140a2309024 # v0.6.17
         with:
-          cache-prefix: ${{ runner.os }}-v20.x
+          cache-prefix: ${{ runner.os }}-v22.x
 
       - name: Run migration analysis
         id: analysis
@@ -48,7 +48,7 @@ jobs:
           echo "EOF" >> $GITHUB_ENV
 
       - name: Update GitHub Issue
-        uses: actions/github-script@v7
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
           script: |
@@ -62,7 +62,7 @@ jobs:
                 issue_number: issueNumber,
                 body: reportBody
               });
-              
+
               console.log(`✅ Successfully updated issue #${issueNumber}`);
             } catch (error) {
               console.error(`❌ Error updating issue: ${error.message}`);

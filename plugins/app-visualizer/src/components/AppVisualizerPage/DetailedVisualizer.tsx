@@ -31,6 +31,7 @@ import {
   RiCloseCircleLine as DisabledIcon,
 } from '@remixicon/react';
 import { Focusable } from 'react-aria-components';
+import { memo, useMemo, useState, useEffect, useRef, Fragment } from 'react';
 
 function getContrastColor(bgColor: string): string {
   const hex = bgColor.replace('#', '');
@@ -105,131 +106,149 @@ function getFullPath(node?: AppNode): string {
   return getFullPath(parent) + part;
 }
 
-function Output(props: { dataRef: ExtensionDataRef<unknown>; node?: AppNode }) {
-  const { dataRef, node } = props;
-  const { id } = dataRef;
-  const instance = node?.instance;
-
-  const routeResolutionApi = useApi(routeResolutionApiRef);
-
-  const { backgroundColor, color } = getOutputColor(id);
-
-  const chipStyle: React.CSSProperties = {
-    height: 20,
-    padding: '0 10px',
-    borderRadius: '10px',
-    color,
-    backgroundColor,
-    display: 'flex',
-    alignItems: 'center',
-    fontWeight:
-      'var(--bui-font-weight-regular)' as React.CSSProperties['fontWeight'],
-  };
-
-  if (id === coreExtensionData.routeRef.id && node) {
-    try {
-      const routeRef = props.node?.instance?.getData(
-        coreExtensionData.routeRef,
-      );
-      const link = routeRef && routeResolutionApi.resolve(routeRef)?.();
-      if (link) {
-        return (
-          <TooltipTrigger>
-            <Link href={link} style={chipStyle}>
-              link
-            </Link>
-            <Tooltip>{id}</Tooltip>
-          </TooltipTrigger>
-        );
-      }
-    } catch {
-      /* ignore */
-    }
-  }
-
-  let tooltip = id;
-  let text: string | undefined = undefined;
-  if (id === coreExtensionData.routePath.id) {
-    text = String(instance?.getData(dataRef) ?? '');
-    tooltip = getFullPath(node);
-  }
-
-  return (
-    <TooltipTrigger>
-      <Focusable>
-        <Text style={{ ...chipStyle, cursor: 'help' }}>{text}</Text>
-      </Focusable>
-      <Tooltip style={{ maxWidth: 'unset' }}>{tooltip}</Tooltip>
-    </TooltipTrigger>
-  );
-}
-
-function Attachments(props: {
-  node: AppNode;
-  enabled: boolean;
-  depth: number;
+function ProgressiveCollection({
+  items,
+  batchSize = 10,
+}: {
+  items: Array<() => React.ReactElement>;
+  batchSize?: number;
 }) {
-  const { node, depth } = props;
-  const { attachments } = node.edges;
+  const [maxIndex, setMaxIndex] = useState(0);
+  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  if (attachments.size === 0) {
-    return null;
-  }
+  useEffect(() => {
+    if (maxIndex >= items.length) {
+      return undefined;
+    }
+
+    const processBatch = () => {
+      const nextIndex = Math.min(maxIndex + batchSize, items.length);
+      setMaxIndex(nextIndex);
+
+      if (nextIndex < items.length) {
+        timeoutRef.current = setTimeout(processBatch, 0);
+      }
+    };
+
+    timeoutRef.current = setTimeout(processBatch, 0);
+
+    // eslint-disable-next-line consistent-return
+    return () => {
+      if (timeoutRef.current !== null) {
+        clearTimeout(timeoutRef.current);
+        timeoutRef.current = null;
+      }
+    };
+  }, [maxIndex, items.length, batchSize]);
 
   return (
-    <Flex direction="column" gap="4">
-      {[...attachments.entries()]
-        .sort(([a], [b]) => a.localeCompare(b))
-        .map(([key, children], idx) => {
-          return (
-            <Box key={key}>
-              <Flex
-                p="2"
-                align="center"
-                style={{
-                  borderTopWidth: 'var(--bui-space-1_5)',
-                  borderTopStyle: 'solid',
-                  borderTopColor: getBorderColor(depth),
-                  borderTop: idx === 0 ? 'none' : undefined,
-                  width: 'fit-content',
-                }}
-              >
-                <InputIcon size={16} />
-                <div style={{ marginLeft: 'var(--bui-space-2)' }}>{key}</div>
-              </Flex>
-              <Flex ml="2" mb="2" direction="column" align="start" gap="1">
-                {children.map(childNode => (
-                  <Extension
-                    key={childNode.spec.id}
-                    node={childNode}
-                    depth={depth + 1}
-                  />
-                ))}
-              </Flex>
-            </Box>
-          );
-        })}
-    </Flex>
+    <>
+      {items.slice(0, maxIndex).map((item, index) => (
+        <Fragment key={index}>{item()}</Fragment>
+      ))}
+    </>
   );
 }
 
-function Extension(props: { node: AppNode; depth: number }) {
-  const { node, depth } = props;
+const Output = memo(
+  function Output(props: {
+    dataRef: ExtensionDataRef<unknown>;
+    node?: AppNode;
+  }) {
+    const { dataRef, node } = props;
+    const { id } = dataRef;
+    const instance = node?.instance;
 
+    const routeResolutionApi = useApi(routeResolutionApiRef);
+
+    const { backgroundColor, color } = getOutputColor(id);
+
+    const chipStyle: React.CSSProperties = {
+      height: 20,
+      padding: '0 10px',
+      borderRadius: '10px',
+      color,
+      backgroundColor,
+      display: 'flex',
+      alignItems: 'center',
+      fontWeight:
+        'var(--bui-font-weight-regular)' as React.CSSProperties['fontWeight'],
+    };
+
+    if (id === coreExtensionData.routeRef.id && node) {
+      try {
+        const routeRef = props.node?.instance?.getData(
+          coreExtensionData.routeRef,
+        );
+        const link = routeRef && routeResolutionApi.resolve(routeRef)?.();
+        if (link) {
+          return (
+            <TooltipTrigger>
+              <Link href={link} style={chipStyle}>
+                link
+              </Link>
+              <Tooltip>{id}</Tooltip>
+            </TooltipTrigger>
+          );
+        }
+      } catch {
+        /* ignore */
+      }
+    }
+
+    let tooltip = id;
+    let text: string | undefined = undefined;
+    if (id === coreExtensionData.routePath.id) {
+      text = String(instance?.getData(dataRef) ?? '');
+      tooltip = getFullPath(node);
+    }
+
+    return (
+      <TooltipTrigger>
+        <Focusable>
+          <Text style={{ ...chipStyle, cursor: 'help' }}>{text}</Text>
+        </Focusable>
+        <Tooltip style={{ maxWidth: 'unset' }}>{tooltip}</Tooltip>
+      </TooltipTrigger>
+    );
+  },
+  (prevProps, nextProps) => {
+    return (
+      prevProps.dataRef.id === nextProps.dataRef.id &&
+      prevProps.node?.spec.id === nextProps.node?.spec.id
+    );
+  },
+);
+
+function Extension({ node, depth }: { node: AppNode; depth: number }) {
   const enabled = Boolean(node.instance);
-  const dataRefs = node.instance && [...node.instance.getDataRefs()];
 
-  // Build tooltip text
-  const tooltipParts = [];
-  let currentNode = node;
-  tooltipParts.push(currentNode.spec.id);
-  while (currentNode.edges.attachedTo) {
-    const input = currentNode.edges.attachedTo.input;
-    currentNode = currentNode.edges.attachedTo.node;
-    tooltipParts.push(`${currentNode.spec.id} [${input}]`);
-  }
-  tooltipParts.reverse();
-  const tooltipText = tooltipParts.join('\n');
+  const tooltipText = useMemo(() => {
+    const tooltipParts = [];
+    let currentNode = node;
+    tooltipParts.push(currentNode.spec.id);
+    while (currentNode.edges.attachedTo) {
+      const input = currentNode.edges.attachedTo.input;
+      currentNode = currentNode.edges.attachedTo.node;
+      tooltipParts.push(`${currentNode.spec.id} [${input}]`);
+    }
+    tooltipParts.reverse();
+    return tooltipParts.join('\n');
+  }, [node]);
+
+  const sortedDataRefs = useMemo(() => {
+    if (!node.instance) {
+      return [];
+    }
+    const dataRefs = [...node.instance.getDataRefs()];
+    return dataRefs.sort((a, b) => a.id.localeCompare(b.id));
+  }, [node.instance]);
+
+  const sortedAttachments = useMemo(() => {
+    return [...node.edges.attachments.entries()].sort(([a], [b]) =>
+      a.localeCompare(b),
+    );
+  }, [node.edges.attachments]);
 
   return (
     <Box
@@ -261,15 +280,46 @@ function Extension(props: { node: AppNode; depth: number }) {
           </Tooltip>
         </TooltipTrigger>
         <Flex ml="2" align="center" gap="2">
-          {dataRefs &&
-            dataRefs.length > 0 &&
-            dataRefs
-              .sort((a, b) => a.id.localeCompare(b.id))
-              .map(ref => <Output key={ref.id} dataRef={ref} node={node} />)}
+          {sortedDataRefs.length > 0 &&
+            sortedDataRefs.map(ref => (
+              <Output key={ref.id} dataRef={ref} node={node} />
+            ))}
           {!enabled && <DisabledIcon size={16} />}
         </Flex>
       </Flex>
-      <Attachments node={node} enabled={enabled} depth={depth} />
+      {sortedAttachments.length > 0 && (
+        <Flex direction="column" gap="4">
+          {sortedAttachments.map(([key, children], idx) => (
+            <Box key={key}>
+              <Flex
+                p="2"
+                align="center"
+                style={{
+                  borderTopWidth: 'var(--bui-space-1_5)',
+                  borderTopStyle: 'solid',
+                  borderTopColor: getBorderColor(depth),
+                  borderTop: idx === 0 ? 'none' : undefined,
+                  width: 'fit-content',
+                }}
+              >
+                <InputIcon size={16} />
+                <div style={{ marginLeft: 'var(--bui-space-2)' }}>{key}</div>
+              </Flex>
+              <Flex ml="2" mb="2" direction="column" align="start" gap="1">
+                <ProgressiveCollection
+                  items={children.map(childNode => () => (
+                    <Extension
+                      key={childNode.spec.id}
+                      node={childNode}
+                      depth={depth + 1}
+                    />
+                  ))}
+                />
+              </Flex>
+            </Box>
+          ))}
+        </Flex>
+      )}
     </Box>
   );
 }

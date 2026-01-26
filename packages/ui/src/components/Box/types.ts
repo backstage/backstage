@@ -14,22 +14,31 @@
  * limitations under the License.
  */
 
-import type { SpaceProps, Responsive } from '../../types';
+import type { ReactNode, CSSProperties } from 'react';
+import type { Responsive, Surface, SpaceProps } from '../../types';
 
 /** @public */
-export interface BoxProps extends SpaceProps {
-  display?: Responsive<'none' | 'flex' | 'block' | 'inline'>;
+export type BoxOwnProps = {
   as?: keyof JSX.IntrinsicElements;
+  surface?: Responsive<Surface>;
+  children?: ReactNode;
+  className?: string;
+  style?: CSSProperties;
+};
+
+/** @public */
+export type BoxUtilityProps = {
+  display?: Responsive<'none' | 'flex' | 'block' | 'inline'>;
+  position?: Responsive<
+    'static' | 'relative' | 'absolute' | 'fixed' | 'sticky'
+  >;
   width?: Responsive<string>;
   minWidth?: Responsive<string>;
   maxWidth?: Responsive<string>;
   height?: Responsive<string>;
   minHeight?: Responsive<string>;
   maxHeight?: Responsive<string>;
-  position?: Responsive<
-    'static' | 'relative' | 'absolute' | 'fixed' | 'sticky'
-  >;
-  children?: React.ReactNode;
-  className?: string;
-  style?: React.CSSProperties;
-}
+};
+
+/** @public */
+export interface BoxProps extends SpaceProps, BoxOwnProps, BoxUtilityProps {}

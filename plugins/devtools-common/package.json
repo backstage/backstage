@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-devtools-common",
-  "version": "0.1.19",
+  "version": "0.1.21",
   "description": "Common functionalities for the devtools plugin",
   "backstage": {
     "role": "common-library",
@@ -8,14 +8,12 @@
     "pluginPackages": [
       "@backstage/plugin-devtools",
       "@backstage/plugin-devtools-backend",
-      "@backstage/plugin-devtools-common"
+      "@backstage/plugin-devtools-common",
+      "@backstage/plugin-devtools-react"
     ]
   },
   "publishConfig": {
-    "access": "public",
-    "main": "dist/index.cjs.js",
-    "module": "dist/index.esm.js",
-    "types": "dist/index.d.ts"
+    "access": "public"
   },
   "homepage": "https://backstage.io",
   "repository": {
@@ -25,8 +23,23 @@
   },
   "license": "Apache-2.0",
   "sideEffects": false,
+  "exports": {
+    ".": "./src/index.ts",
+    "./alpha": "./src/alpha.ts",
+    "./package.json": "./package.json"
+  },
   "main": "src/index.ts",
   "types": "src/index.ts",
+  "typesVersions": {
+    "*": {
+      "alpha": [
+        "src/alpha.ts"
+      ],
+      "package.json": [
+        "package.json"
+      ]
+    }
+  },
   "files": [
     "dist"
   ],

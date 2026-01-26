@@ -42,7 +42,13 @@ import {
 } from '../filters';
 import { createDeferred } from '@backstage/types';
 import { EntityListPagination } from '../types';
-import { EntityListProvider, useEntityList } from './useEntityListProvider';
+import {
+  EntityListContextProps,
+  EntityListProvider,
+  NewEntityListContext,
+  useEntityList,
+} from './useEntityListProvider';
+import { createVersionedValueMap } from '@backstage/version-bridge';
 
 const entities: Entity[] = [
   {
@@ -213,6 +219,27 @@ describe('<EntityListProvider />', () => {
     expect(result.current.queryParameters).toEqual({
       kind: 'component',
       type: 'service',
+    });
+  });
+
+  it('resolves query param filter values with large arrays', async () => {
+    const largeArray = Array.from({ length: 50 }, (_, i) => `owner-${i}`);
+    const query = qs.stringify({
+      filters: { kind: 'component', owners: largeArray },
+    });
+    const { result } = renderHook(() => useEntityList(), {
+      wrapper: createWrapper({
+        location: `/catalog?${query}`,
+        pagination,
+      }),
+    });
+
+    await waitFor(() => {
+      expect(result.current.queryParameters).toBeTruthy();
+    });
+    expect(result.current.queryParameters).toEqual({
+      kind: 'component',
+      owners: largeArray,
     });
   });
 
@@ -1046,5 +1073,61 @@ describe(`<EntityListProvider pagination={{ mode: 'offset' }} />`, () => {
         filter: { kind: 'group' },
       }),
     );
+  });
+});
+
+describe('versioned context', () => {
+  it('should work explicitly with new versioned contexts', () => {
+    const value: EntityListContextProps<any> = {
+      filters: {},
+      entities: [],
+      backendEntities: [],
+      updateFilters: jest.fn(),
+      queryParameters: {},
+      loading: true,
+      limit: 277,
+      setLimit: jest.fn(),
+      setOffset: jest.fn(),
+      paginationMode: 'none',
+    };
+
+    const { result } = renderHook(() => useEntityList(), {
+      wrapper: ({ children }) => {
+        const InitialFiltersWrapper = (f: PropsWithChildren<{}>) => {
+          const { updateFilters } = useEntityList();
+          useMountEffect(() => {
+            updateFilters({
+              kind: new EntityKindFilter('component', 'Component'),
+            });
+          });
+          return <>{f.children}</>;
+        };
+
+        return (
+          <MemoryRouter initialEntries={['/catalog']}>
+            <TestApiProvider
+              apis={[
+                [configApiRef, mockApis.config()],
+                [catalogApiRef, mockCatalogApi],
+                [identityApiRef, mockIdentityApi],
+                [storageApiRef, mockApis.storage()],
+                [starredEntitiesApiRef, new MockStarredEntitiesApi()],
+                [alertApiRef, { post: jest.fn() }],
+                [translationApiRef, mockApis.translation()],
+                [errorApiRef, { error$: jest.fn(), post: jest.fn() }],
+              ]}
+            >
+              <NewEntityListContext.Provider
+                value={createVersionedValueMap({ 1: value })}
+              >
+                <InitialFiltersWrapper>{children}</InitialFiltersWrapper>
+              </NewEntityListContext.Provider>
+            </TestApiProvider>
+          </MemoryRouter>
+        );
+      },
+    });
+
+    expect(result.current.limit).toBe(277);
   });
 });

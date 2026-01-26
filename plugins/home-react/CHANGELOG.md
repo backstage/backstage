@@ -1,5 +1,46 @@
 # @backstage/plugin-home-react
 
+## 0.1.34
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.3
+  - @backstage/core-components@0.18.5
+
+## 0.1.34-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.5-next.0
+
+## 0.1.33
+
+### Patch Changes
+
+- be21c5c: Updated dependency `@rjsf/utils` to `5.24.13`.
+  Updated dependency `@rjsf/core` to `5.24.13`.
+  Updated dependency `@rjsf/material-ui` to `5.24.13`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.24.13`.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.2
+  - @backstage/core-components@0.18.4
+  - @backstage/core-plugin-api@1.12.1
+
+## 0.1.33-next.1
+
+### Patch Changes
+
+- be21c5c: Updated dependency `@rjsf/utils` to `5.24.13`.
+  Updated dependency `@rjsf/core` to `5.24.13`.
+  Updated dependency `@rjsf/material-ui` to `5.24.13`.
+  Updated dependency `@rjsf/validator-ajv8` to `5.24.13`.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.2-next.1
+  - @backstage/core-components@0.18.4-next.2
+  - @backstage/core-plugin-api@1.12.1-next.0
+
 ## 0.1.33-next.0
 
 ### Patch Changes

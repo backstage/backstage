@@ -20,6 +20,8 @@ import { useNotificationsApi } from '../../hooks';
 import { NotificationSettings } from '@backstage/plugin-notifications-common';
 import { notificationsApiRef } from '../../api';
 import { useApi } from '@backstage/core-plugin-api';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { notificationsTranslationRef } from '../../translation';
 import { UserNotificationSettingsPanel } from './UserNotificationSettingsPanel';
 import { capitalize } from 'lodash';
 
@@ -33,11 +35,9 @@ const NotificationFormatContext = createContext<FormatContextType | undefined>(
 );
 
 export const useNotificationFormat = () => {
+  const { t } = useTranslationRef(notificationsTranslationRef);
   const context = useContext(NotificationFormatContext);
-  if (!context)
-    throw new Error(
-      'useNotificationFormat must be used within a NotificationFormatProvider',
-    );
+  if (!context) throw new Error(t('settings.errors.useNotificationFormat'));
   return context;
 };
 
@@ -83,6 +83,7 @@ export const UserNotificationSettingsCard = (props: {
   originNames?: Record<string, string>;
   topicNames?: Record<string, string>;
 }) => {
+  const { t } = useTranslationRef(notificationsTranslationRef);
   const [settings, setNotificationSettings] = useState<
     NotificationSettings | undefined
   >(undefined);
@@ -105,9 +106,9 @@ export const UserNotificationSettingsCard = (props: {
   };
 
   return (
-    <InfoCard title="Notification settings" variant="gridItem">
+    <InfoCard title={t('settings.title')} variant="gridItem">
       {loading && <Progress />}
-      {error && <ErrorPanel title="Failed to load settings" error={error} />}
+      {error && <ErrorPanel title={t('settings.errorTitle')} error={error} />}
       {settings && (
         <NotificationFormatProvider
           originMap={props.originNames}

@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-permission-node",
-  "version": "0.10.7-next.0",
+  "version": "0.10.8",
   "description": "Common permission and authorization utilities for backend plugins",
   "backstage": {
     "role": "node-library",
@@ -62,10 +62,10 @@
     "@backstage/plugin-auth-node": "workspace:^",
     "@backstage/plugin-permission-common": "workspace:^",
     "@types/express": "^4.17.6",
-    "express": "^4.17.1",
+    "express": "^4.22.0",
     "express-promise-router": "^4.1.0",
     "zod": "^3.22.4",
-    "zod-to-json-schema": "^3.20.4"
+    "zod-to-json-schema": "^3.25.1"
   },
   "devDependencies": {
     "@backstage/backend-defaults": "workspace:^",

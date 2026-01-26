@@ -26,6 +26,9 @@ import {
 import { CommitAction } from '@gitbeaker/rest';
 import { createGitlabApi, getErrorMessage } from './helpers';
 import { examples } from './gitlabRepoPush.examples';
+import { getFileAction } from '../util';
+import { SerializedFile } from '@backstage/plugin-scaffolder-node';
+import { RepositoryTreeSchema } from '@gitbeaker/rest';
 
 /**
  * Create a new action that commits into a gitlab repository.
@@ -75,7 +78,7 @@ export const createGitlabRepoPushAction = (options: {
             .optional(),
         commitAction: z =>
           z
-            .enum(['create', 'update', 'delete'], {
+            .enum(['create', 'update', 'delete', 'auto'], {
               description:
                 'The action to be used for git commit. Defaults to create, but can be set to update or delete',
             })
@@ -126,15 +129,50 @@ export const createGitlabRepoPushAction = (options: {
         gitignore: true,
       });
 
-      const actions: CommitAction[] = fileContents.map(file => ({
-        action: commitAction ?? 'create',
-        filePath: targetPath
-          ? path.posix.join(targetPath, file.path)
-          : file.path,
-        encoding: 'base64',
-        content: file.content.toString('base64'),
-        execute_filemode: file.executable,
-      }));
+      let remoteFiles: RepositoryTreeSchema[] = [];
+      if ((ctx.input.commitAction ?? 'auto') === 'auto') {
+        try {
+          remoteFiles = await api.Repositories.allRepositoryTrees(repoID, {
+            ref: branchName,
+            recursive: true,
+            path: targetPath ?? undefined,
+          });
+        } catch (e) {
+          ctx.logger.warn(
+            `Could not retrieve the list of files for ${repoID} (branch: ${branchName}) : ${getErrorMessage(
+              e,
+            )}`,
+          );
+        }
+      }
+
+      const fileActionMap: {
+        file: SerializedFile;
+        action: 'create' | 'delete' | 'update' | 'skip';
+      }[] = [];
+      for (const file of fileContents) {
+        const action = await getFileAction(
+          { file, targetPath },
+          { repoID, branch: branchName },
+          api,
+          ctx.logger,
+          remoteFiles,
+          ctx.input.commitAction,
+        );
+        fileActionMap.push({ file, action });
+      }
+
+      const actions: CommitAction[] = fileActionMap
+        .filter(o => o.action !== 'skip')
+        .map(({ file, action }) => ({
+          action: action as CommitAction['action'],
+          filePath: targetPath
+            ? path.posix.join(targetPath, file.path)
+            : file.path,
+          encoding: 'base64',
+          content: file.content.toString('base64'),
+          execute_filemode: file.executable,
+        }));
 
       const branchExists = await ctx.checkpoint({
         key: `branch.exists.${repoID}.${branchName}`,

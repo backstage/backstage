@@ -1,8 +1,12 @@
-import React, { useEffect } from 'react';
+import addonA11y from '@storybook/addon-a11y';
+import addonDocs from '@storybook/addon-docs';
+import addonThemes from '@storybook/addon-themes';
+import addonLinks from '@storybook/addon-links';
+import { definePreview } from '@storybook/react-vite';
+import { useEffect } from 'react';
 import { TestApiProvider } from '@backstage/test-utils';
 import { Content, AlertDisplay } from '@backstage/core-components';
 import { apis } from './support/apis';
-import type { Decorator, Preview } from '@storybook/react-vite';
 import { useGlobals } from 'storybook/preview-api';
 import { UnifiedThemeProvider, themes } from '@backstage/theme';
 import { allModes } from './modes';
@@ -16,7 +20,8 @@ import './storybook.css';
 // Custom themes
 import './themes/spotify.css';
 
-const preview: Preview = {
+export default definePreview({
+  tags: ['manifest'],
   globalTypes: {
     themeMode: {
       name: 'Theme Mode',
@@ -47,10 +52,12 @@ const preview: Preview = {
       },
     },
   },
+
   initialGlobals: {
     themeMode: 'light',
     themeName: 'backstage',
   },
+
   parameters: {
     layout: 'fullscreen',
 
@@ -72,7 +79,7 @@ const preview: Preview = {
     },
 
     viewport: {
-      viewports: {
+      options: {
         initial: {
           name: 'Initial',
           styles: { width: '320px', height: '100%' },
@@ -101,7 +108,15 @@ const preview: Preview = {
         // 'dark spotify': allModes['dark spotify'],
       },
     },
+
+    a11y: {
+      // 'todo' - show a11y violations in the test UI only
+      // 'error' - fail CI on a11y violations
+      // 'off' - skip a11y checks entirely
+      test: 'todo',
+    },
   },
+
   decorators: [
     Story => {
       const [globals] = useGlobals();
@@ -121,10 +136,11 @@ const preview: Preview = {
         };
       }, [selectedTheme, selectedThemeName]);
 
-      document.body.style.backgroundColor = 'var(--bui-bg)';
+      document.body.style.backgroundColor = 'var(--bui-bg-surface-0)';
       const docsStoryElements = document.getElementsByClassName('docs-story');
       Array.from(docsStoryElements).forEach(element => {
-        (element as HTMLElement).style.backgroundColor = 'var(--bui-bg)';
+        (element as HTMLElement).style.backgroundColor =
+          'var(--bui-bg-surface-0)';
       });
 
       return (
@@ -140,6 +156,6 @@ const preview: Preview = {
       );
     },
   ],
-};
 
-export default preview;
+  addons: [addonLinks(), addonThemes(), addonDocs(), addonA11y()],
+});

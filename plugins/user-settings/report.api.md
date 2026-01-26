@@ -5,7 +5,7 @@
 ```ts
 import { ApiRef } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
-import { BackstageUserIdentity } from '@backstage/core-plugin-api';
+import { BackstageUserIdentity } from '@backstage/frontend-plugin-api';
 import { DiscoveryApi } from '@backstage/core-plugin-api';
 import { ElementType } from 'react';
 import { ErrorApi } from '@backstage/core-plugin-api';

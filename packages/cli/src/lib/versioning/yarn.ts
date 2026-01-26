@@ -15,10 +15,7 @@
  */
 
 import { assertError, ForwardedError } from '@backstage/errors';
-import { execFile as execFileCb } from 'child_process';
-import { promisify } from 'util';
-
-const execFile = promisify(execFileCb);
+import { runOutput } from '@backstage/cli-common';
 
 const versions = new Map<string, Promise<'classic' | 'berry'>>();
 
@@ -30,16 +27,12 @@ export function detectYarnVersion(dir?: string): Promise<'classic' | 'berry'> {
 
   const promise = Promise.resolve().then(async () => {
     try {
-      const { stdout } = await execFile('yarn', ['--version'], {
-        shell: true,
+      const stdout = await runOutput(['yarn', '--version'], {
         cwd,
       });
       return stdout.trim().startsWith('1.') ? 'classic' : 'berry';
     } catch (error) {
       assertError(error);
-      if ('stderr' in error) {
-        process.stderr.write(error.stderr as Buffer);
-      }
       throw new ForwardedError('Failed to determine yarn version', error);
     }
   });

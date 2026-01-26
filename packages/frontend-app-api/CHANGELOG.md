@@ -1,5 +1,35 @@
 # @backstage/frontend-app-api
 
+## 0.14.0
+
+### Minor Changes
+
+- 3bd2a1a: BREAKING: The ability for plugins to override APIs has been restricted to only allow overrides of APIs within the same plugin. For example, a plugin can no longer override any of the core APIs provided by the `app` plugin, this must be done with an `app` module instead.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.3
+  - @backstage/frontend-defaults@0.3.5
+
+## 0.13.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-defaults@0.3.5-next.0
+  - @backstage/frontend-plugin-api@0.13.2
+
+## 0.13.3
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-app-api@1.19.3
+  - @backstage/frontend-plugin-api@0.13.2
+  - @backstage/core-plugin-api@1.12.1
+  - @backstage/frontend-defaults@0.3.4
+
 ## 0.13.3-next.0
 
 ### Patch Changes

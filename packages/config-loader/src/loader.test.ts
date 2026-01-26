@@ -17,7 +17,7 @@
 import { AppConfig } from '@backstage/config';
 import { loadConfig } from './loader';
 import fs from 'fs-extra';
-import { rest } from 'msw';
+import { http, HttpResponse } from 'msw';
 import { setupServer } from 'msw/node';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 import { createDeferred } from '@backstage/types';
@@ -74,32 +74,28 @@ describe('loadConfig', () => {
   });
 
   const server = setupServer();
-  const initialLoaderHandler = rest.get(
+  const initialLoaderHandler = http.get(
     `https://some.domain.io/app-config.yaml`,
-    (_req, res, ctx) => {
-      return res(
-        ctx.body(
-          `app:
+    () => {
+      return new HttpResponse(
+        `app:
                     title: Remote Example App
                     sessionKey: 'abc123'
                     escaped: \$\${Escaped}
                   `,
-        ),
       );
     },
   );
 
-  const reloadHandler = rest.get(
+  const reloadHandler = http.get(
     `https://some.domain.io/app-config.yaml`,
-    (_req, res, ctx) => {
-      return res(
-        ctx.body(
-          `app:
+    () => {
+      return new HttpResponse(
+        `app:
                     title: NEW ReMOTe ExaMPLe App
                     sessionKey: 'abc123'
                     escaped: \$\${Escaped}
                   `,
-        ),
       );
     },
   );

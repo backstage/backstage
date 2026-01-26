@@ -16,7 +16,7 @@
 
 import ora from 'ora';
 import chalk from 'chalk';
-import { run } from '../../../lib/run';
+import { run } from '@backstage/cli-common';
 
 export async function runYarnInstall() {
   const spinner = ora({
@@ -27,7 +27,7 @@ export async function runYarnInstall() {
 
   const installOutput = new Array<Buffer>();
   try {
-    await run('yarn', ['install'], {
+    await run(['yarn', 'install'], {
       env: {
         FORCE_COLOR: 'true',
         // We filter out all of the npm_* environment variables that are added when
@@ -39,9 +39,9 @@ export async function runYarnInstall() {
           ),
         ),
       },
-      stdoutLogFunc: data => installOutput.push(data),
-      stderrLogFunc: data => installOutput.push(data),
-    });
+      onStdout: data => installOutput.push(data),
+      onStderr: data => installOutput.push(data),
+    }).waitForExit();
     spinner.succeed();
   } catch (error) {
     spinner.fail();

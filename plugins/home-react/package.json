@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-home-react",
-  "version": "0.1.33-next.0",
+  "version": "0.1.34",
   "description": "A Backstage plugin that contains react components helps you build a home page",
   "backstage": {
     "role": "web-library",
@@ -60,7 +60,7 @@
     "@backstage/frontend-plugin-api": "workspace:^",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
-    "@rjsf/utils": "5.23.2"
+    "@rjsf/utils": "5.24.13"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",

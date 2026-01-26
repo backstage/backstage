@@ -1,6 +1,6 @@
 {
   "name": "@backstage/frontend-plugin-api",
-  "version": "0.13.2-next.0",
+  "version": "0.13.3",
   "backstage": {
     "role": "web-library"
   },
@@ -16,12 +16,16 @@
   "sideEffects": false,
   "exports": {
     ".": "./src/index.ts",
+    "./alpha": "./src/alpha.ts",
     "./package.json": "./package.json"
   },
   "main": "src/index.ts",
   "types": "src/index.ts",
   "typesVersions": {
     "*": {
+      "alpha": [
+        "src/alpha.ts"
+      ],
       "package.json": [
         "package.json"
       ]
@@ -40,18 +44,15 @@
     "test": "backstage-cli package test"
   },
   "dependencies": {
-    "@backstage/config": "workspace:^",
-    "@backstage/core-components": "workspace:^",
     "@backstage/errors": "workspace:^",
     "@backstage/types": "workspace:^",
     "@backstage/version-bridge": "workspace:^",
-    "@material-ui/core": "^4.12.4",
-    "lodash": "^4.17.21",
     "zod": "^3.22.4",
-    "zod-to-json-schema": "^3.21.4"
+    "zod-to-json-schema": "^3.25.1"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
+    "@backstage/config": "workspace:^",
     "@backstage/frontend-app-api": "workspace:^",
     "@backstage/frontend-test-utils": "workspace:^",
     "@backstage/test-utils": "workspace:^",

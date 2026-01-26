@@ -154,6 +154,104 @@ export interface Config {
        * List of plugin sources to load actions from.
        */
       pluginSources?: string[];
+
+      /**
+       * Filter configuration for actions. Allows controlling which actions
+       * are exposed to consumers based on patterns and attributes.
+       */
+      filter?: {
+        /**
+         * Rules for actions to include. An action must match at least one rule to be included.
+         * Each rule can specify an id pattern and/or attribute constraints.
+         * If no include rules are specified, all actions are included by default.
+         *
+         * @example
+         * ```yaml
+         * include:
+         *   - id: 'catalog:*'
+         *     attributes:
+         *       destructive: false
+         *   - id: 'scaffolder:*'
+         * ```
+         */
+        include?: Array<{
+          /**
+           * Glob pattern for action IDs to match.
+           * Action IDs have the format `{pluginId}:{actionName}`.
+           * @example 'catalog:*'
+           */
+          id?: string;
+
+          /**
+           * Attribute constraints. All specified attributes must match.
+           * Actions are compared against their resolved attributes (with defaults applied).
+           */
+          attributes?: {
+            /**
+             * If specified, only match actions where destructive matches this value.
+             * Actions default to destructive: true if not explicitly set.
+             */
+            destructive?: boolean;
+
+            /**
+             * If specified, only match actions where readOnly matches this value.
+             * Actions default to readOnly: false if not explicitly set.
+             */
+            readOnly?: boolean;
+
+            /**
+             * If specified, only match actions where idempotent matches this value.
+             * Actions default to idempotent: false if not explicitly set.
+             */
+            idempotent?: boolean;
+          };
+        }>;
+
+        /**
+         * Rules for actions to exclude. Exclusions take precedence over inclusions.
+         * Each rule can specify an id pattern and/or attribute constraints.
+         *
+         * @example
+         * ```yaml
+         * exclude:
+         *   - id: '*:delete-*'
+         *   - attributes:
+         *       readOnly: false
+         * ```
+         */
+        exclude?: Array<{
+          /**
+           * Glob pattern for action IDs to match.
+           * Action IDs have the format `{pluginId}:{actionName}`.
+           * @example '*:delete-*'
+           */
+          id?: string;
+
+          /**
+           * Attribute constraints. All specified attributes must match.
+           * Actions are compared against their resolved attributes (with defaults applied).
+           */
+          attributes?: {
+            /**
+             * If specified, only match actions where destructive matches this value.
+             * Actions default to destructive: true if not explicitly set.
+             */
+            destructive?: boolean;
+
+            /**
+             * If specified, only match actions where readOnly matches this value.
+             * Actions default to readOnly: false if not explicitly set.
+             */
+            readOnly?: boolean;
+
+            /**
+             * If specified, only match actions where idempotent matches this value.
+             * Actions default to idempotent: false if not explicitly set.
+             */
+            idempotent?: boolean;
+          };
+        }>;
+      };
     };
 
     /**
@@ -710,27 +808,9 @@ export interface Config {
              */
             client?: {
               /**
-               * Namespace for the current instance.
+               * Namespace and separator used for prefixing keys.
                */
-              namespace?: string;
-              /**
-               * Separator to use between namespace and key.
-               */
-              keyPrefixSeparator?: string;
-              /**
-               * Number of keys to delete in a single batch.
-               */
-              clearBatchSize?: number;
-              /**
-               * Enable Unlink instead of using Del for clearing keys. This is more performant but may not be supported by all Redis versions.
-               */
-              useUnlink?: boolean;
-              /**
-               * Whether to allow clearing all keys when no namespace is set.
-               * If set to true and no namespace is set, iterate() will return all keys.
-               * Defaults to `false`.
-               */
-              noNamespaceAffectsAll?: boolean;
+              keyPrefix?: string;
             };
             /**
              * An optional Valkey cluster (redis cluster under the hood) configuration.
@@ -992,6 +1072,13 @@ export interface Config {
      * remove the default value that Backstage puts in place for that policy.
      */
     csp?: { [policyId: string]: string[] | false };
+
+    /**
+     * Referrer Policy options
+     */
+    referrer?: {
+      policy: string[];
+    };
 
     /**
      * Options for the health check service and endpoint.

@@ -45,6 +45,7 @@ describe('sentry:project:create action', () => {
     slug?: string;
     platform?: string;
     authToken?: string;
+    apiBaseUrl?: string;
   }> =>
     createMockActionContext({
       workspacePath: './dev/proj',
@@ -267,6 +268,49 @@ describe('sentry:project:create action', () => {
             { detail: 'project creation mocked result' },
             { status: 201 },
           );
+        },
+      ),
+    );
+
+    await action.handler({
+      ...actionContext,
+      input: {
+        ...actionContext.input,
+        ...input,
+      },
+    });
+  });
+
+  it(`should ${examples[3].description}`, async () => {
+    expect.assertions(3);
+
+    let input;
+    try {
+      input = yaml.parse(examples[3].example).steps[0].input;
+    } catch (error) {
+      console.error('Failed to parse YAML:', error);
+    }
+
+    const action = createSentryCreateProjectAction(createScaffolderConfig());
+    const actionContext = getActionContext();
+
+    worker.use(
+      http.post(
+        `${input.apiBaseUrl || 'https://sentry.io/api/0'}/teams/${
+          input.organizationSlug
+        }/${input.teamSlug}/projects/`,
+        async ({ request }) => {
+          expect(request.headers.get('Authorization')).toBe(
+            `Bearer d16711beb516e1e910d2ede554dc1bf725654ef3c75e5a9106de9aec13d6gf95`,
+          );
+          expect(request.headers.get('Content-Type')).toBe(`application/json`);
+          await expect(request.json()).resolves.toEqual({
+            name: 'Scaffolded project A',
+          });
+          return new HttpResponse(JSON.stringify({ id: 'mock-id' }), {
+            status: 201,
+            headers: { 'content-type': 'application/json' },
+          });
         },
       ),
     );

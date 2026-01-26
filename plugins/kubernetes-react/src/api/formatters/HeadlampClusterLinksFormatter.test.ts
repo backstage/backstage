@@ -21,11 +21,6 @@ describe('HeadlampClusterLinksFormatter', () => {
 
   beforeEach(() => {
     formatter = new HeadlampClusterLinksFormatter();
-    // Mock window.location.origin
-    Object.defineProperty(window, 'location', {
-      value: { origin: 'http://localhost:3000' },
-      writable: true,
-    });
   });
 
   it('formats internal dashboard link correctly', async () => {
@@ -41,7 +36,7 @@ describe('HeadlampClusterLinksFormatter', () => {
 
     const result = await formatter.formatClusterLink(options);
     expect(result.toString()).toBe(
-      'http://localhost:3000/headlamp?to=%2Fc%2Ftest-cluster%2Fpods%2Fdefault%2Ftest-pod',
+      'http://localhost/headlamp?to=%2Fc%2Ftest-cluster%2Fpods%2Fdefault%2Ftest-pod',
     );
   });
 

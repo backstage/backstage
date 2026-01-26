@@ -1,6 +1,6 @@
 {
   "name": "techdocs-cli-embedded-app",
-  "version": "0.2.115-next.0",
+  "version": "0.2.116",
   "backstage": {
     "role": "frontend"
   },
@@ -62,7 +62,7 @@
     "@testing-library/user-event": "^14.0.0",
     "@types/react": "*",
     "@types/react-dom": "*",
-    "cross-env": "^7.0.0"
+    "cross-env": "^10.0.0"
   },
   "bundled": true
 }

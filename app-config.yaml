@@ -109,8 +109,12 @@ integrations:
       token: ${GITLAB_TOKEN}
   ### Example for how to add a bitbucket cloud integration
   # bitbucketCloud:
+  #   # Using API token
   #   - username: ${BITBUCKET_USERNAME}
   #     token: ${BITBUCKET_API_TOKEN}
+  #   # Using OAuth
+  #   - clientId: ${BITBUCKET_CLIENT_ID}
+  #     clientSecret: ${BITBUCKET_CLIENT_SECRET}
   ### Example for how to add your bitbucket server instance using the API:
   # - host: server.bitbucket.com
   #   apiBaseUrl: server.bitbucket.com
@@ -185,15 +189,9 @@ catalog:
       target: ../catalog-model/examples/acme-corp.yaml
       rules:
         - allow: [User, Group]
-    # Example component for github-actions and TechDocs
-    - type: file
-      target: ../../plugins/github-actions/examples/sample.yaml
     # Example component for TechDocs
     - type: file
       target: ../../plugins/techdocs-backend/examples/documented-component/catalog-info.yaml
-    # Example component for ADRs
-    - type: file
-      target: ../../plugins/adr/examples/component/catalog-info.yaml
     # Backstage example templates
     - type: file
       target: ../../plugins/scaffolder-backend/sample-templates/all-templates.yaml
@@ -311,3 +309,8 @@ auth:
 
 permission:
   enabled: true
+
+devTools:
+  scheduledTasks:
+    plugins:
+      - catalog

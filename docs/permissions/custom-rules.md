@@ -159,7 +159,7 @@ To install custom rules in a plugin, we need to use the [`PermissionsRegistrySer
    ```typescript title="packages/backend/src/modules/catalogPermissionRules.ts"
    import { createBackendModule } from '@backstage/backend-plugin-api';
    import { catalogPermissionExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
-   import { isInSystemRule } from './permissionPolicyExtension';
+   import { isInSystemRule } from './permissionsPolicyExtension';
 
    export default createBackendModule({
      pluginId: 'catalog',

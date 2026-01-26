@@ -15,23 +15,27 @@
  */
 
 import { assertError, ForwardedError } from '@backstage/errors';
-import { execFile, paths } from '../util';
+import { paths } from '../paths';
+import { runOutput } from '@backstage/cli-common';
 
 /**
  * Run a git command, trimming the output splitting it into lines.
  */
 export async function runGit(...args: string[]) {
   try {
-    const { stdout } = await execFile('git', args, {
-      shell: true,
+    const stdout = await runOutput(['git', ...args], {
       cwd: paths.targetRoot,
     });
     return stdout.trim().split(/\r\n|\r|\n/);
   } catch (error) {
     assertError(error);
-    if (error.stderr || typeof error.code === 'number') {
-      const stderr = (error.stderr as undefined | Buffer)?.toString('utf8');
-      const msg = stderr?.trim() ?? `with exit code ${error.code}`;
+    if (
+      'code' in error &&
+      typeof (error as { code?: number }).code === 'number'
+    ) {
+      const code = (error as { code?: number }).code;
+      const stderr = (error as { stderr?: string }).stderr;
+      const msg = stderr?.trim() ?? `with exit code ${code}`;
       throw new Error(`git ${args[0]} failed, ${msg}`);
     }
     throw new ForwardedError('Unknown execution error', error);
@@ -83,10 +87,8 @@ export class GitUtils {
       // silently fall back to using the ref directly if merge base is not available
     }
 
-    const { stdout } = await execFile('git', ['show', `${showRef}:${path}`], {
-      shell: true,
+    const stdout = await runOutput(['git', 'show', `${showRef}:${path}`], {
       cwd: paths.targetRoot,
-      maxBuffer: 1024 * 1024 * 50,
     });
     return stdout;
   }

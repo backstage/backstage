@@ -67,7 +67,7 @@ export interface Config {
        *  @see: https://raw.githubusercontent.com/cure53/DOMPurify/master/src/regexp.ts
        * @visibility frontend
        */
-      additionalAllowedURIProtocols?: string;
+      additionalAllowedURIProtocols?: string[];
     };
   };
 }

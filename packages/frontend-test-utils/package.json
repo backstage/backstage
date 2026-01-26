@@ -1,6 +1,6 @@
 {
   "name": "@backstage/frontend-test-utils",
-  "version": "0.4.2-next.0",
+  "version": "0.4.3",
   "backstage": {
     "role": "web-library"
   },
@@ -35,6 +35,7 @@
     "@backstage/frontend-app-api": "workspace:^",
     "@backstage/frontend-plugin-api": "workspace:^",
     "@backstage/plugin-app": "workspace:^",
+    "@backstage/plugin-app-react": "workspace:^",
     "@backstage/test-utils": "workspace:^",
     "@backstage/types": "workspace:^",
     "@backstage/version-bridge": "workspace:^",

@@ -1,5 +1,71 @@
 # @techdocs/cli
 
+## 1.10.4
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.15.0
+  - @backstage/cli-common@0.1.17
+  - @backstage/plugin-techdocs-node@1.14.0
+
+## 1.10.4-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.15.0-next.2
+
+## 1.10.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.14.1-next.1
+  - @backstage/plugin-techdocs-node@1.13.11-next.0
+
+## 1.10.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-defaults@0.14.1-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/cli-common@0.1.16
+  - @backstage/config@1.3.6
+  - @backstage/plugin-techdocs-node@1.13.10
+
+## 1.10.3
+
+### Patch Changes
+
+- 43629b1: Updated to use new utilities from `@backstage/cli-common`.
+- 2bae83a: Bumped dev dependencies `@types/node`
+- Updated dependencies
+  - @backstage/backend-defaults@0.14.0
+  - @backstage/plugin-techdocs-node@1.13.10
+  - @backstage/cli-common@0.1.16
+
+## 1.10.3-next.2
+
+### Patch Changes
+
+- 2bae83a: Bumped dev dependencies `@types/node`
+- Updated dependencies
+  - @backstage/backend-defaults@0.14.0-next.1
+  - @backstage/plugin-techdocs-node@1.13.10-next.1
+  - @backstage/cli-common@0.1.16-next.2
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config@1.3.6
+
+## 1.10.3-next.1
+
+### Patch Changes
+
+- 43629b1: Updated to use new utilities from `@backstage/cli-common`.
+- Updated dependencies
+  - @backstage/cli-common@0.1.16-next.1
+
 ## 1.10.3-next.0
 
 ### Patch Changes

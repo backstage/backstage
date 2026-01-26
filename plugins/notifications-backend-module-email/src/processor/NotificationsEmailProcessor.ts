@@ -45,6 +45,7 @@ import { DefaultAwsCredentialsManager } from '@backstage/integration-aws-node';
 import { NotificationTemplateRenderer } from '../extensions';
 import Mail from 'nodemailer/lib/mailer';
 import pThrottle from 'p-throttle';
+import { SendEmailCommandInput } from '@aws-sdk/client-sesv2';
 
 export class NotificationsEmailProcessor implements NotificationProcessor {
   private transporter: any;
@@ -53,6 +54,7 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
   private readonly sender: string;
   private readonly replyTo?: string;
   private readonly sesConfig?: Config;
+  private readonly sesOptions?: Partial<SendEmailCommandInput>;
   private readonly cacheTtl: number;
   private readonly concurrencyLimit: number;
   private readonly throttleInterval: number;
@@ -91,6 +93,7 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
     this.sender = emailProcessorConfig.getString('sender');
     this.replyTo = emailProcessorConfig.getOptionalString('replyTo');
     this.sesConfig = emailProcessorConfig.getOptionalConfig('sesConfig');
+    this.sesOptions = this.getSesOptions();
     this.concurrencyLimit =
       emailProcessorConfig.getOptionalNumber('concurrencyLimit') ?? 2;
     this.throttleInterval = emailProcessorConfig.has('throttleInterval')
@@ -307,20 +310,23 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
     return contentParts.join('\n\n');
   }
 
-  private async getSesOptions() {
+  private getSesOptions(): Partial<SendEmailCommandInput> | undefined {
     if (!this.sesConfig) {
       return undefined;
     }
-    const ses: Record<string, string> = {};
-    const sourceArn = this.sesConfig.getOptionalString('sourceArn');
+    const ses: Partial<SendEmailCommandInput> = {};
     const fromArn = this.sesConfig.getOptionalString('fromArn');
+    const sourceArn = this.sesConfig.getOptionalString('sourceArn');
     const configurationSetName = this.sesConfig.getOptionalString(
       'configurationSetName',
     );
 
-    if (sourceArn) ses.SourceArn = sourceArn;
-    if (fromArn) ses.FromArn = fromArn;
+    if (fromArn) ses.FromEmailAddressIdentityArn = fromArn;
     if (configurationSetName) ses.ConfigurationSetName = configurationSetName;
+    if (sourceArn)
+      this.logger.warn(
+        'sourceArn is not supported in SESv2 and will be ignored',
+      );
 
     return Object.keys(ses).length > 0 ? ses : undefined;
   }
@@ -332,7 +338,7 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
       html: this.getHtmlContent(notification),
       text: this.getTextContent(notification),
       replyTo: this.replyTo,
-      ses: await this.getSesOptions(),
+      ses: this.sesOptions,
     };
 
     await this.sendMails(mailOptions, emails);
@@ -350,7 +356,7 @@ export class NotificationsEmailProcessor implements NotificationProcessor {
       html: await this.templateRenderer?.getHtml?.(notification),
       text: await this.templateRenderer?.getText?.(notification),
       replyTo: this.replyTo,
-      ses: await this.getSesOptions(),
+      ses: this.sesOptions,
     };
 
     await this.sendMails(mailOptions, emails);

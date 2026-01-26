@@ -555,6 +555,35 @@ The `RepoBranchPicker` is a custom field that we provide part of the
 `plugin-scaffolder`. You can provide your own custom fields by
 [writing your own Custom Field Extensions](./writing-custom-field-extensions.md)
 
+### The Repository Owner Picker
+
+Similar to the repository picker, there is a picker for owners to support autocompletion. A full example could look like this:
+
+```yaml
+- title: Choose an owner
+  required:
+    - repoOwner
+  properties:
+    repoOwner:
+      title: Repository Owner
+      type: string
+      ui:field: RepoOwnerPicker
+      ui:options:
+        host: github.com
+        excludedOwners:
+          - backstage
+        requestUserCredentials:
+          secretsKey: USER_OAUTH_TOKEN
+```
+
+Passing the `requestUserCredentials` and `host` properties is required for autocompletion to work. For more information regarding the `requestUserCredentials` object, please refer to the [Using the Users `oauth` token](#using-the-users-oauth-token) section under [The Repository Picker](#the-repository-picker).
+
+For a list of all possible `ui:options` input props for `RepoOwnerPicker`, please visit [here](./ui-options-examples.md#repoownerpicker).
+
+The `RepoOwnerPicker` is a custom field that we provide part of the
+`plugin-scaffolder`. You can provide your own custom fields by
+[writing your own Custom Field Extensions](./writing-custom-field-extensions.md)
+
 ### Accessing the signed-in users details
 
 Sometimes when authoring templates, you'll want to access the user that is running the template, and get details from the profile or the users `Entity` in the Catalog.

@@ -13,13 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { createApiRef } from '@backstage/core-plugin-api';
 import {
-  DiscoveryApi,
-  createApiRef,
-  FetchApi,
-} from '@backstage/core-plugin-api';
-import { ResponseError } from '@backstage/errors';
-import { UnprocessedEntity } from '../types';
+  CatalogUnprocessedEntitiesApiResponse as CommonCatalogUnprocessedEntitiesApiResponse,
+  CatalogUnprocessedEntitiesApi as CommonCatalogUnprocessedEntitiesApi,
+  CatalogUnprocessedEntitiesClient as CommonCatalogUnprocessedEntitiesClient,
+} from '@backstage/plugin-catalog-unprocessed-entities-common';
 
 /**
  * {@link @backstage/core-plugin-api#ApiRef} for the {@link CatalogUnprocessedEntitiesApi}
@@ -35,69 +34,24 @@ export const catalogUnprocessedEntitiesApiRef =
  * Response expected by the {@link CatalogUnprocessedEntitiesApi}
  *
  * @public
+ * @deprecated Use the type imported from `@backstage/plugin-catalog-unprocessed-entities-common` instead.
  */
-export type CatalogUnprocessedEntitiesApiResponse = {
-  entities: UnprocessedEntity[];
-};
+export type CatalogUnprocessedEntitiesApiResponse =
+  CommonCatalogUnprocessedEntitiesApiResponse;
 
 /**
  * Interface for the CatalogUnprocessedEntitiesApi.
  *
  * @public
+ * @deprecated Use the type imported from `@backstage/plugin-catalog-unprocessed-entities-common` instead.
  */
-export interface CatalogUnprocessedEntitiesApi {
-  /**
-   * Returns a list of entities with state 'pending'
-   */
-  pending(): Promise<CatalogUnprocessedEntitiesApiResponse>;
-  /**
-   * Returns a list of entities with state 'failed'
-   */
-  failed(): Promise<CatalogUnprocessedEntitiesApiResponse>;
-  /**
-   * Deletes an entity from the refresh_state table
-   */
-  delete(entityId: string): Promise<void>;
-}
+export interface CatalogUnprocessedEntitiesApi
+  extends CommonCatalogUnprocessedEntitiesApi {}
 
 /**
  * Default API implementation for the Catalog Unprocessed Entities plugin
  *
  * @public
+ * @deprecated Use the client imported from `@backstage/plugin-catalog-unprocessed-entities-common` instead.
  */
-export class CatalogUnprocessedEntitiesClient
-  implements CatalogUnprocessedEntitiesApi
-{
-  public discovery: DiscoveryApi;
-  public fetchApi: FetchApi;
-
-  constructor(discovery: DiscoveryApi, fetchApi: FetchApi) {
-    this.discovery = discovery;
-    this.fetchApi = fetchApi;
-  }
-
-  private async fetch<T>(path: string, init?: RequestInit): Promise<T> {
-    const url = await this.discovery.getBaseUrl('catalog');
-    const resp = await this.fetchApi.fetch(`${url}/${path}`, init);
-
-    if (!resp.ok) {
-      throw await ResponseError.fromResponse(resp);
-    }
-
-    return resp.status === 204 ? (resp as T) : await resp.json();
-  }
-
-  async pending(): Promise<CatalogUnprocessedEntitiesApiResponse> {
-    return await this.fetch('entities/unprocessed/pending');
-  }
-
-  async failed(): Promise<CatalogUnprocessedEntitiesApiResponse> {
-    return await this.fetch('entities/unprocessed/failed');
-  }
-
-  async delete(entityId: string): Promise<void> {
-    await this.fetch(`entities/unprocessed/delete/${entityId}`, {
-      method: 'DELETE',
-    });
-  }
-}
+export class CatalogUnprocessedEntitiesClient extends CommonCatalogUnprocessedEntitiesClient {}

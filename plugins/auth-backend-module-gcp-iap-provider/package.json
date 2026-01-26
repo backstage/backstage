@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-auth-backend-module-gcp-iap-provider",
-  "version": "0.4.10-next.0",
+  "version": "0.4.10",
   "description": "A GCP IAP auth provider module for the Backstage auth backend",
   "backstage": {
     "role": "backend-plugin-module",
@@ -48,7 +48,7 @@
   "devDependencies": {
     "@backstage/backend-test-utils": "workspace:^",
     "@backstage/cli": "workspace:^",
-    "express": "^4.18.2"
+    "express": "^4.22.0"
   },
   "configSchema": "config.d.ts"
 }

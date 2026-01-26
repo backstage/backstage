@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-auth-backend-module-onelogin-provider",
-  "version": "0.3.10-next.0",
+  "version": "0.3.10",
   "description": "The onelogin-provider backend module for the auth plugin.",
   "backstage": {
     "role": "backend-plugin-module",
@@ -36,7 +36,7 @@
   "dependencies": {
     "@backstage/backend-plugin-api": "workspace:^",
     "@backstage/plugin-auth-node": "workspace:^",
-    "express": "^4.18.2",
+    "express": "^4.22.0",
     "passport": "^0.7.0",
     "passport-onelogin-oauth": "^0.0.1",
     "zod": "^3.22.4"

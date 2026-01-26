@@ -380,6 +380,12 @@ export function createPublishBitbucketServerPullRequestAction(options: {
         apiBaseUrl,
       });
 
+      if (!toRef) {
+        throw new InputError(
+          `Target branch '${finalTargetBranch}' not found in repository ${project}/${repo}. Please ensure the branch exists before creating a pull request.`,
+        );
+      }
+
       let fromRef = await findBranches({
         project,
         repo,

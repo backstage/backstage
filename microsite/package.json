@@ -4,7 +4,7 @@
   "private": true,
   "license": "Apache-2.0",
   "scripts": {
-    "build": "node scripts/pre-build.js && docusaurus build",
+    "build": "docusaurus build",
     "deploy": "docusaurus deploy",
     "docusaurus": "docusaurus",
     "generate-openapi-docs": "yarn docusaurus clean-api-docs all && yarn docusaurus gen-api-docs all",
@@ -12,7 +12,7 @@
     "prettier:fix": "prettier --write .",
     "publish-gh-pages": "docusaurus-publish",
     "rename-version": "docusaurus-rename-version",
-    "start": "node scripts/pre-build.js && docusaurus start",
+    "start": "docusaurus start",
     "swizzle": "docusaurus swizzle",
     "verify:sidebars": "node ./scripts/verify-sidebars",
     "version": "docusaurus-version",
@@ -28,7 +28,7 @@
     "@docusaurus/preset-classic": "^3.1.1",
     "@docusaurus/types": "^3.1.1",
     "@mdx-js/react": "^3.0.0",
-    "@swc/core": "^1.3.46",
+    "@swc/core": "^1.15.6",
     "clsx": "^2.0.0",
     "docusaurus-plugin-openapi-docs": "^4.3.0",
     "docusaurus-plugin-sass": "^0.2.3",
@@ -44,11 +44,10 @@
   "devDependencies": {
     "@docusaurus/module-type-aliases": "^3.1.1",
     "@docusaurus/tsconfig": "^3.1.1",
-    "@types/luxon": "^3.0.0",
     "@types/webpack-env": "^1.18.0",
     "js-yaml": "^4.1.1",
     "prettier": "^2.6.2",
-    "typescript": "~5.2.0",
+    "typescript": "~5.7.0",
     "yaml-loader": "^0.8.0"
   }
 }

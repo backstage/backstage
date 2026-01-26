@@ -126,7 +126,7 @@ export class BackstageIpcClient {
       timeout.unref();
 
       this.#handlers.set(id, responseHandler);
-      this.#sendMessage(request, (e: Error) => {
+      this.#sendMessage(request, undefined, undefined, (e: Error | null) => {
         if (e) {
           reject(e);
         }

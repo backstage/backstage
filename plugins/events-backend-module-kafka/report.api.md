@@ -6,6 +6,6 @@
 import { BackendFeature } from '@backstage/backend-plugin-api';
 
 // @public
-const eventsModuleKafkaConsumingEventPublisher: BackendFeature;
-export default eventsModuleKafkaConsumingEventPublisher;
+const _default: BackendFeature;
+export default _default;
 ```

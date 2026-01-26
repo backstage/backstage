@@ -1,5 +1,50 @@
 # @backstage/plugin-app-visualizer
 
+## 0.1.27
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.11.0
+  - @backstage/frontend-plugin-api@0.13.3
+  - @backstage/core-components@0.18.5
+
+## 0.1.27-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.5-next.0
+
+## 0.1.27-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.11.0-next.0
+  - @backstage/core-components@0.18.4
+  - @backstage/core-plugin-api@1.12.1
+  - @backstage/frontend-plugin-api@0.13.2
+
+## 0.1.26
+
+### Patch Changes
+
+- d02db50: Remove unnecessary use of `compatWrapper` and `convertLegacyRouteRef`(s) for the new frontend system.
+- Updated dependencies
+  - @backstage/ui@0.10.0
+  - @backstage/frontend-plugin-api@0.13.2
+  - @backstage/core-components@0.18.4
+  - @backstage/core-plugin-api@1.12.1
+
+## 0.1.26-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/ui@0.10.0-next.1
+  - @backstage/core-components@0.18.4-next.1
+
 ## 0.1.26-next.0
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-search-backend",
-  "version": "2.0.9-next.0",
+  "version": "2.0.10",
   "description": "The Backstage backend plugin that provides your backstage app with search",
   "backstage": {
     "role": "backend-plugin",
@@ -67,7 +67,7 @@
     "@backstage/plugin-search-common": "workspace:^",
     "@backstage/types": "workspace:^",
     "dataloader": "^2.0.0",
-    "express": "^4.17.1",
+    "express": "^4.22.0",
     "lodash": "^4.17.21",
     "qs": "^6.10.1",
     "yn": "^4.0.0",

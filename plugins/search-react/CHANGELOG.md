@@ -1,5 +1,31 @@
 # @backstage/plugin-search-react
 
+## 1.10.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.3
+  - @backstage/core-components@0.18.5
+
+## 1.10.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.5-next.0
+
+## 1.10.1
+
+### Patch Changes
+
+- 8947a4e: Skip the very first empty search when going to the landing page
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.2
+  - @backstage/core-components@0.18.4
+  - @backstage/core-plugin-api@1.12.1
+  - @backstage/theme@0.7.1
+
 ## 1.10.1-next.0
 
 ### Patch Changes

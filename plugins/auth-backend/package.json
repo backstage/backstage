@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-auth-backend",
-  "version": "0.25.7-next.0",
+  "version": "0.26.0",
   "description": "A Backstage backend plugin that handles authentication",
   "backstage": {
     "role": "backend-plugin",
@@ -54,7 +54,7 @@
     "@google-cloud/firestore": "^7.0.0",
     "connect-session-knex": "^4.0.0",
     "cookie-parser": "^1.4.5",
-    "express": "^4.17.1",
+    "express": "^4.22.0",
     "express-promise-router": "^4.1.0",
     "express-session": "^1.17.1",
     "jose": "^5.0.0",

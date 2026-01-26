@@ -14,7 +14,8 @@
  * limitations under the License.
  */
 
-import type { Meta, StoryObj, StoryFn } from '@storybook/react-vite';
+import preview from '../../../../../.storybook/preview';
+import type { StoryFn } from '@storybook/react-vite';
 import { HeaderPage } from './HeaderPage';
 import type { HeaderTab } from '../Header/types';
 import { MemoryRouter } from 'react-router-dom';
@@ -29,16 +30,13 @@ import {
 } from '../../';
 import { RiMore2Line } from '@remixicon/react';
 
-const meta = {
+const meta = preview.meta({
   title: 'Backstage UI/HeaderPage',
   component: HeaderPage,
   parameters: {
     layout: 'fullscreen',
   },
-} satisfies Meta<typeof HeaderPage>;
-
-export default meta;
-type Story = StoryObj<typeof meta>;
+});
 
 const tabs: HeaderTab[] = [
   {
@@ -130,25 +128,25 @@ const layoutDecorator = [
   ),
 ];
 
-export const Default: Story = {
+export const Default = meta.story({
   args: {
     title: 'Page Title',
   },
-};
+});
 
-export const WithTabs: Story = {
+export const WithTabs = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
     tabs,
   },
   decorators: [withRouter],
-};
+});
 
-export const WithCustomActions: Story = {
+export const WithCustomActions = meta.story({
   decorators: [withRouter],
   render: () => (
     <HeaderPage
-      {...Default.args}
+      {...Default.input.args}
       customActions={
         <>
           <Button>Custom action</Button>
@@ -174,48 +172,44 @@ export const WithCustomActions: Story = {
       }
     />
   ),
-};
+});
 
-export const WithBreadcrumbs: Story = {
+export const WithBreadcrumbs = meta.story({
   decorators: [withRouter],
   args: {
-    ...Default.args,
+    ...Default.input.args,
     breadcrumbs: [{ label: 'Home', href: '/' }],
   },
-};
+});
 
-export const WithLongBreadcrumbs: Story = {
+export const WithLongBreadcrumbs = meta.story({
   decorators: [withRouter],
   args: {
-    ...Default.args,
+    ...Default.input.args,
     breadcrumbs: [
       { label: 'Home', href: '/' },
       { label: 'Long Breadcrumb Name', href: '/long-breadcrumb' },
     ],
   },
-};
+});
 
-export const WithEverything: Story = {
+export const WithEverything = meta.story({
   decorators: [withRouter],
   render: () => (
     <HeaderPage
-      {...Default.args}
+      {...Default.input.args}
       tabs={tabs}
       customActions={<Button>Custom action</Button>}
       breadcrumbs={[{ label: 'Home', href: '/' }]}
     />
   ),
-};
+});
 
-export const WithLayout: Story = {
-  args: {
-    ...WithEverything.args,
-  },
-  decorators: [withRouter, ...layoutDecorator],
-  render: WithEverything.render,
-};
+export const WithLayout = WithEverything.extend({
+  decorators: [...layoutDecorator],
+});
 
-export const WithTabsMatchingStrategies: Story = {
+export const WithTabsMatchingStrategies = meta.story({
   args: {
     title: 'Route Matching Demo',
     tabs: [
@@ -273,9 +267,9 @@ export const WithTabsMatchingStrategies: Story = {
       </Container>
     </MemoryRouter>
   ),
-};
+});
 
-export const WithTabsExactMatching: Story = {
+export const WithTabsExactMatching = meta.story({
   args: {
     title: 'Exact Matching Demo',
     tabs: [
@@ -312,9 +306,9 @@ export const WithTabsExactMatching: Story = {
       </Container>
     </MemoryRouter>
   ),
-};
+});
 
-export const WithTabsPrefixMatchingDeep: Story = {
+export const WithTabsPrefixMatchingDeep = meta.story({
   args: {
     title: 'Deep Nesting Demo',
     tabs: [
@@ -342,26 +336,31 @@ export const WithTabsPrefixMatchingDeep: Story = {
     <MemoryRouter initialEntries={['/catalog/users/john/details']}>
       <HeaderPage {...args} />
       <Container>
-        <Text>
+        <Text as="p">
           <strong>Current URL:</strong> /catalog/users/john/details
         </Text>
         <br />
-        <Text>Both "Catalog" and "Users" tabs are active because:</Text>
-        <Text>
-          • <strong>Catalog</strong>: URL starts with /catalog
+        <Text as="p">
+          Active tab is <strong>Users</strong> because:
         </Text>
-        <Text>
-          • <strong>Users</strong>: URL starts with /catalog/users
-        </Text>
-        <Text>
-          • <strong>Components</strong>: not active (URL doesn't start with
-          /catalog/components)
-        </Text>
-        <br />
-        <Text>
+        <ul>
+          <li>
+            <strong>Catalog</strong>: Matches since URL starts with /catalog
+          </li>
+          <li>
+            <strong>Users</strong>: Is active since URL starts with
+            /catalog/users, and is more specific (has more url segments) than
+            "Catalog"
+          </li>
+          <li>
+            <strong>Components</strong>: not active (URL doesn't start with
+            /catalog/components)
+          </li>
+        </ul>
+        <Text as="p">
           This demonstrates how prefix matching works with deeply nested routes.
         </Text>
       </Container>
     </MemoryRouter>
   ),
-};
+});

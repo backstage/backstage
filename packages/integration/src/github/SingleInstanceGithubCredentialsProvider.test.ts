@@ -563,4 +563,330 @@ describe('SingleInstanceGithubCredentialsProvider tests', () => {
       2,
     );
   });
+
+  describe('public access', () => {
+    it('should use an installation token when public access is enabled and owner is not in allowed list', async () => {
+      const githubProvider = SingleInstanceGithubCredentialsProvider.create({
+        host: 'github.com',
+        apps: [
+          {
+            appId: 1,
+            privateKey: 'privateKey',
+            webhookSecret: '123',
+            clientId: 'CLIENT_ID',
+            clientSecret: 'CLIENT_SECRET',
+            allowedInstallationOwners: ['other-org'],
+            publicAccess: true,
+          },
+        ],
+      });
+
+      octokit.apps.listInstallations.mockResolvedValue({
+        headers: {
+          etag: '123',
+        },
+        data: [
+          {
+            id: 1,
+            repository_selection: 'all',
+            account: {
+              login: 'other-org',
+            },
+          },
+        ],
+      } as RestEndpointMethodTypes['apps']['listInstallations']['response']);
+
+      octokit.apps.createInstallationAccessToken.mockResolvedValueOnce({
+        data: {
+          expires_at: DateTime.local().plus({ hours: 1 }).toString(),
+          token: 'public_access_token',
+        },
+      } as RestEndpointMethodTypes['apps']['createInstallationAccessToken']['response']);
+
+      const { token, headers, type } = await githubProvider.getCredentials({
+        url: 'https://github.com/some-public-org/some-repo',
+      });
+
+      expect(type).toEqual('app');
+      expect(token).toEqual('public_access_token');
+      expect(headers).toEqual({ Authorization: 'Bearer public_access_token' });
+    });
+
+    it('should use an installation token when public access is enabled and no installation exists for owner', async () => {
+      const githubProvider = SingleInstanceGithubCredentialsProvider.create({
+        host: 'github.com',
+        apps: [
+          {
+            appId: 1,
+            privateKey: 'privateKey',
+            webhookSecret: '123',
+            clientId: 'CLIENT_ID',
+            clientSecret: 'CLIENT_SECRET',
+            publicAccess: true,
+          },
+        ],
+      });
+
+      octokit.apps.listInstallations.mockResolvedValue({
+        headers: {
+          etag: '123',
+        },
+        data: [
+          {
+            id: 42,
+            repository_selection: 'all',
+            account: {
+              login: 'installed-org',
+            },
+          },
+        ],
+      } as RestEndpointMethodTypes['apps']['listInstallations']['response']);
+
+      octokit.apps.createInstallationAccessToken.mockResolvedValueOnce({
+        data: {
+          expires_at: DateTime.local().plus({ hours: 1 }).toString(),
+          token: 'public_installation_token',
+        },
+      } as RestEndpointMethodTypes['apps']['createInstallationAccessToken']['response']);
+
+      const { token, headers, type } = await githubProvider.getCredentials({
+        url: 'https://github.com/non-installed-org/some-repo',
+      });
+
+      expect(type).toEqual('app');
+      expect(token).toEqual('public_installation_token');
+      expect(headers).toEqual({
+        Authorization: 'Bearer public_installation_token',
+      });
+    });
+
+    it('should not use public access when normal installation credentials are available', async () => {
+      const githubProvider = SingleInstanceGithubCredentialsProvider.create({
+        host: 'github.com',
+        apps: [
+          {
+            appId: 1,
+            privateKey: 'privateKey',
+            webhookSecret: '123',
+            clientId: 'CLIENT_ID',
+            clientSecret: 'CLIENT_SECRET',
+            publicAccess: true,
+          },
+        ],
+      });
+
+      octokit.apps.listInstallations.mockResolvedValue({
+        headers: {
+          etag: '123',
+        },
+        data: [
+          {
+            id: 1,
+            repository_selection: 'all',
+            account: {
+              login: 'backstage',
+            },
+          },
+        ],
+      } as RestEndpointMethodTypes['apps']['listInstallations']['response']);
+
+      octokit.apps.createInstallationAccessToken.mockResolvedValueOnce({
+        data: {
+          expires_at: DateTime.local().plus({ hours: 1 }).toString(),
+          token: 'normal_token',
+        },
+      } as RestEndpointMethodTypes['apps']['createInstallationAccessToken']['response']);
+
+      const { token, type } = await githubProvider.getCredentials({
+        url: 'https://github.com/backstage/repo',
+      });
+
+      expect(type).toEqual('app');
+      expect(token).toEqual('normal_token');
+      // createInstallationAccessToken should only be called once for the normal flow
+      expect(octokit.apps.createInstallationAccessToken).toHaveBeenCalledTimes(
+        1,
+      );
+    });
+
+    it('should fall back to configured token when public access fails', async () => {
+      const githubProvider = SingleInstanceGithubCredentialsProvider.create({
+        host: 'github.com',
+        apps: [
+          {
+            appId: 1,
+            privateKey: 'privateKey',
+            webhookSecret: '123',
+            clientId: 'CLIENT_ID',
+            clientSecret: 'CLIENT_SECRET',
+            allowedInstallationOwners: ['other-org'],
+            publicAccess: true,
+          },
+        ],
+        token: 'fallback_token',
+      });
+
+      octokit.apps.listInstallations.mockResolvedValue({
+        headers: {
+          etag: '123',
+        },
+        data: [],
+      } as unknown as RestEndpointMethodTypes['apps']['listInstallations']['response']);
+
+      const { token, type } = await githubProvider.getCredentials({
+        url: 'https://github.com/some-org/repo',
+      });
+
+      expect(type).toEqual('token');
+      expect(token).toEqual('fallback_token');
+    });
+
+    it('should return undefined when public access is disabled and no installation exists', async () => {
+      const githubProvider = SingleInstanceGithubCredentialsProvider.create({
+        host: 'github.com',
+        apps: [
+          {
+            appId: 1,
+            privateKey: 'privateKey',
+            webhookSecret: '123',
+            clientId: 'CLIENT_ID',
+            clientSecret: 'CLIENT_SECRET',
+            allowedInstallationOwners: ['other-org'],
+            // publicAccess is not set (defaults to false)
+          },
+        ],
+      });
+
+      octokit.apps.listInstallations.mockResolvedValue({
+        headers: {
+          etag: '123',
+        },
+        data: [
+          {
+            id: 1,
+            repository_selection: 'all',
+            account: {
+              login: 'other-org',
+            },
+          },
+        ],
+      } as RestEndpointMethodTypes['apps']['listInstallations']['response']);
+
+      const { token, headers } = await githubProvider.getCredentials({
+        url: 'https://github.com/some-org/repo',
+      });
+
+      expect(token).toBeUndefined();
+      expect(headers).toBeUndefined();
+    });
+
+    it('should cache public access tokens separately from regular tokens', async () => {
+      const githubProvider = SingleInstanceGithubCredentialsProvider.create({
+        host: 'github.com',
+        apps: [
+          {
+            appId: 1,
+            privateKey: 'privateKey',
+            webhookSecret: '123',
+            clientId: 'CLIENT_ID',
+            clientSecret: 'CLIENT_SECRET',
+            allowedInstallationOwners: ['installed-org'],
+            publicAccess: true,
+          },
+        ],
+      });
+
+      octokit.apps.listInstallations.mockResolvedValue({
+        headers: {
+          etag: '123',
+        },
+        data: [
+          {
+            id: 1,
+            repository_selection: 'all',
+            account: {
+              login: 'installed-org',
+            },
+          },
+        ],
+      } as RestEndpointMethodTypes['apps']['listInstallations']['response']);
+
+      octokit.apps.createInstallationAccessToken.mockResolvedValue({
+        data: {
+          expires_at: DateTime.local().plus({ hours: 1 }).toString(),
+          token: 'public_token',
+        },
+      } as RestEndpointMethodTypes['apps']['createInstallationAccessToken']['response']);
+
+      // First call for a public org
+      await githubProvider.getCredentials({
+        url: 'https://github.com/public-org/repo',
+      });
+
+      // Second call for the same public org should use cached token
+      await githubProvider.getCredentials({
+        url: 'https://github.com/public-org/repo',
+      });
+
+      // createInstallationAccessToken should only be called once due to caching
+      expect(octokit.apps.createInstallationAccessToken).toHaveBeenCalledTimes(
+        1,
+      );
+    });
+
+    it('should use public access with multiple apps when only one has publicAccess enabled', async () => {
+      const githubProvider = SingleInstanceGithubCredentialsProvider.create({
+        host: 'github.com',
+        apps: [
+          {
+            appId: 1,
+            privateKey: 'privateKey',
+            webhookSecret: '123',
+            clientId: 'CLIENT_ID',
+            clientSecret: 'CLIENT_SECRET',
+            allowedInstallationOwners: ['org-1'],
+            // publicAccess not set, defaults to false
+          },
+          {
+            appId: 2,
+            privateKey: 'privateKey2',
+            webhookSecret: '456',
+            clientId: 'CLIENT_ID_2',
+            clientSecret: 'CLIENT_SECRET_2',
+            allowedInstallationOwners: ['org-2'],
+            publicAccess: true,
+          },
+        ],
+      });
+
+      octokit.apps.listInstallations.mockResolvedValue({
+        headers: {
+          etag: '123',
+        },
+        data: [
+          {
+            id: 1,
+            repository_selection: 'all',
+            account: {
+              login: 'org-2',
+            },
+          },
+        ],
+      } as RestEndpointMethodTypes['apps']['listInstallations']['response']);
+
+      octokit.apps.createInstallationAccessToken.mockResolvedValueOnce({
+        data: {
+          expires_at: DateTime.local().plus({ hours: 1 }).toString(),
+          token: 'public_access_from_app_2',
+        },
+      } as RestEndpointMethodTypes['apps']['createInstallationAccessToken']['response']);
+
+      const { token, type } = await githubProvider.getCredentials({
+        url: 'https://github.com/unknown-org/repo',
+      });
+
+      expect(type).toEqual('app');
+      expect(token).toEqual('public_access_from_app_2');
+    });
+  });
 });

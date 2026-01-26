@@ -31,6 +31,7 @@ import { Breadcrumbs } from './Breadcrumbs';
 export default {
   title: 'Layout/Breadcrumbs',
   component: Breadcrumbs,
+  tags: ['!manifest'],
 };
 
 export const InHeader = () => (

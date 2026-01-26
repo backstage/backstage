@@ -44,6 +44,7 @@ import { StatusError, StatusOK } from '@backstage/core-components';
 import { PodMetricsContext } from '../../hooks/usePodMetrics';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { kubernetesReactTranslationRef } from '../../translation';
+import { SecretsAccordions } from '../SecretsAccordions';
 
 type ClusterSummaryProps = {
   clusterName: string;
@@ -179,6 +180,11 @@ export const Cluster = ({ clusterObjects, podsWithErrors }: ClusterProps) => {
                   {groupedResponses.configMaps.length > 0 ? (
                     <Grid item>
                       <ConfigmapsAccordions />
+                    </Grid>
+                  ) : undefined}
+                  {groupedResponses.secrets.length > 0 ? (
+                    <Grid item>
+                      <SecretsAccordions />
                     </Grid>
                   ) : undefined}
                   {groupedResponses.cronJobs.length > 0 ? (

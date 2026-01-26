@@ -1,6 +1,6 @@
 {
   "name": "example-app-next",
-  "version": "0.0.30-next.0",
+  "version": "0.0.31",
   "backstage": {
     "role": "frontend"
   },
@@ -57,6 +57,7 @@
     "@backstage/plugin-catalog-import": "workspace:^",
     "@backstage/plugin-catalog-react": "workspace:^",
     "@backstage/plugin-catalog-unprocessed-entities": "workspace:^",
+    "@backstage/plugin-devtools": "workspace:^",
     "@backstage/plugin-home": "workspace:^",
     "@backstage/plugin-kubernetes": "workspace:^",
     "@backstage/plugin-kubernetes-cluster": "workspace:^",
@@ -97,7 +98,7 @@
     "@types/react": "*",
     "@types/react-dom": "*",
     "@types/zen-observable": "^0.8.0",
-    "cross-env": "^7.0.0"
+    "cross-env": "^10.0.0"
   },
   "bundled": true
 }

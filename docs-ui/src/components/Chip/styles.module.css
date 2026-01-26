@@ -1,11 +1,9 @@
 .chip {
-  display: inline-flex;
-  align-items: center;
+  display: inline;
   font-family: monospace;
   font-size: 13px;
   border-radius: 6px;
-  padding: 0px 8px;
-  height: 24px;
+  padding: 4px 8px;
   margin-right: 4px;
   background-color: #f0f0f0;
   color: #5d5d5d;

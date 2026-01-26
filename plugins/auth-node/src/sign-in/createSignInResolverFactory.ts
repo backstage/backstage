@@ -18,7 +18,7 @@ import { ZodSchema, ZodTypeDef } from 'zod';
 import { SignInResolver } from '../types';
 import zodToJsonSchema from 'zod-to-json-schema';
 import { JsonObject } from '@backstage/types';
-import { fromError } from 'zod-validation-error';
+import { fromError } from 'zod-validation-error/v3';
 import { InputError } from '@backstage/errors';
 
 /** @public */

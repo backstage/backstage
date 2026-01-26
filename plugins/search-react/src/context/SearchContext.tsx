@@ -130,12 +130,24 @@ const useSearchContextValue = (
   const [pageCursor, setPageCursor] = useState<string | undefined>(
     initialValue.pageCursor,
   );
+  const isFirstEmptyMount = useRef(true);
 
   const prevTerm = usePrevious(term);
   const prevFilters = usePrevious(filters);
   const abortControllerRef = useRef<AbortController | null>(null);
 
-  const result = useAsync(async () => {
+  const result = useAsync(async (): Promise<SearchResultSet> => {
+    if (isFirstEmptyMount.current) {
+      if (!term && !types.length && !Object.keys(filters).length) {
+        return {
+          results: [],
+          numberOfResults: 0,
+        };
+      }
+
+      isFirstEmptyMount.current = false;
+    }
+
     // Here we cancel the previous request before making a new one
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();

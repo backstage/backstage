@@ -1,5 +1,30 @@
 # @backstage/codemods
 
+## 0.1.53
+
+### Patch Changes
+
+- 688f070: Updated to use new utilities from `@backstage/cli-common`.
+- 2bae83a: Bumped dev dependencies `@types/node`
+- Updated dependencies
+  - @backstage/cli-common@0.1.16
+
+## 0.1.53-next.2
+
+### Patch Changes
+
+- 2bae83a: Bumped dev dependencies `@types/node`
+- Updated dependencies
+  - @backstage/cli-common@0.1.16-next.2
+
+## 0.1.53-next.1
+
+### Patch Changes
+
+- 688f070: Updated to use new utilities from `@backstage/cli-common`.
+- Updated dependencies
+  - @backstage/cli-common@0.1.16-next.1
+
 ## 0.1.53-next.0
 
 ### Patch Changes

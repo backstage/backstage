@@ -1,3 +1,4 @@
+import preview from '../../../../../.storybook/preview';
 /*
  * Copyright 2024 The Backstage Authors
  *
@@ -15,11 +16,11 @@
  */
 
 import { ReactNode } from 'react';
-import type { Meta, StoryObj } from '@storybook/react-vite';
 import { Box } from './Box';
 import { Flex } from '../Flex';
+import { Button } from '../Button';
 
-const meta = {
+const meta = preview.meta({
   title: 'Backstage UI/Box',
   component: Box,
   argTypes: {
@@ -31,10 +32,7 @@ const meta = {
       control: false,
     },
   },
-} satisfies Meta<typeof Box>;
-
-export default meta;
-type Story = StoryObj<typeof meta>;
+});
 
 const diagonalStripePattern = (() => {
   const svg = `
@@ -47,7 +45,7 @@ const diagonalStripePattern = (() => {
   return `data:image/svg+xml,${encodeURIComponent(svg)}`;
 })();
 
-export const Default: Story = {
+export const Default = meta.story({
   args: {
     width: '64px',
     height: '64px',
@@ -63,10 +61,10 @@ export const Default: Story = {
       color: '#2563eb',
     },
   },
-};
+});
 
-export const Margin: Story = {
-  args: { ...Default.args },
+export const Margin = meta.story({
+  args: { ...Default.input.args },
   render: args => (
     <Flex align="center">
       <Box style={{ border: '1px solid red', borderRadius: '5px' }}>
@@ -89,10 +87,10 @@ export const Margin: Story = {
       </Box>
     </Flex>
   ),
-};
+});
 
-export const ResponsiveMargin: Story = {
-  args: { ...Default.args },
+export const ResponsiveMargin = meta.story({
+  args: { ...Default.input.args },
   render: args => (
     <Flex align="center">
       <Box style={{ border: '1px solid red', borderRadius: '5px' }}>
@@ -115,10 +113,10 @@ export const ResponsiveMargin: Story = {
       </Box>
     </Flex>
   ),
-};
+});
 
-export const CustomMargin: Story = {
-  args: { ...Default.args },
+export const CustomMargin = meta.story({
+  args: { ...Default.input.args },
   render: args => (
     <Flex align="center">
       <Box style={{ border: '1px solid red', borderRadius: '5px' }}>
@@ -141,10 +139,10 @@ export const CustomMargin: Story = {
       </Box>
     </Flex>
   ),
-};
+});
 
-export const CustomResponsiveMargin: Story = {
-  args: { ...Default.args },
+export const CustomResponsiveMargin = meta.story({
+  args: { ...Default.input.args },
   render: args => (
     <Flex align="center">
       <Box style={{ border: '1px solid red', borderRadius: '5px' }}>
@@ -167,10 +165,10 @@ export const CustomResponsiveMargin: Story = {
       </Box>
     </Flex>
   ),
-};
+});
 
-export const Padding: Story = {
-  args: { ...Default.args },
+export const Padding = meta.story({
+  args: { ...Default.input.args },
   render: args => (
     <Flex align="center">
       <Box pl="6" style={{ border: '1px solid red', borderRadius: '5px' }}>
@@ -193,10 +191,10 @@ export const Padding: Story = {
       </Box>
     </Flex>
   ),
-};
+});
 
-export const ResponsivePadding: Story = {
-  args: { ...Default.args },
+export const ResponsivePadding = meta.story({
+  args: { ...Default.input.args },
   render: args => (
     <Flex align="center">
       <Box
@@ -237,10 +235,10 @@ export const ResponsivePadding: Story = {
       </Box>
     </Flex>
   ),
-};
+});
 
-export const CustomPadding: Story = {
-  args: { ...Default.args },
+export const CustomPadding = meta.story({
+  args: { ...Default.input.args },
   render: args => (
     <Flex align="center">
       <Box pl="42px" style={{ border: '1px solid red', borderRadius: '5px' }}>
@@ -263,10 +261,10 @@ export const CustomPadding: Story = {
       </Box>
     </Flex>
   ),
-};
+});
 
-export const CustomResponsivePadding: Story = {
-  args: { ...Default.args },
+export const CustomResponsivePadding = meta.story({
+  args: { ...Default.input.args },
   render: args => (
     <Flex align="center">
       <Box
@@ -307,7 +305,7 @@ export const CustomResponsivePadding: Story = {
       </Box>
     </Flex>
   ),
-};
+});
 
 const CardDisplay = ({ children }: { children?: ReactNode }) => {
   return (
@@ -327,7 +325,7 @@ const CardDisplay = ({ children }: { children?: ReactNode }) => {
   );
 };
 
-export const Display: Story = {
+export const Display = meta.story({
   render: args => (
     <Flex direction="column" align="center">
       <Flex>
@@ -346,4 +344,92 @@ export const Display: Story = {
       </Box>
     </Flex>
   ),
-};
+});
+
+export const Surfaces = meta.story({
+  args: { px: '6', py: '4' },
+  render: args => (
+    <Flex align="center" style={{ flexWrap: 'wrap' }}>
+      <Box {...args}>Default</Box>
+      <Box surface="0" {...args}>
+        Surface 0
+      </Box>
+      <Box surface="1" {...args}>
+        Surface 1
+      </Box>
+      <Box surface="2" {...args}>
+        Surface 2
+      </Box>
+      <Box surface="3" {...args}>
+        Surface 3
+      </Box>
+      <Box surface={{ initial: '0', sm: '1' }} {...args}>
+        Responsive Surface
+      </Box>
+      <Box surface="danger" {...args}>
+        Surface Danger
+      </Box>
+      <Box surface="warning" {...args}>
+        Surface Warning
+      </Box>
+      <Box surface="success" {...args}>
+        Surface Success
+      </Box>
+    </Flex>
+  ),
+});
+
+export const SurfacesNested = meta.story({
+  args: { px: '6', py: '4' },
+  render: args => (
+    <Flex direction="column">
+      <Box style={{ maxWidth: '600px' }} mb="4">
+        In this test, we are nesting boxes and buttons on different surfaces to
+        ensure that the correct surface is applied to each element. If a Button
+        is placed on a surface that doesn't have the surface prop set, it will
+        inherit the surface from the parent.
+      </Box>
+      <Box {...args} surface="1">
+        <Button variant="secondary">Button</Button>
+        <Box {...args} surface="2" mt="4">
+          <Button variant="secondary">Button</Button>
+          <Box {...args} mt="4">
+            <Button variant="secondary">Button</Button>
+          </Box>
+        </Box>
+      </Box>
+    </Flex>
+  ),
+});
+
+export const SurfacesAutoIncrement = meta.story({
+  args: { px: '6', py: '4' },
+  render: args => (
+    <Flex direction="column">
+      <Box style={{ maxWidth: '600px' }} mb="4">
+        Using surface="auto" automatically increments from the parent surface
+        level. This makes components more reusable as they don't need to know
+        their absolute surface level. Notice how each nested Box with
+        surface="auto" automatically increments: 0 → 1 → 2 → 3 (capped at 3).
+      </Box>
+      <Box {...args} surface="0">
+        Surface 0 (explicit)
+        <Box {...args} surface="auto" mt="4">
+          <Box mb="3">Surface auto (becomes 1)</Box>
+          <Button variant="secondary" onSurface="auto">
+            Button auto
+          </Button>
+          <Box {...args} surface="auto" mt="4">
+            Surface auto (becomes 2)
+            <Box {...args} surface="auto" mt="4">
+              Surface auto (becomes 3)
+              <Box {...args} surface="auto" mt="4">
+                Surface auto (stays 3 - capped)
+              </Box>
+            </Box>
+          </Box>
+        </Box>
+      </Box>
+    </Flex>
+  ),
+});

@@ -15,6 +15,7 @@
  */
 
 import {
+  isChildPath,
   UrlReaderServiceReadTreeResponse,
   UrlReaderServiceReadTreeResponseDirOptions,
   UrlReaderServiceReadTreeResponseFile,
@@ -23,12 +24,10 @@ import concatStream from 'concat-stream';
 import fs from 'fs-extra';
 import platformPath from 'path';
 import { pipeline as pipelineCb, Readable } from 'stream';
-import tar, { Parse, ParseStream, ReadEntry } from 'tar';
+import * as tar from 'tar';
+import type { ReadEntry } from 'tar';
 import { promisify } from 'util';
 import { stripFirstDirectoryFromPath } from './util';
-
-// Tar types for `Parse` is not a proper constructor, but it should be
-const TarParseStream = Parse as unknown as { new (): ParseStream };
 
 const pipeline = promisify(pipelineCb);
 
@@ -84,7 +83,7 @@ export class TarArchiveResponse implements UrlReaderServiceReadTreeResponse {
     this.onlyOnce();
 
     const files = Array<UrlReaderServiceReadTreeResponseFile>();
-    const parser = new TarParseStream();
+    const parser = new tar.Parser();
 
     parser.on('entry', (entry: ReadEntry & Readable) => {
       if (entry.type === 'Directory') {
@@ -180,6 +179,22 @@ export class TarArchiveResponse implements UrlReaderServiceReadTreeResponse {
           // Filter errors will short-circuit the rest of the filtering and then throw
           if (filterError) {
             return false;
+          }
+
+          // Block symlinks/hardlinks that escape the extraction directory
+          const entry = stat as ReadEntry;
+          if (
+            (entry.type === 'SymbolicLink' || entry.type === 'Link') &&
+            entry.linkpath
+          ) {
+            const strippedPath = path.split('/').slice(strip).join('/');
+            const linkDir = platformPath.dirname(
+              platformPath.join(dir, strippedPath),
+            );
+            const targetPath = platformPath.resolve(linkDir, entry.linkpath);
+            if (!isChildPath(dir, targetPath)) {
+              return false;
+            }
           }
 
           // File path relative to the root extracted directory. Will remove the

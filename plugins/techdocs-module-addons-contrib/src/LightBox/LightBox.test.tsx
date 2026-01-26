@@ -15,6 +15,7 @@
  */
 
 import { TechDocsAddonTester } from '@backstage/plugin-techdocs-addons-test-utils';
+import { screen } from 'shadow-dom-testing-library';
 
 import { LightBox } from '../plugin';
 import { entityPresentationApiRef } from '@backstage/plugin-catalog-react';
@@ -30,20 +31,16 @@ describe('LightBox', () => {
   });
 
   it('renders without exploding', async () => {
-    const { getByText } = await TechDocsAddonTester.buildAddonsInTechDocs([
-      <LightBox />,
-    ])
+    await TechDocsAddonTester.buildAddonsInTechDocs([<LightBox />])
       .withDom(<body>TEST_CONTENT</body>)
       .withApis([[entityPresentationApiRef, entityPresentationApiMock]])
       .renderWithEffects();
 
-    expect(getByText('TEST_CONTENT')).toBeInTheDocument();
+    expect(screen.getByShadowText('TEST_CONTENT')).toBeInTheDocument();
   });
 
   it('Add onclick event to images', async () => {
-    const { getByTestId } = await TechDocsAddonTester.buildAddonsInTechDocs([
-      <LightBox />,
-    ])
+    await TechDocsAddonTester.buildAddonsInTechDocs([<LightBox />])
       .withDom(
         <img
           data-testid="fixture"
@@ -54,7 +51,9 @@ describe('LightBox', () => {
       .withApis([[entityPresentationApiRef, entityPresentationApiMock]])
       .renderWithEffects();
 
-    expect(getByTestId('fixture').onclick).not.toBeUndefined();
-    expect(getByTestId('fixture').onclick).toEqual(expect.any(Function));
+    expect(screen.getByShadowTestId('fixture').onclick).not.toBeUndefined();
+    expect(screen.getByShadowTestId('fixture').onclick).toEqual(
+      expect.any(Function),
+    );
   });
 });

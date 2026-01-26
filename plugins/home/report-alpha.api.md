@@ -107,6 +107,7 @@ export const homeTranslationRef: TranslationRef<
   {
     readonly 'starredEntities.noStarredEntitiesMessage': 'Click the star beside an entity name to add it to this list!';
     readonly 'addWidgetDialog.title': 'Add new widget to dashboard';
+    readonly 'customHomepageButtons.cancel': 'Cancel';
     readonly 'customHomepageButtons.clearAll': 'Clear all';
     readonly 'customHomepageButtons.edit': 'Edit';
     readonly 'customHomepageButtons.restoreDefaults': 'Restore defaults';

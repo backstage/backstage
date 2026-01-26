@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-kubernetes-cluster",
-  "version": "0.0.32-next.0",
+  "version": "0.0.33",
   "description": "A Backstage plugin that shows details of Kubernetes clusters",
   "backstage": {
     "role": "frontend-plugin",
@@ -72,7 +72,7 @@
     "@backstage/test-utils": "workspace:^",
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^16.0.0",
-    "@types/node": "^20.16.0",
+    "@types/node": "^22.13.14",
     "@types/react": "^18.0.0",
     "react": "^18.0.2",
     "react-dom": "^18.0.2",

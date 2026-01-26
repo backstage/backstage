@@ -100,7 +100,6 @@ export interface Config {
              * If account ID is not set and no credentials are set, environment variables or aws config file will be used to authenticate.
              * @see https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/loading-node-credentials-environment.html
              * @see https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/loading-node-credentials-shared.html
-             * @visibility secret
              */
             accountId?: string;
             /**
@@ -141,14 +140,12 @@ export interface Config {
              * (Optional) AWS Region.
              * If not set, AWS_REGION environment variable or aws config file will be used.
              * @see https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/setting-region.html
-             * @visibility secret
              */
             region?: string;
             /**
              * (Optional) AWS Endpoint.
              * The endpoint URI to send requests to. The default endpoint is built from the configured region.
              * @see https://docs.aws.amazon.com/AWSJavaScriptSDK/latest/AWS/S3.html#constructor-property
-             * @visibility secret
              */
             endpoint?: string;
             /**

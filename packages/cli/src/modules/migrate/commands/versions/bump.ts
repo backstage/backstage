@@ -41,7 +41,7 @@ import {
 } from '@backstage/release-manifests';
 import { migrateMovedPackages } from './migrate';
 import { runYarnInstall } from '../../lib/utils';
-import { run } from '../../../../lib/run';
+import { run } from '@backstage/cli-common';
 
 const DEP_TYPES = [
   'dependencies',
@@ -135,7 +135,7 @@ export default async (opts: OptionValues) => {
       ? `${env.BACKSTAGE_VERSIONS_BASE_URL}/v1/releases/${releaseManifest.releaseVersion}/yarn-plugin`
       : `https://versions.backstage.io/v1/releases/${releaseManifest.releaseVersion}/yarn-plugin`;
 
-    await run('yarn', ['plugin', 'import', yarnPluginUrl]);
+    await run(['yarn', 'plugin', 'import', yarnPluginUrl]).waitForExit();
     console.log();
   }
 

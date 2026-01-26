@@ -1,5 +1,96 @@
 # @backstage/plugin-techdocs
 
+## 1.16.2
+
+### Patch Changes
+
+- 0afb8a6: Corrected color of some elements such as Grid cards and Tables.
+- 94ff7ab: Code block "Copy to clipboard" button was not positioned correctly for docs built with `mkdocs-material>=9.7`
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.3
+  - @backstage/core-components@0.18.5
+  - @backstage/integration@1.19.2
+  - @backstage/plugin-search-react@1.10.2
+  - @backstage/integration-react@1.2.14
+  - @backstage/plugin-auth-react@0.1.23
+  - @backstage/plugin-catalog-react@1.21.5
+  - @backstage/plugin-techdocs-react@1.3.7
+
+## 1.16.2-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.5-next.0
+  - @backstage/integration-react@1.2.14-next.0
+  - @backstage/plugin-auth-react@0.1.23-next.0
+  - @backstage/plugin-catalog-react@1.21.5-next.1
+  - @backstage/plugin-search-react@1.10.2-next.0
+  - @backstage/plugin-techdocs-react@1.3.7-next.0
+
+## 1.16.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration@1.19.2-next.0
+  - @backstage/integration-react@1.2.14-next.0
+  - @backstage/plugin-catalog-react@1.21.5-next.0
+  - @backstage/frontend-plugin-api@0.13.2
+  - @backstage/plugin-search-react@1.10.1
+
+## 1.16.1
+
+### Patch Changes
+
+- f3f84f1: Minor extension type updates after frontend API bump
+- 5c33821: Fixed schema type for additionalAllowedURIProtocols
+- d02db50: Remove unnecessary use of `compatWrapper` and `convertLegacyRouteRef`(s) for the new frontend system.
+- 592361e: The `techdocs` config is now marked as optional.
+- Updated dependencies
+  - @backstage/integration@1.19.0
+  - @backstage/frontend-plugin-api@0.13.2
+  - @backstage/core-components@0.18.4
+  - @backstage/plugin-catalog-react@1.21.4
+  - @backstage/plugin-search-react@1.10.1
+  - @backstage/core-plugin-api@1.12.1
+  - @backstage/theme@0.7.1
+  - @backstage/integration-react@1.2.13
+  - @backstage/plugin-auth-react@0.1.22
+  - @backstage/plugin-techdocs-react@1.3.6
+
+## 1.16.1-next.2
+
+### Patch Changes
+
+- f3f84f1: Minor extension type updates after frontend API bump
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.2-next.1
+  - @backstage/integration@1.18.3-next.1
+  - @backstage/plugin-catalog-react@1.21.4-next.2
+  - @backstage/core-components@0.18.4-next.2
+  - @backstage/catalog-client@1.12.1
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config@1.3.6
+  - @backstage/core-plugin-api@1.12.1-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/integration-react@1.2.13-next.0
+  - @backstage/theme@0.7.1-next.0
+  - @backstage/plugin-auth-react@0.1.22-next.0
+  - @backstage/plugin-search-common@1.2.21
+  - @backstage/plugin-search-react@1.10.1-next.0
+  - @backstage/plugin-techdocs-common@0.1.1
+  - @backstage/plugin-techdocs-react@1.3.6-next.0
+
+## 1.16.1-next.1
+
+### Patch Changes
+
+- 592361e: The `techdocs` config is now marked as optional.
+- Updated dependencies
+  - @backstage/core-components@0.18.4-next.1
+  - @backstage/plugin-catalog-react@1.21.4-next.1
+
 ## 1.16.1-next.0
 
 ### Patch Changes

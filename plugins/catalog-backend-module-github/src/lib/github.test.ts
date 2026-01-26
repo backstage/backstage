@@ -166,6 +166,54 @@ describe('github', () => {
         getOrganizationUsers(graphql, 'a', 'token'),
       ).resolves.toEqual(output);
     });
+
+    it('reads members excluding suspended users', async () => {
+      const input: QueryResponse = {
+        organization: {
+          membersWithRole: {
+            pageInfo: { hasNextPage: false },
+            nodes: [
+              {
+                login: 'a',
+                name: 'b',
+                bio: 'c',
+                email: 'd',
+                avatarUrl: 'e',
+                suspendedAt: '2025-01-01',
+              },
+              {
+                login: 'a',
+                name: 'b',
+                bio: 'c',
+                email: 'd',
+                avatarUrl: 'e',
+                suspendedAt: undefined,
+              },
+            ],
+          },
+        },
+      };
+
+      const output = {
+        users: [
+          expect.objectContaining({
+            metadata: expect.objectContaining({ name: 'a', description: 'c' }),
+            spec: {
+              profile: { displayName: 'b', email: 'd', picture: 'e' },
+              memberOf: [],
+            },
+          }),
+        ],
+      };
+
+      server.use(
+        graphqlMsw.query('users', () => HttpResponse.json({ data: input })),
+      );
+
+      await expect(
+        getOrganizationUsers(graphql, 'a', 'token', undefined, undefined, true),
+      ).resolves.toEqual(output);
+    });
   });
 
   describe('getOrganizationUsers using custom UserTransformer', () => {
@@ -278,6 +326,63 @@ describe('github', () => {
 
       expect(users.users).toHaveLength(1);
       expect(users).toEqual(output);
+    });
+
+    it('reads members including suspended users', async () => {
+      const input: QueryResponse = {
+        organization: {
+          membersWithRole: {
+            pageInfo: { hasNextPage: false },
+            nodes: [
+              {
+                login: 'a',
+                name: 'b',
+                bio: 'c',
+                email: 'd',
+                avatarUrl: 'e',
+              },
+              {
+                login: 'ab',
+                name: 'bb',
+                bio: 'cc',
+                email: 'dd',
+                avatarUrl: 'ee',
+                suspendedAt: '2025-01-01',
+              },
+            ],
+          },
+        },
+      };
+
+      const output = {
+        users: [
+          expect.objectContaining({
+            metadata: expect.objectContaining({
+              name: 'a-custom',
+            }),
+          }),
+          expect.objectContaining({
+            metadata: expect.objectContaining({
+              name: 'ab-custom',
+            }),
+          }),
+        ],
+      };
+
+      server.use(
+        graphqlMsw.query('users', () => HttpResponse.json({ data: input })),
+      );
+
+      await expect(
+        getOrganizationUsers(
+          graphql,
+          'a',
+          'token',
+          customUserTransformer,
+          undefined,
+          false,
+        ),
+      ).resolves.toEqual(output);
     });
   });
 

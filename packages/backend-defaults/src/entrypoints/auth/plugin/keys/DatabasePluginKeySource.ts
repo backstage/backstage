@@ -102,7 +102,7 @@ export class DatabasePluginKeySource implements PluginKeySource {
 
       await this.keyStore.addKey({
         id: kid,
-        key: publicKey as InternalKey,
+        key: publicKey as unknown as InternalKey,
         expiresAt: new Date(
           Date.now() +
             this.keyDurationSeconds *

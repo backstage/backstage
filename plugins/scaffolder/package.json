@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-scaffolder",
-  "version": "1.34.4-next.0",
+  "version": "1.35.1",
   "description": "The Backstage plugin that helps you create new things",
   "backstage": {
     "role": "frontend-plugin",
@@ -81,10 +81,10 @@
     "@material-ui/icons": "^4.9.1",
     "@material-ui/lab": "4.0.0-alpha.61",
     "@react-hookz/web": "^24.0.0",
-    "@rjsf/core": "5.23.2",
-    "@rjsf/material-ui": "5.23.2",
-    "@rjsf/utils": "5.23.2",
-    "@rjsf/validator-ajv8": "5.23.2",
+    "@rjsf/core": "5.24.13",
+    "@rjsf/material-ui": "5.24.13",
+    "@rjsf/utils": "5.24.13",
+    "@rjsf/validator-ajv8": "5.24.13",
     "@uiw/react-codemirror": "^4.9.3",
     "classnames": "^2.2.6",
     "git-url-parse": "^15.0.0",
@@ -102,7 +102,7 @@
     "react-window": "^1.8.10",
     "yaml": "^2.0.0",
     "zod": "^3.22.4",
-    "zod-to-json-schema": "^3.20.4"
+    "zod-to-json-schema": "^3.25.1"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",

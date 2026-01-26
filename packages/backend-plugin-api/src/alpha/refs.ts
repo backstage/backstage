@@ -45,3 +45,14 @@ export const actionsRegistryServiceRef = createServiceRef<
 >({
   id: 'alpha.core.actionsRegistry',
 });
+
+/**
+ * Read information about your current Backstage deployment.
+ * @alpha
+ */
+export const rootSystemMetadataServiceRef = createServiceRef<
+  import('./RootSystemMetadataService').RootSystemMetadataService
+>({
+  id: 'alpha.core.rootSystemMetadata',
+  scope: 'root',
+});

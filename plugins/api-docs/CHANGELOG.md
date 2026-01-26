@@ -1,5 +1,73 @@
 # @backstage/plugin-api-docs
 
+## 0.13.3
+
+### Patch Changes
+
+- 0216090: Updated dependency `@types/swagger-ui-react` to `^5.0.0`.
+- abeba2b: Fix types with new bumped dependency
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.3
+  - @backstage/plugin-catalog@1.32.2
+  - @backstage/core-components@0.18.5
+  - @backstage/plugin-catalog-react@1.21.5
+
+## 0.13.3-next.2
+
+### Patch Changes
+
+- 0216090: Updated dependency `@types/swagger-ui-react` to `^5.0.0`.
+- abeba2b: Fix types with new bumped dependency
+- Updated dependencies
+  - @backstage/plugin-catalog@1.32.2-next.2
+
+## 0.13.3-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.5-next.0
+  - @backstage/plugin-catalog@1.32.2-next.1
+  - @backstage/plugin-catalog-react@1.21.5-next.1
+
+## 0.13.3-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-catalog@1.32.2-next.0
+  - @backstage/plugin-catalog-react@1.21.5-next.0
+  - @backstage/frontend-plugin-api@0.13.2
+
+## 0.13.2
+
+### Patch Changes
+
+- f3f84f1: Minor extension type updates after frontend API bump
+- d02db50: Remove unnecessary use of `compatWrapper` and `convertLegacyRouteRef`(s) for the new frontend system.
+- Updated dependencies
+  - @backstage/plugin-catalog@1.32.1
+  - @backstage/frontend-plugin-api@0.13.2
+  - @backstage/core-components@0.18.4
+  - @backstage/plugin-catalog-react@1.21.4
+  - @backstage/core-plugin-api@1.12.1
+  - @backstage/plugin-permission-react@0.4.39
+
+## 0.13.2-next.1
+
+### Patch Changes
+
+- f3f84f1: Minor extension type updates after frontend API bump
+- Updated dependencies
+  - @backstage/plugin-catalog@1.32.1-next.1
+  - @backstage/frontend-plugin-api@0.13.2-next.1
+  - @backstage/plugin-catalog-react@1.21.4-next.2
+  - @backstage/core-components@0.18.4-next.2
+  - @backstage/catalog-model@1.7.6
+  - @backstage/core-plugin-api@1.12.1-next.0
+  - @backstage/plugin-catalog-common@1.1.7
+  - @backstage/plugin-permission-react@0.4.39-next.0
+
 ## 0.13.2-next.0
 
 ### Patch Changes
