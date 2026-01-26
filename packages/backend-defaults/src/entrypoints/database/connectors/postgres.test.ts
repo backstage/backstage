@@ -333,7 +333,7 @@ describe('postgres', () => {
           connection: {
             type: 'azure',
             tokenCredential: {
-              tokenRenewalOffsetTime: '1 minute',
+              tokenRenewableOffsetTime: '1 minute',
             },
             user: 'some-user@domain.com',
             database: 'other_db',
@@ -356,7 +356,7 @@ describe('postgres', () => {
       expirationResult = await connectionResult.expirationChecker();
       expect(expirationResult).toBe(true);
 
-      // Check the default tokenRenewalOffsetTime of 5 minutes
+      // Check the default tokenRenewableOffsetTime of 5 minutes
       configResult = await buildPgDatabaseConfig(
         new ConfigReader({
           client: 'pg',
@@ -381,6 +381,29 @@ describe('postgres', () => {
       jest.useFakeTimers({ now: tokenExpirationTimestamp });
       expirationResult = await connectionResult.expirationChecker();
       expect(expirationResult).toBe(true);
+    });
+
+    it('throws an error when Azure token acquisition fails', async () => {
+      const { DefaultAzureCredential } = jest.requireMock(
+        '@azure/identity',
+      ) as jest.Mocked<typeof import('@azure/identity')>;
+
+      DefaultAzureCredential.prototype.getToken.mockResolvedValue(null as any);
+
+      const configResult = await buildPgDatabaseConfig(
+        new ConfigReader({
+          client: 'pg',
+          connection: {
+            type: 'azure',
+            user: 'some-user@domain.com',
+            database: 'other_db',
+          },
+        }),
+      );
+
+      await expect(configResult.connection()).rejects.toThrow(
+        'Failed to acquire Azure access token for database authentication',
+      );
     });
 
     it('uses the correct config when using cloudsql', async () => {

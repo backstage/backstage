@@ -33,7 +33,7 @@ import { Client } from 'pg';
 import { Connector } from '../types';
 import { mergeDatabaseConfig } from './mergeDatabaseConfig';
 import format from 'pg-format';
-import { AccessToken, TokenCredential } from '@azure/identity';
+import { TokenCredential } from '@azure/identity';
 
 // Limits the number of concurrent DDL operations to 1
 const ddlLimiter = limiterFactory(1);
@@ -127,7 +127,7 @@ export type AzureTokenCredentialConfig = {
    * - A standard ISO formatted duration string, e.g. 'P2DT6H' or 'PT1M'.
    * - An object with individual units (in plural) as keys, e.g. `{ days: 2, hours: 6 }`.
    */
-  tokenRenewalOffsetTime?: string | HumanDuration;
+  tokenRenewableOffsetTime?: string | HumanDuration;
   /**
    * The client ID of a user-assigned managed identity.
    * If not provided, the system-assigned managed identity is used.
@@ -146,9 +146,9 @@ export async function buildAzurePgConfig(config: Config): Promise<Knex.Config> {
 
   const tokenConfig = config.getOptionalConfig('connection.tokenCredential');
 
-  const tokenRenewalOffsetMs = durationToMilliseconds(
-    tokenConfig?.has('tokenRenewalOffsetTime')
-      ? readDurationFromConfig(tokenConfig, { key: 'tokenRenewalOffsetTime' })
+  const tokenRenewableOffsetTime = durationToMilliseconds(
+    tokenConfig?.has('tokenRenewableOffsetTime')
+      ? readDurationFromConfig(tokenConfig, { key: 'tokenRenewableOffsetTime' })
       : { minutes: 5 },
   );
 
@@ -181,16 +181,22 @@ export async function buildAzurePgConfig(config: Config): Promise<Knex.Config> {
   ]) as Partial<Knex.StaticConnectionConfig>;
 
   async function getConnectionConfig() {
-    const token = (await credential.getToken(
+    const token = await credential.getToken(
       'https://ossrdbms-aad.database.windows.net/.default',
-    )) as AccessToken; // This cast is safe since we know all of our TokenCredential implementations return this type.
+    );
+
+    if (!token) {
+      throw new Error(
+        'Failed to acquire Azure access token for database authentication',
+      );
+    }
 
     const connectionConfig = {
       ...sanitizedConnection,
       password: token.token,
       expirationChecker: () =>
-        /* return true if the token is within the renewal offset time */
-        token.expiresOnTimestamp - tokenRenewalOffsetMs <= Date.now(),
+        /* return true if the token is within the renewable offset time */
+        token.expiresOnTimestamp - tokenRenewableOffsetTime <= Date.now(),
     };
 
     return connectionConfig;
