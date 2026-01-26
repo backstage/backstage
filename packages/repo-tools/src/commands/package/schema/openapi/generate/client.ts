@@ -68,7 +68,7 @@ async function generate(
         'templates/typescript-backstage-client.yaml',
       ),
       '--generator-key',
-      'v3.0',
+      'v3.1',
       additionalProperties
         ? `--additional-properties=${additionalProperties}`
         : '',
@@ -87,7 +87,7 @@ async function generate(
 
   await fs.writeFile(
     resolve(parentDirectory, 'index.ts'),
-    `// 
+    `//
     export * from './generated';`,
   );
 
@@ -111,7 +111,12 @@ async function generate(
   }
 
   fs.removeSync(resolve(resolvedOutputDirectory, '.openapi-generator-ignore'));
+  fs.removeSync(resolve(resolvedOutputDirectory, '.gitattributes'));
 
+  fs.rmSync(resolve(resolvedOutputDirectory, 'docs'), {
+    recursive: true,
+    force: true,
+  });
   fs.rmSync(resolve(resolvedOutputDirectory, '.openapi-generator'), {
     recursive: true,
     force: true,
