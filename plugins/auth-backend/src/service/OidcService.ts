@@ -26,6 +26,8 @@ import crypto from 'crypto';
 import { OidcDatabase } from '../database/OidcDatabase';
 import { DateTime } from 'luxon';
 import matcher from 'matcher';
+import { offlineAccessServiceRef } from './OfflineAccessService';
+import { readDcrTokenExpiration } from './readTokenExpiration';
 
 export class OidcService {
   private readonly auth: AuthService;
@@ -34,6 +36,7 @@ export class OidcService {
   private readonly userInfo: UserInfoDatabase;
   private readonly oidc: OidcDatabase;
   private readonly config: RootConfigService;
+  private readonly offlineAccess?: typeof offlineAccessServiceRef.T;
 
   private constructor(
     auth: AuthService,
@@ -42,6 +45,7 @@ export class OidcService {
     userInfo: UserInfoDatabase,
     oidc: OidcDatabase,
     config: RootConfigService,
+    offlineAccess?: typeof offlineAccessServiceRef.T,
   ) {
     this.auth = auth;
     this.tokenIssuer = tokenIssuer;
@@ -49,6 +53,7 @@ export class OidcService {
     this.userInfo = userInfo;
     this.oidc = oidc;
     this.config = config;
+    this.offlineAccess = offlineAccess;
   }
 
   static create(options: {
@@ -58,6 +63,7 @@ export class OidcService {
     userInfo: UserInfoDatabase;
     oidc: OidcDatabase;
     config: RootConfigService;
+    offlineAccess?: typeof offlineAccessServiceRef.T;
   }) {
     return new OidcService(
       options.auth,
@@ -66,6 +72,7 @@ export class OidcService {
       options.userInfo,
       options.oidc,
       options.config,
+      options.offlineAccess,
     );
   }
 
@@ -89,24 +96,28 @@ export class OidcService {
         'PS512',
         'EdDSA',
       ],
-      scopes_supported: ['openid'],
+      scopes_supported: ['openid', 'offline_access'],
       token_endpoint_auth_methods_supported: [
         'client_secret_basic',
         'client_secret_post',
       ],
+      revocation_endpoint_auth_methods_supported: [
+        'client_secret_post',
+        'client_secret_basic',
+      ],
       claims_supported: ['sub', 'ent'],
-      grant_types_supported: ['authorization_code'],
+      grant_types_supported: ['authorization_code', 'refresh_token'],
       authorization_endpoint: `${this.baseUrl}/v1/authorize`,
       registration_endpoint: `${this.baseUrl}/v1/register`,
       code_challenge_methods_supported: ['S256', 'plain'],
     };
   }
 
-  public async listPublicKeys() {
+  async listPublicKeys() {
     return await this.tokenIssuer.listPublicKeys();
   }
 
-  public async getUserInfo({ token }: { token: string }) {
+  async getUserInfo({ token }: { token: string }) {
     const credentials = await this.auth.authenticate(token, {
       allowLimitedAccess: true,
     });
@@ -124,7 +135,7 @@ export class OidcService {
     return await this.userInfo.getUserInfo(userEntityRef);
   }
 
-  public async registerClient(opts: {
+  async registerClient(opts: {
     responseTypes?: string[];
     grantTypes?: string[];
     clientName: string;
@@ -159,7 +170,7 @@ export class OidcService {
     });
   }
 
-  public async createAuthorizationSession(opts: {
+  async createAuthorizationSession(opts: {
     clientId: string;
     redirectUri: string;
     responseType: string;
@@ -226,7 +237,7 @@ export class OidcService {
     };
   }
 
-  public async approveAuthorizationSession(opts: {
+  async approveAuthorizationSession(opts: {
     sessionId: string;
     userEntityRef: string;
   }) {
@@ -275,7 +286,7 @@ export class OidcService {
     };
   }
 
-  public async getAuthorizationSession(opts: { sessionId: string }) {
+  async getAuthorizationSession(opts: { sessionId: string }) {
     const session = await this.oidc.getAuthorizationSession({
       id: opts.sessionId,
     });
@@ -313,7 +324,7 @@ export class OidcService {
     };
   }
 
-  public async rejectAuthorizationSession(opts: {
+  async rejectAuthorizationSession(opts: {
     sessionId: string;
     userEntityRef: string;
   }) {
@@ -342,17 +353,32 @@ export class OidcService {
     });
   }
 
-  public async exchangeCodeForToken(params: {
+  async exchangeCodeForToken(params: {
     code: string;
     redirectUri: string;
     codeVerifier?: string;
     grantType: string;
     expiresIn: number;
+    clientCredentials: { clientId: string; clientSecret: string };
   }) {
-    const { code, redirectUri, codeVerifier, grantType, expiresIn } = params;
+    const {
+      code,
+      redirectUri,
+      codeVerifier,
+      grantType,
+      expiresIn,
+      clientCredentials,
+    } = params;
 
     if (grantType !== 'authorization_code') {
       throw new InputError('Unsupported grant type');
+    }
+
+    const isValidClient = await this.#verifyClientCredentials(
+      clientCredentials,
+    );
+    if (!isValidClient) {
+      throw new AuthenticationError('Invalid client credentials');
     }
 
     const authCode = await this.oidc.getAuthorizationCode({ code });
@@ -394,7 +420,7 @@ export class OidcService {
       }
 
       if (
-        !this.verifyPkce(
+        !this.#verifyPkceChallenge(
           session.codeChallenge,
           codeVerifier,
           session.codeChallengeMethod,
@@ -415,16 +441,107 @@ export class OidcService {
       },
     });
 
+    // Check if offline_access scope is requested
+    let refreshToken: string | undefined;
+    if (
+      session.scope?.includes('offline_access') &&
+      this.offlineAccess &&
+      session.clientId
+    ) {
+      refreshToken = await this.offlineAccess.issueRefreshToken({
+        userEntityRef: session.userEntityRef,
+        oidcClientId: session.clientId,
+      });
+    }
+
     return {
       accessToken: token,
       tokenType: 'Bearer',
       expiresIn: expiresIn,
       idToken: token,
       scope: session.scope || 'openid',
+      refreshToken,
     };
   }
 
-  private verifyPkce(
+  async refreshAccessToken(params: {
+    refreshToken: string;
+    clientCredentials: { clientId: string; clientSecret: string };
+  }): Promise<{
+    accessToken: string;
+    tokenType: string;
+    expiresIn: number;
+    refreshToken: string;
+  }> {
+    if (!this.offlineAccess) {
+      throw new InputError('Refresh tokens are not enabled');
+    }
+
+    const isValidClient = await this.#verifyClientCredentials(
+      params.clientCredentials,
+    );
+    if (!isValidClient) {
+      throw new AuthenticationError('Invalid client credentials');
+    }
+
+    const { accessToken, refreshToken } =
+      await this.offlineAccess.refreshAccessToken({
+        refreshToken: params.refreshToken,
+        clientId: params.clientCredentials.clientId,
+        tokenIssuer: this.tokenIssuer,
+      });
+
+    const expiresIn = readDcrTokenExpiration(this.config);
+
+    return {
+      accessToken,
+      tokenType: 'Bearer',
+      expiresIn,
+      refreshToken,
+    };
+  }
+
+  /**
+   * Revoke a refresh token if offline access is enabled
+   */
+  async revokeRefreshToken(options: {
+    token: string;
+    clientCredentials: { clientId: string; clientSecret: string };
+  }): Promise<void> {
+    if (!this.offlineAccess) {
+      return;
+    }
+
+    const { token, clientCredentials } = options;
+
+    const isValidClient = await this.#verifyClientCredentials(
+      clientCredentials,
+    );
+    if (!isValidClient) {
+      throw new AuthenticationError('Invalid client credentials');
+    }
+
+    await this.offlineAccess.revokeRefreshToken(token, {
+      clientId: clientCredentials?.clientId,
+    });
+  }
+
+  /**
+   * Verifies client credentials against the registered OIDC clients
+   */
+  async #verifyClientCredentials(clientCredentials: {
+    clientId: string;
+    clientSecret: string;
+  }): Promise<boolean> {
+    const client = await this.oidc.getClient({
+      clientId: clientCredentials.clientId,
+    });
+    return Boolean(
+      client && client.clientSecret === clientCredentials.clientSecret,
+    );
+  }
+
+  #verifyPkceChallenge(
     codeChallenge: string,
     codeVerifier: string,
     method?: string,

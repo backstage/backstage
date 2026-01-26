@@ -26,6 +26,8 @@ import {
 } from '@backstage/plugin-auth-node';
 import { catalogServiceRef } from '@backstage/plugin-catalog-node';
 import { createRouter } from './service/router';
+import { offlineSessionDatabaseRef } from './database/OfflineSessionDatabase';
+import { offlineAccessServiceRef } from './service/OfflineAccessService';
 
 /**
  * Auth plugin
@@ -68,6 +70,8 @@ export const authPlugin = createBackendPlugin({
         auth: coreServices.auth,
         httpAuth: coreServices.httpAuth,
         catalog: catalogServiceRef,
+        offlineSessionDb: offlineSessionDatabaseRef,
+        offlineAccess: offlineAccessServiceRef,
       },
       async init({
         httpRouter,
@@ -78,6 +82,8 @@ export const authPlugin = createBackendPlugin({
         auth,
         httpAuth,
         catalog,
+        offlineSessionDb,
+        offlineAccess,
       }) {
         const router = await createRouter({
           logger,
@@ -89,6 +95,8 @@ export const authPlugin = createBackendPlugin({
           providerFactories: Object.fromEntries(providers),
           ownershipResolver,
           httpAuth,
+          offlineSessionDb,
+          offlineAccess,
         });
         httpRouter.addAuthPolicy({
           path: '/',

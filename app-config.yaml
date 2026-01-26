@@ -218,6 +218,8 @@ auth:
     enabled: true
     allowedRedirectUriPatterns:
       - cursor://*
+      - http://localhost:*
+      - http://127.0.0.1:*
 
   ### Add auth.keyStore.provider to more granularly control how to store JWK data when running
   # the auth-backend.
