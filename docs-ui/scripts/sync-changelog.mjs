@@ -897,6 +897,30 @@ async function main() {
     console.log(`  - ${comp}: ${count} ${count === 1 ? 'entry' : 'entries'}`);
   });
 
+  // Warn about unknown components
+  const unknownComponents = [];
+  allEntries.forEach(entry => {
+    const fullText = entry.description;
+    const componentMatch = fullText.match(
+      /Affected components?:[ \t]*([^\n]+)/i,
+    );
+    if (componentMatch) {
+      const names = componentMatch[1].split(',').map(n => n.trim());
+      names.forEach(name => {
+        if (!mapComponentName(name, validComponents)) {
+          unknownComponents.push(name);
+        }
+      });
+    }
+  });
+
+  if (unknownComponents.length > 0) {
+    console.log('\n⚠️  Unknown components (skipped):');
+    [...new Set(unknownComponents)].forEach(name => {
+      console.log(`  - ${name}`);
+    });
+  }
+
   // Create changelogs directory if it doesn't exist
   const changelogsDir = path.join(__dirname, '../src/utils/changelogs');
   if (!fs.existsSync(changelogsDir) && !dryRun) {
