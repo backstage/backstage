@@ -25,7 +25,7 @@
     display: flex;
     align-items: flex-start;
     gap: var(--bui-space-2);
-    padding: var(--bui-space-2) var(--bui-space-3);
+    padding: var(--bui-space-3) var(--bui-space-3);
     border-radius: var(--bui-radius-3);
     border: 1px solid var(--alert-border);
     font-family: var(--bui-font-regular);
