@@ -23,7 +23,7 @@ import { mockServices } from '@backstage/backend-test-utils';
 
 const mockGitlabClient = {
   Groups: {
-    search: jest.fn(),
+    show: jest.fn(),
     create: jest.fn(),
   },
 };
@@ -44,7 +44,9 @@ describe('gitlab:group:ensureExists', () => {
   });
 
   it(`Should ${examples[0].description}`, async () => {
-    mockGitlabClient.Groups.search.mockResolvedValue([]);
+    mockGitlabClient.Groups.show.mockRejectedValue({
+      cause: { response: { status: 404 } },
+    });
     mockGitlabClient.Groups.create.mockResolvedValue({
       id: 3,
       full_path: 'group1',
@@ -82,12 +84,9 @@ describe('gitlab:group:ensureExists', () => {
   });
 
   it(`Should ${examples[1].description}`, async () => {
-    mockGitlabClient.Groups.search.mockResolvedValue([
-      {
-        id: 1,
-        full_path: 'group1',
-      },
-    ]);
+    mockGitlabClient.Groups.show
+      .mockResolvedValueOnce({ id: 1, full_path: 'group1' })
+      .mockRejectedValueOnce({ cause: { response: { status: 404 } } });
     mockGitlabClient.Groups.create.mockResolvedValue({
       id: 3,
       full_path: 'group1/group2',
@@ -127,16 +126,10 @@ describe('gitlab:group:ensureExists', () => {
   });
 
   it(`Should ${examples[2].description}`, async () => {
-    mockGitlabClient.Groups.search.mockResolvedValue([
-      {
-        id: 1,
-        full_path: 'group1',
-      },
-      {
-        id: 2,
-        full_path: 'group1/group2',
-      },
-    ]);
+    mockGitlabClient.Groups.show
+      .mockResolvedValueOnce({ id: 1, full_path: 'group1' })
+      .mockResolvedValueOnce({ id: 2, full_path: 'group1/group2' })
+      .mockRejectedValueOnce({ cause: { response: { status: 404 } } });
     mockGitlabClient.Groups.create.mockResolvedValue({
       id: 3,
       full_path: 'group1/group2/group3',
@@ -199,23 +192,17 @@ describe('gitlab:group:ensureExists', () => {
       input: yaml.parse(examples[3].example).steps[0].input,
     });
 
-    expect(mockGitlabClient.Groups.search).not.toHaveBeenCalled();
+    expect(mockGitlabClient.Groups.show).not.toHaveBeenCalled();
     expect(mockGitlabClient.Groups.create).not.toHaveBeenCalled();
 
     expect(mockContext.output).toHaveBeenCalledWith('groupId', 42);
   });
 
   it(`Should ${examples[4].description}`, async () => {
-    mockGitlabClient.Groups.search.mockResolvedValue([
-      {
-        id: 1,
-        full_path: 'group1',
-      },
-      {
-        id: 2,
-        full_path: 'group1/group2',
-      },
-    ]);
+    mockGitlabClient.Groups.show
+      .mockResolvedValueOnce({ id: 1, full_path: 'group1' })
+      .mockResolvedValueOnce({ id: 2, full_path: 'group1/group2' })
+      .mockRejectedValueOnce({ cause: { response: { status: 404 } } });
     mockGitlabClient.Groups.create.mockResolvedValue({
       id: 3,
       full_path: 'group1/group2/group3',
@@ -255,20 +242,11 @@ describe('gitlab:group:ensureExists', () => {
   });
 
   it(`Should ${examples[5].description}`, async () => {
-    mockGitlabClient.Groups.search.mockResolvedValue([
-      {
-        id: 1,
-        full_path: 'group1',
-      },
-      {
-        id: 2,
-        full_path: 'group1/group2',
-      },
-      {
-        id: 3,
-        full_path: 'group1/group2/group3',
-      },
-    ]);
+    mockGitlabClient.Groups.show
+      .mockResolvedValueOnce({ id: 1, full_path: 'group1' })
+      .mockResolvedValueOnce({ id: 2, full_path: 'group1/group2' })
+      .mockResolvedValueOnce({ id: 3, full_path: 'group1/group2/group3' })
+      .mockRejectedValueOnce({ cause: { response: { status: 404 } } });
     mockGitlabClient.Groups.create.mockResolvedValue({
       id: 4,
       full_path: 'group1/group2/group3/group4',
