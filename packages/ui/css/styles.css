@@ -94,6 +94,7 @@
     --bui-border-hover: #0003;
     --bui-border-pressed: #0006;
     --bui-border-disabled: #0000001a;
+    --bui-border-info: #7ea9d6;
     --bui-border-danger: #f87a7a;
     --bui-border-warning: #e36d05;
     --bui-border-success: #53db83;
@@ -156,6 +157,7 @@
     --bui-border-hover: #fff6;
     --bui-border-pressed: #ffffff80;
     --bui-border-disabled: #fff3;
+    --bui-border-info: #7ea9d6;
     --bui-border-danger: #f87a7a;
     --bui-border-warning: #e36d05;
     --bui-border-success: #53db83;
