@@ -26,7 +26,7 @@ import fs from 'fs-extra';
 import chalk from 'chalk';
 import { runner } from '../../../../lib/runner';
 import { oas } from '@stoplight/spectral-rulesets';
-import { truthy } from '@stoplight/spectral-functions';
+import { truthy, schema } from '@stoplight/spectral-functions';
 import { DiagnosticSeverity } from '@stoplight/types';
 import { pretty } from '@stoplight/spectral-formatters';
 import { getPathToOpenApiSpec } from '../../../../lib/openapi/helpers';
@@ -57,6 +57,63 @@ async function lint(directoryPath: string, config?: { strict: boolean }) {
           },
           severity: 'error',
         },
+        'valid-backstage-permissions': {
+          given: "$.paths..[?(@['x-backstage-permissions'])]",
+          then: {
+            field: 'x-backstage-permissions',
+            function: schema,
+            functionOptions: {
+              schema: {
+                type: 'object',
+                required: ['permission'],
+                properties: {
+                  permission: {
+                    type: 'string',
+                    description: 'The permission name to check',
+                  },
+                  validateManually: {
+                    type: 'boolean',
+                    description:
+                      'If true, skip automatic validation and let handler check permissions',
+                  },
+                  resourceRef: {
+                    type: 'object',
+                    required: ['from', 'param'],
+                    properties: {
+                      from: {
+                        type: 'string',
+                        enum: ['path', 'query'],
+                        description:
+                          'Where to extract the resource reference from',
+                      },
+                      param: {
+                        type: 'string',
+                        description: 'The parameter name to extract',
+                      },
+                    },
+                    additionalProperties: false,
+                  },
+                  onDeny: {
+                    type: 'object',
+                    properties: {
+                      statusCode: {
+                        type: 'number',
+                        description: 'HTTP status code to return on denial',
+                      },
+                      body: {
+                        description: 'Custom response body to return',
+                      },
+                    },
+                  },
+                },
+                additionalProperties: false,
+              },
+              allErrors: true,
+            },
+          },
+          severity: 'error',
+          message: 'x-backstage-permissions must follow the correct schema',
+        },
       },
       overrides: [
         {
@@ -78,18 +135,26 @@ async function lint(directoryPath: string, config?: { strict: boolean }) {
   );
   spectral.setRuleset(backstageRuleset);
 
-  // we lint our document using the ruleset we passed to the Spectral object
-  const result = await spectral.run(document);
-  const errors = result.filter(e => e.severity === DiagnosticSeverity.Error);
-  const numberOfErrors = (strict && result.length) || errors.length;
-  if (numberOfErrors > 0) {
-    console.error(
-      pretty(result, {
-        // Used to fulfill the types, but not used for prettier output.
-        failSeverity: DiagnosticSeverity.Error,
-      }),
-    );
-    throw new Error(`${numberOfErrors} error(s) found when linting your spec.`);
+  try {
+    // we lint our document using the ruleset we passed to the Spectral object
+    const result = await spectral.run(document);
+    const errors = result.filter(e => e.severity === DiagnosticSeverity.Error);
+    const numberOfErrors = (strict && result.length) || errors.length;
+    if (numberOfErrors > 0) {
+      console.error(errors);
+      console.error(
+        pretty(result, {
+          // Used to fulfill the types, but not used for prettier output.
+          failSeverity: DiagnosticSeverity.Error,
+        }),
+      );
+      throw new Error(
+        `${numberOfErrors} error(s) found when linting your spec.`,
+      );
+    }
+  } catch (error) {
+    console.error(error);
+    throw error;
   }
 }
 
@@ -97,9 +162,10 @@ export async function bulkCommand(
   paths: string[] = [],
   options: { strict?: boolean },
 ): Promise<void> {
-  const resultsList = await runner(paths, (dir: string) =>
-    lint(dir, { strict: !!options.strict }),
-  );
+  const resultsList = await runner(paths, async (dir: string) => {
+    console.log(dir);
+    await lint(dir, { strict: !!options.strict });
+  });
 
   let failed = false;
   for (const { relativeDir, resultText } of resultsList) {
