@@ -124,6 +124,61 @@ export interface AccordionTriggerProps extends HeadingProps {
   title?: string;
 }
 
+// @public
+export const Alert: ForwardRefExoticComponent<
+  AlertProps & RefAttributes<HTMLDivElement>
+>;
+
+// @public
+export const AlertDefinition: {
+  readonly styles: {
+    readonly [key: string]: string;
+  };
+  readonly classNames: {
+    readonly root: 'bui-Alert';
+    readonly contentWrapper: 'bui-AlertContentWrapper';
+    readonly content: 'bui-AlertContent';
+    readonly title: 'bui-AlertTitle';
+    readonly description: 'bui-AlertDescription';
+    readonly icon: 'bui-AlertIcon';
+    readonly spinner: 'bui-AlertSpinner';
+    readonly actions: 'bui-AlertActions';
+  };
+  readonly surface: 'container';
+  readonly propDefs: {
+    readonly status: {
+      readonly dataAttribute: true;
+      readonly default: 'info';
+    };
+    readonly loading: {
+      readonly dataAttribute: true;
+    };
+    readonly icon: {};
+    readonly customActions: {};
+    readonly title: {};
+    readonly description: {};
+    readonly surface: {};
+    readonly className: {};
+    readonly style: {};
+  };
+  readonly utilityProps: readonly ['m', 'mb', 'ml', 'mr', 'mt', 'mx', 'my'];
+};
+
+// @public (undocumented)
+export type AlertOwnProps = ContainerSurfaceProps & {
+  status?: Responsive<'info' | 'success' | 'warning' | 'danger'>;
+  icon?: boolean | ReactElement;
+  loading?: boolean;
+  customActions?: ReactNode;
+  title?: ReactNode;
+  description?: ReactNode;
+  className?: string;
+  style?: CSSProperties;
+};
+
+// @public
+export interface AlertProps extends MarginProps, AlertOwnProps {}
+
 // @public (undocumented)
 export type AlignItems = 'stretch' | 'start' | 'center' | 'end';
 
@@ -1075,6 +1130,24 @@ export interface LinkProps extends LinkProps_2 {
 }
 
 // @public (undocumented)
+export interface MarginProps {
+  // (undocumented)
+  m?: Responsive<Space>;
+  // (undocumented)
+  mb?: Responsive<Space>;
+  // (undocumented)
+  ml?: Responsive<Space>;
+  // (undocumented)
+  mr?: Responsive<Space>;
+  // (undocumented)
+  mt?: Responsive<Space>;
+  // (undocumented)
+  mx?: Responsive<Space>;
+  // (undocumented)
+  my?: Responsive<Space>;
+}
+
+// @public (undocumented)
 export const Menu: (props: MenuProps<object>) => JSX_2.Element;
 
 // @public (undocumented)
@@ -1260,6 +1333,24 @@ type Option_2 = {
   disabled?: boolean;
 };
 export { Option_2 as Option };
+
+// @public (undocumented)
+export interface PaddingProps {
+  // (undocumented)
+  p?: Responsive<Space>;
+  // (undocumented)
+  pb?: Responsive<Space>;
+  // (undocumented)
+  pl?: Responsive<Space>;
+  // (undocumented)
+  pr?: Responsive<Space>;
+  // (undocumented)
+  pt?: Responsive<Space>;
+  // (undocumented)
+  px?: Responsive<Space>;
+  // (undocumented)
+  py?: Responsive<Space>;
+}
 
 // @public (undocumented)
 export interface PagePagination extends TablePaginationProps {
@@ -1516,36 +1607,7 @@ export type Space =
   | string;
 
 // @public (undocumented)
-export interface SpaceProps {
-  // (undocumented)
-  m?: Responsive<Space>;
-  // (undocumented)
-  mb?: Responsive<Space>;
-  // (undocumented)
-  ml?: Responsive<Space>;
-  // (undocumented)
-  mr?: Responsive<Space>;
-  // (undocumented)
-  mt?: Responsive<Space>;
-  // (undocumented)
-  mx?: Responsive<Space>;
-  // (undocumented)
-  my?: Responsive<Space>;
-  // (undocumented)
-  p?: Responsive<Space>;
-  // (undocumented)
-  pb?: Responsive<Space>;
-  // (undocumented)
-  pl?: Responsive<Space>;
-  // (undocumented)
-  pr?: Responsive<Space>;
-  // (undocumented)
-  pt?: Responsive<Space>;
-  // (undocumented)
-  px?: Responsive<Space>;
-  // (undocumented)
-  py?: Responsive<Space>;
-}
+export interface SpaceProps extends MarginProps, PaddingProps {}
 
 // @public (undocumented)
 export const SubmenuTrigger: (props: SubmenuTriggerProps) => JSX_2.Element;
