@@ -329,27 +329,6 @@ async function parseListItem(
     description = description
       .replace(/\n*\*\*Affected components:\*\*[ \t]*[^\n]+/g, '')
       .trim();
-  } else {
-    // Fallback: try old format without bold markers for backwards compatibility
-    // Some older changelog entries may not have been migrated to the new format
-    const oldFormatMatch = description.match(
-      /Affected components?:\s*([^\n]+)/i,
-    );
-    if (oldFormatMatch) {
-      const componentNames = oldFormatMatch[1]
-        .split(',')
-        .map(name => name.trim())
-        .filter(Boolean);
-
-      components = componentNames
-        .map(name => mapComponentName(name, validComponents))
-        .filter(Boolean);
-
-      // Strip old format line from description
-      description = description
-        .replace(/\n*Affected components?:[ \t]*[^\n]+/i, '')
-        .trim();
-    }
   }
 
   // Extract migration notes using bold marker (standard format)
