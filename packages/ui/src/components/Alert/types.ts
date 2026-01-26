@@ -18,7 +18,7 @@ import type { ReactElement, ReactNode, CSSProperties } from 'react';
 import type {
   ContainerSurfaceProps,
   Responsive,
-  SpaceProps,
+  MarginProps,
 } from '../../types';
 
 /** @public */
@@ -38,4 +38,4 @@ export type AlertOwnProps = ContainerSurfaceProps & {
  *
  * @public
  */
-export interface AlertProps extends SpaceProps, AlertOwnProps {}
+export interface AlertProps extends MarginProps, AlertOwnProps {}

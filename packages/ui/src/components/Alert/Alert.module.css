@@ -25,7 +25,6 @@
     gap: var(--bui-space-6);
     padding: var(--bui-space-3) var(--bui-space-3);
     border-radius: var(--bui-radius-3);
-    border: 1px solid var(--alert-border);
     font-family: var(--bui-font-regular);
     font-size: var(--bui-font-size-3);
     line-height: 1.5;

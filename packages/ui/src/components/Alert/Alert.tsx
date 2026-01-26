@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-'use client';
-
 import { forwardRef, Ref, isValidElement, ReactElement } from 'react';
 import { ProgressBar } from 'react-aria-components';
 import {
@@ -107,14 +105,14 @@ export const Alert = forwardRef(
       if (icon === true) {
         switch (status) {
           case 'success':
-            return <RiCheckLine />;
+            return <RiCheckLine aria-hidden="true" />;
           case 'warning':
-            return <RiErrorWarningLine />;
+            return <RiErrorWarningLine aria-hidden="true" />;
           case 'danger':
-            return <RiAlertLine />;
+            return <RiAlertLine aria-hidden="true" />;
           case 'info':
           default:
-            return <RiInformationLine />;
+            return <RiInformationLine aria-hidden="true" />;
         }
       }
 
@@ -129,9 +127,9 @@ export const Alert = forwardRef(
         className={classes.root}
         ref={ref}
         style={{ ...style, ...utilityStyle }}
-        data-has-description={description ? 'true' : 'false'}
         {...dataAttributes}
         {...restProps}
+        data-has-description={description ? 'true' : 'false'}
       >
         <div className={classes.contentWrapper}>
           {loading ? (

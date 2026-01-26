@@ -145,12 +145,12 @@ export const CustomIcon = meta.story({
     <Flex direction="column" gap="4">
       <Alert
         status="info"
-        icon={<RiCloudLine />}
+        icon={<RiCloudLine aria-hidden="true" />}
         title="This alert uses a custom cloud icon instead of the default info icon."
       />
       <Alert
         status="success"
-        icon={<RiCloudLine />}
+        icon={<RiCloudLine aria-hidden="true" />}
         title="Custom icons work with any status variant."
       />
     </Flex>

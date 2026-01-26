@@ -92,7 +92,7 @@ export type Columns =
   | 'auto';
 
 /** @public */
-export interface SpaceProps {
+export interface MarginProps {
   m?: Responsive<Space>;
   mb?: Responsive<Space>;
   ml?: Responsive<Space>;
@@ -100,6 +100,10 @@ export interface SpaceProps {
   mt?: Responsive<Space>;
   mx?: Responsive<Space>;
   my?: Responsive<Space>;
+}
+
+/** @public */
+export interface PaddingProps {
   p?: Responsive<Space>;
   pb?: Responsive<Space>;
   pl?: Responsive<Space>;
@@ -108,6 +112,9 @@ export interface SpaceProps {
   px?: Responsive<Space>;
   py?: Responsive<Space>;
 }
+
+/** @public */
+export interface SpaceProps extends MarginProps, PaddingProps {}
 
 /** @public */
 export type TextVariants =
