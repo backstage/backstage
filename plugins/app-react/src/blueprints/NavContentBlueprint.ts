@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2026 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,7 +15,10 @@
  */
 
 import { IconComponent, RouteRef } from '@backstage/frontend-plugin-api';
-import { createExtensionBlueprint, createExtensionDataRef } from '../wiring';
+import {
+  createExtensionBlueprint,
+  createExtensionDataRef,
+} from '@backstage/frontend-plugin-api';
 
 /**
  * The props for the {@link NavContentComponent}.
@@ -25,7 +28,7 @@ import { createExtensionBlueprint, createExtensionDataRef } from '../wiring';
 export interface NavContentComponentProps {
   /**
    * The nav items available to the component. These are all the items created
-   * with the {@link NavItemBlueprint} in the app.
+   * with the {@link @backstage/frontend-plugin-api#NavItemBlueprint} in the app.
    *
    * In addition to the original properties from the nav items, these also
    * include a resolved route path as `to`, and duplicated `title` as `text` to
@@ -57,10 +60,9 @@ const componentDataRef = createExtensionDataRef<NavContentComponent>().with({
 });
 
 /**
- * Creates an extension that replaces the entire nav bar with your own component.
+ * Creates an extension that replaces the entire nav bar with your own component. This blueprint is limited to use by the app plugin.
  *
  * @public
- * @deprecated Use {@link @backstage/plugin-app-react#NavContentBlueprint} instead.
  */
 export const NavContentBlueprint = createExtensionBlueprint({
   kind: 'nav-content',

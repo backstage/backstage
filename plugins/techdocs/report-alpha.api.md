@@ -84,6 +84,7 @@ const _default: OverridableFrontendPlugin<
           {
             singleton: boolean;
             optional: boolean;
+            internal?: boolean;
           }
         >;
       };
@@ -146,6 +147,7 @@ const _default: OverridableFrontendPlugin<
           {
             singleton: false;
             optional: false;
+            internal: false;
           }
         >;
         emptyState: ExtensionInput<
@@ -159,6 +161,7 @@ const _default: OverridableFrontendPlugin<
           {
             singleton: true;
             optional: true;
+            internal: false;
           }
         >;
       };
@@ -290,6 +293,7 @@ const _default: OverridableFrontendPlugin<
           {
             singleton: false;
             optional: false;
+            internal: false;
           }
         >;
       };

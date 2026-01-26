@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2026 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,15 +15,19 @@
  */
 
 import { ReactNode } from 'react';
-import { createExtensionBlueprint, createExtensionDataRef } from '../wiring';
+import {
+  createExtensionBlueprint,
+  createExtensionDataRef,
+} from '@backstage/frontend-plugin-api';
 
 const componentDataRef = createExtensionDataRef<
   (props: { children: ReactNode }) => JSX.Element | null
 >().with({ id: 'app.router.wrapper' });
 
 /**
+ * Creates an extension that replaces the router component. This blueprint is limited to use by the app plugin.
+ *
  * @public
- * @deprecated Use {@link @backstage/plugin-app-react#RouterBlueprint} instead.
  */
 export const RouterBlueprint = createExtensionBlueprint({
   kind: 'app-router-component',

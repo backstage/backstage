@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2026 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,8 @@ import {
   coreExtensionData,
   createExtension,
   createExtensionInput,
-} from '../wiring';
+  createFrontendModule,
+} from '@backstage/frontend-plugin-api';
 import { renderTestApp } from '@backstage/frontend-test-utils';
 
 describe('AppRootWrapperBlueprint', () => {
@@ -63,7 +64,11 @@ describe('AppRootWrapperBlueprint', () => {
       },
     });
 
-    renderTestApp({ extensions: [extension] });
+    renderTestApp({
+      features: [
+        createFrontendModule({ pluginId: 'app', extensions: [extension] }),
+      ],
+    });
 
     await waitFor(() => expect(screen.getByText('Hello')).toBeInTheDocument());
   });
@@ -95,20 +100,28 @@ describe('AppRootWrapperBlueprint', () => {
     });
 
     renderTestApp({
-      extensions: [
-        extension,
-        createExtension({
-          name: 'test-child',
-          attachTo: { id: 'app-root-wrapper:test', input: 'children' },
-          output: [coreExtensionData.reactElement],
-          factory: () => [coreExtensionData.reactElement(<div>Its Me</div>)],
+      extensions: [],
+      features: [
+        createFrontendModule({
+          pluginId: 'app',
+          extensions: [
+            extension,
+            createExtension({
+              name: 'test-child',
+              attachTo: extension.inputs.children,
+              output: [coreExtensionData.reactElement],
+              factory: () => [
+                coreExtensionData.reactElement(<div>Its Me</div>),
+              ],
+            }),
+          ],
         }),
       ],
       config: {
         app: {
           extensions: [
             {
-              'app-root-wrapper:test': { config: { name: 'Robin' } },
+              'app-root-wrapper:app': { config: { name: 'Robin' } },
             },
           ],
         },

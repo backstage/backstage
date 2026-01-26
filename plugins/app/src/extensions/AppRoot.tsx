@@ -22,9 +22,6 @@ import {
   JSX,
 } from 'react';
 import {
-  AppRootWrapperBlueprint,
-  RouterBlueprint,
-  SignInPageBlueprint,
   coreExtensionData,
   discoveryApiRef,
   fetchApiRef,
@@ -33,6 +30,11 @@ import {
   createExtensionInput,
   routeResolutionApiRef,
 } from '@backstage/frontend-plugin-api';
+import {
+  AppRootWrapperBlueprint,
+  RouterBlueprint,
+  SignInPageBlueprint,
+} from '@backstage/plugin-app-react';
 import {
   DiscoveryApi,
   ErrorApi,
@@ -59,37 +61,26 @@ export const AppRoot = createExtension({
     router: createExtensionInput([RouterBlueprint.dataRefs.component], {
       singleton: true,
       optional: true,
+      internal: true,
     }),
     signInPage: createExtensionInput([SignInPageBlueprint.dataRefs.component], {
       singleton: true,
       optional: true,
+      internal: true,
     }),
     children: createExtensionInput([coreExtensionData.reactElement], {
       singleton: true,
     }),
     elements: createExtensionInput([coreExtensionData.reactElement]),
-    wrappers: createExtensionInput([
-      AppRootWrapperBlueprint.dataRefs.component,
-    ]),
+    wrappers: createExtensionInput(
+      [AppRootWrapperBlueprint.dataRefs.component],
+      {
+        internal: true,
+      },
+    ),
   },
   output: [coreExtensionData.reactElement],
   factory({ inputs, apis }) {
-    if (inputs.router && inputs.router.node.spec.plugin?.id !== 'app') {
-      // eslint-disable-next-line no-console
-      console.warn(
-        `DEPRECATION WARNING: Router should only be installed as an extension in the app plugin. ` +
-          `You can either use appPlugin.override(), or a module for the app plugin. The following extension will be ignored in the future: ${inputs.router.node.spec.id}`,
-      );
-    }
-
-    if (inputs.signInPage && inputs.signInPage.node.spec.plugin?.id !== 'app') {
-      // eslint-disable-next-line no-console
-      console.warn(
-        `DEPRECATION WARNING: SignInPage should only be installed as an extension in the app plugin. ` +
-          `You can either use appPlugin.override(), or a module for the app plugin. The following extension will be ignored in the future: ${inputs.signInPage.node.spec.id}`,
-      );
-    }
-
     if (isProtectedApp()) {
       const identityApi = apis.get(identityApiRef);
       if (!identityApi) {
@@ -117,16 +108,8 @@ export const AppRoot = createExtension({
 
     for (const wrapper of inputs.wrappers) {
       const Component = wrapper.get(AppRootWrapperBlueprint.dataRefs.component);
-      const pluginId = wrapper.node.spec.plugin.id;
       if (Component) {
         content = <Component>{content}</Component>;
-        if (pluginId !== 'app') {
-          // eslint-disable-next-line no-console
-          console.warn(
-            `DEPRECATION WARNING: AppRootWrappers should only be installed as an extension in the app plugin. ` +
-              `You can either use appPlugin.override(), or a module for the app plugin. The following extension will be ignored in the future: ${wrapper.node.spec.id}`,
-          );
-        }
       }
     }
 

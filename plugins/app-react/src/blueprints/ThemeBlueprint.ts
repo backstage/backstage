@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2026 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,20 @@
  * limitations under the License.
  */
 
-import { AppTheme } from '../apis/definitions/AppThemeApi';
-import { createExtensionBlueprint, createExtensionDataRef } from '../wiring';
+import { AppTheme } from '@backstage/frontend-plugin-api';
+import {
+  createExtensionBlueprint,
+  createExtensionDataRef,
+} from '@backstage/frontend-plugin-api';
 
 const themeDataRef = createExtensionDataRef<AppTheme>().with({
   id: 'core.theme.theme',
 });
 
 /**
- * Creates an extension that adds/replaces an app theme.
+ * Creates an extension that adds/replaces an app theme. This blueprint is limited to use by the app plugin.
  *
  * @public
- * @deprecated Use {@link @backstage/plugin-app-react#ThemeBlueprint} instead.
  */
 export const ThemeBlueprint = createExtensionBlueprint({
   kind: 'theme',

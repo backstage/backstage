@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 The Backstage Authors
+ * Copyright 2026 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { SwappableComponentRef } from '../components';
+
+import { SwappableComponentRef } from '@backstage/frontend-plugin-api';
 import {
   createExtensionBlueprint,
   createExtensionBlueprintParams,
   createExtensionDataRef,
-} from '../wiring';
+} from '@backstage/frontend-plugin-api';
 
 export const componentDataRef = createExtensionDataRef<{
   ref: SwappableComponentRef;
@@ -28,10 +29,9 @@ export const componentDataRef = createExtensionDataRef<{
 }>().with({ id: 'core.swappableComponent' });
 
 /**
- * Blueprint for creating swappable components from a SwappableComponentRef and a loader
+ * Blueprint for creating swappable components from a SwappableComponentRef and a loader. This blueprint is limited to use by the app plugin.
  *
  * @public
- * @deprecated Use {@link @backstage/plugin-app-react#SwappableComponentBlueprint} instead.
  */
 export const SwappableComponentBlueprint = createExtensionBlueprint({
   kind: 'component',

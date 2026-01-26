@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2026 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,16 +14,20 @@
  * limitations under the License.
  */
 
-import { IconComponent } from '../icons';
-import { createExtensionBlueprint, createExtensionDataRef } from '../wiring';
+import { IconComponent } from '@backstage/frontend-plugin-api';
+import {
+  createExtensionBlueprint,
+  createExtensionDataRef,
+} from '@backstage/frontend-plugin-api';
 
 const iconsDataRef = createExtensionDataRef<{
   [key in string]: IconComponent;
 }>().with({ id: 'core.icons' });
 
 /**
+ * Creates an extension that adds icon bundles to your app. This blueprint is limited to use by the app plugin.
+ *
  * @public
- * @deprecated Use {@link @backstage/plugin-app-react#IconBundleBlueprint} instead.
  */
 export const IconBundleBlueprint = createExtensionBlueprint({
   kind: 'icon-bundle',

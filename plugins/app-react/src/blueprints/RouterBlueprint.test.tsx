@@ -20,7 +20,7 @@ import {
   coreExtensionData,
   createExtension,
   createExtensionInput,
-} from '../wiring';
+} from '@backstage/frontend-plugin-api';
 import { createExtensionTester } from '@backstage/frontend-test-utils';
 
 describe('RouterBlueprint', () => {
