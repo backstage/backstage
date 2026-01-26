@@ -36,9 +36,20 @@ import { AlertDefinition } from './definition';
  * icon selection based on status when the icon prop is set to true.
  *
  * @example
- * Basic usage:
+ * Basic usage with title only:
  * ```tsx
- * <Alert status="info">This is an informational message</Alert>
+ * <Alert status="info" title="This is an informational message" />
+ * ```
+ *
+ * @example
+ * With title and description:
+ * ```tsx
+ * <Alert
+ *   status="warning"
+ *   icon={true}
+ *   title="Pending Review"
+ *   description="Please review the following items before proceeding."
+ * />
  * ```
  *
  * @example
@@ -47,16 +58,16 @@ import { AlertDefinition } from './definition';
  * <Alert
  *   status="success"
  *   icon={true}
+ *   title="Operation completed"
+ *   description="Your changes have been saved successfully."
  *   loading={isProcessing}
  *   customActions={
  *     <>
  *       <Button size="small" variant="tertiary">Dismiss</Button>
- *       <Button size="small" variant="primary">Action</Button>
+ *       <Button size="small" variant="primary">View</Button>
  *     </>
  *   }
- * >
- *   Operation completed successfully
- * </Alert>
+ * />
  * ```
  *
  * @public
@@ -73,8 +84,9 @@ export const Alert = forwardRef(
       icon,
       loading,
       customActions,
+      title,
+      description,
       style,
-      surfaceChildren: children,
     } = ownProps;
 
     // Determine which icon to render
@@ -118,19 +130,26 @@ export const Alert = forwardRef(
         {...dataAttributes}
         {...restProps}
       >
-        {statusIcon && <div className={classes.icon}>{statusIcon}</div>}
-
-        {loading && (
-          <ProgressBar
-            aria-label="Loading"
-            isIndeterminate
-            className={classes.spinner}
-          >
-            <RiLoader4Line aria-hidden="true" />
-          </ProgressBar>
+        {loading ? (
+          <div className={classes.icon}>
+            <ProgressBar
+              aria-label="Loading"
+              isIndeterminate
+              className={classes.spinner}
+            >
+              <RiLoader4Line aria-hidden="true" />
+            </ProgressBar>
+          </div>
+        ) : (
+          statusIcon && <div className={classes.icon}>{statusIcon}</div>
         )}
 
-        <div className={classes.content}>{children}</div>
+        <div className={classes.content}>
+          {title && <div className={classes.title}>{title}</div>}
+          {description && (
+            <div className={classes.description}>{description}</div>
+          )}
+        </div>
 
         {customActions && (
           <div className={classes.actions}>{customActions}</div>

@@ -27,7 +27,8 @@ export type AlertOwnProps = ContainerSurfaceProps & {
   icon?: boolean | ReactElement;
   loading?: boolean;
   customActions?: ReactNode;
-  children?: ReactNode;
+  title?: ReactNode;
+  description?: ReactNode;
   className?: string;
   style?: CSSProperties;
 };

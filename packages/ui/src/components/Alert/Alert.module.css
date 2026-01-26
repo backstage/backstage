@@ -18,35 +18,28 @@
 
 @layer components {
   .bui-Alert {
-    --loading-duration: 200ms;
     --alert-bg: var(--bui-bg-surface-1);
     --alert-fg: var(--bui-fg-primary);
     --alert-border: var(--bui-border);
 
-    position: relative;
     display: flex;
     align-items: flex-start;
-    gap: var(--bui-space-3);
-    padding: var(--bui-space-3) var(--bui-space-4);
+    gap: var(--bui-space-2);
+    padding: var(--bui-space-2) var(--bui-space-3);
     border-radius: var(--bui-radius-3);
     border: 1px solid var(--alert-border);
     font-family: var(--bui-font-regular);
     font-size: var(--bui-font-size-3);
     line-height: 1.5;
-    transition: opacity var(--loading-duration) ease-out;
 
     /* Apply variables */
     background-color: var(--alert-bg);
     color: var(--alert-fg);
-
-    &[data-loading='true'] {
-      opacity: 0.7;
-    }
   }
 
   .bui-Alert[data-status='info'] {
-    --alert-bg: var(--bui-bg-surface-1);
-    --alert-fg: var(--bui-fg-primary);
+    --alert-bg: var(--bui-bg-info);
+    --alert-fg: var(--bui-fg-info);
     --alert-border: var(--bui-border-info);
   }
 
@@ -74,15 +67,10 @@
     align-items: center;
     justify-content: center;
     margin-top: 0.125rem;
-    transition: opacity var(--loading-duration) ease-out;
 
     svg {
-      width: 1.25rem;
-      height: 1.25rem;
-    }
-
-    .bui-Alert[data-loading='true'] & {
-      opacity: 0;
+      width: 1rem;
+      height: 1rem;
     }
   }
 
@@ -92,21 +80,22 @@
     word-wrap: break-word;
   }
 
-  .bui-AlertSpinner {
-    position: absolute;
-    top: var(--bui-space-3);
-    left: var(--bui-space-4);
-    display: flex;
-    opacity: 0;
-    transition: opacity var(--loading-duration) ease-in;
+  .bui-AlertTitle {
+    font-weight: var(--bui-font-weight-bold);
+    font-size: var(--bui-font-size-3);
+  }
 
-    .bui-Alert[data-loading='true'] & {
-      opacity: 1;
-    }
+  .bui-AlertDescription {
+    font-size: var(--bui-font-size-2);
+    opacity: 0.9;
+  }
+
+  .bui-AlertSpinner {
+    display: flex;
 
     & svg {
-      width: 1.25rem;
-      height: 1.25rem;
+      width: 1rem;
+      height: 1rem;
       animation: bui-spin 1s linear infinite;
     }
   }
@@ -120,18 +109,6 @@
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .bui-Alert {
-      transition-duration: 50ms;
-    }
-
-    .bui-AlertIcon {
-      transition-duration: 50ms;
-    }
-
-    .bui-AlertSpinner {
-      transition-duration: 50ms;
-    }
-
     .bui-AlertSpinner svg {
       animation: none;
     }
