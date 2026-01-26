@@ -15,3 +15,5 @@
  */
 
 import '@testing-library/jest-dom';
+
+globalThis.BroadcastChannel = require('worker_threads').BroadcastChannel;

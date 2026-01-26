@@ -224,7 +224,8 @@ export type AppOptions = {
       >;
     }
   >;
-  featureFlags?: (FeatureFlag & Omit<FeatureFlag, 'pluginId'>)[];
+  featureFlags?: (Omit<FeatureFlag, 'pluginId' | 'persisted'> &
+    Partial<Pick<FeatureFlag, 'pluginId' | 'persisted'>>)[];
   components: AppComponents;
   themes: (Partial<AppTheme> & Omit<AppTheme, 'theme'>)[];
   configLoader?: AppConfigLoader;
@@ -492,14 +493,21 @@ export class GoogleAuth {
 
 // @public
 export class LocalStorageFeatureFlags implements FeatureFlagsApi {
+  constructor();
+  // (undocumented)
+  getFlag(name: string): Promise<boolean>;
   // (undocumented)
   getRegisteredFlags(): FeatureFlag[];
   // (undocumented)
   isActive(name: string): boolean;
   // (undocumented)
+  observe$(name: string): Observable<boolean>;
+  // (undocumented)
   registerFlag(flag: FeatureFlag): void;
   // (undocumented)
   save(options: FeatureFlagsSaveOptions): void;
+  // (undocumented)
+  setFlag(name: string, active: boolean): Promise<void>;
 }
 
 // @public
@@ -531,6 +539,27 @@ export class MicrosoftAuth {
 export class MultipleAnalyticsApi implements AnalyticsApi {
   captureEvent(event: AnalyticsEvent): void;
   static fromApis(actualApis: AnalyticsApi[]): MultipleAnalyticsApi;
+}
+
+// @public
+export class MultiStorageFeatureFlags implements FeatureFlagsApi {
+  constructor({ storageApi }: { storageApi: StorageApi });
+  // (undocumented)
+  getFlag(name: string): Promise<boolean>;
+  // (undocumented)
+  getRegisteredFlags(): FeatureFlag[];
+  // (undocumented)
+  initialize(): void;
+  // (undocumented)
+  isActive(name: string): boolean;
+  // (undocumented)
+  observe$(name: string): Observable<boolean>;
+  // (undocumented)
+  registerFlag(flag: FeatureFlag): void;
+  // (undocumented)
+  save(options: FeatureFlagsSaveOptions): void;
+  // (undocumented)
+  setFlag(name: string, active: boolean): Promise<void>;
 }
 
 // @public

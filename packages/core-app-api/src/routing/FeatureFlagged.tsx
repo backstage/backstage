@@ -15,9 +15,8 @@
  */
 
 import {
-  featureFlagsApiRef,
-  useApi,
   attachComponentData,
+  useFeatureFlag,
 } from '@backstage/core-plugin-api';
 import { ReactNode } from 'react';
 
@@ -39,11 +38,17 @@ export type FeatureFlaggedProps = { children: ReactNode } & (
  */
 export const FeatureFlagged = (props: FeatureFlaggedProps) => {
   const { children } = props;
-  const featureFlagApi = useApi(featureFlagsApiRef);
-  const isEnabled =
-    'with' in props
-      ? featureFlagApi.isActive(props.with)
-      : !featureFlagApi.isActive(props.without);
+
+  const flagName = 'with' in props ? props.with : props.without;
+
+  const enabled = useFeatureFlag(flagName, { strictPresence: true });
+
+  if (typeof enabled === 'undefined') {
+    // Flag is not yet settled
+    return <>{null}</>;
+  }
+
+  const isEnabled = 'with' in props ? enabled : !enabled;
   return <>{isEnabled ? children : null}</>;
 };
 

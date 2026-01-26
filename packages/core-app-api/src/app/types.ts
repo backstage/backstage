@@ -220,7 +220,8 @@ export type AppOptions = {
   /**
    * Application level feature flags.
    */
-  featureFlags?: (FeatureFlag & Omit<FeatureFlag, 'pluginId'>)[];
+  featureFlags?: (Omit<FeatureFlag, 'pluginId' | 'persisted'> &
+    Partial<Pick<FeatureFlag, 'pluginId' | 'persisted'>>)[];
 
   /**
    * Supply components to the app to override the default ones.

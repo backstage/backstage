@@ -3930,6 +3930,7 @@ __metadata:
     react: "npm:^18.0.2"
     react-dom: "npm:^18.0.2"
     react-router-dom: "npm:^6.3.0"
+    react-use: "npm:^17.2.4"
     zod: "npm:^3.22.4"
     zod-to-json-schema: "npm:^3.25.1"
   peerDependencies:
@@ -7764,7 +7765,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@backstage/plugin-user-settings-backend@workspace:plugins/user-settings-backend":
+"@backstage/plugin-user-settings-backend@workspace:^, @backstage/plugin-user-settings-backend@workspace:plugins/user-settings-backend":
   version: 0.0.0-use.local
   resolution: "@backstage/plugin-user-settings-backend@workspace:plugins/user-settings-backend"
   dependencies:
@@ -30864,6 +30865,7 @@ __metadata:
     "@backstage/plugin-search-backend-node": "workspace:^"
     "@backstage/plugin-signals-backend": "workspace:^"
     "@backstage/plugin-techdocs-backend": "workspace:^"
+    "@backstage/plugin-user-settings-backend": "workspace:^"
     "@opentelemetry/auto-instrumentations-node": "npm:^0.67.0"
     "@opentelemetry/exporter-prometheus": "npm:^0.208.0"
     "@opentelemetry/sdk-node": "npm:^0.208.0"

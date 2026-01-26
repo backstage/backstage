@@ -14,41 +14,69 @@
  * limitations under the License.
  */
 
+import { useCallback } from 'react';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemText from '@material-ui/core/ListItemText';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import Switch from '@material-ui/core/Switch';
 import Tooltip from '@material-ui/core/Tooltip';
+import Typography from '@material-ui/core/Typography';
 import { FeatureFlag } from '@backstage/core-plugin-api';
-import { useTranslationRef } from '@backstage/frontend-plugin-api';
-import { userSettingsTranslationRef } from '../../translation';
+import {
+  featureFlagsApiRef,
+  useApi,
+  useFeatureFlag,
+  useTranslationRef,
+} from '@backstage/frontend-plugin-api';
 import { TranslationFunction } from '@backstage/core-plugin-api/alpha';
+import { userSettingsTranslationRef } from '../../translation';
 
 type Props = {
   flag: FeatureFlag;
-  enabled: boolean;
-  toggleHandler: Function;
+  initiallyEnabled: boolean;
 };
 
 const getSecondaryText = (
   flag: FeatureFlag,
   t: TranslationFunction<typeof userSettingsTranslationRef.T>,
 ) => {
+  const pluginText = (
+    <Typography variant="caption" color="textSecondary">
+      {flag.pluginId
+        ? t('featureFlags.flagItem.subtitle.registeredInPlugin', {
+            pluginId: flag.pluginId,
+          })
+        : t('featureFlags.flagItem.subtitle.registeredInApplication')}
+    </Typography>
+  );
+
   if (flag.description) {
-    return flag.description;
+    return (
+      <>
+        <Typography variant="body2" color="textSecondary">
+          {flag.description}
+        </Typography>
+        {pluginText}
+      </>
+    );
   }
-  return flag.pluginId
-    ? t('featureFlags.flagItem.subtitle.registeredInPlugin', {
-        pluginId: flag.pluginId,
-      })
-    : t('featureFlags.flagItem.subtitle.registeredInApplication');
+
+  return pluginText;
 };
 
-export const FlagItem = ({ flag, enabled, toggleHandler }: Props) => {
+export const FlagItem = ({ flag, initiallyEnabled }: Props) => {
   const { t } = useTranslationRef(userSettingsTranslationRef);
+  const featureFlagsApi = useApi(featureFlagsApiRef);
+
+  const enabled =
+    useFeatureFlag(flag.name, { strictPresence: true }) ?? initiallyEnabled;
+
+  const toggleHandler = useCallback(() => {
+    featureFlagsApi.setFlag(flag.name, !enabled);
+  }, [featureFlagsApi, enabled, flag.name]);
 
   return (
-    <ListItem divider button onClick={() => toggleHandler(flag.name)}>
+    <ListItem divider button onClick={toggleHandler}>
       <ListItemIcon>
         <Tooltip
           placement="top"

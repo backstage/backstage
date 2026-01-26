@@ -47,6 +47,7 @@
     "@backstage/errors": "workspace:^",
     "@backstage/types": "workspace:^",
     "@backstage/version-bridge": "workspace:^",
+    "react-use": "^17.2.4",
     "zod": "^3.22.4",
     "zod-to-json-schema": "^3.25.1"
   },

@@ -19,10 +19,17 @@ import { createPlugin } from '@backstage/core-plugin-api';
 
 export const examplePlugin = createPlugin({
   // ...
-  featureFlags: [{ name: 'show-example-feature' }],
+  featureFlags: [
+    {
+      name: 'show-example-feature',
+      persisted: true, // Optional
+    },
+  ],
   // ...
 });
 ```
+
+If `persisted` is left out (or false), the feature flag will be stored in the browser for the user. If true, it will be stored in the StorageApi, which may use the backend for storage if implemented using the UserStorage plugin. It will then be persisted for any browser the user is using.
 
 ### In the application
 
@@ -73,11 +80,19 @@ import { FeatureFlagged } from '@backstage/core-app-api';
 
 ## Evaluating Feature Flag State
 
-It is also possible to query a feature flag using the [FeatureFlags Api](https://backstage.io/docs/reference/core-plugin-api.featureflagsapi).
+It is also possible to query a feature flag using either the hook `useFeatureFlag` or the [FeatureFlags Api](https://backstage.io/docs/reference/core-plugin-api.featureflagsapi).
 
 ```ts
-import { useApi, featureFlagsApiRef } from '@backstage/core-plugin-api';
+import { useFeatureFlag } from '@backstage/frontend-plugin-api';
+
+const isOn = useFeatureFlag('show-example-feature');
+```
+
+or
+
+```ts
+import { useApi, featureFlagsApiRef } from '@backstage/frontend-plugin-api';
 
 const featureFlagsApi = useApi(featureFlagsApiRef);
-const isOn = featureFlagsApi.isActive('show-example-feature');
+const isOn = await featureFlagsApi.getFlag('show-example-feature');
 ```
