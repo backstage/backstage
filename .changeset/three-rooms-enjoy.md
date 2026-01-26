@@ -2,4 +2,4 @@
 '@backstage/plugin-search': minor
 ---
 
-Set the default search type to `All` instead of `Software Catalog` in the search page.
+Added support for configuring the default search type in the search page via the `search.defaultType` option in `app-config.yaml`. This applies to both the legacy and new frontend systems. If not set, the default is empty, which means searching for "all" types.

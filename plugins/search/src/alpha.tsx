@@ -39,6 +39,7 @@ import {
   createExtensionInput,
   PageBlueprint,
   NavItemBlueprint,
+  configApiRef,
 } from '@backstage/frontend-plugin-api';
 
 import {
@@ -139,6 +140,7 @@ export const searchPage = PageBlueprint.makeWithOverrides({
           const { isMobile } = useSidebarPinState();
           const { types } = useSearch();
           const catalogApi = useApi(catalogApiRef);
+          const configApi = useApi(configApiRef);
 
           return (
             <Page themeId="home">
@@ -152,6 +154,9 @@ export const searchPage = PageBlueprint.makeWithOverrides({
                     <Grid item xs={3}>
                       <SearchType.Accordion
                         name="Result Type"
+                        defaultValue={configApi.getOptionalString(
+                          'search.defaultType',
+                        )}
                         showCounts
                         types={[
                           {
