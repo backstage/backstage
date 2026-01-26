@@ -35,6 +35,11 @@
     /* Apply variables */
     background-color: var(--alert-bg);
     color: var(--alert-fg);
+
+    /* Center align when there's no description */
+    &[data-has-description='false'] {
+      align-items: center;
+    }
   }
 
   .bui-Alert[data-status='info'] {
@@ -66,11 +71,15 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-top: 0.125rem;
 
     svg {
       width: 1rem;
       height: 1rem;
+    }
+
+    /* Add slight top margin when there's a description for better alignment */
+    .bui-Alert[data-has-description='true'] & {
+      margin-top: 0.125rem;
     }
   }
 

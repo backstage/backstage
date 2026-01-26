@@ -127,6 +127,7 @@ export const Alert = forwardRef(
         className={classes.root}
         ref={ref}
         style={{ ...style, ...utilityStyle }}
+        data-has-description={description ? 'true' : 'false'}
         {...dataAttributes}
         {...restProps}
       >
