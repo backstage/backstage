@@ -177,7 +177,7 @@ export type AlertOwnProps = ContainerSurfaceProps & {
 };
 
 // @public
-export interface AlertProps extends SpaceProps, AlertOwnProps {}
+export interface AlertProps extends MarginProps, AlertOwnProps {}
 
 // @public (undocumented)
 export type AlignItems = 'stretch' | 'start' | 'center' | 'end';
@@ -1130,6 +1130,24 @@ export interface LinkProps extends LinkProps_2 {
 }
 
 // @public (undocumented)
+export interface MarginProps {
+  // (undocumented)
+  m?: Responsive<Space>;
+  // (undocumented)
+  mb?: Responsive<Space>;
+  // (undocumented)
+  ml?: Responsive<Space>;
+  // (undocumented)
+  mr?: Responsive<Space>;
+  // (undocumented)
+  mt?: Responsive<Space>;
+  // (undocumented)
+  mx?: Responsive<Space>;
+  // (undocumented)
+  my?: Responsive<Space>;
+}
+
+// @public (undocumented)
 export const Menu: (props: MenuProps<object>) => JSX_2.Element;
 
 // @public (undocumented)
@@ -1315,6 +1333,24 @@ type Option_2 = {
   disabled?: boolean;
 };
 export { Option_2 as Option };
+
+// @public (undocumented)
+export interface PaddingProps {
+  // (undocumented)
+  p?: Responsive<Space>;
+  // (undocumented)
+  pb?: Responsive<Space>;
+  // (undocumented)
+  pl?: Responsive<Space>;
+  // (undocumented)
+  pr?: Responsive<Space>;
+  // (undocumented)
+  pt?: Responsive<Space>;
+  // (undocumented)
+  px?: Responsive<Space>;
+  // (undocumented)
+  py?: Responsive<Space>;
+}
 
 // @public (undocumented)
 export interface PagePagination extends TablePaginationProps {
@@ -1571,36 +1607,7 @@ export type Space =
   | string;
 
 // @public (undocumented)
-export interface SpaceProps {
-  // (undocumented)
-  m?: Responsive<Space>;
-  // (undocumented)
-  mb?: Responsive<Space>;
-  // (undocumented)
-  ml?: Responsive<Space>;
-  // (undocumented)
-  mr?: Responsive<Space>;
-  // (undocumented)
-  mt?: Responsive<Space>;
-  // (undocumented)
-  mx?: Responsive<Space>;
-  // (undocumented)
-  my?: Responsive<Space>;
-  // (undocumented)
-  p?: Responsive<Space>;
-  // (undocumented)
-  pb?: Responsive<Space>;
-  // (undocumented)
-  pl?: Responsive<Space>;
-  // (undocumented)
-  pr?: Responsive<Space>;
-  // (undocumented)
-  pt?: Responsive<Space>;
-  // (undocumented)
-  px?: Responsive<Space>;
-  // (undocumented)
-  py?: Responsive<Space>;
-}
+export interface SpaceProps extends MarginProps, PaddingProps {}
 
 // @public (undocumented)
 export const SubmenuTrigger: (props: SubmenuTriggerProps) => JSX_2.Element;
