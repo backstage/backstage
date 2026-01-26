@@ -251,6 +251,7 @@ jobs:
 
       - name: create missing generated file
         run: |
+          mkdir -p docs/reference
           cat > docs/reference/index.md <<EOF
           ---
           id: 'index'
