@@ -21,13 +21,15 @@
     --loading-duration: 200ms;
     --alert-bg: var(--bui-bg-surface-1);
     --alert-fg: var(--bui-fg-primary);
+    --alert-border: var(--bui-border);
 
     position: relative;
     display: flex;
     align-items: flex-start;
     gap: var(--bui-space-3);
     padding: var(--bui-space-3) var(--bui-space-4);
-    border-radius: var(--bui-radius-2);
+    border-radius: var(--bui-radius-3);
+    border: 1px solid var(--alert-border);
     font-family: var(--bui-font-regular);
     font-size: var(--bui-font-size-3);
     line-height: 1.5;
@@ -45,21 +47,25 @@
   .bui-Alert[data-status='info'] {
     --alert-bg: var(--bui-bg-surface-1);
     --alert-fg: var(--bui-fg-primary);
+    --alert-border: var(--bui-border-info);
   }
 
   .bui-Alert[data-status='success'] {
     --alert-bg: var(--bui-bg-success);
     --alert-fg: var(--bui-fg-success);
+    --alert-border: var(--bui-border-success);
   }
 
   .bui-Alert[data-status='warning'] {
     --alert-bg: var(--bui-bg-warning);
     --alert-fg: var(--bui-fg-warning);
+    --alert-border: var(--bui-border-warning);
   }
 
   .bui-Alert[data-status='danger'] {
     --alert-bg: var(--bui-bg-danger);
     --alert-fg: var(--bui-fg-danger);
+    --alert-border: var(--bui-border-danger);
   }
 
   .bui-AlertIcon {

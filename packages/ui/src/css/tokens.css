@@ -137,6 +137,7 @@
     --bui-border-hover: rgba(0, 0, 0, 0.2);
     --bui-border-pressed: rgba(0, 0, 0, 0.4);
     --bui-border-disabled: rgba(0, 0, 0, 0.1);
+    --bui-border-info: #7ea9d6;
     --bui-border-danger: #f87a7a;
     --bui-border-warning: #e36d05;
     --bui-border-success: #53db83;
@@ -222,6 +223,7 @@
     --bui-border-hover: rgba(255, 255, 255, 0.4);
     --bui-border-pressed: rgba(255, 255, 255, 0.5);
     --bui-border-disabled: rgba(255, 255, 255, 0.2);
+    --bui-border-info: #7ea9d6;
     --bui-border-danger: #f87a7a;
     --bui-border-warning: #e36d05;
     --bui-border-success: #53db83;
