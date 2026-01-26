@@ -244,10 +244,23 @@ jobs:
           name: stable-openapi-docs
           path: docs
 
-      - name: grab lastest releases docs
+      - name: grab latest releases docs
         run: |
           git fetch origin master --depth 1
           git checkout FETCH_HEAD -- docs/releases
+
+      - name: create missing generated file
+        run: |
+          cat > docs/reference/index.md <<EOF
+          ---
+          id: 'index'
+          title: 'Package Index'
+          description: 'Index of all Backstage Packages'
+          ---
+
+          Please use [the new API documentation](https://backstage.io/api/stable) for more information.
+
+          EOF
 
       - name: generate stable docs
         run: yarn docusaurus docs:version stable
