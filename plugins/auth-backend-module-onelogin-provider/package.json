@@ -39,7 +39,7 @@
     "express": "^4.22.0",
     "passport": "^0.7.0",
     "passport-onelogin-oauth": "^0.0.1",
-    "zod": "^3.22.4"
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@backstage/backend-defaults": "workspace:^",

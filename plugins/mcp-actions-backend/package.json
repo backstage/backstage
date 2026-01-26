@@ -44,7 +44,7 @@
     "@modelcontextprotocol/sdk": "^1.25.2",
     "express": "^4.22.0",
     "express-promise-router": "^4.1.0",
-    "zod": "^3.22.4"
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@backstage/backend-test-utils": "workspace:^",
