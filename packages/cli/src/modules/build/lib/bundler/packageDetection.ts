@@ -32,10 +32,7 @@ interface PackageDetectionConfig {
 function readPackageDetectionConfig(
   config: Config,
 ): PackageDetectionConfig | undefined {
-  // The experimental key is deprecated, but supported still for backwards compatibility
-  const packages =
-    config.getOptional('app.packages') ??
-    config.getOptional('app.experimental.packages');
+  const packages = config.getOptional('app.packages');
   if (packages === undefined || packages === null) {
     return undefined;
   }
