@@ -16,32 +16,24 @@
 
 import {
   ApiBlueprint,
+  createApiRef,
   createExtensionInput,
 } from '@backstage/frontend-plugin-api';
-import { formFieldsApiRef } from './ref';
-import { FormField, ScaffolderFormFieldsApi } from './types';
-import { FormFieldBlueprint } from '../blueprints';
+import { FormFieldBlueprint } from '@backstage/plugin-scaffolder-react/alpha';
 import { OpaqueFormField } from '@internal/scaffolder';
 
-class DefaultScaffolderFormFieldsApi implements ScaffolderFormFieldsApi {
-  private readonly formFieldLoaders: Array<() => Promise<FormField>>;
-
-  constructor(formFieldLoaders: Array<() => Promise<FormField>> = []) {
-    this.formFieldLoaders = formFieldLoaders;
-  }
-
-  async getFormFields() {
-    const formFields = await Promise.all(
-      this.formFieldLoaders.map(loader => loader()),
-    );
-
-    const internalFormFields = formFields.map(OpaqueFormField.toInternal);
-
-    return internalFormFields;
-  }
+interface FormField {
+  readonly $$type: '@backstage/scaffolder/FormField';
 }
 
-/** @alpha */
+interface ScaffolderFormFieldsApi {
+  loadFormFields(): Promise<FormField[]>;
+}
+
+const formFieldsApiRef = createApiRef<ScaffolderFormFieldsApi>({
+  id: 'plugin.scaffolder.form-fields-loader',
+});
+
 export const formFieldsApi = ApiBlueprint.makeWithOverrides({
   name: 'form-fields',
   inputs: {
@@ -58,8 +50,22 @@ export const formFieldsApi = ApiBlueprint.makeWithOverrides({
       defineParams({
         api: formFieldsApiRef,
         deps: {},
-        factory: () => new DefaultScaffolderFormFieldsApi(formFieldLoaders),
+        factory: () => ({
+          async loadFormFields() {
+            const formFields = await Promise.all(
+              formFieldLoaders.map(loader => loader()),
+            );
+
+            const internalFormFields = formFields.map(
+              OpaqueFormField.toInternal,
+            );
+
+            return internalFormFields;
+          },
+        }),
       }),
     );
   },
 });
+
+export { formFieldsApiRef };
