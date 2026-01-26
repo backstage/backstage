@@ -3162,6 +3162,8 @@ __metadata:
     knex: "npm:^3.0.0"
     luxon: "npm:^3.0.0"
     zod: "npm:^3.22.4"
+  peerDependencies:
+    "@opentelemetry/api": ^1.9.0
   languageName: unknown
   linkType: soft
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 The Backstage Authors
+ * Copyright 2026 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,21 +20,34 @@ import {
   CallToolRequestSchema,
 } from '@modelcontextprotocol/sdk/types.js';
 import { JsonObject } from '@backstage/types';
-import { ActionsService } from '@backstage/backend-plugin-api/alpha';
+import {
+  ActionsService,
+  MetricsService,
+} from '@backstage/backend-plugin-api/alpha';
 import { version } from '@backstage/plugin-mcp-actions-backend/package.json';
 import { NotFoundError } from '@backstage/errors';
+import { performance } from 'perf_hooks';
 
 import { handleErrors } from './handleErrors';
+import { createMcpMetrics, McpMetrics } from '../metrics';
 
 export class McpService {
   private readonly actions: ActionsService;
+  private readonly metrics: McpMetrics;
 
-  constructor(actions: ActionsService) {
+  constructor(actions: ActionsService, metrics: MetricsService) {
     this.actions = actions;
+    this.metrics = createMcpMetrics(metrics);
   }
 
-  static async create({ actions }: { actions: ActionsService }) {
-    return new McpService(actions);
+  static async create({
+    actions,
+    metrics,
+  }: {
+    actions: ActionsService;
+    metrics: MetricsService;
+  }) {
+    return new McpService(actions, metrics);
   }
 
   getServer({ credentials }: { credentials: BackstageCredentials }) {
@@ -56,7 +69,7 @@ export class McpService {
           inputSchema: action.schema.input,
           // todo(blam): this is unfortunately not supported by most clients yet.
           // When this is provided you need to provide structuredContent instead.
-          // outputSchema: action.schema.output,
+          outputSchema: action.schema.output,
           name: action.name,
           description: action.description,
           annotations: {
@@ -72,32 +85,71 @@ export class McpService {
 
     server.setRequestHandler(CallToolRequestSchema, async ({ params }) => {
       return handleErrors(async () => {
-        const { actions } = await this.actions.list({ credentials });
-        const action = actions.find(a => a.name === params.name);
+        const actionName = params.name;
 
-        if (!action) {
-          throw new NotFoundError(`Action "${params.name}" not found`);
-        }
-
-        const { output } = await this.actions.invoke({
-          id: action.id,
-          input: params.arguments as JsonObject,
-          credentials,
+        const requestSize = JSON.stringify(params).length;
+        this.metrics.messagesSize.record(requestSize, {
+          action_name: actionName,
+          direction: 'request',
         });
 
-        return {
-          // todo(blam): unfortunately structuredContent is not supported by most clients yet.
-          // so the validation for the output happens in the default actions registry
-          // and we return it as json text instead for now.
-          content: [
-            {
-              type: 'text',
-              text: ['```json', JSON.stringify(output, null, 2), '```'].join(
-                '\n',
-              ),
-            },
-          ],
-        };
+        const { actions } = await this.actions.list({ credentials });
+        const action = actions.find(a => a.name === actionName);
+
+        if (!action) {
+          this.metrics.actionsLookup.add(1, {
+            action_name: actionName,
+            result: 'not_found',
+          });
+          throw new NotFoundError(`Action "${actionName}" not found`);
+        }
+
+        this.metrics.actionsLookup.add(1, {
+          action_name: actionName,
+          result: 'found',
+        });
+
+        const startTime = performance.now();
+        let status: 'success' | 'error' = 'success';
+
+        try {
+          const { output } = await this.actions.invoke({
+            id: action.id,
+            input: params.arguments as JsonObject,
+            credentials,
+          });
+
+          const response = {
+            // todo(blam): unfortunately structuredContent is not supported by most clients yet.
+            // so the validation for the output happens in the default actions registry
+            // and we return it as json text instead for now.
+            content: [
+              {
+                type: 'text',
+                text: ['```json', JSON.stringify(output, null, 2), '```'].join(
+                  '\n',
+                ),
+              },
+            ],
+          };
+
+          const responseSize = JSON.stringify(response).length;
+          this.metrics.messagesSize.record(responseSize, {
+            action_name: actionName,
+            direction: 'response',
+          });
+
+          return response;
+        } catch (err) {
+          status = 'error';
+          throw err;
+        } finally {
+          const durationSeconds = (performance.now() - startTime) / 1000;
+          this.metrics.actionsExecutionDuration.record(durationSeconds, {
+            action_name: actionName,
+            status,
+          });
+        }
       });
     });
 
