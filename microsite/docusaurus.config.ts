@@ -92,9 +92,16 @@ const config: Config = {
       removeLegacyPostBuildHeadAttribute: true,
     },
     experimental_faster: {
+      swcJsLoader: true,
+      swcJsMinimizer: true,
+      lightningCssMinimizer: true,
       rspackBundler: true,
+      mdxCrossCompilerCache: true,
       rspackPersistentCache: true,
-      ssgWorkerThreads: true,
+      // TODO: React has an issue with server rendering here.
+      // ssgWorkerThreads: true,
+      // TODO: This prints extra warnings in the console, add back when we have a fix.
+      // swcHtmlMinimizer: true,
     },
   },
   presets: [
@@ -162,23 +169,6 @@ const config: Config = {
       return removeHtmlComments(fileContent);
     },
     format: 'detect',
-  },
-  webpack: {
-    jsLoader: isServer => ({
-      loader: require.resolve('swc-loader'),
-      options: {
-        jsc: {
-          parser: {
-            syntax: 'typescript',
-            tsx: true,
-          },
-          target: 'es2017',
-        },
-        module: {
-          type: isServer ? 'commonjs' : 'es6',
-        },
-      },
-    }),
   },
   plugins: [
     'docusaurus-plugin-sass',
