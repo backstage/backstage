@@ -999,6 +999,14 @@ describe('createSpecializedApp', () => {
             pluginId: 'test',
             extensions: [
               createExtension({
+                name: 'working',
+                attachTo: { id: 'root', input: 'app' },
+                output: [coreExtensionData.reactElement],
+                factory: () => [
+                  coreExtensionData.reactElement(<div>Working</div>),
+                ],
+              }),
+              createExtension({
                 name: 'failing',
                 attachTo: { id: 'root', input: 'app' },
                 output: [coreExtensionData.reactElement],
