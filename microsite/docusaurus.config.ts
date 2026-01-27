@@ -377,9 +377,19 @@ const config: Config = {
           position: 'left',
         },
         {
-          to: '/api/stable',
+          type: 'dropdown',
           label: 'Reference',
           position: 'left',
+          items: [
+            {
+              label: `Stable (${releases[0]})`,
+              to: '/api/stable',
+            },
+            {
+              label: 'Next',
+              to: '/api/next',
+            },
+          ],
         },
         {
           to: `docs/releases/${releases[0]}`,
