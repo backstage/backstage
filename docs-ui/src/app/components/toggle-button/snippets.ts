@@ -18,7 +18,7 @@ export const withIconSnippet = `const [isSelected, setIsSelected] = useState(fal
 <ToggleButton
   isSelected={isSelected}
   onChange={setIsSelected}
-  icon={<RiCheckLine />}
+  iconStart={<RiCheckLine />}
 >
   With Icon
 </ToggleButton>`;

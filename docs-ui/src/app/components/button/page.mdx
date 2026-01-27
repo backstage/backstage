@@ -16,6 +16,7 @@ import { ChangelogComponent } from '@/components/ChangelogComponent';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
 import { ButtonDefinition } from '../../../utils/definitions';
+import { ReactAriaLink } from '@/components/ReactAriaLink';
 import {
   Variants,
   Sizes,
@@ -25,9 +26,13 @@ import {
   AsLink,
 } from './components';
 
+export const reactAriaUrls = {
+  button: 'https://react-spectrum.adobe.com/react-aria/Button.html',
+};
+
 <PageTitle
   title="Button"
-  description="A button component that can be used to trigger actions."
+  description="A button with primary, secondary, and tertiary variants and loading state."
 />
 
 <Snippet align="center" py={4} preview={<Variants />} code={variantsSnippet} />
@@ -40,11 +45,11 @@ import {
 
 <PropsTable data={buttonPropDefs} />
 
+<ReactAriaLink component="Button" href={reactAriaUrls.button} />
+
 ## Examples
 
 ### Variants
-
-Here's a view when buttons have different variants.
 
 <Snippet
   align="center"
@@ -52,17 +57,23 @@ Here's a view when buttons have different variants.
   open
   preview={<Variants />}
   code={variantsSnippet}
+  layout="side-by-side"
 />
 
 ### Sizes
 
-Here's a view when buttons have different sizes.
-
-<Snippet align="center" py={4} open preview={<Sizes />} code={sizesSnippet} />
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<Sizes />}
+  code={sizesSnippet}
+  layout="side-by-side"
+/>
 
 ### With Icons
 
-Here's a view when buttons have icons.
+Icons can appear before or after the label.
 
 <Snippet
   align="center"
@@ -70,11 +81,10 @@ Here's a view when buttons have icons.
   open
   preview={<WithIcons />}
   code={withIconsSnippet}
+  layout="side-by-side"
 />
 
 ### Disabled
-
-Here's a view when buttons are disabled.
 
 <Snippet
   align="center"
@@ -82,11 +92,12 @@ Here's a view when buttons are disabled.
   open
   preview={<Disabled />}
   code={disabledSnippet}
+  layout="side-by-side"
 />
 
 ### Loading
 
-Here's a view when buttons are in a loading state.
+Shows a spinner and disables interaction during async operations.
 
 <Snippet
   align="center"
@@ -94,11 +105,12 @@ Here's a view when buttons are in a loading state.
   open
   preview={<Loading />}
   code={loadingSnippet}
+  layout="side-by-side"
 />
 
 ### Responsive
 
-Here's a view when buttons are responsive.
+Button props accept responsive breakpoint objects.
 
 <CodeBlock code={buttonResponsiveSnippet} />
 
@@ -106,7 +118,14 @@ Here's a view when buttons are responsive.
 
 If you want to use a button as a link, please use the `ButtonLink` component.
 
-<Snippet align="center" py={4} open preview={<AsLink />} code={asLinkSnippet} />
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<AsLink />}
+  code={asLinkSnippet}
+  layout="side-by-side"
+/>
 
 <Theming definition={ButtonDefinition} />
 
