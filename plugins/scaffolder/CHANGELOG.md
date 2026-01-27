@@ -1,5 +1,17 @@
 # @backstage/plugin-scaffolder
 
+## 1.35.2
+
+### Patch Changes
+
+- 5683c85: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.4
+  - @backstage/core-components@0.18.6
+  - @backstage/core-plugin-api@1.12.2
+  - @backstage/plugin-scaffolder-react@1.19.6
+  - @backstage/plugin-catalog-react@1.21.6
+
 ## 1.35.1
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # @backstage/cli-node
 
+## 0.2.17
+
+### Patch Changes
+
+- 5683c85: Bump to latest zod to ensure it has the latest features
+
 ## 0.2.16
 
 ### Patch Changes

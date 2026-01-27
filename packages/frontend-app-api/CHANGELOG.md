@@ -1,5 +1,17 @@
 # @backstage/frontend-app-api
 
+## 0.14.1
+
+### Patch Changes
+
+- 98f35b4: Updated the behavior of the new API override logic to log a deprecation warning instead of rejecting the override and blocking app startup, as was originally intended.
+- 5683c85: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/frontend-defaults@0.3.6
+  - @backstage/frontend-plugin-api@0.13.4
+  - @backstage/core-plugin-api@1.12.2
+  - @backstage/core-app-api@1.19.4
+
 ## 0.14.0
 
 ### Minor Changes

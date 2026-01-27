@@ -1,5 +1,16 @@
 # @backstage/plugin-search-backend
 
+## 2.0.11
+
+### Patch Changes
+
+- 5683c85: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.2
+  - @backstage/backend-defaults@0.15.1
+  - @backstage/plugin-permission-common@0.9.5
+  - @backstage/plugin-permission-node@0.10.9
+
 ## 2.0.10
 
 ### Patch Changes

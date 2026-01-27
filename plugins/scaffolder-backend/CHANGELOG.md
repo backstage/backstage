@@ -1,5 +1,21 @@
 # @backstage/plugin-scaffolder-backend
 
+## 3.1.2
+
+### Patch Changes
+
+- 5683c85: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.3.2
+  - @backstage/plugin-scaffolder-backend-module-github@0.9.5
+  - @backstage/plugin-scaffolder-backend-module-gitlab@0.11.2
+  - @backstage/backend-plugin-api@1.6.2
+  - @backstage/backend-defaults@0.15.1
+  - @backstage/plugin-permission-common@0.9.5
+  - @backstage/plugin-permission-node@0.10.9
+  - @backstage/plugin-scaffolder-node@0.12.4
+  - @backstage/plugin-auth-node@0.6.12
+
 ## 3.1.1
 
 ### Patch Changes

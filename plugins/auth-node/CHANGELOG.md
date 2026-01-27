@@ -1,5 +1,13 @@
 # @backstage/plugin-auth-node
 
+## 0.6.12
+
+### Patch Changes
+
+- 5683c85: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.2
+
 ## 0.6.11
 
 ### Patch Changes

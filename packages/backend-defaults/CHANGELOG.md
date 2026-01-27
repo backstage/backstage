@@ -1,5 +1,16 @@
 # @backstage/backend-defaults
 
+## 0.15.1
+
+### Patch Changes
+
+- 5683c85: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.2
+  - @backstage/plugin-permission-node@0.10.9
+  - @backstage/cli-node@0.2.17
+  - @backstage/plugin-auth-node@0.6.12
+
 ## 0.15.0
 
 ### Minor Changes

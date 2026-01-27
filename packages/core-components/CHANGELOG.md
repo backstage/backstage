@@ -1,5 +1,13 @@
 # @backstage/core-components
 
+## 0.18.6
+
+### Patch Changes
+
+- 5683c85: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.2
+
 ## 0.18.5
 
 ### Patch Changes

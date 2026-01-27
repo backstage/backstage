@@ -1,5 +1,13 @@
 # @backstage/cli
 
+## 0.35.3
+
+### Patch Changes
+
+- 5683c85: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/cli-node@0.2.17
+
 ## 0.35.2
 
 ### Patch Changes

@@ -1,5 +1,14 @@
 # @backstage/plugin-auth-backend-module-oidc-provider
 
+## 0.4.12
+
+### Patch Changes
+
+- 5683c85: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.2
+  - @backstage/plugin-auth-node@0.6.12
+
 ## 0.4.11
 
 ### Patch Changes

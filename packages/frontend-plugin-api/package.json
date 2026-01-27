@@ -1,6 +1,6 @@
 {
   "name": "@backstage/frontend-plugin-api",
-  "version": "0.13.3",
+  "version": "0.13.4",
   "backstage": {
     "role": "web-library"
   },

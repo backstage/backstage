@@ -1,6 +1,6 @@
 {
   "name": "@backstage/ui",
-  "version": "0.11.1",
+  "version": "0.11.2",
   "backstage": {
     "role": "web-library"
   },
