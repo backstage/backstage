@@ -1,1 +1,0 @@
-import{i as l}from"./iframe-DEXNC9RX.js";const s=l({id:"search",messages:{searchModal:{viewFullResults:"View Full Results"},searchType:{allResults:"All Results",tabs:{allTitle:"All"},accordion:{allTitle:"All",collapse:"Collapse",numberOfResults:"{{number}} results"}},sidebarSearchModal:{title:"Search"}}});export{s};
