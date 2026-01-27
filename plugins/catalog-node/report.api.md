@@ -10,7 +10,6 @@ import { AnalyzeLocationRequest } from '@backstage/plugin-catalog-common';
 import { AnalyzeLocationResponse } from '@backstage/plugin-catalog-common';
 import { BackstageCredentials } from '@backstage/backend-plugin-api';
 import { CatalogProcessor as CatalogProcessor_2 } from '@backstage/plugin-catalog-node';
-import { CatalogProcessorParser as CatalogProcessorParser_2 } from '@backstage/plugin-catalog-node';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { Entity } from '@backstage/catalog-model';
 import { EntityProvider as EntityProvider_2 } from '@backstage/plugin-catalog-node';
@@ -36,7 +35,6 @@ import { ScmLocationAnalyzer as ScmLocationAnalyzer_2 } from '@backstage/plugin-
 import { ServiceRef } from '@backstage/backend-plugin-api';
 import { StreamEntitiesRequest } from '@backstage/catalog-client';
 import { ValidateEntityResponse } from '@backstage/catalog-client';
-import { Validators } from '@backstage/catalog-model';
 
 // @public (undocumented)
 export type AnalyzeOptions = {
@@ -68,15 +66,6 @@ export interface CatalogLocationsExtensionPoint {
 
 // @public (undocumented)
 export const catalogLocationsExtensionPoint: ExtensionPoint<CatalogLocationsExtensionPoint>;
-
-// @public (undocumented)
-export interface CatalogModelExtensionPoint {
-  setEntityDataParser(parser: CatalogProcessorParser_2): void;
-  setFieldValidators(validators: Partial<Validators>): void;
-}
-
-// @public (undocumented)
-export const catalogModelExtensionPoint: ExtensionPoint<CatalogModelExtensionPoint>;
 
 // @public (undocumented)
 export interface CatalogProcessingExtensionPoint {

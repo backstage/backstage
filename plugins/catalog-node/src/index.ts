@@ -32,11 +32,9 @@ export type {
   CatalogLocationsExtensionPoint,
   CatalogProcessingExtensionPoint,
   CatalogAnalysisExtensionPoint,
-  CatalogModelExtensionPoint,
 } from './extensions';
 export {
   catalogLocationsExtensionPoint,
   catalogProcessingExtensionPoint,
   catalogAnalysisExtensionPoint,
-  catalogModelExtensionPoint,
 } from './extensions';

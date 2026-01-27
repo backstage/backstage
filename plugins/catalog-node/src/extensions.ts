@@ -97,7 +97,7 @@ export interface CatalogProcessingExtensionPoint {
   ): void;
 }
 
-/** @public */
+/** @alpha */
 export interface CatalogModelExtensionPoint {
   /**
    * Sets the validator function to use for one or more special fields of an
@@ -158,7 +158,7 @@ export const catalogAnalysisExtensionPoint =
     id: 'catalog.analysis',
   });
 
-/** @public */
+/** @alpha */
 export const catalogModelExtensionPoint =
   createExtensionPoint<CatalogModelExtensionPoint>({
     id: 'catalog.model',

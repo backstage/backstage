@@ -31,11 +31,11 @@ import {
   catalogAnalysisExtensionPoint,
   CatalogLocationsExtensionPoint,
   catalogLocationsExtensionPoint,
-  CatalogModelExtensionPoint,
-  catalogModelExtensionPoint,
   catalogProcessingExtensionPoint,
 } from '@backstage/plugin-catalog-node';
 import {
+  CatalogModelExtensionPoint,
+  catalogModelExtensionPoint,
   CatalogPermissionExtensionPoint,
   catalogPermissionExtensionPoint,
   CatalogPermissionRuleInput,

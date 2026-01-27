@@ -7,8 +7,7 @@ Promoted stable catalog extension points from alpha to main export. The followin
 - `catalogLocationsExtensionPoint` and `CatalogLocationsExtensionPoint`
 - `catalogProcessingExtensionPoint` and `CatalogProcessingExtensionPoint`
 - `catalogAnalysisExtensionPoint` and `CatalogAnalysisExtensionPoint`
-- `catalogModelExtensionPoint` and `CatalogModelExtensionPoint`
 
 The old alpha exports for these extension points are now deprecated with `@deprecated` markers pointing to the new stable exports. Please update your imports from `@backstage/plugin-catalog-node/alpha` to `@backstage/plugin-catalog-node`.
 
-Note: The `catalogPermissionExtensionPoint`, `CatalogPermissionExtensionPoint`, and `CatalogPermissionRuleInput` remain in alpha as they are deprecated in favor of `coreServices.permissionsRegistry`.
+Note: The `catalogModelExtensionPoint`, `catalogPermissionExtensionPoint`, and related types remain in alpha.

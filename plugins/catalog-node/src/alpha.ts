@@ -57,11 +57,9 @@ import {
   CatalogLocationsExtensionPoint as _CatalogLocationsExtensionPoint,
   CatalogProcessingExtensionPoint as _CatalogProcessingExtensionPoint,
   CatalogAnalysisExtensionPoint as _CatalogAnalysisExtensionPoint,
-  CatalogModelExtensionPoint as _CatalogModelExtensionPoint,
   catalogLocationsExtensionPoint as _catalogLocationsExtensionPoint,
   catalogProcessingExtensionPoint as _catalogProcessingExtensionPoint,
   catalogAnalysisExtensionPoint as _catalogAnalysisExtensionPoint,
-  catalogModelExtensionPoint as _catalogModelExtensionPoint,
 } from '@backstage/plugin-catalog-node';
 
 /**
@@ -100,18 +98,8 @@ export type CatalogAnalysisExtensionPoint = _CatalogAnalysisExtensionPoint;
  */
 export const catalogAnalysisExtensionPoint = _catalogAnalysisExtensionPoint;
 
-/**
- * @alpha
- * @deprecated Use {@link @backstage/plugin-catalog-node#CatalogModelExtensionPoint} instead
- */
-export type CatalogModelExtensionPoint = _CatalogModelExtensionPoint;
-
-/**
- * @alpha
- * @deprecated Use {@link @backstage/plugin-catalog-node#catalogModelExtensionPoint} instead
- */
-export const catalogModelExtensionPoint = _catalogModelExtensionPoint;
-
+export type { CatalogModelExtensionPoint } from './extensions';
+export { catalogModelExtensionPoint } from './extensions';
 export type { CatalogPermissionRuleInput } from './extensions';
 export type { CatalogPermissionExtensionPoint } from './extensions';
 export { catalogPermissionExtensionPoint } from './extensions';

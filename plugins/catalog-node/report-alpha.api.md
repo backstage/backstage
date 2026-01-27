@@ -6,8 +6,8 @@
 import { CatalogAnalysisExtensionPoint as CatalogAnalysisExtensionPoint_2 } from '@backstage/plugin-catalog-node';
 import { CatalogApi } from '@backstage/catalog-client';
 import { CatalogLocationsExtensionPoint as CatalogLocationsExtensionPoint_2 } from '@backstage/plugin-catalog-node';
-import { CatalogModelExtensionPoint as CatalogModelExtensionPoint_2 } from '@backstage/plugin-catalog-node';
 import { CatalogProcessingExtensionPoint as CatalogProcessingExtensionPoint_2 } from '@backstage/plugin-catalog-node';
+import { CatalogProcessorParser } from '@backstage/plugin-catalog-node';
 import { EntitiesSearchFilter } from '@backstage/plugin-catalog-node';
 import { Entity } from '@backstage/catalog-model';
 import { ExtensionPoint } from '@backstage/backend-plugin-api';
@@ -16,6 +16,7 @@ import { PermissionResourceRef } from '@backstage/plugin-permission-node';
 import { PermissionRule } from '@backstage/plugin-permission-node';
 import { PermissionRuleParams } from '@backstage/plugin-permission-common';
 import { ServiceRef } from '@backstage/backend-plugin-api';
+import { Validators } from '@backstage/catalog-model';
 
 // @alpha @deprecated (undocumented)
 export type CatalogAnalysisExtensionPoint = CatalogAnalysisExtensionPoint_2;
@@ -37,11 +38,14 @@ export type CatalogLocationsExtensionPoint = CatalogLocationsExtensionPoint_2;
 // @alpha @deprecated (undocumented)
 export const catalogLocationsExtensionPoint: ExtensionPoint<CatalogLocationsExtensionPoint_2>;
 
-// @alpha @deprecated (undocumented)
-export type CatalogModelExtensionPoint = CatalogModelExtensionPoint_2;
+// @alpha (undocumented)
+export interface CatalogModelExtensionPoint {
+  setEntityDataParser(parser: CatalogProcessorParser): void;
+  setFieldValidators(validators: Partial<Validators>): void;
+}
 
-// @alpha @deprecated (undocumented)
-export const catalogModelExtensionPoint: ExtensionPoint<CatalogModelExtensionPoint_2>;
+// @alpha (undocumented)
+export const catalogModelExtensionPoint: ExtensionPoint<CatalogModelExtensionPoint>;
 
 // @alpha @deprecated (undocumented)
 export interface CatalogPermissionExtensionPoint {

@@ -998,7 +998,7 @@ import {
   coreServices,
   createBackendModule,
 } from '@backstage/backend-plugin-api';
-import { catalogModelExtensionPoint } from '@backstage/plugin-catalog-node';
+import { catalogModelExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
 import { customEntityDataParser } from '../lib/customEntityDataParser';
 
 export const catalogModuleCustomDataParser = createBackendModule({
