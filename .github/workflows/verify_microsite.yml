@@ -11,8 +11,6 @@ on:
 
 permissions:
   contents: read
-  pull-requests: write # For PR comments
-  statuses: write # For PR statuses
 
 
 jobs:

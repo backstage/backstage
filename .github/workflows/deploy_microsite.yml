@@ -5,7 +5,7 @@ on:
       - master
 
 permissions:
-  contents: write # for JamesIves/github-pages-deploy-action to push changes in repo
+  contents: read
 
 jobs:
   stable:
@@ -199,7 +199,7 @@ jobs:
 
   deploy-microsite-and-storybook:
     permissions:
-      contents: read
+      contents: write # for JamesIves/github-pages-deploy-action to push changes in repo
 
     runs-on: ubuntu-latest
 
@@ -322,9 +322,9 @@ jobs:
           production-deploy: ${{ github.ref == 'refs/heads/master' }}
           github-token: ${{ secrets.GITHUB_TOKEN }}
           deploy-message: 'Deploy from GitHub Actions - ${{ github.event.head_commit.message }}'
-          enable-pull-request-comment: true
+          enable-pull-request-comment: false
           enable-commit-comment: false
-          overwrites-pull-request-comment: true
+          overwrites-pull-request-comment: false
         env:
           NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
           NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
