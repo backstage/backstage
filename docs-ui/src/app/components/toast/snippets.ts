@@ -39,7 +39,7 @@ export function Example() {
   return (
     <>
       <ToastRegion queue={toastQueue} />
-      <Flex gap="3" wrap="wrap">
+      <Flex gap="3">
         <Button
           onPress={() =>
             toastQueue.add({
@@ -116,7 +116,7 @@ export function Example() {
   return (
     <>
       <ToastRegion queue={toastQueue} />
-      <Flex gap="3" wrap="wrap">
+      <Flex gap="3">
         <Button
           onPress={() =>
             toastQueue.add({
@@ -142,64 +142,13 @@ export function Example() {
   );
 }`;
 
-export const positionsSnippet = `import { useState } from 'react';
-import { ToastRegion, toastQueue, Button, Flex } from '@backstage/ui';
-
-export function Example() {
-  const [currentPosition, setCurrentPosition] = useState<'top' | 'bottom' | null>(null);
-  const [currentPlacement, setCurrentPlacement] = useState<'start' | 'center' | 'end' | null>(null);
-
-  const showToast = (
-    position: 'top' | 'bottom',
-    placement: 'start' | 'center' | 'end'
-  ) => {
-    setCurrentPosition(position);
-    setCurrentPlacement(placement);
-    toastQueue.add({
-      title: \`\${position} - \${placement}\`,
-      description: \`Toast positioned at \${position} \${placement}\`,
-      status: 'info',
-    });
-  };
-
-  return (
-    <>
-      {currentPosition && currentPlacement && (
-        <ToastRegion
-          queue={toastQueue}
-          position={currentPosition}
-          placement={currentPlacement}
-        />
-      )}
-      <Flex direction="column" gap="4">
-        <div>
-          <strong>Top Positions:</strong>
-          <Flex gap="2" style={{ marginTop: '8px' }}>
-            <Button onPress={() => showToast('top', 'start')}>Top Start</Button>
-            <Button onPress={() => showToast('top', 'center')}>Top Center</Button>
-            <Button onPress={() => showToast('top', 'end')}>Top End</Button>
-          </Flex>
-        </div>
-        <div>
-          <strong>Bottom Positions:</strong>
-          <Flex gap="2" style={{ marginTop: '8px' }}>
-            <Button onPress={() => showToast('bottom', 'start')}>Bottom Start</Button>
-            <Button onPress={() => showToast('bottom', 'center')}>Bottom Center</Button>
-            <Button onPress={() => showToast('bottom', 'end')}>Bottom End</Button>
-          </Flex>
-        </div>
-      </Flex>
-    </>
-  );
-}`;
-
 export const autoDismissSnippet = `import { ToastRegion, toastQueue, Button, Flex } from '@backstage/ui';
 
 export function Example() {
   return (
     <>
       <ToastRegion queue={toastQueue} />
-      <Flex gap="3" wrap="wrap">
+      <Flex gap="3">
         <Button
           onPress={() =>
             toastQueue.add(
@@ -273,7 +222,7 @@ export function Example() {
   return (
     <>
       <ToastRegion queue={toastQueue} />
-      <Flex gap="3" wrap="wrap">
+      <Flex gap="3">
         <Button
           onPress={() => {
             toastQueue.add({

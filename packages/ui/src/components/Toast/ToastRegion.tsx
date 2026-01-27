@@ -22,11 +22,12 @@ import { ToastRegionDefinition } from './definition';
 import { Toast } from './Toast';
 
 /**
- * A ToastRegion displays one or more toast notifications.
+ * A ToastRegion displays one or more toast notifications in the bottom-right corner.
  *
  * @remarks
  * The ToastRegion component should typically be placed once at the root of your application.
- * It manages the display and positioning of all toast notifications added to its queue.
+ * It manages the display and stacking of all toast notifications added to its queue.
+ * Toasts appear in the bottom-right corner with deep stacking when multiple are visible.
  * Toast regions are ARIA landmark regions that can be navigated using F6 (forward) and
  * Shift+F6 (backward) for keyboard accessibility.
  *
@@ -35,26 +36,16 @@ import { Toast } from './Toast';
  * @example
  * Basic setup in app root:
  * ```tsx
- * import { ToastRegion, queue } from '@backstage/ui';
+ * import { ToastRegion, toastQueue } from '@backstage/ui';
  *
  * function App() {
  *   return (
  *     <>
- *       <ToastRegion queue={queue} />
+ *       <ToastRegion queue={toastQueue} />
  *       <YourAppContent />
  *     </>
  *   );
  * }
- * ```
- *
- * @example
- * Custom positioning:
- * ```tsx
- * <ToastRegion
- *   queue={queue}
- *   position="top"
- *   placement="center"
- * />
  * ```
  *
  * @public

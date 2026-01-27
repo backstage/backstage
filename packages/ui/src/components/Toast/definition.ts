@@ -52,8 +52,6 @@ export const ToastRegionDefinition = defineComponent<ToastRegionOwnProps>()({
   },
   propDefs: {
     queue: {},
-    position: { dataAttribute: true, default: 'bottom' },
-    placement: { dataAttribute: true, default: 'end' },
     className: {},
   },
 });

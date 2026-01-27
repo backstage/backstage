@@ -8,7 +8,6 @@ import {
   statusVariantsSnippet,
   withDescriptionSnippet,
   withoutDescriptionSnippet,
-  positionsSnippet,
   autoDismissSnippet,
   programmaticControlSnippet,
   queueManagementSnippet,
@@ -18,7 +17,6 @@ import {
   StatusVariants,
   WithDescription,
   WithoutDescription,
-  Positions,
   AutoDismiss,
   ProgrammaticControl,
   QueueManagement,
@@ -30,7 +28,7 @@ import { ToastDefinition, ToastRegionDefinition } from '../../../utils/definitio
 
 <PageTitle
   title="Toast"
-  description="A Toast displays a brief, temporary notification of actions, errors, or other events in an application."
+  description="A Toast displays a brief, temporary notification of actions, errors, or other events in the bottom-right corner of the application."
 />
 
 <Snippet align="center" py={4} preview={<Default />} code={defaultSnippet} />
@@ -93,18 +91,6 @@ Toasts can display a title only for simpler notifications.
   open
   preview={<WithoutDescription />}
   code={withoutDescriptionSnippet}
-/>
-
-### Positions and Placements
-
-Control where toasts appear on the screen with `position` (top/bottom) and `placement` (start/center/end).
-
-<Snippet
-  align="center"
-  py={4}
-  open
-  preview={<Positions />}
-  code={positionsSnippet}
 />
 
 ### Auto Dismiss

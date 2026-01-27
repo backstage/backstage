@@ -35,17 +35,5 @@ export const toastRegionPropDefs: Record<string, PropDef> = {
     values: ['ToastQueue<ToastContent>'],
     responsive: false,
   },
-  position: {
-    type: 'enum',
-    values: ['top', 'bottom'],
-    responsive: true,
-    default: 'bottom',
-  },
-  placement: {
-    type: 'enum',
-    values: ['start', 'center', 'end'],
-    responsive: true,
-    default: 'end',
-  },
   ...classNamePropDefs,
 };

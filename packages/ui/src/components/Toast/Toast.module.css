@@ -17,22 +17,23 @@
 @layer tokens, base, components, utilities;
 
 @layer components {
-  /* Toast Region - Container for all toasts */
+  /* Toast Region - Container for all toasts (bottom-right only) */
   .bui-ToastRegion {
     position: fixed;
-    bottom: 2rem;
-    right: 2rem;
+    bottom: 1rem;
+    right: 1rem;
+    z-index: 100050;
     width: 300px;
-    /* inset-inline-start: 0;
-    inset-inline-end: 0;
-    z-index: 100050; 
-    display: flex;
     pointer-events: none;
-    outline: none; */
+    outline: none;
+  }
 
-    /* Position: Bottom */
-    /* bottom: 0;
-    flex-direction: column-reverse; */
+  @media (min-width: 500px) {
+    .bui-ToastRegion {
+      width: 350px;
+      bottom: 2rem;
+      right: 2rem;
+    }
   }
 
   /* Individual Toast */
@@ -40,17 +41,18 @@
     --toast-bg: var(--bui-bg-surface-1);
     --toast-fg: var(--bui-fg-primary);
     --toast-gap: 0.75rem;
-    --toast-peek: 1.25rem;
+    --toast-peek: 0.75rem;
     --toast-scale: calc(max(0, 1 - (var(--toast-index) * 0.05)));
     --toast-shrink: calc(1 - var(--toast-scale));
 
-    position: relative;
+    position: absolute;
+    right: 0;
+    margin: 0 auto;
+    box-sizing: border-box;
     display: flex;
     align-items: flex-start;
     gap: var(--bui-space-3);
-    min-width: 320px;
-    max-width: 480px;
-    margin: var(--bui-space-2);
+    width: 100%;
     padding: var(--bui-space-3);
     border-radius: var(--bui-radius-3);
     background-color: var(--toast-bg);
@@ -60,10 +62,12 @@
     line-height: 1.5;
     box-shadow: var(--bui-shadow);
     outline: none;
+    cursor: default;
+    user-select: none;
     z-index: calc(1000 - var(--toast-index));
-    pointer-events: auto;
-    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.4s;
-    opacity: calc(1 - (var(--toast-index) * 0.15));
+    transition:
+      transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 0.5s;
 
     /* Focus ring */
     &:focus-visible {
@@ -72,48 +76,22 @@
     }
   }
 
-  /* Bottom position stacking */
-  .bui-ToastRegion .bui-Toast:not([data-entering]) {
-    transform: translateY(
-        calc(
-          (var(--toast-index) * var(--toast-peek) * -1) -
-            (var(--toast-shrink) * 100%)
-        )
-      )
-      scale(var(--toast-scale));
+  /* Stacking from bottom */
+  .bui-Toast {
+    bottom: 0;
     transform-origin: bottom center;
+    transform: translateY(calc(var(--toast-index) * var(--toast-peek) * -1))
+      scale(var(--toast-scale));
+    opacity: calc(1 - (var(--toast-index) * 0.15));
   }
 
   /* Only first toast is interactive */
-  .bui-ToastRegion li:not(:first-child) .bui-Toast {
+  .bui-Toast[style*='--toast-index: 0'] {
+    pointer-events: auto;
+  }
+
+  .bui-Toast:not([style*='--toast-index: 0']) {
     pointer-events: none;
-  }
-
-  /* List styling for toast container */
-  /* .bui-ToastRegion ol {
-    display: inherit;
-    flex-direction: inherit;
-    align-items: inherit;
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-    position: relative;
-  } */
-
-  .bui-ToastRegion li {
-    display: flex !important;
-    position: absolute;
-    width: 100%;
-    justify-content: flex-end;
-  }
-
-  /* Position list items based on toast region position */
-  .bui-ToastRegion[data-position='bottom'] li {
-    bottom: 0;
-  }
-
-  .bui-ToastRegion[data-position='top'] li {
-    top: 0;
   }
 
   /* Status variants */
@@ -215,63 +193,21 @@
     }
   }
 
-  /* Animations */
-  @keyframes bui-toast-slide-in-bottom {
-    from {
-      transform: translateY(calc(100% + 2rem)) scale(1);
-      opacity: 0;
-    }
+  /* Entering and exiting states */
+  .bui-Toast[data-entering] {
+    transform: translateY(calc(100% + 2rem)) scale(1);
+    opacity: 0;
   }
 
-  @keyframes bui-toast-slide-in-top {
-    from {
-      transform: translateY(calc(-100% - 2rem)) scale(1);
-      opacity: 0;
-    }
-  }
-
-  @keyframes bui-toast-slide-out-bottom {
-    to {
-      transform: translateY(calc(100% + 2rem));
-      opacity: 0;
-    }
-  }
-
-  @keyframes bui-toast-slide-out-top {
-    to {
-      transform: translateY(calc(-100% - 2rem));
-      opacity: 0;
-    }
-  }
-
-  /* Apply animations based on position */
-  .bui-ToastRegion[data-position='bottom'] .bui-Toast[data-entering] {
-    animation: bui-toast-slide-in-bottom 0.4s cubic-bezier(0.22, 1, 0.36, 1)
-      forwards;
-  }
-
-  .bui-ToastRegion[data-position='bottom'] .bui-Toast[data-exiting] {
-    animation: bui-toast-slide-out-bottom 0.3s ease-in forwards;
-  }
-
-  .bui-ToastRegion[data-position='top'] .bui-Toast[data-entering] {
-    animation: bui-toast-slide-in-top 0.4s cubic-bezier(0.22, 1, 0.36, 1)
-      forwards;
-  }
-
-  .bui-ToastRegion[data-position='top'] .bui-Toast[data-exiting] {
-    animation: bui-toast-slide-out-top 0.3s ease-in forwards;
+  .bui-Toast[data-exiting] {
+    transform: translateY(calc(100% + 2rem)) scale(var(--toast-scale));
+    opacity: 0;
   }
 
   /* Reduced motion */
   @media (prefers-reduced-motion: reduce) {
     .bui-Toast {
       transition: none;
-    }
-
-    .bui-Toast[data-entering],
-    .bui-Toast[data-exiting] {
-      animation: none;
     }
   }
 }

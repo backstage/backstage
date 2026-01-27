@@ -22,16 +22,6 @@ import { Button } from '../Button';
 const meta = preview.meta({
   title: 'Backstage UI/Toast',
   component: ToastRegion,
-  argTypes: {
-    position: {
-      control: 'select',
-      options: ['top', 'bottom'],
-    },
-    placement: {
-      control: 'select',
-      options: ['start', 'center', 'end'],
-    },
-  },
 });
 
 export const Default = meta.story({
@@ -166,89 +156,6 @@ export const WithoutIcons = meta.story({
       </Flex>
     </>
   ),
-});
-
-export const Positions = meta.story({
-  render: () => (
-    <>
-      <ToastRegion queue={toastQueue} position="top" placement="center" />
-      <Flex gap="3">
-        <Button
-          onPress={() =>
-            toastQueue.add({
-              title: 'Toast from top center',
-              description: 'This appears at the top center.',
-              status: 'info',
-            })
-          }
-        >
-          Top Center
-        </Button>
-      </Flex>
-    </>
-  ),
-});
-
-export const AllPositions = meta.story({
-  render: () => {
-    const [currentPosition, setCurrentPosition] = useState<'top' | 'bottom'>(
-      'bottom',
-    );
-    const [currentPlacement, setCurrentPlacement] = useState<
-      'start' | 'center' | 'end'
-    >('end');
-
-    const showToast = (
-      position: 'top' | 'bottom',
-      placement: 'start' | 'center' | 'end',
-    ) => {
-      setCurrentPosition(position);
-      setCurrentPlacement(placement);
-      toastQueue.add({
-        title: `${position} - ${placement}`,
-        description: `Toast positioned at ${position} ${placement}`,
-        status: 'info',
-      });
-    };
-
-    return (
-      <>
-        <ToastRegion
-          queue={toastQueue}
-          position={currentPosition}
-          placement={currentPlacement}
-        />
-        <Flex direction="column" gap="4">
-          <div>
-            <strong>Top Positions:</strong>
-            <Flex gap="2" style={{ marginTop: '8px' }}>
-              <Button onPress={() => showToast('top', 'start')}>
-                Top Start
-              </Button>
-              <Button onPress={() => showToast('top', 'center')}>
-                Top Center
-              </Button>
-              <Button onPress={() => showToast('top', 'end')}>Top End</Button>
-            </Flex>
-          </div>
-          <div>
-            <strong>Bottom Positions:</strong>
-            <Flex gap="2" style={{ marginTop: '8px' }}>
-              <Button onPress={() => showToast('bottom', 'start')}>
-                Bottom Start
-              </Button>
-              <Button onPress={() => showToast('bottom', 'center')}>
-                Bottom Center
-              </Button>
-              <Button onPress={() => showToast('bottom', 'end')}>
-                Bottom End
-              </Button>
-            </Flex>
-          </div>
-        </Flex>
-      </>
-    );
-  },
 });
 
 export const AutoDismiss = meta.story({

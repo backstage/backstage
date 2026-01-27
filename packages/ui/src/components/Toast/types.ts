@@ -64,10 +64,6 @@ export interface ToastProps extends ToastOwnProps {}
 export type ToastRegionOwnProps = {
   /** Toast queue instance */
   queue: RAToastQueue<ToastContent>;
-  /** Position of the toast region (top or bottom) */
-  position?: Responsive<'top' | 'bottom'>;
-  /** Horizontal placement of toasts */
-  placement?: Responsive<'start' | 'center' | 'end'>;
   /** Custom class name */
   className?: string;
 };
