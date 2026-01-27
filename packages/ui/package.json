@@ -44,7 +44,7 @@
     "@remixicon/react": "^4.6.0",
     "@tanstack/react-table": "^8.21.3",
     "clsx": "^2.1.1",
-    "react-aria-components": "^1.13.0"
+    "react-aria-components": "^1.14.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",

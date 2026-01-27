@@ -39,7 +39,7 @@
     "@backstage/frontend-plugin-api": "workspace:^",
     "@backstage/ui": "workspace:^",
     "@remixicon/react": "^4.6.0",
-    "react-aria-components": "^1.13.0"
+    "react-aria-components": "^1.14.0"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",
