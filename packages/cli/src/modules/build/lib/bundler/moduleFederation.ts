@@ -165,7 +165,10 @@ export async function createRuntimeSharedDependenciesEntryPoint(options: {
 
   if (watch) {
     const watcher = chokidar.watch(resolvePath(targetPath, 'package.json'));
-    watcher.on('change', doWriteSharedDependenciesModule);
+    watcher.on('change', async () => {
+      await doWriteSharedDependenciesModule();
+      watch();
+    });
   }
   await doWriteSharedDependenciesModule();
 
