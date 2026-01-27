@@ -1,5 +1,19 @@
 # @backstage/plugin-scaffolder-backend-module-bitbucket
 
+## 0.3.19-next.0
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- Updated dependencies
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-cloud@0.3.2-next.0
+  - @backstage/backend-plugin-api@1.7.0-next.0
+  - @backstage/plugin-scaffolder-node@0.12.4-next.0
+  - @backstage/integration@1.19.3-next.0
+  - @backstage/plugin-scaffolder-backend-module-bitbucket-server@0.2.18-next.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+
 ## 0.3.18
 
 ### Patch Changes

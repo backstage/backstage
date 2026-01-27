@@ -1,5 +1,31 @@
 # @backstage/frontend-app-api
 
+## 0.14.1-next.0
+
+### Patch Changes
+
+- 17e0eb3: Updated the behavior of the new API override logic to log a deprecation warning instead of rejecting the override and blocking app startup, as was originally intended.
+- 7edb810: Implemented support for the `internal` extension input option.
+- 492503a: Updated error reporting and app tree resolution logic to attribute errors to the correct extension and allow app startup to proceed more optimistically:
+
+  - If an attachment fails to provide the required input data, the error is now attributed to the attachment rather than the parent extension.
+  - Singleton extension inputs will now only forward attachment errors if the input is required.
+  - Array extension inputs will now filter out failed attachments instead of failing the entire app tree resolution.
+
+- 122d39c: Completely removed support for the deprecated `app.experimental.packages` configuration. Replace existing usage directly with `app.packages`.
+- 9554c36: **DEPRECATED**: Deprecated support for multiple attachment points.
+- 53b6549: Plugins in the new frontend system now have a `pluginId` field rather than `id` to better align with naming conventions used throughout the frontend and backend systems. The old field is still present but marked as deprecated. All internal code has been updated to prefer `pluginId` while maintaining backward compatibility by falling back to `id` when needed.
+- 69d880e: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/frontend-defaults@0.3.6-next.0
+  - @backstage/frontend-plugin-api@0.14.0-next.0
+  - @backstage/core-plugin-api@1.12.2-next.0
+  - @backstage/core-app-api@1.19.4-next.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.11
+
 ## 0.14.0
 
 ### Minor Changes
