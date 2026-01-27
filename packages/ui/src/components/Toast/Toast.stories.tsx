@@ -15,8 +15,7 @@
  */
 import { useState } from 'react';
 import preview from '../../../../../.storybook/preview';
-import { ToastRegion } from './ToastRegion';
-import { toastQueue } from './queue';
+import { ToastRegion, toastQueue } from './index';
 import { Flex } from '../Flex';
 import { Button } from '../Button';
 
@@ -57,7 +56,7 @@ export const StatusVariants = meta.story({
   render: () => (
     <>
       <ToastRegion queue={toastQueue} />
-      <Flex gap="3" wrap="wrap">
+      <Flex gap="3">
         <Button
           onPress={() =>
             toastQueue.add({
@@ -111,7 +110,7 @@ export const WithoutDescription = meta.story({
   render: () => (
     <>
       <ToastRegion queue={toastQueue} />
-      <Flex gap="3" wrap="wrap">
+      <Flex gap="3">
         <Button
           onPress={() =>
             toastQueue.add({
@@ -141,7 +140,7 @@ export const WithoutIcons = meta.story({
   render: () => (
     <>
       <ToastRegion queue={toastQueue} />
-      <Flex gap="3" wrap="wrap">
+      <Flex gap="3">
         <Button
           onPress={() =>
             toastQueue.add({
@@ -173,7 +172,7 @@ export const Positions = meta.story({
   render: () => (
     <>
       <ToastRegion queue={toastQueue} position="top" placement="center" />
-      <Flex gap="3" wrap="wrap">
+      <Flex gap="3">
         <Button
           onPress={() =>
             toastQueue.add({
@@ -192,12 +191,12 @@ export const Positions = meta.story({
 
 export const AllPositions = meta.story({
   render: () => {
-    const [currentPosition, setCurrentPosition] = useState<
-      'top' | 'bottom' | null
-    >(null);
+    const [currentPosition, setCurrentPosition] = useState<'top' | 'bottom'>(
+      'bottom',
+    );
     const [currentPlacement, setCurrentPlacement] = useState<
-      'start' | 'center' | 'end' | null
-    >(null);
+      'start' | 'center' | 'end'
+    >('end');
 
     const showToast = (
       position: 'top' | 'bottom',
@@ -214,13 +213,11 @@ export const AllPositions = meta.story({
 
     return (
       <>
-        {currentPosition && currentPlacement && (
-          <ToastRegion
-            queue={toastQueue}
-            position={currentPosition}
-            placement={currentPlacement}
-          />
-        )}
+        <ToastRegion
+          queue={toastQueue}
+          position={currentPosition}
+          placement={currentPlacement}
+        />
         <Flex direction="column" gap="4">
           <div>
             <strong>Top Positions:</strong>
@@ -258,7 +255,7 @@ export const AutoDismiss = meta.story({
   render: () => (
     <>
       <ToastRegion queue={toastQueue} />
-      <Flex gap="3" wrap="wrap">
+      <Flex gap="3">
         <Button
           onPress={() =>
             toastQueue.add(
@@ -343,7 +340,7 @@ export const QueueManagement = meta.story({
   render: () => (
     <>
       <ToastRegion queue={toastQueue} />
-      <Flex gap="3" wrap="wrap">
+      <Flex gap="3">
         <Button
           onPress={() => {
             toastQueue.add({

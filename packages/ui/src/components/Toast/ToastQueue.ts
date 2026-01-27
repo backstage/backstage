@@ -42,4 +42,6 @@ import type { ToastContent } from './types';
  *
  * @public
  */
-export const toastQueue = new RAToastQueue<ToastContent>({});
+export const toastQueue = new RAToastQueue<ToastContent>({
+  maxVisibleToasts: 3,
+});

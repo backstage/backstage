@@ -20,41 +20,19 @@
   /* Toast Region - Container for all toasts */
   .bui-ToastRegion {
     position: fixed;
-    inset-inline-start: 0;
+    bottom: 2rem;
+    right: 2rem;
+    width: 300px;
+    /* inset-inline-start: 0;
     inset-inline-end: 0;
-    z-index: 100050; /* Above modals */
+    z-index: 100050; 
     display: flex;
     pointer-events: none;
-    outline: none;
-    margin-block-end: var(--bui-space-2);
-    margin-inline: var(--bui-space-2);
-  }
+    outline: none; */
 
-  /* Position: Top */
-  .bui-ToastRegion[data-position='top'] {
-    top: 0;
-    flex-direction: column;
-  }
-
-  /* Position: Bottom */
-  .bui-ToastRegion[data-position='bottom'] {
-    bottom: 0;
-    flex-direction: column-reverse;
-  }
-
-  /* Placement: Start */
-  .bui-ToastRegion[data-placement='start'] {
-    align-items: flex-start;
-  }
-
-  /* Placement: Center */
-  .bui-ToastRegion[data-placement='center'] {
-    align-items: center;
-  }
-
-  /* Placement: End */
-  .bui-ToastRegion[data-placement='end'] {
-    align-items: flex-end;
+    /* Position: Bottom */
+    /* bottom: 0;
+    flex-direction: column-reverse; */
   }
 
   /* Individual Toast */
@@ -84,9 +62,8 @@
     outline: none;
     z-index: calc(1000 - var(--toast-index));
     pointer-events: auto;
-    transition:
-      transform 0.4s cubic-bezier(0.22, 1, 0.36, 1),
-      opacity 0.4s;
+    transition: transform 0.4s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.4s;
+    opacity: calc(1 - (var(--toast-index) * 0.15));
 
     /* Focus ring */
     &:focus-visible {
@@ -96,7 +73,7 @@
   }
 
   /* Bottom position stacking */
-  .bui-ToastRegion[data-position='bottom'] .bui-Toast:not([data-entering]) {
+  .bui-ToastRegion .bui-Toast:not([data-entering]) {
     transform: translateY(
         calc(
           (var(--toast-index) * var(--toast-peek) * -1) -
@@ -107,30 +84,13 @@
     transform-origin: bottom center;
   }
 
-  /* Top position stacking */
-  .bui-ToastRegion[data-position='top'] .bui-Toast:not([data-entering]) {
-    transform: translateY(
-        calc(
-          (var(--toast-index) * var(--toast-peek)) +
-            (var(--toast-shrink) * 100%)
-        )
-      )
-      scale(var(--toast-scale));
-    transform-origin: top center;
-  }
-
-  /* Reduce opacity and disable interaction for stacked toasts */
-  .bui-Toast {
-    opacity: calc(1 - (var(--toast-index) * 0.15));
-  }
-
   /* Only first toast is interactive */
   .bui-ToastRegion li:not(:first-child) .bui-Toast {
     pointer-events: none;
   }
 
   /* List styling for toast container */
-  .bui-ToastRegion ol {
+  /* .bui-ToastRegion ol {
     display: inherit;
     flex-direction: inherit;
     align-items: inherit;
@@ -138,12 +98,13 @@
     margin: 0;
     padding: 0;
     position: relative;
-  }
+  } */
 
   .bui-ToastRegion li {
-    display: block !important;
+    display: flex !important;
     position: absolute;
     width: 100%;
+    justify-content: flex-end;
   }
 
   /* Position list items based on toast region position */
@@ -285,7 +246,8 @@
 
   /* Apply animations based on position */
   .bui-ToastRegion[data-position='bottom'] .bui-Toast[data-entering] {
-    animation: bui-toast-slide-in-bottom 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    animation: bui-toast-slide-in-bottom 0.4s cubic-bezier(0.22, 1, 0.36, 1)
+      forwards;
   }
 
   .bui-ToastRegion[data-position='bottom'] .bui-Toast[data-exiting] {
@@ -293,7 +255,8 @@
   }
 
   .bui-ToastRegion[data-position='top'] .bui-Toast[data-entering] {
-    animation: bui-toast-slide-in-top 0.4s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    animation: bui-toast-slide-in-top 0.4s cubic-bezier(0.22, 1, 0.36, 1)
+      forwards;
   }
 
   .bui-ToastRegion[data-position='top'] .bui-Toast[data-exiting] {

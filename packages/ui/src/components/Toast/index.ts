@@ -16,6 +16,6 @@
 
 export { Toast } from './Toast';
 export { ToastRegion } from './ToastRegion';
-export * from './types';
 export { ToastDefinition, ToastRegionDefinition } from './definition';
-export { toastQueue } from './queue';
+export { toastQueue } from './ToastQueue';
+export * from './types';

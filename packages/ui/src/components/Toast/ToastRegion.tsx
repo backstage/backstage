@@ -60,7 +60,7 @@ import { Toast } from './Toast';
  * @public
  */
 export const ToastRegion = forwardRef(
-  (props: ToastRegionProps, ref: Ref<HTMLElement>) => {
+  (props: ToastRegionProps, ref: Ref<HTMLDivElement>) => {
     const { ownProps, restProps, dataAttributes } = useDefinition(
       ToastRegionDefinition,
       props,
