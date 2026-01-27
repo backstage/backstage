@@ -34,16 +34,14 @@ function AppErrorItem(props: { error: AppError }): JSX.Element {
     'extensionId' in context ? context.extensionId : node?.spec.id;
   const routeId = 'routeId' in context ? context.routeId : undefined;
   const plugin = 'plugin' in context ? context.plugin : node?.spec.plugin;
-  const pluginId = plugin?.id ?? 'N/A';
+  const pluginId = plugin?.pluginId ?? 'N/A';
 
   const [info, setInfo] = useState<FrontendPluginInfo | undefined>(undefined);
   useEffect(() => {
     plugin?.info().then(setInfo, error => {
       // eslint-disable-next-line no-console
       console.error(
-        `Failed to load info for plugin ${
-          plugin.pluginId ?? plugin.id
-        }: ${error}`,
+        `Failed to load info for plugin ${plugin.pluginId}: ${error}`,
       );
     });
   }, [plugin]);

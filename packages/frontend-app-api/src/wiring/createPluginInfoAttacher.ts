@@ -78,7 +78,7 @@ export function createPluginInfoAttacher(
         });
 
         const infoWithOverrides = applyInfoOverrides(
-          plugin.pluginId ?? plugin.id,
+          plugin.pluginId,
           resolvedInfo,
         );
         return normalizePluginInfo(infoWithOverrides);
