@@ -1,0 +1,42 @@
+import{r as p,j as e}from"./iframe-Vo5gUnCl.js";import{$ as v,a as g}from"./Button-Bu-Jni_F.js";import{f as b}from"./index-BKpDU6T2.js";import{d as f,u as y}from"./defineComponent-U8Ri8PQS.js";const B={"bui-Button":"_bui-Button_1ipmg_20","bui-ButtonContent":"_bui-ButtonContent_1ipmg_176","bui-ButtonSpinner":"_bui-ButtonSpinner_1ipmg_190","bui-spin":"_bui-spin_1ipmg_1"},x=f()({styles:B,classNames:{root:"bui-Button",content:"bui-ButtonContent",spinner:"bui-ButtonSpinner"},surface:"leaf",propDefs:{size:{dataAttribute:!0,default:"small"},variant:{dataAttribute:!0,default:"primary"},loading:{dataAttribute:!0},iconStart:{},iconEnd:{},onSurface:{},children:{},className:{},style:{}}}),n=p.forwardRef((t,l)=>{const{ownProps:i,restProps:r,dataAttributes:s}=y(x,t),{classes:a,iconStart:m,iconEnd:o,loading:u,children:d}=i;return e.jsx(v,{className:a.root,ref:l,isPending:u,...s,...r,children:({isPending:c})=>e.jsxs(e.Fragment,{children:[e.jsxs("span",{className:a.content,children:[m,d,o]}),c&&e.jsx(g,{"aria-label":"Loading",isIndeterminate:!0,className:a.spinner,children:e.jsx(b,{"aria-hidden":"true"})})]})})});n.displayName="Button";n.__docgenInfo={description:`A button component built on React Aria Components that provides accessible
+interactive elements for triggering actions.
+
+@remarks
+The Button component supports multiple variants (primary, secondary, tertiary, danger),
+sizes (small, medium), and states including loading and disabled. It automatically
+handles keyboard navigation, focus management, and ARIA attributes for accessibility.
+
+@example
+Basic usage:
+\`\`\`tsx
+<Button>Click me</Button>
+\`\`\`
+
+@example
+With icons and loading state:
+\`\`\`tsx
+<Button
+  variant="primary"
+  size="medium"
+  iconStart={<IconComponent />}
+  loading={isSubmitting}
+>
+  Submit
+</Button>
+\`\`\`
+
+@public`,methods:[],displayName:"Button",props:{onSurface:{required:!1,tsType:{name:"union",raw:"T | Partial<Record<Breakpoint, T>>",elements:[{name:"union",raw:`| '0'
+| '1'
+| '2'
+| '3'
+| 'danger'
+| 'warning'
+| 'success'
+| 'auto'`,elements:[{name:"literal",value:"'0'"},{name:"literal",value:"'1'"},{name:"literal",value:"'2'"},{name:"literal",value:"'3'"},{name:"literal",value:"'danger'"},{name:"literal",value:"'warning'"},{name:"literal",value:"'success'"},{name:"literal",value:"'auto'"}]},{name:"Partial",elements:[{name:"Record",elements:[{name:"union",raw:"'initial' | 'xs' | 'sm' | 'md' | 'lg' | 'xl'",elements:[{name:"literal",value:"'initial'"},{name:"literal",value:"'xs'"},{name:"literal",value:"'sm'"},{name:"literal",value:"'md'"},{name:"literal",value:"'lg'"},{name:"literal",value:"'xl'"}]},{name:"union",raw:`| '0'
+| '1'
+| '2'
+| '3'
+| 'danger'
+| 'warning'
+| 'success'
+| 'auto'`,elements:[{name:"literal",value:"'0'"},{name:"literal",value:"'1'"},{name:"literal",value:"'2'"},{name:"literal",value:"'3'"},{name:"literal",value:"'danger'"},{name:"literal",value:"'warning'"},{name:"literal",value:"'success'"},{name:"literal",value:"'auto'"}]}],raw:"Record<Breakpoint, T>"}],raw:"Partial<Record<Breakpoint, T>>"}]},description:""},size:{required:!1,tsType:{name:"union",raw:"T | Partial<Record<Breakpoint, T>>",elements:[{name:"union",raw:"'small' | 'medium' | 'large'",elements:[{name:"literal",value:"'small'"},{name:"literal",value:"'medium'"},{name:"literal",value:"'large'"}]},{name:"Partial",elements:[{name:"Record",elements:[{name:"union",raw:"'initial' | 'xs' | 'sm' | 'md' | 'lg' | 'xl'",elements:[{name:"literal",value:"'initial'"},{name:"literal",value:"'xs'"},{name:"literal",value:"'sm'"},{name:"literal",value:"'md'"},{name:"literal",value:"'lg'"},{name:"literal",value:"'xl'"}]},{name:"union",raw:"'small' | 'medium' | 'large'",elements:[{name:"literal",value:"'small'"},{name:"literal",value:"'medium'"},{name:"literal",value:"'large'"}]}],raw:"Record<Breakpoint, T>"}],raw:"Partial<Record<Breakpoint, T>>"}]},description:""},variant:{required:!1,tsType:{name:"union",raw:"T | Partial<Record<Breakpoint, T>>",elements:[{name:"union",raw:"'primary' | 'secondary' | 'tertiary'",elements:[{name:"literal",value:"'primary'"},{name:"literal",value:"'secondary'"},{name:"literal",value:"'tertiary'"}]},{name:"Partial",elements:[{name:"Record",elements:[{name:"union",raw:"'initial' | 'xs' | 'sm' | 'md' | 'lg' | 'xl'",elements:[{name:"literal",value:"'initial'"},{name:"literal",value:"'xs'"},{name:"literal",value:"'sm'"},{name:"literal",value:"'md'"},{name:"literal",value:"'lg'"},{name:"literal",value:"'xl'"}]},{name:"union",raw:"'primary' | 'secondary' | 'tertiary'",elements:[{name:"literal",value:"'primary'"},{name:"literal",value:"'secondary'"},{name:"literal",value:"'tertiary'"}]}],raw:"Record<Breakpoint, T>"}],raw:"Partial<Record<Breakpoint, T>>"}]},description:""},iconStart:{required:!1,tsType:{name:"ReactElement"},description:""},iconEnd:{required:!1,tsType:{name:"ReactElement"},description:""},loading:{required:!1,tsType:{name:"boolean"},description:""},children:{required:!1,tsType:{name:"ReactNode"},description:""},className:{required:!1,tsType:{name:"string"},description:""},style:{required:!1,tsType:{name:"CSSProperties"},description:""}},composes:["Omit"]};export{n as B};
