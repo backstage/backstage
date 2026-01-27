@@ -16,7 +16,7 @@
 
 import type { ReactElement, ReactNode } from 'react';
 import type { UNSTABLE_ToastQueue as RAToastQueue } from 'react-aria-components';
-import type { ToastState, QueuedToast } from 'react-stately';
+import type { QueuedToast } from 'react-stately';
 import type { Responsive } from '../../types';
 
 /**
