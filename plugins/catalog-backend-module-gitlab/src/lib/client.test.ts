@@ -19,7 +19,10 @@ import {
   registerMswTestHooks,
 } from '@backstage/backend-test-utils';
 import { ConfigReader } from '@backstage/config';
-import { readGitLabIntegrationConfig } from '@backstage/integration';
+import {
+  GitLabIntegration,
+  readGitLabIntegrationConfig,
+} from '@backstage/integration';
 import { setupServer } from 'msw/node';
 import { handlers } from '../__testUtils__/handlers';
 import * as mock from '../__testUtils__/mocks';
@@ -33,8 +36,10 @@ describe('GitLabClient', () => {
   describe('isSelfManaged', () => {
     it('returns true if self managed instance', () => {
       const client = new GitLabClient({
-        config: readGitLabIntegrationConfig(
-          new ConfigReader(mock.config_self_managed),
+        integration: new GitLabIntegration(
+          readGitLabIntegrationConfig(
+            new ConfigReader(mock.config_self_managed),
+          ),
         ),
         logger: mockServices.logger.mock(),
       });
@@ -42,7 +47,9 @@ describe('GitLabClient', () => {
     });
     it('returns false if gitlab.com', () => {
       const client = new GitLabClient({
-        config: readGitLabIntegrationConfig(new ConfigReader(mock.config_saas)),
+        integration: new GitLabIntegration(
+          readGitLabIntegrationConfig(new ConfigReader(mock.config_saas)),
+        ),
         logger: mockServices.logger.mock(),
       });
       expect(client.isSelfManaged()).toBeFalsy();
@@ -52,8 +59,10 @@ describe('GitLabClient', () => {
   describe('pagedRequest', () => {
     it('should provide immediate items within the page', async () => {
       const client = new GitLabClient({
-        config: readGitLabIntegrationConfig(
-          new ConfigReader(mock.config_self_managed),
+        integration: new GitLabIntegration(
+          readGitLabIntegrationConfig(
+            new ConfigReader(mock.config_self_managed),
+          ),
         ),
         logger: mockServices.logger.mock(),
       });
@@ -65,8 +74,10 @@ describe('GitLabClient', () => {
 
     it('should request items for a given page number', async () => {
       const client = new GitLabClient({
-        config: readGitLabIntegrationConfig(
-          new ConfigReader(mock.config_self_managed),
+        integration: new GitLabIntegration(
+          readGitLabIntegrationConfig(
+            new ConfigReader(mock.config_self_managed),
+          ),
         ),
         logger: mockServices.logger.mock(),
       });
@@ -86,8 +97,10 @@ describe('GitLabClient', () => {
 
     it('should not have a next page if at the end', async () => {
       const client = new GitLabClient({
-        config: readGitLabIntegrationConfig(
-          new ConfigReader(mock.config_self_managed),
+        integration: new GitLabIntegration(
+          readGitLabIntegrationConfig(
+            new ConfigReader(mock.config_self_managed),
+          ),
         ),
         logger: mockServices.logger.mock(),
       });
@@ -105,8 +118,10 @@ describe('GitLabClient', () => {
 
     it('should throw if response is not okay', async () => {
       const client = new GitLabClient({
-        config: readGitLabIntegrationConfig(
-          new ConfigReader(mock.config_self_managed),
+        integration: new GitLabIntegration(
+          readGitLabIntegrationConfig(
+            new ConfigReader(mock.config_self_managed),
+          ),
         ),
         logger: mockServices.logger.mock(),
       });
@@ -121,8 +136,10 @@ describe('GitLabClient', () => {
   describe('listProjects', () => {
     it('should get projects for a given group', async () => {
       const client = new GitLabClient({
-        config: readGitLabIntegrationConfig(
-          new ConfigReader(mock.config_self_managed),
+        integration: new GitLabIntegration(
+          readGitLabIntegrationConfig(
+            new ConfigReader(mock.config_self_managed),
+          ),
         ),
         logger: mockServices.logger.mock(),
       });
@@ -145,8 +162,10 @@ describe('GitLabClient', () => {
 
     it('should get not archived projects', async () => {
       const client = new GitLabClient({
-        config: readGitLabIntegrationConfig(
-          new ConfigReader(mock.config_self_managed),
+        integration: new GitLabIntegration(
+          readGitLabIntegrationConfig(
+            new ConfigReader(mock.config_self_managed),
+          ),
         ),
         logger: mockServices.logger.mock(),
       });
@@ -170,8 +189,10 @@ describe('GitLabClient', () => {
 
     it('should get all projects for an instance', async () => {
       const client = new GitLabClient({
-        config: readGitLabIntegrationConfig(
-          new ConfigReader(mock.config_self_managed),
+        integration: new GitLabIntegration(
+          readGitLabIntegrationConfig(
+            new ConfigReader(mock.config_self_managed),
+          ),
         ),
         logger: mockServices.logger.mock(),
       });
@@ -190,8 +211,10 @@ describe('GitLabClient', () => {
 
     it('should pass simple parameter to API when provided', async () => {
       const client = new GitLabClient({
-        config: readGitLabIntegrationConfig(
-          new ConfigReader(mock.config_self_managed),
+        integration: new GitLabIntegration(
+          readGitLabIntegrationConfig(
+            new ConfigReader(mock.config_self_managed),
+          ),
         ),
         logger: mockServices.logger.mock(),
       });
@@ -212,8 +235,10 @@ describe('GitLabClient', () => {
 
     it('should pass simple parameter to group projects API when provided', async () => {
       const client = new GitLabClient({
-        config: readGitLabIntegrationConfig(
-          new ConfigReader(mock.config_self_managed),
+        integration: new GitLabIntegration(
+          readGitLabIntegrationConfig(
+            new ConfigReader(mock.config_self_managed),
+          ),
         ),
         logger: mockServices.logger.mock(),
       });
@@ -241,8 +266,10 @@ describe('GitLabClient', () => {
   describe('listUsers', () => {
     it('listUsers gets all users in the instance', async () => {
       const client = new GitLabClient({
-        config: readGitLabIntegrationConfig(
-          new ConfigReader(mock.config_self_managed),
+        integration: new GitLabIntegration(
+          readGitLabIntegrationConfig(
+            new ConfigReader(mock.config_self_managed),
+          ),
         ),
         logger: mockServices.logger.mock(),
       });
@@ -262,8 +289,10 @@ describe('GitLabClient', () => {
   describe('listGroups', () => {
     it('listGroups gets all groups in the instance', async () => {
       const client = new GitLabClient({
-        config: readGitLabIntegrationConfig(
-          new ConfigReader(mock.config_self_managed),
+        integration: new GitLabIntegration(
+          readGitLabIntegrationConfig(
+            new ConfigReader(mock.config_self_managed),
+          ),
         ),
         logger: mockServices.logger.mock(),
       });
@@ -283,7 +312,9 @@ describe('GitLabClient', () => {
   describe('get gitlab.com users', () => {
     it('gets all users under group', async () => {
       const client = new GitLabClient({
-        config: readGitLabIntegrationConfig(new ConfigReader(mock.config_saas)),
+        integration: new GitLabIntegration(
+          readGitLabIntegrationConfig(new ConfigReader(mock.config_saas)),
+        ),
         logger: mockServices.logger.mock(),
       });
       const saasMembers = (
@@ -297,7 +328,9 @@ describe('GitLabClient', () => {
     });
     it('gets all users with token without full permissions', async () => {
       const client = new GitLabClient({
-        config: readGitLabIntegrationConfig(new ConfigReader(mock.config_saas)),
+        integration: new GitLabIntegration(
+          readGitLabIntegrationConfig(new ConfigReader(mock.config_saas)),
+        ),
         logger: mockServices.logger.mock(),
       });
       const saasMembers = (
@@ -307,7 +340,9 @@ describe('GitLabClient', () => {
     });
     it('rejects when GraphQL returns errors', async () => {
       const client = new GitLabClient({
-        config: readGitLabIntegrationConfig(new ConfigReader(mock.config_saas)),
+        integration: new GitLabIntegration(
+          readGitLabIntegrationConfig(new ConfigReader(mock.config_saas)),
+        ),
         logger: mockServices.logger.mock(),
       });
       await expect(() =>
@@ -318,8 +353,10 @@ describe('GitLabClient', () => {
     });
     it('traverses multi-page results', async () => {
       const client = new GitLabClient({
-        config: readGitLabIntegrationConfig(
-          new ConfigReader(mock.config_self_managed),
+        integration: new GitLabIntegration(
+          readGitLabIntegrationConfig(
+            new ConfigReader(mock.config_self_managed),
+          ),
         ),
         logger: mockServices.logger.mock(),
       });
@@ -336,8 +373,10 @@ describe('GitLabClient', () => {
   describe('listDescendantGroups', () => {
     it('gets all groups under root', async () => {
       const client = new GitLabClient({
-        config: readGitLabIntegrationConfig(
-          new ConfigReader(mock.config_self_managed),
+        integration: new GitLabIntegration(
+          readGitLabIntegrationConfig(
+            new ConfigReader(mock.config_self_managed),
+          ),
         ),
         logger: mockServices.logger.mock(),
       });
@@ -351,8 +390,10 @@ describe('GitLabClient', () => {
 
     it('gets all descendant groups with token without full permissions', async () => {
       const client = new GitLabClient({
-        config: readGitLabIntegrationConfig(
-          new ConfigReader(mock.config_self_managed),
+        integration: new GitLabIntegration(
+          readGitLabIntegrationConfig(
+            new ConfigReader(mock.config_self_managed),
+          ),
         ),
         logger: mockServices.logger.mock(),
       });
@@ -366,8 +407,10 @@ describe('GitLabClient', () => {
 
     it('rejects when GraphQL returns errors', async () => {
       const client = new GitLabClient({
-        config: readGitLabIntegrationConfig(
-          new ConfigReader(mock.config_self_managed),
+        integration: new GitLabIntegration(
+          readGitLabIntegrationConfig(
+            new ConfigReader(mock.config_self_managed),
+          ),
         ),
         logger: mockServices.logger.mock(),
       });
@@ -380,8 +423,10 @@ describe('GitLabClient', () => {
     });
     it('traverses multi-page results', async () => {
       const client = new GitLabClient({
-        config: readGitLabIntegrationConfig(
-          new ConfigReader(mock.config_self_managed),
+        integration: new GitLabIntegration(
+          readGitLabIntegrationConfig(
+            new ConfigReader(mock.config_self_managed),
+          ),
         ),
         logger: mockServices.logger.mock(),
       });
@@ -397,8 +442,10 @@ describe('GitLabClient', () => {
   describe('getGroupMembers', () => {
     it('gets member IDs', async () => {
       const client = new GitLabClient({
-        config: readGitLabIntegrationConfig(
-          new ConfigReader(mock.config_self_managed),
+        integration: new GitLabIntegration(
+          readGitLabIntegrationConfig(
+            new ConfigReader(mock.config_self_managed),
+          ),
         ),
         logger: mockServices.logger.mock(),
       });
@@ -420,8 +467,10 @@ describe('GitLabClient', () => {
 
     it('gets member IDs with token without full permissions', async () => {
       const client = new GitLabClient({
-        config: readGitLabIntegrationConfig(
-          new ConfigReader(mock.config_self_managed),
+        integration: new GitLabIntegration(
+          readGitLabIntegrationConfig(
+            new ConfigReader(mock.config_self_managed),
+          ),
         ),
         logger: mockServices.logger.mock(),
       });
@@ -436,8 +485,10 @@ describe('GitLabClient', () => {
     // TODO: is this one really necessary?
     it('rejects when GraphQL returns errors', async () => {
       const client = new GitLabClient({
-        config: readGitLabIntegrationConfig(
-          new ConfigReader(mock.config_self_managed),
+        integration: new GitLabIntegration(
+          readGitLabIntegrationConfig(
+            new ConfigReader(mock.config_self_managed),
+          ),
         ),
         logger: mockServices.logger.mock(),
       });
@@ -451,8 +502,10 @@ describe('GitLabClient', () => {
 
     it('traverses multi-page results', async () => {
       const client = new GitLabClient({
-        config: readGitLabIntegrationConfig(
-          new ConfigReader(mock.config_self_managed),
+        integration: new GitLabIntegration(
+          readGitLabIntegrationConfig(
+            new ConfigReader(mock.config_self_managed),
+          ),
         ),
         logger: mockServices.logger.mock(),
       });
@@ -467,8 +520,10 @@ describe('GitLabClient', () => {
   describe('getGroupById', () => {
     it('should return group details by ID', async () => {
       const client = new GitLabClient({
-        config: readGitLabIntegrationConfig(
-          new ConfigReader(mock.config_self_managed),
+        integration: new GitLabIntegration(
+          readGitLabIntegrationConfig(
+            new ConfigReader(mock.config_self_managed),
+          ),
         ),
         logger: mockServices.logger.mock(),
       });
@@ -479,8 +534,10 @@ describe('GitLabClient', () => {
 
     it('should handle errors when fetching group details by ID', async () => {
       const client = new GitLabClient({
-        config: readGitLabIntegrationConfig(
-          new ConfigReader(mock.config_self_managed),
+        integration: new GitLabIntegration(
+          readGitLabIntegrationConfig(
+            new ConfigReader(mock.config_self_managed),
+          ),
         ),
         logger: mockServices.logger.mock(),
       });
@@ -494,8 +551,10 @@ describe('GitLabClient', () => {
   describe('getProjectById', () => {
     it('should return project details by ID', async () => {
       const client = new GitLabClient({
-        config: readGitLabIntegrationConfig(
-          new ConfigReader(mock.config_self_managed),
+        integration: new GitLabIntegration(
+          readGitLabIntegrationConfig(
+            new ConfigReader(mock.config_self_managed),
+          ),
         ),
         logger: mockServices.logger.mock(),
       });
@@ -506,8 +565,10 @@ describe('GitLabClient', () => {
 
     it('should handle errors when fetching project details by ID', async () => {
       const client = new GitLabClient({
-        config: readGitLabIntegrationConfig(
-          new ConfigReader(mock.config_self_managed),
+        integration: new GitLabIntegration(
+          readGitLabIntegrationConfig(
+            new ConfigReader(mock.config_self_managed),
+          ),
         ),
         logger: mockServices.logger.mock(),
       });
@@ -521,8 +582,10 @@ describe('GitLabClient', () => {
   describe('getUserById', () => {
     it('should return user details by ID', async () => {
       const client = new GitLabClient({
-        config: readGitLabIntegrationConfig(
-          new ConfigReader(mock.config_self_managed),
+        integration: new GitLabIntegration(
+          readGitLabIntegrationConfig(
+            new ConfigReader(mock.config_self_managed),
+          ),
         ),
         logger: mockServices.logger.mock(),
       });
@@ -533,8 +596,10 @@ describe('GitLabClient', () => {
 
     it('should handle errors when fetching user details by ID', async () => {
       const client = new GitLabClient({
-        config: readGitLabIntegrationConfig(
-          new ConfigReader(mock.config_self_managed),
+        integration: new GitLabIntegration(
+          readGitLabIntegrationConfig(
+            new ConfigReader(mock.config_self_managed),
+          ),
         ),
         logger: mockServices.logger.mock(),
       });
@@ -549,8 +614,8 @@ describe('GitLabClient', () => {
 describe('paginated', () => {
   it('should iterate through the pages until exhausted', async () => {
     const client = new GitLabClient({
-      config: readGitLabIntegrationConfig(
-        new ConfigReader(mock.config_self_managed),
+      integration: new GitLabIntegration(
+        readGitLabIntegrationConfig(new ConfigReader(mock.config_self_managed)),
       ),
       logger: mockServices.logger.mock(),
     });
@@ -573,8 +638,8 @@ describe('hasFile', () => {
 
   beforeEach(() => {
     client = new GitLabClient({
-      config: readGitLabIntegrationConfig(
-        new ConfigReader(mock.config_self_managed),
+      integration: new GitLabIntegration(
+        readGitLabIntegrationConfig(new ConfigReader(mock.config_self_managed)),
       ),
       logger: mockServices.logger.mock(),
     });
@@ -594,8 +659,8 @@ describe('hasFile', () => {
 describe('pagedRequest search params', () => {
   it('no search params provided', async () => {
     const client = new GitLabClient({
-      config: readGitLabIntegrationConfig(
-        new ConfigReader(mock.config_self_managed),
+      integration: new GitLabIntegration(
+        readGitLabIntegrationConfig(new ConfigReader(mock.config_self_managed)),
       ),
       logger: mockServices.logger.mock(),
     });
@@ -612,8 +677,8 @@ describe('pagedRequest search params', () => {
 
   it('defined numeric search params', async () => {
     const client = new GitLabClient({
-      config: readGitLabIntegrationConfig(
-        new ConfigReader(mock.config_self_managed),
+      integration: new GitLabIntegration(
+        readGitLabIntegrationConfig(new ConfigReader(mock.config_self_managed)),
       ),
       logger: mockServices.logger.mock(),
     });
@@ -633,8 +698,8 @@ describe('pagedRequest search params', () => {
 
   it('defined string search params', async () => {
     const client = new GitLabClient({
-      config: readGitLabIntegrationConfig(
-        new ConfigReader(mock.config_self_managed),
+      integration: new GitLabIntegration(
+        readGitLabIntegrationConfig(new ConfigReader(mock.config_self_managed)),
       ),
       logger: mockServices.logger.mock(),
     });
@@ -654,8 +719,8 @@ describe('pagedRequest search params', () => {
 
   it('defined boolean search params', async () => {
     const client = new GitLabClient({
-      config: readGitLabIntegrationConfig(
-        new ConfigReader(mock.config_self_managed),
+      integration: new GitLabIntegration(
+        readGitLabIntegrationConfig(new ConfigReader(mock.config_self_managed)),
       ),
       logger: mockServices.logger.mock(),
     });
