@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-import { forwardRef, Ref, useEffect, useState } from 'react';
-import { UNSTABLE_ToastRegion as RAToastRegion } from 'react-aria-components';
-import type { ToastRegionProps } from './types';
+import { forwardRef, Ref, useEffect, useState, useRef } from 'react';
+import { useToastRegion } from '@react-aria/toast';
+import { AnimatePresence } from 'motion/react';
+import type { QueuedToast, ToastState } from 'react-stately';
+import type { ToastRegionProps, ToastContent } from './types';
 import { useDefinition } from '../../hooks/useDefinition';
 import { ToastRegionDefinition } from './definition';
 import { Toast } from './Toast';
@@ -51,41 +53,57 @@ import { Toast } from './Toast';
  * @public
  */
 export const ToastRegion = forwardRef(
-  (props: ToastRegionProps, ref: Ref<HTMLDivElement>) => {
+  (props: ToastRegionProps, _ref: Ref<HTMLDivElement>) => {
     const { ownProps, restProps, dataAttributes } = useDefinition(
       ToastRegionDefinition,
       props,
     );
     const { classes, queue, className } = ownProps;
 
-    // Track visible toast keys to determine index
-    const [visibleToasts, setVisibleToasts] = useState<string[]>([]);
+    const [, forceUpdate] = useState({});
+    const ref = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
-      const updateToasts = () => {
-        setVisibleToasts(queue.visibleToasts.map(t => t.key));
-      };
-
-      // Subscribe to queue changes
-      const unsubscribe = queue.subscribe(updateToasts);
-      updateToasts(); // Initial update
-
+      // Subscribe to queue changes to trigger re-renders
+      const unsubscribe = queue.subscribe(() => forceUpdate({}));
       return unsubscribe;
     }, [queue]);
 
+    const state: ToastState<ToastContent> = {
+      visibleToasts: queue.visibleToasts,
+      add: (content: ToastContent, options?: any) =>
+        queue.add(content, options),
+      close: (key: string) => queue.close(key),
+      pauseAll: () => queue.pauseAll(),
+      resumeAll: () => queue.resumeAll(),
+    };
+
+    const { regionProps } = useToastRegion({}, state, ref);
+
     return (
-      <RAToastRegion
+      <div
+        {...regionProps}
         ref={ref}
-        queue={queue}
         className={className || classes.region}
         {...dataAttributes}
         {...restProps}
       >
-        {({ toast }) => {
-          const index = visibleToasts.indexOf(toast.key);
-          return <Toast toast={toast} index={index >= 0 ? index : 0} />;
-        }}
-      </RAToastRegion>
+        <ol style={{ margin: 0, padding: 0, listStyleType: 'none' }}>
+          <AnimatePresence mode="popLayout">
+            {queue.visibleToasts.map(
+              (toast: QueuedToast<ToastContent>, arrayIndex: number) => {
+                // Reverse index so newest toast (at end of array) gets index 0
+                const index = queue.visibleToasts.length - 1 - arrayIndex;
+                return (
+                  <li key={toast.key} style={{ display: 'contents' }}>
+                    <Toast toast={toast} index={index} state={state} />
+                  </li>
+                );
+              },
+            )}
+          </AnimatePresence>
+        </ol>
+      </div>
     );
   },
 );

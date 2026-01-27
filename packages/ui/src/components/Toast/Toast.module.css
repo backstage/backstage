@@ -193,17 +193,6 @@
     }
   }
 
-  /* Entering and exiting states */
-  .bui-Toast[data-entering] {
-    transform: translateY(calc(100% + 2rem)) scale(1);
-    opacity: 0;
-  }
-
-  .bui-Toast[data-exiting] {
-    transform: translateY(calc(100% + 2rem)) scale(var(--toast-scale));
-    opacity: 0;
-  }
-
   /* Reduced motion */
   @media (prefers-reduced-motion: reduce) {
     .bui-Toast {

@@ -16,6 +16,7 @@
 
 import type { ReactElement, ReactNode } from 'react';
 import type { UNSTABLE_ToastQueue as RAToastQueue } from 'react-aria-components';
+import type { ToastState, QueuedToast } from 'react-stately';
 import type { Responsive } from '../../types';
 
 /**
@@ -35,16 +36,15 @@ export interface ToastContent {
 
 /**
  * Own props for the Toast component
- * @public
+ * @internal
  */
 export type ToastOwnProps = {
   /** Toast object from the queue */
-  toast: {
-    key: string;
-    content: ToastContent;
-  };
+  toast: QueuedToast<ToastContent>;
+  /** Toast state for hooks */
+  state: ToastState<ToastContent>;
   /** Index of the toast in the stack (0 = frontmost) */
-  index?: number;
+  index: number;
   /** Override status from content */
   status?: Responsive<'info' | 'success' | 'warning' | 'danger'>;
   /** Override icon from content */
@@ -53,7 +53,7 @@ export type ToastOwnProps = {
 
 /**
  * Properties for {@link Toast}
- * @public
+ * @internal
  */
 export interface ToastProps extends ToastOwnProps {}
 

@@ -14,13 +14,10 @@
  * limitations under the License.
  */
 
-import { forwardRef, Ref, isValidElement, ReactElement } from 'react';
-import {
-  UNSTABLE_Toast as RAToast,
-  UNSTABLE_ToastContent as RAToastContent,
-  Text,
-  Button as RAButton,
-} from 'react-aria-components';
+import { forwardRef, Ref, isValidElement, ReactElement, useRef } from 'react';
+import { motion } from 'motion/react';
+import { useToast } from '@react-aria/toast';
+import { useButton } from 'react-aria';
 import {
   RiInformationLine,
   RiCheckLine,
@@ -31,6 +28,8 @@ import {
 import type { ToastProps } from './types';
 import { useDefinition } from '../../hooks/useDefinition';
 import { ToastDefinition } from './definition';
+import type { ToastState } from 'react-stately';
+import type { ToastContent } from './types';
 
 /**
  * A Toast displays a brief, temporary notification of actions, errors, or other events in an application.
@@ -66,12 +65,17 @@ import { ToastDefinition } from './definition';
  * @public
  */
 export const Toast = forwardRef(
-  (props: ToastProps, ref: Ref<HTMLDivElement>) => {
-    const { ownProps, restProps, dataAttributes } = useDefinition(
-      ToastDefinition,
-      props,
-    );
-    const { classes, toast, index = 0, status, icon } = ownProps;
+  (props: ToastProps, _forwardedRef: Ref<HTMLDivElement>) => {
+    const { ownProps, dataAttributes } = useDefinition(ToastDefinition, props);
+    const { classes, toast, state, index = 0, status, icon } = ownProps;
+
+    const ref = useRef<HTMLDivElement>(null);
+    const closeButtonRef = useRef<HTMLButtonElement>(null);
+
+    const { toastProps, titleProps, descriptionProps, closeButtonProps } =
+      useToast({ toast }, state, ref);
+
+    const { buttonProps } = useButton(closeButtonProps, closeButtonRef);
 
     // Get content from toast
     const content = toast.content;
@@ -112,36 +116,46 @@ export const Toast = forwardRef(
     const statusIcon = getStatusIcon();
 
     return (
-      <RAToast
-        toast={toast}
-        className={classes.root}
+      <motion.div
         ref={ref}
+        className={classes.root}
         style={
           {
             '--toast-index': index,
           } as React.CSSProperties
         }
+        {...toastProps}
         {...dataAttributes}
         data-status={finalStatus}
-        {...restProps}
+        initial={{ y: '150%', opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        exit={{ y: '150%', opacity: 0 }}
+        transition={{
+          duration: 0.4,
+          ease: [0.22, 1, 0.36, 1],
+        }}
       >
-        <RAToastContent className={classes.content}>
+        <div className={classes.content}>
           {statusIcon && <div className={classes.icon}>{statusIcon}</div>}
           <div>
-            <Text slot="title" className={classes.title}>
+            <div {...titleProps} className={classes.title}>
               {content.title}
-            </Text>
+            </div>
             {content.description && (
-              <Text slot="description" className={classes.description}>
+              <div {...descriptionProps} className={classes.description}>
                 {content.description}
-              </Text>
+              </div>
             )}
           </div>
-        </RAToastContent>
-        <RAButton slot="close" className={classes.closeButton}>
+        </div>
+        <button
+          {...buttonProps}
+          ref={closeButtonRef}
+          className={classes.closeButton}
+        >
           <RiCloseLine aria-hidden="true" />
-        </RAButton>
-      </RAToast>
+        </button>
+      </motion.div>
     );
   },
 );
