@@ -17,7 +17,7 @@
 import type { ReactElement, ReactNode } from 'react';
 import type { UNSTABLE_ToastQueue as RAToastQueue } from 'react-aria-components';
 import type { QueuedToast } from 'react-stately';
-import type { Responsive } from '../../types';
+import type { Responsive, ContainerSurfaceProps } from '../../types';
 
 /**
  * Content for a toast notification
@@ -38,7 +38,7 @@ export interface ToastContent {
  * Own props for the Toast component
  * @internal
  */
-export type ToastOwnProps = {
+export type ToastOwnProps = ContainerSurfaceProps & {
   /** Toast object from the queue */
   toast: QueuedToast<ToastContent>;
   /** Callback when swipe ends */

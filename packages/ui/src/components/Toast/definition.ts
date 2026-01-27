@@ -38,6 +38,9 @@ export const ToastDefinition = defineComponent<ToastOwnProps>()({
     onSwipeEnd: {},
     status: { dataAttribute: true },
     icon: {},
+    surface: {},
+    className: {},
+    style: {},
   },
 });
 
