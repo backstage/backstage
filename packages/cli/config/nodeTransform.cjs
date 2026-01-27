@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-const { pathToFileURL } = require('url');
+const { pathToFileURL } = require('node:url');
 const { transformSync } = require('@swc/core');
 const { addHook } = require('pirates');
-const { Module } = require('module');
+const { Module } = require('node:module');
 
 // This hooks into module resolution and overrides imports of packages that
 // exist in the linked workspace to instead be resolved from the linked workspace.
 if (process.env.BACKSTAGE_CLI_LINKED_WORKSPACE) {
-  const { join: joinPath } = require('path');
+  const { join: joinPath } = require('node:path');
   const { getPackagesSync } = require('@manypkg/get-packages');
   const { packages: linkedPackages, root: linkedRoot } = getPackagesSync(
     process.env.BACKSTAGE_CLI_LINKED_WORKSPACE,

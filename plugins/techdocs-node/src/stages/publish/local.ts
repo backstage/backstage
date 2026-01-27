@@ -28,9 +28,9 @@ import {
 import { Config } from '@backstage/config';
 import express from 'express';
 import fs from 'fs-extra';
-import os from 'os';
+import os from 'node:os';
 import createLimiter from 'p-limit';
-import path from 'path';
+import path from 'node:path';
 import {
   PublisherBase,
   PublishRequest,

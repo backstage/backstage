@@ -15,8 +15,8 @@
  */
 
 import fs from 'fs-extra';
-import os from 'os';
-import { join as joinPath, relative as relativePath } from 'path';
+import os from 'node:os';
+import { join as joinPath, relative as relativePath } from 'node:path';
 import { createMockDirectory, MockDirectory } from './MockDirectory';
 
 describe('createMockDirectory', () => {

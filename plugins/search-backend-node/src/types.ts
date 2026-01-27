@@ -25,7 +25,7 @@ import {
   IndexableResultSet,
   SearchQuery,
 } from '@backstage/plugin-search-common';
-import { Writable } from 'stream';
+import { Writable } from 'node:stream';
 
 /**
  * Options required to instantiate the index builder.

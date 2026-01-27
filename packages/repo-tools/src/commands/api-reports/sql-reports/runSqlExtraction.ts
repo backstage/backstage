@@ -15,7 +15,7 @@
  */
 
 import fs, { readJson } from 'fs-extra';
-import { relative as relativePath } from 'path';
+import { relative as relativePath } from 'node:path';
 import { paths as cliPaths } from '../../../lib/paths';
 import { diff as justDiff } from 'just-diff';
 import { SchemaInfo } from './types';

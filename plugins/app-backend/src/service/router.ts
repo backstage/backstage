@@ -24,7 +24,7 @@ import helmet from 'helmet';
 import express, { Request, Response } from 'express';
 import Router from 'express-promise-router';
 import fs from 'fs-extra';
-import { resolve as resolvePath } from 'path';
+import { resolve as resolvePath } from 'node:path';
 import {
   createStaticAssetMiddleware,
   findStaticAssets,

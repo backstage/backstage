@@ -22,7 +22,7 @@ import {
   NotFoundError,
 } from '@backstage/errors';
 import { decodeJwt } from 'jose';
-import crypto from 'crypto';
+import crypto from 'node:crypto';
 import { OidcDatabase } from '../database/OidcDatabase';
 import { DateTime } from 'luxon';
 import matcher from 'matcher';

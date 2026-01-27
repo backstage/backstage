@@ -20,8 +20,8 @@ import {
   createMockDirectory,
   MockDirectory,
 } from '@backstage/backend-test-utils';
-import { readFile } from 'fs/promises';
-import { join as joinPath } from 'path';
+import { readFile } from 'node:fs/promises';
+import { join as joinPath } from 'node:path';
 
 jest.mock('crypto', () => {
   const hash = {

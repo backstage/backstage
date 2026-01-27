@@ -28,7 +28,7 @@ import type * as OpenApiPlugin from 'docusaurus-plugin-openapi-docs';
 const backstageTheme = themes.vsDark;
 backstageTheme.plain.backgroundColor = '#232323';
 
-const useVersionedDocs = require('fs').existsSync('versions.json');
+const useVersionedDocs = require('node:fs').existsSync('versions.json');
 
 // This patches the redirect plugin to ignore the error when it tries to override existing fields.
 // This lets us add redirects that only apply to the next docs, while the stable docs still contain the source path.

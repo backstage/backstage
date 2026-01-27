@@ -22,7 +22,7 @@ import { version } from '../lib/version';
 import chalk from 'chalk';
 import { exitWithError } from '../lib/errors';
 import { ForwardedError } from '@backstage/errors';
-import { isPromise } from 'util/types';
+import { isPromise } from 'node:util/types';
 
 type UninitializedFeature = CliFeature | Promise<{ default: CliFeature }>;
 

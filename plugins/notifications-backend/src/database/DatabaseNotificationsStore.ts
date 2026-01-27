@@ -30,7 +30,7 @@ import {
   NotificationSeverity,
 } from '@backstage/plugin-notifications-common';
 import { Knex } from 'knex';
-import crypto from 'crypto';
+import crypto from 'node:crypto';
 import { durationToMilliseconds, HumanDuration } from '@backstage/types';
 
 const migrationsDir = resolvePackagePath(

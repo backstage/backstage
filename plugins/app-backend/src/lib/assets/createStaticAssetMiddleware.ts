@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { extname } from 'path';
+import { extname } from 'node:path';
 import { RequestHandler } from 'express';
 import { StaticAssetProvider } from './types';
 import { CACHE_CONTROL_MAX_CACHE } from '../headers';

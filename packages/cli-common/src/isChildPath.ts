@@ -20,8 +20,8 @@ import {
   resolve as resolvePath,
   dirname,
   basename,
-} from 'path';
-import { realpathSync, lstatSync, readlinkSync } from 'fs';
+} from 'node:path';
+import { realpathSync, lstatSync, readlinkSync } from 'node:fs';
 
 // Resolves a path to its real location, following symlinks.
 // Handles cases where the final target doesn't exist by recursively

@@ -22,10 +22,10 @@ const fsMock = fs as jest.Mocked<typeof fs>;
 
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { createCatalogWriteAction } from './write';
-import { resolve as resolvePath } from 'path';
+import { resolve as resolvePath } from 'node:path';
 import * as yaml from 'yaml';
 import { examples } from './write.examples';
-import os from 'os';
+import os from 'node:os';
 
 describe('catalog:write', () => {
   const action = createCatalogWriteAction();

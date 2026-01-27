@@ -8,7 +8,7 @@ import { Config } from '@backstage/config';
 import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
 import { IndexableDocument } from '@backstage/plugin-search-common';
 import { LoggerService } from '@backstage/backend-plugin-api';
-import { Readable } from 'stream';
+import { Readable } from 'node:stream';
 
 // @public
 const searchStackOverflowCollatorModule: BackendFeature;

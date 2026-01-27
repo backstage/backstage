@@ -16,11 +16,11 @@
  */
 
 const fs = require('fs-extra');
-const path = require('path');
+const path = require('node:path');
 const semver = require('semver');
 const { Octokit } = require('@octokit/rest');
-const { execFile: execFileCb } = require('child_process');
-const { promisify, parseArgs } = require('util');
+const { execFile: execFileCb } = require('node:child_process');
+const { promisify, parseArgs } = require('node:util');
 
 const execFile = promisify(execFileCb);
 
@@ -211,7 +211,7 @@ async function main(args) {
   // Output patch branch for CI workflows to capture
   if (process.env.PATCH_RELEASE_BRANCH && process.env.GITHUB_OUTPUT) {
     // Use native fs for appendFileSync (fs-extra doesn't have sync version)
-    const nativeFs = require('fs');
+    const nativeFs = require('node:fs');
     nativeFs.appendFileSync(
       process.env.GITHUB_OUTPUT,
       `patch_branch=${patchBranch}\n`,

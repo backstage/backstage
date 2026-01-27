@@ -31,7 +31,7 @@ import {
 } from '@backstage/errors';
 import { JsonValue } from '@backstage/types';
 import { ScmIntegrationRegistry } from '@backstage/integration';
-import path from 'path';
+import path from 'node:path';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
 import {
   CatalogProcessor,

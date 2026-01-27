@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import crypto from 'crypto';
+import crypto from 'node:crypto';
 import openBrowser from 'react-dev-utils/openBrowser';
 import { request } from '@octokit/request';
 import express, { Express, Request, Response } from 'express';
