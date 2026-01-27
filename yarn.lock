@@ -4198,7 +4198,7 @@ __metadata:
     "@remixicon/react": "npm:^4.6.0"
     "@types/react": "npm:^18.0.0"
     react: "npm:^18.0.2"
-    react-aria-components: "npm:^1.13.0"
+    react-aria-components: "npm:^1.14.0"
     react-dom: "npm:^18.0.2"
     react-router-dom: "npm:^6.3.0"
   peerDependencies:
@@ -8014,7 +8014,7 @@ __metadata:
     lightningcss: "npm:^1.29.1"
     mini-css-extract-plugin: "npm:^2.9.2"
     react: "npm:^18.0.2"
-    react-aria-components: "npm:^1.13.0"
+    react-aria-components: "npm:^1.14.0"
     react-dom: "npm:^18.0.2"
     react-router-dom: "npm:^6.3.0"
     storybook: "npm:^10.2.0-alpha.7"
@@ -43545,7 +43545,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"react-aria-components@npm:^1.13.0":
+"react-aria-components@npm:^1.14.0":
   version: 1.14.0
   resolution: "react-aria-components@npm:1.14.0"
   dependencies:
