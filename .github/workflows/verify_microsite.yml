@@ -12,7 +12,6 @@ on:
 permissions:
   contents: read
 
-
 jobs:
   stable:
     runs-on: ubuntu-latest
