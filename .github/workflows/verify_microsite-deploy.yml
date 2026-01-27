@@ -111,3 +111,53 @@ jobs:
           ls -la
           ls -la microsite/build/
 
+      - name: Deploy to Netlify
+        uses: nwtgck/actions-netlify@4cbaf4c08f1a7bfa537d6113472ef4424e4eb654 # v3.0.0
+        id: netlify-deploy
+        with:
+          publish-dir: './microsite/build'
+          production-branch: master
+          production-deploy: false
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          deploy-message: |
+            Preview for PR #${{ needs.setup.outputs.pr-number }}
+            Commit: ${{ needs.setup.outputs.git-ref }}
+          enable-pull-request-comment: false # We'll handle this separately
+          enable-commit-comment: false
+          enable-commit-status: true
+          overwrites-pull-request-comment: false
+          alias: pr-${{ needs.setup.outputs.pr-number }}
+        env:
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        timeout-minutes: 10
+
+      - name: Find existing preview comment
+        uses: peter-evans/find-comment@3eae4d37986fb5a8592848f6a574fdf654e61f9e # v3
+        id: find-comment
+        with:
+          issue-number: ${{ needs.setup.outputs.pr-number }}
+          comment-author: 'github-actions[bot]'
+          body-includes: 'Netlify Preview Deployment'
+
+      - name: Comment on PR with preview URL
+        uses: peter-evans/create-or-update-comment@71345be0265236311c031f5c7866368bd1eff043 # v4
+        with:
+          comment-id: ${{ steps.find-comment.outputs.comment-id }}
+          issue-number: ${{ needs.setup.outputs.pr-number }}
+          edit-mode: replace
+          body: |
+            ### Netlify Preview Deployment
+
+            ✅ Preview deployed successfully!
+
+            **Preview URL:** ${{ steps.netlify-deploy.outputs.deploy-url }}
+
+            Built from commit `${{ needs.setup.outputs.git-ref }}`
+
+            ---
+            <sub>Deploys by [Netlify](https://www.netlify.com)</sub>
+
+      - name: Output deployment URL
+        run: |
+          echo "Deployed preview to: ${{ steps.netlify-deploy.outputs.deploy-url }}"

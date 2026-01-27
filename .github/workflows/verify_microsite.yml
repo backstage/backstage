@@ -11,6 +11,9 @@ on:
 
 permissions:
   contents: read
+  pull-requests: write # For PR comments
+  statuses: write # For PR statuses
+
 
 jobs:
   stable:
@@ -313,7 +316,7 @@ jobs:
             Commit: ${{ github.sha }}
           enable-pull-request-comment: false # We'll handle this separately
           enable-commit-comment: false
-          enable-commit-status: true
+          enable-commit-status: false
           overwrites-pull-request-comment: false
           alias: pr-${{ github.event.pull_request.number }}
         env:
