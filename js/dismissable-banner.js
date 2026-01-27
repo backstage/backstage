@@ -1,1 +1,19 @@
-window.addEventListener("DOMContentLoaded",(()=>{document.querySelectorAll("[data-banner]").forEach((e=>{const t=`hideBanner/${e.getAttribute("data-banner")}`;localStorage.getItem(t)||e.classList.remove("Banner--hidden");const n=e.querySelector("[data-banner-dismiss]");n&&n.addEventListener("click",(()=>{e.classList.add("Banner--hiding"),localStorage.setItem(t,"true"),setTimeout((()=>e.classList.add("Banner--hidden")),300)}))}))}));
+window.addEventListener('DOMContentLoaded', () => {
+  const banners = document.querySelectorAll('[data-banner]');
+  banners.forEach(banner => {
+    const storageKey = `hideBanner/${banner.getAttribute('data-banner')}`;
+
+    if (!localStorage.getItem(storageKey)) {
+      banner.classList.remove('Banner--hidden');
+    }
+
+    const dismissButton = banner.querySelector('[data-banner-dismiss]');
+    if (dismissButton) {
+      dismissButton.addEventListener('click', () => {
+        banner.classList.add('Banner--hiding');
+        localStorage.setItem(storageKey, 'true');
+        setTimeout(() => banner.classList.add('Banner--hidden'), 300);
+      });
+    }
+  });
+});
