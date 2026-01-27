@@ -31,12 +31,14 @@ import {
   catalogAnalysisExtensionPoint,
   CatalogLocationsExtensionPoint,
   catalogLocationsExtensionPoint,
+  catalogProcessingExtensionPoint,
+} from '@backstage/plugin-catalog-node';
+import {
   CatalogModelExtensionPoint,
   catalogModelExtensionPoint,
   CatalogPermissionExtensionPoint,
   catalogPermissionExtensionPoint,
   CatalogPermissionRuleInput,
-  catalogProcessingExtensionPoint,
 } from '@backstage/plugin-catalog-node/alpha';
 import { eventsServiceRef } from '@backstage/plugin-events-node';
 import { Permission } from '@backstage/plugin-permission-common';
