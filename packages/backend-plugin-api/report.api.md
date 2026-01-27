@@ -102,6 +102,11 @@ export interface BackendModuleRegistrationPoints {
     impl: TExtensionPoint,
   ): void;
   // (undocumented)
+  registerExtensionPoint<TExtensionPoint>(options: {
+    extensionPoint: ExtensionPoint<TExtensionPoint>;
+    factory: (context: ExtensionPointFactoryContext) => TExtensionPoint;
+  }): void;
+  // (undocumented)
   registerInit<
     TDeps extends {
       [name in string]: ServiceRef<unknown> | ExtensionPoint<unknown>;
@@ -114,11 +119,14 @@ export interface BackendModuleRegistrationPoints {
 
 // @public
 export interface BackendPluginRegistrationPoints {
-  // (undocumented)
   registerExtensionPoint<TExtensionPoint>(
     ref: ExtensionPoint<TExtensionPoint>,
     impl: TExtensionPoint,
   ): void;
+  registerExtensionPoint<TExtensionPoint>(options: {
+    extensionPoint: ExtensionPoint<TExtensionPoint>;
+    factory: (context: ExtensionPointFactoryContext) => TExtensionPoint;
+  }): void;
   // (undocumented)
   registerInit<
     TDeps extends {
@@ -387,6 +395,11 @@ export type ExtensionPoint<T> = {
   toString(): string;
   $$type: '@backstage/ExtensionPoint';
 };
+
+// @public
+export interface ExtensionPointFactoryContext {
+  reportModuleStartupFailure(options: { error: Error }): void;
+}
 
 // @public
 export interface HttpAuthService {

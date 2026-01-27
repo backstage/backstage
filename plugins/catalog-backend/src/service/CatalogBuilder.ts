@@ -50,7 +50,6 @@ import {
 import {
   CatalogProcessor,
   CatalogProcessorParser,
-  EntityProvider,
   LocationAnalyzer,
   PlaceholderResolver,
   ScmLocationAnalyzer,
@@ -78,7 +77,10 @@ import {
   createRandomProcessingInterval,
   ProcessingIntervalFunction,
 } from '../processing/refresh';
-import { connectEntityProviders } from '../processing/connectEntityProviders';
+import {
+  connectEntityProviders,
+  EntityProviderEntry,
+} from '../processing/connectEntityProviders';
 import { evictEntitiesFromOrphanedProviders } from '../processing/evictEntitiesFromOrphanedProviders';
 import { DefaultCatalogProcessingEngine } from '../processing/DefaultCatalogProcessingEngine';
 import { DefaultCatalogProcessingOrchestrator } from '../processing/DefaultCatalogProcessingOrchestrator';
@@ -149,6 +151,8 @@ export type CatalogEnvironment = {
  * - Processors can be added or replaced. These implement the functionality of
  *   reading, parsing, validating, and processing the entity data before it is
  *   persisted in the catalog.
+ *
+ * @internal
  */
 export class CatalogBuilder {
   private readonly env: CatalogEnvironment;
@@ -156,7 +160,7 @@ export class CatalogBuilder {
   private entityPoliciesReplace: boolean;
   private placeholderResolvers: Record<string, PlaceholderResolver>;
   private fieldFormatValidators: Partial<Validators>;
-  private entityProviders: EntityProvider[];
+  private entityProviders: EntityProviderEntry[];
   private processors: CatalogProcessor[];
   private locationAnalyzers: ScmLocationAnalyzer[];
   private processorsReplace: boolean;
@@ -283,7 +287,7 @@ export class CatalogBuilder {
    * @param providers - One or more entity providers
    */
   addEntityProvider(
-    ...providers: Array<EntityProvider | Array<EntityProvider>>
+    ...providers: Array<EntityProviderEntry | Array<EntityProviderEntry>>
   ): CatalogBuilder {
     this.entityProviders.push(...providers.flat());
     return this;
@@ -526,12 +530,20 @@ export class CatalogBuilder {
 
     const locationStore = new DefaultLocationStore(dbClient);
     const configLocationProvider = new ConfigLocationEntityProvider(config);
-    const entityProviders = filterProviders(
-      lodash.uniqBy(
-        [...this.entityProviders, locationStore, configLocationProvider],
-        provider => provider.getProviderName(),
-      ),
+    const entityProviderEntries = lodash.uniqBy(
+      [
+        ...this.entityProviders,
+        { provider: locationStore },
+        { provider: configLocationProvider },
+      ],
+      entry => entry.provider.getProviderName(),
+    );
+    const enabledProviderEntries = filterProviders(
+      entityProviderEntries,
       config,
+    );
+    const enabledProviders = enabledProviderEntries.map(
+      entry => entry.provider,
     );
 
     const processingEngine = new DefaultCatalogProcessingEngine({
@@ -583,7 +595,7 @@ export class CatalogBuilder {
       enableRelationsCompatibility,
     });
 
-    await connectEntityProviders(providerDatabase, entityProviders);
+    await connectEntityProviders(providerDatabase, enabledProviderEntries);
 
     return {
       processingEngine: {
@@ -594,7 +606,7 @@ export class CatalogBuilder {
           ) {
             await evictEntitiesFromOrphanedProviders({
               db: providerDatabase,
-              providers: entityProviders,
+              providers: enabledProviders,
               logger,
             });
           }
