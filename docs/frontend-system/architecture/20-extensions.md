@@ -337,23 +337,11 @@ const routableExtension = createExtension({
 });
 ```
 
-## Multiple attachment points
+## Sharing extensions across multiple locations
 
-For some cases it can be useful to attach extensions to multiple parents. An example of this are Scaffolder field extensions or TechDocs addons that are consumed by multiple extensions. Specifying multiple attachments is done by providing an array of attachment points to the `attachTo` property of the extension. Keep in mind that this increases the complexity of your extension tree and should only be done when necessary. The following example shows how to attach our example extension to multiple parents:
+If you need to make extensions available in multiple locations throughout your app, use a Utility API that collects the extensions and allows multiple parent extensions to consume them. This pattern provides better separation of concerns and makes data flow more explicit.
 
-```tsx
-const extension = createExtension({
-  name: 'my-extension',
-  attachTo: [
-    { id: 'my-first-parent', input: 'content' },
-    { id: 'my-second-parent', input: 'children' }, // The input names do not need to match
-  ],
-  output: [coreExtensionData.reactElement],
-  factory() {
-    return [coreExtensionData.reactElement(<div>Hello World</div>)];
-  },
-});
-```
+See the [Sharing Extensions Across Multiple Locations](./27-sharing-extensions.md) guide for a complete explanation of this pattern with detailed examples.
 
 ## Relative attachment points
 
@@ -363,7 +351,7 @@ When creating an extension or an [extension blueprint](./23-extension-blueprints
 // Parent extension with a fixed attachment point
 const parentExtension = createExtension({
   kind: 'section',
-  attachTo: [{ id: 'app/some-fixed-extension', input: 'children' }],
+  attachTo: { id: 'app/some-fixed-extension', input: 'children' },
   inputs: {
     content: createExtensionInput([coreExtensionData.reactElement], {
       singleton: true,
@@ -385,7 +373,7 @@ const parentExtension = createExtension({
 // Child extension with a relative attachment point
 const childExtension = createExtension({
   kind: 'section-content',
-  attachTo: [{ relative: { kind: 'section' }, input: 'content' }],
+  attachTo: { relative: { kind: 'section' }, input: 'content' },
   output: [coreExtensionData.reactElement],
   factory() {
     return [coreExtensionData.reactElement(<p>Section Content</p>)];
