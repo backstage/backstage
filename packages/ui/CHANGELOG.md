@@ -1,5 +1,74 @@
 # @backstage/ui
 
+## 0.12.0-next.0
+
+### Minor Changes
+
+- b1f723b: **BREAKING**: Changed CSS selectors for `ButtonIcon` and `ButtonLink` components. Custom styles targeting `.bui-Button` to style these components must be updated to use `.bui-ButtonIcon` or `.bui-ButtonLink` respectively.
+
+  ```diff
+  -/* This no longer styles ButtonIcon or ButtonLink */
+  -.bui-Button[data-variant="primary"] { ... }
+  +/* Use component-specific selectors */
+  +.bui-ButtonIcon[data-variant="primary"] { ... }
+  +.bui-ButtonLink[data-variant="primary"] { ... }
+  ```
+
+  Affected components: ButtonIcon, ButtonLink
+
+- caeb9ad: **BREAKING**: The `cell` and `header` properties in `ColumnConfig` now return `ReactElement` instead of `ReactNode`.
+
+  This fixes an issue where React Aria's Collection component would inject an `id` prop into Fragment wrappers, causing "Invalid prop `id` supplied to `React.Fragment`" errors on render.
+
+  Migration:
+
+  ```diff
+  const columns: ColumnConfig<MyItem>[] = [
+    {
+      id: 'name',
+      label: 'Name',
+  -   cell: (item) => item.name,
+  +   cell: (item) => <CellText title={item.name} />,
+  -   header: () => 'Name',
+  +   header: () => <Column>Name</Column>,
+    },
+  ];
+  ```
+
+### Patch Changes
+
+- 350c948: Fixed Box component to forward HTML attributes to the underlying div element.
+
+  **Affected components:** Box
+
+- 7455dae: Use node prefix on native imports
+- 508bd1a: Added new `Alert` component with support for status variants (info, success, warning, danger), icons, loading states, and custom actions.
+
+  Updated status color tokens for improved contrast and consistency across light and dark themes:
+
+  - Added new `--bui-bg-info` and `--bui-fg-info` tokens for info status
+  - Updated `--bui-bg-danger`, `--bui-fg-danger` tokens
+  - Updated `--bui-bg-warning`, `--bui-fg-warning` tokens
+  - Updated `--bui-bg-success`, `--bui-fg-success` tokens
+
+  **Affected components**: Alert
+
+- da30862: Fixed client-side navigation for container components by wrapping the container (not individual items) in RouterProvider. Components now conditionally provide routing context only when children have internal links, removing the Router context requirement when not needed. This also removes the need to wrap these components in MemoryRouter during tests when they are not using the `href` prop.
+
+  Additionally, when multiple tabs match the current URL via prefix matching, the tab with the most specific path (highest segment count) is now selected. For example, with URL `/catalog/users/john`, a tab with path `/catalog/users` is now selected over a tab with path `/catalog`.
+
+  Affected components: Tabs, Tab, TagGroup, Tag, Menu, MenuItem, MenuAutocomplete
+
+- 092c453: Fixed an infinite render loop in Tabs when navigating to a URL that doesn't match any tab `href`.
+- 5320aa8: Fixed components to not require a Router context when rendering without internal links.
+
+  Affected components: Link, ButtonLink, Row
+
+- cb090b4: Bump react-aria-components to v1.14.0
+- c429101: Fixed React 17 compatibility by using `useId` from `react-aria` instead of the built-in React hook which is only available in React 18+.
+- Updated dependencies
+  - @backstage/version-bridge@1.0.11
+
 ## 0.11.0
 
 ### Minor Changes

@@ -1,5 +1,14 @@
 # @backstage/integration
 
+## 1.19.3-next.0
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- Updated dependencies
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+
 ## 1.19.2
 
 ### Patch Changes
