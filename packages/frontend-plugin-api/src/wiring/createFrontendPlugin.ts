@@ -130,6 +130,15 @@ export interface FrontendPlugin<
   },
 > {
   readonly $$type: '@backstage/FrontendPlugin';
+  /**
+   * The plugin ID.
+   */
+  readonly pluginId: string;
+  /**
+   * Deprecated alias for `pluginId`.
+   *
+   * @deprecated Use `pluginId` instead.
+   */
   readonly id: string;
   readonly routes: TRoutes;
   readonly externalRoutes: TExternalRoutes;
@@ -231,6 +240,7 @@ export function createFrontendPlugin<
   }
 
   return OpaqueFrontendPlugin.createInstance('v1', {
+    pluginId,
     id: pluginId,
     routes: options.routes ?? ({} as TRoutes),
     externalRoutes: options.externalRoutes ?? ({} as TExternalRoutes),

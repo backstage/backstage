@@ -252,11 +252,11 @@ function resolveV2Inputs(
   return mapValues(inputMap, (input, inputName) => {
     const allAttachedNodes = attachments.get(inputName) ?? [];
     const collector = parentCollector.child({ inputName });
-    const inputPluginId = node.spec.plugin.id;
+    const inputPluginId = node.spec.plugin.pluginId;
 
     const attachedNodes = input.config.internal
       ? allAttachedNodes.filter(attachment => {
-          const attachmentPluginId = attachment.spec.plugin.id;
+          const attachmentPluginId = attachment.spec.plugin.pluginId;
           if (attachmentPluginId !== inputPluginId) {
             collector.report({
               code: 'EXTENSION_INPUT_INTERNAL_IGNORED',

@@ -1383,9 +1383,10 @@ export interface FrontendPlugin<
   readonly $$type: '@backstage/FrontendPlugin';
   // (undocumented)
   readonly externalRoutes: TExternalRoutes;
-  // (undocumented)
+  // @deprecated
   readonly id: string;
   info(): Promise<FrontendPluginInfo>;
+  readonly pluginId: string;
   // (undocumented)
   readonly routes: TRoutes;
 }
