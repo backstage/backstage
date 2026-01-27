@@ -14,10 +14,21 @@
  * limitations under the License.
  */
 
-import { forwardRef, Ref, isValidElement, ReactElement, useRef } from 'react';
-import { motion } from 'motion/react';
-import { useToast } from '@react-aria/toast';
-import { useButton } from 'react-aria';
+import {
+  forwardRef,
+  Ref,
+  isValidElement,
+  ReactElement,
+  useContext,
+  useState,
+  useEffect,
+  useRef,
+} from 'react';
+import {
+  UNSTABLE_Toast as RAToast,
+  UNSTABLE_ToastStateContext,
+  Button as RAButton,
+} from 'react-aria-components';
 import {
   RiInformationLine,
   RiCheckLine,
@@ -28,8 +39,6 @@ import {
 import type { ToastProps } from './types';
 import { useDefinition } from '../../hooks/useDefinition';
 import { ToastDefinition } from './definition';
-import type { ToastState } from 'react-stately';
-import type { ToastContent } from './types';
 
 /**
  * A Toast displays a brief, temporary notification of actions, errors, or other events in an application.
@@ -44,15 +53,15 @@ import type { ToastContent } from './types';
  * @example
  * Basic usage with queue:
  * ```tsx
- * import { queue } from '@backstage/ui';
+ * import { toastQueue } from '@backstage/ui';
  *
- * queue.add({ title: 'File saved successfully', status: 'success' });
+ * toastQueue.add({ title: 'File saved successfully', status: 'success' });
  * ```
  *
  * @example
  * With description and auto-dismiss:
  * ```tsx
- * queue.add(
+ * toastQueue.add(
  *   {
  *     title: 'Update available',
  *     description: 'A new version is ready to install.',
@@ -65,17 +74,80 @@ import type { ToastContent } from './types';
  * @public
  */
 export const Toast = forwardRef(
-  (props: ToastProps, _forwardedRef: Ref<HTMLDivElement>) => {
-    const { ownProps, dataAttributes } = useDefinition(ToastDefinition, props);
-    const { classes, toast, state, index = 0, status, icon } = ownProps;
+  (props: ToastProps, ref: Ref<HTMLDivElement>) => {
+    const { ownProps, restProps, dataAttributes } = useDefinition(
+      ToastDefinition,
+      props,
+    );
+    const { classes, toast, onSwipeEnd, status, icon } = ownProps;
 
-    const ref = useRef<HTMLDivElement>(null);
-    const closeButtonRef = useRef<HTMLButtonElement>(null);
+    // Get state from context
+    const state = useContext(UNSTABLE_ToastStateContext);
 
-    const { toastProps, titleProps, descriptionProps, closeButtonProps } =
-      useToast({ toast }, state, ref);
+    // Calculate index from state
+    const visibleToasts = state?.visibleToasts || [];
+    const arrayIndex = visibleToasts.findIndex(t => t.key === toast.key);
+    const index = arrayIndex >= 0 ? arrayIndex : 0;
 
-    const { buttonProps } = useButton(closeButtonProps, closeButtonRef);
+    // Track starting state for enter animation
+    const [isStarting, setIsStarting] = useState(true);
+
+    // Track swipe position
+    const [swipeX, setSwipeX] = useState(0);
+    const [isSwiping, setIsSwiping] = useState(false);
+    const [isExpanded, setIsExpanded] = useState(false);
+    const startXRef = useRef(0);
+    const toastRef = useRef<HTMLDivElement>(null);
+
+    useEffect(() => {
+      // Remove starting state after brief delay to trigger animation
+      const timer = setTimeout(() => setIsStarting(false), 50);
+      return () => clearTimeout(timer);
+    }, []);
+
+    const handlePointerDown = (e: React.PointerEvent) => {
+      // Check if region is hovered (expanded state)
+      const region = toastRef.current?.closest(
+        '[role="region"]',
+      ) as HTMLElement;
+      setIsExpanded(region?.matches(':hover') || false);
+
+      setIsSwiping(true);
+      startXRef.current = e.clientX;
+      (e.target as HTMLElement).setPointerCapture(e.pointerId);
+    };
+
+    const handlePointerMove = (e: React.PointerEvent) => {
+      if (!isSwiping) return;
+
+      const deltaX = e.clientX - startXRef.current;
+      // Only allow swipe right
+      if (deltaX > 0) {
+        setSwipeX(deltaX);
+      }
+    };
+
+    const handlePointerUp = (e: React.PointerEvent) => {
+      if (!isSwiping) return;
+
+      setIsSwiping(false);
+      (e.target as HTMLElement).releasePointerCapture(e.pointerId);
+
+      // Notify parent that swipe ended to lock hover
+      onSwipeEnd?.();
+
+      // If swiped more than 150px, close the toast
+      if (swipeX > 150) {
+        // Animate off screen before closing
+        setSwipeX(400);
+        setTimeout(() => {
+          state?.close(toast.key);
+        }, 200);
+      } else {
+        // Spring back
+        setSwipeX(0);
+      }
+    };
 
     // Get content from toast
     const content = toast.content;
@@ -116,46 +188,71 @@ export const Toast = forwardRef(
     const statusIcon = getStatusIcon();
 
     return (
-      <motion.div
-        ref={ref}
+      <RAToast
+        toast={toast}
+        ref={node => {
+          if (toastRef) {
+            (
+              toastRef as React.MutableRefObject<HTMLDivElement | null>
+            ).current = node;
+          }
+          if (typeof ref === 'function') {
+            ref(node);
+          } else if (ref) {
+            (ref as React.MutableRefObject<HTMLDivElement | null>).current =
+              node;
+          }
+        }}
         className={classes.root}
         style={
           {
             '--toast-index': index,
+            '--swipe-x': swipeX,
+            transform:
+              swipeX > 0
+                ? isExpanded
+                  ? `translateX(${swipeX}px) translateY(calc((var(--toast-index) * -100%) - (var(--toast-index) * var(--bui-space-2)))) scale(1)`
+                  : `translateX(${swipeX}px) translateY(calc(var(--toast-index) * var(--toast-peek) * -1)) scale(var(--toast-scale))`
+                : undefined,
           } as React.CSSProperties
         }
-        {...toastProps}
+        data-swiping={isSwiping ? '' : undefined}
+        onPointerDown={handlePointerDown}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        onPointerCancel={() => {
+          setIsSwiping(false);
+          setSwipeX(0);
+        }}
         {...dataAttributes}
         data-status={finalStatus}
-        initial={{ y: '150%', opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        exit={{ y: '150%', opacity: 0 }}
-        transition={{
-          duration: 0.4,
-          ease: [0.22, 1, 0.36, 1],
-        }}
+        data-starting-style={isStarting ? '' : undefined}
+        {...restProps}
       >
         <div className={classes.content}>
           {statusIcon && <div className={classes.icon}>{statusIcon}</div>}
           <div>
-            <div {...titleProps} className={classes.title}>
-              {content.title}
-            </div>
+            <div className={classes.title}>{content.title}</div>
             {content.description && (
-              <div {...descriptionProps} className={classes.description}>
-                {content.description}
-              </div>
+              <div className={classes.description}>{content.description}</div>
             )}
           </div>
         </div>
-        <button
-          {...buttonProps}
-          ref={closeButtonRef}
+        <RAButton
+          slot="close"
           className={classes.closeButton}
+          onPress={() => {
+            // Lock hover first to prevent collapse
+            onSwipeEnd?.();
+            // Small delay before actually closing to let lock take effect
+            setTimeout(() => {
+              state?.close(toast.key);
+            }, 0);
+          }}
         >
           <RiCloseLine aria-hidden="true" />
-        </button>
-      </motion.div>
+        </RAButton>
+      </RAToast>
     );
   },
 );

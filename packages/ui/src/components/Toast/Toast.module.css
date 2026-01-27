@@ -78,20 +78,52 @@
 
   /* Stacking from bottom */
   .bui-Toast {
+    --swipe-x: 0;
+    
     bottom: 0;
+    left: 0;
+    width: 100%;
     transform-origin: bottom center;
     transform: translateY(calc(var(--toast-index) * var(--toast-peek) * -1))
       scale(var(--toast-scale));
     opacity: calc(1 - (var(--toast-index) * 0.15));
+    will-change: transform;
+  }
+  
+  /* Disable transitions during swipe for immediate feedback */
+  .bui-Toast[data-swiping] {
+    transition: none !important;
+    opacity: calc((1 - (var(--toast-index) * 0.15)) * (1 - (var(--swipe-x) / 400)));
   }
 
-  /* Only first toast is interactive */
-  .bui-Toast[style*='--toast-index: 0'] {
+  /* Expanded state on hover - show all toasts stacked with gap */
+  .bui-ToastRegion:hover .bui-Toast,
+  .bui-ToastRegion:focus-within .bui-Toast,
+  .bui-ToastRegion[data-hover-locked] .bui-Toast {
+    transform: translateY(calc((var(--toast-index) * -100%) - (var(--toast-index) * var(--bui-space-2)))) scale(1);
+    opacity: 1;
     pointer-events: auto;
   }
+  
+  /* Add padding above each toast when expanded to fill the gap */
+  .bui-ToastRegion:hover .bui-Toast::before,
+  .bui-ToastRegion:focus-within .bui-Toast::before,
+  .bui-ToastRegion[data-hover-locked] .bui-Toast::before {
+    content: '';
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    right: 0;
+    height: var(--bui-space-2);
+  }
 
-  .bui-Toast:not([style*='--toast-index: 0']) {
+  /* Only first toast (index 0) is interactive by default */
+  .bui-Toast {
     pointer-events: none;
+  }
+  
+  .bui-Toast[style*='--toast-index: 0'] {
+    pointer-events: auto;
   }
 
   /* Status variants */
@@ -193,10 +225,21 @@
     }
   }
 
+  /* Starting state - toast entering */
+  .bui-Toast[data-starting-style] {
+    transform: translateY(calc(100% + 2rem)) scale(1) !important;
+    opacity: 0 !important;
+  }
+
   /* Reduced motion */
   @media (prefers-reduced-motion: reduce) {
     .bui-Toast {
       transition: none;
+    }
+
+    html.bui-toast-add::view-transition-new(*),
+    html.bui-toast-remove::view-transition-old(*) {
+      animation: none;
     }
   }
 }

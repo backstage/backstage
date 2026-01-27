@@ -35,8 +35,7 @@ export const ToastDefinition = defineComponent<ToastOwnProps>()({
   surface: 'container',
   propDefs: {
     toast: {},
-    state: {},
-    index: {},
+    onSwipeEnd: {},
     status: { dataAttribute: true },
     icon: {},
   },

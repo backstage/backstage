@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-import { forwardRef, Ref, useEffect, useState, useRef } from 'react';
-import { useToastRegion } from '@react-aria/toast';
-import { AnimatePresence } from 'motion/react';
-import type { QueuedToast, ToastState } from 'react-stately';
-import type { ToastRegionProps, ToastContent } from './types';
+import { forwardRef, Ref, useState, useRef } from 'react';
+import { UNSTABLE_ToastRegion as RAToastRegion } from 'react-aria-components';
+import type { ToastRegionProps } from './types';
 import { useDefinition } from '../../hooks/useDefinition';
 import { ToastRegionDefinition } from './definition';
 import { Toast } from './Toast';
@@ -53,57 +51,58 @@ import { Toast } from './Toast';
  * @public
  */
 export const ToastRegion = forwardRef(
-  (props: ToastRegionProps, _ref: Ref<HTMLDivElement>) => {
+  (props: ToastRegionProps, ref: Ref<HTMLDivElement>) => {
     const { ownProps, restProps, dataAttributes } = useDefinition(
       ToastRegionDefinition,
       props,
     );
     const { classes, queue, className } = ownProps;
 
-    const [, forceUpdate] = useState({});
-    const ref = useRef<HTMLDivElement>(null);
+    // Lock hover state after swipe/close to prevent collapse
+    const [isHoverLocked, setIsHoverLocked] = useState(false);
+    const unlockTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-    useEffect(() => {
-      // Subscribe to queue changes to trigger re-renders
-      const unsubscribe = queue.subscribe(() => forceUpdate({}));
-      return unsubscribe;
-    }, [queue]);
-
-    const state: ToastState<ToastContent> = {
-      visibleToasts: queue.visibleToasts,
-      add: (content: ToastContent, options?: any) =>
-        queue.add(content, options),
-      close: (key: string) => queue.close(key),
-      pauseAll: () => queue.pauseAll(),
-      resumeAll: () => queue.resumeAll(),
+    const lockHover = () => {
+      setIsHoverLocked(true);
+      // Clear any pending unlock
+      if (unlockTimerRef.current) {
+        clearTimeout(unlockTimerRef.current);
+      }
     };
 
-    const { regionProps } = useToastRegion({}, state, ref);
+    const unlockHover = (e: React.MouseEvent) => {
+      // Check if mouse is actually leaving the region bounds
+      const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+      const isOutside =
+        e.clientX < rect.left ||
+        e.clientX > rect.right ||
+        e.clientY < rect.top ||
+        e.clientY > rect.bottom;
+
+      if (!isOutside) {
+        // Mouse is still inside, don't unlock yet
+        return;
+      }
+
+      // Delay unlock to prevent collapse during DOM updates
+      unlockTimerRef.current = setTimeout(() => {
+        setIsHoverLocked(false);
+      }, 100);
+    };
 
     return (
-      <div
-        {...regionProps}
+      <RAToastRegion
         ref={ref}
+        queue={queue}
         className={className || classes.region}
+        aria-label="Notifications"
+        data-hover-locked={isHoverLocked ? '' : undefined}
         {...dataAttributes}
         {...restProps}
+        onMouseLeave={unlockHover}
       >
-        <ol style={{ margin: 0, padding: 0, listStyleType: 'none' }}>
-          <AnimatePresence mode="popLayout">
-            {queue.visibleToasts.map(
-              (toast: QueuedToast<ToastContent>, arrayIndex: number) => {
-                // Reverse index so newest toast (at end of array) gets index 0
-                const index = queue.visibleToasts.length - 1 - arrayIndex;
-                return (
-                  <li key={toast.key} style={{ display: 'contents' }}>
-                    <Toast toast={toast} index={index} state={state} />
-                  </li>
-                );
-              },
-            )}
-          </AnimatePresence>
-        </ol>
-      </div>
+        {({ toast }) => <Toast toast={toast} onSwipeEnd={lockHover} />}
+      </RAToastRegion>
     );
   },
 );

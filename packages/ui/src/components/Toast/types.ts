@@ -41,10 +41,8 @@ export interface ToastContent {
 export type ToastOwnProps = {
   /** Toast object from the queue */
   toast: QueuedToast<ToastContent>;
-  /** Toast state for hooks */
-  state: ToastState<ToastContent>;
-  /** Index of the toast in the stack (0 = frontmost) */
-  index: number;
+  /** Callback when swipe ends */
+  onSwipeEnd?: () => void;
   /** Override status from content */
   status?: Responsive<'info' | 'success' | 'warning' | 'danger'>;
   /** Override icon from content */
