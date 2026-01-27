@@ -8,7 +8,11 @@ import {
   containerSimpleSnippet,
   containerResponsiveSnippet,
 } from './snippets';
-import { Preview } from './components';
+import {
+  Preview,
+  BasicUsagePreview,
+  ResponsiveSpacingPreview,
+} from './components';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
 import { ContainerDefinition } from '../../../utils/definitions';
@@ -17,7 +21,7 @@ import { ChangelogComponent } from '@/components/ChangelogComponent';
 <PageTitle
   type="Layout"
   title="Container"
-  description="The container component let you use our default max-width and center the content on the page."
+  description="A centered layout wrapper with max-width and vertical spacing props."
 />
 
 <Snippet py={4} preview={<Preview />} code={previewSnippet} />
@@ -32,18 +36,23 @@ import { ChangelogComponent } from '@/components/ChangelogComponent';
 
 ## Examples
 
-### Simple
+### Basic Usage
 
-A simple example of how to use the Container component.
+<Snippet
+  preview={<BasicUsagePreview />}
+  code={containerSimpleSnippet}
+  layout="side-by-side"
+/>
 
-<CodeBlock code={containerSimpleSnippet} />
+### Responsive Spacing
 
-### Responsive padding & margin
+Spacing props accept breakpoint objects for responsive behavior.
 
-The Container component also supports responsive values, making it easy to
-create responsive designs.
-
-<CodeBlock code={containerResponsiveSnippet} />
+<Snippet
+  preview={<ResponsiveSpacingPreview />}
+  code={containerResponsiveSnippet}
+  layout="side-by-side"
+/>
 
 <Theming definition={ContainerDefinition} />
 

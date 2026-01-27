@@ -1,34 +1,42 @@
 'use client';
 
 import { Box } from '../../../../../packages/ui/src/components/Box/Box';
-
-const diagonalStripePattern = (() => {
-  const svg = `
-    <svg width="6" height="6" viewBox="0 0 6 6" xmlns="http://www.w3.org/2000/svg">
-      <g fill="#2563eb" fill-opacity="0.6" fill-rule="evenodd">
-        <path d="M5 0h1L0 6V5zM6 5v1H5z"/>
-      </g>
-    </svg>
-  `.trim();
-  return `data:image/svg+xml,${encodeURIComponent(svg)}`;
-})();
+import { Flex } from '../../../../../packages/ui/src/components/Flex/Flex';
 
 export const Default = () => {
   return (
+    <Box p="4" surface="1">
+      Hello World
+    </Box>
+  );
+};
+
+export const Surface = () => {
+  return (
+    <Flex direction="column" gap="4">
+      <Box p="4" surface="0">
+        Surface 0
+      </Box>
+      <Box p="4" surface="1">
+        Surface 1
+      </Box>
+      <Box p="4" surface="2">
+        Surface 2
+      </Box>
+      <Box p="4" surface="3">
+        Surface 3
+      </Box>
+    </Flex>
+  );
+};
+
+export const Responsive = () => {
+  return (
     <Box
-      width="64px"
-      height="64px"
-      style={{
-        background: '#eaf2fd',
-        borderRadius: '4px',
-        border: '1px solid #2563eb',
-        backgroundImage: `url("${diagonalStripePattern}")`,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        fontWeight: 'bold',
-        color: '#2563eb',
-      }}
-    />
+      p={{ initial: '2', md: '4' }}
+      display={{ initial: 'block', md: 'flex' }}
+    >
+      Hello World
+    </Box>
   );
 };

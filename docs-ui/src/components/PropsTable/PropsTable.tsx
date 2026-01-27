@@ -16,10 +16,10 @@ interface ColumnConfig {
 }
 
 const defaultColumns: ColumnConfig[] = [
-  { key: 'prop', width: '16%' },
-  { key: 'type', width: '50%' },
-  { key: 'default', width: '20%' },
-  { key: 'responsive', width: '14%' },
+  { key: 'prop' as const, width: '15%' },
+  { key: 'type' as const, width: '25%' },
+  { key: 'default' as const, width: '15%' },
+  { key: 'description' as const, width: '45%' },
 ];
 
 const columnLabels: Record<ColumnType, string> = {

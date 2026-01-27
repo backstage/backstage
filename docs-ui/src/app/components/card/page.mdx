@@ -10,10 +10,10 @@ import {
 import {
   cardUsageSnippet,
   defaultSnippet,
-  customSizeSnippet,
+  headerAndBodySnippet,
   withLongBodySnippet,
 } from './snippets';
-import { Default, CustomSize, WithLongBody } from './components';
+import { Default, HeaderAndBody, WithLongBody } from './components';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
 import { CardDefinition } from '../../../utils/definitions';
@@ -21,7 +21,7 @@ import { ChangelogComponent } from '@/components/ChangelogComponent';
 
 <PageTitle
   title="Card"
-  description="A card component that can be used to display content in a box."
+  description="A container with header, body, and footer sections for grouped content."
 />
 
 <Snippet align="center" py={4} preview={<Default />} code={defaultSnippet} />
@@ -32,54 +32,53 @@ import { ChangelogComponent } from '@/components/ChangelogComponent';
 
 ## API reference
 
-### Card
+All Card components extend `HTMLDivElement` attributes.
 
-A card component that can be used to display content in a box.
+### Card
 
 <PropsTable data={cardPropDefs} />
 
 ### CardHeader
 
-To display a header in a card, use the `CardHeader` component. This will be fixed at the top of the card.
+Fixed at the top of the card.
 
 <PropsTable data={cardHeaderPropDefs} />
 
 ### CardBody
 
-To display content in a card, use the `CardBody` component. This will automatically fill the card.
+Scrollable content area that fills available space.
 
 <PropsTable data={cardBodyPropDefs} />
 
 ### CardFooter
 
-To display a footer in a card, use the `CardFooter` component. This will be fixed at the bottom of the card.
+Fixed at the bottom of the card.
 
 <PropsTable data={cardFooterPropDefs} />
 
 ## Examples
 
-### Custom size
+### Header and body only
 
-Here's a view when card has a custom size.
+Cards can omit the footer section.
 
 <Snippet
   align="center"
   py={4}
-  preview={<CustomSize />}
-  code={customSizeSnippet}
-  open
+  layout="side-by-side"
+  preview={<HeaderAndBody />}
+  code={headerAndBodySnippet}
 />
 
-### With long body
+### Scrollable body
 
-Here's a view when card has a long body.
+When body content exceeds the available height, CardBody scrolls while header and footer remain fixed.
 
 <Snippet
   align="center"
   py={4}
   preview={<WithLongBody />}
   code={withLongBodySnippet}
-  open
 />
 
 <Theming definition={CardDefinition} />
