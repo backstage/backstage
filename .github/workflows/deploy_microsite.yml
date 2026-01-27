@@ -5,7 +5,7 @@ on:
       - master
 
 permissions:
-  contents: read
+  contents: write # for JamesIves/github-pages-deploy-action to push changes in repo
 
 jobs:
   stable:
@@ -307,6 +307,12 @@ jobs:
 
       - name: Check the build output
         run: ls microsite/build && ls microsite/build/storybook && ls microsite/build/api/stable && ls microsite/build/api/next
+
+      - name: Deploy both microsite and storybook to gh-pages
+        uses: JamesIves/github-pages-deploy-action@9d877eea73427180ae43cf98e8914934fe157a1a # v4.7.6
+        with:
+          branch: gh-pages
+          folder: microsite/build
 
       - name: Deploy to Netlify
         uses: nwtgck/actions-netlify@4cbaf4c08f1a7bfa537d6113472ef4424e4eb654 # v3.0.0
