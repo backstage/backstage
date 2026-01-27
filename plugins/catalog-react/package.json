@@ -103,7 +103,7 @@
     "react-dom": "^18.0.2",
     "react-router-dom": "^6.3.0",
     "react-test-renderer": "^16.13.1",
-    "zod": "^3.22.4"
+    "zod": "^3.25.76"
   },
   "peerDependencies": {
     "@types/react": "^17.0.0 || ^18.0.0",

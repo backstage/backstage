@@ -194,7 +194,7 @@
     "winston-transport": "^4.5.0",
     "yauzl": "^3.0.0",
     "yn": "^4.0.0",
-    "zod": "^3.22.4",
+    "zod": "^3.25.76",
     "zod-to-json-schema": "^3.25.1"
   },
   "devDependencies": {
