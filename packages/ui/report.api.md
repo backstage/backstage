@@ -443,7 +443,7 @@ export interface ButtonLinkProps
 
 // @public (undocumented)
 export type ButtonOwnProps = LeafSurfaceProps & {
-  size?: Responsive<'small' | 'medium' | 'large'>;
+  size?: Responsive<'small' | 'medium'>;
   variant?: Responsive<'primary' | 'secondary' | 'tertiary'>;
   iconStart?: ReactElement;
   iconEnd?: ReactElement;
