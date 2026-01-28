@@ -404,7 +404,10 @@ export function createSpecializedApp(options?: CreateSpecializedAppOptions): {
   return {
     apis,
     tree,
-    errors: collector.collectErrors(),
+    // Proxy the errors so that any errors collected after completeInitialization are also included.
+    get errors() {
+      return collector.collectErrors();
+    },
     async completeInitialization() {
       const disabledNodes = new Set<AppNode>();
       const newlyEnabledNodes: AppNode[] = [];

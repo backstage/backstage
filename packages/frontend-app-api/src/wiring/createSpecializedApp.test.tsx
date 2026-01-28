@@ -97,7 +97,7 @@ describe('createSpecializedApp', () => {
     expect(screen.getByText('Test foo')).toBeInTheDocument();
   });
 
-  it('should support APIs and feature flags', () => {
+  it('should support APIs and feature flags', async () => {
     const flags = new Array<{ name: string; pluginId: string }>();
     const app = createSpecializedApp({
       features: [
@@ -391,7 +391,7 @@ describe('createSpecializedApp', () => {
   });
 
   it('should use provided apis', async () => {
-    const app = await createSpecializedApp({
+    const app = createSpecializedApp({
       advanced: {
         apis: TestApiRegistry.from([
           configApiRef,
@@ -444,7 +444,7 @@ describe('createSpecializedApp', () => {
   it('should make the app structure available through the AppTreeApi', async () => {
     let appTreeApi: AppTreeApi | undefined = undefined;
 
-    const { tree } = await createSpecializedApp({
+    const { tree } = createSpecializedApp({
       features: [
         createFrontendPlugin({
           pluginId: 'test',
@@ -593,14 +593,12 @@ describe('createSpecializedApp', () => {
     });
 
     render(
-      (
-        await createSpecializedApp({
-          features: [pluginA, pluginB],
-          bindRoutes({ bind }) {
-            bind(pluginA.externalRoutes, { ext: pluginB.routes.root });
-          },
-        })
-      ).tree.root.instance!.getData(coreExtensionData.reactElement),
+      createSpecializedApp({
+        features: [pluginA, pluginB],
+        bindRoutes({ bind }) {
+          bind(pluginA.externalRoutes, { ext: pluginB.routes.root });
+        },
+      }).tree.root.instance!.getData(coreExtensionData.reactElement),
     );
 
     expect(screen.getByText('link: /test')).toBeInTheDocument();
@@ -609,7 +607,7 @@ describe('createSpecializedApp', () => {
   it('should support multiple attachment points', async () => {
     let appTreeApi: AppTreeApi | undefined = undefined;
 
-    await createSpecializedApp({
+    createSpecializedApp({
       features: [
         createFrontendPlugin({
           pluginId: 'test',
@@ -686,10 +684,10 @@ describe('createSpecializedApp', () => {
     `);
   });
 
-  it('should apply multiple middlewares in order', async () => {
+  it('should apply multiple middlewares in order', () => {
     const textDataRef = createExtensionDataRef<string>().with({ id: 'text' });
 
-    const app = await createSpecializedApp({
+    const app = createSpecializedApp({
       features: [
         createFrontendPlugin({
           pluginId: 'test',
@@ -772,7 +770,7 @@ describe('createSpecializedApp', () => {
         "Attempted to load plugin info for plugin 'test', but the plugin instance is not installed in an app";
       await expect(plugin.info()).rejects.toThrow(errorMsg);
 
-      const app = await createSpecializedApp({ features: [plugin] });
+      const app = createSpecializedApp({ features: [plugin] });
 
       await expect(plugin.info()).rejects.toThrow(errorMsg);
 
@@ -791,7 +789,7 @@ describe('createSpecializedApp', () => {
         extensions: [testExtension],
       });
 
-      const app = await createSpecializedApp({ features: [plugin] });
+      const app = createSpecializedApp({ features: [plugin] });
       const info = await app.tree.nodes.get('test')?.spec.plugin?.info();
       expect(info).toMatchObject({
         packageName: '@backstage/frontend-app-api',
@@ -814,7 +812,7 @@ describe('createSpecializedApp', () => {
         },
       });
 
-      const app = await createSpecializedApp({ features: [overriddenPlugin] });
+      const app = createSpecializedApp({ features: [overriddenPlugin] });
       const info = await app.tree.nodes.get('test')?.spec.plugin?.info();
       expect(info).toMatchObject({
         packageName: 'test-override',
@@ -838,7 +836,7 @@ describe('createSpecializedApp', () => {
         extensions: [testExtension],
       });
 
-      const app = await createSpecializedApp({ features: [plugin] });
+      const app = createSpecializedApp({ features: [plugin] });
       const info = await app.tree.nodes.get('test')?.spec.plugin?.info();
       expect(info).toEqual({
         packageName: '@backstage/frontend-app-api',
@@ -857,7 +855,7 @@ describe('createSpecializedApp', () => {
         extensions: [testExtension],
       });
 
-      const app = await createSpecializedApp({
+      const app = createSpecializedApp({
         features: [plugin],
         advanced: {
           pluginInfoResolver: async ctx => {
