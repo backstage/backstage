@@ -66,11 +66,6 @@ export class LunrSearchEngine implements SearchEngine {
     );
   }
 
-  /** @deprecated Use docStores instead */
-  protected set docStore(value: Record<string, IndexableDocument>) {
-    this.docStores.__legacy__ = value;
-  }
-
   constructor(options: { logger: LoggerService }) {
     this.logger = options.logger;
     const uuidTag = uuid();
@@ -261,7 +256,7 @@ export class LunrSearchEngine implements SearchEngine {
     const realResultSet: IndexableResultSet = {
       results: results.slice(offset, offset + pageSize).map((d, index) => ({
         type: d.type,
-        document: this.docStore[d.result.ref],
+        document: this.docStores[d.type]?.[d.result.ref],
         rank: page * pageSize + index + 1,
         highlight: {
           preTag: this.highlightPreTag,
@@ -269,7 +264,7 @@ export class LunrSearchEngine implements SearchEngine {
           fields: parseHighlightFields({
             preTag: this.highlightPreTag,
             postTag: this.highlightPostTag,
-            doc: this.docStore[d.result.ref],
+            doc: this.docStores[d.type]?.[d.result.ref],
             positionMetadata: d.result.matchData.metadata as any,
           }),
         },
