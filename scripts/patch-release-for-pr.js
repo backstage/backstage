@@ -244,7 +244,11 @@ async function main(args) {
     await run('git', 'checkout', '-b', branchName);
   }
 
+  const appliedPrNumbers = [];
+
   for (const prNumber of prNumbers) {
+    console.log(`Processing PR #${prNumber}...`);
+
     const { data } = await octokit.pulls.get({
       owner,
       repo,
@@ -271,18 +275,70 @@ async function main(args) {
       '--reverse',
       '--pretty=%H',
     );
-    for (const logSha of logLines.split(/\r?\n/)) {
-      await run('git', 'cherry-pick', '-n', logSha);
+
+    const commitMessage = `Patch from PR #${prNumber}`;
+
+    // Check if this patch has already been applied by looking for the commit message
+    try {
+      const existingCommit = await run(
+        'git',
+        'log',
+        '--grep',
+        commitMessage,
+        '--format=%H',
+        '-1',
+      );
+
+      if (existingCommit) {
+        console.log(
+          `Patch from PR #${prNumber} has already been applied, skipping...`,
+        );
+        continue;
+      }
+    } catch {
+      // No existing commit found, proceed with cherry-pick
     }
-    await run(
-      'git',
-      'commit',
-      '--signoff',
-      '--no-verify',
-      '-m',
-      `Patch from PR #${prNumber}`,
-    );
+
+    let hasChanges = false;
+    for (const logSha of logLines.split(/\r?\n/)) {
+      try {
+        await run('git', 'cherry-pick', '-n', logSha);
+        hasChanges = true;
+      } catch (error) {
+        // Check if the cherry-pick failed because changes are already applied
+        const status = await run('git', 'status', '--porcelain');
+        if (!status) {
+          console.log(
+            `Commit ${logSha} appears to be already applied, skipping...`,
+          );
+          continue;
+        }
+        throw error;
+      }
+    }
+
+    if (!hasChanges) {
+      console.log(
+        `All commits from PR #${prNumber} are already applied, skipping...`,
+      );
+      continue;
+    }
+
+    await run('git', 'commit', '--signoff', '--no-verify', '-m', commitMessage);
+
+    appliedPrNumbers.push(prNumber);
   }
+
+  if (appliedPrNumbers.length === 0) {
+    console.log('All patches have already been applied, nothing to do.');
+    return;
+  }
+
+  console.log(
+    `Applied ${appliedPrNumbers.length} patch(es): ${appliedPrNumbers.join(
+      ', ',
+    )}`,
+  );
 
   console.log('Running "yarn install" ...');
   await run('yarn', 'install');
@@ -311,12 +367,17 @@ async function main(args) {
     await run('git', 'push', 'origin', '-u', branchName);
   }
 
-  // Generate PR body
+  // Generate PR body using only applied patches
   let body;
   if (descriptions) {
-    const descriptionList = descriptions
+    // Filter descriptions to only include applied patches
+    const appliedDescriptions = descriptions.filter((_, index) =>
+      appliedPrNumbers.includes(prNumbers[index]),
+    );
+
+    const descriptionList = appliedDescriptions
       .map((desc, index) => {
-        const prNumber = prNumbers[index];
+        const prNumber = appliedPrNumbers[index];
         const prLink = `https://github.com/${owner}/${repo}/pull/${prNumber}`;
         return `- ${desc} ([#${prNumber}](${prLink}))`;
       })
@@ -329,7 +390,9 @@ async function main(args) {
   const params = new URLSearchParams({
     expand: 1,
     body: body,
-    title: `Patch release of ${prNumbers.map(nr => `#${nr}`).join(', ')}`,
+    title: `Patch release of ${appliedPrNumbers
+      .map(nr => `#${nr}`)
+      .join(', ')}`,
   });
 
   const url = `https://github.com/backstage/backstage/compare/${patchBranch}...${branchName}?${params}`;
