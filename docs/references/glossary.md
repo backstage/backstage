@@ -208,7 +208,7 @@ One of the [packages](#package) within a [monorepo](#monorepo). A package may or
 
 1. A single repository for a collection of related software projects, such as all projects belonging to an organization.
 
-2. A project layout that consists of multiple [packages](#package) within a single project, where packages are able to have local dependencies on each other. Often enabled through tooling such as [lerna](https://lerna.js.org/) and [yarn workspaces](https://classic.yarnpkg.com/en/docs/workspaces/)
+2. A project layout that consists of multiple [packages](#package) within a single project, where packages are able to have local dependencies on each other. Often enabled through tooling such as [yarn workspaces](https://classic.yarnpkg.com/en/docs/workspaces/)
 
 ## Name
 

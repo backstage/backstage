@@ -17,11 +17,11 @@
 import Docker from 'dockerode';
 import fs from 'fs-extra';
 import { ForwardedError } from '@backstage/errors';
-import { PassThrough } from 'stream';
-import { pipeline as pipelineStream } from 'stream';
-import { promisify } from 'util';
+import { PassThrough } from 'node:stream';
+import { pipeline as pipelineStream } from 'node:stream';
+import { promisify } from 'node:util';
 import { TechDocsContainerRunner } from './types';
-import { Writable } from 'stream';
+import { Writable } from 'node:stream';
 
 const pipeline = promisify(pipelineStream);
 

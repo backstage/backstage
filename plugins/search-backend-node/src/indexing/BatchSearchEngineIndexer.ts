@@ -16,7 +16,7 @@
 
 import { assertError } from '@backstage/errors';
 import { IndexableDocument } from '@backstage/plugin-search-common';
-import { Writable } from 'stream';
+import { Writable } from 'node:stream';
 
 /**
  * Options for {@link BatchSearchEngineIndexer}

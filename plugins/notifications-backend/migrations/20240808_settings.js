@@ -13,6 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
+// @ts-check
+
+/**
+ * @param {import('knex').Knex} knex
+ */
 exports.up = async function up(knex) {
   await knex.schema.createTable('user_settings', table => {
     table.string('user').notNullable();

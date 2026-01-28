@@ -25,7 +25,7 @@ import { ScannedPluginPackage } from '../scanner';
 import { PluginScanner } from '../scanner/plugin-scanner';
 import { ModuleLoader } from '../loader';
 import { CommonJSModuleLoader } from '../loader/CommonJSModuleLoader';
-import * as url from 'url';
+import * as url from 'node:url';
 import {
   BackendFeature,
   LoggerService,
@@ -36,7 +36,7 @@ import {
 } from '@backstage/backend-plugin-api';
 import { PackageRole, PackageRoles } from '@backstage/cli-node';
 import { findPaths } from '@backstage/cli-common';
-import * as fs from 'fs';
+import * as fs from 'node:fs';
 
 /**
  * @public
@@ -99,11 +99,18 @@ export class DynamicPluginManager implements DynamicPluginProvider {
   private readonly _plugins: DynamicPlugin[];
   private _availablePackages: ScannedPluginPackage[];
 
+  private readonly logger: LoggerService;
+  private readonly packages: ScannedPluginPackage[];
+  private readonly moduleLoader: ModuleLoader;
+
   private constructor(
-    private readonly logger: LoggerService,
-    private readonly packages: ScannedPluginPackage[],
-    private readonly moduleLoader: ModuleLoader,
+    logger: LoggerService,
+    packages: ScannedPluginPackage[],
+    moduleLoader: ModuleLoader,
   ) {
+    this.logger = logger;
+    this.packages = packages;
+    this.moduleLoader = moduleLoader;
     this._plugins = [];
     this._availablePackages = packages;
   }
@@ -304,7 +311,11 @@ export const dynamicPluginsServiceFactory = Object.assign(
 );
 
 class DynamicPluginsEnabledFeatureDiscoveryService {
-  constructor(private readonly dynamicPlugins: DynamicPluginProvider) {}
+  private readonly dynamicPlugins: DynamicPluginProvider;
+
+  constructor(dynamicPlugins: DynamicPluginProvider) {
+    this.dynamicPlugins = dynamicPlugins;
+  }
 
   async getBackendFeatures(): Promise<{ features: Array<BackendFeature> }> {
     return {

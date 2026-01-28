@@ -15,20 +15,20 @@
  */
 
 import { getPackages, Package, Packages } from '@manypkg/get-packages';
-import os from 'os';
+import os from 'node:os';
 import fs from 'fs-extra';
 import {
   relative as relativePath,
   join as joinPath,
   resolve as resolvePath,
   posix,
-} from 'path';
+} from 'node:path';
 import { exec } from '../../lib/exec';
 import { ForwardedError } from '@backstage/errors';
-import { Readable } from 'stream';
-import { finished } from 'stream/promises';
-import { ReadableStream } from 'stream/web';
-import tar from 'tar';
+import { Readable } from 'node:stream';
+import { finished } from 'node:stream/promises';
+import { ReadableStream } from 'node:stream/web';
+import * as tar from 'tar';
 
 // TODO: add option for this
 const DEFAULT_REGISTRY_URL = 'https://registry.npmjs.org';
@@ -98,7 +98,9 @@ export default async (
     throw new Error(`Could not find package ${packageArg} in source repo`);
   }
 
-  const tmpDir = await fs.mkdtemp(os.tmpdir());
+  const tmpDir = await fs.mkdtemp(
+    joinPath(os.tmpdir(), 'backstage-repo-tools-generate-patch-'),
+  );
   const ctx: PatchContext = {
     sourceRepo,
     targetRepo,

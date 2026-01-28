@@ -25,11 +25,12 @@ import {
   DocumentCollatorFactory,
   IndexableDocument,
 } from '@backstage/plugin-search-common';
-import { Readable } from 'stream';
+import { Readable } from 'node:stream';
 
 /**
  * Extended IndexableDocument with explore tool specific properties
  *
+ * @deprecated This entire package is deprecated and has been moved to the Backstage community repository; please use the `@backstage-community/plugin-search-backend-module-explore` package instead.
  * @public
  */
 export interface ToolDocument extends IndexableDocument, ExploreTool {}

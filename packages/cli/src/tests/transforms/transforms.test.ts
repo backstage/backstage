@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { execFileSync } from 'child_process';
-import { resolve as resolvePath } from 'path';
+import { execFileSync } from 'node:child_process';
+import { resolve as resolvePath } from 'node:path';
 import { Output, buildPackage } from '../../modules/build/lib/builder';
 
 const exportValues = {
@@ -36,18 +36,18 @@ const exportValues = {
 };
 
 const expectedExports = {
-  commonJs: {
+  commonJs: expect.objectContaining({
     ...exportValues.commonJs,
     dyn: exportValues.all,
     default: {
       ...exportValues.commonJs,
       dyn: exportValues.all,
     },
-  },
-  module: {
+  }),
+  module: expect.objectContaining({
     ...exportValues.all,
     dyn: exportValues.all,
-  },
+  }),
 };
 
 function loadFixture(fixture: string) {

@@ -20,6 +20,7 @@ import { AuthProviderInfo } from '@backstage/core-plugin-api';
 import { AuthRequestOptions } from '@backstage/core-plugin-api';
 import { BackstageIdentityApi } from '@backstage/core-plugin-api';
 import { BackstageIdentityResponse } from '@backstage/core-plugin-api';
+import { BackstageIdentityResponse as BackstageIdentityResponse_2 } from '@backstage/frontend-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { bitbucketAuthApiRef } from '@backstage/core-plugin-api';
 import { bitbucketServerAuthApiRef } from '@backstage/core-plugin-api';
@@ -52,8 +53,10 @@ import { Observable } from '@backstage/types';
 import { oktaAuthApiRef } from '@backstage/core-plugin-api';
 import { oneloginAuthApiRef } from '@backstage/core-plugin-api';
 import { OpenIdConnectApi } from '@backstage/core-plugin-api';
+import { openshiftAuthApiRef } from '@backstage/core-plugin-api';
 import { PendingOAuthRequest } from '@backstage/core-plugin-api';
 import { ProfileInfo } from '@backstage/core-plugin-api';
+import { ProfileInfo as ProfileInfo_2 } from '@backstage/frontend-plugin-api';
 import { ProfileInfoApi } from '@backstage/core-plugin-api';
 import { PropsWithChildren } from 'react';
 import PropTypes from 'prop-types';
@@ -61,6 +64,7 @@ import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/core-plugin-api';
 import { SessionApi } from '@backstage/core-plugin-api';
 import { SessionState } from '@backstage/core-plugin-api';
+import { SessionState as SessionState_2 } from '@backstage/frontend-plugin-api';
 import { StorageApi } from '@backstage/core-plugin-api';
 import { StorageValueSnapshot } from '@backstage/core-plugin-api';
 import { SubRouteRef } from '@backstage/core-plugin-api';
@@ -510,13 +514,13 @@ export class MicrosoftAuth {
   // (undocumented)
   getBackstageIdentity(
     options?: AuthRequestOptions,
-  ): Promise<BackstageIdentityResponse | undefined>;
+  ): Promise<BackstageIdentityResponse_2 | undefined>;
   // (undocumented)
   getIdToken(options?: AuthRequestOptions): Promise<string>;
   // (undocumented)
-  getProfile(options?: AuthRequestOptions): Promise<ProfileInfo | undefined>;
+  getProfile(options?: AuthRequestOptions): Promise<ProfileInfo_2 | undefined>;
   // (undocumented)
-  sessionState$(): Observable<SessionState>;
+  sessionState$(): Observable<SessionState_2>;
   // (undocumented)
   signIn(): Promise<void>;
   // (undocumented)
@@ -650,6 +654,12 @@ export type OpenLoginPopupOptions = {
   width?: number;
   height?: number;
 };
+
+// @public
+export class OpenShiftAuth {
+  // (undocumented)
+  static create(options: OAuthApiCreateOptions): typeof openshiftAuthApiRef.T;
+}
 
 // @public
 export type PopupOptions = {

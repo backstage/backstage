@@ -7,21 +7,20 @@ import { Entity } from '@backstage/catalog-model';
 import { EntityCardType } from '@backstage/plugin-catalog-react/alpha';
 import { EntityPredicate } from '@backstage/plugin-catalog-react/alpha';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
-import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
-import { ExtensionInput } from '@backstage/frontend-plugin-api';
-import { ExternalRouteRef } from '@backstage/frontend-plugin-api';
-import { FrontendPlugin } from '@backstage/frontend-plugin-api';
+import { ExternalRouteRef } from '@backstage/core-plugin-api';
 import { JSX as JSX_2 } from 'react';
+import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
+import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
 import { TranslationRef } from '@backstage/frontend-plugin-api';
 
 // @alpha (undocumented)
-const _default: FrontendPlugin<
+const _default: OverridableFrontendPlugin<
   {},
   {
-    catalogIndex: ExternalRouteRef<undefined>;
+    catalogIndex: ExternalRouteRef<undefined, true>;
   },
   {
-    'entity-card:org/group-profile': ExtensionDefinition<{
+    'entity-card:org/group-profile': OverridableExtensionDefinition<{
       kind: 'entity-card';
       name: 'group-profile';
       config: {
@@ -62,14 +61,63 @@ const _default: FrontendPlugin<
         type?: EntityCardType;
       };
     }>;
-    'entity-card:org/members-list': ExtensionDefinition<{
+    'entity-card:org/members-list': OverridableExtensionDefinition<{
+      config: {
+        initialRelationAggregation: 'direct' | 'aggregated' | undefined;
+        showAggregateMembersToggle: boolean | undefined;
+        filter: EntityPredicate | undefined;
+        type: 'content' | 'summary' | 'info' | undefined;
+      };
+      configInput: {
+        showAggregateMembersToggle?: boolean | undefined;
+        initialRelationAggregation?: 'direct' | 'aggregated' | undefined;
+        filter?: EntityPredicate | undefined;
+        type?: 'content' | 'summary' | 'info' | undefined;
+      };
+      output:
+        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
+        | ExtensionDataRef<
+            (entity: Entity) => boolean,
+            'catalog.entity-filter-function',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<
+            string,
+            'catalog.entity-filter-expression',
+            {
+              optional: true;
+            }
+          >
+        | ExtensionDataRef<
+            EntityCardType,
+            'catalog.entity-card-type',
+            {
+              optional: true;
+            }
+          >;
+      inputs: {};
       kind: 'entity-card';
       name: 'members-list';
+      params: {
+        loader: () => Promise<JSX.Element>;
+        filter?: string | EntityPredicate | ((entity: Entity) => boolean);
+        type?: EntityCardType;
+      };
+    }>;
+    'entity-card:org/ownership': OverridableExtensionDefinition<{
       config: {
+        initialRelationAggregation: 'direct' | 'aggregated' | undefined;
+        showAggregateMembersToggle: boolean | undefined;
+        ownedKinds: string[] | undefined;
         filter: EntityPredicate | undefined;
         type: 'content' | 'summary' | 'info' | undefined;
       };
       configInput: {
+        showAggregateMembersToggle?: boolean | undefined;
+        initialRelationAggregation?: 'direct' | 'aggregated' | undefined;
+        ownedKinds?: string[] | undefined;
         filter?: EntityPredicate | undefined;
         type?: 'content' | 'summary' | 'info' | undefined;
       };
@@ -97,65 +145,24 @@ const _default: FrontendPlugin<
             }
           >;
       inputs: {};
-      params: {
-        loader: () => Promise<JSX.Element>;
-        filter?: string | EntityPredicate | ((entity: Entity) => boolean);
-        type?: EntityCardType;
-      };
-    }>;
-    'entity-card:org/ownership': ExtensionDefinition<{
       kind: 'entity-card';
       name: 'ownership';
-      config: {
-        filter: EntityPredicate | undefined;
-        type: 'content' | 'summary' | 'info' | undefined;
-      };
-      configInput: {
-        filter?: EntityPredicate | undefined;
-        type?: 'content' | 'summary' | 'info' | undefined;
-      };
-      output:
-        | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
-        | ExtensionDataRef<
-            (entity: Entity) => boolean,
-            'catalog.entity-filter-function',
-            {
-              optional: true;
-            }
-          >
-        | ExtensionDataRef<
-            string,
-            'catalog.entity-filter-expression',
-            {
-              optional: true;
-            }
-          >
-        | ExtensionDataRef<
-            EntityCardType,
-            'catalog.entity-card-type',
-            {
-              optional: true;
-            }
-          >;
-      inputs: {};
       params: {
         loader: () => Promise<JSX.Element>;
         filter?: string | EntityPredicate | ((entity: Entity) => boolean);
         type?: EntityCardType;
       };
     }>;
-    'entity-card:org/user-profile': ExtensionDefinition<{
+    'entity-card:org/user-profile': OverridableExtensionDefinition<{
       config: {
         maxRelations: number | undefined;
         hideIcons: boolean;
-      } & {
         filter: EntityPredicate | undefined;
         type: 'content' | 'summary' | 'info' | undefined;
       };
       configInput: {
         hideIcons?: boolean | undefined;
         maxRelations?: number | undefined;
-      } & {
         filter?: EntityPredicate | undefined;
         type?: 'content' | 'summary' | 'info' | undefined;
       };
@@ -182,15 +189,7 @@ const _default: FrontendPlugin<
               optional: true;
             }
           >;
-      inputs: {
-        [x: string]: ExtensionInput<
-          ExtensionDataRef,
-          {
-            optional: boolean;
-            singleton: boolean;
-          }
-        >;
-      };
+      inputs: {};
       kind: 'entity-card';
       name: 'user-profile';
       params: {

@@ -7,7 +7,4 @@ description: This plugin provides an overview of all the resources provisioned t
 documentation: https://github.com/harness/backstage-plugins/tree/main/plugins/harness-iacm#harness-iacm-plugin
 iconUrl: https://static.harness.io/ng-static/images/favicon.png
 npmPackageName: '@harnessio/backstage-plugin-harness-iacm'
-tags:
-  - infrastructure-as-code
-  - resource-management
 addedDate: '2024-07-03'

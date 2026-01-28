@@ -26,13 +26,19 @@ import { ForwardedError } from '@backstage/errors';
 export class NotificationCleaner {
   private readonly retention: HumanDuration = { years: 1 };
   private readonly enabled: boolean = true;
+  private readonly scheduler: SchedulerService;
+  private readonly logger: LoggerService;
+  private readonly database: NotificationsStore;
 
   constructor(
     config: Config,
-    private readonly scheduler: SchedulerService,
-    private readonly logger: LoggerService,
-    private readonly database: NotificationsStore,
+    scheduler: SchedulerService,
+    logger: LoggerService,
+    database: NotificationsStore,
   ) {
+    this.scheduler = scheduler;
+    this.logger = logger;
+    this.database = database;
     if (config.has('notifications.retention')) {
       const retentionConfig = config.get('notifications.retention');
       if (typeof retentionConfig === 'boolean' && !retentionConfig) {

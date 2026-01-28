@@ -5,8 +5,6 @@ sidebar_label: Routes
 description: Frontend routes
 ---
 
-> **NOTE: The new frontend system is in alpha and is only supported by a small number of plugins.**
-
 ## Introduction
 
 Each Backstage plugin is an isolated piece of functionality that doesn't typically communicate directly with other plugins. In order to achieve this, there are many parts of the frontend system that provide a layer of indirection for cross-plugin communication, and the routing system is one of them.
@@ -279,7 +277,7 @@ Another thing to note is that this indirection in the routing is particularly us
 
 ### Default Targets for External Route References
 
-It is possible to define a default target for an external route reference, potentially removing the need to bind the route in the app. This reduces the need for configuration when installing new plugins through providing a sensible default. It is of course still possible to override the route binding in the app.
+It is possible to define a default target for an external route reference, potentially removing the need to bind the route in the app. This reduces the need for configuration when installing new plugins through providing a sensible default. It is of course still possible to override the route binding in the app, as long as the external route ref is exported via the `externalRoutes` property of the plugin instance.
 
 The default target uses the same syntax as the route binding configuration, and will only be used if the target plugin and route exist. For example, this is how the catalog can define a default target for the create component external route in a way that removes the need for the binding in the previous example:
 
@@ -422,7 +420,7 @@ export default createFrontendPlugin({
 
 ## Route Aliases - Overriding Routed Extensions in Modules
 
-It is possible to [override extensions of a plugin using a module](./25-extension-overrides.md#creating-a-frontend-module). In some cases the extension you're overriding may require a route reference. You could import import the plugin instance and access the it via the `routes` property, but this creates a direct dependency on the plugin and risks leading to package duplication issues that would also break the route reference.
+It is possible to [override extensions of a plugin using a module](./25-extension-overrides.md#creating-a-frontend-module). In some cases the extension you're overriding may require a route reference. You could import the plugin instance and access the it via the `routes` property, but this creates a direct dependency on the plugin and risks leading to package duplication issues that would also break the route reference.
 
 Instead of accessing the route reference directly, you can create a new route reference that acts as an alias for the original one from the plugin. For example, you can override the catalog index page with a custom one like this:
 

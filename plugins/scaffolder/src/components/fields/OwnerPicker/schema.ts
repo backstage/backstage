@@ -54,7 +54,6 @@ export const OwnerPickerFieldSchema = makeFieldSchema({
 /**
  * The input props that can be specified under `ui:options` for the
  * `OwnerPicker` field extension.
- *
  * @public
  */
 export type OwnerPickerUiOptions = NonNullable<

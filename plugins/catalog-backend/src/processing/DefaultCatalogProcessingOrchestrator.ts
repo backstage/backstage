@@ -31,7 +31,7 @@ import {
 } from '@backstage/errors';
 import { JsonValue } from '@backstage/types';
 import { ScmIntegrationRegistry } from '@backstage/integration';
-import path from 'path';
+import path from 'node:path';
 import { LocationSpec } from '@backstage/plugin-catalog-common';
 import {
   CatalogProcessor,
@@ -87,17 +87,25 @@ function addProcessorAttributes(
 export class DefaultCatalogProcessingOrchestrator
   implements CatalogProcessingOrchestrator
 {
-  constructor(
-    private readonly options: {
-      processors: CatalogProcessor[];
-      integrations: ScmIntegrationRegistry;
-      logger: LoggerService;
-      parser: CatalogProcessorParser;
-      policy: EntityPolicy;
-      rulesEnforcer: CatalogRulesEnforcer;
-      legacySingleProcessorValidation: boolean;
-    },
-  ) {}
+  private readonly options: {
+    processors: CatalogProcessor[];
+    integrations: ScmIntegrationRegistry;
+    logger: LoggerService;
+    parser: CatalogProcessorParser;
+    policy: EntityPolicy;
+    rulesEnforcer: CatalogRulesEnforcer;
+  };
+
+  constructor(options: {
+    processors: CatalogProcessor[];
+    integrations: ScmIntegrationRegistry;
+    logger: LoggerService;
+    parser: CatalogProcessorParser;
+    policy: EntityPolicy;
+    rulesEnforcer: CatalogRulesEnforcer;
+  }) {
+    this.options = options;
+  }
 
   async process(
     request: EntityProcessingRequest,
@@ -309,9 +317,6 @@ export class DefaultCatalogProcessingOrchestrator
             );
             if (thisValid) {
               valid = true;
-              if (this.options.legacySingleProcessorValidation) {
-                break;
-              }
             }
           } catch (e) {
             throw new InputError(

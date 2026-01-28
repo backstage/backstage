@@ -23,8 +23,8 @@ import {
 import { findPaths } from '@backstage/cli-common';
 
 import fs from 'fs-extra';
-import * as path from 'path';
-import * as url from 'url';
+import * as path from 'node:path';
+import * as url from 'node:url';
 import { isEmpty } from 'lodash';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { JsonObject } from '@backstage/types';

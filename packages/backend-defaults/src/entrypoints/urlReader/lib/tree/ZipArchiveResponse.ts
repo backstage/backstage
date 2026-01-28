@@ -22,8 +22,8 @@ import {
 import archiver from 'archiver';
 import yauzl, { Entry } from 'yauzl';
 import fs from 'fs-extra';
-import platformPath from 'path';
-import { Readable } from 'stream';
+import platformPath from 'node:path';
+import { Readable } from 'node:stream';
 import { streamToBuffer } from './util';
 import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
 
@@ -32,14 +32,24 @@ import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
  */
 export class ZipArchiveResponse implements UrlReaderServiceReadTreeResponse {
   private read = false;
+  private readonly stream: Readable;
+  private readonly subPath: string;
+  private readonly workDir: string;
+  public readonly etag: string;
+  private readonly filter?: (path: string, info: { size: number }) => boolean;
 
   constructor(
-    private readonly stream: Readable,
-    private readonly subPath: string,
-    private readonly workDir: string,
-    public readonly etag: string,
-    private readonly filter?: (path: string, info: { size: number }) => boolean,
+    stream: Readable,
+    subPath: string,
+    workDir: string,
+    etag: string,
+    filter?: (path: string, info: { size: number }) => boolean,
   ) {
+    this.stream = stream;
+    this.subPath = subPath;
+    this.workDir = workDir;
+    this.etag = etag;
+    this.filter = filter;
     if (subPath) {
       if (!subPath.endsWith('/')) {
         this.subPath += '/';

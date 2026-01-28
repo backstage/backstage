@@ -65,5 +65,85 @@ describe('paths', () => {
         `${workspacePath}/template`,
       );
     });
+
+    it('should throw an error if the path is a symlink pointing to a non-existent target outside base', () => {
+      // This tests the case where realpathSync would fail with ENOENT
+      // but the symlink itself exists and points outside the base directory
+      const nonExistentTarget = `${secondDirectory.path}/does-not-exist.txt`;
+      mockDir.addContent({
+        [`${workspacePath}/dangling-link`]: ({ symlink }) =>
+          symlink(nonExistentTarget),
+      });
+
+      expect(() =>
+        resolveSafeChildPath(workspacePath, './dangling-link'),
+      ).toThrow(
+        'Relative path is not allowed to refer to a directory outside its parent',
+      );
+    });
+
+    it('should allow symlinks pointing to non-existent targets within base directory', () => {
+      mockDir.addContent({
+        [`${workspacePath}/internal-link`]: ({ symlink }) =>
+          symlink('./future-file.txt'),
+      });
+
+      expect(resolveSafeChildPath(workspacePath, './internal-link')).toEqual(
+        `${workspacePath}/internal-link`,
+      );
+    });
+
+    it('should throw an error when writing through a symlink to a non-existent file outside base', () => {
+      // Symlink in workspace points outside, target directory exists but file doesn't
+      // e.g., /workspace/evil -> /etc, then write to evil/newfile.conf
+      // The check should catch that evil/newfile.conf resolves to /etc/newfile.conf
+      mockDir.addContent({
+        [`${workspacePath}/escape-link`]: ({ symlink }) =>
+          symlink(secondDirectory.path),
+      });
+
+      // This should throw because escape-link/new-file.txt would write to secondDirectory/new-file.txt
+      expect(() =>
+        resolveSafeChildPath(workspacePath, './escape-link/new-file.txt'),
+      ).toThrow(
+        'Relative path is not allowed to refer to a directory outside its parent',
+      );
+    });
+
+    it('should throw an error for symlink chains pointing outside base', () => {
+      // link1 -> link2 -> outside
+      // Even if final target doesn't exist, should detect the escape
+      const nonExistentOutside = `${secondDirectory.path}/does-not-exist`;
+      mockDir.addContent({
+        [`${workspacePath}/link2`]: ({ symlink }) =>
+          symlink(nonExistentOutside),
+        [`${workspacePath}/link1`]: ({ symlink }) => symlink('./link2'),
+      });
+
+      expect(() => resolveSafeChildPath(workspacePath, './link1')).toThrow(
+        'Relative path is not allowed to refer to a directory outside its parent',
+      );
+    });
+
+    it('should throw when deeply nested non-existent path has symlink ancestor pointing outside', () => {
+      // Tests the recursive parent-walking behavior in resolveRealPath.
+      // When given a/b/c/d/file.txt where none of b/c/d exist, the code walks up
+      // the tree until finding 'a' (a symlink), resolves it, then rebuilds the path.
+      mockDir.addContent({
+        [`${workspacePath}/escape`]: ({ symlink }) =>
+          symlink(secondDirectory.path),
+      });
+
+      // escape/deeply/nested/path/file.txt requires walking up 4 levels
+      // before finding the symlink at 'escape'
+      expect(() =>
+        resolveSafeChildPath(
+          workspacePath,
+          './escape/deeply/nested/path/file.txt',
+        ),
+      ).toThrow(
+        'Relative path is not allowed to refer to a directory outside its parent',
+      );
+    });
   });
 });

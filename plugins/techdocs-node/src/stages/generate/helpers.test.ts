@@ -21,7 +21,7 @@ import {
   mockServices,
 } from '@backstage/backend-test-utils';
 import fs from 'fs-extra';
-import path, { resolve as resolvePath } from 'path';
+import path, { resolve as resolvePath } from 'node:path';
 import { ParsedLocationAnnotation } from '../../helpers';
 import {
   createOrUpdateMetadata,

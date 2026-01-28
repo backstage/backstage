@@ -19,11 +19,11 @@ import {
   PackageGraph,
   PackageRole,
 } from '@backstage/cli-node';
-import { relative as relativePath } from 'path';
+import { relative as relativePath } from 'node:path';
 import { paths } from '../../../../lib/paths';
 import { resolveLinkedWorkspace } from '../package/start/resolveLinkedWorkspace';
 import { startPackage } from '../package/start/startPackage';
-import { parseArgs } from 'util';
+import { parseArgs } from 'node:util';
 
 const ACCEPTED_PACKAGE_ROLES: Array<PackageRole | undefined> = [
   'frontend',

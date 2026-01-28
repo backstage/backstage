@@ -27,6 +27,7 @@ import { QueryEntitiesRequest } from '@backstage/catalog-client';
 import { QueryEntitiesResponse } from '@backstage/catalog-client';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 import { ServiceMock } from '@backstage/backend-test-utils';
+import { StreamEntitiesRequest } from '@backstage/catalog-client';
 import { ValidateEntityResponse } from '@backstage/catalog-client';
 
 // @public
@@ -106,6 +107,11 @@ export interface CatalogServiceMock extends CatalogService, CatalogApi {
     id: string,
     options?: CatalogServiceRequestOptions | CatalogRequestOptions,
   ): Promise<void>;
+  // (undocumented)
+  streamEntities(
+    request?: StreamEntitiesRequest,
+    options?: CatalogServiceRequestOptions | CatalogRequestOptions,
+  ): AsyncIterable<Entity[]>;
   // (undocumented)
   validateEntity(
     entity: Entity,

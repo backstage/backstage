@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import { Express } from 'express';
-import { Server } from 'http';
+import { Server } from 'node:http';
 import { Proxy } from './proxy/setup';
 
 const proxiesToCleanup: Proxy[] = [];

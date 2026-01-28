@@ -55,7 +55,7 @@ describe('useIsPodExecTerminalSupported', () => {
     },
     {
       condition: 'AuthProvider is google',
-      returnValue: false,
+      returnValue: true,
       testClusters: [{ authProvider: 'google' }],
     },
     {

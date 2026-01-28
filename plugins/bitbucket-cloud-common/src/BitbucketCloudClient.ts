@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { BitbucketCloudIntegrationConfig } from '@backstage/integration';
+import {
+  BitbucketCloudIntegrationConfig,
+  getBitbucketCloudOAuthToken,
+} from '@backstage/integration';
 import fetch, { Request } from 'cross-fetch';
 import { Models } from './models';
 import { WithPagination } from './pagination';
@@ -40,6 +43,7 @@ export class BitbucketCloudClient {
     workspace: string,
     query: string,
     options?: FilterAndSortOptions & PartialResponseOptions,
+    pagelen?: number,
   ): WithPagination<Models.SearchResultPage, Models.SearchCodeSearchResult> {
     const workspaceEnc = encodeURIComponent(workspace);
     return new WithPagination(
@@ -50,6 +54,7 @@ export class BitbucketCloudClient {
           search_query: query,
         }),
       url => this.getTypeMapped(url),
+      pagelen,
     );
   }
 
@@ -137,30 +142,43 @@ export class BitbucketCloudClient {
   }
 
   private async request(req: Request): Promise<Response> {
-    return fetch(req, { headers: this.getAuthHeaders() }).then(
-      (response: Response) => {
-        if (!response.ok) {
-          throw new Error(
-            `Unexpected response for ${req.method} ${req.url}. Expected 200 but got ${response.status} - ${response.statusText}`,
-          );
-        }
+    const headers = await this.getAuthHeaders();
+    return fetch(req, { headers }).then((response: Response) => {
+      if (!response.ok) {
+        throw new Error(
+          `Unexpected response for ${req.method} ${req.url}. Expected 200 but got ${response.status} - ${response.statusText}`,
+        );
+      }
 
-        return response;
-      },
-    );
+      return response;
+    });
   }
 
-  private getAuthHeaders(): Record<string, string> {
+  private async getAuthHeaders(): Promise<Record<string, string>> {
     const headers: Record<string, string> = {};
 
-    if (this.config.username) {
+    // OAuth authentication (clientId/clientSecret)
+    if (this.config.clientId && this.config.clientSecret) {
+      const token = await getBitbucketCloudOAuthToken(
+        this.config.clientId,
+        this.config.clientSecret,
+      );
+      headers.Authorization = `Bearer ${token}`;
+      return headers;
+    }
+
+    // Basic authentication (username/token or username/appPassword)
+    if (
+      this.config.username &&
+      (this.config.token ?? this.config.appPassword)
+    ) {
       const buffer = Buffer.from(
-        `${this.config.username}:${this.config.appPassword}`,
+        `${this.config.username}:${
+          this.config.token ?? this.config.appPassword
+        }`,
         'utf8',
       );
       headers.Authorization = `Basic ${buffer.toString('base64')}`;
-    } else if (this.config.token) {
-      headers.Authorization = `Bearer ${this.config.token}`;
     }
 
     return headers;

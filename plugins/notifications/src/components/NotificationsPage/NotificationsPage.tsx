@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { useState, useMemo, useEffect } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import throttle from 'lodash/throttle';
 import {
   Content,
@@ -24,6 +24,15 @@ import {
 import Grid from '@material-ui/core/Grid';
 import { ConfirmProvider } from 'material-ui-confirm';
 import { useSignal } from '@backstage/plugin-signals-react';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { notificationsTranslationRef } from '../../translation';
+
+const TableTitleKeys = {
+  all: 'notificationsPage.tableTitle.all',
+  saved: 'notificationsPage.tableTitle.saved',
+  unread: 'notificationsPage.tableTitle.unread',
+  read: 'notificationsPage.tableTitle.read',
+} as const;
 
 import { NotificationsTable } from '../NotificationsTable';
 import { useNotificationsApi } from '../../hooks';
@@ -58,8 +67,9 @@ export type NotificationsPageProps = {
 };
 
 export const NotificationsPage = (props?: NotificationsPageProps) => {
+  const { t } = useTranslationRef(notificationsTranslationRef);
   const {
-    title = 'Notifications',
+    title = t('notificationsPage.title'),
     themeId = 'tool',
     subtitle,
     tooltip,
@@ -101,7 +111,10 @@ export const NotificationsPage = (props?: NotificationsPageProps) => {
         options.topic = topic;
       }
 
-      const createdAfterDate = CreatedAfterOptions[createdAfter].getDate();
+      const createdAfterDate =
+        CreatedAfterOptions[
+          createdAfter as keyof typeof CreatedAfterOptions
+        ].getDate();
       if (createdAfterDate.valueOf() > 0) {
         options.createdAfter = createdAfterDate;
       }
@@ -156,13 +169,21 @@ export const NotificationsPage = (props?: NotificationsPageProps) => {
   const isUnread = !!value?.[1]?.unread;
   const allTopics = value?.[2]?.topics;
 
-  let tableTitle = `All notifications (${totalCount})`;
+  let tableTitle: string = t(TableTitleKeys.all, {
+    count: totalCount ?? 0,
+  });
   if (saved) {
-    tableTitle = `Saved notifications (${totalCount})`;
+    tableTitle = t(TableTitleKeys.saved, {
+      count: totalCount ?? 0,
+    });
   } else if (unreadOnly === true) {
-    tableTitle = `Unread notifications (${totalCount})`;
+    tableTitle = t(TableTitleKeys.unread, {
+      count: totalCount ?? 0,
+    });
   } else if (unreadOnly === false) {
-    tableTitle = `Read notifications (${totalCount})`;
+    tableTitle = t(TableTitleKeys.read, {
+      count: totalCount ?? 0,
+    });
   }
 
   return (

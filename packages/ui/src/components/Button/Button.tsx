@@ -14,40 +14,78 @@
  * limitations under the License.
  */
 
-import clsx from 'clsx';
 import { forwardRef, Ref } from 'react';
-import { Button as RAButton } from 'react-aria-components';
+import { Button as RAButton, ProgressBar } from 'react-aria-components';
+import { RiLoader4Line } from '@remixicon/react';
 import type { ButtonProps } from './types';
-import { useStyles } from '../../hooks/useStyles';
+import { useDefinition } from '../../hooks/useDefinition';
+import { ButtonDefinition } from './definition';
 
-/** @public */
+/**
+ * A button component built on React Aria Components that provides accessible
+ * interactive elements for triggering actions.
+ *
+ * @remarks
+ * The Button component supports multiple variants (primary, secondary, tertiary, danger),
+ * sizes (small, medium), and states including loading and disabled. It automatically
+ * handles keyboard navigation, focus management, and ARIA attributes for accessibility.
+ *
+ * @example
+ * Basic usage:
+ * ```tsx
+ * <Button>Click me</Button>
+ * ```
+ *
+ * @example
+ * With icons and loading state:
+ * ```tsx
+ * <Button
+ *   variant="primary"
+ *   size="medium"
+ *   iconStart={<IconComponent />}
+ *   loading={isSubmitting}
+ * >
+ *   Submit
+ * </Button>
+ * ```
+ *
+ * @public
+ */
 export const Button = forwardRef(
   (props: ButtonProps, ref: Ref<HTMLButtonElement>) => {
-    const {
-      size = 'small',
-      variant = 'primary',
-      iconStart,
-      iconEnd,
-      children,
-      className,
-      ...rest
-    } = props;
-
-    const { classNames, dataAttributes } = useStyles('Button', {
-      size,
-      variant,
-    });
+    const { ownProps, restProps, dataAttributes } = useDefinition(
+      ButtonDefinition,
+      props,
+    );
+    const { classes, iconStart, iconEnd, loading, children } = ownProps;
 
     return (
       <RAButton
-        className={clsx(classNames.root, className)}
+        className={classes.root}
         ref={ref}
+        isPending={loading}
         {...dataAttributes}
-        {...rest}
+        {...restProps}
       >
-        {iconStart}
-        {children}
-        {iconEnd}
+        {({ isPending }) => (
+          <>
+            <span className={classes.content}>
+              {iconStart}
+              {children}
+              {iconEnd}
+            </span>
+
+            {isPending && (
+              <ProgressBar
+                aria-label="Loading"
+                isIndeterminate
+                className={classes.spinner}
+              >
+                <RiLoader4Line aria-hidden="true" />
+              </ProgressBar>
+            )}
+          </>
+        )}
       </RAButton>
     );
   },

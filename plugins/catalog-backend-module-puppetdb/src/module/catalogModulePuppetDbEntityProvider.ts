@@ -18,13 +18,13 @@ import {
   coreServices,
   createBackendModule,
 } from '@backstage/backend-plugin-api';
-import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
+import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
 import { PuppetDbEntityProvider } from '../providers/PuppetDbEntityProvider';
 
 /**
  * Registers the `PuppetDbEntityProvider` with the catalog processing extension point.
  *
- * @alpha
+ * @public
  */
 export const catalogModulePuppetDbEntityProvider = createBackendModule({
   pluginId: 'catalog',

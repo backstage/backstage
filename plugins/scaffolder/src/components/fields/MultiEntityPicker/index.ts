@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+export { MultiEntityPicker } from './MultiEntityPicker';
 export {
   MultiEntityPickerFieldSchema,
   type MultiEntityPickerUiOptions,

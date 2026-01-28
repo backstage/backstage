@@ -86,9 +86,12 @@ export const EntityContentBlueprint = createExtensionBlueprint({
     },
     { node, config },
   ) {
-    const path = config.path ?? params.path;
-    const title = config.title ?? params.title;
-    const group = config.group ?? params.group;
+    // TODO(blam): Remove support for all the `default*` props in the future, this breaks backwards compatibility without it
+    // As this is marked as BREAKING ALPHA, it doesn't affect the public API so it falls in range and gets picked
+    // up by packages that depend on `catalog-react`.
+    const path = config.path ?? params.path ?? params.defaultPath;
+    const title = config.title ?? params.title ?? params.defaultTitle;
+    const group = config.group ?? params.group ?? params.defaultGroup;
 
     yield coreExtensionData.reactElement(
       ExtensionBoundary.lazy(node, params.loader),
@@ -104,7 +107,7 @@ export const EntityContentBlueprint = createExtensionBlueprint({
 
     yield* resolveEntityFilterData(params.filter, config, node);
 
-    if (group) {
+    if (group && typeof group === 'string') {
       yield entityContentGroupDataRef(group);
     }
   },

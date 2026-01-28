@@ -12,26 +12,25 @@ import { ComponentType } from 'react';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionBlueprintParams } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
-import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
-import { FrontendPlugin } from '@backstage/frontend-plugin-api';
-import { IconComponent } from '@backstage/core-plugin-api';
-import { IconComponent as IconComponent_2 } from '@backstage/frontend-plugin-api';
+import { IconComponent } from '@backstage/frontend-plugin-api';
 import { JSX as JSX_2 } from 'react';
-import { NavContentComponent } from '@backstage/frontend-plugin-api';
+import { NavContentComponent } from '@backstage/plugin-app-react';
+import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
+import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
 import { ReactNode } from 'react';
 import { RouteRef } from '@backstage/frontend-plugin-api';
-import { SignInPageProps } from '@backstage/core-plugin-api';
+import { SignInPageProps } from '@backstage/plugin-app-react';
 import { SwappableComponentRef } from '@backstage/frontend-plugin-api';
 import { TranslationMessages } from '@backstage/frontend-plugin-api';
 import { TranslationResource } from '@backstage/frontend-plugin-api';
 
 // @public (undocumented)
-const appPlugin: FrontendPlugin<
+const appPlugin: OverridableFrontendPlugin<
   {},
   {},
   {
-    app: ExtensionDefinition<{
+    app: OverridableExtensionDefinition<{
       config: {};
       configInput: {};
       output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
@@ -41,6 +40,7 @@ const appPlugin: FrontendPlugin<
           {
             singleton: true;
             optional: false;
+            internal: false;
           }
         >;
       };
@@ -48,7 +48,7 @@ const appPlugin: FrontendPlugin<
       kind: undefined;
       name: undefined;
     }>;
-    'app/layout': ExtensionDefinition<{
+    'app/layout': OverridableExtensionDefinition<{
       config: {};
       configInput: {};
       output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
@@ -58,6 +58,7 @@ const appPlugin: FrontendPlugin<
           {
             singleton: true;
             optional: false;
+            internal: false;
           }
         >;
         content: ExtensionInput<
@@ -65,6 +66,7 @@ const appPlugin: FrontendPlugin<
           {
             singleton: true;
             optional: false;
+            internal: false;
           }
         >;
       };
@@ -72,7 +74,7 @@ const appPlugin: FrontendPlugin<
       kind: undefined;
       name: 'layout';
     }>;
-    'app/nav': ExtensionDefinition<{
+    'app/nav': OverridableExtensionDefinition<{
       config: {};
       configInput: {};
       output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
@@ -90,6 +92,7 @@ const appPlugin: FrontendPlugin<
           {
             singleton: false;
             optional: false;
+            internal: false;
           }
         >;
         content: ExtensionInput<
@@ -101,6 +104,7 @@ const appPlugin: FrontendPlugin<
           {
             singleton: true;
             optional: true;
+            internal: true;
           }
         >;
       };
@@ -108,7 +112,7 @@ const appPlugin: FrontendPlugin<
       kind: undefined;
       name: 'nav';
     }>;
-    'app/root': ExtensionDefinition<{
+    'app/root': OverridableExtensionDefinition<{
       config: {};
       configInput: {};
       output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
@@ -122,6 +126,7 @@ const appPlugin: FrontendPlugin<
           {
             singleton: true;
             optional: true;
+            internal: true;
           }
         >;
         signInPage: ExtensionInput<
@@ -133,6 +138,7 @@ const appPlugin: FrontendPlugin<
           {
             singleton: true;
             optional: true;
+            internal: true;
           }
         >;
         children: ExtensionInput<
@@ -140,6 +146,7 @@ const appPlugin: FrontendPlugin<
           {
             singleton: true;
             optional: false;
+            internal: false;
           }
         >;
         elements: ExtensionInput<
@@ -147,6 +154,7 @@ const appPlugin: FrontendPlugin<
           {
             singleton: false;
             optional: false;
+            internal: false;
           }
         >;
         wrappers: ExtensionInput<
@@ -158,6 +166,7 @@ const appPlugin: FrontendPlugin<
           {
             singleton: false;
             optional: false;
+            internal: true;
           }
         >;
       };
@@ -165,7 +174,7 @@ const appPlugin: FrontendPlugin<
       kind: undefined;
       name: 'root';
     }>;
-    'app/routes': ExtensionDefinition<{
+    'app/routes': OverridableExtensionDefinition<{
       config: {};
       configInput: {};
       output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
@@ -183,6 +192,7 @@ const appPlugin: FrontendPlugin<
           {
             singleton: false;
             optional: false;
+            internal: false;
           }
         >;
       };
@@ -190,7 +200,7 @@ const appPlugin: FrontendPlugin<
       kind: undefined;
       name: 'routes';
     }>;
-    'api:app/alert': ExtensionDefinition<{
+    'api:app/alert': OverridableExtensionDefinition<{
       kind: 'api';
       name: 'alert';
       config: {};
@@ -205,7 +215,7 @@ const appPlugin: FrontendPlugin<
         params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
-    'api:app/analytics': ExtensionDefinition<{
+    'api:app/analytics': OverridableExtensionDefinition<{
       config: {};
       configInput: {};
       output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
@@ -219,6 +229,7 @@ const appPlugin: FrontendPlugin<
           {
             singleton: false;
             optional: false;
+            internal: false;
           }
         >;
       };
@@ -232,13 +243,19 @@ const appPlugin: FrontendPlugin<
         params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
-    'api:app/app-language': ExtensionDefinition<{
-      kind: 'api';
-      name: 'app-language';
-      config: {};
-      configInput: {};
+    'api:app/app-language': OverridableExtensionDefinition<{
+      config: {
+        defaultLanguage: string | undefined;
+        availableLanguages: string[] | undefined;
+      };
+      configInput: {
+        defaultLanguage?: string | undefined;
+        availableLanguages?: string[] | undefined;
+      };
       output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
       inputs: {};
+      kind: 'api';
+      name: 'app-language';
       params: <
         TApi,
         TImpl extends TApi,
@@ -247,7 +264,7 @@ const appPlugin: FrontendPlugin<
         params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
-    'api:app/app-theme': ExtensionDefinition<{
+    'api:app/app-theme': OverridableExtensionDefinition<{
       config: {};
       configInput: {};
       output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
@@ -257,6 +274,7 @@ const appPlugin: FrontendPlugin<
           {
             singleton: false;
             optional: false;
+            internal: true;
           }
         >;
       };
@@ -270,7 +288,7 @@ const appPlugin: FrontendPlugin<
         params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
-    'api:app/atlassian-auth': ExtensionDefinition<{
+    'api:app/atlassian-auth': OverridableExtensionDefinition<{
       kind: 'api';
       name: 'atlassian-auth';
       config: {};
@@ -285,7 +303,7 @@ const appPlugin: FrontendPlugin<
         params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
-    'api:app/bitbucket-auth': ExtensionDefinition<{
+    'api:app/bitbucket-auth': OverridableExtensionDefinition<{
       kind: 'api';
       name: 'bitbucket-auth';
       config: {};
@@ -300,7 +318,7 @@ const appPlugin: FrontendPlugin<
         params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
-    'api:app/bitbucket-server-auth': ExtensionDefinition<{
+    'api:app/bitbucket-server-auth': OverridableExtensionDefinition<{
       kind: 'api';
       name: 'bitbucket-server-auth';
       config: {};
@@ -315,7 +333,22 @@ const appPlugin: FrontendPlugin<
         params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
-    'api:app/dialog': ExtensionDefinition<{
+    'api:app/components': OverridableExtensionDefinition<{
+      kind: 'api';
+      name: 'components';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
+      inputs: {};
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
+    }>;
+    'api:app/dialog': OverridableExtensionDefinition<{
       kind: 'api';
       name: 'dialog';
       config: {};
@@ -330,7 +363,7 @@ const appPlugin: FrontendPlugin<
         params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
-    'api:app/discovery': ExtensionDefinition<{
+    'api:app/discovery': OverridableExtensionDefinition<{
       kind: 'api';
       name: 'discovery';
       config: {};
@@ -345,7 +378,7 @@ const appPlugin: FrontendPlugin<
         params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
-    'api:app/error': ExtensionDefinition<{
+    'api:app/error': OverridableExtensionDefinition<{
       kind: 'api';
       name: 'error';
       config: {};
@@ -360,7 +393,7 @@ const appPlugin: FrontendPlugin<
         params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
-    'api:app/feature-flags': ExtensionDefinition<{
+    'api:app/feature-flags': OverridableExtensionDefinition<{
       kind: 'api';
       name: 'feature-flags';
       config: {};
@@ -375,7 +408,7 @@ const appPlugin: FrontendPlugin<
         params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
-    'api:app/fetch': ExtensionDefinition<{
+    'api:app/fetch': OverridableExtensionDefinition<{
       kind: 'api';
       name: 'fetch';
       config: {};
@@ -390,7 +423,7 @@ const appPlugin: FrontendPlugin<
         params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
-    'api:app/github-auth': ExtensionDefinition<{
+    'api:app/github-auth': OverridableExtensionDefinition<{
       kind: 'api';
       name: 'github-auth';
       config: {};
@@ -405,7 +438,7 @@ const appPlugin: FrontendPlugin<
         params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
-    'api:app/gitlab-auth': ExtensionDefinition<{
+    'api:app/gitlab-auth': OverridableExtensionDefinition<{
       kind: 'api';
       name: 'gitlab-auth';
       config: {};
@@ -420,7 +453,7 @@ const appPlugin: FrontendPlugin<
         params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
-    'api:app/google-auth': ExtensionDefinition<{
+    'api:app/google-auth': OverridableExtensionDefinition<{
       kind: 'api';
       name: 'google-auth';
       config: {};
@@ -435,7 +468,7 @@ const appPlugin: FrontendPlugin<
         params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
-    'api:app/icons': ExtensionDefinition<{
+    'api:app/icons': OverridableExtensionDefinition<{
       config: {};
       configInput: {};
       output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
@@ -443,7 +476,7 @@ const appPlugin: FrontendPlugin<
         icons: ExtensionInput<
           ConfigurableExtensionDataRef<
             {
-              [x: string]: IconComponent_2;
+              [x: string]: IconComponent;
             },
             'core.icons',
             {}
@@ -451,6 +484,7 @@ const appPlugin: FrontendPlugin<
           {
             singleton: false;
             optional: false;
+            internal: true;
           }
         >;
       };
@@ -464,7 +498,7 @@ const appPlugin: FrontendPlugin<
         params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
-    'api:app/microsoft-auth': ExtensionDefinition<{
+    'api:app/microsoft-auth': OverridableExtensionDefinition<{
       kind: 'api';
       name: 'microsoft-auth';
       config: {};
@@ -479,7 +513,7 @@ const appPlugin: FrontendPlugin<
         params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
-    'api:app/oauth-request': ExtensionDefinition<{
+    'api:app/oauth-request': OverridableExtensionDefinition<{
       kind: 'api';
       name: 'oauth-request';
       config: {};
@@ -494,7 +528,7 @@ const appPlugin: FrontendPlugin<
         params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
-    'api:app/okta-auth': ExtensionDefinition<{
+    'api:app/okta-auth': OverridableExtensionDefinition<{
       kind: 'api';
       name: 'okta-auth';
       config: {};
@@ -509,7 +543,7 @@ const appPlugin: FrontendPlugin<
         params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
-    'api:app/onelogin-auth': ExtensionDefinition<{
+    'api:app/onelogin-auth': OverridableExtensionDefinition<{
       kind: 'api';
       name: 'onelogin-auth';
       config: {};
@@ -524,7 +558,22 @@ const appPlugin: FrontendPlugin<
         params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
-    'api:app/permission': ExtensionDefinition<{
+    'api:app/openshift-auth': OverridableExtensionDefinition<{
+      kind: 'api';
+      name: 'openshift-auth';
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
+      inputs: {};
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
+    }>;
+    'api:app/permission': OverridableExtensionDefinition<{
       kind: 'api';
       name: 'permission';
       config: {};
@@ -539,7 +588,39 @@ const appPlugin: FrontendPlugin<
         params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
-    'api:app/scm-auth': ExtensionDefinition<{
+    'api:app/plugin-wrapper': OverridableExtensionDefinition<{
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
+      inputs: {
+        wrappers: ExtensionInput<
+          ConfigurableExtensionDataRef<
+            () => Promise<{
+              component: ComponentType<{
+                children: ReactNode;
+              }>;
+            }>,
+            'core.plugin-wrapper.loader',
+            {}
+          >,
+          {
+            singleton: false;
+            optional: false;
+            internal: false;
+          }
+        >;
+      };
+      kind: 'api';
+      name: 'plugin-wrapper';
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
+    }>;
+    'api:app/scm-auth': OverridableExtensionDefinition<{
       kind: 'api';
       name: 'scm-auth';
       config: {};
@@ -554,7 +635,7 @@ const appPlugin: FrontendPlugin<
         params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
-    'api:app/scm-integrations': ExtensionDefinition<{
+    'api:app/scm-integrations': OverridableExtensionDefinition<{
       kind: 'api';
       name: 'scm-integrations';
       config: {};
@@ -569,7 +650,7 @@ const appPlugin: FrontendPlugin<
         params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
-    'api:app/storage': ExtensionDefinition<{
+    'api:app/storage': OverridableExtensionDefinition<{
       kind: 'api';
       name: 'storage';
       config: {};
@@ -584,7 +665,7 @@ const appPlugin: FrontendPlugin<
         params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
-    'api:app/swappable-components': ExtensionDefinition<{
+    'api:app/swappable-components': OverridableExtensionDefinition<{
       config: {};
       configInput: {};
       output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
@@ -603,6 +684,7 @@ const appPlugin: FrontendPlugin<
           {
             singleton: false;
             optional: false;
+            internal: true;
           }
         >;
       };
@@ -616,7 +698,7 @@ const appPlugin: FrontendPlugin<
         params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
-    'api:app/translations': ExtensionDefinition<{
+    'api:app/translations': OverridableExtensionDefinition<{
       config: {};
       configInput: {};
       output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
@@ -637,6 +719,7 @@ const appPlugin: FrontendPlugin<
           {
             singleton: false;
             optional: false;
+            internal: true;
           }
         >;
       };
@@ -650,7 +733,7 @@ const appPlugin: FrontendPlugin<
         params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
-    'api:app/vmware-cloud-auth': ExtensionDefinition<{
+    'api:app/vmware-cloud-auth': OverridableExtensionDefinition<{
       kind: 'api';
       name: 'vmware-cloud-auth';
       config: {};
@@ -665,7 +748,7 @@ const appPlugin: FrontendPlugin<
         params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
-    'app-root-element:app/alert-display': ExtensionDefinition<{
+    'app-root-element:app/alert-display': OverridableExtensionDefinition<{
       config: {
         transientTimeoutMs: number;
         anchorOrigin: {
@@ -683,41 +766,25 @@ const appPlugin: FrontendPlugin<
         transientTimeoutMs?: number | undefined;
       };
       output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
-      inputs: {
-        [x: string]: ExtensionInput<
-          ExtensionDataRef,
-          {
-            optional: boolean;
-            singleton: boolean;
-          }
-        >;
-      };
+      inputs: {};
       kind: 'app-root-element';
       name: 'alert-display';
       params: {
         element: JSX.Element;
       };
     }>;
-    'app-root-element:app/dialog-display': ExtensionDefinition<{
+    'app-root-element:app/dialog-display': OverridableExtensionDefinition<{
       config: {};
       configInput: {};
       output: ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>;
-      inputs: {
-        [x: string]: ExtensionInput<
-          ExtensionDataRef,
-          {
-            optional: boolean;
-            singleton: boolean;
-          }
-        >;
-      };
+      inputs: {};
       kind: 'app-root-element';
       name: 'dialog-display';
       params: {
         element: JSX.Element;
       };
     }>;
-    'app-root-element:app/oauth-request-dialog': ExtensionDefinition<{
+    'app-root-element:app/oauth-request-dialog': OverridableExtensionDefinition<{
       kind: 'app-root-element';
       name: 'oauth-request-dialog';
       config: {};
@@ -728,9 +795,9 @@ const appPlugin: FrontendPlugin<
         element: JSX.Element;
       };
     }>;
-    'component:app/core.components.errorBoundary': ExtensionDefinition<{
+    'component:app/core-error-display': OverridableExtensionDefinition<{
       kind: 'component';
-      name: 'core.components.errorBoundary';
+      name: 'core-error-display';
       config: {};
       configInput: {};
       output: ExtensionDataRef<
@@ -784,9 +851,9 @@ const appPlugin: FrontendPlugin<
           : never;
       }>;
     }>;
-    'component:app/core.components.notFoundErrorPage': ExtensionDefinition<{
+    'component:app/core-not-found-error-page': OverridableExtensionDefinition<{
       kind: 'component';
-      name: 'core.components.notFoundErrorPage';
+      name: 'core-not-found-error-page';
       config: {};
       configInput: {};
       output: ExtensionDataRef<
@@ -840,9 +907,9 @@ const appPlugin: FrontendPlugin<
           : never;
       }>;
     }>;
-    'component:app/core.components.progress': ExtensionDefinition<{
+    'component:app/core-progress': OverridableExtensionDefinition<{
       kind: 'component';
-      name: 'core.components.progress';
+      name: 'core-progress';
       config: {};
       configInput: {};
       output: ExtensionDataRef<
@@ -896,7 +963,7 @@ const appPlugin: FrontendPlugin<
           : never;
       }>;
     }>;
-    'sign-in-page:app': ExtensionDefinition<{
+    'sign-in-page:app': OverridableExtensionDefinition<{
       kind: 'sign-in-page';
       name: undefined;
       config: {};
@@ -911,7 +978,7 @@ const appPlugin: FrontendPlugin<
         loader: () => Promise<ComponentType<SignInPageProps>>;
       };
     }>;
-    'theme:app/dark': ExtensionDefinition<{
+    'theme:app/dark': OverridableExtensionDefinition<{
       kind: 'theme';
       name: 'dark';
       config: {};
@@ -922,7 +989,7 @@ const appPlugin: FrontendPlugin<
         theme: AppTheme;
       };
     }>;
-    'theme:app/light': ExtensionDefinition<{
+    'theme:app/light': OverridableExtensionDefinition<{
       kind: 'theme';
       name: 'light';
       config: {};

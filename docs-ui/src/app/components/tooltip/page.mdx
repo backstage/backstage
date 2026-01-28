@@ -1,0 +1,65 @@
+import { PropsTable } from '@/components/PropsTable';
+import { Snippet } from '@/components/Snippet';
+import { CodeBlock } from '@/components/CodeBlock';
+import { ReactAriaLink } from '@/components/ReactAriaLink';
+import { tooltipTriggerPropDefs, tooltipPropDefs } from './props-definition';
+import {
+  tooltipUsageSnippet,
+  defaultSnippet,
+  placementSnippet,
+} from './snippets';
+import { Default, Placement } from './components';
+import { PageTitle } from '@/components/PageTitle';
+import { Theming } from '@/components/Theming';
+import { TooltipDefinition } from '../../../utils/definitions';
+import { ChangelogComponent } from '@/components/ChangelogComponent';
+
+export const reactAriaUrls = {
+  tooltip: 'https://react-aria.adobe.com/Tooltip',
+};
+
+<PageTitle
+  title="Tooltip"
+  description="A popup with contextual information on hover or focus."
+/>
+
+<Snippet py={4} preview={<Default />} code={defaultSnippet} align="center" />
+
+## Usage
+
+<CodeBlock code={tooltipUsageSnippet} />
+
+## API reference
+
+### TooltipTrigger
+
+Wraps the trigger element and tooltip content.
+
+<PropsTable data={tooltipTriggerPropDefs} />
+
+<ReactAriaLink component="TooltipTrigger" href={reactAriaUrls.tooltip} />
+
+### Tooltip
+
+The tooltip content that appears on hover or focus.
+
+<PropsTable data={tooltipPropDefs} />
+
+<ReactAriaLink component="Tooltip" href={reactAriaUrls.tooltip} />
+
+## Examples
+
+### Placement
+
+The tooltip appears in the specified direction relative to the trigger.
+
+<Snippet
+  py={4}
+  preview={<Placement />}
+  code={placementSnippet}
+  align="center"
+/>
+
+<Theming definition={TooltipDefinition} />
+
+<ChangelogComponent component="tooltip" />

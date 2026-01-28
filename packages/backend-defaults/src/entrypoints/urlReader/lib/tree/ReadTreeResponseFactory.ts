@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import os from 'os';
-import { Readable } from 'stream';
+import os from 'node:os';
+import { Readable } from 'node:stream';
 import { Config } from '@backstage/config';
 import {
   ReadTreeResponseFactoryOptions,
@@ -36,7 +36,11 @@ export class DefaultReadTreeResponseFactory implements ReadTreeResponseFactory {
     );
   }
 
-  constructor(private readonly workDir: string) {}
+  private readonly workDir: string;
+
+  constructor(workDir: string) {
+    this.workDir = workDir;
+  }
 
   async fromTarArchive(
     options: ReadTreeResponseFactoryOptions & {

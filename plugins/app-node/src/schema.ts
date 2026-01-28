@@ -15,7 +15,7 @@
  */
 
 import fs from 'fs-extra';
-import { resolve as resolvePath } from 'path';
+import { resolve as resolvePath } from 'node:path';
 import { ConfigSchema, loadConfigSchema } from '@backstage/config-loader';
 
 /**

@@ -24,12 +24,14 @@ import {
   QueryEntitiesInitialRequest,
   QueryEntitiesRequest,
 } from '../catalog/types';
-import { EntityFilter } from '@backstage/plugin-catalog-node';
+import { CatalogProcessor, EntityFilter } from '@backstage/plugin-catalog-node';
 import {
   Entity,
   parseEntityRef,
   stringifyEntityRef,
 } from '@backstage/catalog-model';
+import { Config } from '@backstage/config';
+import type { EntityProviderEntry } from '../processing/connectEntityProviders';
 
 export async function requireRequestBody(req: Request): Promise<unknown> {
   const contentType = req.header('content-type');
@@ -165,4 +167,79 @@ export function expandLegacyCompoundRelationsInEntity(entity: Entity): Entity {
     }
   }
   return entity;
+}
+
+/**
+ * Given a list of catalog processors, filter out the ones that are disabled
+ * through the `catalog.processorOptions` config and sort them by priority.
+ */
+export function filterAndSortProcessors(
+  processors: CatalogProcessor[],
+  config: Config,
+): CatalogProcessor[] {
+  function getProcessorOptions(
+    processor: CatalogProcessor,
+  ): Config | undefined {
+    const root = config.getOptionalConfig('catalog.processorOptions');
+    try {
+      return root?.getOptionalConfig(processor.getProcessorName());
+    } catch {
+      // We silence errors specifically here, to cover for cases where the
+      // processor name contains special characters which makes the config
+      // reader throw an error.
+      return undefined;
+    }
+  }
+
+  function isProcessorDisabled(processor: CatalogProcessor): boolean {
+    return (
+      getProcessorOptions(processor)?.getOptionalBoolean('disabled') === true
+    );
+  }
+
+  function getProcessorPriority(processor: CatalogProcessor): number {
+    let priority =
+      getProcessorOptions(processor)?.getOptionalNumber('priority');
+
+    if (priority === undefined) {
+      try {
+        priority = processor.getPriority?.();
+      } catch {
+        // In case the processor method throws, just return default priority
+      }
+    }
+
+    return priority ?? 20;
+  }
+
+  return processors
+    .filter(p => !isProcessorDisabled(p))
+    .sort((a, b) => getProcessorPriority(a) - getProcessorPriority(b));
+}
+
+/**
+ * Given a list of entity providers, filter out the ones that are disabled
+ * through the `catalog.providerOptions` config.
+ */
+export function filterProviders(
+  providers: EntityProviderEntry[],
+  config: Config,
+): EntityProviderEntry[] {
+  function getProviderOptions(entry: EntityProviderEntry): Config | undefined {
+    const root = config.getOptionalConfig('catalog.providerOptions');
+    try {
+      return root?.getOptionalConfig(entry.provider.getProviderName());
+    } catch {
+      // We silence errors specifically here, to cover for cases where the
+      // provider name contains special characters which makes the config
+      // reader throw an error.
+      return undefined;
+    }
+  }
+
+  function isProviderDisabled(entry: EntityProviderEntry): boolean {
+    return getProviderOptions(entry)?.getOptionalBoolean('disabled') === true;
+  }
+
+  return providers.filter(entry => !isProviderDisabled(entry));
 }

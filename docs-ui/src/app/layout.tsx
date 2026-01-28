@@ -1,9 +1,10 @@
 import type { Metadata } from 'next';
-import { Sidebar } from '../components/Sidebar';
+import { Sidebar } from '@/components/Sidebar/Sidebar';
 import { Toolbar } from '@/components/Toolbar';
-import { StickyHeader } from '../components/StickyHeader/StickyHeader';
 import { Providers } from './providers';
 import { CustomTheme } from '@/components/CustomTheme';
+import { TableOfContents } from '@/components/TableOfContents';
+import { MobileBottomNav } from '@/components/MobileBottomNav';
 import styles from './layout.module.css';
 
 import '../css/globals.css';
@@ -44,18 +45,25 @@ export default async function RootLayout({
   return (
     <html
       lang="en"
-      data-theme="light"
-      data-theme-name="default"
+      data-theme-mode="light"
+      data-theme-name="backstage"
       suppressHydrationWarning
     >
       <body>
         <Providers>
           <Sidebar />
-          <Toolbar version={packageVersion} />
-          <StickyHeader />
           <div className={styles.container}>
-            <div className={styles.content}>{children}</div>
+            <div className={styles.contentWrapper}>
+              <Toolbar version={packageVersion} />
+              <div className={styles.content}>
+                <div className={styles.contentInner}>{children}</div>
+                <aside className={styles.toc}>
+                  <TableOfContents />
+                </aside>
+              </div>
+            </div>
           </div>
+          <MobileBottomNav />
           <CustomTheme />
         </Providers>
       </body>

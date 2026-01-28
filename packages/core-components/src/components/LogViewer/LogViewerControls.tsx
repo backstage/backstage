@@ -15,17 +15,20 @@
  */
 
 import { KeyboardEvent } from 'react';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import IconButton from '@material-ui/core/IconButton';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import ChevronRightIcon from '@material-ui/icons/ChevronRight';
 import FilterListIcon from '@material-ui/icons/FilterList';
+import { coreComponentsTranslationRef } from '../../translation';
 import { LogViewerSearch } from './useLogViewerSearch';
 
 export interface LogViewerControlsProps extends LogViewerSearch {}
 
 export function LogViewerControls(props: LogViewerControlsProps) {
+  const { t } = useTranslationRef(coreComponentsTranslationRef);
   const { resultCount, resultIndexStep, toggleShouldFilter } = props;
   const resultIndex = props.resultIndex ?? 0;
 
@@ -57,7 +60,7 @@ export function LogViewerControls(props: LogViewerControlsProps) {
       <TextField
         size="small"
         variant="standard"
-        placeholder="Search"
+        placeholder={t('logViewer.searchField.placeholder')}
         value={props.searchInput}
         onKeyPress={handleKeyPress}
         onChange={e => props.setSearchInput(e.target.value)}

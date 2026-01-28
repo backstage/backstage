@@ -148,7 +148,9 @@ Options:
 Usage: <none>
 
 Options:
+  --format
   --help
+  --include
   --version
 ```
 
@@ -312,6 +314,7 @@ Usage: program [options]
 Options:
   --check
   --config <path>
+  --entrypoint <path>
   --inspect [host]
   --inspect-brk [host]
   --link <path>
@@ -323,7 +326,7 @@ Options:
 ### `backstage-cli package test`
 
 ```
-Usage: backstage-cli [--config=<pathToConfigFile>] [TestPathPattern]
+Usage: backstage-cli [--config=<pathToConfigFile>] [TestPathPatterns]
 
 Options:
   --all
@@ -348,7 +351,6 @@ Options:
   --debug
   --detectLeaks
   --detectOpenHandles
-  --env
   --errorOnDeprecated
   --filter
   --findRelatedTests
@@ -358,7 +360,6 @@ Options:
   --globals
   --haste
   --ignoreProjects
-  --init
   --injectGlobals
   --json
   --lastCommit
@@ -399,13 +400,13 @@ Options:
   --silent
   --skipFilter
   --snapshotSerializers
-  --testEnvironment
+  --testEnvironment, --env
   --testEnvironmentOptions
   --testFailureExitCode
   --testLocationInResults
   --testMatch
   --testPathIgnorePatterns
-  --testPathPattern
+  --testPathPatterns
   --testRegex
   --testResultsProcessor
   --testRunner
@@ -417,6 +418,7 @@ Options:
   --useStderr
   --verbose
   --version
+  --waitForUnhandledRejections
   --watch
   --watchAll
   --watchPathIgnorePatterns

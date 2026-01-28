@@ -655,7 +655,7 @@ describe('dynamicFrontendFeaturesLoader', () => {
 
     const errorCalls = mocks.console.error.mock.calls.flatMap(e => e[0]);
     expect(errorCalls).toEqual([
-      `Failed fetching module federation configuration of dynamic frontend plugins: FetchError: invalid json response body at http://localhost:7007/.backstage/dynamic-features/remotes reason: Unexpected end of JSON input`,
+      `Failed fetching module federation configuration of dynamic frontend plugins: SyntaxError: Unexpected end of JSON input`,
     ]);
     const warnCalls = mocks.console.warn.mock.calls.flatMap(e => e[0]);
     expect(warnCalls).toEqual([]);

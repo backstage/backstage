@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
+import type { GetEntitiesResponse } from '@backstage/catalog-client';
 import { Entity } from '@backstage/catalog-model';
 import {
   alertApiRef,
@@ -23,7 +23,10 @@ import {
   identityApiRef,
   storageApiRef,
 } from '@backstage/core-plugin-api';
+import { translationApiRef } from '@backstage/core-plugin-api/alpha';
+import { catalogApiMock } from '@backstage/plugin-catalog-react/testUtils';
 import { mockApis, TestApiProvider } from '@backstage/test-utils';
+import { useMountEffect } from '@react-hookz/web';
 import { act, renderHook, waitFor } from '@testing-library/react';
 import qs from 'qs';
 import { PropsWithChildren } from 'react';
@@ -37,10 +40,15 @@ import {
   EntityTypeFilter,
   EntityUserFilter,
 } from '../filters';
-import { EntityListProvider, useEntityList } from './useEntityListProvider';
-import { useMountEffect } from '@react-hookz/web';
-import { translationApiRef } from '@backstage/core-plugin-api/alpha';
+import { createDeferred } from '@backstage/types';
 import { EntityListPagination } from '../types';
+import {
+  EntityListContextProps,
+  EntityListProvider,
+  NewEntityListContext,
+  useEntityList,
+} from './useEntityListProvider';
+import { createVersionedValueMap } from '@backstage/version-bridge';
 
 const entities: Entity[] = [
   {
@@ -144,6 +152,7 @@ describe('<EntityListProvider />', () => {
     expect(mockCatalogApi.getEntities).toHaveBeenCalledTimes(1);
     expect(mockCatalogApi.getEntities).toHaveBeenCalledWith({
       filter: { kind: 'component' },
+      order: [{ field: 'metadata.name', order: 'asc' }],
     });
   });
 
@@ -188,6 +197,7 @@ describe('<EntityListProvider />', () => {
       expect(mockCatalogApi.getEntities).toHaveBeenCalledTimes(1);
       expect(mockCatalogApi.getEntities).toHaveBeenCalledWith({
         filter: { kind: 'component' },
+        order: [{ field: 'metadata.name', order: 'asc' }],
       });
     });
   });
@@ -209,6 +219,27 @@ describe('<EntityListProvider />', () => {
     expect(result.current.queryParameters).toEqual({
       kind: 'component',
       type: 'service',
+    });
+  });
+
+  it('resolves query param filter values with large arrays', async () => {
+    const largeArray = Array.from({ length: 50 }, (_, i) => `owner-${i}`);
+    const query = qs.stringify({
+      filters: { kind: 'component', owners: largeArray },
+    });
+    const { result } = renderHook(() => useEntityList(), {
+      wrapper: createWrapper({
+        location: `/catalog?${query}`,
+        pagination,
+      }),
+    });
+
+    await waitFor(() => {
+      expect(result.current.queryParameters).toBeTruthy();
+    });
+    expect(result.current.queryParameters).toEqual({
+      kind: 'component',
+      owners: largeArray,
     });
   });
 
@@ -262,6 +293,7 @@ describe('<EntityListProvider />', () => {
     await waitFor(() => {
       expect(mockCatalogApi.getEntities).toHaveBeenNthCalledWith(2, {
         filter: { kind: 'api', 'spec.type': ['service'] },
+        order: [{ field: 'metadata.name', order: 'asc' }],
       });
     });
   });
@@ -318,6 +350,7 @@ describe('<EntityListProvider />', () => {
 
     expect(mockCatalogApi.getEntities).toHaveBeenCalledWith({
       filter: { kind: 'user' },
+      order: [{ field: 'metadata.name', order: 'asc' }],
     });
   });
 
@@ -339,7 +372,66 @@ describe('<EntityListProvider />', () => {
 
     expect(mockCatalogApi.getEntities).toHaveBeenCalledWith({
       filter: { kind: 'group' },
+      order: [{ field: 'metadata.name', order: 'asc' }],
     });
+  });
+
+  it('uses the last applied filter even if an earlier request finishes later', async () => {
+    const { result } = renderHook(() => useEntityList(), {
+      wrapper: createWrapper({ pagination }),
+    });
+
+    const firstResult = createDeferred<GetEntitiesResponse>();
+    const secondResult = createDeferred<GetEntitiesResponse>();
+
+    await waitFor(() => {
+      expect(result.current.backendEntities.length).toBeGreaterThan(0);
+    });
+    expect(result.current.totalItems).toBe(2);
+    expect(result.current.backendEntities.length).toBe(2);
+    expect(mockCatalogApi.getEntities).toHaveBeenCalledTimes(1);
+
+    mockCatalogApi.getEntities!.mockReturnValueOnce(firstResult);
+
+    await act(async () => {
+      result.current.updateFilters({
+        kind: new EntityKindFilter('api', 'API'),
+      });
+    });
+
+    await waitFor(() => {
+      expect(mockCatalogApi.getEntities).toHaveBeenNthCalledWith(2, {
+        filter: { kind: 'api' },
+        order: [{ field: 'metadata.name', order: 'asc' }],
+      });
+    });
+
+    mockCatalogApi.getEntities!.mockReturnValueOnce(secondResult);
+
+    await act(async () => {
+      result.current.updateFilters({
+        kind: new EntityKindFilter('system', 'System'),
+      });
+    });
+
+    await waitFor(() => {
+      expect(mockCatalogApi.getEntities).toHaveBeenNthCalledWith(3, {
+        filter: { kind: 'system' },
+        order: [{ field: 'metadata.name', order: 'asc' }],
+      });
+    });
+
+    await act(async () => {
+      secondResult.resolve({
+        items: [],
+      });
+      firstResult.resolve({
+        items: entities,
+      });
+    });
+
+    expect(result.current.filters.kind!.value).toBe('system');
+    expect(result.current.backendEntities.length).toBe(0);
   });
 });
 
@@ -431,6 +523,29 @@ describe('<EntityListProvider pagination />', () => {
       expect(result.current.entities.length).toBe(1);
       expect(mockCatalogApi.queryEntities).toHaveBeenCalledTimes(1);
     });
+  });
+
+  it('applies frontend-only filters without refetching', async () => {
+    const { result } = renderHook(() => useEntityList(), {
+      wrapper: createWrapper({ pagination }),
+    });
+
+    await waitFor(() => {
+      expect(result.current.backendEntities.length).toBe(2);
+      expect(result.current.filters.kind?.value).toBe('component');
+    });
+
+    act(() =>
+      result.current.updateFilters({
+        user: EntityUserFilter.all(),
+      }),
+    );
+
+    await waitFor(() => {
+      expect(result.current.filters.user?.value).toBe('all');
+      expect(result.current.entities.length).toBe(2);
+    });
+    expect(mockCatalogApi.queryEntities).toHaveBeenCalledTimes(1);
   });
 
   it('resolves query param filter values', async () => {
@@ -736,6 +851,29 @@ describe(`<EntityListProvider pagination={{ mode: 'offset' }} />`, () => {
     });
   });
 
+  it('applies frontend-only filters without refetching', async () => {
+    const { result } = renderHook(() => useEntityList(), {
+      wrapper: createWrapper({ pagination }),
+    });
+
+    await waitFor(() => {
+      expect(result.current.backendEntities.length).toBe(2);
+      expect(result.current.filters.kind?.value).toBe('component');
+    });
+
+    act(() =>
+      result.current.updateFilters({
+        user: EntityUserFilter.all(),
+      }),
+    );
+
+    await waitFor(() => {
+      expect(result.current.filters.user?.value).toBe('all');
+      expect(result.current.entities.length).toBe(2);
+    });
+    expect(mockCatalogApi.queryEntities).toHaveBeenCalledTimes(1);
+  });
+
   it('resolves query param filter values', async () => {
     const query = qs.stringify({
       filters: { kind: 'component', type: 'service' },
@@ -935,5 +1073,61 @@ describe(`<EntityListProvider pagination={{ mode: 'offset' }} />`, () => {
         filter: { kind: 'group' },
       }),
     );
+  });
+});
+
+describe('versioned context', () => {
+  it('should work explicitly with new versioned contexts', () => {
+    const value: EntityListContextProps<any> = {
+      filters: {},
+      entities: [],
+      backendEntities: [],
+      updateFilters: jest.fn(),
+      queryParameters: {},
+      loading: true,
+      limit: 277,
+      setLimit: jest.fn(),
+      setOffset: jest.fn(),
+      paginationMode: 'none',
+    };
+
+    const { result } = renderHook(() => useEntityList(), {
+      wrapper: ({ children }) => {
+        const InitialFiltersWrapper = (f: PropsWithChildren<{}>) => {
+          const { updateFilters } = useEntityList();
+          useMountEffect(() => {
+            updateFilters({
+              kind: new EntityKindFilter('component', 'Component'),
+            });
+          });
+          return <>{f.children}</>;
+        };
+
+        return (
+          <MemoryRouter initialEntries={['/catalog']}>
+            <TestApiProvider
+              apis={[
+                [configApiRef, mockApis.config()],
+                [catalogApiRef, mockCatalogApi],
+                [identityApiRef, mockIdentityApi],
+                [storageApiRef, mockApis.storage()],
+                [starredEntitiesApiRef, new MockStarredEntitiesApi()],
+                [alertApiRef, { post: jest.fn() }],
+                [translationApiRef, mockApis.translation()],
+                [errorApiRef, { error$: jest.fn(), post: jest.fn() }],
+              ]}
+            >
+              <NewEntityListContext.Provider
+                value={createVersionedValueMap({ 1: value })}
+              >
+                <InitialFiltersWrapper>{children}</InitialFiltersWrapper>
+              </NewEntityListContext.Provider>
+            </TestApiProvider>
+          </MemoryRouter>
+        );
+      },
+    });
+
+    expect(result.current.limit).toBe(277);
   });
 });

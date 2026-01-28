@@ -16,7 +16,7 @@
 
 import { Command, OptionValues } from 'commander';
 import { paths } from '../../../../lib/paths';
-import { runCheck } from '../../../../lib/run';
+import { runCheck } from '@backstage/cli-common';
 
 function includesAnyOf(hayStack: string[], ...needles: string[]) {
   for (const needle of needles) {
@@ -55,8 +55,8 @@ export default async (_opts: OptionValues, cmd: Command) => {
     !includesAnyOf(args, '--watch', '--watchAll')
   ) {
     const isGitRepo = () =>
-      runCheck('git', 'rev-parse', '--is-inside-work-tree');
-    const isMercurialRepo = () => runCheck('hg', '--cwd', '.', 'root');
+      runCheck(['git', 'rev-parse', '--is-inside-work-tree']);
+    const isMercurialRepo = () => runCheck(['hg', '--cwd', '.', 'root']);
 
     if ((await isGitRepo()) || (await isMercurialRepo())) {
       args.push('--watch');
@@ -78,9 +78,35 @@ export default async (_opts: OptionValues, cmd: Command) => {
     process.env.TZ = 'UTC';
   }
 
+  // Unless the user explicitly toggles node-snapshot, default to provide --no-node-snapshot to reduce number of steps to run scaffolder
+  //  on Node LTS.
+  if (!process.env.NODE_OPTIONS?.includes('--node-snapshot')) {
+    process.env.NODE_OPTIONS = `${
+      process.env.NODE_OPTIONS ? `${process.env.NODE_OPTIONS} ` : ''
+    }--no-node-snapshot`;
+  }
+
   // This ensures that the process doesn't exit too early before stdout is flushed
   if (args.includes('--help')) {
     (process.stdout as any)._handle.setBlocking(true);
+  }
+
+  // Because of the ongoing migration to v30 of jest, jest is no longer hard-depended to allow
+  // opt-in migration. Users instead need to add jest as a devDependency themselves and specify
+  // the version they want. This prints a helpful error message if jest is not found, i.e. they
+  // forgot/didn't know they had to add jest themselves.
+  try {
+    require.resolve('jest');
+  } catch {
+    console.error(
+      [
+        'No Jest installation found in this project.',
+        '',
+        'To support opt-in migration to Jest v30, the Backstage CLI now expects Jest to be installed as a devDependency.',
+        'See the migration guide in the changelog for version options and their consequences.',
+      ].join('\n'),
+    );
+    process.exit(1);
   }
 
   await require('jest').run(args);

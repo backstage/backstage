@@ -211,6 +211,7 @@ describe('DefaultLocationStore', () => {
           entity_id: entityId,
           key: `metadata.annotations.${ANNOTATION_ORIGIN_LOCATION}`,
           value: `url:https://example.com`,
+          original_value: `url:https://example.com`,
         });
 
         await knex<DbLocationsRow>('locations').insert({

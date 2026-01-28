@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-const path = require('path');
+const path = require('node:path');
 
 module.exports = require('@backstage/cli/config/jest').then(baseConfig => ({
   ...baseConfig,

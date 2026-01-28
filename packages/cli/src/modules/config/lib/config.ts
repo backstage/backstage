@@ -19,7 +19,7 @@ import { AppConfig, ConfigReader } from '@backstage/config';
 import { paths } from '../../../lib/paths';
 import { getPackages } from '@manypkg/get-packages';
 import { PackageGraph } from '@backstage/cli-node';
-import { resolve as resolvePath } from 'path';
+import { resolve as resolvePath } from 'node:path';
 
 type Options = {
   args: string[];

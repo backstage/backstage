@@ -18,10 +18,10 @@
 
 // This script is used to verify that the branch that we're patching is correct, and that we're not patching branches like master
 
-const { execFile: execFileCb } = require('child_process');
-const { resolve: resolvePath } = require('path');
-const { promises: fs } = require('fs');
-const { promisify } = require('util');
+const { execFile: execFileCb } = require('node:child_process');
+const { resolve: resolvePath } = require('node:path');
+const { promises: fs } = require('node:fs');
+const { promisify } = require('node:util');
 const semver = require('semver');
 
 const baseRef = process.env.GITHUB_BASE_REF || 'master';

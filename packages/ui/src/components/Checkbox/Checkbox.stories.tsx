@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,47 +13,42 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import type { Meta, StoryObj } from '@storybook/react';
+import preview from '../../../../../.storybook/preview';
 import { Checkbox } from './Checkbox';
 import { Flex } from '../Flex';
-import { Text } from '../Text';
 
-const meta = {
-  title: 'Components/Checkbox',
+const meta = preview.meta({
+  title: 'Backstage UI/Checkbox',
   component: Checkbox,
-} satisfies Meta<typeof Checkbox>;
+});
 
-export default meta;
-type Story = StoryObj<typeof meta>;
-
-export const Default: Story = {
+export const Default = meta.story({
   args: {
-    label: 'Accept terms and conditions',
+    children: 'Accept terms and conditions',
   },
-};
+});
 
-export const AllVariants: Story = {
+export const Indeterminate = meta.story({
+  args: {
+    children: 'Select all',
+    isIndeterminate: true,
+  },
+});
+
+export const AllVariants = meta.story({
+  ...Default.input,
   render: () => (
-    <Flex align="center">
-      <Checkbox />
-      <Checkbox checked />
-      <Checkbox label="Checkbox" />
-      <Checkbox label="Checkbox" checked />
+    <Flex direction="column" gap="2">
+      <Checkbox>Unchecked</Checkbox>
+      <Checkbox isSelected>Checked</Checkbox>
+      <Checkbox isIndeterminate>Indeterminate</Checkbox>
+      <Checkbox isDisabled>Disabled</Checkbox>
+      <Checkbox isSelected isDisabled>
+        Checked & Disabled
+      </Checkbox>
+      <Checkbox isIndeterminate isDisabled>
+        Indeterminate & Disabled
+      </Checkbox>
     </Flex>
   ),
-};
-
-export const Playground: Story = {
-  render: () => (
-    <Flex>
-      <Text>All variants</Text>
-      <Flex align="center">
-        <Checkbox />
-        <Checkbox checked />
-        <Checkbox label="Checkbox" />
-        <Checkbox label="Checkbox" checked />
-      </Flex>
-    </Flex>
-  ),
-};
+});

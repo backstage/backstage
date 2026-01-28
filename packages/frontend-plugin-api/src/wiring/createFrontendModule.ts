@@ -86,7 +86,7 @@ export interface InternalFrontendModule extends FrontendModule {
  */
 export function createFrontendModule<
   TId extends string,
-  TExtensions extends readonly ExtensionDefinition[] = [],
+  TExtensions extends readonly ExtensionDefinition[],
 >(options: CreateFrontendModuleOptions<TId, TExtensions>): FrontendModule {
   const { pluginId } = options;
 

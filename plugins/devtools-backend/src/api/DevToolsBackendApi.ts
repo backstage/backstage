@@ -28,7 +28,7 @@ import { JsonObject } from '@backstage/types';
 import { findPaths } from '@backstage/cli-common';
 import { getPackages } from '@manypkg/get-packages';
 import ping from 'ping';
-import os from 'os';
+import os from 'node:os';
 import fs from 'fs-extra';
 import { Lockfile } from '../util/Lockfile';
 import { memoize } from 'lodash';
@@ -37,10 +37,13 @@ import { LoggerService } from '@backstage/backend-plugin-api';
 
 /** @public */
 export class DevToolsBackendApi {
-  public constructor(
-    private readonly logger: LoggerService,
-    private readonly config: Config,
-  ) {}
+  private readonly logger: LoggerService;
+  private readonly config: Config;
+
+  public constructor(logger: LoggerService, config: Config) {
+    this.logger = logger;
+    this.config = config;
+  }
 
   public async listExternalDependencyDetails(): Promise<ExternalDependency[]> {
     const result: ExternalDependency[] = [];

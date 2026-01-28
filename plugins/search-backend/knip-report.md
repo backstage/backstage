@@ -4,6 +4,6 @@
 
 | Name                              | Location     | Severity |
 | :-------------------------------- | :----------- | :------- |
-| @backstage/plugin-permission-node | package.json | error    |
-| yn                                | package.json | error    |
+| @backstage/plugin-permission-node | plugins/search-backend/package.json | error    |
+| yn                                | plugins/search-backend/package.json | error    |
 

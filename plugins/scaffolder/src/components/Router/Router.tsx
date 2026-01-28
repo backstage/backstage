@@ -63,7 +63,6 @@ import { RequirePermission } from '@backstage/plugin-permission-react';
 import { templateManagementPermission } from '@backstage/plugin-scaffolder-common/alpha';
 import { useApp } from '@backstage/core-plugin-api';
 import { OpaqueFormField } from '@internal/scaffolder';
-import { useAsync, useMountEffect } from '@react-hookz/web';
 import { TemplatingExtensionsPage } from '../TemplatingExtensionsPage';
 import { FormField } from '@backstage/plugin-scaffolder-react/alpha';
 
@@ -103,6 +102,8 @@ export type RouterProps = {
     tasks?: boolean;
     /** Whether to show a link to the create page (on /create subroutes) */
     create?: boolean;
+    /** Whether to show a link to the templating extensions page */
+    templatingExtensions?: boolean;
   };
 };
 
@@ -114,7 +115,9 @@ export type RouterProps = {
  */
 export const InternalRouter = (
   props: PropsWithChildren<
-    RouterProps & { formFieldLoaders?: Array<() => Promise<FormField>> }
+    RouterProps & {
+      formFields?: Array<FormField>;
+    }
   >,
 ) => {
   const {
@@ -131,14 +134,13 @@ export const InternalRouter = (
   } = props;
   const outlet = useOutlet() || props.children;
   const customFieldExtensions = useCustomFieldExtensions(outlet);
-  const loadedFieldExtensions = useFormFieldLoaders(props.formFieldLoaders);
 
   const app = useApp();
   const { NotFoundErrorPage } = app.getComponents();
 
   const fieldExtensions = [
     ...customFieldExtensions,
-    ...loadedFieldExtensions,
+    ...(props.formFields?.map(OpaqueFormField.toInternal) ?? []),
     ...DEFAULT_SCAFFOLDER_FIELD_EXTENSIONS.filter(
       ({ name }) =>
         !customFieldExtensions.some(
@@ -244,7 +246,7 @@ export const InternalRouter = (
       />
       <Route
         path={templatingExtensionsRouteRef.path}
-        element={<TemplatingExtensionsPage />}
+        element={<TemplatingExtensionsPage contextMenu={props.contextMenu} />}
       />
       <Route path="*" element={<NotFoundErrorPage />} />
     </Routes>
@@ -259,17 +261,3 @@ export const InternalRouter = (
 export const Router = (props: PropsWithChildren<RouterProps>) => {
   return <InternalRouter {...props} />;
 };
-
-function useFormFieldLoaders(
-  formFieldLoaders?: Array<() => Promise<FormField>>,
-) {
-  const [{ result: loadedFieldExtensions }, { execute }] =
-    useAsync(async () => {
-      const loaded = await Promise.all(
-        (formFieldLoaders ?? []).map(loader => loader()),
-      );
-      return loaded.map(f => OpaqueFormField.toInternal(f));
-    }, []);
-  useMountEffect(execute);
-  return loadedFieldExtensions;
-}

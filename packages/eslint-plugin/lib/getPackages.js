@@ -16,12 +16,12 @@
 
 // @ts-check
 
-const path = require('path');
+const path = require('node:path');
 const manypkg = require('@manypkg/get-packages');
 
 /**
  * @typedef ExtendedPackage
- * @type {import('@manypkg/get-packages').Package & { packageJson: { exports?: Record<string, string>, files?: Array<string>, backstage?: { inline?: boolean, role?: string } }}} packageJson
+ * @type {import('@manypkg/get-packages').Package & { packageJson: { exports?: Record<string, string>, files?: Array<string>, backstage?: { inline?: boolean, role?: string, pluginId?: string } }}} packageJson
  */
 
 /**

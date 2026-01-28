@@ -40,7 +40,7 @@ import {
   NotFoundError,
   NotModifiedError,
 } from '@backstage/errors';
-import { Readable } from 'stream';
+import { Readable } from 'node:stream';
 import { parseLastModified } from './util';
 import parseGitUrl from 'git-url-parse';
 
@@ -62,12 +62,20 @@ export class GiteaUrlReader implements UrlReaderService {
       });
   };
 
+  private readonly integration: GiteaIntegration;
+  private readonly deps: {
+    treeResponseFactory: ReadTreeResponseFactory;
+  };
+
   constructor(
-    private readonly integration: GiteaIntegration,
-    private readonly deps: {
+    integration: GiteaIntegration,
+    deps: {
       treeResponseFactory: ReadTreeResponseFactory;
     },
-  ) {}
+  ) {
+    this.integration = integration;
+    this.deps = deps;
+  }
 
   async read(url: string): Promise<Buffer> {
     const response = await this.readUrl(url);

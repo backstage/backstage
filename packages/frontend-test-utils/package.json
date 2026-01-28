@@ -1,6 +1,6 @@
 {
   "name": "@backstage/frontend-test-utils",
-  "version": "0.3.5-next.2",
+  "version": "0.4.5-next.0",
   "backstage": {
     "role": "web-library"
   },
@@ -35,10 +35,11 @@
     "@backstage/frontend-app-api": "workspace:^",
     "@backstage/frontend-plugin-api": "workspace:^",
     "@backstage/plugin-app": "workspace:^",
+    "@backstage/plugin-app-react": "workspace:^",
     "@backstage/test-utils": "workspace:^",
     "@backstage/types": "workspace:^",
     "@backstage/version-bridge": "workspace:^",
-    "zod": "^3.22.4"
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",

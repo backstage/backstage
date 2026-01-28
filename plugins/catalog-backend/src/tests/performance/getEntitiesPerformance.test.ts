@@ -25,7 +25,7 @@ import {
   CatalogClient,
   GetEntitiesResponse,
 } from '@backstage/catalog-client';
-import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
+import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
 import { Knex } from 'knex';
 import { default as catalogPlugin } from '../..';
 import {
@@ -40,7 +40,7 @@ import { describePerformanceTest, performanceTraceEnabled } from './lib/env';
 jest.setTimeout(600_000);
 
 const databases = TestDatabases.create({
-  ids: [/* 'MYSQL_8', */ 'POSTGRES_17', /* 'POSTGRES_13',*/ 'SQLITE_3'],
+  ids: [/* 'MYSQL_8', */ 'POSTGRES_18', /* 'POSTGRES_14',*/ 'SQLITE_3'],
   disableDocker: false,
 });
 

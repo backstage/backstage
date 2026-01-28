@@ -441,7 +441,7 @@ Base64-encoded certificate authority bundle in PEM format. The Kubernetes client
 will verify that the TLS certificate presented by the API server is signed by
 this CA.
 
-This value could be obtained via inspecting the kubeconfig file (usually
+This value could be obtained via inspecting the `kubeconfig` file (usually
 at `~/.kube/config`) under `clusters[*].cluster.certificate-authority-data`. For
 GKE, execute the following command to obtain the value
 
@@ -619,7 +619,7 @@ The custom resource's group.
 
 #### `customResources.\*.apiVersion`
 
-The custom resource's apiVersion.
+The custom resource's `apiVersion`.
 
 #### `customResources.\*.plural`
 

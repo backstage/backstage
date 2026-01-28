@@ -129,3 +129,24 @@ Responds with
 - `200 OK` if successful
 - `404 Not Found` if there was no such registered task for this plugin
 - `409 Conflict` if the task was already in a running state
+
+## Testing
+
+The `@backstage/backend-test-utils` package provides `mockServices.scheduler`, which provides a mocked implementation of the scheduler service that can be used in tests. This mocked implementation is used by default in `startTestBackend`, and it will immediately run any registered tasks on startup as long as they're not configured to run manually or with an initial delay.
+
+A dedicated instance can be used for more control during testing:
+
+```ts
+it('should trigger a task', async () => {
+  const scheduler = mockServices.scheduler();
+
+  const { server } = await startTestBackend({
+    features: [scheduler.factory()],
+  });
+
+  await scheduler.triggerTask('some-task-id');
+
+  // Next verify that the plugin state is updated accordingly
+  // e.g. by calling the API or verifying database state
+});
+```

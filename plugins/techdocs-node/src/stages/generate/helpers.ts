@@ -18,12 +18,12 @@ import { isChildPath, LoggerService } from '@backstage/backend-plugin-api';
 import { Entity } from '@backstage/catalog-model';
 import { assertError, ForwardedError } from '@backstage/errors';
 import { ScmIntegrationRegistry } from '@backstage/integration';
-import { SpawnOptionsWithoutStdio, spawn } from 'child_process';
+import { SpawnOptionsWithoutStdio, spawn } from 'node:child_process';
 import fs from 'fs-extra';
 import gitUrlParse from 'git-url-parse';
 import yaml, { DEFAULT_SCHEMA, Type } from 'js-yaml';
-import path, { resolve as resolvePath } from 'path';
-import { PassThrough, Writable } from 'stream';
+import path, { resolve as resolvePath } from 'node:path';
+import { PassThrough, Writable } from 'node:stream';
 import { ParsedLocationAnnotation } from '../../helpers';
 import { DefaultMkdocsContent, SupportedGeneratorKey } from './types';
 import { getFileTreeRecursively } from '../publish/helpers';
@@ -129,7 +129,13 @@ export const getRepoUrlFromLocationAnnotation = (
 };
 
 class UnknownTag {
-  constructor(public readonly data: any, public readonly type?: string) {}
+  public readonly data: any;
+  public readonly type?: string;
+
+  constructor(data: any, type?: string) {
+    this.data = data;
+    this.type = type;
+  }
 }
 
 export const MKDOCS_SCHEMA = DEFAULT_SCHEMA.extend([

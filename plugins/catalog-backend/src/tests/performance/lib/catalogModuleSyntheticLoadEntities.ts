@@ -144,10 +144,12 @@ export const common = {
  * @internal
  */
 export class SyntheticLoadEntitiesProvider implements EntityProvider {
-  constructor(
-    private readonly load: SyntheticLoadOptions,
-    private readonly events: SyntheticLoadEvents,
-  ) {
+  private readonly load: SyntheticLoadOptions;
+  private readonly events: SyntheticLoadEvents;
+
+  constructor(load: SyntheticLoadOptions, events: SyntheticLoadEvents) {
+    this.load = load;
+    this.events = events;
     validateSyntheticLoadOptions(load);
   }
 
@@ -184,7 +186,10 @@ export class SyntheticLoadEntitiesProvider implements EntityProvider {
  * @internal
  */
 export class SyntheticLoadEntitiesProcessor implements CatalogProcessor {
-  constructor(private readonly load: SyntheticLoadOptions) {
+  private readonly load: SyntheticLoadOptions;
+
+  constructor(load: SyntheticLoadOptions) {
+    this.load = load;
     validateSyntheticLoadOptions(load);
   }
 

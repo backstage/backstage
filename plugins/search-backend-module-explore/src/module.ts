@@ -30,6 +30,7 @@ import { ToolDocumentCollatorFactory } from './collators/ToolDocumentCollatorFac
 /**
  * Search backend module for the Explore index.
  *
+ * @deprecated This entire package is deprecated and has been moved to the Backstage community repository; please use the `@backstage-community/plugin-search-backend-module-explore` package instead.
  * @public
  */
 export default createBackendModule({

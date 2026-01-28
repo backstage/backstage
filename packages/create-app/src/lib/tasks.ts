@@ -13,6 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+import { bootstrapEnvProxyAgents } from '@backstage/cli-common';
+
+bootstrapEnvProxyAgents();
 
 import chalk from 'chalk';
 import fs from 'fs-extra';
@@ -24,11 +27,11 @@ import {
   dirname,
   resolve as resolvePath,
   relative as relativePath,
-} from 'path';
-import { exec as execCb } from 'child_process';
+} from 'node:path';
+import { exec as execCb } from 'node:child_process';
 import { packageVersions } from './versions';
-import { promisify } from 'util';
-import os from 'os';
+import { promisify } from 'node:util';
+import os from 'node:os';
 
 const TASK_NAME_MAX_LENGTH = 14;
 const TEN_MINUTES_MS = 1000 * 60 * 10;

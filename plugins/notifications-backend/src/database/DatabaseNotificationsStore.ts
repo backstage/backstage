@@ -30,7 +30,7 @@ import {
   NotificationSeverity,
 } from '@backstage/plugin-notifications-common';
 import { Knex } from 'knex';
-import crypto from 'crypto';
+import crypto from 'node:crypto';
 import { durationToMilliseconds, HumanDuration } from '@backstage/types';
 
 const migrationsDir = resolvePackagePath(
@@ -121,7 +121,10 @@ export const generateSettingsHash = (
 export class DatabaseNotificationsStore implements NotificationsStore {
   private readonly isSQLite = false;
 
-  private constructor(private readonly db: Knex) {
+  private readonly db: Knex;
+
+  private constructor(db: Knex) {
+    this.db = db;
     this.isSQLite = this.db.client.config.client.includes('sqlite3');
   }
 

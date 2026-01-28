@@ -27,7 +27,7 @@ import {
 import fs from 'fs-extra';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import path from 'path';
+import path from 'node:path';
 import { NotFoundError, NotModifiedError } from '@backstage/errors';
 import {
   GhBlobResponse,
@@ -373,7 +373,7 @@ describe('GithubUrlReader', () => {
                 'content-disposition',
                 'attachment; filename=backstage-mock-etag123.tar.gz',
               ),
-              ctx.body(repoBuffer),
+              ctx.body(new Uint8Array(repoBuffer)),
             ),
         ),
         rest.get(
@@ -390,7 +390,7 @@ describe('GithubUrlReader', () => {
                 'content-disposition',
                 'attachment; filename=backstage-mock-etag123.tar.gz',
               ),
-              ctx.body(repoBuffer),
+              ctx.body(new Uint8Array(repoBuffer)),
             ),
         ),
         rest.get(
@@ -480,7 +480,7 @@ describe('GithubUrlReader', () => {
                 'content-disposition',
                 'attachment; filename=backstage-mock-etag123.tar.gz',
               ),
-              ctx.body(repoBuffer),
+              ctx.body(new Uint8Array(repoBuffer)),
             );
           },
         ),
@@ -531,7 +531,7 @@ describe('GithubUrlReader', () => {
                 'content-disposition',
                 'attachment; filename=backstage-mock-etag123.tar.gz',
               ),
-              ctx.body(repoBuffer),
+              ctx.body(new Uint8Array(repoBuffer)),
             );
           },
         ),
@@ -720,7 +720,7 @@ describe('GithubUrlReader', () => {
                 'content-disposition',
                 'attachment; filename=backstage-mock-etag123.tar.gz',
               ),
-              ctx.body(repoBuffer),
+              ctx.body(new Uint8Array(repoBuffer)),
             ),
         ),
         rest.get(
@@ -733,7 +733,7 @@ describe('GithubUrlReader', () => {
                 'content-disposition',
                 'attachment; filename=backstage-mock-etag123.tar.gz',
               ),
-              ctx.body(repoBuffer),
+              ctx.body(new Uint8Array(repoBuffer)),
             ),
         ),
       );

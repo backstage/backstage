@@ -1,5 +1,72 @@
 # @backstage/plugin-catalog-unprocessed-entities-common
 
+## 0.0.13-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.5-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/errors@1.2.7
+
+## 0.0.12
+
+### Patch Changes
+
+- df4d646: Moved types, API and client to the common package, allowing both frontend and
+  backend plugins to use the `CatalogUnprocessedEntitiesClient`.
+
+  The following types, clients and interfaces have been deprecated and should be
+  imported from the `@backstage/plugin-catalog-unprocessed-entities-common` instead:
+  `CatalogUnprocessedEntitiesApi`, `CatalogUnprocessedEntitiesApiResponse`, `UnprocessedEntity`,
+  `UnprocessedEntityCache`, `UnprocessedEntityError`, `CatalogUnprocessedEntitiesClient`.
+
+  All those types, clients and interfaces are re-exported temporarily in the
+  `@backstage/plugin-catalog-unprocessed-entities` package until cleaned up.
+
+## 0.0.12-next.0
+
+### Patch Changes
+
+- df4d646: Moved types, API and client to the common package, allowing both frontend and
+  backend plugins to use the `CatalogUnprocessedEntitiesClient`.
+
+  The following types, clients and interfaces have been deprecated and should be
+  imported from the `@backstage/plugin-catalog-unprocessed-entities-common` instead:
+  `CatalogUnprocessedEntitiesApi`, `CatalogUnprocessedEntitiesApiResponse`, `UnprocessedEntity`,
+  `UnprocessedEntityCache`, `UnprocessedEntityError`, `CatalogUnprocessedEntitiesClient`.
+
+  All those types, clients and interfaces are re-exported temporarily in the
+  `@backstage/plugin-catalog-unprocessed-entities` package until cleaned up.
+
+## 0.0.11
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.3
+
+## 0.0.11-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.3-next.0
+
+## 0.0.10
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.2
+
+## 0.0.10-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-common@0.9.2-next.0
+
 ## 0.0.9
 
 ### Patch Changes

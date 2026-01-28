@@ -213,13 +213,13 @@ export function AncestryPage(props: { entity: Entity }) {
         {t('inspectEntityDialog.ancestryPage.title')}
       </DialogContentText>
       <DialogContentText gutterBottom>
-        This is the ancestry of entities above the current one - as in, the
-        chain(s) of entities down to the current one, where{' '}
-        <Link to="https://backstage.io/docs/features/software-catalog/life-of-an-entity">
-          processors emitted
-        </Link>{' '}
-        child entities that ultimately led to the current one existing. Note
-        that this is a completely different mechanism from relations.
+        {t('inspectEntityDialog.ancestryPage.description', {
+          processorsLink: (
+            <Link to="https://backstage.io/docs/features/software-catalog/life-of-an-entity">
+              {t('inspectEntityDialog.ancestryPage.processorsLink')}
+            </Link>
+          ),
+        })}
       </DialogContentText>
       <Box mt={4}>
         <DependencyGraph

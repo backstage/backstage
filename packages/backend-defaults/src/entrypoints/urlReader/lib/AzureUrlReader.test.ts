@@ -31,7 +31,7 @@ import {
 import fs from 'fs-extra';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import path from 'path';
+import path from 'node:path';
 import { NotModifiedError } from '@backstage/errors';
 import { AzureUrlReader } from './AzureUrlReader';
 import { DefaultReadTreeResponseFactory } from './tree';
@@ -214,7 +214,7 @@ describe('AzureUrlReader', () => {
             res(
               ctx.status(200),
               ctx.set('Content-Type', 'application/zip'),
-              ctx.body(repoBuffer),
+              ctx.body(new Uint8Array(repoBuffer)),
             ),
         ),
         rest.get(
@@ -324,7 +324,7 @@ describe('AzureUrlReader', () => {
             res(
               ctx.status(200),
               ctx.set('Content-Type', 'application/zip'),
-              ctx.body(repoBuffer),
+              ctx.body(new Uint8Array(repoBuffer)),
             ),
         ),
         rest.get(

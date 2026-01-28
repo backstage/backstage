@@ -4,5 +4,5 @@
 
 | Name             | Location     | Severity |
 | :--------------- | :----------- | :------- |
-| @react-hookz/web | package.json | error    |
+| @react-hookz/web | packages/frontend-defaults/package.json | error    |
 

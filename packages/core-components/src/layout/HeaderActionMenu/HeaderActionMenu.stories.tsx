@@ -18,6 +18,7 @@ import { HeaderActionMenu, HeaderActionMenuProps } from './HeaderActionMenu';
 export default {
   title: 'Layout/HeaderActionMenu',
   component: HeaderActionMenu,
+  tags: ['!manifest'],
 };
 
 export const Default = (args: HeaderActionMenuProps) => (

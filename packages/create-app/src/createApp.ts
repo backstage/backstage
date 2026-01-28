@@ -17,9 +17,9 @@
 import chalk from 'chalk';
 import { OptionValues } from 'commander';
 import inquirer, { Answers } from 'inquirer';
-import { resolve as resolvePath } from 'path';
+import { resolve as resolvePath } from 'node:path';
 import { findPaths } from '@backstage/cli-common';
-import os from 'os';
+import os from 'node:os';
 import fs from 'fs-extra';
 import {
   Task,

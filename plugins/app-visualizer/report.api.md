@@ -5,18 +5,18 @@
 ```ts
 import { AnyRouteRefParams } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
-import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
-import { FrontendPlugin } from '@backstage/frontend-plugin-api';
-import { IconComponent } from '@backstage/core-plugin-api';
+import { IconComponent } from '@backstage/frontend-plugin-api';
 import { JSX as JSX_2 } from 'react';
+import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
+import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 
 // @public (undocumented)
-const visualizerPlugin: FrontendPlugin<
+const visualizerPlugin: OverridableFrontendPlugin<
   {},
   {},
   {
-    'nav-item:app-visualizer': ExtensionDefinition<{
+    'nav-item:app-visualizer': OverridableExtensionDefinition<{
       kind: 'nav-item';
       name: undefined;
       config: {};
@@ -37,7 +37,7 @@ const visualizerPlugin: FrontendPlugin<
         routeRef: RouteRef<undefined>;
       };
     }>;
-    'page:app-visualizer': ExtensionDefinition<{
+    'page:app-visualizer': OverridableExtensionDefinition<{
       kind: 'page';
       name: undefined;
       config: {

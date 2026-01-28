@@ -15,7 +15,7 @@
  */
 
 import fs from 'fs-extra';
-import { resolve as resolvePath } from 'path';
+import { resolve as resolvePath } from 'node:path';
 import { buildBundle, getModuleFederationOptions } from './bundler';
 import { getEnvironmentParallelism } from '../../../lib/parallel';
 import { loadCliConfig } from '../../config/lib/config';
@@ -26,11 +26,11 @@ interface BuildAppOptions {
   writeStats: boolean;
   configPaths: string[];
   isModuleFederationRemote?: true;
-  rspack?: typeof import('@rspack/core').rspack;
+  webpack?: typeof import('webpack');
 }
 
 export async function buildFrontend(options: BuildAppOptions) {
-  const { targetDir, writeStats, configPaths, rspack } = options;
+  const { targetDir, writeStats, configPaths, webpack } = options;
   const packageJson = (await fs.readJson(
     resolvePath(targetDir, 'package.json'),
   )) as BackstagePackageJson;
@@ -48,6 +48,6 @@ export async function buildFrontend(options: BuildAppOptions) {
       args: configPaths,
       fromPackage: packageJson.name,
     })),
-    rspack,
+    webpack,
   });
 }

@@ -4,6 +4,53 @@
 
 ```ts
 import { BasicPermission } from '@backstage/plugin-permission-common';
+import { Entity } from '@backstage/catalog-model';
+
+// @public
+export interface CatalogUnprocessedEntitiesApi {
+  delete(
+    entityId: string,
+    options?: UnprocessedEntitiesRequestOptions,
+  ): Promise<void>;
+  failed(
+    options?: UnprocessedEntitiesRequestOptions,
+  ): Promise<CatalogUnprocessedEntitiesApiResponse>;
+  pending(
+    options?: UnprocessedEntitiesRequestOptions,
+  ): Promise<CatalogUnprocessedEntitiesApiResponse>;
+}
+
+// @public
+export type CatalogUnprocessedEntitiesApiResponse = {
+  entities: UnprocessedEntity[];
+};
+
+// @public
+export class CatalogUnprocessedEntitiesClient
+  implements CatalogUnprocessedEntitiesApi
+{
+  constructor(
+    discovery: {
+      getBaseUrl(pluginId: string): Promise<string>;
+    },
+    fetchApi?: {
+      fetch: typeof fetch;
+    },
+  );
+  // (undocumented)
+  delete(
+    entityId: string,
+    options?: UnprocessedEntitiesRequestOptions,
+  ): Promise<void>;
+  // (undocumented)
+  failed(
+    options?: UnprocessedEntitiesRequestOptions,
+  ): Promise<CatalogUnprocessedEntitiesApiResponse>;
+  // (undocumented)
+  pending(
+    options?: UnprocessedEntitiesRequestOptions,
+  ): Promise<CatalogUnprocessedEntitiesApiResponse>;
+}
 
 // @public
 export const unprocessedEntitiesDeletePermission: BasicPermission;
@@ -11,5 +58,43 @@ export const unprocessedEntitiesDeletePermission: BasicPermission;
 // @public
 export const unprocessedEntitiesPermissions: {
   unprocessedEntitiesDeletePermission: BasicPermission;
+};
+
+// @public
+export interface UnprocessedEntitiesRequestOptions {
+  // (undocumented)
+  token?: string;
+}
+
+// @public
+export type UnprocessedEntity = {
+  entity_id: string;
+  entity_ref: string;
+  unprocessed_entity: Entity;
+  unprocessed_hash?: string;
+  processed_entity?: Entity;
+  result_hash?: string;
+  cache?: UnprocessedEntityCache;
+  next_update_at: string | Date;
+  last_discovery_at: string | Date;
+  errors?: UnprocessedEntityError[];
+  location_key?: string;
+};
+
+// @public
+export type UnprocessedEntityCache = {
+  ttl: number;
+  cache: object;
+};
+
+// @public
+export type UnprocessedEntityError = {
+  name: string;
+  message: string;
+  cause: {
+    name: string;
+    message: string;
+    stack: string;
+  };
 };
 ```

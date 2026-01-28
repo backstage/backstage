@@ -21,7 +21,7 @@ import {
   TestDatabases,
 } from '@backstage/backend-test-utils';
 import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
-import { createHash } from 'crypto';
+import { createHash } from 'node:crypto';
 import { Knex } from 'knex';
 import { v4 as uuid } from 'uuid';
 import { DefaultCatalogDatabase } from '../database/DefaultCatalogDatabase';
@@ -57,6 +57,7 @@ describe('DefaultRefreshService', () => {
         database: knex,
         logger,
         refreshInterval: () => 100,
+        events: mockServices.events.mock(),
       }),
       catalogDb: new DefaultCatalogDatabase({
         database: knex,
@@ -121,6 +122,7 @@ describe('DefaultRefreshService', () => {
       processingDatabase: db,
       knex: knex,
       stitcher: stitcher,
+      scheduler: mockServices.scheduler(),
       orchestrator: {
         async process(request: EntityProcessingRequest) {
           const entityRef = stringifyEntityRef(request.entity);
@@ -161,6 +163,7 @@ describe('DefaultRefreshService', () => {
       },
       createHash: () => createHash('sha1'),
       pollingIntervalMs: 50,
+      events: mockServices.events.mock(),
     });
 
     return engine;

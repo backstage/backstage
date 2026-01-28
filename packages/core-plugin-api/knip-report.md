@@ -4,5 +4,5 @@
 
 | Name                        | Location     | Severity |
 | :-------------------------- | :----------- | :------- |
-| @testing-library/user-event | package.json | error    |
+| @testing-library/user-event | packages/core-plugin-api/package.json | error    |
 

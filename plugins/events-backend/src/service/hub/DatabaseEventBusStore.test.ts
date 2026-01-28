@@ -26,7 +26,7 @@ jest.setTimeout(60_000);
 const logger = mockServices.logger.mock();
 
 const databases = TestDatabases.create({
-  ids: ['POSTGRES_13', 'POSTGRES_17'],
+  ids: ['POSTGRES_14', 'POSTGRES_18'],
 });
 
 const maybeDescribe =

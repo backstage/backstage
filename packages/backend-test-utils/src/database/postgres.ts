@@ -15,7 +15,7 @@
  */
 
 import { stringifyError } from '@backstage/errors';
-import { randomBytes } from 'crypto';
+import { randomBytes } from 'node:crypto';
 import knexFactory, { Knex } from 'knex';
 import { parse as parsePgConnectionString } from 'pg-connection-string';
 import { v4 as uuid } from 'uuid';
@@ -77,7 +77,11 @@ export async function startPostgresContainer(image: string): Promise<{
 
   const container = await new GenericContainer(image)
     .withExposedPorts(5432)
-    .withEnvironment({ POSTGRES_PASSWORD: password })
+    .withEnvironment({
+      // Since postgres 18, the default directory changed - so we pin it here
+      PGDATA: '/var/lib/postgresql/data',
+      POSTGRES_PASSWORD: password,
+    })
     .withTmpFs({ '/var/lib/postgresql/data': 'rw' })
     .start();
 

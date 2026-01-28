@@ -1,5 +1,224 @@
 # @backstage/plugin-catalog-node
 
+## 1.21.0-next.0
+
+### Minor Changes
+
+- cfd8103: Promoted stable catalog extension points from alpha to main export. The following extension points are now exported from `@backstage/plugin-catalog-node` instead of `@backstage/plugin-catalog-node/alpha`:
+
+  - `catalogLocationsExtensionPoint` and `CatalogLocationsExtensionPoint`
+  - `catalogProcessingExtensionPoint` and `CatalogProcessingExtensionPoint`
+  - `catalogAnalysisExtensionPoint` and `CatalogAnalysisExtensionPoint`
+
+  The old alpha exports for these extension points are now deprecated with `@deprecated` markers pointing to the new stable exports. Please update your imports from `@backstage/plugin-catalog-node/alpha` to `@backstage/plugin-catalog-node`.
+
+  Note: The `catalogModelExtensionPoint`, `catalogPermissionExtensionPoint`, and related types remain in alpha.
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.7.0-next.0
+  - @backstage/plugin-permission-common@0.9.5-next.0
+  - @backstage/plugin-permission-node@0.10.9-next.0
+  - @backstage/catalog-client@1.12.1
+  - @backstage/catalog-model@1.7.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-catalog-common@1.1.8-next.0
+
+## 1.20.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-node@0.10.7
+  - @backstage/backend-plugin-api@1.6.0
+
+## 1.20.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-node@0.10.7-next.1
+  - @backstage/backend-plugin-api@1.6.0-next.1
+  - @backstage/catalog-client@1.12.1
+  - @backstage/catalog-model@1.7.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-catalog-common@1.1.7
+  - @backstage/plugin-permission-common@0.9.3
+
+## 1.20.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.1-next.0
+  - @backstage/plugin-permission-node@0.10.7-next.0
+  - @backstage/catalog-client@1.12.1
+  - @backstage/catalog-model@1.7.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-catalog-common@1.1.7
+  - @backstage/plugin-permission-common@0.9.3
+
+## 1.20.0
+
+### Minor Changes
+
+- 9d3ec06: Make YAML merge (<<:) support configurable in the Backstage Catalog instead of always being enabled
+- 8c26af4: Enable YAML merge keys in yamlPlaceholderResolver
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.0
+  - @backstage/plugin-permission-common@0.9.3
+  - @backstage/catalog-model@1.7.6
+  - @backstage/catalog-client@1.12.1
+  - @backstage/plugin-catalog-common@1.1.7
+  - @backstage/plugin-permission-node@0.10.6
+
+## 1.20.0-next.1
+
+### Minor Changes
+
+- 9d3ec06: Make YAML merge (<<:) support configurable in the Backstage Catalog instead of always being enabled
+- 8c26af4: Enable YAML merge keys in yamlPlaceholderResolver
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.5.0-next.1
+  - @backstage/plugin-permission-common@0.9.3-next.1
+  - @backstage/plugin-permission-node@0.10.6-next.1
+
+## 1.19.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-model@1.7.6-next.0
+  - @backstage/plugin-permission-node@0.10.6-next.0
+  - @backstage/backend-plugin-api@1.4.5-next.0
+  - @backstage/catalog-client@1.12.1-next.0
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-catalog-common@1.1.7-next.0
+  - @backstage/plugin-permission-common@0.9.3-next.0
+
+## 1.19.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.4
+  - @backstage/plugin-catalog-common@1.1.6
+  - @backstage/plugin-permission-common@0.9.2
+  - @backstage/plugin-permission-node@0.10.5
+
+## 1.19.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.4-next.0
+  - @backstage/plugin-permission-common@0.9.2-next.0
+  - @backstage/plugin-permission-node@0.10.5-next.0
+  - @backstage/plugin-catalog-common@1.1.6-next.0
+  - @backstage/catalog-client@1.12.0
+
+## 1.19.0
+
+### Minor Changes
+
+- 0e9ec44: Introduced new `streamEntities` async generator method for the catalog.
+
+  Catalog API and Catalog Service now includes a `streamEntities` method that allows for streaming entities from the catalog.
+  This method is designed to handle large datasets efficiently by processing entities in a stream rather than loading them
+  all into memory at once. This is useful when you need to fetch a large number of entities but do not want to use pagination
+  or fetch all entities at once.
+
+  Example usage:
+
+  ```ts
+  const pageStream = catalogClient.streamEntities({ pageSize: 100 }, { token });
+  for await (const page of pageStream) {
+    // Handle page of entities
+    for (const entity of page) {
+      console.log(entity);
+    }
+  }
+  ```
+
+### Patch Changes
+
+- 2bbd24f: Order catalog processors by priority.
+
+  This change enables the ordering of catalog processors by their priority,
+  allowing for more control over the catalog processing sequence.
+  The default priority is set to 20, and processors can be assigned a custom
+  priority to influence their execution order. Lower number indicates higher priority.
+  The priority can be set by implementing the `getPriority` method in the processor class
+  or by adding a `catalog.processors.<processorName>.priority` configuration
+  in the `app-config.yaml` file. The configuration takes precedence over the method.
+
+- Updated dependencies
+  - @backstage/catalog-client@1.12.0
+  - @backstage/types@1.2.2
+  - @backstage/backend-plugin-api@1.4.3
+  - @backstage/plugin-permission-node@0.10.4
+
+## 1.19.0-next.1
+
+### Minor Changes
+
+- 0e9ec44: Introduced new `streamEntities` async generator method for the catalog.
+
+  Catalog API and Catalog Service now includes a `streamEntities` method that allows for streaming entities from the catalog.
+  This method is designed to handle large datasets efficiently by processing entities in a stream rather than loading them
+  all into memory at once. This is useful when you need to fetch a large number of entities but do not want to use pagination
+  or fetch all entities at once.
+
+  Example usage:
+
+  ```ts
+  const pageStream = catalogClient.streamEntities({ pageSize: 100 }, { token });
+  for await (const page of pageStream) {
+    // Handle page of entities
+    for (const entity of page) {
+      console.log(entity);
+    }
+  }
+  ```
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.12.0-next.0
+
+## 1.18.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.4.3-next.0
+  - @backstage/plugin-permission-node@0.10.4-next.0
+
+## 1.18.0
+
+### Minor Changes
+
+- 3f4da39: Added the analyze-location endpoint to the CatalogService
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/catalog-client@1.11.0
+  - @backstage/plugin-permission-node@0.10.3
+  - @backstage/backend-plugin-api@1.4.2
+
 ## 1.18.0-next.0
 
 ### Minor Changes

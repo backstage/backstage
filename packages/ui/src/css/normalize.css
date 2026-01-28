@@ -16,13 +16,19 @@ Use a better box model (opinionated).
     box-sizing: border-box;
   }
 
+  /**
+1. Improve consistency of default fonts in all browsers. (https://github.com/sindresorhus/modern-normalize/issues/3)
+2. Correct the line height in all browsers.
+3. Prevent adjustments of font size after orientation changes in iOS.
+4. Use a more readable tab size (opinionated).
+*/
+
   html {
-    /* Improve consistency of default fonts in all browsers. (https://github.com/sindresorhus/modern-normalize/issues/3) */
     font-family: system-ui, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif,
-      'Apple Color Emoji', 'Segoe UI Emoji';
-    line-height: 1.15; /* 1. Correct the line height in all browsers. */
-    -webkit-text-size-adjust: 100%; /* 2. Prevent adjustments of font size after orientation changes in iOS. */
-    tab-size: 4; /* 3. Use a more readable tab size (opinionated). */
+      'Apple Color Emoji', 'Segoe UI Emoji'; /* 1 */
+    line-height: 1.15; /* 2 */
+    -webkit-text-size-adjust: 100%; /* 3 */
+    tab-size: 4; /* 4 */
   }
 
   /*
@@ -30,8 +36,12 @@ Sections
 ========
 */
 
+  /**
+Remove the margin in all browsers.
+*/
+
   body {
-    margin: 0; /* Remove the margin in all browsers. */
+    margin: 0;
   }
 
   /*

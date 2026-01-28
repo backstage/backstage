@@ -12,20 +12,21 @@ import { Entity } from '@backstage/catalog-model';
 import { EntityPredicate } from '@backstage/plugin-catalog-react/alpha';
 import { ExtensionBlueprintParams } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
-import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
-import { FrontendPlugin } from '@backstage/frontend-plugin-api';
-import { IconComponent } from '@backstage/core-plugin-api';
+import { IconComponent } from '@backstage/frontend-plugin-api';
 import { IconLinkVerticalProps } from '@backstage/core-components';
 import { JSX as JSX_2 } from 'react';
-import { RouteRef } from '@backstage/frontend-plugin-api';
+import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
+import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
+import { RouteRef } from '@backstage/core-plugin-api';
+import { RouteRef as RouteRef_2 } from '@backstage/frontend-plugin-api';
 import { SearchResultItemExtensionComponent } from '@backstage/plugin-search-react/alpha';
 import { SearchResultItemExtensionPredicate } from '@backstage/plugin-search-react/alpha';
 import { SearchResultListItemBlueprintParams } from '@backstage/plugin-search-react/alpha';
 import { TechDocsAddonOptions } from '@backstage/plugin-techdocs-react';
 
 // @alpha (undocumented)
-const _default: FrontendPlugin<
+const _default: OverridableFrontendPlugin<
   {
     root: RouteRef<undefined>;
     docRoot: RouteRef<{
@@ -37,7 +38,7 @@ const _default: FrontendPlugin<
   },
   {},
   {
-    'api:techdocs': ExtensionDefinition<{
+    'api:techdocs': OverridableExtensionDefinition<{
       kind: 'api';
       name: undefined;
       config: {};
@@ -52,7 +53,35 @@ const _default: FrontendPlugin<
         params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
-    'api:techdocs/storage': ExtensionDefinition<{
+    'api:techdocs/addons': OverridableExtensionDefinition<{
+      config: {};
+      configInput: {};
+      output: ExtensionDataRef<AnyApiFactory, 'core.api.factory', {}>;
+      inputs: {
+        addons: ExtensionInput<
+          ConfigurableExtensionDataRef<
+            TechDocsAddonOptions,
+            'techdocs.addon',
+            {}
+          >,
+          {
+            singleton: false;
+            optional: false;
+            internal: false;
+          }
+        >;
+      };
+      kind: 'api';
+      name: 'addons';
+      params: <
+        TApi,
+        TImpl extends TApi,
+        TDeps extends { [name in string]: unknown },
+      >(
+        params: ApiFactory<TApi, TImpl, TDeps>,
+      ) => ExtensionBlueprintParams<AnyApiFactory>;
+    }>;
+    'api:techdocs/storage': OverridableExtensionDefinition<{
       kind: 'api';
       name: 'storage';
       config: {};
@@ -67,7 +96,7 @@ const _default: FrontendPlugin<
         params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
-    'empty-state:techdocs/entity-content': ExtensionDefinition<{
+    'empty-state:techdocs/entity-content': OverridableExtensionDefinition<{
       config: {};
       configInput: {};
       output: ExtensionDataRef<
@@ -81,8 +110,9 @@ const _default: FrontendPlugin<
         [x: string]: ExtensionInput<
           ExtensionDataRef,
           {
-            optional: boolean;
             singleton: boolean;
+            optional: boolean;
+            internal?: boolean;
           }
         >;
       };
@@ -90,7 +120,7 @@ const _default: FrontendPlugin<
       kind: 'empty-state';
       name: 'entity-content';
     }>;
-    'entity-content:techdocs': ExtensionDefinition<{
+    'entity-content:techdocs': OverridableExtensionDefinition<{
       config: {
         path: string | undefined;
         title: string | undefined;
@@ -107,7 +137,7 @@ const _default: FrontendPlugin<
         | ExtensionDataRef<string, 'core.routing.path', {}>
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
         | ExtensionDataRef<
-            RouteRef<AnyRouteRefParams>,
+            RouteRef_2<AnyRouteRefParams>,
             'core.routing.ref',
             {
               optional: true;
@@ -145,6 +175,7 @@ const _default: FrontendPlugin<
           {
             singleton: false;
             optional: false;
+            internal: false;
           }
         >;
         emptyState: ExtensionInput<
@@ -158,6 +189,7 @@ const _default: FrontendPlugin<
           {
             singleton: true;
             optional: true;
+            internal: false;
           }
         >;
       };
@@ -171,11 +203,11 @@ const _default: FrontendPlugin<
         defaultGroup?: [Error: `Use the 'group' param instead`];
         group?: keyof defaultEntityContentGroups | (string & {});
         loader: () => Promise<JSX.Element>;
-        routeRef?: RouteRef;
+        routeRef?: RouteRef_2;
         filter?: string | EntityPredicate | ((entity: Entity) => boolean);
       };
     }>;
-    'entity-icon-link:techdocs/read-docs': ExtensionDefinition<{
+    'entity-icon-link:techdocs/read-docs': OverridableExtensionDefinition<{
       kind: 'entity-icon-link';
       name: 'read-docs';
       config: {
@@ -214,7 +246,7 @@ const _default: FrontendPlugin<
         filter?: EntityPredicate | ((entity: Entity) => boolean);
       };
     }>;
-    'nav-item:techdocs': ExtensionDefinition<{
+    'nav-item:techdocs': OverridableExtensionDefinition<{
       kind: 'nav-item';
       name: undefined;
       config: {};
@@ -223,7 +255,7 @@ const _default: FrontendPlugin<
         {
           title: string;
           icon: IconComponent;
-          routeRef: RouteRef<undefined>;
+          routeRef: RouteRef_2<undefined>;
         },
         'core.nav-item.target',
         {}
@@ -232,10 +264,10 @@ const _default: FrontendPlugin<
       params: {
         title: string;
         icon: IconComponent;
-        routeRef: RouteRef<undefined>;
+        routeRef: RouteRef_2<undefined>;
       };
     }>;
-    'page:techdocs': ExtensionDefinition<{
+    'page:techdocs': OverridableExtensionDefinition<{
       kind: 'page';
       name: undefined;
       config: {
@@ -248,7 +280,7 @@ const _default: FrontendPlugin<
         | ExtensionDataRef<string, 'core.routing.path', {}>
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
         | ExtensionDataRef<
-            RouteRef<AnyRouteRefParams>,
+            RouteRef_2<AnyRouteRefParams>,
             'core.routing.ref',
             {
               optional: true;
@@ -259,10 +291,10 @@ const _default: FrontendPlugin<
         defaultPath?: [Error: `Use the 'path' param instead`];
         path: string;
         loader: () => Promise<JSX.Element>;
-        routeRef?: RouteRef;
+        routeRef?: RouteRef_2;
       };
     }>;
-    'page:techdocs/reader': ExtensionDefinition<{
+    'page:techdocs/reader': OverridableExtensionDefinition<{
       config: {
         path: string | undefined;
       };
@@ -273,7 +305,7 @@ const _default: FrontendPlugin<
         | ExtensionDataRef<string, 'core.routing.path', {}>
         | ExtensionDataRef<JSX_2.Element, 'core.reactElement', {}>
         | ExtensionDataRef<
-            RouteRef<AnyRouteRefParams>,
+            RouteRef_2<AnyRouteRefParams>,
             'core.routing.ref',
             {
               optional: true;
@@ -289,6 +321,7 @@ const _default: FrontendPlugin<
           {
             singleton: false;
             optional: false;
+            internal: false;
           }
         >;
       };
@@ -298,16 +331,15 @@ const _default: FrontendPlugin<
         defaultPath?: [Error: `Use the 'path' param instead`];
         path: string;
         loader: () => Promise<JSX.Element>;
-        routeRef?: RouteRef;
+        routeRef?: RouteRef_2;
       };
     }>;
-    'search-result-list-item:techdocs': ExtensionDefinition<{
+    'search-result-list-item:techdocs': OverridableExtensionDefinition<{
       config: {
         title: string | undefined;
         lineClamp: number;
         asLink: boolean;
         asListItem: boolean;
-      } & {
         noTrack: boolean;
       };
       configInput: {
@@ -315,26 +347,18 @@ const _default: FrontendPlugin<
         lineClamp?: number | undefined;
         asListItem?: boolean | undefined;
         asLink?: boolean | undefined;
-      } & {
         noTrack?: boolean | undefined;
       };
       output: ExtensionDataRef<
         {
           predicate?: SearchResultItemExtensionPredicate;
           component: SearchResultItemExtensionComponent;
+          icon?: JSX_2.Element;
         },
         'search.search-result-list-item.item',
         {}
       >;
-      inputs: {
-        [x: string]: ExtensionInput<
-          ExtensionDataRef,
-          {
-            optional: boolean;
-            singleton: boolean;
-          }
-        >;
-      };
+      inputs: {};
       kind: 'search-result-list-item';
       name: undefined;
       params: SearchResultListItemBlueprintParams;
@@ -344,13 +368,12 @@ const _default: FrontendPlugin<
 export default _default;
 
 // @alpha (undocumented)
-export const techDocsSearchResultListItemExtension: ExtensionDefinition<{
+export const techDocsSearchResultListItemExtension: OverridableExtensionDefinition<{
   config: {
     title: string | undefined;
     lineClamp: number;
     asLink: boolean;
     asListItem: boolean;
-  } & {
     noTrack: boolean;
   };
   configInput: {
@@ -358,26 +381,18 @@ export const techDocsSearchResultListItemExtension: ExtensionDefinition<{
     lineClamp?: number | undefined;
     asListItem?: boolean | undefined;
     asLink?: boolean | undefined;
-  } & {
     noTrack?: boolean | undefined;
   };
   output: ExtensionDataRef<
     {
       predicate?: SearchResultItemExtensionPredicate;
       component: SearchResultItemExtensionComponent;
+      icon?: JSX_2.Element;
     },
     'search.search-result-list-item.item',
     {}
   >;
-  inputs: {
-    [x: string]: ExtensionInput<
-      ExtensionDataRef,
-      {
-        optional: boolean;
-        singleton: boolean;
-      }
-    >;
-  };
+  inputs: {};
   kind: 'search-result-list-item';
   name: undefined;
   params: SearchResultListItemBlueprintParams;

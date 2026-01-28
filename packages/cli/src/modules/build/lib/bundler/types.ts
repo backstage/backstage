@@ -45,7 +45,7 @@ export type BundlingOptions = {
   // An external linked workspace to include in the bundling
   linkedWorkspace?: string;
   moduleFederation?: ModuleFederationOptions;
-  rspack?: typeof import('@rspack/core').rspack;
+  webpack?: typeof import('webpack');
 };
 
 export type ServeOptions = BundlingPathsOptions & {
@@ -69,7 +69,7 @@ export type BuildOptions = BundlingPathsOptions & {
   frontendAppConfigs: AppConfig[];
   fullConfig: Config;
   moduleFederation?: ModuleFederationOptions;
-  rspack?: typeof import('@rspack/core').rspack;
+  webpack?: typeof import('webpack');
 };
 
 export type BackendBundlingOptions = {
@@ -79,5 +79,5 @@ export type BackendBundlingOptions = {
   inspectEnabled: boolean;
   inspectBrkEnabled: boolean;
   require?: string;
-  rspack?: typeof import('@rspack/core').rspack;
+  webpack?: typeof import('webpack');
 };

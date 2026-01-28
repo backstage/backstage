@@ -14,48 +14,88 @@
  * limitations under the License.
  */
 
-import { createElement, forwardRef } from 'react';
-import { gapPropDefs } from '../../props/gap-props';
-import { extractProps } from '../../utils/extractProps';
-import { gridItemPropDefs, gridPropDefs } from './Grid.props';
+import { forwardRef } from 'react';
 import clsx from 'clsx';
 import type { GridItemProps, GridProps } from './types';
-import { spacingPropDefs } from '../../props/spacing.props';
 import { useStyles } from '../../hooks/useStyles';
+import { GridDefinition, GridItemDefinition } from './definition';
+import styles from './Grid.module.css';
+import { SurfaceProvider, useSurface } from '../../hooks/useSurface';
 
 const GridRoot = forwardRef<HTMLDivElement, GridProps>((props, ref) => {
-  const propDefs = {
-    ...gapPropDefs,
-    ...gridPropDefs,
-    ...spacingPropDefs,
-  };
-
-  const { classNames } = useStyles('Grid');
-
-  const { className, style } = extractProps(props, propDefs);
-
-  return createElement('div', {
-    ref,
-    className: clsx(classNames.root, className),
-    style,
-    children: props.children,
+  // Resolve the surface this Grid creates for its children
+  // Using 'surface' parameter = container behavior (auto increments)
+  const { surface: resolvedSurface } = useSurface({
+    surface: props.surface,
   });
+
+  const { classNames, dataAttributes, utilityClasses, style, cleanedProps } =
+    useStyles(GridDefinition, {
+      columns: 'auto',
+      gap: '4',
+      ...props,
+      surface: resolvedSurface, // Use resolved surface for data attribute
+    });
+
+  const { className, surface, ...rest } = cleanedProps;
+
+  const content = (
+    <div
+      ref={ref}
+      className={clsx(
+        classNames.root,
+        utilityClasses,
+        styles[classNames.root],
+        className,
+      )}
+      style={style}
+      {...dataAttributes}
+      {...rest}
+    />
+  );
+
+  return resolvedSurface ? (
+    <SurfaceProvider surface={resolvedSurface}>{content}</SurfaceProvider>
+  ) : (
+    content
+  );
 });
 
 const GridItem = forwardRef<HTMLDivElement, GridItemProps>((props, ref) => {
-  const propDefs = {
-    ...gridItemPropDefs,
-  };
-
-  const { classNames } = useStyles('Grid');
-  const { className, style } = extractProps(props, propDefs);
-
-  return createElement('div', {
-    ref,
-    className: clsx(classNames.item, className),
-    style,
-    children: props.children,
+  // Resolve the surface this GridItem creates for its children
+  // Using 'surface' parameter = container behavior (auto increments)
+  const { surface: resolvedSurface } = useSurface({
+    surface: props.surface,
   });
+
+  const { classNames, dataAttributes, utilityClasses, style, cleanedProps } =
+    useStyles(GridItemDefinition, {
+      ...props,
+      surface: resolvedSurface, // Use resolved surface for data attribute
+    });
+
+  const { className, surface, ...rest } = cleanedProps;
+
+  const content = (
+    <div
+      ref={ref}
+      className={clsx(
+        classNames.root,
+        utilityClasses,
+        styles[classNames.root],
+        className,
+      )}
+      style={style}
+      {...dataAttributes}
+      {...rest}
+    />
+  );
+
+  return resolvedSurface ? (
+    <SurfaceProvider surface={resolvedSurface}>{content}</SurfaceProvider>
+  ) : (
+    content
+  );
 });
 
 /** @public */

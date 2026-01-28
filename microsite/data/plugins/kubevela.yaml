@@ -7,9 +7,4 @@ description: KubeVela is a modern software delivery platform that makes deployin
 documentation: https://github.com/kubevela-contrib/backstage-plugin-kubevela
 iconUrl: https://kubevela.io/img/logo.svg
 npmPackageName: '@oamdev/plugin-kubevela-backend'
-tags:
-  - cd
-  - delivery
-  - multi-cluster
-  - deployment as code
 addedDate: '2023-02-12'

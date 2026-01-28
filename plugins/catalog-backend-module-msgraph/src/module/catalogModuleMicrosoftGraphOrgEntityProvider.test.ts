@@ -16,7 +16,7 @@
 
 import { SchedulerServiceTaskScheduleDefinition } from '@backstage/backend-plugin-api';
 import { mockServices, startTestBackend } from '@backstage/backend-test-utils';
-import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
+import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
 import { catalogModuleMicrosoftGraphOrgEntityProvider } from './catalogModuleMicrosoftGraphOrgEntityProvider';
 import { MicrosoftGraphOrgEntityProvider } from '../processors';
 

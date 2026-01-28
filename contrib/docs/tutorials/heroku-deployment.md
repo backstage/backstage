@@ -49,7 +49,7 @@ Add a build script in `package.json` to compile frontend during deployment:
 
 ## Start Command
 
-Create a [Procfile](https://devcenter.heroku.com/articles/procfile) in the app's root:
+Create a [`Procfile`](https://devcenter.heroku.com/articles/procfile) in the app's root:
 
 ```shell
 echo "web: yarn workspace backend start --config ../../app-config.yaml --config ../../app-config.production.yaml" > Procfile

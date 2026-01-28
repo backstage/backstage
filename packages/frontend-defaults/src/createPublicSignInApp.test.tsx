@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-import {
-  SignInPageBlueprint,
-  createFrontendModule,
-} from '@backstage/frontend-plugin-api';
+import { createFrontendModule } from '@backstage/frontend-plugin-api';
+import { SignInPageBlueprint } from '@backstage/plugin-app-react';
 import { render, screen, waitFor } from '@testing-library/react';
 import { useEffect } from 'react';
 import { createPublicSignInApp } from './createPublicSignInApp';
@@ -96,6 +94,7 @@ describe('createPublicSignInApp', () => {
       <body
         data-theme-mode="light"
         data-theme-name="backstage"
+        data-unified-theme-stack="[{"mode":"light","name":"backstage"}]"
       >
         <div>
           <form

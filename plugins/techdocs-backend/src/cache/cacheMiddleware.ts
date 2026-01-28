@@ -23,7 +23,7 @@ type CacheMiddlewareOptions = {
   logger: LoggerService;
 };
 
-type ErrorCallback = (err?: Error) => void;
+type ErrorCallback = (err?: Error | null) => void;
 
 export const createCacheMiddleware = ({
   cache,

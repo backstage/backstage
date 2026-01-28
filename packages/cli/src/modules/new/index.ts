@@ -16,7 +16,7 @@
 import { createCliPlugin } from '../../wiring/factory';
 import { Command } from 'commander';
 import { lazy } from '../../lib/lazy';
-import { removed } from '../../lib/removed';
+import { NotImplementedError } from '@backstage/errors';
 
 export default createCliPlugin({
   pluginId: 'new',
@@ -71,7 +71,9 @@ export default createCliPlugin({
       description: 'Create a new Backstage app',
       deprecated: true,
       execute: async () => {
-        removed("use 'backstage-cli new' instead")();
+        throw new NotImplementedError(
+          `This command has been removed, use 'backstage-cli new' instead`,
+        );
       },
     });
     reg.addCommand({
@@ -79,7 +81,9 @@ export default createCliPlugin({
       description: 'Create a new Backstage plugin',
       deprecated: true,
       execute: async () => {
-        removed("use 'backstage-cli new' instead")();
+        throw new NotImplementedError(
+          `This command has been removed, use 'backstage-cli new' instead`,
+        );
       },
     });
   },

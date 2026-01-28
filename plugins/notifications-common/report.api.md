@@ -4,10 +4,12 @@
 
 ```ts
 import { Config } from '@backstage/config';
+import { JsonValue } from '@backstage/types';
 
 // @public (undocumented)
 export type ChannelSetting = {
   id: string;
+  enabled?: boolean;
   origins: OriginSetting[];
 };
 
@@ -52,6 +54,9 @@ export type NotificationPayload = {
   topic?: string;
   scope?: string;
   icon?: string;
+  metadata?: {
+    [KMetadataKey in string]?: JsonValue;
+  };
 };
 
 // @public (undocumented)

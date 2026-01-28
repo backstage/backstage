@@ -17,3 +17,4 @@
 export * from './VisitsStorageApi';
 export * from './VisitsWebStorageApi';
 export * from './VisitsApi';
+export type { VisitInput } from './VisitsStorageApi';

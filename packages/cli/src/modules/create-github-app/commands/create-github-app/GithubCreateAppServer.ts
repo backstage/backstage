@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import crypto from 'crypto';
+import crypto from 'node:crypto';
 import openBrowser from 'react-dev-utils/openBrowser';
 import { request } from '@octokit/request';
 import express, { Express, Request, Response } from 'express';
@@ -58,10 +58,12 @@ export class GithubCreateAppServer {
     return server.start();
   }
 
-  private constructor(
-    private readonly actionUrl: string,
-    private readonly permissions: string[],
-  ) {
+  private readonly actionUrl: string;
+  private readonly permissions: string[];
+
+  private constructor(actionUrl: string, permissions: string[]) {
+    this.actionUrl = actionUrl;
+    this.permissions = permissions;
     const webhookId = crypto
       .randomBytes(15)
       .toString('base64')

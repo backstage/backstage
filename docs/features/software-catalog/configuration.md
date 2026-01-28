@@ -90,6 +90,35 @@ also write a _custom processor_ to convert between the existing system and
 Backstage's descriptor format. This is documented in
 [External Integrations](external-integrations.md).
 
+### Processor configuration
+
+You can configure processors under the `catalog.processorOptions` key. You can define
+options for each processor by its name. With the processor options you can disable
+a processor or set its priority.
+
+```yaml
+catalog:
+  processorOptions:
+    processorName:
+      disabled: false # Defaults to false
+      priority: 100
+```
+
+The priority is a number defining the order in which processors are executed. The lower the number,
+the higher the priority. The default priority is `20`.
+
+## Provider configuration
+
+It's possible to also disable entity providers using the config. You can configure providers
+under the `catalog.providerOptions` key. The key is the provider name.
+
+```yaml
+catalog:
+  providerOptions:
+    providerName:
+      disabled: true
+```
+
 ## Catalog Rules
 
 By default, the catalog will only allow the ingestion of entities with the kind
@@ -152,27 +181,29 @@ this remote source, users cannot also register new entities with e.g. the
 [catalog-import](https://github.com/backstage/backstage/tree/master/plugins/catalog-import)
 plugin.
 
-## Clean up orphaned entities
+## Automatic removal of orphaned entities
 
-In short, entities can become orphaned through multiple means, such as when a catalog-info YAML file is moved from one place to another in the version control system without updating the registration in the catalog. For safety reasons, the default behavior is to just tag the orphaned entities, and keep them around. You can read more about orphaned entities [here](life-of-an-entity.md#orphaning).
+Entities can become orphaned through multiple means, such as when a catalog-info YAML file is moved from one place to another in the version control system without updating the registration in the catalog. The default behavior is to automatically remove orphaned entities. You can read more about orphaned entities [here](life-of-an-entity.md#orphaning).
 
-However, if you do wish to automatically remove the orphaned entities, you can use the following configuration, and everything with an orphaned entity tag will be eventually deleted.
-
-```yaml
-catalog:
-  orphanStrategy: delete
-```
-
-## Clean up entities from orphaned entity providers
-
-By default, if an entity provider which has provided entities to the catalog, is no longer configured, then the entities remain in the catalog until they are manually unregistered.
-
-To remove these entities automatically, you can use the following configuration.
+However, if you wish to keep orphaned entities, you can use the following configuration, and automatic cleanup will be disabled.
 
 ```yaml
 catalog:
-  orphanProviderStrategy: delete
+  orphanStrategy: keep
 ```
+
+## Automatic removal of entities from orphaned entity providers
+
+By default, if an entity provider which has provided entities to the catalog is no longer configured, then the entities it provided will be automatically removed.
+
+To keep these entities instead, you can use the following configuration.
+
+```yaml
+catalog:
+  orphanProviderStrategy: keep
+```
+
+If you have had providers installed in the past that ingested entities into the catalog that you want to keep, the recommendation is to add the provider back to the catalog. If you don’t want the provider to run, you can schedule it with a very large interval.
 
 ## Processing Interval
 

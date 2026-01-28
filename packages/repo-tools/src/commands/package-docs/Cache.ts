@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { readFile, writeFile, cp } from 'fs/promises';
+import { readFile, writeFile, cp } from 'node:fs/promises';
 import globby from 'globby';
-import { dirname, join as joinPath, relative } from 'path';
-import crypto from 'crypto';
+import { dirname, join as joinPath, relative } from 'node:path';
+import crypto from 'node:crypto';
 import { Lockfile } from '@backstage/cli-node';
 import { exists, rm, mkdirp } from 'fs-extra';
 import { z } from 'zod';
@@ -41,12 +41,19 @@ const cacheEntrySchema = z.object({
 export class PackageDocsCache {
   // A map of package directory to package hash.
   private keyCache: Map<string, string>;
+  private readonly lockfile: Lockfile;
+  // A map of package directory to cache entry.
+  private readonly cache: Map<string, CacheEntry>;
+  private readonly baseDirectory: string;
+
   constructor(
-    private readonly lockfile: Lockfile,
-    // A map of package directory to cache entry.
-    private readonly cache: Map<string, CacheEntry>,
-    private readonly baseDirectory: string,
+    lockfile: Lockfile,
+    cache: Map<string, CacheEntry>,
+    baseDirectory: string,
   ) {
+    this.lockfile = lockfile;
+    this.cache = cache;
+    this.baseDirectory = baseDirectory;
     this.keyCache = new Map();
   }
   static async loadAsync(baseDirectory: string, lockfile: Lockfile) {

@@ -32,7 +32,7 @@ spec:
           title: Title
           type: string
           description: Notification title
-        description:
+        info:
           title: Description
           type: string
           description: Notification longer description
@@ -67,7 +67,7 @@ spec:
         recipients: ${{ parameters.recipients }}
         entityRefs: ${{ parameters.entityRefs }}
         title: ${{ parameters.title }}
-        description: ${{ parameters.description }}
+        info: ${{ parameters.info }}
         link: ${{ parameters.link }}
         severity: ${{ parameters.severity }}
         topic: ${{ parameters.topic }}

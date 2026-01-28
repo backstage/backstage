@@ -34,3 +34,22 @@ export function unwrapFeature(
 
   return feature;
 }
+
+/** @internal */
+export type DeepReadonly<T> = {
+  readonly [K in keyof T]: T[K] extends object ? DeepReadonly<T[K]> : T[K];
+};
+
+/**
+ * Deeply freezes an object by recursively freezing all of its properties.
+ * From https://gist.github.com/tkrotoff/e997cd6ff8d6cf6e51e6bb6146407fc3 +
+ *  https://stackoverflow.com/a/69656011
+ */
+export function deepFreeze<T>(obj: T) {
+  // Can cause: "Type instantiation is excessively deep and possibly infinite."
+  // @ts-expect-error
+  Object.values(obj).forEach(
+    value => Object.isFrozen(value) || deepFreeze(value),
+  );
+  return Object.freeze(obj) as DeepReadonly<T>;
+}

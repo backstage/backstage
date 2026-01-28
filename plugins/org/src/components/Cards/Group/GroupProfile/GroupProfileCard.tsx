@@ -29,7 +29,6 @@ import {
   Link,
 } from '@backstage/core-components';
 import Box from '@material-ui/core/Box';
-import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
@@ -57,6 +56,20 @@ import { useEntityPermission } from '@backstage/plugin-catalog-react/alpha';
 import { catalogEntityRefreshPermission } from '@backstage/plugin-catalog-common/alpha';
 import { useTranslationRef } from '@backstage/frontend-plugin-api';
 import { orgTranslationRef } from '../../../../translation';
+import { makeStyles } from '@material-ui/core/styles';
+
+const useStyles = makeStyles(theme => ({
+  container: {
+    display: 'flex',
+    flexWrap: 'wrap',
+    gap: theme.spacing(1),
+    padding: theme.spacing(1),
+  },
+  list: {
+    padding: 0,
+    marginLeft: theme.spacing(0.5),
+  },
+}));
 
 const CardTitle = (props: { title: string }) => (
   <Box display="flex" alignItems="center">
@@ -77,6 +90,7 @@ export const GroupProfileCard = (props: {
     catalogEntityRefreshPermission,
   );
   const { t } = useTranslationRef(orgTranslationRef);
+  const classes = useStyles();
 
   const refreshEntity = useCallback(async () => {
     await catalogApi.refreshEntity(stringifyEntityRef(group));
@@ -153,84 +167,76 @@ export const GroupProfileCard = (props: {
         </>
       }
     >
-      <Grid container spacing={3}>
-        <Grid item xs={12} sm={2} xl={1}>
-          <Avatar displayName={displayName} picture={profile?.picture} />
-        </Grid>
-        <Grid item md={10} xl={11}>
-          <List>
+      <Box className={classes.container}>
+        <Avatar displayName={displayName} picture={profile?.picture} />
+        <List className={classes.list}>
+          <ListItem>
+            <ListItemIcon>
+              <Tooltip title={t('groupProfileCard.listItemTitle.entityRef')}>
+                <PermIdentityIcon />
+              </Tooltip>
+            </ListItemIcon>
+            <ListItemText
+              primary={stringifyEntityRef(group)}
+              secondary={t('groupProfileCard.listItemTitle.entityRef')}
+            />
+          </ListItem>
+          {profile?.email && (
             <ListItem>
               <ListItemIcon>
-                <Tooltip title={t('groupProfileCard.listItemTitle.entityRef')}>
-                  <PermIdentityIcon />
+                <Tooltip title={t('groupProfileCard.listItemTitle.email')}>
+                  <EmailIcon />
                 </Tooltip>
               </ListItemIcon>
               <ListItemText
-                primary={stringifyEntityRef(group)}
-                secondary={t('groupProfileCard.listItemTitle.entityRef')}
+                primary={<Link to={emailHref}>{profile.email}</Link>}
+                secondary={t('groupProfileCard.listItemTitle.email')}
               />
             </ListItem>
-            {profile?.email && (
-              <ListItem>
-                <ListItemIcon>
-                  <Tooltip title={t('groupProfileCard.listItemTitle.email')}>
-                    <EmailIcon />
-                  </Tooltip>
-                </ListItemIcon>
-                <ListItemText
-                  primary={<Link to={emailHref}>{profile.email}</Link>}
-                  secondary={t('groupProfileCard.listItemTitle.email')}
-                />
-              </ListItem>
-            )}
-            <ListItem>
-              <ListItemIcon>
-                <Tooltip
-                  title={t('groupProfileCard.listItemTitle.parentGroup')}
-                >
-                  <AccountTreeIcon />
-                </Tooltip>
-              </ListItemIcon>
-              <ListItemText
-                primary={
-                  parentRelations.length ? (
-                    <EntityRefLinks
-                      entityRefs={parentRelations}
-                      defaultKind="Group"
-                    />
-                  ) : (
-                    'N/A'
-                  )
-                }
-                secondary={t('groupProfileCard.listItemTitle.parentGroup')}
-              />
-            </ListItem>
-            <ListItem>
-              <ListItemIcon>
-                <Tooltip
-                  title={t('groupProfileCard.listItemTitle.childGroups')}
-                >
-                  <GroupIcon />
-                </Tooltip>
-              </ListItemIcon>
-              <ListItemText
-                primary={
-                  childRelations.length ? (
-                    <EntityRefLinks
-                      entityRefs={childRelations}
-                      defaultKind="Group"
-                    />
-                  ) : (
-                    'N/A'
-                  )
-                }
-                secondary={t('groupProfileCard.listItemTitle.childGroups')}
-              />
-            </ListItem>
-            {props?.showLinks && <LinksGroup links={links} />}
-          </List>
-        </Grid>
-      </Grid>
+          )}
+          <ListItem>
+            <ListItemIcon>
+              <Tooltip title={t('groupProfileCard.listItemTitle.parentGroup')}>
+                <AccountTreeIcon />
+              </Tooltip>
+            </ListItemIcon>
+            <ListItemText
+              primary={
+                parentRelations.length ? (
+                  <EntityRefLinks
+                    entityRefs={parentRelations}
+                    defaultKind="Group"
+                  />
+                ) : (
+                  'N/A'
+                )
+              }
+              secondary={t('groupProfileCard.listItemTitle.parentGroup')}
+            />
+          </ListItem>
+          <ListItem>
+            <ListItemIcon>
+              <Tooltip title={t('groupProfileCard.listItemTitle.childGroups')}>
+                <GroupIcon />
+              </Tooltip>
+            </ListItemIcon>
+            <ListItemText
+              primary={
+                childRelations.length ? (
+                  <EntityRefLinks
+                    entityRefs={childRelations}
+                    defaultKind="Group"
+                  />
+                ) : (
+                  'N/A'
+                )
+              }
+              secondary={t('groupProfileCard.listItemTitle.childGroups')}
+            />
+          </ListItem>
+          {props?.showLinks && <LinksGroup links={links} />}
+        </List>
+      </Box>
     </InfoCard>
   );
 };

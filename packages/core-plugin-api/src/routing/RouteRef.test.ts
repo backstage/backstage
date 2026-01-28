@@ -16,6 +16,7 @@
 
 import { AnyParams, RouteRef, ParamKeys } from './types';
 import { createRouteRef } from './RouteRef';
+import { RouteResolutionApi, RouteFunc } from '@backstage/frontend-plugin-api';
 
 describe('RouteRef', () => {
   it('should be created', () => {
@@ -23,7 +24,9 @@ describe('RouteRef', () => {
       id: 'my-route-ref',
     });
     expect(routeRef.params).toEqual([]);
-    expect(String(routeRef)).toBe('routeRef{type=absolute,id=my-route-ref}');
+    expect(String(routeRef)).toMatch(
+      /^routeRef\{type=absolute,id=my-route-ref\}$/,
+    );
   });
 
   it('should be created with params', () => {
@@ -94,5 +97,38 @@ describe('RouteRef', () => {
     validateType<ParamKeys<undefined>>([]);
 
     expect(true).toBeDefined();
+  });
+
+  describe('with new frontend system', () => {
+    const routeResolutionApi = { resolve: jest.fn() } as RouteResolutionApi;
+
+    function expectType<T>(): <U>(
+      v: U,
+    ) => [T, U] extends [U, T] ? { ok(): void } : { invalid: U } {
+      return () => ({ ok() {} } as any);
+    }
+
+    it('should resolve routes correctly', () => {
+      expectType<RouteFunc<undefined> | undefined>()(
+        routeResolutionApi.resolve(createRouteRef({ id: '1' })),
+      ).ok();
+      expectType<RouteFunc<undefined> | undefined>()(
+        routeResolutionApi.resolve(createRouteRef({ id: '1' })),
+      ).ok();
+      expectType<RouteFunc<undefined> | undefined>()(
+        routeResolutionApi.resolve(createRouteRef({ id: '1', params: [] })),
+      ).ok();
+
+      expectType<RouteFunc<{ x: string }> | undefined>()(
+        routeResolutionApi.resolve(createRouteRef({ id: '1', params: ['x'] })),
+      ).ok();
+      expectType<RouteFunc<{ x: string; y: string }> | undefined>()(
+        routeResolutionApi.resolve(
+          createRouteRef({ id: '1', params: ['x', 'y'] }),
+        ),
+      ).ok();
+
+      expect(1).toBe(1);
+    });
   });
 });

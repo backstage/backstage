@@ -35,6 +35,7 @@ import { catalogGraphRouteRef } from '../../routes';
 import { CatalogGraphCard } from './CatalogGraphCard';
 import Button from '@material-ui/core/Button';
 import { translationApiRef } from '@backstage/core-plugin-api/alpha';
+import { catalogGraphApiRef, DefaultCatalogGraphApi } from '../../api';
 
 describe('<CatalogGraphCard/>', () => {
   let entity: Entity;
@@ -56,6 +57,7 @@ describe('<CatalogGraphCard/>', () => {
     apis = TestApiRegistry.from(
       [catalogApiRef, catalog],
       [translationApiRef, mockApis.translation()],
+      [catalogGraphApiRef, new DefaultCatalogGraphApi()],
     );
 
     wrapper = (

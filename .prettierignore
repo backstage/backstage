@@ -1,3 +1,5 @@
+.cache
+.lighthouseci
 .yarn
 dist
 microsite
@@ -8,6 +10,7 @@ packages/ui/css
 coverage
 *.hbs
 templates
+type-docs
 # old reports
 api-report.md
 api-report-*.md

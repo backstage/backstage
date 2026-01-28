@@ -4,6 +4,7 @@
 
 ```ts
 import { BackendFeature } from '@backstage/backend-plugin-api';
+import { CustomErrorBase } from '@backstage/errors';
 import { ServiceFactory } from '@backstage/backend-plugin-api';
 
 // @public (undocumented)
@@ -17,9 +18,28 @@ export interface Backend {
         }>,
   ): void;
   // (undocumented)
-  start(): Promise<void>;
+  start(): Promise<{
+    result: BackendStartupResult;
+  }>;
   // (undocumented)
   stop(): Promise<void>;
+}
+
+// @public
+export class BackendStartupError extends CustomErrorBase {
+  constructor(startupResult: BackendStartupResult);
+  // (undocumented)
+  name: 'BackendStartupError';
+  // (undocumented)
+  get result(): BackendStartupResult;
+}
+
+// @public
+export interface BackendStartupResult {
+  beginAt: Date;
+  outcome: 'success' | 'failure';
+  plugins: PluginStartupResult[];
+  resultAt: Date;
 }
 
 // @public (undocumented)
@@ -31,5 +51,26 @@ export function createSpecializedBackend(
 export interface CreateSpecializedBackendOptions {
   // (undocumented)
   defaultServiceFactories: ServiceFactory[];
+}
+
+// @public
+export interface ModuleStartupResult {
+  failure?: {
+    error: Error;
+    allowed: boolean;
+  };
+  moduleId: string;
+  resultAt: Date;
+}
+
+// @public
+export interface PluginStartupResult {
+  failure?: {
+    error: Error;
+    allowed: boolean;
+  };
+  modules: ModuleStartupResult[];
+  pluginId: string;
+  resultAt: Date;
 }
 ```

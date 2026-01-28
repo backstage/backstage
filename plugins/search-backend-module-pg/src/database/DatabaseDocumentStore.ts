@@ -75,7 +75,11 @@ export class DatabaseDocumentStore implements DatabaseStore {
     }
   }
 
-  constructor(private readonly db: Knex) {}
+  private readonly db: Knex;
+
+  constructor(db: Knex) {
+    this.db = db;
+  }
 
   async transaction<T>(fn: (tx: Knex.Transaction) => Promise<T>): Promise<T> {
     return await this.db.transaction(fn);
@@ -102,13 +106,23 @@ export class DatabaseDocumentStore implements DatabaseStore {
     );
   }
 
-  async completeInsert(tx: Knex.Transaction, type: string): Promise<void> {
+  async completeInsert(
+    tx: Knex.Transaction,
+    type: string,
+    truncate = false,
+  ): Promise<void> {
+    const documentSelect = truncate
+      ? tx.raw(
+          `jsonb_set(document, '{text}', to_jsonb(LEFT(document->>'text', 50000))) as document`,
+        )
+      : 'document';
+
     // Copy all new rows into the documents table
     await tx
       .insert(
         tx<RawDocumentRow>('documents_to_insert').select(
           'type',
-          'document',
+          documentSelect,
           'hash',
         ),
       )
@@ -139,7 +153,10 @@ export class DatabaseDocumentStore implements DatabaseStore {
     await tx<DocumentResultRow>('documents_to_insert').insert(
       documents.map(document => ({
         type,
-        document,
+        document: {
+          ...document,
+          // text: truncateDocsText(document.text),
+        },
       })),
     );
   }

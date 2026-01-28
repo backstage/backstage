@@ -69,11 +69,16 @@ export class BitbucketUrlReader implements UrlReaderService {
       });
   };
 
+  private readonly integration: BitbucketIntegration;
+  private readonly deps: { treeResponseFactory: ReadTreeResponseFactory };
+
   constructor(
-    private readonly integration: BitbucketIntegration,
+    integration: BitbucketIntegration,
     logger: LoggerService,
-    private readonly deps: { treeResponseFactory: ReadTreeResponseFactory },
+    deps: { treeResponseFactory: ReadTreeResponseFactory },
   ) {
+    this.integration = integration;
+    this.deps = deps;
     const { host, token, username, appPassword } = integration.config;
     const replacement =
       host === 'bitbucket.org' ? 'bitbucketCloud' : 'bitbucketServer';
@@ -93,13 +98,27 @@ export class BitbucketUrlReader implements UrlReaderService {
     return response.buffer();
   }
 
+  private getCredentials = async (options?: {
+    token?: string;
+  }): Promise<{ headers: Record<string, string> }> => {
+    if (options?.token) {
+      return {
+        headers: {
+          Authorization: `Bearer ${options.token}`,
+        },
+      };
+    }
+
+    return await getBitbucketRequestOptions(this.integration.config);
+  };
+
   async readUrl(
     url: string,
     options?: UrlReaderServiceReadUrlOptions,
   ): Promise<UrlReaderServiceReadUrlResponse> {
     const { etag, lastModifiedAfter, signal } = options ?? {};
     const bitbucketUrl = getBitbucketFileFetchUrl(url, this.integration.config);
-    const requestOptions = getBitbucketRequestOptions(this.integration.config);
+    const requestOptions = await this.getCredentials(options);
 
     let response: Response;
     try {

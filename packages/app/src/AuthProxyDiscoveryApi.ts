@@ -20,12 +20,16 @@ import { DiscoveryApi } from '@backstage/core-plugin-api';
 
 export class AuthProxyDiscoveryApi implements DiscoveryApi {
   private urlPatternDiscovery: UrlPatternDiscovery;
+  private readonly isAuthProxyingEnabled?: boolean;
+  private readonly authProxyUrl?: string;
 
   constructor(
     baseUrl: string,
-    private readonly isAuthProxyingEnabled?: boolean,
-    private readonly authProxyUrl?: string,
+    isAuthProxyingEnabled?: boolean,
+    authProxyUrl?: string,
   ) {
+    this.isAuthProxyingEnabled = isAuthProxyingEnabled;
+    this.authProxyUrl = authProxyUrl;
     this.urlPatternDiscovery = UrlPatternDiscovery.compile(
       `${baseUrl}/api/{{ pluginId }}`,
     );

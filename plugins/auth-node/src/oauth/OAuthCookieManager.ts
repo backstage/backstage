@@ -47,7 +47,7 @@ const defaultCookieConfigurer: CookieConfigurer = ({
     ? pathname.slice(0, -'/handler/frame'.length)
     : `${pathname}/${providerId}`;
 
-  return { domain, path, secure, sameSite };
+  return { path, secure, sameSite };
 };
 
 /** @internal */
@@ -145,102 +145,154 @@ export class OAuthCookieManager {
     maxAge: number,
     origin?: string,
     pathSuffix: string = '',
-  ): Response {
+  ): void {
     const options = {
       maxAge,
       ...this.getConfig(origin, pathSuffix),
     };
     const req = res.req;
-    let output = res;
-    if (val.length > MAX_COOKIE_SIZE_CHARACTERS) {
-      const nonChunkedFormatExists = !!req.cookies[name];
-      if (nonChunkedFormatExists) {
-        output = output.cookie(name, '', this.getRemoveCookieOptions());
-      }
 
-      const chunked = this.splitCookieToChunks(val, MAX_COOKIE_SIZE_CHARACTERS);
-      chunked.forEach((value, chunkNumber) => {
-        output = output.cookie(
-          OAuthCookieManager.getCookieChunkName(name, chunkNumber),
-          value,
-          options,
-        );
-      });
-      return output;
-    }
-
-    const chunkedFormatExists = OAuthCookieManager.chunkedCookieExists(
+    const newCookieShouldBeChunked = val.length > MAX_COOKIE_SIZE_CHARACTERS;
+    const existingChunkCount = OAuthCookieManager.countExistingCookieChunks(
       req,
       name,
     );
-    if (chunkedFormatExists) {
-      for (let chunkNumber = 0; ; chunkNumber++) {
-        const key = OAuthCookieManager.getCookieChunkName(name, chunkNumber);
-        const exists = !!req.cookies[key];
-        if (!exists) {
-          break;
-        }
-        output = output.cookie(key, '', this.getRemoveCookieOptions());
-      }
+    const chunkedFormatExists = existingChunkCount > 0;
+
+    // If using the default cookieConfigurer, delete old cookie with domain
+    // explicitly set to the callbackUrl's domain (legacy behavior)
+    if (this.cookieConfigurer === defaultCookieConfigurer) {
+      this.removeLegacyCookieWithDomain(res, name, existingChunkCount);
     }
 
-    return output.cookie(name, val, options);
+    if (chunkedFormatExists) {
+      this.removeChunkedCookie(res, name, existingChunkCount);
+    }
+
+    if (newCookieShouldBeChunked) {
+      this.setChunkedCookie(req, res, name, val, options);
+    } else {
+      res.cookie(name, val, options);
+    }
+  }
+
+  private removeLegacyCookieWithDomain(
+    res: Response,
+    name: string,
+    chunkCount: number,
+  ): void {
+    const { hostname: domain } = new URL(this.options.callbackUrl);
+    res.cookie(name, '', {
+      ...this.getRemoveCookieOptions(),
+      domain: domain,
+    });
+
+    this.removeChunkedCookie(res, name, chunkCount, { domain });
+  }
+
+  private setChunkedCookie(
+    req: Request,
+    res: Response,
+    name: string,
+    val: string,
+    options: CookieOptions,
+  ): void {
+    const nonChunkedFormatExists = !!req.cookies[name];
+    if (nonChunkedFormatExists) {
+      res.cookie(name, '', this.getRemoveCookieOptions());
+    }
+    const chunkedCookieArray = this.splitCookieToChunks(
+      val,
+      MAX_COOKIE_SIZE_CHARACTERS,
+    );
+    chunkedCookieArray.forEach((chunkValue, chunkNumber) => {
+      res.cookie(
+        OAuthCookieManager.getCookieChunkName(name, chunkNumber),
+        chunkValue,
+        options,
+      );
+    });
   }
 
   private getCookie(req: Request, name: string): string | undefined {
-    const isChunked = OAuthCookieManager.chunkedCookieExists(req, name);
+    const existingChunkCount = OAuthCookieManager.countExistingCookieChunks(
+      req,
+      name,
+    );
+    const isChunked = existingChunkCount > 0;
     if (isChunked) {
-      const chunks: string[] = [];
-      let chunkNumber = 0;
-      let chunk =
-        req.cookies[OAuthCookieManager.getCookieChunkName(name, chunkNumber)];
-      while (chunk) {
-        chunks.push(chunk);
-        chunkNumber++;
-        chunk =
-          req.cookies[OAuthCookieManager.getCookieChunkName(name, chunkNumber)];
-      }
-      return chunks.join('');
+      return this.getChunkedCookie(req, name, existingChunkCount);
     }
     return req.cookies[name];
   }
 
-  private removeCookie(res: Response, name: string, origin?: string): Response {
-    const req = res.req;
-    const options = this.getRemoveCookieOptions(origin);
-    const isChunked = OAuthCookieManager.chunkedCookieExists(req, name);
-    if (isChunked) {
-      const nonChunkedFormatExists = !!req.cookies[name];
-      let output: Response = nonChunkedFormatExists
-        ? res.cookie(name, '', options)
-        : res;
-      for (let chunkNumber = 0; ; chunkNumber++) {
-        const key = OAuthCookieManager.getCookieChunkName(name, chunkNumber);
-        const exists = !!req.cookies[key];
-        if (!exists) {
-          break;
-        }
-        output = output.cookie(key, '', options);
-      }
-      return output;
+  private getChunkedCookie(
+    req: Request,
+    name: string,
+    chunkCount: number,
+  ): string | undefined {
+    const chunkedCookieArray: string[] = [];
+    for (let chunkNumber = 0; chunkNumber < chunkCount; chunkNumber++) {
+      const chunk =
+        req.cookies[OAuthCookieManager.getCookieChunkName(name, chunkNumber)];
+      chunkedCookieArray.push(chunk);
     }
-    return res.cookie(name, '', options);
+    return chunkedCookieArray.join('');
+  }
+
+  private removeCookie(res: Response, name: string, origin?: string): void {
+    const req = res.req;
+    const existingChunkCount = OAuthCookieManager.countExistingCookieChunks(
+      req,
+      name,
+    );
+    const chunkedFormatExists = existingChunkCount > 0;
+    const nonChunkedFormatExists = !!req.cookies[name];
+
+    if (nonChunkedFormatExists) {
+      res.cookie(name, '', this.getRemoveCookieOptions(origin));
+    }
+    if (chunkedFormatExists) {
+      this.removeChunkedCookie(res, name, existingChunkCount, {
+        origin,
+      });
+    }
+  }
+
+  private removeChunkedCookie(
+    res: Response,
+    name: string,
+    chunkCount: number,
+    { domain, origin }: { domain?: string; origin?: string } = {},
+  ): void {
+    for (let chunkNumber = 0; chunkNumber < chunkCount; chunkNumber++) {
+      const key = OAuthCookieManager.getCookieChunkName(name, chunkNumber);
+      const baseOptions = this.getRemoveCookieOptions(origin);
+      const options = domain ? { ...baseOptions, domain } : baseOptions;
+      res.cookie(key, '', options);
+    }
   }
 
   private splitCookieToChunks(val: string, chunkSize: number): string[] {
     const numChunks = Math.ceil(val.length / chunkSize);
-    const chunks: string[] = Array<string>(numChunks);
+    const chunkedCookieArray: string[] = Array<string>(numChunks);
 
     let offset: number = 0;
     for (let i = 0; i < numChunks; i++) {
-      chunks[i] = val.substring(offset, offset + chunkSize);
+      chunkedCookieArray[i] = val.substring(offset, offset + chunkSize);
       offset += chunkSize;
     }
-    return chunks;
+    return chunkedCookieArray;
   }
 
-  private static chunkedCookieExists(req: Request, name: string): boolean {
-    return !!req.cookies[OAuthCookieManager.getCookieChunkName(name, 0)];
+  private static countExistingCookieChunks(req: Request, name: string): number {
+    for (let chunkNumber = 0; ; chunkNumber++) {
+      const key = OAuthCookieManager.getCookieChunkName(name, chunkNumber);
+      const exists = !!req.cookies[key];
+      if (!exists) {
+        return chunkNumber;
+      }
+    }
   }
 
   private static getCookieChunkName(name: string, chunkIndex: number): string {

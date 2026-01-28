@@ -1,0 +1,70 @@
+name: MUI to BUI Migration Tracker
+
+on:
+  schedule:
+    # Run daily at midnight UTC
+    - cron: '0 0 * * *'
+  workflow_dispatch:
+    # Allow manual triggering
+
+permissions:
+  issues: write
+  contents: read
+
+jobs:
+  update-migration-progress:
+    runs-on: ubuntu-latest
+    name: Update Migration Progress Issue
+
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@df199fb7be9f65074067a9eb93f12bb4c5547cf2 # v2.13.3
+        with:
+          egress-policy: audit
+
+      - name: Checkout repository
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
+        with:
+          node-version: 22.x
+          registry-url: https://registry.npmjs.org/ # Needed for auth
+
+      - name: yarn install
+        uses: backstage/actions/yarn-install@b3c1841fd69e1658ac631afafd0fb140a2309024 # v0.6.17
+        with:
+          cache-prefix: ${{ runner.os }}-v22.x
+
+      - name: Run migration analysis
+        id: analysis
+        run: |
+          # Run the migration script and save markdown output
+          yarn mui-to-bui --markdown > migration-report.md
+
+          # Read the report into an environment variable (escape for GitHub Actions)
+          echo "REPORT<<EOF" >> $GITHUB_ENV
+          cat migration-report.md >> $GITHUB_ENV
+          echo "EOF" >> $GITHUB_ENV
+
+      - name: Update GitHub Issue
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const issueNumber = 31467;
+            const reportBody = process.env.REPORT;
+
+            try {
+              await github.rest.issues.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: issueNumber,
+                body: reportBody
+              });
+
+              console.log(`✅ Successfully updated issue #${issueNumber}`);
+            } catch (error) {
+              console.error(`❌ Error updating issue: ${error.message}`);
+              throw error;
+            }

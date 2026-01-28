@@ -36,7 +36,7 @@ import { RestEndpointMethodTypes } from '@octokit/rest';
 import fetch, { RequestInit, Response } from 'node-fetch';
 import parseGitUrl from 'git-url-parse';
 import { Minimatch } from 'minimatch';
-import { Readable } from 'stream';
+import { Readable } from 'node:stream';
 import {
   assertError,
   NotFoundError,
@@ -77,13 +77,21 @@ export class GithubUrlReader implements UrlReaderService {
     });
   };
 
+  private readonly integration: GithubIntegration;
+  private readonly deps: {
+    treeResponseFactory: ReadTreeResponseFactory;
+    credentialsProvider: GithubCredentialsProvider;
+  };
+
   constructor(
-    private readonly integration: GithubIntegration,
-    private readonly deps: {
+    integration: GithubIntegration,
+    deps: {
       treeResponseFactory: ReadTreeResponseFactory;
       credentialsProvider: GithubCredentialsProvider;
     },
   ) {
+    this.integration = integration;
+    this.deps = deps;
     if (!integration.config.apiBaseUrl && !integration.config.rawBaseUrl) {
       throw new Error(
         `GitHub integration '${integration.title}' must configure an explicit apiBaseUrl or rawBaseUrl`,

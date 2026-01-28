@@ -1,0 +1,10 @@
+---
+title: Usage Statistics
+author: CodeVerse-GP
+authorUrl: https://github.com/CodeVerse-GP
+category: Monitoring
+description: Shows usage statistics for scaffolder templates
+documentation: https://github.com/CodeVerse-GP/usage-statistics/blob/main/README.md
+iconUrl: '/img/logo-gradient-on-dark.svg'
+npmPackageName: '@codeverse-gp/plugin-usage-statistics'
+addedDate: '2025-11-05'

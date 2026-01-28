@@ -22,6 +22,7 @@ import { SimpleStepperStep } from './SimpleStepperStep';
 export default {
   title: 'Navigation/SimpleStepper',
   component: SimpleStepper,
+  tags: ['!manifest'],
 };
 
 const defaultArgs = {

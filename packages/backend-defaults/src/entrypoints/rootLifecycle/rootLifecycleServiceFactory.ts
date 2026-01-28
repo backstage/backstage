@@ -27,7 +27,11 @@ import {
 
 /** @internal */
 export class BackendLifecycleImpl implements RootLifecycleService {
-  constructor(private readonly logger: LoggerService) {}
+  private readonly logger: LoggerService;
+
+  constructor(logger: LoggerService) {
+    this.logger = logger;
+  }
 
   #hasStarted = false;
   #startupTasks: Array<{

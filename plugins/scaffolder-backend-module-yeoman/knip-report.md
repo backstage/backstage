@@ -4,5 +4,5 @@
 
 | Name    | Location     | Severity |
 | :------ | :----------- | :------- |
-| winston | package.json | error    |
+| winston | plugins/scaffolder-backend-module-yeoman/package.json | error    |
 

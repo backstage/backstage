@@ -16,7 +16,7 @@
 
 import { CatalogApi, CatalogClient } from '@backstage/catalog-client';
 import { stringifyEntityRef } from '@backstage/catalog-model';
-import { Config } from '@backstage/config';
+import { Config, readDurationFromConfig } from '@backstage/config';
 import { NotFoundError } from '@backstage/errors';
 import {
   DocsBuildStrategy,
@@ -41,6 +41,7 @@ import {
   HttpAuthService,
   LoggerService,
 } from '@backstage/backend-plugin-api';
+import { durationToMilliseconds } from '@backstage/types';
 
 /**
  * Required dependencies for running TechDocs in the "out-of-the-box"
@@ -131,9 +132,18 @@ export async function createRouter(
 
   // Set up a cache client if configured.
   let cache: TechDocsCache | undefined;
-  const defaultTtl = config.getOptionalNumber('techdocs.cache.ttl');
-  if (defaultTtl) {
-    const cacheClient = options.cache.withOptions({ defaultTtl });
+  if (config.has('techdocs.cache.ttl')) {
+    let ttlMs: number;
+    if (typeof config.get('techdocs.cache.ttl') === 'number') {
+      ttlMs = config.getNumber('techdocs.cache.ttl');
+    } else {
+      ttlMs = durationToMilliseconds(
+        readDurationFromConfig(config, {
+          key: 'techdocs.cache.ttl',
+        }),
+      );
+    }
+    const cacheClient = options.cache.withOptions({ defaultTtl: ttlMs });
     cache = TechDocsCache.fromConfig(config, { cache: cacheClient, logger });
   }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2024 The Backstage Authors
+ * Copyright 2025 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,53 +13,68 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
-import type { Meta, StoryObj } from '@storybook/react';
+import preview from '../../../../../.storybook/preview';
 import { Flex } from './Flex';
 import { Text } from '../Text';
+import { Box } from '../Box';
 
-const meta = {
-  title: 'Layout/Flex',
+const meta = preview.meta({
+  title: 'Backstage UI/Flex',
   component: Flex,
   argTypes: {
     align: {
       control: 'inline-radio',
-      options: ['left', 'center', 'right'],
+      options: ['start', 'center', 'end', 'baseline', 'stretch'],
     },
-    children: {
-      control: false,
+    justify: {
+      control: 'inline-radio',
+      options: ['start', 'center', 'end', 'between'],
     },
-    className: {
-      control: 'text',
+    direction: {
+      control: 'inline-radio',
+      options: ['row', 'column', 'row-reverse', 'column-reverse'],
     },
   },
-  args: {
-    align: 'stretch',
-    gap: '4',
-    children: 'hello world',
-  },
-} satisfies Meta<typeof Flex>;
+});
 
-export default meta;
-type Story = StoryObj<typeof meta>;
+const DecorativeBox = ({
+  width = '48px',
+  height = '48px',
+}: {
+  width?: string;
+  height?: string;
+}) => {
+  const diagonalStripePattern = (() => {
+    const svg = `
+      <svg width="6" height="6" viewBox="0 0 6 6" xmlns="http://www.w3.org/2000/svg">
+        <g fill="#2563eb" fill-opacity="0.6" fill-rule="evenodd">
+          <path d="M5 0h1L0 6V5zM6 5v1H5z"/>
+        </g>
+      </svg>
+    `.trim();
+    return `data:image/svg+xml,${encodeURIComponent(svg)}`;
+  })();
 
-const DecorativeBox = () => {
   return (
-    <div
+    <Box
+      width={width}
+      height={height}
       style={{
         background: '#eaf2fd',
         borderRadius: '4px',
-        boxShadow: '0 0 0 1px #2563eb',
-        height: '32px',
-        minWidth: '100px',
-        backgroundImage:
-          'url("data:image/svg+xml,%3Csvg%20width%3D%226%22%20height%3D%226%22%20viewBox%3D%220%200%206%206%22%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%3E%3Cg%20fill%3D%22%232563eb%22%20fill-opacity%3D%220.3%22%20fill-rule%3D%22evenodd%22%3E%3Cpath%20d%3D%22M5%200h1L0%206V5zM6%205v1H5z%22/%3E%3C/g%3E%3C/svg%3E")',
+        border: '1px solid #2563eb',
+        backgroundImage: `url("${diagonalStripePattern}")`,
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        fontWeight: 'bold',
+        color: '#2563eb',
       }}
     />
   );
 };
 
-export const Default: Story = {
+export const Default = meta.story({
   args: {
     children: (
       <>
@@ -69,83 +84,146 @@ export const Default: Story = {
       </>
     ),
   },
-};
+});
 
-export const ColumnDirection: Story = {
+export const ColumnDirection = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
     direction: 'column',
   },
-};
+});
 
-export const RowDirection: Story = {
+export const RowDirection = meta.story({
   args: {
-    ...Default.args,
+    ...Default.input.args,
     direction: 'row',
   },
-};
+});
 
-export const AlignLeft: Story = {
-  render: () => (
-    <Flex align="start">
+export const AlignStartInColumn = meta.story({
+  args: {
+    align: 'start',
+    direction: 'column',
+  },
+  render: args => (
+    <Flex {...args}>
+      <DecorativeBox height="32px" />
+      <DecorativeBox height="24px" />
+      <DecorativeBox height="48px" />
+    </Flex>
+  ),
+});
+
+export const AlignStartInRow = meta.story({
+  args: {
+    align: 'start',
+    direction: 'row',
+  },
+  render: args => (
+    <Flex {...args}>
+      <DecorativeBox height="32px" />
+      <DecorativeBox height="24px" />
+      <DecorativeBox height="48px" />
+    </Flex>
+  ),
+});
+
+export const AlignCenterInColumn = meta.story({
+  args: {
+    align: 'center',
+    direction: 'column',
+  },
+  render: args => (
+    <Flex {...args}>
+      <DecorativeBox height="32px" />
+      <DecorativeBox height="24px" />
+      <DecorativeBox height="48px" />
+    </Flex>
+  ),
+});
+
+export const AlignCenterInRow = meta.story({
+  args: {
+    align: 'center',
+    direction: 'row',
+  },
+  render: args => (
+    <Flex {...args}>
+      <DecorativeBox height="32px" />
+      <DecorativeBox height="24px" />
+      <DecorativeBox height="48px" />
+    </Flex>
+  ),
+});
+
+export const AlignEndInColumn = meta.story({
+  args: {
+    align: 'end',
+    direction: 'column',
+  },
+  render: args => (
+    <Flex {...args}>
+      <DecorativeBox height="32px" />
+      <DecorativeBox height="24px" />
+      <DecorativeBox height="48px" />
+    </Flex>
+  ),
+});
+
+export const AlignEndInRow = meta.story({
+  args: {
+    align: 'end',
+    direction: 'row',
+  },
+  render: args => (
+    <Flex {...args}>
+      <DecorativeBox height="32px" />
+      <DecorativeBox height="24px" />
+      <DecorativeBox height="48px" />
+    </Flex>
+  ),
+});
+
+export const ResponsiveAlign = meta.story({
+  args: {
+    align: { xs: 'start', md: 'center', lg: 'end' },
+  },
+  render: args => (
+    <Flex {...args}>
+      <DecorativeBox height="32px" />
+      <DecorativeBox height="24px" />
+      <DecorativeBox height="48px" />
+    </Flex>
+  ),
+});
+
+export const ResponsiveGap = meta.story({
+  args: {
+    gap: { xs: '4', md: '8', lg: '12' },
+  },
+  render: args => (
+    <Flex {...args}>
       <DecorativeBox />
       <DecorativeBox />
       <DecorativeBox />
     </Flex>
   ),
-};
+});
 
-export const AlignCenter: Story = {
-  render: () => (
-    <Flex align="center">
+export const LargeGap = meta.story({
+  args: {
+    gap: '8',
+  },
+  render: args => (
+    <Flex {...args}>
       <DecorativeBox />
       <DecorativeBox />
       <DecorativeBox />
     </Flex>
   ),
-};
+});
 
-export const AlignRight: Story = {
-  render: () => (
-    <Flex align="end">
-      <DecorativeBox />
-      <DecorativeBox />
-      <DecorativeBox />
-    </Flex>
-  ),
-};
-
-export const ResponsiveAlign: Story = {
-  render: () => (
-    <Flex align={{ xs: 'start', md: 'center', lg: 'end' }}>
-      <DecorativeBox />
-      <DecorativeBox />
-      <DecorativeBox />
-    </Flex>
-  ),
-};
-
-export const ResponsiveGap: Story = {
-  render: () => (
-    <Flex gap={{ xs: '4', md: '8', lg: '12' }}>
-      <DecorativeBox />
-      <DecorativeBox />
-      <DecorativeBox />
-    </Flex>
-  ),
-};
-
-export const LargeGap: Story = {
-  render: () => (
-    <Flex gap="8">
-      <DecorativeBox />
-      <DecorativeBox />
-      <DecorativeBox />
-    </Flex>
-  ),
-};
-
-export const WithTextTruncate: Story = {
+export const WithTextTruncate = meta.story({
   render: () => (
     <Flex direction="row" gap="8">
       <Flex>
@@ -164,4 +242,67 @@ export const WithTextTruncate: Story = {
       </Flex>
     </Flex>
   ),
-};
+});
+
+export const Surfaces = meta.story({
+  args: {
+    px: '6',
+    py: '4',
+  },
+  render: args => (
+    <Flex align="center" style={{ flexWrap: 'wrap' }}>
+      <Flex {...args}>Default</Flex>
+      <Flex surface="0" {...args}>
+        Surface 0
+      </Flex>
+      <Flex surface="1" {...args}>
+        Surface 1
+      </Flex>
+      <Flex surface="2" {...args}>
+        Surface 2
+      </Flex>
+      <Flex surface="3" {...args}>
+        Surface 3
+      </Flex>
+      <Flex surface={{ initial: '0', sm: '1' }} {...args}>
+        Responsive Surface
+      </Flex>
+      <Flex surface="danger" {...args}>
+        Surface Danger
+      </Flex>
+      <Flex surface="warning" {...args}>
+        Surface Warning
+      </Flex>
+      <Flex surface="success" {...args}>
+        Surface Success
+      </Flex>
+    </Flex>
+  ),
+});
+
+export const SurfacesAutoIncrement = meta.story({
+  args: { px: '6', py: '4', gap: '4' },
+  render: args => (
+    <Flex direction="column">
+      <div style={{ maxWidth: '600px', marginBottom: '16px' }}>
+        Using surface="auto" automatically increments from the parent surface.
+        This allows components to be reusable without hardcoding surface levels.
+      </div>
+      <Flex {...args} surface="0" direction="column">
+        <div>Surface 0 (explicit)</div>
+        <Flex {...args} surface="auto" direction="column">
+          <div>Surface auto (becomes 1)</div>
+          <Flex {...args} surface="auto" direction="column">
+            <div>Surface auto (becomes 2)</div>
+            <Flex {...args} surface="auto" direction="column">
+              <div>Surface auto (becomes 3)</div>
+              <Flex {...args} surface="auto" direction="column">
+                <div>Surface auto (stays 3 - capped)</div>
+              </Flex>
+            </Flex>
+          </Flex>
+        </Flex>
+      </Flex>
+    </Flex>
+  ),
+});

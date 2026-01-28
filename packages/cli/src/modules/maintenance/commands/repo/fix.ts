@@ -23,7 +23,11 @@ import {
 } from '@backstage/cli-node';
 import { OptionValues } from 'commander';
 import fs from 'fs-extra';
-import { resolve as resolvePath, posix, relative as relativePath } from 'path';
+import {
+  resolve as resolvePath,
+  posix,
+  relative as relativePath,
+} from 'node:path';
 import { paths } from '../../../../lib/paths';
 import { publishPreflightCheck } from '../../lib/publishing';
 

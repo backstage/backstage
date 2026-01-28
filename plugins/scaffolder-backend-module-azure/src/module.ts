@@ -18,7 +18,7 @@ import {
   coreServices,
 } from '@backstage/backend-plugin-api';
 import { ScmIntegrations } from '@backstage/integration';
-import { scaffolderActionsExtensionPoint } from '@backstage/plugin-scaffolder-node/alpha';
+import { scaffolderActionsExtensionPoint } from '@backstage/plugin-scaffolder-node';
 import { createPublishAzureAction } from './actions';
 
 /**

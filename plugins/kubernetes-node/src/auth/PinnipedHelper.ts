@@ -15,7 +15,7 @@
  */
 
 import { LoggerService } from '@backstage/backend-plugin-api';
-import * as https from 'https';
+import * as https from 'node:https';
 import fetch, { RequestInit } from 'node-fetch';
 import { ClusterDetails } from '../types/types';
 
@@ -50,7 +50,11 @@ export type PinnipedParameters = {
  * @public
  */
 export class PinnipedHelper {
-  constructor(private readonly logger: LoggerService) {}
+  private readonly logger: LoggerService;
+
+  constructor(logger: LoggerService) {
+    this.logger = logger;
+  }
 
   public async tokenCredentialRequest(
     clusterDetails: ClusterDetails,

@@ -29,7 +29,7 @@ jest.mock('./railsNewRunner', () => {
 
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
-import { resolve as resolvePath } from 'path';
+import { resolve as resolvePath } from 'node:path';
 import { createFetchRailsAction } from './index';
 import { fetchContents } from '@backstage/plugin-scaffolder-node';
 import { createMockDirectory } from '@backstage/backend-test-utils';

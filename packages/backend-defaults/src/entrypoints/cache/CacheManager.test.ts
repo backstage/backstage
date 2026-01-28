@@ -333,4 +333,176 @@ describe('CacheManager store options', () => {
       keyPrefixSeparator: '!',
     });
   });
+
+  it('correctly applies namespace configuration to redis and valkey stores', () => {
+    const testCases = [
+      {
+        store: 'redis',
+        client: {
+          namespace: 'my-app',
+          keyPrefixSeparator: ':',
+        },
+      },
+      { store: 'valkey', client: { keyPrefix: 'my-app:' } },
+    ];
+
+    testCases.forEach(({ store, client }) => {
+      const manager = CacheManager.fromConfig(
+        mockServices.rootConfig({
+          data: {
+            backend: {
+              cache: {
+                store,
+                connection: 'redis://localhost:6379',
+                [store]: {
+                  client,
+                },
+              },
+            },
+          },
+        }),
+      );
+
+      manager.forPlugin('testPlugin');
+
+      if (store === 'redis') {
+        // eslint-disable-next-line jest/no-conditional-expect
+        expect(KeyvRedis).toHaveBeenCalledWith(
+          'redis://localhost:6379',
+          client,
+        );
+      } else if (store === 'valkey') {
+        // eslint-disable-next-line jest/no-conditional-expect
+        expect(KeyvValkey).toHaveBeenCalledWith(
+          'redis://localhost:6379',
+          client,
+        );
+      }
+    });
+  });
+
+  it('falls back to pluginId when no namespace is configured', () => {
+    const manager = CacheManager.fromConfig(
+      mockServices.rootConfig({
+        data: {
+          backend: {
+            cache: {
+              store: 'redis',
+              connection: 'redis://localhost:6379',
+            },
+          },
+        },
+      }),
+    );
+
+    manager.forPlugin('testPlugin');
+
+    expect(KeyvRedis).toHaveBeenCalledWith('redis://localhost:6379', {
+      keyPrefixSeparator: ':',
+    });
+  });
+
+  describe('Namespace construction', () => {
+    it('returns pluginId when no store options are provided', () => {
+      const result = (CacheManager as any).constructNamespace(
+        'testPlugin',
+        undefined,
+      );
+      expect(result).toBe('testPlugin');
+    });
+
+    it.each([
+      {
+        type: 'redis',
+        field: 'namespace',
+        client: { keyPrefixSeparator: ':' },
+      },
+      { type: 'valkey', field: 'keyPrefix', client: {} },
+    ])(
+      'returns pluginId when store options have no $field for $type',
+      ({ type, client }) => {
+        const storeOptions = {
+          type,
+          client,
+        };
+        const result = (CacheManager as any).constructNamespace(
+          'testPlugin',
+          storeOptions,
+        );
+        expect(result).toBe('testPlugin');
+      },
+    );
+
+    it('combines namespace and pluginId with default separator for redis', () => {
+      const storeOptions = {
+        type: 'redis',
+        client: {
+          namespace: 'my-app',
+          keyPrefixSeparator: ':',
+        },
+      };
+      const result = (CacheManager as any).constructNamespace(
+        'testPlugin',
+        storeOptions,
+      );
+      expect(result).toBe('my-app:testPlugin');
+    });
+
+    it('combines namespace and pluginId with custom separator for redis', () => {
+      const storeOptions = {
+        type: 'redis',
+        client: {
+          namespace: 'my-app',
+          keyPrefixSeparator: '-',
+        },
+      };
+      const result = (CacheManager as any).constructNamespace(
+        'testPlugin',
+        storeOptions,
+      );
+      expect(result).toBe('my-app-testPlugin');
+    });
+
+    it('uses default separator when keyPrefixSeparator is not provided for redis', () => {
+      const storeOptions = {
+        type: 'redis',
+        client: {
+          namespace: 'my-app',
+        },
+      };
+      const result = (CacheManager as any).constructNamespace(
+        'testPlugin',
+        storeOptions,
+      );
+      expect(result).toBe('my-app:testPlugin');
+    });
+
+    it('uses keyPrefix for valkey', () => {
+      const storeOptions = {
+        type: 'valkey',
+        client: {
+          keyPrefix: 'my-app:',
+        },
+      };
+      const result = (CacheManager as any).constructNamespace(
+        'testPlugin',
+        storeOptions,
+      );
+      expect(result).toBe('my-app:testPlugin');
+    });
+
+    it('handles empty namespace by falling back to pluginId', () => {
+      const storeOptions = {
+        client: {
+          namespace: '',
+          keyPrefixSeparator: ':',
+        },
+      };
+      const result = (CacheManager as any).constructNamespace(
+        'testPlugin',
+        storeOptions,
+      );
+      expect(result).toBe('testPlugin');
+    });
+  });
 });

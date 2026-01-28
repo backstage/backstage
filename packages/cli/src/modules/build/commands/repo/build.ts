@@ -16,7 +16,7 @@
 
 import chalk from 'chalk';
 import { Command, OptionValues } from 'commander';
-import { relative as relativePath } from 'path';
+import { relative as relativePath } from 'node:path';
 import { buildPackages, getOutputsForRole } from '../../lib/builder';
 import { paths } from '../../../../lib/paths';
 import {
@@ -31,10 +31,9 @@ import { createScriptOptionsParser } from '../../../../lib/optionsParser';
 
 export async function command(opts: OptionValues, cmd: Command): Promise<void> {
   let packages = await PackageGraph.listTargetPackages();
-  const shouldUseRspack = Boolean(process.env.EXPERIMENTAL_RSPACK);
 
-  const rspack = shouldUseRspack
-    ? (require('@rspack/core') as typeof import('@rspack/core').rspack)
+  const webpack = process.env.LEGACY_WEBPACK_BUILD
+    ? (require('webpack') as typeof import('webpack'))
     : undefined;
 
   if (opts.since) {
@@ -116,7 +115,7 @@ export async function command(opts: OptionValues, cmd: Command): Promise<void> {
           targetDir: pkg.dir,
           configPaths: (buildOptions.config as string[]) ?? [],
           writeStats: Boolean(buildOptions.stats),
-          rspack,
+          webpack,
         });
       },
     });

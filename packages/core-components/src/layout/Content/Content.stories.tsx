@@ -18,6 +18,7 @@ import { Content } from './Content';
 export default {
   title: 'Layout/Content',
   component: Content,
+  tags: ['!manifest'],
 };
 
 type Props = {

@@ -4,15 +4,15 @@
 
 | Name    | Location     | Severity |
 | :------ | :----------- | :------- |
-| history | package.json | error    |
+| history | packages/core-app-api/package.json | error    |
 
 ## Unused devDependencies (5)
 
 | Name                         | Location     | Severity |
 | :--------------------------- | :----------- | :------- |
-| @testing-library/react-hooks | package.json | error    |
-| react-router-dom-stable      | package.json | error    |
-| react-router-dom-beta        | package.json | error    |
-| react-router-stable          | package.json | error    |
-| react-router-beta            | package.json | error    |
+| @testing-library/react-hooks | packages/core-app-api/package.json | error    |
+| react-router-dom-stable      | packages/core-app-api/package.json | error    |
+| react-router-dom-beta        | packages/core-app-api/package.json | error    |
+| react-router-stable          | packages/core-app-api/package.json | error    |
+| react-router-beta            | packages/core-app-api/package.json | error    |
 

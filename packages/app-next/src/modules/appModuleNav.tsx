@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { compatWrapper } from '@backstage/core-compat-api';
 import {
   Link,
   Sidebar,
@@ -29,10 +28,8 @@ import {
 import SearchIcon from '@material-ui/icons/Search';
 import MenuIcon from '@material-ui/icons/Menu';
 import BuildIcon from '@material-ui/icons/Build';
-import {
-  createFrontendModule,
-  NavContentBlueprint,
-} from '@backstage/frontend-plugin-api';
+import { createFrontendModule } from '@backstage/frontend-plugin-api';
+import { NavContentBlueprint } from '@backstage/plugin-app-react';
 import { SidebarSearchModal } from '@backstage/plugin-search';
 import { NotificationsSidebarItem } from '@backstage/plugin-notifications';
 import {
@@ -106,36 +103,34 @@ export const appModuleNav = createFrontendModule({
   extensions: [
     NavContentBlueprint.make({
       params: {
-        component: ({ items }) => {
-          return compatWrapper(
-            <Sidebar>
-              <SidebarLogo />
-              <SidebarGroup label="Search" icon={<SearchIcon />} to="/search">
-                <SidebarSearchModal />
-              </SidebarGroup>
-              <SidebarDivider />
-              <SidebarGroup label="Menu" icon={<MenuIcon />}>
-                <SidebarScrollWrapper>
-                  {items.map((item, index) => (
-                    <SidebarItem {...item} key={index} />
-                  ))}
-                </SidebarScrollWrapper>
-              </SidebarGroup>
-              <SidebarDivider />
-              <SidebarSpace />
-              <SidebarDivider />
-              <SidebarGroup
-                label="Settings"
-                icon={<UserSettingsSignInAvatar />}
-                to="/settings"
-              >
-                <NotificationsSidebarItem />
-                <SidebarItem icon={BuildIcon} to="devtools" text="DevTools" />
-                <Settings />
-              </SidebarGroup>
-            </Sidebar>,
-          );
-        },
+        component: ({ items }) => (
+          <Sidebar>
+            <SidebarLogo />
+            <SidebarGroup label="Search" icon={<SearchIcon />} to="/search">
+              <SidebarSearchModal />
+            </SidebarGroup>
+            <SidebarDivider />
+            <SidebarGroup label="Menu" icon={<MenuIcon />}>
+              <SidebarScrollWrapper>
+                {items.map((item, index) => (
+                  <SidebarItem {...item} key={index} />
+                ))}
+              </SidebarScrollWrapper>
+            </SidebarGroup>
+            <SidebarDivider />
+            <SidebarSpace />
+            <SidebarDivider />
+            <SidebarGroup
+              label="Settings"
+              icon={<UserSettingsSignInAvatar />}
+              to="/settings"
+            >
+              <NotificationsSidebarItem />
+              <SidebarItem icon={BuildIcon} to="devtools" text="DevTools" />
+              <Settings />
+            </SidebarGroup>
+          </Sidebar>
+        ),
       },
     }),
   ],

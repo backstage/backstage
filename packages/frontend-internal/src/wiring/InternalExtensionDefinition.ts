@@ -17,10 +17,10 @@
 import {
   ApiHolder,
   AppNode,
-  ExtensionAttachToSpec,
+  ExtensionDefinitionAttachTo,
   ExtensionDataValue,
   ExtensionDataRef,
-  ExtensionDefinition,
+  OverridableExtensionDefinition,
   ExtensionDefinitionParameters,
   ExtensionInput,
   PortableSchema,
@@ -29,14 +29,14 @@ import {
 import { OpaqueType } from '@internal/opaque';
 
 export const OpaqueExtensionDefinition = OpaqueType.create<{
-  public: ExtensionDefinition<ExtensionDefinitionParameters>;
+  public: OverridableExtensionDefinition<ExtensionDefinitionParameters>;
   versions:
     | {
         readonly version: 'v1';
         readonly kind?: string;
         readonly namespace?: string;
         readonly name?: string;
-        readonly attachTo: ExtensionAttachToSpec;
+        readonly attachTo: ExtensionDefinitionAttachTo;
         readonly disabled: boolean;
         readonly configSchema?: PortableSchema<any, any>;
         readonly inputs: {
@@ -67,25 +67,17 @@ export const OpaqueExtensionDefinition = OpaqueType.create<{
         readonly kind?: string;
         readonly namespace?: string;
         readonly name?: string;
-        readonly attachTo: ExtensionAttachToSpec;
+        readonly attachTo: ExtensionDefinitionAttachTo;
         readonly disabled: boolean;
         readonly configSchema?: PortableSchema<any, any>;
-        readonly inputs: {
-          [inputName in string]: ExtensionInput<
-            ExtensionDataRef,
-            { optional: boolean; singleton: boolean }
-          >;
-        };
+        readonly inputs: { [inputName in string]: ExtensionInput };
         readonly output: Array<ExtensionDataRef>;
         factory(context: {
           node: AppNode;
           apis: ApiHolder;
           config: object;
           inputs: ResolvedExtensionInputs<{
-            [inputName in string]: ExtensionInput<
-              ExtensionDataRef,
-              { optional: boolean; singleton: boolean }
-            >;
+            [inputName in string]: ExtensionInput;
           }>;
         }): Iterable<ExtensionDataValue<any, any>>;
       };

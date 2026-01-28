@@ -15,7 +15,7 @@
  */
 
 import { Config } from '@backstage/config';
-import path from 'path';
+import path from 'node:path';
 import { getEntityLocationRef } from '../processing/util';
 import {
   EntityProvider,
@@ -24,7 +24,11 @@ import {
 import { locationSpecToLocationEntity } from '../util/conversion';
 
 export class ConfigLocationEntityProvider implements EntityProvider {
-  constructor(private readonly config: Config) {}
+  private readonly config: Config;
+
+  constructor(config: Config) {
+    this.config = config;
+  }
 
   getProviderName(): string {
     return 'ConfigLocationProvider';

@@ -17,16 +17,14 @@ import {
   coreServices,
   createBackendModule,
 } from '@backstage/backend-plugin-api';
-import {
-  scaffolderActionsExtensionPoint,
-  scaffolderAutocompleteExtensionPoint,
-} from '@backstage/plugin-scaffolder-node/alpha';
+import { scaffolderAutocompleteExtensionPoint } from '@backstage/plugin-scaffolder-node/alpha';
 import {
   createGithubActionsDispatchAction,
   createGithubAutolinksAction,
   createGithubDeployKeyAction,
   createGithubEnvironmentAction,
   createGithubIssuesLabelAction,
+  createGithubIssuesCreateAction,
   createGithubRepoCreateAction,
   createGithubRepoPushAction,
   createGithubWebhookAction,
@@ -41,6 +39,7 @@ import {
 } from '@backstage/integration';
 import { createHandleAutocompleteRequest } from './autocomplete/autocomplete';
 import { catalogServiceRef } from '@backstage/plugin-catalog-node';
+import { scaffolderActionsExtensionPoint } from '@backstage/plugin-scaffolder-node';
 
 /**
  * @public
@@ -79,6 +78,10 @@ export const githubModule = createBackendModule({
             catalog,
           }),
           createGithubIssuesLabelAction({
+            integrations,
+            githubCredentialsProvider,
+          }),
+          createGithubIssuesCreateAction({
             integrations,
             githubCredentialsProvider,
           }),

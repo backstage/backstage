@@ -24,8 +24,25 @@ export default createCliPlugin({
       path: ['info'],
       description: 'Show helpful information for debugging and reporting bugs',
       execute: async ({ args }) => {
-        yargs().parse(args);
-        await lazy(() => import('./commands/info'), 'default')(args);
+        const argv = await yargs()
+          .options({
+            include: {
+              type: 'string',
+              array: true,
+              default: [],
+              description:
+                'Glob patterns for additional packages to include (e.g., @spotify/backstage*)',
+            },
+            format: {
+              type: 'string',
+              choices: ['text', 'json'],
+              default: 'text',
+              description: 'Output format (text or json)',
+            },
+          })
+          .help()
+          .parse(args);
+        await lazy(() => import('./commands/info'), 'default')(argv);
       },
     });
   },

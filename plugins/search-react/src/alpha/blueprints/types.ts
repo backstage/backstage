@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { JSX } from 'react';
 import { ListItemProps } from '@material-ui/core/ListItem';
 import { SearchDocument, SearchResult } from '@backstage/plugin-search-common';
 import { createExtensionDataRef } from '@backstage/frontend-plugin-api';
@@ -22,6 +23,7 @@ import { createExtensionDataRef } from '@backstage/frontend-plugin-api';
 export type BaseSearchResultListItemProps<T = {}> = T & {
   rank?: number;
   result?: SearchDocument;
+  icon?: JSX.Element;
 } & Omit<ListItemProps, 'button'>;
 
 /** @alpha */
@@ -40,6 +42,7 @@ export type SearchResultItemExtensionPredicate = (
 export const searchResultListItemDataRef = createExtensionDataRef<{
   predicate?: SearchResultItemExtensionPredicate;
   component: SearchResultItemExtensionComponent;
+  icon?: JSX.Element;
 }>().with({ id: 'search.search-result-list-item.item' });
 
 /** @alpha */

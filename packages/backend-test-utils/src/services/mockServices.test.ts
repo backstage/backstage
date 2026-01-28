@@ -30,3 +30,37 @@ describe('mockServices', () => {
     expect(mockServices[key].factory()).toEqual(expect.any(Object));
   });
 });
+
+describe('mockServices.rootConfig()', () => {
+  it('should notify about updates', async () => {
+    const config = mockServices.rootConfig();
+
+    const fooConfig = config.getConfig('foo');
+
+    const rootListener = jest.fn();
+    const fooListener = jest.fn();
+
+    config.subscribe?.(rootListener);
+    fooConfig.subscribe?.(fooListener);
+
+    expect(rootListener).toHaveBeenCalledTimes(0);
+    expect(fooListener).toHaveBeenCalledTimes(0);
+
+    config.update({ data: { foo: { bar: 1, baz: 2 } } });
+
+    expect(rootListener).toHaveBeenCalledTimes(1);
+    expect(fooListener).toHaveBeenCalledTimes(1);
+
+    config.update({ data: { foo: { baz: 2, bar: 1 } } });
+
+    // Doesn't notify, no changes
+    expect(rootListener).toHaveBeenCalledTimes(1);
+    expect(fooListener).toHaveBeenCalledTimes(1);
+
+    config.update({ data: { foo: { bar: 1, baz: 2 }, unrelated: 'key' } });
+
+    // Notifies all listeners, even if an unrelated key was changed
+    expect(rootListener).toHaveBeenCalledTimes(2);
+    expect(fooListener).toHaveBeenCalledTimes(2);
+  });
+});

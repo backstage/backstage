@@ -96,6 +96,7 @@ const useStyles = makeStyles(
       fontWeight: theme.typography.fontWeightBold,
     },
     markdownContent: {
+      wordBreak: 'break-word',
       '& p': {
         display: 'inline',
       },

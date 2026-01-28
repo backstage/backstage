@@ -18,7 +18,7 @@ import {
   DocumentDecoratorFactory,
   DocumentTypeInfo,
 } from '@backstage/plugin-search-common';
-import { pipeline, Transform } from 'stream';
+import { pipeline, Transform } from 'node:stream';
 import { Scheduler } from './Scheduler';
 import {
   IndexBuilderOptions,

@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import '@backstage/backend-common';
 import { Entity } from '@backstage/catalog-model';
-import { ServiceLocatorRequestContext } from '../types/types';
+import { ServiceLocatorRequestContext } from '@backstage/plugin-kubernetes-node';
 import { SingleTenantServiceLocator } from './SingleTenantServiceLocator';
 
 describe('SingleTenantConfigClusterLocator', () => {

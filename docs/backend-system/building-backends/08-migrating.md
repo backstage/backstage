@@ -211,7 +211,7 @@ argument of `createBackend`.
 
 ## Removing `@backstage/backend-common`
 
-The `@backstage/backend-common` package has been deprecated as part of moving to the new backend system, an you will need to replace existing usage of it. All exports from the package have been marked as deprecated in the last few releases of the package, and each export has its own deprecation message that explains how to replace that particular export.
+The `@backstage/backend-common` package has been deprecated as part of moving to the new backend system, and you will need to replace existing usage of it. All exports from the package have been marked as deprecated in the last few releases of the package, and each export has its own deprecation message that explains how to replace that particular export.
 
 These are the deprecation messages for the most common replacements:
 
@@ -660,7 +660,7 @@ depends on the appropriate extension point and interacts with it.
 
 ```ts title="packages/backend/src/index.ts"
 /* highlight-add-start */
-import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
+import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
 import { createBackendModule } from '@backstage/backend-plugin-api';
 /* highlight-add-end */
 

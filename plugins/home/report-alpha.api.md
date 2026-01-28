@@ -9,21 +9,21 @@ import { ApiFactory } from '@backstage/frontend-plugin-api';
 import { ConfigurableExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionBlueprintParams } from '@backstage/frontend-plugin-api';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
-import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { ExtensionInput } from '@backstage/frontend-plugin-api';
-import { FrontendPlugin } from '@backstage/frontend-plugin-api';
 import { JSX as JSX_2 } from 'react';
+import { OverridableExtensionDefinition } from '@backstage/frontend-plugin-api';
+import { OverridableFrontendPlugin } from '@backstage/frontend-plugin-api';
 import { RouteRef } from '@backstage/frontend-plugin-api';
 import { TranslationRef } from '@backstage/frontend-plugin-api';
 
 // @alpha (undocumented)
-const _default: FrontendPlugin<
+const _default: OverridableFrontendPlugin<
   {
     root: RouteRef<undefined>;
   },
   {},
   {
-    'api:home/visits': ExtensionDefinition<{
+    'api:home/visits': OverridableExtensionDefinition<{
       kind: 'api';
       name: 'visits';
       config: {};
@@ -38,7 +38,7 @@ const _default: FrontendPlugin<
         params: ApiFactory<TApi, TImpl, TDeps>,
       ) => ExtensionBlueprintParams<AnyApiFactory>;
     }>;
-    'app-root-element:home/visit-listener': ExtensionDefinition<{
+    'app-root-element:home/visit-listener': OverridableExtensionDefinition<{
       kind: 'app-root-element';
       name: 'visit-listener';
       config: {};
@@ -49,7 +49,7 @@ const _default: FrontendPlugin<
         element: JSX.Element;
       };
     }>;
-    'page:home': ExtensionDefinition<{
+    'page:home': OverridableExtensionDefinition<{
       config: {
         path: string | undefined;
       };
@@ -85,6 +85,7 @@ const _default: FrontendPlugin<
           {
             singleton: true;
             optional: true;
+            internal: false;
           }
         >;
       };
@@ -107,6 +108,7 @@ export const homeTranslationRef: TranslationRef<
   {
     readonly 'starredEntities.noStarredEntitiesMessage': 'Click the star beside an entity name to add it to this list!';
     readonly 'addWidgetDialog.title': 'Add new widget to dashboard';
+    readonly 'customHomepageButtons.cancel': 'Cancel';
     readonly 'customHomepageButtons.clearAll': 'Clear all';
     readonly 'customHomepageButtons.edit': 'Edit';
     readonly 'customHomepageButtons.restoreDefaults': 'Restore defaults';

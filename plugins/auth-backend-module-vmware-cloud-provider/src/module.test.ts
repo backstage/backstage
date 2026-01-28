@@ -58,7 +58,7 @@ describe('authModuleVmwareCloudProvider', () => {
     expect(res.status).toEqual(302);
 
     const nonceCookie = agent.jar.getCookie('vmwareCloudServices-nonce', {
-      domain: 'localhost',
+      domain: '127.0.0.1',
       path: '/api/auth/vmwareCloudServices/handler',
       script: false,
       secure: false,

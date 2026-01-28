@@ -16,9 +16,9 @@
 
 import fs from 'fs-extra';
 import { isEqual } from 'lodash';
-import { join } from 'path';
+import { join } from 'node:path';
 import chalk from 'chalk';
-import { relative as relativePath, resolve as resolvePath } from 'path';
+import { relative as relativePath, resolve as resolvePath } from 'node:path';
 import { runner } from '../../../../lib/runner';
 import { paths as cliPaths } from '../../../../lib/paths';
 import {

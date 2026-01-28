@@ -47,40 +47,7 @@ export function createGithubRepoCreateAction(options: {
     examples,
     schema: {
       input: {
-        repoUrl: inputProps.repoUrl,
-        description: inputProps.description,
-        homepage: inputProps.homepage,
-        access: inputProps.access,
-        requireCodeOwnerReviews: inputProps.requireCodeOwnerReviews,
-        bypassPullRequestAllowances: inputProps.bypassPullRequestAllowances,
-        requiredApprovingReviewCount: inputProps.requiredApprovingReviewCount,
-        restrictions: inputProps.restrictions,
-        requiredStatusCheckContexts: inputProps.requiredStatusCheckContexts,
-        requireBranchesToBeUpToDate: inputProps.requireBranchesToBeUpToDate,
-        requiredConversationResolution:
-          inputProps.requiredConversationResolution,
-        repoVisibility: inputProps.repoVisibility,
-        deleteBranchOnMerge: inputProps.deleteBranchOnMerge,
-        allowMergeCommit: inputProps.allowMergeCommit,
-        allowSquashMerge: inputProps.allowSquashMerge,
-        squashMergeCommitTitle: inputProps.squashMergeCommitTitle,
-        squashMergeCommitMessage: inputProps.squashMergeCommitMessage,
-        allowRebaseMerge: inputProps.allowRebaseMerge,
-        allowAutoMerge: inputProps.allowAutoMerge,
-        allowUpdateBranch: inputProps.allowUpdateBranch,
-        collaborators: inputProps.collaborators,
-        hasProjects: inputProps.hasProjects,
-        hasWiki: inputProps.hasWiki,
-        hasIssues: inputProps.hasIssues,
-        token: inputProps.token,
-        topics: inputProps.topics,
-        repoVariables: inputProps.repoVariables,
-        secrets: inputProps.secrets,
-        oidcCustomization: inputProps.oidcCustomization,
-        requiredCommitSigning: inputProps.requiredCommitSigning,
-        requiredLinearHistory: inputProps.requiredLinearHistory,
-        customProperties: inputProps.customProperties,
-        subscribe: inputProps.subscribe,
+        ...inputProps,
       },
       output: {
         remoteUrl: outputProps.remoteUrl,
@@ -113,6 +80,8 @@ export function createGithubRepoCreateAction(options: {
         customProperties,
         subscribe,
         token: providedToken,
+        autoInit = undefined,
+        workflowAccess,
       } = ctx.input;
 
       const { host, owner, repo } = parseRepoUrl(repoUrl, integrations);
@@ -164,6 +133,8 @@ export function createGithubRepoCreateAction(options: {
             customProperties,
             subscribe,
             ctx.logger,
+            autoInit,
+            workflowAccess,
           );
           return newRepo.clone_url;
         },

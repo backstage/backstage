@@ -105,13 +105,20 @@ export class AzureBlobStorageEntityProvider implements EntityProvider {
       );
     });
   }
+  private readonly config: AzureBlobStorageConfig;
+  private readonly integration: AzureBlobStorageIntergation;
+  private readonly credentialsProvider: DefaultAzureCredentialsManager;
+
   private constructor(
-    private readonly config: AzureBlobStorageConfig,
-    private readonly integration: AzureBlobStorageIntergation,
-    private readonly credentialsProvider: DefaultAzureCredentialsManager,
+    config: AzureBlobStorageConfig,
+    integration: AzureBlobStorageIntergation,
+    credentialsProvider: DefaultAzureCredentialsManager,
     logger: LoggerService,
     schedule: SchedulerServiceTaskRunner,
   ) {
+    this.config = config;
+    this.integration = integration;
+    this.credentialsProvider = credentialsProvider;
     this.logger = logger.child({ target: this.getProviderName() });
     this.scheduleFn = this.createScheduleFn(schedule);
   }

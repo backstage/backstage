@@ -158,8 +158,8 @@ To install custom rules in a plugin, we need to use the [`PermissionsRegistrySer
 
    ```typescript title="packages/backend/src/modules/catalogPermissionRules.ts"
    import { createBackendModule } from '@backstage/backend-plugin-api';
-   import { catalogPermissionExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
-   import { isInSystemRule } from './permissionPolicyExtension';
+   import { catalogPermissionExtensionPoint } from '@backstage/plugin-catalog-node';
+   import { isInSystemRule } from './permissionsPolicyExtension';
 
    export default createBackendModule({
      pluginId: 'catalog',
@@ -184,7 +184,7 @@ To install custom rules in a plugin, we need to use the [`PermissionsRegistrySer
      import('@backstage/plugin-catalog-backend-module-scaffolder-entity-model'),
    );
    /* highlight-add-next-line */
-   backend.add(import('./extensions/catalogPermissionRules'));
+   backend.add(import('./modules/catalogPermissionRules'));
    ```
 
 5. Now when you run you Backstage instance - `yarn start` - the rule will be added to the catalog plugin.

@@ -4,7 +4,7 @@
 
 | Name                        | Location     | Severity |
 | :-------------------------- | :----------- | :------- |
-| @backstage/backend-defaults | package.json | error    |
-| winston                     | package.json | error    |
-| yn                          | package.json | error    |
+| @backstage/backend-defaults | plugins/scaffolder-backend-module-cookiecutter/package.json | error    |
+| winston                     | plugins/scaffolder-backend-module-cookiecutter/package.json | error    |
+| yn                          | plugins/scaffolder-backend-module-cookiecutter/package.json | error    |
 

@@ -820,6 +820,95 @@ export const config_org_group_with_subgroups_sass = {
     },
   },
 };
+
+export const config_groupPatterns_only_noMatch = {
+  integrations: {
+    gitlab: [
+      {
+        host: 'example.com',
+        apiBaseUrl: 'https://example.com/api/v4',
+        token: '1234',
+      },
+    ],
+  },
+  catalog: {
+    providers: {
+      gitlab: {
+        'test-id': {
+          host: 'example.com',
+          groupPattern: ['^group8$', '^group9$', '^group10$'],
+        },
+      },
+    },
+  },
+};
+
+export const config_groupPatterns_only_Match1Group = {
+  integrations: {
+    gitlab: [
+      {
+        host: 'example.com',
+        apiBaseUrl: 'https://example.com/api/v4',
+        token: '1234',
+      },
+    ],
+  },
+  catalog: {
+    providers: {
+      gitlab: {
+        'test-id': {
+          host: 'example.com',
+          groupPattern: ['^group1$', '^group9$', '^group10$'],
+        },
+      },
+    },
+  },
+};
+
+export const config_groupPatterns_multiple_matches = {
+  integrations: {
+    gitlab: [
+      {
+        host: 'example.com',
+        apiBaseUrl: 'https://example.com/api/v4',
+        token: '1234',
+      },
+    ],
+  },
+  catalog: {
+    providers: {
+      gitlab: {
+        'test-id': {
+          host: 'example.com',
+          groupPattern: ['^group1$', '^group2$', '^group10$'],
+        },
+      },
+    },
+  },
+};
+
+export const config_groupPatterns_duplicate_match = {
+  integrations: {
+    gitlab: [
+      {
+        host: 'example.com',
+        apiBaseUrl: 'https://example.com/api/v4',
+        token: '1234',
+      },
+    ],
+  },
+  catalog: {
+    providers: {
+      gitlab: {
+        'test-id': {
+          host: 'example.com',
+          groupPattern: ['^group1$', 'subgroup1'], // Both patterns match the same group
+        },
+      },
+    },
+  },
+};
+
 /**
  * GitLab API responses
  */
@@ -918,6 +1007,18 @@ export const all_projects_response: GitLabProject[] = [
     last_activity_at: new Date().toString(),
     web_url: 'https://example.com/group1/test-repo8-archived',
     path_with_namespace: 'group1/test-repo8-archived',
+  },
+  // project in subgroup
+  {
+    id: 9,
+    description: 'Project Nine Description',
+    name: 'test-repo9',
+    default_branch: 'main',
+    path: 'test-repo9',
+    archived: false,
+    last_activity_at: new Date().toString(),
+    web_url: 'https://example.com/group1/subgroup1/test-repo9',
+    path_with_namespace: 'group1/subgroup1/test-repo9',
   },
 ];
 
@@ -1210,6 +1311,12 @@ export const all_groups_response: GitLabGroup[] = [
     name: 'subgroup2',
     description: '',
     full_path: 'group1/subgroup2',
+  },
+  {
+    id: 8,
+    name: 'awsome-group',
+    description: '',
+    full_path: 'awsome-group',
   },
 ];
 
@@ -2084,6 +2191,7 @@ export const expected_single_user_entity: MockObject[] = [
           'backstage.io/managed-by-origin-location':
             'url:https://example.com/JohnDoe',
           'example.com/user-login': 'https://gitlab.example/john_doe',
+          'example.com/user-id': '1',
         },
         name: 'JohnDoe',
       },
@@ -2111,6 +2219,7 @@ export const expected_single_user_removed_entity: MockObject[] = [
           'backstage.io/managed-by-origin-location':
             'url:https://example.com/johndoe',
           'example.com/user-login': '',
+          'example.com/user-id': '1',
         },
         name: 'johndoe',
       },
@@ -2138,6 +2247,7 @@ export const expected_full_org_scan_entities: MockObject[] = [
           'backstage.io/managed-by-origin-location':
             'url:https://example.com/JohnDoe',
           'example.com/user-login': 'https://gitlab.example/john_doe',
+          'example.com/user-id': '1',
         },
         name: 'JohnDoe',
       },
@@ -2162,6 +2272,7 @@ export const expected_full_org_scan_entities: MockObject[] = [
           'backstage.io/managed-by-origin-location':
             'url:https://example.com/JaneDoe',
           'example.com/user-login': 'https://gitlab.example/jane_doe',
+          'example.com/user-id': '2',
         },
         name: 'JaneDoe',
       },
@@ -2187,6 +2298,7 @@ export const expected_full_org_scan_entities: MockObject[] = [
           'backstage.io/managed-by-origin-location':
             'url:https://example.com/MarySmith',
           'example.com/user-login': 'https://gitlab.example/mary_smith',
+          'example.com/user-id': '3',
         },
         name: 'MarySmith',
       },
@@ -2212,6 +2324,7 @@ export const expected_full_org_scan_entities: MockObject[] = [
           'backstage.io/managed-by-origin-location':
             'url:https://example.com/MarioMario',
           'example.com/user-login': 'https://gitlab.example/mario_mario',
+          'example.com/user-id': '5',
         },
         name: 'MarioMario',
       },
@@ -2288,6 +2401,7 @@ export const expected_full_org_scan_entities_saas: MockObject[] = [
           'backstage.io/managed-by-origin-location':
             'url:https://gitlab.com/testuser1',
           'gitlab.com/user-login': 'https://gitlab.com/testuser1',
+          'gitlab.com/user-id': '12',
           'gitlab.com/saml-external-uid': '51',
         },
         name: 'testuser1',
@@ -2314,6 +2428,7 @@ export const expected_full_org_scan_entities_saas: MockObject[] = [
           'backstage.io/managed-by-origin-location':
             'url:https://gitlab.com/testuser2',
           'gitlab.com/user-login': 'https://gitlab.com/testuser2',
+          'gitlab.com/user-id': '34',
           'gitlab.com/saml-external-uid': '52',
         },
         name: 'testuser2',
@@ -2340,6 +2455,7 @@ export const expected_full_org_scan_entities_saas: MockObject[] = [
           'backstage.io/managed-by-origin-location':
             'url:https://gitlab.com/testuser4',
           'gitlab.com/user-login': 'https://gitlab.com/testuser4',
+          'gitlab.com/user-id': '44',
           'gitlab.com/saml-external-uid': '54',
         },
         name: 'testuser4',
@@ -2366,6 +2482,7 @@ export const expected_full_org_scan_entities_saas: MockObject[] = [
           'backstage.io/managed-by-origin-location':
             'url:https://gitlab.com/testuser3',
           'gitlab.com/user-login': 'https://gitlab.com/testuser3',
+          'gitlab.com/user-id': '33',
           'gitlab.com/saml-external-uid': '53',
         },
         name: 'testuser3',
@@ -2396,6 +2513,7 @@ export const expected_full_org_scan_entities_includeUsersWithoutSeat_saas: MockO
             'backstage.io/managed-by-origin-location':
               'url:https://gitlab.com/testuser1',
             'gitlab.com/user-login': 'https://gitlab.com/testuser1',
+            'gitlab.com/user-id': '12',
             'gitlab.com/saml-external-uid': '51',
           },
           name: 'testuser1',
@@ -2422,6 +2540,7 @@ export const expected_full_org_scan_entities_includeUsersWithoutSeat_saas: MockO
             'backstage.io/managed-by-origin-location':
               'url:https://gitlab.com/testuser2',
             'gitlab.com/user-login': 'https://gitlab.com/testuser2',
+            'gitlab.com/user-id': '34',
             'gitlab.com/saml-external-uid': '52',
           },
           name: 'testuser2',
@@ -2448,6 +2567,7 @@ export const expected_full_org_scan_entities_includeUsersWithoutSeat_saas: MockO
             'backstage.io/managed-by-origin-location':
               'url:https://gitlab.com/testusernoseat1',
             'gitlab.com/user-login': 'https://gitlab.com/testusernoseat1',
+            'gitlab.com/user-id': '36',
             'gitlab.com/saml-external-uid': '60',
           },
           name: 'testusernoseat1',
@@ -2474,6 +2594,7 @@ export const expected_full_org_scan_entities_includeUsersWithoutSeat_saas: MockO
             'backstage.io/managed-by-origin-location':
               'url:https://gitlab.com/testuser4',
             'gitlab.com/user-login': 'https://gitlab.com/testuser4',
+            'gitlab.com/user-id': '44',
             'gitlab.com/saml-external-uid': '54',
           },
           name: 'testuser4',
@@ -2500,6 +2621,7 @@ export const expected_full_org_scan_entities_includeUsersWithoutSeat_saas: MockO
             'backstage.io/managed-by-origin-location':
               'url:https://gitlab.com/testuser3',
             'gitlab.com/user-login': 'https://gitlab.com/testuser3',
+            'gitlab.com/user-id': '33',
             'gitlab.com/saml-external-uid': '53',
           },
           name: 'testuser3',
@@ -2566,6 +2688,7 @@ export const expected_subgroup_org_scan_entities_saas: MockObject[] = [
           'backstage.io/managed-by-origin-location':
             'url:https://gitlab.com/testuser1',
           'gitlab.com/user-login': 'https://gitlab.com/testuser1',
+          'gitlab.com/user-id': '12',
           'gitlab.com/saml-external-uid': '51',
         },
         name: 'testuser1',
@@ -2595,6 +2718,7 @@ export const expected_full_members_group_org_scan_entities: MockObject[] = [
           'backstage.io/managed-by-origin-location':
             'url:https://example.com/JohnDoe',
           'example.com/user-login': 'https://gitlab.example/john_doe',
+          'example.com/user-id': '1',
         },
         name: 'JohnDoe',
       },
@@ -2619,6 +2743,7 @@ export const expected_full_members_group_org_scan_entities: MockObject[] = [
           'backstage.io/managed-by-origin-location':
             'url:https://example.com/JaneDoe',
           'example.com/user-login': 'https://gitlab.example/jane_doe',
+          'example.com/user-id': '2',
         },
         name: 'JaneDoe',
       },
@@ -2644,6 +2769,7 @@ export const expected_full_members_group_org_scan_entities: MockObject[] = [
           'backstage.io/managed-by-origin-location':
             'url:https://example.com/MarySmith',
           'example.com/user-login': 'https://gitlab.example/mary_smith',
+          'example.com/user-id': '3',
         },
         name: 'MarySmith',
       },
@@ -2669,6 +2795,7 @@ export const expected_full_members_group_org_scan_entities: MockObject[] = [
           'backstage.io/managed-by-origin-location':
             'url:https://example.com/MarioMario',
           'example.com/user-login': 'https://gitlab.example/mario_mario',
+          'example.com/user-id': '5',
         },
         name: 'MarioMario',
       },
@@ -2744,6 +2871,7 @@ export const expected_group_members_group_org_scan_entities: MockObject[] = [
           'backstage.io/managed-by-origin-location':
             'url:https://example.com/JohnDoe',
           'example.com/user-login': 'https://gitlab.example/john_doe',
+          'example.com/user-id': '1',
         },
         name: 'JohnDoe',
       },

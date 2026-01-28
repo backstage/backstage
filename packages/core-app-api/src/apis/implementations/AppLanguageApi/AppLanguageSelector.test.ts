@@ -144,11 +144,26 @@ describe('AppLanguageSelector', () => {
       AppLanguageSelector.createWithStorage({
         availableLanguages: ['de'],
       }),
-    ).toThrow("Supported languages must include 'en'");
+    ).toThrow(
+      "Initial language must be one of the supported languages, got 'en'",
+    );
 
     const selector = AppLanguageSelector.createWithStorage(baseOptions);
     expect(() => selector.setLanguage('sv')).toThrow(
       "Failed to change language to 'sv', available languages are 'en', 'de'",
+    );
+  });
+
+  it('should support no en languages', () => {
+    const selector = AppLanguageSelector.createWithStorage({
+      availableLanguages: ['de'],
+      defaultLanguage: 'de',
+    });
+
+    expect(selector.getLanguage()).toEqual({ language: 'de' });
+
+    expect(() => selector.setLanguage('en')).toThrow(
+      "Failed to change language to 'en', available languages are 'de'",
     );
   });
 });

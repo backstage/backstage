@@ -17,7 +17,7 @@
 import { z } from 'zod';
 import fs from 'fs-extra';
 import recursiveReaddir from 'recursive-readdir';
-import { resolve as resolvePath, relative as relativePath } from 'path';
+import { resolve as resolvePath, relative as relativePath } from 'node:path';
 import { dirname } from 'node:path';
 import { parse as parseYaml } from 'yaml';
 import { paths } from '../../../../lib/paths';
@@ -28,7 +28,7 @@ import {
 } from '../types';
 import { PortableTemplate } from '../types';
 import { ForwardedError } from '@backstage/errors';
-import { fromZodError } from 'zod-validation-error';
+import { fromZodError } from 'zod-validation-error/v3';
 
 const templateDefinitionSchema = z
   .object({

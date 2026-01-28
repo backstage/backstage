@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { resolve } from 'path';
+import { resolve } from 'node:path';
 import { OptionValues } from 'commander';
 import fs from 'fs-extra';
 import {

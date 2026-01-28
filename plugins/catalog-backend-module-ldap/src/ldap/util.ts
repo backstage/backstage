@@ -14,18 +14,8 @@
  * limitations under the License.
  */
 
-import { Error as LDAPError, SearchEntry, SearchOptions } from 'ldapjs';
-import { cloneDeep } from 'lodash';
+import { Entry } from 'ldapts';
 import { LdapVendor } from './vendors';
-
-/**
- * Builds a string form of an LDAP Error structure.
- *
- * @param error - The error
- */
-export function errorString(error: LDAPError) {
-  return `${error.code} ${error.name}: ${error.message}`;
-}
 
 /**
  * Maps a single-valued attribute to a consumer.
@@ -42,7 +32,7 @@ export function errorString(error: LDAPError) {
  * @public
  */
 export function mapStringAttr(
-  entry: SearchEntry,
+  entry: Entry,
   vendor: LdapVendor,
   attributeName: string | undefined,
   setter: (value: string) => void,
@@ -53,18 +43,6 @@ export function mapStringAttr(
       setter(values[0]);
     }
   }
-}
-
-export function createOptions(inputOptions: SearchOptions): SearchOptions {
-  const result = cloneDeep(inputOptions);
-
-  if (result.paged === true) {
-    result.paged = { pagePause: true };
-  } else if (typeof result.paged === 'object') {
-    result.paged.pagePause = true;
-  }
-
-  return result;
 }
 
 export type RecursivePartial<T> = {

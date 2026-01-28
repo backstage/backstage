@@ -24,6 +24,9 @@ import { VisitListEmpty } from './VisitListEmpty';
 import { VisitListFew } from './VisitListFew';
 import { VisitListSkeleton } from './VisitListSkeleton';
 
+/**
+ * @internal
+ */
 export const VisitList = ({
   detailType,
   visits = [],

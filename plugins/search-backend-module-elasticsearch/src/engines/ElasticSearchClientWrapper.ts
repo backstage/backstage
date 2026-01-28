@@ -16,7 +16,7 @@
 
 import { Client as ElasticSearchClient } from '@elastic/elasticsearch';
 import { Client as OpenSearchClient } from '@opensearch-project/opensearch';
-import { Readable } from 'stream';
+import { Readable } from 'node:stream';
 import {
   ElasticSearchClientOptions,
   isOpenSearchCompatible,
@@ -115,7 +115,7 @@ export class ElasticSearchClientWrapper {
 
   bulk(bulkOptions: {
     datasource: Readable;
-    onDocument: () => ElasticSearchIndexAction;
+    onDocument: (doc: any) => ElasticSearchIndexAction;
     refreshOnCompletion?: string | boolean;
   }) {
     if (this.openSearchClient) {

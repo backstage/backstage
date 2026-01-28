@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { relative as relativePath } from 'path';
+import { relative as relativePath } from 'node:path';
 import { getPackages } from '@manypkg/get-packages';
-import webpack from 'webpack';
+import { rspack } from '@rspack/core';
 import { paths } from '../../../../lib/paths';
 
 /**
@@ -26,7 +26,7 @@ import { paths } from '../../../../lib/paths';
  * of react and react-dom which are always resolved from the target workspace.
  */
 export async function createWorkspaceLinkingPlugins(
-  bundler: typeof webpack,
+  bundler: typeof rspack,
   workspace: string,
 ) {
   const { packages: linkedPackages, root: linkedRoot } = await getPackages(

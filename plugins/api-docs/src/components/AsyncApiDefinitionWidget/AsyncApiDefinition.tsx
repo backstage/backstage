@@ -125,8 +125,11 @@ const useStyles = makeStyles(theme => ({
     },
     '& .prose': {
       color: theme.palette.text.secondary,
-      '& h3': {
+      '& h3, code': {
         color: theme.palette.text.primary,
+      },
+      '& a': {
+        color: theme.palette.link,
       },
     },
     '& .bg-gray-100, .bg-gray-200': {

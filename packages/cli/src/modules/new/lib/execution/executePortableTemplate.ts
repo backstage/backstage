@@ -24,6 +24,7 @@ import {
 } from '../types';
 import { installNewPackage } from './installNewPackage';
 import { writeTemplateContents } from './writeTemplateContents';
+import { run } from '@backstage/cli-common';
 
 type ExecuteNewTemplateOptions = {
   config: PortableTemplateConfig;
@@ -54,14 +55,25 @@ export async function executePortableTemplate(
     }
 
     if (!options.skipInstall) {
-      await Task.forCommand('yarn install', {
-        cwd: targetDir,
-        optional: true,
-      });
-      await Task.forCommand('yarn lint --fix', {
-        cwd: targetDir,
-        optional: true,
-      });
+      for (const command of [
+        ['yarn', 'install'],
+        ['yarn', 'lint', '--fix'],
+      ]) {
+        const commandStr = command.join(' ');
+        try {
+          await Task.forItem('executing', commandStr, async () => {
+            await run(command, {
+              cwd: targetDir,
+              stdio: 'ignore',
+            }).waitForExit();
+          });
+        } catch (error) {
+          assertError(error);
+          Task.error(
+            `Warning: Failed to execute command '${commandStr}', ${error}`,
+          );
+        }
+      }
     }
 
     Task.log();

@@ -30,6 +30,8 @@ import { Pod } from 'kubernetes-models/v1/Pod';
 import type { V1Pod } from '@kubernetes/client-node';
 import { usePodMetrics } from '../../hooks/usePodMetrics';
 import Typography from '@material-ui/core/Typography';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { kubernetesReactTranslationRef } from '../../translation';
 
 /**
  *
@@ -63,22 +65,6 @@ export type PodsTablesProps = {
   children?: ReactNode;
 };
 
-const READY: TableColumn<Pod>[] = [
-  {
-    title: 'containers ready',
-    align: 'center',
-    render: containersReady,
-    width: 'auto',
-  },
-  {
-    title: 'total restarts',
-    align: 'center',
-    render: totalRestarts,
-    type: 'numeric',
-    width: 'auto',
-  },
-];
-
 const PodDrawerTrigger = ({ pod }: { pod: Pod }) => {
   const errors = useMatchingErrors({
     kind: 'Pod',
@@ -98,9 +84,10 @@ const PodDrawerTrigger = ({ pod }: { pod: Pod }) => {
 
 const Cpu = ({ clusterName, pod }: { clusterName: string; pod: Pod }) => {
   const metrics = usePodMetrics(clusterName, pod);
+  const { t } = useTranslationRef(kubernetesReactTranslationRef);
 
   if (!metrics) {
-    return <Typography>unknown</Typography>;
+    return <Typography>{t('podsTable.unknown')}</Typography>;
   }
 
   return <>{podStatusToCpuUtil(metrics)}</>;
@@ -108,9 +95,10 @@ const Cpu = ({ clusterName, pod }: { clusterName: string; pod: Pod }) => {
 
 const Memory = ({ clusterName, pod }: { clusterName: string; pod: Pod }) => {
   const metrics = usePodMetrics(clusterName, pod);
+  const { t } = useTranslationRef(kubernetesReactTranslationRef);
 
   if (!metrics) {
-    return <Typography>unknown</Typography>;
+    return <Typography>{t('podsTable.unknown')}</Typography>;
   }
 
   return <>{podStatusToMemoryUtil(metrics)}</>;
@@ -123,26 +111,44 @@ const Memory = ({ clusterName, pod }: { clusterName: string; pod: Pod }) => {
  */
 export const PodsTable = ({ pods, extraColumns = [] }: PodsTablesProps) => {
   const cluster = useContext(ClusterContext);
+  const { t } = useTranslationRef(kubernetesReactTranslationRef);
+
+  const READY: TableColumn<Pod>[] = [
+    {
+      title: t('podsTable.columns.containersReady'),
+      align: 'center',
+      render: containersReady,
+      width: 'auto',
+    },
+    {
+      title: t('podsTable.columns.totalRestarts'),
+      align: 'center',
+      render: totalRestarts,
+      type: 'numeric',
+      width: 'auto',
+    },
+  ];
+
   const defaultColumns: TableColumn<Pod>[] = [
     {
-      title: 'ID',
+      title: t('podsTable.columns.id'),
       field: 'metadata.uid',
       hidden: true,
     },
     {
-      title: 'name',
+      title: t('podsTable.columns.name'),
       highlight: true,
       render: (pod: Pod) => {
         return <PodDrawerTrigger pod={pod} />;
       },
     },
     {
-      title: 'phase',
-      render: (pod: Pod) => pod.status?.phase ?? 'unknown',
+      title: t('podsTable.columns.phase'),
+      render: (pod: Pod) => pod.status?.phase ?? t('podsTable.unknown'),
       width: 'auto',
     },
     {
-      title: 'status',
+      title: t('podsTable.columns.status'),
       render: containerStatuses,
     },
   ];
@@ -154,14 +160,14 @@ export const PodsTable = ({ pods, extraColumns = [] }: PodsTablesProps) => {
   if (extraColumns.includes(RESOURCE_COLUMNS)) {
     const resourceColumns: TableColumn<Pod>[] = [
       {
-        title: 'CPU usage %',
+        title: t('podsTable.columns.cpuUsage'),
         render: (pod: Pod) => {
           return <Cpu clusterName={cluster.name} pod={pod} />;
         },
         width: 'auto',
       },
       {
-        title: 'Memory usage %',
+        title: t('podsTable.columns.memoryUsage'),
         render: (pod: Pod) => {
           return <Memory clusterName={cluster.name} pod={pod} />;
         },

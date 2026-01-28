@@ -25,7 +25,7 @@ import {
 import { AuthenticationError } from '@backstage/errors';
 import { JsonObject } from '@backstage/types';
 import { decodeJwt } from 'jose';
-import { ExternalTokenHandler } from './external/ExternalTokenHandler';
+import { ExternalAuthTokenHandler } from './external/ExternalAuthTokenHandler';
 import {
   createCredentialsWithNonePrincipal,
   createCredentialsWithServicePrincipal,
@@ -38,14 +38,28 @@ import { UserTokenHandler } from './user/UserTokenHandler';
 
 /** @internal */
 export class DefaultAuthService implements AuthService {
+  private readonly userTokenHandler: UserTokenHandler;
+  private readonly pluginTokenHandler: PluginTokenHandler;
+  private readonly externalTokenHandler: ExternalAuthTokenHandler;
+  private readonly pluginId: string;
+  private readonly disableDefaultAuthPolicy: boolean;
+  private readonly pluginKeySource: PluginKeySource;
+
   constructor(
-    private readonly userTokenHandler: UserTokenHandler,
-    private readonly pluginTokenHandler: PluginTokenHandler,
-    private readonly externalTokenHandler: ExternalTokenHandler,
-    private readonly pluginId: string,
-    private readonly disableDefaultAuthPolicy: boolean,
-    private readonly pluginKeySource: PluginKeySource,
-  ) {}
+    userTokenHandler: UserTokenHandler,
+    pluginTokenHandler: PluginTokenHandler,
+    externalTokenHandler: ExternalAuthTokenHandler,
+    pluginId: string,
+    disableDefaultAuthPolicy: boolean,
+    pluginKeySource: PluginKeySource,
+  ) {
+    this.userTokenHandler = userTokenHandler;
+    this.pluginTokenHandler = pluginTokenHandler;
+    this.externalTokenHandler = externalTokenHandler;
+    this.pluginId = pluginId;
+    this.disableDefaultAuthPolicy = disableDefaultAuthPolicy;
+    this.pluginKeySource = pluginKeySource;
+  }
 
   async authenticate(
     token: string,

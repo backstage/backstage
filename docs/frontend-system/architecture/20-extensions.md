@@ -5,8 +5,6 @@ sidebar_label: Extensions
 description: Frontend extensions
 ---
 
-> **NOTE: The new frontend system is in alpha and is only supported by a small number of plugins.**
-
 As mentioned in the [previous section](./10-app.md), Backstage apps are built up from a tree of extensions. This section will go into more detail about what extensions are, how to create and use them, and how to create your own extensibility patterns.
 
 ## Extension Structure
@@ -176,6 +174,8 @@ const navigationExtension = createExtension({
 
 The input (see [1] above) is an object that we create using `createExtensionInput`. The first argument is the set of extension data that we accept via this input, and works just like the `output` option. The second argument is optional, and it allows us to put constraints on the extensions that are attached to our input. If the `singleton: true` option is set, only a single extension can be attached at a time, and unless the `optional: true` option is set it will also be required that there is exactly one attached extension.
 
+Another option that can be used when creating an extension input is the `internal: true` option, which restricts the input to only accept extensions from the same plugin as the extension defining the input. Extensions from other plugins that attempt to attach to an internal input will be ignored, and a warning will be reported. This is useful when you want to limit extensibility to overrides and modules of your plugin, rather than letting it be open to any plugin.
+
 So how can we now attach the output to the parent extension's input? If we think about a navigation component, like the Sidebar in Backstage, there might be plugins that want to attach a link to their plugin to this navigation component. In this case the plugin only needs to know the extension `id` and the name of the extension `input` to attach the extension `output` returned by the `factory` to the specified extension:
 
 ```tsx
@@ -337,20 +337,74 @@ const routableExtension = createExtension({
 });
 ```
 
-## Multiple attachment points
+## Sharing extensions across multiple locations
 
-For some cases it can be useful to attach extensions to multiple parents. An example of this are Scaffolder field extensions or TechDocs addons that are consumed by multiple extensions. Specifying multiple attachments is done by providing an array of attachment points to the `attachTo` property of the extension. Keep in mind that this increases the complexity of your extension tree and should only be done when necessary. The following example shows how to attach our example extension to multiple parents:
+If you need to make extensions available in multiple locations throughout your app, use a Utility API that collects the extensions and allows multiple parent extensions to consume them. This pattern provides better separation of concerns and makes data flow more explicit.
+
+See the [Sharing Extensions Across Multiple Locations](./27-sharing-extensions.md) guide for a complete explanation of this pattern with detailed examples.
+
+## Relative attachment points
+
+When creating an extension or an [extension blueprint](./23-extension-blueprints.md) you can specify an attachment point that is relative to the current plugin. This is particularly useful for groups of blueprints that are part of a common hierarchy, with extensions from one blueprint attaching to extensions from the other blueprint. For example, the following pair of extension definitions could be installed multiple times in different plugins, each creating their own hierarchy:
 
 ```tsx
-const extension = createExtension({
-  name: 'my-extension',
-  attachTo: [
-    { id: 'my-first-parent', input: 'content' },
-    { id: 'my-second-parent', input: 'children' }, // The input names do not need to match
-  ],
+// Parent extension with a fixed attachment point
+const parentExtension = createExtension({
+  kind: 'section',
+  attachTo: { id: 'app/some-fixed-extension', input: 'children' },
+  inputs: {
+    content: createExtensionInput([coreExtensionData.reactElement], {
+      singleton: true,
+    }),
+  },
+  output: [coreExtensionData.reactElement],
+  factory({ inputs }) {
+    return [
+      coreExtensionData.reactElement(
+        <section>
+          <h1>Section Title</h1>
+          {inputs.content.get(coreExtensionData.reactElement)}
+        </section>,
+      ),
+    ];
+  },
+});
+
+// Child extension with a relative attachment point
+const childExtension = createExtension({
+  kind: 'section-content',
+  attachTo: { relative: { kind: 'section' }, input: 'content' },
   output: [coreExtensionData.reactElement],
   factory() {
-    return [coreExtensionData.reactElement(<div>Hello World</div>)];
+    return [coreExtensionData.reactElement(<p>Section Content</p>)];
   },
 });
 ```
+
+## Extension input references
+
+Building on the relative attachment point concept, you can also reference extension inputs directly via the `inputs` property of an extension definition. This provides a more convenient and type-safe way to attach child extensions, especially when using blueprints that provide a nested hierarchy of extensions.
+
+Extension inputs references are always relative, this means that they can only be used for referencing extensions within the same plugin.
+
+Each extension definition exposes an `inputs` property that contains references to all of its defined inputs. These references can be passed directly to the `attachTo` option when creating child extensions:
+
+```tsx
+const parent = createExtension({
+  inputs: {
+    children: createExtensionInput([coreExtensionData.reactElement]),
+  },
+  // other options...
+});
+
+// Create a child extension that attaches to the parent's input
+const child = createExtension({
+  attachTo: page.inputs.children, // Direct reference to the input
+  output: [coreExtensionData.reactElement], // Outputs are verified against the parent input
+  // other options...
+});
+```
+
+These references are a type-safe way to attach child extensions, it both ensures that the parent input is present, as well as the child providing the required data for the parent.
+
+Under the hood, input references are resolved in the same way as relative attachment points, using the extension's kind, namespace, and name to construct the final attachment target.

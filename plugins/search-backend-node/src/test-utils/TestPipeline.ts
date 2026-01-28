@@ -15,7 +15,7 @@
  */
 
 import { IndexableDocument } from '@backstage/plugin-search-common';
-import { pipeline, Readable, Transform, Writable } from 'stream';
+import { pipeline, Readable, Transform, Writable } from 'node:stream';
 
 /**
  * Object resolved after a test pipeline is executed.

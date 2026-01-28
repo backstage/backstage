@@ -4,5 +4,5 @@
 
 | Name    | Location     | Severity |
 | :------ | :----------- | :------- |
-| p-limit | package.json | error    |
+| p-limit | plugins/catalog-graph/package.json | error    |
 

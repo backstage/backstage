@@ -61,11 +61,21 @@ export type ExternalDependency = {
 };
 
 // @public (undocumented)
-export enum ExternalDependencyStatus {
+export const ExternalDependencyStatus: {
+  readonly healthy: 'Healthy';
+  readonly unhealthy: 'Unhealthy';
+};
+
+// @public (undocumented)
+export type ExternalDependencyStatus =
+  (typeof ExternalDependencyStatus)[keyof typeof ExternalDependencyStatus];
+
+// @public (undocumented)
+export namespace ExternalDependencyStatus {
   // (undocumented)
-  healthy = 'Healthy',
+  export type healthy = typeof ExternalDependencyStatus.healthy;
   // (undocumented)
-  unhealthy = 'Unhealthy',
+  export type unhealthy = typeof ExternalDependencyStatus.unhealthy;
 }
 
 // @public (undocumented)

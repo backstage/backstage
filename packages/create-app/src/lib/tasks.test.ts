@@ -15,9 +15,9 @@
  */
 
 import fs from 'fs-extra';
-import child_process from 'child_process';
-import { resolve as resolvePath } from 'path';
-import os from 'os';
+import child_process from 'node:child_process';
+import { resolve as resolvePath } from 'node:path';
+import os from 'node:os';
 import {
   Task,
   buildAppTask,
@@ -89,12 +89,17 @@ jest.mock('./versions', () => ({
     '@backstage/plugin-catalog-react': '1.0.0',
     '@backstage/plugin-kubernetes': '1.0.0',
     '@backstage/plugin-kubernetes-backend': '1.0.0',
+    '@backstage/plugin-notifications': '1.0.0',
+    '@backstage/plugin-notifications-backend': '1.0.0',
     '@backstage/plugin-org': '1.0.0',
     '@backstage/plugin-scaffolder': '1.0.0',
     '@backstage/plugin-scaffolder-backend-module-github': '1.0.0',
+    '@backstage/plugin-scaffolder-backend-module-notifications': '1.0.0',
     '@backstage/plugin-permission-react': '1.0.0',
     '@backstage/plugin-search': '1.0.0',
     '@backstage/plugin-search-react': '1.0.0',
+    '@backstage/plugin-signals': '1.0.0',
+    '@backstage/plugin-signals-backend': '1.0.0',
     '@backstage/plugin-techdocs': '1.0.0',
     '@backstage/plugin-techdocs-react': '1.0.0',
     '@backstage/plugin-techdocs-module-addons-contrib': '1.0.0',

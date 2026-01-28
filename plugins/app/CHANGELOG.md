@@ -1,5 +1,276 @@
 # @backstage/plugin-app
 
+## 0.4.0-next.0
+
+### Minor Changes
+
+- 7edb810: **BREAKING**: Extensions created with the following blueprints must now be provided via an override or a module for the `app` plugin. Extensions from other plugins will now trigger a warning in the app and be ignored.
+
+  - `IconBundleBlueprint`
+  - `NavContentBlueprint`
+  - `RouterBlueprint`
+  - `SignInPageBlueprint`
+  - `SwappableComponentBlueprint`
+  - `ThemeBlueprint`
+  - `TranslationBlueprint`
+
+### Patch Changes
+
+- 69d880e: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/core-components@0.18.6-next.0
+  - @backstage/frontend-plugin-api@0.14.0-next.0
+  - @backstage/core-plugin-api@1.12.2-next.0
+  - @backstage/plugin-app-react@0.1.1-next.0
+  - @backstage/integration-react@1.2.15-next.0
+  - @backstage/theme@0.7.1
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-permission-react@0.4.40-next.0
+
+## 0.3.4
+
+### Patch Changes
+
+- 4554a4e: Implemented support for the new `PluginWrapperBlueprint` from `@backstage/frontend-plugin-api/alpha`.
+- 9ccf84e: The following blueprints are being restricted to only be used in app plugin overrides and modules. They will now produce a deprecation warning when used outside of the app plugin:
+
+  - `AppRootWrapperBlueprint`
+  - `IconBundleBlueprint`
+  - `NavContentBlueprint`
+  - `RouterBlueprint`
+  - `SignInPageBlueprint`
+  - `SwappableComponentBlueprint`
+  - `ThemeBlueprint`
+  - `TranslationBlueprint`
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.3
+  - @backstage/plugin-app-react@0.1.0
+  - @backstage/core-components@0.18.5
+  - @backstage/integration-react@1.2.14
+
+## 0.3.4-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.5-next.0
+  - @backstage/integration-react@1.2.14-next.0
+
+## 0.3.4-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/integration-react@1.2.14-next.0
+  - @backstage/frontend-plugin-api@0.13.2
+
+## 0.3.3
+
+### Patch Changes
+
+- f3f84f1: Minor extension type updates after frontend API bump
+- f7bc228: Support to set `defaultLanguage` and `availableLanguages` for the app language API in the new frontend system
+- d02db50: Remove unnecessary use of `compatWrapper` and `convertLegacyRouteRef`(s) for the new frontend system.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.2
+  - @backstage/core-components@0.18.4
+  - @backstage/core-plugin-api@1.12.1
+  - @backstage/theme@0.7.1
+  - @backstage/integration-react@1.2.13
+  - @backstage/plugin-permission-react@0.4.39
+
+## 0.3.3-next.1
+
+### Patch Changes
+
+- f3f84f1: Minor extension type updates after frontend API bump
+- f7bc228: Support to set `defaultLanguage` and `availableLanguages` for the app language API in the new frontend system
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.2-next.1
+  - @backstage/core-components@0.18.4-next.2
+  - @backstage/core-plugin-api@1.12.1-next.0
+  - @backstage/integration-react@1.2.13-next.0
+  - @backstage/theme@0.7.1-next.0
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-permission-react@0.4.39-next.0
+
+## 0.3.3-next.0
+
+### Patch Changes
+
+- d02db50: Remove unnecessary use of `compatWrapper` and `convertLegacyRouteRef`(s) for the new frontend system.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.2-next.0
+  - @backstage/core-plugin-api@1.12.1-next.0
+  - @backstage/theme@0.7.1-next.0
+  - @backstage/integration-react@1.2.13-next.0
+  - @backstage/core-components@0.18.4-next.0
+  - @backstage/plugin-permission-react@0.4.39-next.0
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.11
+
+## 0.3.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.13.0
+  - @backstage/core-components@0.18.3
+  - @backstage/core-plugin-api@1.12.0
+  - @backstage/plugin-permission-react@0.4.38
+  - @backstage/integration-react@1.2.12
+
+## 0.3.2-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/plugin-permission-react@0.4.38-next.0
+  - @backstage/core-plugin-api@1.11.2-next.0
+  - @backstage/core-components@0.18.3-next.0
+  - @backstage/frontend-plugin-api@0.12.2-next.0
+  - @backstage/integration-react@1.2.12-next.0
+  - @backstage/theme@0.7.0
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.11
+
+## 0.3.1
+
+### Patch Changes
+
+- ae1dad0: Fixed an issue that caused the `NotFound` page to not render correctly when a Page was mounted at `/`.
+- Updated dependencies
+  - @backstage/core-components@0.18.2
+  - @backstage/frontend-plugin-api@0.12.1
+  - @backstage/theme@0.7.0
+  - @backstage/core-plugin-api@1.11.1
+  - @backstage/integration-react@1.2.11
+  - @backstage/plugin-permission-react@0.4.37
+
+## 0.3.1-next.2
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.2-next.2
+  - @backstage/theme@0.6.9-next.0
+
+## 0.3.1-next.1
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.2-next.1
+  - @backstage/core-plugin-api@1.11.1-next.0
+  - @backstage/integration-react@1.2.11-next.1
+  - @backstage/plugin-permission-react@0.4.37-next.0
+  - @backstage/frontend-plugin-api@0.12.1-next.1
+
+## 0.3.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/core-components@0.18.2-next.0
+  - @backstage/frontend-plugin-api@0.12.1-next.0
+  - @backstage/integration-react@1.2.11-next.0
+  - @backstage/core-plugin-api@1.11.0
+  - @backstage/theme@0.6.8
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-permission-react@0.4.36
+
+## 0.3.0
+
+### Minor Changes
+
+- 99790db: Add implementation of OpenShift authentication provider.
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.12.0
+  - @backstage/core-plugin-api@1.11.0
+  - @backstage/core-components@0.18.0
+  - @backstage/types@1.2.2
+  - @backstage/integration-react@1.2.10
+
+## 0.2.1-next.0
+
+### Patch Changes
+
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.11.1-next.0
+  - @backstage/core-components@0.17.6-next.0
+  - @backstage/integration-react@1.2.10-next.0
+
+## 0.2.0
+
+### Minor Changes
+
+- fda1bbc: **BREAKING**: The `componentsApi` implementation has been removed from the plugin and replaced with the new `SwappableComponentsApi` instead.
+
+  If you were overriding the `componentsApi` implementation, you can now use the new `SwappableComponentsApi` instead.
+
+  ```ts
+  // old
+  appPlugin.getExtension('api:app/components').override(...)
+
+  // new
+  appPlugin.getExtension('api:app/swappable-components').override(...)
+  ```
+
+- 29786f6: Updated the `app/nav` extension to use the new `NavContentBlueprint`, and removed support for extensions created with the now removed `NavLogoBlueprint`.
+- 121899a: **BREAKING**: The `app-root-element` extension now only accepts `JSX.Element` in its `element` param, meaning overrides need to be updated.
+
+### Patch Changes
+
+- 91cbdf4: Log a warning when `SwappableComponent` extensions are installed outside of using the `app` plugin
+- fda1bbc: Default implementations of core components are now provided by this package.
+
+  A backwards compatible `componentsApi` implementation is also provided from this package which uses the `SwappableComponentsApi` as the implementation. This backwards compatible wrapper will be removed in the future.
+
+- f2f133c: Internal update to use the new variant of `ApiBlueprint`.
+- a08f95f: Added a new module for implementing public sign-in apps, exported as `appModulePublicSignIn` via the `/alpha` sub-path export. This replaces the `createPublicSignInApp` export from `@backstage/frontend-defaults`, which is now deprecated.
+- 5d31d66: Updated the usage of the `RouterBlueprint` and `AppRootWrapperBlueprint` to use the lowercase `component` parameter
+- 93b5e38: The default implementation of the Analytics API now collects and instantiates analytics implementations exposed via `AnalyticsImplementationBlueprint` extensions. If no such extensions are discovered, the API continues to do nothing with analytics events fired within Backstage. If multiple such extensions are discovered, every discovered implementation automatically receives analytics events.
+- 9831f4e: Adjusted the dialog API types to have more sensible defaults
+- Updated dependencies
+  - @backstage/core-components@0.17.5
+  - @backstage/frontend-plugin-api@0.11.0
+  - @backstage/theme@0.6.8
+
+## 0.2.0-next.2
+
+### Minor Changes
+
+- fda1bbc: **BREAKING**: The `componentsApi` implementation has been removed from the plugin and replaced with the new `SwappableComponentsApi` instead.
+
+  If you were overriding the `componentsApi` implementation, you can now use the new `SwappableComponentsApi` instead.
+
+  ```ts
+  // old
+  appPlugin.getExtension('api:app/components').override(...)
+
+  // new
+  appPlugin.getExtension('api:app/swappable-components').override(...)
+  ```
+
+### Patch Changes
+
+- 91cbdf4: Log a warning when `SwappableComponent` extensions are installed outside of using the `app` plugin
+- fda1bbc: Default implementations of core components are now provided by this package.
+
+  A backwards compatible `componentsApi` implementation is also provided from this package which uses the `SwappableComponentsApi` as the implementation. This backwards compatible wrapper will be removed in the future.
+
+- 9831f4e: Adjusted the dialog API types to have more sensible defaults
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.11.0-next.2
+  - @backstage/core-components@0.17.5-next.2
+
 ## 0.2.0-next.1
 
 ### Minor Changes

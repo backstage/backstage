@@ -21,7 +21,7 @@ import {
   fixRequestBody,
   RequestHandler,
 } from 'http-proxy-middleware';
-import http from 'http';
+import http from 'node:http';
 import { JsonObject } from '@backstage/types';
 import {
   DiscoveryService,
@@ -292,8 +292,7 @@ export async function createRouter(
     logger: options.logger,
   };
 
-  const externalUrl = await options.discovery.getExternalBaseUrl('proxy');
-  const { pathname: pathPrefix } = new URL(externalUrl);
+  const pathPrefix = '/api/proxy';
 
   const proxyConfig: ProxyConfig = {
     ...(options.additionalEndpoints ?? {}),

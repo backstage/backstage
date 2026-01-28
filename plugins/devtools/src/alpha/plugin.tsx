@@ -21,13 +21,11 @@ import {
   ApiBlueprint,
   PageBlueprint,
   NavItemBlueprint,
+  createExtensionInput,
+  coreExtensionData,
 } from '@backstage/frontend-plugin-api';
 
 import { devToolsApiRef, DevToolsClient } from '../api';
-import {
-  compatWrapper,
-  convertLegacyRouteRef,
-} from '@backstage/core-compat-api';
 import BuildIcon from '@material-ui/icons/Build';
 import { rootRouteRef } from '../routes';
 
@@ -46,14 +44,35 @@ export const devToolsApi = ApiBlueprint.make({
 });
 
 /** @alpha */
-export const devToolsPage = PageBlueprint.make({
-  params: {
-    path: '/devtools',
-    routeRef: convertLegacyRouteRef(rootRouteRef),
-    loader: () =>
-      import('../components/DevToolsPage').then(m =>
-        compatWrapper(<m.DevToolsPage />),
-      ),
+export const devToolsPage = PageBlueprint.makeWithOverrides({
+  inputs: {
+    contents: createExtensionInput(
+      [
+        coreExtensionData.reactElement,
+        coreExtensionData.routePath,
+        coreExtensionData.routeRef.optional(),
+        coreExtensionData.title,
+      ],
+      {
+        optional: true,
+      },
+    ),
+  },
+  factory(originalFactory, { inputs }) {
+    return originalFactory({
+      path: '/devtools',
+      routeRef: rootRouteRef,
+      loader: () => {
+        const contents = inputs.contents.map(content => ({
+          path: content.get(coreExtensionData.routePath),
+          title: content.get(coreExtensionData.title),
+          children: content.get(coreExtensionData.reactElement),
+        }));
+        return import('../components/DevToolsPage').then(m => (
+          <m.DevToolsPage contents={contents} />
+        ));
+      },
+    });
   },
 });
 
@@ -61,7 +80,7 @@ export const devToolsPage = PageBlueprint.make({
 export const devToolsNavItem = NavItemBlueprint.make({
   params: {
     title: 'DevTools',
-    routeRef: convertLegacyRouteRef(rootRouteRef),
+    routeRef: rootRouteRef,
     icon: BuildIcon,
   },
 });
@@ -71,7 +90,7 @@ export default createFrontendPlugin({
   pluginId: 'devtools',
   info: { packageJson: () => import('../../package.json') },
   routes: {
-    root: convertLegacyRouteRef(rootRouteRef),
+    root: rootRouteRef,
   },
   extensions: [devToolsApi, devToolsPage, devToolsNavItem],
 });

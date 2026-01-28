@@ -16,6 +16,9 @@
 
 import { default as feature } from './module';
 
-/** @alpha */
+/**
+ * @alpha
+ * @deprecated This entire package is deprecated and has been moved to the Backstage community repository; please use the `@backstage-community/plugin-search-backend-module-explore` package instead.
+ */
 const _feature = feature;
 export default _feature;

@@ -64,6 +64,7 @@ module.exports = {
     messages: {
       forbidden:
         '{{sourcePackage}} ({{sourceRole}}) uses forbidden import from {{targetPackage}} ({{targetRole}}).',
+      useSamePluginId: `Import of {{targetPackage}} ({{targetRole}}) from {{sourceRole}} is forbidden unless you are overriding the plugin, in which case the \`backstage.pluginId\` in {{sourcePackage}}/package.json must be the same as in {{targetPackage}}`,
       useReactPlugin:
         'Use web library {{targetPackage}}-react or common library instead.',
       useNodePlugin:
@@ -146,8 +147,21 @@ module.exports = {
       }
 
       const sourceRole = pkg.packageJson.backstage?.role;
+      const sourcePluginId = pkg.packageJson.backstage?.pluginId;
       const targetRole = targetPackage.packageJson.backstage?.role;
+      const targetPluginId = targetPackage.packageJson.backstage?.pluginId;
       if (!sourceRole || !targetRole) {
+        return;
+      }
+
+      // Allow frontend plugins to import from other frontend plugins with the same pluginId for NFS
+      if (
+        sourceRole === 'frontend-plugin' &&
+        targetRole === 'frontend-plugin' &&
+        sourcePluginId &&
+        targetPluginId &&
+        sourcePluginId === targetPluginId
+      ) {
         return;
       }
 
@@ -165,6 +179,19 @@ module.exports = {
           (sourceRole === 'frontend-plugin' || sourceRole === 'web-library') &&
           targetRole === 'frontend-plugin'
         ) {
+          suggest.push({
+            messageId: 'useSamePluginId',
+            data: {
+              targetPackage: targetName,
+              targetRole: targetRole,
+              sourcePackage: sourceName,
+              sourceRole: sourceRole,
+            },
+            /** @param {import('eslint').Rule.RuleFixer} _fixer */
+            fix(_fixer) {
+              // Not a fixable case, just give a suggestion to change plugin id
+            },
+          });
           suggest.push({
             messageId: 'useReactPlugin',
             data: {
