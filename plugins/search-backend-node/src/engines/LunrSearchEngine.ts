@@ -53,14 +53,21 @@ export type LunrQueryTranslator = (query: SearchQuery) => ConcreteLunrQuery;
  */
 export class LunrSearchEngine implements SearchEngine {
   protected lunrIndices: Record<string, lunr.Index> = {};
-  protected docStore: Record<string, IndexableDocument>;
+  protected docStores: Record<string, Record<string, IndexableDocument>> = {};
   protected logger: LoggerService;
   protected highlightPreTag: string;
   protected highlightPostTag: string;
 
+  /** @deprecated Use docStores instead */
+  protected get docStore(): Record<string, IndexableDocument> {
+    return Object.values(this.docStores).reduce(
+      (acc, store) => ({ ...acc, ...store }),
+      {},
+    );
+  }
+
   constructor(options: { logger: LoggerService }) {
     this.logger = options.logger;
-    this.docStore = {};
     const uuidTag = uuid();
     this.highlightPreTag = `<${uuidTag}>`;
     this.highlightPostTag = `</${uuidTag}>`;
@@ -171,7 +178,7 @@ export class LunrSearchEngine implements SearchEngine {
       // case of transient issues in underlying collators.
       if (!errorThrown && documentsIndexed > 0) {
         this.lunrIndices[type] = indexer.buildIndex();
-        this.docStore = { ...this.docStore, ...newDocuments };
+        this.docStores[type] = newDocuments;
       } else {
         indexerLogger.warn(
           `Index for ${type} was not ${
@@ -249,7 +256,7 @@ export class LunrSearchEngine implements SearchEngine {
     const realResultSet: IndexableResultSet = {
       results: results.slice(offset, offset + pageSize).map((d, index) => ({
         type: d.type,
-        document: this.docStore[d.result.ref],
+        document: this.docStores[d.type]?.[d.result.ref],
         rank: page * pageSize + index + 1,
         highlight: {
           preTag: this.highlightPreTag,
@@ -257,7 +264,7 @@ export class LunrSearchEngine implements SearchEngine {
           fields: parseHighlightFields({
             preTag: this.highlightPreTag,
             postTag: this.highlightPostTag,
-            doc: this.docStore[d.result.ref],
+            doc: this.docStores[d.type]?.[d.result.ref],
             positionMetadata: d.result.matchData.metadata as any,
           }),
         },

@@ -39,10 +39,13 @@ class LunrSearchEngineForTests extends LunrSearchEngine {
     };
   }
   getDocStore() {
-    return this.docStore;
+    return Object.values(this.docStores).reduce(
+      (acc, store) => ({ ...acc, ...store }),
+      {},
+    );
   }
   setDocStore(docStore: Record<string, IndexableDocument>) {
-    this.docStore = docStore;
+    this.docStores.__legacy__ = docStore;
   }
   getLunrIndices() {
     return this.lunrIndices;
