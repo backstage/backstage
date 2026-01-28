@@ -7870,6 +7870,7 @@ __metadata:
     "@microsoft/api-documenter": "npm:^7.28.1"
     "@microsoft/api-extractor": "npm:^7.55.1"
     "@openapitools/openapi-generator-cli": "npm:^2.7.0"
+    "@prettier/sync": "npm:^0.6.1"
     "@stoplight/spectral-core": "npm:^1.18.0"
     "@stoplight/spectral-formatters": "npm:^1.1.0"
     "@stoplight/spectral-functions": "npm:^1.7.2"
@@ -7909,7 +7910,7 @@ __metadata:
     "@microsoft/tsdoc": "*"
     "@microsoft/tsdoc-config": "*"
     "@useoptic/optic": ^1.0.0
-    prettier: ^2.8.1
+    prettier: ^2.8.1 || ^3.8.1
     typedoc: ^0.28.0
     typescript: "> 3.0.0"
   peerDependenciesMeta:
@@ -14354,6 +14355,17 @@ __metadata:
   version: 2.11.8
   resolution: "@popperjs/core@npm:2.11.8"
   checksum: 10/ddd16090cde777aaf102940f05d0274602079a95ad9805bd20bc55dcc7c3a2ba1b99dd5c73e5cc2753c3d31250ca52a67d58059459d7d27debb983a9f552936c
+  languageName: node
+  linkType: hard
+
+"@prettier/sync@npm:^0.6.1":
+  version: 0.6.1
+  resolution: "@prettier/sync@npm:0.6.1"
+  dependencies:
+    make-synchronized: "npm:^0.8.0"
+  peerDependencies:
+    prettier: "*"
+  checksum: 10/2c53cd4ee718e2ebd2fb31aa5ec4773f743b9c29fcc6db6794dc3553bc87aa8fe7db47b51add6809cab655520b7550329d1cce2ca837f6f4643991eff44abad1
   languageName: node
   linkType: hard
 
@@ -38022,6 +38034,13 @@ __metadata:
     socks-proxy-agent: "npm:^6.0.0"
     ssri: "npm:^8.0.0"
   checksum: 10/a868e74fc223a78afb7a1f8115133befdffae84f07a5f5dd9317cbf9f784a8373f28829a73ae3f31060e1b0cb4944e73257733c3b10c314354060fab412b6028
+  languageName: node
+  linkType: hard
+
+"make-synchronized@npm:^0.8.0":
+  version: 0.8.0
+  resolution: "make-synchronized@npm:0.8.0"
+  checksum: 10/e744bafcd61ee1ecabe6fb2c295ecb4b06a7bfe4e844222b80b7a5ae80a4d27ba657abc4892d1c702fa2f6ae568d8505e801c1498fe1379dd824ded5483d978c
   languageName: node
   linkType: hard
 
