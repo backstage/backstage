@@ -35,10 +35,10 @@ import {
 import { mockClient, AwsClientStub } from 'aws-sdk-client-mock';
 import express from 'express';
 import request from 'supertest';
-import path from 'path';
+import path from 'node:path';
 import fs from 'fs-extra';
 import { AwsS3Publish } from './awsS3';
-import { Readable } from 'stream';
+import { Readable } from 'node:stream';
 import {
   createMockDirectory,
   mockServices,

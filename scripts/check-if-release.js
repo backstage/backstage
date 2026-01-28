@@ -24,11 +24,11 @@
 //
 // needs_release = 'true' | 'false'
 
-const { execFile: execFileCb } = require('child_process');
-const { resolve: resolvePath } = require('path');
-const { promises: fs } = require('fs');
-const { promisify } = require('util');
-const { EOL } = require('os');
+const { execFile: execFileCb } = require('node:child_process');
+const { resolve: resolvePath } = require('node:path');
+const { promises: fs } = require('node:fs');
+const { promisify } = require('node:util');
+const { EOL } = require('node:os');
 
 const parentRef = process.env.COMMIT_SHA_BEFORE || 'HEAD^';
 

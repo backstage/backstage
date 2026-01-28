@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { join as joinPath } from 'path';
-import { spawn, SpawnOptionsWithoutStdio } from 'child_process';
+import { join as joinPath } from 'node:path';
+import { spawn, SpawnOptionsWithoutStdio } from 'node:child_process';
 import fs from 'fs-extra';
 import yaml from 'yaml';
 import { buildDepTreeFromFiles } from 'snyk-nodejs-lockfile-parser';

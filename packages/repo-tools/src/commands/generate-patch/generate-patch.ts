@@ -15,19 +15,19 @@
  */
 
 import { getPackages, Package, Packages } from '@manypkg/get-packages';
-import os from 'os';
+import os from 'node:os';
 import fs from 'fs-extra';
 import {
   relative as relativePath,
   join as joinPath,
   resolve as resolvePath,
   posix,
-} from 'path';
+} from 'node:path';
 import { exec } from '../../lib/exec';
 import { ForwardedError } from '@backstage/errors';
-import { Readable } from 'stream';
-import { finished } from 'stream/promises';
-import { ReadableStream } from 'stream/web';
+import { Readable } from 'node:stream';
+import { finished } from 'node:stream/promises';
+import { ReadableStream } from 'node:stream/web';
 import * as tar from 'tar';
 
 // TODO: add option for this

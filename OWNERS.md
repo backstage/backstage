@@ -71,6 +71,7 @@ Scope: The Backstage design system, component library, as well as surrounding to
 | ------------------- | ------------ | ------------- | --------------------------------------------- | ------------- |
 | Charles de Dreuille | Spotify      |               | [cdedreuille](https://github.com/cdedreuille) | `cdedreuille` |
 | Patrik Oldsberg     | Spotify      | Cubic Belugas | [Rugvip](https://github.com/Rugvip)           | `Rugvip`      |
+| Johan Persson       | Spotify      |               | [Naycon](https://github.com/Naycon)           | `naycon`      |
 
 ### Documentation
 

@@ -17,7 +17,7 @@ import { Project } from 'ts-morph';
 import { BackstagePackageJson, PackageGraph } from '@backstage/cli-node';
 import fs from 'fs-extra';
 import { paths as cliPaths } from '../../lib/paths';
-import path from 'path';
+import path from 'node:path';
 
 const project = new Project({
   tsConfigFilePath: cliPaths.resolveTargetRoot('tsconfig.json'),

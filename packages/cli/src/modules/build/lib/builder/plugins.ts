@@ -19,7 +19,7 @@ import {
   dirname,
   resolve as resolvePath,
   relative as relativePath,
-} from 'path';
+} from 'node:path';
 import { createFilter } from 'rollup-pluginutils';
 import {
   Plugin,

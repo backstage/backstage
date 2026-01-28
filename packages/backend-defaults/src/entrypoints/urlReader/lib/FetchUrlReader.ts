@@ -28,7 +28,7 @@ import {
   NotModifiedError,
 } from '@backstage/errors';
 import { ReaderFactory } from './types';
-import path from 'path';
+import path from 'node:path';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
 import { Config } from '@backstage/config';
 

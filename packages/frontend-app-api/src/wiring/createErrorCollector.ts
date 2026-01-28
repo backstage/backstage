@@ -38,6 +38,14 @@ export type AppErrorTypes = {
   EXTENSION_INPUT_DATA_MISSING: {
     context: { node: AppNode; inputName: string };
   };
+  EXTENSION_INPUT_INTERNAL_IGNORED: {
+    context: {
+      node: AppNode;
+      inputName: string;
+      extensionId: string;
+      plugin: FrontendPlugin;
+    };
+  };
   EXTENSION_ATTACHMENT_CONFLICT: {
     context: { node: AppNode; inputName: string };
   };

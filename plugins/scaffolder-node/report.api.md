@@ -15,13 +15,13 @@ import { PermissionCriteria } from '@backstage/plugin-permission-common';
 import { Schema } from 'jsonschema';
 import { ScmIntegrationRegistry } from '@backstage/integration';
 import { ScmIntegrations } from '@backstage/integration';
-import { SpawnOptionsWithoutStdio } from 'child_process';
+import { SpawnOptionsWithoutStdio } from 'node:child_process';
 import { TaskSpec } from '@backstage/plugin-scaffolder-common';
 import { TemplateInfo } from '@backstage/plugin-scaffolder-common';
 import { UpdateTaskCheckpointOptions } from '@backstage/plugin-scaffolder-node/alpha';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
 import { UserEntity } from '@backstage/catalog-model';
-import { Writable } from 'stream';
+import { Writable } from 'node:stream';
 import { z } from 'zod';
 
 // @public

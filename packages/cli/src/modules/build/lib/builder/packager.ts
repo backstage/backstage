@@ -17,7 +17,7 @@
 import fs from 'fs-extra';
 import { rollup, RollupOptions } from 'rollup';
 import chalk from 'chalk';
-import { relative as relativePath, resolve as resolvePath } from 'path';
+import { relative as relativePath, resolve as resolvePath } from 'node:path';
 import { paths } from '../../../../lib/paths';
 import { makeRollupConfigs } from './config';
 import { BuildOptions, Output } from './types';

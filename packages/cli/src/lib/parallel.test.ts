@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import os from 'os';
+import os from 'node:os';
 import {
   parseParallelismOption,
   getEnvironmentParallelism,

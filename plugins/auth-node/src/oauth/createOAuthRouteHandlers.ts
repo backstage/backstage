@@ -15,8 +15,8 @@
  */
 
 import express from 'express';
-import crypto from 'crypto';
-import { URL } from 'url';
+import crypto from 'node:crypto';
+import { URL } from 'node:url';
 import {
   AuthenticationError,
   InputError,

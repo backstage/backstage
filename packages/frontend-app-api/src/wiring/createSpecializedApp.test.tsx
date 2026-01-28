@@ -289,7 +289,7 @@ describe('createSpecializedApp', () => {
     expect(mockAnalyticsApi).toHaveBeenCalled();
   });
 
-  it('should select the API factory from the owning plugin on conflict', () => {
+  it('should warn when API overrides would be blocked by new logic', () => {
     const testApiRef = createApiRef<{ value: string }>({ id: 'test.api' });
 
     const app = createSpecializedApp({
@@ -303,7 +303,7 @@ describe('createSpecializedApp', () => {
                 defineParams({
                   api: testApiRef,
                   deps: {},
-                  factory: () => ({ value: 'other' }),
+                  factory: () => ({ value: 'other-before' }),
                 }),
             }),
           ],
@@ -329,7 +329,7 @@ describe('createSpecializedApp', () => {
                 defineParams({
                   api: testApiRef,
                   deps: {},
-                  factory: () => ({ value: 'other' }),
+                  factory: () => ({ value: 'other-after' }),
                 }),
             }),
           ],
@@ -348,7 +348,8 @@ describe('createSpecializedApp', () => {
       }),
     ]);
 
-    expect(app.apis.get(testApiRef)).toEqual({ value: 'owner' });
+    // Old behavior: last factory wins
+    expect(app.apis.get(testApiRef)).toEqual({ value: 'other-after' });
   });
 
   it('should allow API overrides within the same plugin', () => {

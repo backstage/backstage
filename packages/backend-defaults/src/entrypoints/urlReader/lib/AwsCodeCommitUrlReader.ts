@@ -46,9 +46,9 @@ import {
   GetFolderCommand,
 } from '@aws-sdk/client-codecommit';
 import { AwsCredentialIdentityProvider } from '@aws-sdk/types';
-import { Readable } from 'stream';
+import { Readable } from 'node:stream';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
-import { relative } from 'path/posix';
+import { relative } from 'node:path/posix';
 import { AbortController } from '@aws-sdk/abort-controller';
 
 export function parseUrl(

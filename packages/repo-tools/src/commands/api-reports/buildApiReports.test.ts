@@ -15,7 +15,7 @@
  */
 
 import { createMockDirectory } from '@backstage/backend-test-utils';
-import { normalize } from 'path';
+import { normalize } from 'node:path';
 import * as pathsLib from '../../lib/paths';
 
 import { categorizePackageDirs } from './categorizePackageDirs';

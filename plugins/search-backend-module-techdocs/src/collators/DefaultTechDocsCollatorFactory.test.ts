@@ -23,7 +23,7 @@ import {
 } from '@backstage/backend-test-utils';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
-import { Readable } from 'stream';
+import { Readable } from 'node:stream';
 import { DefaultTechDocsCollatorFactory } from './DefaultTechDocsCollatorFactory';
 import { TechDocsCollatorEntityTransformer } from './TechDocsCollatorEntityTransformer';
 import {

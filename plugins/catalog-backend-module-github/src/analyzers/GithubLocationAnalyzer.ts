@@ -30,7 +30,7 @@ import {
 } from '@backstage/plugin-catalog-node';
 import { Config } from '@backstage/config';
 import { AuthService } from '@backstage/backend-plugin-api';
-import { extname } from 'path';
+import { extname } from 'node:path';
 
 /** @public */
 export type GithubLocationAnalyzerOptions = {

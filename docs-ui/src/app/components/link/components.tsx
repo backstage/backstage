@@ -26,29 +26,29 @@ export const AllVariants = () => {
   return (
     <MemoryRouter>
       <Flex gap="4" direction="column">
-        <Link href="https://ui.backstage.io" variant="title-large">
-          Sign up for Backstage
+        <Link href="#" variant="title-large">
+          title-large
         </Link>
-        <Link href="https://ui.backstage.io" variant="title-medium">
-          Sign up for Backstage
+        <Link href="#" variant="title-medium">
+          title-medium
         </Link>
-        <Link href="https://ui.backstage.io" variant="title-small">
-          Sign up for Backstage
+        <Link href="#" variant="title-small">
+          title-small
         </Link>
-        <Link href="https://ui.backstage.io" variant="title-x-small">
-          Sign up for Backstage
+        <Link href="#" variant="title-x-small">
+          title-x-small
         </Link>
-        <Link href="https://ui.backstage.io" variant="body-large">
-          Sign up for Backstage
+        <Link href="#" variant="body-large">
+          body-large
         </Link>
-        <Link href="https://ui.backstage.io" variant="body-medium">
-          Sign up for Backstage
+        <Link href="#" variant="body-medium">
+          body-medium
         </Link>
-        <Link href="https://ui.backstage.io" variant="body-small">
-          Sign up for Backstage
+        <Link href="#" variant="body-small">
+          body-small
         </Link>
-        <Link href="https://ui.backstage.io" variant="body-x-small">
-          Sign up for Backstage
+        <Link href="#" variant="body-x-small">
+          body-x-small
         </Link>
       </Flex>
     </MemoryRouter>
@@ -59,51 +59,35 @@ export const AllColors = () => {
   return (
     <MemoryRouter>
       <Flex gap="4" direction="column">
-        <Link
-          href="https://ui.backstage.io"
-          variant="title-small"
-          color="primary"
-        >
-          I am primary
+        <Link href="#" color="primary">
+          Primary
         </Link>
-        <Link
-          href="https://ui.backstage.io"
-          variant="title-small"
-          color="secondary"
-        >
-          I am secondary
+        <Link href="#" color="secondary">
+          Secondary
         </Link>
-        <Link
-          href="https://ui.backstage.io"
-          variant="title-small"
-          color="tertiary"
-        >
-          I am tertiary
+        <Link href="#" color="danger">
+          Danger
         </Link>
-        <Link
-          href="https://ui.backstage.io"
-          variant="title-small"
-          color="inherit"
-        >
-          I am inherit
+        <Link href="#" color="warning">
+          Warning
+        </Link>
+        <Link href="#" color="success">
+          Success
         </Link>
       </Flex>
     </MemoryRouter>
   );
 };
 
-export const Underline = () => {
+export const Weight = () => {
   return (
     <MemoryRouter>
-      <Flex gap="4" direction="column">
-        <Link href="https://ui.backstage.io" underline="always">
-          Always underlined
+      <Flex gap="4">
+        <Link href="#" weight="regular">
+          Regular
         </Link>
-        <Link href="https://ui.backstage.io" underline="hover">
-          Underlined on hover
-        </Link>
-        <Link href="https://ui.backstage.io" underline="none">
-          Never underlined
+        <Link href="#" weight="bold">
+          Bold
         </Link>
       </Flex>
     </MemoryRouter>

@@ -5,11 +5,16 @@ import { flexPropDefs } from './props-definition';
 import {
   flexUsageSnippet,
   defaultSnippet,
-  flexSimpleSnippet,
   flexResponsiveSnippet,
   flexAlignSnippet,
+  flexDirectionSnippet,
 } from './snippets';
-import { Default } from './components';
+import {
+  Default,
+  ResponsiveExample,
+  AlignExample,
+  DirectionExample,
+} from './components';
 import { spacingPropDefs } from '@/utils/propDefs';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
@@ -19,7 +24,7 @@ import { ChangelogComponent } from '@/components/ChangelogComponent';
 <PageTitle
   type="Layout"
   title="Flex"
-  description="A responsive flex container component for vertical stacking with customizable gaps."
+  description="A flex container with gap, alignment, and direction props."
 />
 
 <Snippet py={4} align="center" preview={<Default />} code={defaultSnippet} />
@@ -32,31 +37,43 @@ import { ChangelogComponent } from '@/components/ChangelogComponent';
 
 <PropsTable data={flexPropDefs} />
 
-The grid component also accepts all the spacing props from the Box component.
+The Flex component also accepts all the spacing props from the Box component.
 
 <PropsTable data={spacingPropDefs} />
 
 ## Examples
 
-### Simple
+### Direction
 
-A simple example of how to use the Flex component.
+<Snippet
+  py={4}
+  align="center"
+  preview={<DirectionExample />}
+  code={flexDirectionSnippet}
+  layout="side-by-side"
+/>
 
-<CodeBlock code={flexSimpleSnippet} />
+### Responsive gap
 
-### Responsive
+Gap values can be responsive using breakpoint objects.
 
-The Flex component also supports responsive values, making it easy to create
-responsive designs.
+<Snippet
+  py={4}
+  align="center"
+  preview={<ResponsiveExample />}
+  code={flexResponsiveSnippet}
+  layout="side-by-side"
+/>
 
-<CodeBlock code={flexResponsiveSnippet} />
+### Alignment
 
-### Align
-
-The Flex component also supports responsive alignment, making it easy to
-create responsive designs.
-
-<CodeBlock code={flexAlignSnippet} />
+<Snippet
+  py={4}
+  align="center"
+  preview={<AlignExample />}
+  code={flexAlignSnippet}
+  layout="side-by-side"
+/>
 
 <Theming definition={FlexDefinition} />
 

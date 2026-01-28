@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { promises as fs } from 'fs';
+import { promises as fs } from 'node:fs';
 import globby from 'globby';
 import limiterFactory from 'p-limit';
 import { resolveSafeChildPath } from '@backstage/backend-plugin-api';

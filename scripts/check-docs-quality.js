@@ -14,13 +14,13 @@
  * limitations under the License.
  */
 
-const { spawnSync } = require('child_process');
+const { spawnSync } = require('node:child_process');
 const {
   resolve: resolvePath,
   join: joinPath,
   relative: relativePath,
-} = require('path');
-const fs = require('fs').promises;
+} = require('node:path');
+const fs = require('node:fs').promises;
 
 const IGNORED_WHEN_LISTING = [
   /^ADOPTERS\.md$/,

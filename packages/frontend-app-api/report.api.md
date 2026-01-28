@@ -59,6 +59,14 @@ export type AppErrorTypes = {
       inputName: string;
     };
   };
+  EXTENSION_INPUT_INTERNAL_IGNORED: {
+    context: {
+      node: AppNode;
+      inputName: string;
+      extensionId: string;
+      plugin: FrontendPlugin;
+    };
+  };
   EXTENSION_ATTACHMENT_CONFLICT: {
     context: {
       node: AppNode;

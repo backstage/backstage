@@ -27,7 +27,7 @@ import {
   mockCredentials,
 } from '@backstage/backend-test-utils';
 import request from 'supertest';
-import crypto from 'crypto';
+import crypto from 'node:crypto';
 import { OidcRouter } from './OidcRouter';
 import { UserInfoDatabase } from '../database/UserInfoDatabase';
 import { OidcDatabase } from '../database/OidcDatabase';

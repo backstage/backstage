@@ -40,6 +40,11 @@
   color: var(--primary);
   margin-bottom: 0.5rem;
   line-height: 1.5;
+  padding-left: 0.4rem;
+}
+
+.li::marker {
+  color: var(--text-secondary);
 }
 
 .a {

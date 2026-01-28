@@ -9,13 +9,6 @@ import { Chip } from '@/components/Chip';
 // PropsTable Column Configuration (Table docs use description instead of responsive)
 // =============================================================================
 
-export const tablePropsColumns = [
-  { key: 'prop' as const, width: '15%' },
-  { key: 'type' as const, width: '25%' },
-  { key: 'default' as const, width: '15%' },
-  { key: 'description' as const, width: '45%' },
-];
-
 // For return values (no default column)
 export const tableReturnColumns = [
   { key: 'prop' as const, width: '15%' },

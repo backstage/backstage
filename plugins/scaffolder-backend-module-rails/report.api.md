@@ -7,7 +7,7 @@ import { BackendFeature } from '@backstage/backend-plugin-api';
 import { ScmIntegrations } from '@backstage/integration';
 import { TemplateAction } from '@backstage/plugin-scaffolder-node';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
-import { Writable } from 'stream';
+import { Writable } from 'node:stream';
 
 // @public
 export interface ContainerRunner {

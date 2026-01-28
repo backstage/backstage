@@ -1,5 +1,16 @@
 # @backstage/core-app-api
 
+## 1.19.4-next.0
+
+### Patch Changes
+
+- 69d880e: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.2-next.0
+  - @backstage/config@1.3.6
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.11
+
 ## 1.19.3
 
 ### Patch Changes

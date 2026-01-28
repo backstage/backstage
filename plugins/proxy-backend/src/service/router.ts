@@ -21,7 +21,7 @@ import {
   fixRequestBody,
   RequestHandler,
 } from 'http-proxy-middleware';
-import http from 'http';
+import http from 'node:http';
 import { JsonObject } from '@backstage/types';
 import {
   DiscoveryService,

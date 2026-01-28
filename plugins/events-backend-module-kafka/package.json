@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-events-backend-module-kafka",
-  "version": "0.3.0",
+  "version": "0.3.1-next.0",
   "description": "The kafka backend module for the events plugin.",
   "backstage": {
     "role": "backend-plugin-module",

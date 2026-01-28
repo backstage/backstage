@@ -53,11 +53,14 @@ export const dialogWithFormSnippet = `<DialogTrigger>
       <Flex direction="column" gap="3">
         <TextField label="Name" placeholder="Enter full name" />
         <TextField label="Email" placeholder="Enter email address" />
-        <Select label="Role">
-          <SelectItem>Admin</SelectItem>
-          <SelectItem>User</SelectItem>
-          <SelectItem>Viewer</SelectItem>
-        </Select>
+        <Select
+          label="Role"
+          options={[
+            { value: 'admin', label: 'Admin' },
+            { value: 'user', label: 'User' },
+            { value: 'viewer', label: 'Viewer' },
+          ]}
+        />
       </Flex>
     </DialogBody>
     <DialogFooter>

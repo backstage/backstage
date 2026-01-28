@@ -16,7 +16,7 @@ import { ScmIntegrationRegistry } from '@backstage/integration';
 import { StorageOptions } from '@google-cloud/storage';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
 import * as winston from 'winston';
-import { Writable } from 'stream';
+import { Writable } from 'node:stream';
 
 // @public
 export class DirectoryPreparer implements PreparerBase {

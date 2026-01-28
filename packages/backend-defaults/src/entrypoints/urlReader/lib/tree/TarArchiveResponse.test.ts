@@ -15,7 +15,7 @@
  */
 
 import fs from 'fs-extra';
-import { resolve as resolvePath, join as joinPath } from 'path';
+import { resolve as resolvePath, join as joinPath } from 'node:path';
 import { TarArchiveResponse } from './TarArchiveResponse';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 import * as tar from 'tar';

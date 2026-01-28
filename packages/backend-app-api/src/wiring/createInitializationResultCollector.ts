@@ -35,6 +35,11 @@ export function createInitializationResultCollector(options: {
 }): {
   onPluginResult(pluginId: string, error?: Error): void;
   onPluginModuleResult(pluginId: string, moduleId: string, error?: Error): void;
+  amendPluginModuleResult(
+    pluginId: string,
+    moduleId: string,
+    error: Error,
+  ): void;
   finalize(): BackendStartupResult;
 } {
   const logger = options.logger?.child({ type: 'initialization' });
@@ -42,6 +47,7 @@ export function createInitializationResultCollector(options: {
   const starting = new Set(options.pluginIds.toSorted());
   const started = new Set<string>();
 
+  let hasFinalized = false;
   let hasDisallowedFailures = false;
 
   const pluginResults: PluginStartupResult[] = [];
@@ -160,7 +166,43 @@ export function createInitializationResultCollector(options: {
         }
       }
     },
+    amendPluginModuleResult(pluginId: string, moduleId: string, error: Error) {
+      if (hasFinalized) {
+        logger?.error(
+          `Plugin '${pluginId}' reported failure for module '${moduleId}' after startup`,
+          error,
+        );
+        return;
+      }
+      const moduleResults = moduleResultsByPlugin.get(pluginId);
+      if (!moduleResults) {
+        throw new Error(
+          `Failed to amend module result for nonexistent plugin '${pluginId}'`,
+        );
+      }
+      const result = moduleResults.find(r => r.moduleId === moduleId);
+      if (!result) {
+        throw new Error(
+          `Failed to amend module result for nonexistent module '${moduleId}' in plugin '${pluginId}'`,
+        );
+      }
+      const allowed = options.allowBootFailurePredicate(pluginId, moduleId);
+      if (allowed) {
+        logger?.error(
+          `Plugin '${pluginId}' reported failure for module '${moduleId}' during startup, but boot failure is permitted for this plugin module so startup will continue.`,
+          error,
+        );
+      } else {
+        hasDisallowedFailures = true;
+        logger?.error(
+          `Plugin '${pluginId}' reported failure for module '${moduleId}' during startup.`,
+          error,
+        );
+      }
+      result.failure = { error, allowed };
+    },
     finalize() {
+      hasFinalized = true;
       logger?.info(`Plugin initialization complete${getInitStatus()}`);
 
       if (timeout) {

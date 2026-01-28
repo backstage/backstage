@@ -17,7 +17,7 @@
 import { ConflictError } from '@backstage/errors';
 import { UrlReaderServiceReadUrlResponse } from '@backstage/backend-plugin-api';
 import getRawBody from 'raw-body';
-import { Readable } from 'stream';
+import { Readable } from 'node:stream';
 import { ReadUrlResponseFactoryFromStreamOptions } from './types';
 import { parseLastModified, responseToReadable } from './util';
 

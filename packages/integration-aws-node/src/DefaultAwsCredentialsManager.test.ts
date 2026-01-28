@@ -23,7 +23,7 @@ import {
   AssumeRoleCommand,
 } from '@aws-sdk/client-sts';
 import { Config, ConfigReader } from '@backstage/config';
-import { promises } from 'fs';
+import { promises } from 'node:fs';
 import { fromNodeProviderChain } from '@aws-sdk/credential-providers';
 
 const env = process.env;

@@ -1,5 +1,32 @@
 # @backstage/plugin-catalog-node
 
+## 1.21.0-next.0
+
+### Minor Changes
+
+- cfd8103: Promoted stable catalog extension points from alpha to main export. The following extension points are now exported from `@backstage/plugin-catalog-node` instead of `@backstage/plugin-catalog-node/alpha`:
+
+  - `catalogLocationsExtensionPoint` and `CatalogLocationsExtensionPoint`
+  - `catalogProcessingExtensionPoint` and `CatalogProcessingExtensionPoint`
+  - `catalogAnalysisExtensionPoint` and `CatalogAnalysisExtensionPoint`
+
+  The old alpha exports for these extension points are now deprecated with `@deprecated` markers pointing to the new stable exports. Please update your imports from `@backstage/plugin-catalog-node/alpha` to `@backstage/plugin-catalog-node`.
+
+  Note: The `catalogModelExtensionPoint`, `catalogPermissionExtensionPoint`, and related types remain in alpha.
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.7.0-next.0
+  - @backstage/plugin-permission-common@0.9.5-next.0
+  - @backstage/plugin-permission-node@0.10.9-next.0
+  - @backstage/catalog-client@1.12.1
+  - @backstage/catalog-model@1.7.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-catalog-common@1.1.8-next.0
+
 ## 1.20.1
 
 ### Patch Changes

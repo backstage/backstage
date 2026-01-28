@@ -1,6 +1,7 @@
 export const buttonIconUsageSnippet = `import { ButtonIcon } from '@backstage/ui';
+import { RiCloseLine } from '@remixicon/react';
 
-<ButtonIcon />`;
+<ButtonIcon icon={<RiCloseLine />} aria-label="Close" />`;
 
 export const variantsSnippet = `<Flex align="center" gap="2">
   <ButtonIcon icon={<RiCloudLine />} variant="primary" aria-label="Cloud" />

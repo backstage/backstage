@@ -21,7 +21,7 @@ import {
 import { startTestBackend } from '../wiring';
 import { MockSchedulerService } from './MockSchedulerService';
 import { mockServices } from './mockServices';
-import { setTimeout } from 'timers/promises';
+import { setTimeout } from 'node:timers/promises';
 
 const baseOpts = {
   frequency: { seconds: 10 },

@@ -27,10 +27,11 @@ export * from './components/Flex';
 export * from './components/Container';
 
 // UI components
+export * from './components/Accordion';
+export * from './components/Alert';
 export * from './components/Avatar';
 export * from './components/Button';
 export * from './components/Card';
-export * from './components/Accordion';
 export * from './components/Dialog';
 export * from './components/FieldLabel';
 export * from './components/Header';

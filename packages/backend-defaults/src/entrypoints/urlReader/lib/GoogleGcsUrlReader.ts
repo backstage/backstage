@@ -31,11 +31,11 @@ import {
   readGoogleGcsIntegrationConfig,
 } from '@backstage/integration';
 
-import { Readable } from 'stream';
+import { Readable } from 'node:stream';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
 import packageinfo from '../../../../package.json';
 import { assertError } from '@backstage/errors';
-import { relative } from 'path/posix';
+import { relative } from 'node:path/posix';
 
 const GOOGLE_GCS_HOST = 'storage.cloud.google.com';
 

@@ -15,7 +15,7 @@
  */
 
 import { BundlingOptions, ModuleFederationOptions } from './types';
-import { resolve as resolvePath } from 'path';
+import { resolve as resolvePath } from 'node:path';
 import { rspack, Configuration } from '@rspack/core';
 
 import { BundlingPaths } from './paths';

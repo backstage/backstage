@@ -7,8 +7,4 @@ description: Manage StackStorm workflow executions from within Backstage.
 documentation: https://github.com/backstage/community-plugins/tree/main/workspaces/stackstorm/plugins/stackstorm
 iconUrl: /img/stackstorm.png
 npmPackageName: '@backstage-community/plugin-stackstorm'
-tags:
-  - stackstorm
-  - st2
-  - automation
-  - workflow
+addedDate: '2023-02-02'

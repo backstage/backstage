@@ -15,9 +15,9 @@
  */
 
 import fs from 'fs-extra';
-import { Readable } from 'stream';
+import { Readable } from 'node:stream';
 import { create as createArchive } from 'archiver';
-import { resolve as resolvePath } from 'path';
+import { resolve as resolvePath } from 'node:path';
 import { ZipArchiveResponse } from './ZipArchiveResponse';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 

@@ -1,6 +1,6 @@
 {
   "name": "yarn-plugin-backstage",
-  "version": "0.0.8",
+  "version": "0.0.9-next.0",
   "description": "Yarn plugin for working with Backstage monorepos",
   "backstage": {
     "role": "node-library"

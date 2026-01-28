@@ -26,7 +26,7 @@ jest.mock('@backstage/plugin-scaffolder-node', () => {
   };
 });
 
-import path from 'path';
+import path from 'node:path';
 import { createPublishGerritAction } from './gerrit';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';

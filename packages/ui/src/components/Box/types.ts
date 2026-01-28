@@ -41,4 +41,8 @@ export type BoxUtilityProps = {
 };
 
 /** @public */
-export interface BoxProps extends SpaceProps, BoxOwnProps, BoxUtilityProps {}
+export interface BoxProps
+  extends SpaceProps,
+    BoxOwnProps,
+    BoxUtilityProps,
+    React.HTMLAttributes<HTMLDivElement> {}

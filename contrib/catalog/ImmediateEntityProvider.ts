@@ -16,7 +16,7 @@ import {
   EntityProviderConnection,
 } from '@backstage/plugin-catalog-node';
 import { parseEntityYaml } from '@backstage/plugin-catalog-node';
-import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node/alpha';
+import { catalogProcessingExtensionPoint } from '@backstage/plugin-catalog-node';
 import bodyParser from 'body-parser';
 import express from 'express';
 import Router from 'express-promise-router';

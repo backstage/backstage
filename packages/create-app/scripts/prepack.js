@@ -18,7 +18,7 @@
 /* eslint-disable no-restricted-syntax */
 
 const fs = require('fs-extra');
-const path = require('path');
+const path = require('node:path');
 
 async function main() {
   const pkgPath = path.resolve(__dirname, '../package.json');

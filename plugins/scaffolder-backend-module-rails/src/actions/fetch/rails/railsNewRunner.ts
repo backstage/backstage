@@ -15,7 +15,7 @@
  */
 
 import fs from 'fs-extra';
-import path from 'path';
+import path from 'node:path';
 import { executeShellCommand } from '@backstage/plugin-scaffolder-node';
 import commandExists from 'command-exists';
 import {
@@ -23,7 +23,7 @@ import {
   RailsRunOptions,
 } from './railsArgumentResolver';
 import { JsonObject } from '@backstage/types';
-import { Writable } from 'stream';
+import { Writable } from 'node:stream';
 import { ContainerRunner } from './ContainerRunner';
 
 export class RailsNewRunner {

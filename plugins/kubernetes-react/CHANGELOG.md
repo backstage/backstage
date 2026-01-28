@@ -1,5 +1,18 @@
 # @backstage/plugin-kubernetes-react
 
+## 0.5.16-next.0
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- Updated dependencies
+  - @backstage/core-components@0.18.6-next.0
+  - @backstage/core-plugin-api@1.12.2-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-kubernetes-common@0.9.10-next.0
+
 ## 0.5.15
 
 ### Patch Changes

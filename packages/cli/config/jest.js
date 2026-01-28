@@ -15,9 +15,9 @@
  */
 
 const fs = require('fs-extra');
-const path = require('path');
-const crypto = require('crypto');
-const glob = require('util').promisify(require('glob'));
+const path = require('node:path');
+const crypto = require('node:crypto');
+const glob = require('node:util').promisify(require('glob'));
 const { version } = require('../package.json');
 const paths = require('@backstage/cli-common').findPaths(process.cwd());
 const {

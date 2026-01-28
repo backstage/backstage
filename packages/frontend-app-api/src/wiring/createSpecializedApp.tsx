@@ -401,7 +401,7 @@ function createApiFactories(options: {
     if (apiFactory) {
       const apiRefId = apiFactory.api.id;
       const ownerId = getApiOwnerId(apiRefId);
-      const pluginId = apiNode.spec.plugin.id ?? 'app';
+      const pluginId = apiNode.spec.plugin.pluginId ?? 'app';
       const existingFactory = factoriesById.get(apiRefId);
 
       // This allows modules to override factories provided by the plugin, but
@@ -428,13 +428,14 @@ function createApiFactories(options: {
             existingPluginId: acceptedPluginId,
           },
         });
-        if (shouldReplace) {
-          factoriesById.set(apiRefId, {
-            pluginId,
-            factory: apiFactory,
-          });
+        if (!shouldReplace) {
+          // eslint-disable-next-line no-console
+          console.warn(
+            `DEPRECATION WARNING: Plugin '${rejectedPluginId}' is overriding API '${apiRefId}' ` +
+              `from plugin '${acceptedPluginId}'. This will be blocked in a future release. ` +
+              `Please use a module for plugin '${acceptedPluginId}' instead.`,
+          );
         }
-        continue;
       }
 
       factoriesById.set(apiRefId, { pluginId, factory: apiFactory });

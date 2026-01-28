@@ -15,7 +15,7 @@
  */
 
 import { version as cliVersion } from '../../../../package.json';
-import os from 'os';
+import os from 'node:os';
 import { runOutput } from '@backstage/cli-common';
 import { paths } from '../../../lib/paths';
 import { Lockfile } from '../../../lib/versioning';

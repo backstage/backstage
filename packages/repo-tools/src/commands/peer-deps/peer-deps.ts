@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import { resolve as resolvePath } from 'path';
+import { resolve as resolvePath } from 'node:path';
 import { getPackages, Package } from '@manypkg/get-packages';
-import { writeFileSync } from 'fs';
+import { writeFileSync } from 'node:fs';
 
 type ExtendedPackageJSON = Package['packageJson'] & {
   peerDependenciesMeta?: Record<string, { optional?: boolean }>;

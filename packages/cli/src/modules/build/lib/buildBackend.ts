@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import os from 'os';
+import os from 'node:os';
 import fs from 'fs-extra';
-import { resolve as resolvePath } from 'path';
+import { resolve as resolvePath } from 'node:path';
 import * as tar from 'tar';
 import { createDistWorkspace } from './packager';
 import { getEnvironmentParallelism } from '../../../lib/parallel';

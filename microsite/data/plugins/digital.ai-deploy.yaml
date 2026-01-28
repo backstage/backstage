@@ -7,7 +7,4 @@ description: The plugin offers integration with Digital.ai Deploy and backstage 
 documentation: https://docs.digital.ai/deploy/docs/concept/xl-deploy-backstage-overview
 iconUrl: /img/digital.ai-deploy.svg
 npmPackageName: '@digital-ai/plugin-dai-deploy'
-tags:
-  - ci
-  - cd
 addedDate: '2024-05-06'

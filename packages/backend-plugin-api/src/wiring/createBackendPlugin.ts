@@ -17,7 +17,9 @@
 import { BackendFeature } from '../types';
 import {
   BackendPluginRegistrationPoints,
-  InternalBackendPluginRegistration,
+  ExtensionPoint,
+  ExtensionPointFactoryContext,
+  InternalBackendPluginRegistrationV1_1,
   InternalBackendRegistrations,
 } from './types';
 
@@ -49,16 +51,43 @@ export function createBackendPlugin(
   options: CreateBackendPluginOptions,
 ): BackendFeature {
   function getRegistrations() {
-    const extensionPoints: InternalBackendPluginRegistration['extensionPoints'] =
+    const extensionPoints: InternalBackendPluginRegistrationV1_1['extensionPoints'] =
       [];
-    let init: InternalBackendPluginRegistration['init'] | undefined = undefined;
+    let init: InternalBackendPluginRegistrationV1_1['init'] | undefined =
+      undefined;
 
     options.register({
-      registerExtensionPoint(ext, impl) {
+      registerExtensionPoint<TExtensionPoint>(
+        extOrOpts:
+          | ExtensionPoint<TExtensionPoint>
+          | {
+              extensionPoint: ExtensionPoint<TExtensionPoint>;
+              factory: (
+                context: ExtensionPointFactoryContext,
+              ) => TExtensionPoint;
+            },
+        impl?: TExtensionPoint,
+      ) {
         if (init) {
           throw new Error('registerExtensionPoint called after registerInit');
         }
-        extensionPoints.push([ext, impl]);
+        if (
+          typeof extOrOpts === 'object' &&
+          extOrOpts !== null &&
+          'extensionPoint' in extOrOpts
+        ) {
+          extensionPoints.push({
+            extensionPoint: extOrOpts.extensionPoint,
+            factory: extOrOpts.factory as (
+              context: ExtensionPointFactoryContext,
+            ) => unknown,
+          });
+        } else {
+          extensionPoints.push({
+            extensionPoint: extOrOpts,
+            factory: () => impl,
+          });
+        }
       },
       registerInit(regInit) {
         if (init) {
@@ -79,7 +108,7 @@ export function createBackendPlugin(
 
     return [
       {
-        type: 'plugin',
+        type: 'plugin-v1.1',
         pluginId: options.pluginId,
         extensionPoints,
         init,

@@ -15,7 +15,7 @@
  */
 import { BackstagePackageJson, PackageGraph } from '@backstage/cli-node';
 import chalk from 'chalk';
-import { resolve as resolvePath, join as joinPath } from 'path';
+import { resolve as resolvePath, join as joinPath } from 'node:path';
 import { OptionValues } from 'commander';
 import { readJson, writeJson } from 'fs-extra';
 import { minimatch } from 'minimatch';

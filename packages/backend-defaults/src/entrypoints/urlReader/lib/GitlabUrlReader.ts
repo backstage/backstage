@@ -41,7 +41,7 @@ import {
 import parseGitUrl from 'git-url-parse';
 import { trimEnd, trimStart } from 'lodash';
 import { Minimatch } from 'minimatch';
-import { Readable } from 'stream';
+import { Readable } from 'node:stream';
 import { ReadUrlResponseFactory } from './ReadUrlResponseFactory';
 import { ReaderFactory, ReadTreeResponseFactory } from './types';
 import { parseLastModified } from './util';

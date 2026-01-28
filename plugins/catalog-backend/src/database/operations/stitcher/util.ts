@@ -15,7 +15,7 @@
  */
 
 import { Entity } from '@backstage/catalog-model';
-import { createHash } from 'crypto';
+import { createHash } from 'node:crypto';
 import stableStringify from 'fast-json-stable-stringify';
 
 // The number of items that are sent per batch to the database layer, when

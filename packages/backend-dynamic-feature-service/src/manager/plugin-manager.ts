@@ -25,7 +25,7 @@ import { ScannedPluginPackage } from '../scanner';
 import { PluginScanner } from '../scanner/plugin-scanner';
 import { ModuleLoader } from '../loader';
 import { CommonJSModuleLoader } from '../loader/CommonJSModuleLoader';
-import * as url from 'url';
+import * as url from 'node:url';
 import {
   BackendFeature,
   LoggerService,
@@ -36,7 +36,7 @@ import {
 } from '@backstage/backend-plugin-api';
 import { PackageRole, PackageRoles } from '@backstage/cli-node';
 import { findPaths } from '@backstage/cli-common';
-import * as fs from 'fs';
+import * as fs from 'node:fs';
 
 /**
  * @public

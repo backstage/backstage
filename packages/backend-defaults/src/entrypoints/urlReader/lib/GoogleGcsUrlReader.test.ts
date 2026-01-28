@@ -23,7 +23,7 @@ import { UrlReaderPredicateTuple } from './types';
 import packageinfo from '../../../../package.json';
 import { mockServices } from '@backstage/backend-test-utils';
 import { UrlReaderServiceReadUrlResponse } from '@backstage/backend-plugin-api';
-import { Readable } from 'stream';
+import { Readable } from 'node:stream';
 
 const bucketGetFilesMock = jest.fn();
 class Bucket {

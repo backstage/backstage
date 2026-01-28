@@ -16,7 +16,7 @@
 
 import fs from 'fs-extra';
 import npmPackList from 'npm-packlist';
-import { resolve as resolvePath, posix as posixPath } from 'path';
+import { resolve as resolvePath, posix as posixPath } from 'node:path';
 import { BackstagePackageJson } from '@backstage/cli-node';
 import { readEntryPoints } from '../../../../lib/entryPoints';
 import { getEntryPointDefaultFeatureType } from '../../../../lib/typeDistProject';

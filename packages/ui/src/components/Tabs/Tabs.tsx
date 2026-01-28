@@ -135,9 +135,10 @@ export const Tabs = (props: TabsProps) => {
       return undefined;
     }
 
-    // Has routed tabs but none are active - controlled mode with no selection
+    // Has routed tabs but none are active - use empty string for no selection
+    // (React Aria has a bug with null that causes infinite loops)
     if (activeTabs.size === 0) {
-      return null;
+      return '';
     }
 
     let selectedId: string | null = null;

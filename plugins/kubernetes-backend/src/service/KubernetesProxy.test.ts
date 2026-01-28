@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import 'buffer';
-import { resolve as resolvePath } from 'path';
+import 'node:buffer';
+import { resolve as resolvePath } from 'node:path';
 import {
   createMockDirectory,
   mockServices,
@@ -29,7 +29,7 @@ import {
 import { getMockReq, getMockRes } from '@jest-mock/express';
 import express from 'express';
 import Router from 'express-promise-router';
-import { Server } from 'http';
+import { Server } from 'node:http';
 import { rest } from 'msw';
 import { setupServer } from 'msw/node';
 import request from 'supertest';

@@ -85,6 +85,7 @@ const _default: OverridableFrontendPlugin<
           {
             singleton: true;
             optional: true;
+            internal: false;
           }
         >;
       };

@@ -16,13 +16,13 @@
 
 import chalk from 'chalk';
 import fs from 'fs-extra';
-import { createHash } from 'crypto';
+import { createHash } from 'node:crypto';
 import {
   basename,
   extname,
   relative as relativePath,
   resolve as resolvePath,
-} from 'path';
+} from 'node:path';
 import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
 import postcss from 'rollup-plugin-postcss';

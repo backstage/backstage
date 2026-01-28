@@ -16,7 +16,7 @@
  */
 
 const fs = require('fs-extra');
-const path = require('path');
+const path = require('node:path');
 
 const YARN_REGISTRY = 'https://registry.yarnpkg.com';
 const NPM_REGISTRY = 'https://registry.npmjs.org';

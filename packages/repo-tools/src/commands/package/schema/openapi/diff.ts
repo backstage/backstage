@@ -18,9 +18,9 @@ import { exec } from '../../../../lib/exec';
 import { getPathToCurrentOpenApiSpec } from '../../../../lib/openapi/helpers';
 import { paths as cliPaths } from '../../../../lib/paths';
 import { OptionValues } from 'commander';
-import { env } from 'process';
-import { readFile, rm } from 'fs/promises';
-import { resolve } from 'path';
+import { env } from 'node:process';
+import { readFile, rm } from 'node:fs/promises';
+import { resolve } from 'node:path';
 
 const reduceOpticOutput = (output: string) => {
   return output

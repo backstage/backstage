@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { relative as relativePath } from 'path';
+import { relative as relativePath } from 'node:path';
 import { getPackages } from '@manypkg/get-packages';
 import { rspack } from '@rspack/core';
 import { paths } from '../../../../lib/paths';

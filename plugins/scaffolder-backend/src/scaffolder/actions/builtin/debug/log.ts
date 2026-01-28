@@ -16,10 +16,10 @@
 
 import { resolveSafeChildPath } from '@backstage/backend-plugin-api';
 import { readdir, stat } from 'fs-extra';
-import { join, relative } from 'path';
+import { join, relative } from 'node:path';
 import { createTemplateAction } from '@backstage/plugin-scaffolder-node';
 import { examples } from './log.examples';
-import fs from 'fs';
+import fs from 'node:fs';
 
 const id = 'debug:log';
 

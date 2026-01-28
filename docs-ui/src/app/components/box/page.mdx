@@ -5,10 +5,10 @@ import { boxPropDefs } from './props-definition';
 import {
   snippetUsage,
   defaultSnippet,
-  boxSimpleSnippet,
+  boxSurfaceSnippet,
   boxResponsiveSnippet,
 } from './snippets';
-import { Default } from './components';
+import { Default, Surface, Responsive } from './components';
 import { spacingPropDefs } from '@/utils/propDefs';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
@@ -18,21 +18,16 @@ import { ChangelogComponent } from '@/components/ChangelogComponent';
 <PageTitle
   type="Layout"
   title="Box"
-  description="Box is the lowest-level component in Backstage UI. It provides a consistent API for styling and layout."
+  description="The lowest-level component in Backstage UI with spacing, sizing, and display props."
 />
 
-<Snippet py={4} preview={<Default />} code={defaultSnippet} align="center" />
+<Snippet preview={<Default />} code={defaultSnippet} align="center" />
 
 ## Usage
 
 <CodeBlock code={snippetUsage} />
 
 ## API reference
-
-### Box
-
-This is the Box component, our lowest-level component. Here are all the
-available properties.
 
 <PropsTable data={boxPropDefs} />
 
@@ -44,17 +39,21 @@ avoid collapsing margins but both are available.
 
 ## Examples
 
-### Simple example
+### Surface
 
-A simple example of how to use the Box component.
+Here's a view when boxes have different surface levels.
 
-<CodeBlock code={boxSimpleSnippet} />
+<Snippet preview={<Surface />} code={boxSurfaceSnippet} layout="side-by-side" />
 
-### Responsive
+### Responsive props
 
-Here's a view when buttons are responsive.
+Props can accept breakpoint objects for responsive behavior.
 
-<CodeBlock code={boxResponsiveSnippet} />
+<Snippet
+  preview={<Responsive />}
+  code={boxResponsiveSnippet}
+  layout="side-by-side"
+/>
 
 <Theming definition={BoxDefinition} />
 

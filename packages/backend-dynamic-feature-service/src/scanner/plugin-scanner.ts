@@ -15,11 +15,11 @@
  */
 import { Config } from '@backstage/config';
 import { ScannedPluginPackage, ScannedPluginManifest } from './types';
-import * as fs from 'fs/promises';
-import { Stats, lstatSync, existsSync } from 'fs';
+import * as fs from 'node:fs/promises';
+import { Stats, lstatSync, existsSync } from 'node:fs';
 import * as chokidar from 'chokidar';
-import * as path from 'path';
-import * as url from 'url';
+import * as path from 'node:path';
+import * as url from 'node:url';
 import debounce from 'lodash/debounce';
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { ForwardedError } from '@backstage/errors';

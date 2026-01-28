@@ -7,7 +7,4 @@ description: Visualize resource information and Puppet facts from PuppetDB.
 documentation: https://github.com/backstage/community-plugins/blob/main/workspaces/puppetdb/plugins/puppetdb/README.md
 iconUrl: /img/puppet.png
 npmPackageName: '@backstage-community/plugin-puppetdb'
-tags:
-  - puppet
-  - puppetdb
 addedDate: '2023-04-06'

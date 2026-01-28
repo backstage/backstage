@@ -23,6 +23,7 @@ import {
   LifecycleService,
   RootLifecycleService,
   createServiceFactory,
+  ExtensionPointFactoryContext,
 } from '@backstage/backend-plugin-api';
 import { ServiceOrExtensionPoint } from './types';
 // Direct internal import to avoid duplication
@@ -109,10 +110,12 @@ function createRootInstanceMetadataServiceFactory(
     .filter(registration => registration.featureType === 'registrations')
     .flatMap(registration => registration.getRegistrations());
   const plugins = registrations.filter(
-    registration => registration.type === 'plugin',
+    registration =>
+      registration.type === 'plugin' || registration.type === 'plugin-v1.1',
   );
   const modules = registrations.filter(
-    registration => registration.type === 'module',
+    registration =>
+      registration.type === 'module' || registration.type === 'module-v1.1',
   );
   for (const plugin of plugins) {
     const { pluginId } = plugin;
@@ -153,7 +156,13 @@ export class BackendInitializer {
   #startPromise?: Promise<{ result: BackendStartupResult }>;
   #stopPromise?: Promise<void>;
   #registrations = new Array<InternalBackendRegistrations>();
-  #extensionPoints = new Map<string, { impl: unknown; pluginId: string }>();
+  #extensionPoints = new Map<
+    string,
+    {
+      pluginId: string;
+      factory: (context: ExtensionPointFactoryContext) => unknown;
+    }
+  >();
   #serviceRegistry: ServiceRegistry;
   #registeredFeatures = new Array<Promise<BackendFeature>>();
   #registeredFeatureLoaders = new Array<InternalBackendFeatureLoader>();
@@ -166,6 +175,7 @@ export class BackendInitializer {
 
   async #getInitDeps(
     deps: { [name: string]: ServiceOrExtensionPoint },
+    resultCollector: ReturnType<typeof createInitializationResultCollector>,
     pluginId: string,
     moduleId?: string,
   ) {
@@ -180,7 +190,23 @@ export class BackendInitializer {
             `Illegal dependency: Module '${moduleId}' for plugin '${pluginId}' attempted to depend on extension point '${ref.id}' for plugin '${ep.pluginId}'. Extension points can only be used within their plugin's scope.`,
           );
         }
-        result.set(name, ep.impl);
+        if (!moduleId) {
+          throw new Error(
+            `Rejected dependency on extension point ${ref.id} from outside of a module`,
+          );
+        }
+        result.set(
+          name,
+          ep.factory({
+            reportModuleStartupFailure: ({ error }) => {
+              resultCollector.amendPluginModuleResult(
+                pluginId,
+                moduleId,
+                error,
+              );
+            },
+          }),
+        );
       } else {
         const impl = await this.#serviceRegistry.get(
           ref as ServiceRef<unknown>,
@@ -293,6 +319,7 @@ export class BackendInitializer {
         const provides = new Set<ExtensionPoint<unknown>>();
 
         if (r.type === 'plugin' || r.type === 'module') {
+          // Handle v1 format: Array<readonly [ExtensionPoint<unknown>, unknown]>
           for (const [extRef, extImpl] of r.extensionPoints) {
             if (this.#extensionPoints.has(extRef.id)) {
               throw new Error(
@@ -300,14 +327,28 @@ export class BackendInitializer {
               );
             }
             this.#extensionPoints.set(extRef.id, {
-              impl: extImpl,
               pluginId: r.pluginId,
+              factory: () => extImpl,
             });
             provides.add(extRef);
           }
+        } else if (r.type === 'plugin-v1.1' || r.type === 'module-v1.1') {
+          // Handle v1.1 format: Array<ExtensionPointRegistration>
+          for (const extReg of r.extensionPoints) {
+            if (this.#extensionPoints.has(extReg.extensionPoint.id)) {
+              throw new Error(
+                `ExtensionPoint with ID '${extReg.extensionPoint.id}' is already registered`,
+              );
+            }
+            this.#extensionPoints.set(extReg.extensionPoint.id, {
+              pluginId: r.pluginId,
+              factory: extReg.factory,
+            });
+            provides.add(extReg.extensionPoint);
+          }
         }
 
-        if (r.type === 'plugin') {
+        if (r.type === 'plugin' || r.type === 'plugin-v1.1') {
           if (pluginInits.has(r.pluginId)) {
             throw new Error(`Plugin '${r.pluginId}' is already registered`);
           }
@@ -316,7 +357,7 @@ export class BackendInitializer {
             consumes: new Set(Object.values(r.init.deps)),
             init: r.init,
           });
-        } else if (r.type === 'module') {
+        } else if (r.type === 'module' || r.type === 'module-v1.1') {
           let modules = moduleInits.get(r.pluginId);
           if (!modules) {
             modules = new Map();
@@ -391,6 +432,7 @@ export class BackendInitializer {
                 try {
                   const moduleDeps = await this.#getInitDeps(
                     moduleInit.init.deps,
+                    resultCollector,
                     pluginId,
                     moduleId,
                   );
@@ -414,6 +456,7 @@ export class BackendInitializer {
           if (pluginInit) {
             const pluginDeps = await this.#getInitDeps(
               pluginInit.init.deps,
+              resultCollector,
               pluginId,
             );
             await pluginInit.init.func(pluginDeps);
@@ -478,7 +521,7 @@ export class BackendInitializer {
     const allPlugins = new Set<string>();
     for (const feature of this.#registrations) {
       for (const r of feature.getRegistrations()) {
-        if (r.type === 'plugin') {
+        if (r.type === 'plugin' || r.type === 'plugin-v1.1') {
           allPlugins.add(r.pluginId);
         }
       }

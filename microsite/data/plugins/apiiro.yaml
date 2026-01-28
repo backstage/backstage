@@ -1,0 +1,10 @@
+---
+title: Apiiro
+author: Apiiro
+authorUrl: https://apiiro.com/
+category: Security
+description: View your Apiiro Repository Risk Profile in Backstage
+documentation: https://github.com/backstage/community-plugins/blob/main/workspaces/apiiro/plugins/apiiro/README.md
+iconUrl: https://avatars.githubusercontent.com/u/48519090
+npmPackageName: '@backstage-community/plugin-apiiro'
+addedDate: '2026-01-27'

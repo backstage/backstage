@@ -6,9 +6,6 @@ description: |
   The plugin integrates with your Microsoft Calendar.
   It displays all your calendars and events in it.
 documentation: https://github.com/backstage/community-plugins/tree/main/workspaces/microsoft-calendar/plugins/microsoft-calendar
+iconUrl: '/img/logo-gradient-on-dark.svg'
 npmPackageName: '@backstage-community/plugin-microsoft-calendar'
-tags:
-  - Microsoft
-  - calendar
-  - Management
 addedDate: '2023-03-15'

@@ -16,7 +16,7 @@
 
 import yn from 'yn';
 import fs from 'fs-extra';
-import { resolve as resolvePath } from 'path';
+import { resolve as resolvePath } from 'node:path';
 import { rspack, Configuration, MultiStats } from '@rspack/core';
 import {
   measureFileSizesBeforeBuild,

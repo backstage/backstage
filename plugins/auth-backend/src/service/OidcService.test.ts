@@ -28,7 +28,7 @@ import {
 import { AuthDatabase } from '../database/AuthDatabase';
 import { OidcDatabase } from '../database/OidcDatabase';
 import { UserInfoDatabase } from '../database/UserInfoDatabase';
-import crypto from 'crypto';
+import crypto from 'node:crypto';
 import { AnyJWK, TokenIssuer } from '../identity/types';
 
 jest.setTimeout(60_000);

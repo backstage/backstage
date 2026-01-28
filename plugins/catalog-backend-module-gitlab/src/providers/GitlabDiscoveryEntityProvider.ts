@@ -40,7 +40,7 @@ import {
   readGitlabConfigs,
 } from '../lib';
 
-import * as path from 'path';
+import * as path from 'node:path';
 
 const TOPIC_REPO_PUSH = 'gitlab.push';
 

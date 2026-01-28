@@ -15,7 +15,7 @@
  */
 
 import fs from 'fs-extra';
-import { resolve as resolvePath } from 'path';
+import { resolve as resolvePath } from 'node:path';
 import { PackageGraph, PackageRoles } from '@backstage/cli-node';
 
 const REACT_ROUTER_DEPS = ['react-router', 'react-router-dom'];

@@ -92,6 +92,7 @@ const _default: OverridableFrontendPlugin<
           {
             singleton: false;
             optional: true;
+            internal: false;
           }
         >;
       };

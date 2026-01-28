@@ -21,12 +21,12 @@ import {
   UrlReaderServiceReadTreeResponseFile,
 } from '@backstage/backend-plugin-api';
 import concatStream from 'concat-stream';
-import platformPath, { dirname } from 'path';
+import platformPath, { dirname } from 'node:path';
 import getRawBody from 'raw-body';
 import fs from 'fs-extra';
-import { promisify } from 'util';
+import { promisify } from 'node:util';
 import * as tar from 'tar';
-import { pipeline as pipelineCb, Readable } from 'stream';
+import { pipeline as pipelineCb, Readable } from 'node:stream';
 import { FromReadableArrayOptions } from '../types';
 
 const pipeline = promisify(pipelineCb);

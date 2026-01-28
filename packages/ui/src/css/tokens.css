@@ -114,9 +114,10 @@
     --bui-bg-neutral-on-surface-3-disabled: oklch(0% 0 0 / 6%);
 
     /* Status background colors */
-    --bui-bg-danger: #feebe7;
-    --bui-bg-warning: #fff2b2;
-    --bui-bg-success: #e6f6eb;
+    --bui-bg-danger: #ffe2e2;
+    --bui-bg-warning: #ffedd5;
+    --bui-bg-success: #dcfce7;
+    --bui-bg-info: #dbeafe;
 
     /* Foreground colors */
     --bui-fg-primary: var(--bui-black);
@@ -128,15 +129,17 @@
     --bui-fg-solid-disabled: #98a8bc;
     --bui-fg-tint: #1f5493;
     --bui-fg-tint-disabled: var(--bui-gray-5);
-    --bui-fg-danger: #e22b2b;
-    --bui-fg-warning: #e36d05;
-    --bui-fg-success: #1db954;
+    --bui-fg-danger: #991919;
+    --bui-fg-warning: #92310a;
+    --bui-fg-success: #116932;
+    --bui-fg-info: #173da6;
 
     /* Border colors */
     --bui-border: rgba(0, 0, 0, 0.1);
     --bui-border-hover: rgba(0, 0, 0, 0.2);
     --bui-border-pressed: rgba(0, 0, 0, 0.4);
     --bui-border-disabled: rgba(0, 0, 0, 0.1);
+    --bui-border-info: #7ea9d6;
     --bui-border-danger: #f87a7a;
     --bui-border-warning: #e36d05;
     --bui-border-success: #53db83;
@@ -199,9 +202,10 @@
     --bui-bg-neutral-on-surface-3-disabled: oklch(100% 0 0 / 8%);
 
     /* Status background colors */
-    --bui-bg-danger: #3b1219;
+    --bui-bg-danger: #300c0c;
     --bui-bg-warning: #302008;
-    --bui-bg-success: #132d21;
+    --bui-bg-success: #042713;
+    --bui-bg-info: #132049;
 
     /* Foreground colors */
     --bui-fg-primary: var(--bui-white);
@@ -213,15 +217,17 @@
     --bui-fg-solid-disabled: #6191cc;
     --bui-fg-tint: #9cc9ff;
     --bui-fg-tint-disabled: var(--bui-gray-5);
-    --bui-fg-danger: #e22b2b;
-    --bui-fg-warning: #e36d05;
-    --bui-fg-success: #1db954;
+    --bui-fg-danger: #fca5a5;
+    --bui-fg-warning: #fdba74;
+    --bui-fg-success: #86efac;
+    --bui-fg-info: #a3cfff;
 
     /* Border colors */
     --bui-border: rgba(255, 255, 255, 0.12);
     --bui-border-hover: rgba(255, 255, 255, 0.4);
     --bui-border-pressed: rgba(255, 255, 255, 0.5);
     --bui-border-disabled: rgba(255, 255, 255, 0.2);
+    --bui-border-info: #7ea9d6;
     --bui-border-danger: #f87a7a;
     --bui-border-warning: #e36d05;
     --bui-border-success: #53db83;
