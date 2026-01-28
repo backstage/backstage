@@ -278,13 +278,16 @@ async function main(args) {
 
     const commitMessage = `Patch from PR #${prNumber}`;
 
+    const commitMessagePattern = `^${commitMessage}$`;
+
     // Check if this patch has already been applied by looking for the commit message
     try {
       const existingCommit = await run(
         'git',
         'log',
+        '--extended-regexp',
         '--grep',
-        commitMessage,
+        commitMessagePattern,
         '--format=%H',
         '-1',
       );
@@ -300,7 +303,8 @@ async function main(args) {
     }
 
     let hasChanges = false;
-    for (const logSha of logLines.split(/\r?\n/)) {
+    const commitShas = logLines.split(/\r?\n/).filter(Boolean);
+    for (const logSha of commitShas) {
       try {
         await run('git', 'cherry-pick', '-n', logSha);
         hasChanges = true;
