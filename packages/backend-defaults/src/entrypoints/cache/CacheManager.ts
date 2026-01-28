@@ -183,6 +183,62 @@ export class CacheManager {
       ),
     };
 
+    const clientConfig = redisConfig.getOptionalConfig('client');
+    const socketConfig = clientConfig?.getOptionalConfig('socket');
+    const keepAliveConfig = socketConfig?.getOptional('keepAlive');
+    const keepAlive =
+      typeof keepAliveConfig === 'boolean' ||
+      typeof keepAliveConfig === 'number'
+        ? keepAliveConfig
+        : undefined;
+    const keepAliveInitialDelay = socketConfig?.getOptionalNumber(
+      'keepAliveInitialDelay',
+    );
+
+    if (typeof keepAlive === 'number' && keepAliveInitialDelay !== undefined) {
+      logger?.warn(
+        "Both 'client.socket.keepAlive' (number) and 'client.socket.keepAliveInitialDelay' are set. Prefer 'keepAlive: true' with 'keepAliveInitialDelay'. Using 'keepAliveInitialDelay' and treating keepAlive as enabled.",
+      );
+    }
+
+    if (keepAlive === false && keepAliveInitialDelay !== undefined) {
+      logger?.warn(
+        "Both 'client.socket.keepAlive' (false) and 'client.socket.keepAliveInitialDelay' are set. Ignoring 'keepAliveInitialDelay' because keepalive is disabled.",
+      );
+    }
+
+    let keepAliveForSocket: number | false | undefined;
+    let keepAliveInitialDelayForSocket: number | undefined;
+
+    if (keepAlive === false) {
+      keepAliveForSocket = false;
+    } else if (typeof keepAlive === 'number') {
+      if (keepAliveInitialDelay !== undefined) {
+        keepAliveInitialDelayForSocket = keepAliveInitialDelay;
+      } else {
+        keepAliveForSocket = keepAlive;
+      }
+    } else {
+      keepAliveInitialDelayForSocket = keepAliveInitialDelay;
+    }
+
+    const socketOptions =
+      keepAliveForSocket !== undefined ||
+      keepAliveInitialDelayForSocket !== undefined
+        ? {
+            ...(keepAliveForSocket !== undefined
+              ? { keepAlive: keepAliveForSocket }
+              : {}),
+            ...(keepAliveInitialDelayForSocket !== undefined
+              ? { keepAliveInitialDelay: keepAliveInitialDelayForSocket }
+              : {}),
+          }
+        : undefined;
+
+    if (socketOptions) {
+      redisOptions.socket = socketOptions;
+    }
+
     if (redisConfig.has('cluster')) {
       const clusterConfig = redisConfig.getConfig('cluster');
 
@@ -204,6 +260,17 @@ export class CacheManager {
           'maxCommandRedirections',
         ),
       };
+
+      if (redisOptions.socket) {
+        redisOptions.cluster.defaults = {
+          ...(redisOptions.cluster.defaults ?? {}),
+          socket: {
+            ...((redisOptions.cluster.defaults as { socket?: object })
+              ?.socket ?? {}),
+            ...redisOptions.socket,
+          },
+        };
+      }
     }
 
     return redisOptions;
@@ -337,17 +404,21 @@ export class CacheManager {
           `Internal error: Wrong config type passed to redis factory: ${this.storeOptions?.type}`,
         );
       }
+      const storeOptions = this.storeOptions as RedisCacheStoreOptions;
       if (!stores[pluginId]) {
-        const redisOptions = this.storeOptions?.client || {
+        const redisOptions = storeOptions.client || {
           keyPrefixSeparator: ':',
         };
-        if (this.storeOptions?.cluster) {
+        if (storeOptions.cluster) {
           // Create a Redis cluster
-          const cluster = createCluster(this.storeOptions?.cluster);
+          const cluster = createCluster(storeOptions.cluster);
           stores[pluginId] = new KeyvRedis(cluster, redisOptions);
         } else {
           // Create a regular Redis connection
-          stores[pluginId] = new KeyvRedis(this.connection, redisOptions);
+          const connection = storeOptions.socket
+            ? { url: this.connection, socket: storeOptions.socket }
+            : this.connection;
+          stores[pluginId] = new KeyvRedis(connection, redisOptions);
         }
 
         // Always provide an error handler to avoid stopping the process

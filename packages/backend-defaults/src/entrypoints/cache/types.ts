@@ -16,7 +16,11 @@
 
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { HumanDuration, durationToMilliseconds } from '@backstage/types';
-import { RedisClusterOptions, KeyvRedisOptions } from '@keyv/redis';
+import {
+  RedisClusterOptions,
+  KeyvRedisOptions,
+  RedisClientOptions,
+} from '@keyv/redis';
 import { KeyvValkeyOptions } from '@keyv/valkey';
 
 /**
@@ -28,6 +32,7 @@ export type RedisCacheStoreOptions = {
   type: 'redis';
   client?: KeyvRedisOptions;
   cluster?: RedisClusterOptions;
+  socket?: RedisClientOptions['socket'];
 };
 
 /**
