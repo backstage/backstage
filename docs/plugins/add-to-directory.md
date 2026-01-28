@@ -6,10 +6,7 @@ description: Documentation on Adding Plugin to Plugin Directory
 
 ## Adding a Plugin to the Directory
 
-To add a new plugin to the [plugin directory](https://backstage.io/plugins)
-create a file in
-[`microsite/data/plugins`](https://github.com/backstage/backstage/tree/master/microsite/data/plugins)
-with your plugin's information. Example:
+To add a new plugin to the [plugin directory](https://backstage.io/plugins) create a file with the following pattern `<plugin-name>.yaml` where `<plugin-name>` is the name of your plugin. This file will go in [`microsite/data/plugins`](https://github.com/backstage/backstage/tree/master/microsite/data/plugins) with your plugin's information. Example:
 
 ```yaml
 ---
@@ -26,13 +23,24 @@ npmPackageName: # Your npm package name E.g. '@backstage/plugin-<etc>' quotes ar
 addedDate: # The date plugin added to directory E.g. '2022-10-01' quotes are required
 ```
 
+:::tip
+
+You can validate your YAML file is correct by running the following from the root of the repo:
+
+1. First run `yarn install`
+2. Then run `node ./scripts/verify-plugin-directory.js`
+
+If there are any errors they will be listed and you will need to correct them. We run this same check as part of the CI.
+
+:::
+
 ## Submission Tips
 
 Here are a few tips to help speed up the review process when you submit your plugin:
 
-- For any icon that you use make sure you have the proper rights to use it.
+- For any icon that you use make sure you have the proper rights to use it. If you don't have an icon then it will default to `iconUrl: '/img/logo-gradient-on-dark.svg'`.
 - Make sure that your package had been published on the NPM registry and that it's public.
 - Make sure your package on NPM has a link back to your code repo, this helps provide confidence that it's the right package.
-- Where possible, please use an [NPM scope](https://docs.npmjs.com/about-scopes) that matches either your Organization name or user name, this provides trust in the plugin
+- Where possible, please use an [NPM scope](https://docs.npmjs.com/about-scopes) that matches either your Organization name or user name, this provides trust in the plugin.
 - If your plugin has both a frontend and backend link the documentation to the frontend package but make sure it mentioned needing to install the backend package.
 - Where possible include a screenshot of the features in you plugin documentation, it really does help when deciding to use a plugin.

@@ -45543,6 +45543,7 @@ __metadata:
     typescript: "npm:~5.7.0"
     vite: "npm:^7.1.5"
     yaml: "npm:^2.7.0"
+    zod: "npm:^3.25.76"
   languageName: unknown
   linkType: soft
 

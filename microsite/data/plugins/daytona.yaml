@@ -7,8 +7,4 @@ description: Open Source Development Environment Manager
 documentation: https://github.com/daytonaio/backstage-plugins/tree/main/plugins/daytona
 iconUrl: /img/daytona.svg
 npmPackageName: '@daytonaio/backstage-plugin-daytona'
-tags:
-  - Development
-  - Tools
-  - Productivity
 addedDate: '2024-11-02'
