@@ -6,6 +6,7 @@
 import { ApiHolder } from '@backstage/core-plugin-api';
 import { BackstagePlugin } from '@backstage/core-plugin-api';
 import { CatalogApi } from '@backstage/plugin-catalog-react';
+import { ColumnConfig } from '@backstage/ui';
 import { ComponentEntity } from '@backstage/catalog-model';
 import { CompoundEntityRef } from '@backstage/catalog-model';
 import { DomainEntity } from '@backstage/catalog-model';
@@ -35,8 +36,8 @@ import { StorageApi } from '@backstage/core-plugin-api';
 import { StyleRules } from '@material-ui/core/styles/withStyles';
 import { SystemEntity } from '@backstage/catalog-model';
 import { TableColumn } from '@backstage/core-components';
+import { TableItem } from '@backstage/ui';
 import { TableOptions } from '@backstage/core-components';
-import { TableProps } from '@backstage/core-components';
 import { TabProps } from '@material-ui/core/Tab';
 import { UserListFilterKind } from '@backstage/plugin-catalog-react';
 
@@ -158,27 +159,27 @@ export const CatalogTable: {
   columns: Readonly<{
     createNameColumn(options?: {
       defaultKind?: string;
-    }): TableColumn<CatalogTableRow>;
-    createSystemColumn(): TableColumn<CatalogTableRow>;
-    createOwnerColumn(): TableColumn<CatalogTableRow>;
-    createSpecTargetsColumn(): TableColumn<CatalogTableRow>;
+    }): ColumnConfig<CatalogTableRow>;
+    createSystemColumn(): ColumnConfig<CatalogTableRow>;
+    createOwnerColumn(): ColumnConfig<CatalogTableRow>;
+    createSpecTargetsColumn(): ColumnConfig<CatalogTableRow>;
     createSpecTypeColumn(options?: {
       hidden: boolean;
-    }): TableColumn<CatalogTableRow>;
-    createSpecLifecycleColumn(): TableColumn<CatalogTableRow>;
-    createMetadataDescriptionColumn(): TableColumn<CatalogTableRow>;
-    createTagsColumn(): TableColumn<CatalogTableRow>;
+    }): ColumnConfig<CatalogTableRow>;
+    createSpecLifecycleColumn(): ColumnConfig<CatalogTableRow>;
+    createMetadataDescriptionColumn(): ColumnConfig<CatalogTableRow>;
+    createTagsColumn(): ColumnConfig<CatalogTableRow>;
     createTitleColumn(options?: {
       hidden?: boolean;
-    }): TableColumn<CatalogTableRow>;
+    }): ColumnConfig<CatalogTableRow>;
     createLabelColumn(
       key: string,
       options?: {
         title?: string;
         defaultValue?: string;
       },
-    ): TableColumn<CatalogTableRow>;
-    createNamespaceColumn(): TableColumn<CatalogTableRow>;
+    ): ColumnConfig<CatalogTableRow>;
+    createNamespaceColumn(): ColumnConfig<CatalogTableRow>;
   }>;
   defaultColumnsFunc: CatalogTableColumnsFunc;
 };
@@ -186,25 +187,37 @@ export const CatalogTable: {
 // @public
 export type CatalogTableColumnsFunc = (
   entityListContext: EntityListContextProps,
-) => TableColumn<CatalogTableRow>[];
+) => ColumnConfig<CatalogTableRow>[];
 
 // @public
 export interface CatalogTableProps {
   // (undocumented)
-  actions?: TableProps<CatalogTableRow>['actions'];
+  actions?: Array<
+    (row: CatalogTableRow) => {
+      icon: () => React.ReactElement;
+      tooltip: string;
+      disabled?: boolean;
+      onClick?: () => void;
+      cellStyle?: React.CSSProperties;
+    }
+  >;
   // (undocumented)
-  columns?: TableColumn<CatalogTableRow>[] | CatalogTableColumnsFunc;
+  columns?: ColumnConfig<CatalogTableRow>[] | CatalogTableColumnsFunc;
   // (undocumented)
   emptyContent?: ReactNode;
   // (undocumented)
   subtitle?: string;
   // (undocumented)
-  tableOptions?: TableProps<CatalogTableRow>['options'];
+  tableOptions?: {
+    pageSize?: number;
+    pageSizeOptions?: number[];
+    paging?: boolean;
+  };
   title?: string;
 }
 
 // @public (undocumented)
-export interface CatalogTableRow {
+export interface CatalogTableRow extends TableItem {
   // (undocumented)
   entity: Entity;
   // (undocumented)
@@ -227,9 +240,9 @@ export type ColumnBreakpoints = Record<Breakpoint, number>;
 // @public
 export interface DefaultCatalogPageProps {
   // (undocumented)
-  actions?: TableProps<CatalogTableRow>['actions'];
+  actions?: CatalogTableProps['actions'];
   // (undocumented)
-  columns?: TableColumn<CatalogTableRow>[] | CatalogTableColumnsFunc;
+  columns?: ColumnConfig<CatalogTableRow>[] | CatalogTableColumnsFunc;
   // (undocumented)
   emptyContent?: ReactNode;
   // (undocumented)
@@ -245,7 +258,7 @@ export interface DefaultCatalogPageProps {
   // (undocumented)
   pagination?: EntityListPagination;
   // (undocumented)
-  tableOptions?: TableProps<CatalogTableRow>['options'];
+  tableOptions?: CatalogTableProps['tableOptions'];
 }
 
 // @public

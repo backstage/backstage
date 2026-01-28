@@ -16,8 +16,8 @@
 
 import { QueryEntitiesInitialRequest } from '@backstage/catalog-client';
 import { RELATION_OWNED_BY } from '@backstage/catalog-model';
-import { TableColumn, TableProps } from '@backstage/core-components';
 import { identityApiRef, storageApiRef } from '@backstage/core-plugin-api';
+import type { ColumnConfig } from '@backstage/ui';
 import {
   catalogApiRef,
   entityRouteRef,
@@ -211,16 +211,18 @@ describe('DefaultCatalogPage', () => {
   }, 20_000);
 
   it('should render the custom column passed as prop', async () => {
-    const columns: TableColumn<CatalogTableRow>[] = [
-      { title: 'Foo', field: 'entity.foo' },
-      { title: 'Bar', field: 'entity.bar' },
-      { title: 'Baz', field: 'entity.spec.lifecycle' },
+    const columns: ColumnConfig<CatalogTableRow>[] = [
+      { id: 'foo', label: 'Foo', cell: () => 'foo' },
+      { id: 'bar', label: 'Bar', cell: () => 'bar' },
+      {
+        id: 'lifecycle',
+        label: 'Baz',
+        cell: row => String(row.entity.spec?.lifecycle || ''),
+      },
     ];
     await renderWrapped(<DefaultCatalogPage columns={columns} />);
 
-    const columnHeader = screen
-      .getAllByRole('button')
-      .filter(c => c.tagName === 'SPAN');
+    const columnHeader = screen.getAllByRole('columnheader');
     const columnHeaderLabels = columnHeader.map(c => c.textContent);
     expect(columnHeaderLabels).toEqual(['Foo', 'Bar', 'Baz', 'Actions']);
   }, 20_000);
@@ -229,17 +231,27 @@ describe('DefaultCatalogPage', () => {
     const columns: CatalogTableColumnsFunc = ({ filters, entities }) => {
       return filters.kind?.value === 'component' && entities.length
         ? [
-            { title: 'Foo', field: 'entity.foo' },
-            { title: 'Bar', field: 'entity.bar' },
-            { title: 'Baz', field: 'entity.spec.lifecycle' },
+            {
+              id: 'foo',
+              label: 'Foo',
+              cell: () => 'foo',
+            },
+            {
+              id: 'bar',
+              label: 'Bar',
+              cell: () => 'bar',
+            },
+            {
+              id: 'lifecycle',
+              label: 'Baz',
+              cell: row => String(row.entity.spec?.lifecycle || ''),
+            },
           ]
         : [];
     };
     await renderWrapped(<DefaultCatalogPage columns={columns} />);
 
-    const columnHeader = screen
-      .getAllByRole('button')
-      .filter(c => c.tagName === 'SPAN');
+    const columnHeader = screen.getAllByRole('columnheader');
     const columnHeaderLabels = columnHeader.map(c => c.textContent);
     expect(columnHeaderLabels).toEqual(['Foo', 'Bar', 'Baz', 'Actions']);
   }, 20_000);
@@ -260,7 +272,7 @@ describe('DefaultCatalogPage', () => {
   }, 20_000);
 
   it('should render the custom actions of an item passed as prop', async () => {
-    const actions: TableProps<CatalogTableRow>['actions'] = [
+    const actions = [
       () => {
         return {
           icon: () => <DashboardIcon fontSize="small" />,
@@ -286,11 +298,13 @@ describe('DefaultCatalogPage', () => {
     await expect(
       screen.findByText(/Owned components \(1\)/),
     ).resolves.toBeInTheDocument();
-    await expect(screen.findByTitle(/Foo Action/)).resolves.toBeInTheDocument();
-    await expect(screen.findByTitle(/Bar Action/)).resolves.toBeInTheDocument();
     await expect(
-      screen.findByTitle(/Bar Action/).then(e => e.firstChild),
-    ).resolves.toBeDisabled();
+      screen.findByLabelText(/Foo Action/),
+    ).resolves.toBeInTheDocument();
+    await expect(
+      screen.findByLabelText(/Bar Action/),
+    ).resolves.toBeInTheDocument();
+    await expect(screen.findByLabelText(/Bar Action/)).resolves.toBeDisabled();
   }, 20_000);
 
   // this test right now causes some red lines in the log output when running tests

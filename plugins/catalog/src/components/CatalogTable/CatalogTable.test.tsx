@@ -316,10 +316,9 @@ describe('CatalogTable component', () => {
         },
       );
 
-      const columnHeader = screen
-        .getAllByRole('button')
-        .filter(c => c.tagName === 'SPAN');
-      const columnHeaderLabels = columnHeader.map(c => c.textContent);
+      // React Aria table uses columnheader role for headers
+      const columnHeaders = screen.getAllByRole('columnheader');
+      const columnHeaderLabels = columnHeaders.map(c => c.textContent);
       expect(columnHeaderLabels).toEqual(expectedColumns);
     },
     20_000,
@@ -379,10 +378,8 @@ describe('CatalogTable component', () => {
       },
     );
 
-    const columnHeader = screen
-      .getAllByRole('button')
-      .filter(c => c.tagName === 'SPAN');
-    const columnHeaderLabels = columnHeader.map(c => c.textContent);
+    const columnHeaders = screen.getAllByRole('columnheader');
+    const columnHeaderLabels = columnHeaders.map(c => c.textContent);
     expect(columnHeaderLabels).toEqual(expectedColumns);
 
     const labelCellValue = screen.getByText('generic');
@@ -439,10 +436,8 @@ describe('CatalogTable component', () => {
       },
     );
 
-    const columnHeader = screen
-      .getAllByRole('button')
-      .filter(c => c.tagName === 'SPAN');
-    const columnHeaderLabels = columnHeader.map(c => c.textContent);
+    const columnHeaders = screen.getAllByRole('columnheader');
+    const columnHeaderLabels = columnHeaders.map(c => c.textContent);
     expect(columnHeaderLabels).toEqual(expectedColumns);
 
     const labelCellValue = screen.getByText('generic');

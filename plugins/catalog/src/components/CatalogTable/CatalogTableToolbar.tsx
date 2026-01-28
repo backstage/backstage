@@ -16,7 +16,7 @@
 import { ReactElement } from 'react';
 import { EntitySearchBar } from '@backstage/plugin-catalog-react';
 import Toolbar from '@material-ui/core/Toolbar';
-import Typography from '@material-ui/core/Typography';
+import { Text } from '@backstage/ui';
 import { makeStyles } from '@material-ui/core/styles';
 
 /** @public */
@@ -46,9 +46,9 @@ export function CatalogTableToolbar(props: {
   const styles = useToolbarStyles();
   return (
     <Toolbar className={styles.root}>
-      <Typography variant="h5" className={styles.text}>
+      <Text as="h5" variant="title-small" className={styles.text}>
         {props.title}
-      </Typography>
+      </Text>
       <EntitySearchBar />
     </Toolbar>
   );

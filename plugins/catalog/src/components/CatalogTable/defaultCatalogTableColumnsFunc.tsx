@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { TableColumn } from '@backstage/core-components';
+import { ColumnConfig } from '@backstage/ui';
 import { columnFactories } from './columns';
 import { CatalogTableColumnsFunc, CatalogTableRow } from './types';
 
@@ -33,7 +33,7 @@ export const defaultCatalogTableColumnsFunc: CatalogTableColumnsFunc = ({
     ...createEntitySpecificColumns(),
   ];
 
-  function createEntitySpecificColumns(): TableColumn<CatalogTableRow>[] {
+  function createEntitySpecificColumns(): ColumnConfig<CatalogTableRow>[] {
     const descriptionTagColumns = [
       columnFactories.createMetadataDescriptionColumn(),
       columnFactories.createTagsColumn(),
