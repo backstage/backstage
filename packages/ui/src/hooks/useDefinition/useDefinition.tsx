@@ -103,10 +103,8 @@ export function useDefinition<
     classes[name] = clsx(
       cssKey as string,
       definition.styles[cssKey as keyof typeof definition.styles],
-      {
-        [utilityClasses]: utilityTarget === name,
-        [ownPropsResolved.className]: classNameTarget === name,
-      },
+      utilityTarget === name && utilityClasses,
+      classNameTarget === name && ownPropsResolved.className,
     );
   }
 
