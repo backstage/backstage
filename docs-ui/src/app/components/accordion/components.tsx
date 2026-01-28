@@ -8,6 +8,7 @@ import {
 } from '../../../../../packages/ui/src/components/Accordion/Accordion';
 import { Box } from '../../../../../packages/ui/src/components/Box/Box';
 import { Text } from '../../../../../packages/ui/src/components/Text/Text';
+import { RiSettings4Line } from '@remixicon/react';
 
 const Content = () => (
   <Box>
@@ -41,6 +42,17 @@ export const WithSubtitle = () => {
         title="Advanced Settings"
         subtitle="Configure additional options"
       />
+      <AccordionPanel>
+        <Content />
+      </AccordionPanel>
+    </Accordion>
+  );
+};
+
+export const WithIcon = () => {
+  return (
+    <Accordion>
+      <AccordionTrigger title="System Settings" icon={<RiSettings4Line />} />
       <AccordionPanel>
         <Content />
       </AccordionPanel>
