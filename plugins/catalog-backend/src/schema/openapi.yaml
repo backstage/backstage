@@ -6,7 +6,7 @@ info:
     The API surface consists of a few distinct groups of functionality. Each has a
     dedicated section below.
 
-    :::note Note 
+    :::note Note
       This page only describes some of the most commonly used parts of the API, and is a work in progress.
     :::
 
@@ -828,6 +828,12 @@ paths:
       tags:
         - Entity
       description: Refresh the entity related to entityRef.
+      x-backstage-auditor:
+        eventId: entity-mutate
+        severityLevel: medium
+        meta:
+          variant: update
+          entityRef: '{{ request.body.entityRef }}'
       responses:
         '200':
           description: Refreshed
@@ -861,6 +867,8 @@ paths:
       tags:
         - Entity
       description: Get all entities matching a given filter.
+      x-backstage-auditor:
+        eventId: entity-fetch
       responses:
         '200':
           description: ''
@@ -897,6 +905,10 @@ paths:
       tags:
         - Entity
       description: Get a single entity by the UID.
+      x-backstage-auditor:
+        eventId: entity-fetch
+        meta:
+          uid: '{{ request.params.uid }}'
       responses:
         '200':
           description: Ok
@@ -918,6 +930,11 @@ paths:
       tags:
         - Entity
       description: Delete a single entity by UID.
+      x-backstage-auditor:
+        eventId: entity-mutate
+        severityLevel: medium
+        meta:
+          uid: '{{ request.params.uid }}'
       responses:
         '204':
           description: Deleted successfully.
@@ -936,6 +953,10 @@ paths:
       tags:
         - Entity
       description: Get an entity by an entity ref.
+      x-backstage-auditor:
+        eventId: entity-fetch
+        meta:
+          entityRef: '{{ request.params.kind }}:{{ request.params.namespace }}/{{ request.params.name }}'
       responses:
         '200':
           description: Ok
@@ -960,6 +981,10 @@ paths:
       tags:
         - Entity
       description: Get an entity's ancestry by entity ref.
+      x-backstage-auditor:
+        eventId: entity-fetch
+        meta:
+          entityRef: '{{ request.params.kind }}:{{ request.params.namespace }}/{{ request.params.name }}'
       responses:
         '200':
           description: Ok
@@ -984,6 +1009,10 @@ paths:
       tags:
         - Entity
       description: Get a batch set of entities given an array of entityRefs.
+      x-backstage-auditor:
+        eventId: entity-fetch
+        meta:
+          variant: fetch
       responses:
         '200':
           description: Ok
@@ -1035,6 +1064,8 @@ paths:
       tags:
         - Entity
       description: Search for entities by a given query.
+      x-backstage-auditor:
+        eventId: entity-fetch
       responses:
         '200':
           description: Ok
@@ -1080,6 +1111,8 @@ paths:
       tags:
         - Entity
       description: Get all entity facets that match the given filters.
+      x-backstage-auditor:
+        eventId: entity-facets
       responses:
         '200':
           description: Ok
@@ -1117,6 +1150,13 @@ paths:
       tags:
         - Locations
       description: Create a location for a given target.
+      x-backstage-auditor:
+        eventId: location-mutate
+        severityLevel: medium
+        meta:
+          type: '{{ request.body.type }}'
+          target: '{{ request.body.target }}'
+          dryRun: '{{ request.query.dryRun }}'
       responses:
         '201':
           description: Created
@@ -1169,6 +1209,10 @@ paths:
       tags:
         - Locations
       description: Get all locations
+      x-backstage-auditor:
+        eventId: location-fetch
+        meta:
+          variant: fetch
       responses:
         '200':
           description: Ok
@@ -1195,6 +1239,10 @@ paths:
       tags:
         - Locations
       description: Get a location by id.
+      x-backstage-auditor:
+        eventId: location-fetch
+        meta:
+          locationId: '{{ request.params.id }}'
       responses:
         '200':
           description: Ok
@@ -1219,6 +1267,11 @@ paths:
       tags:
         - Locations
       description: Delete a location by id.
+      x-backstage-auditor:
+        eventId: location-mutate
+        severityLevel: medium
+        meta:
+          locationId: '{{ request.params.id }}'
       responses:
         '204':
           description: No content
@@ -1242,6 +1295,10 @@ paths:
       tags:
         - Locations
       description: Get a location for entity.
+      x-backstage-auditor:
+        eventId: location-fetch
+        meta:
+          entityRef: '{{ request.params.kind }}:{{ request.params.namespace }}/{{ request.params.name }}'
       responses:
         '200':
           description: Ok
@@ -1279,6 +1336,8 @@ paths:
       tags:
         - Locations
       description: Validate a given location.
+      x-backstage-auditor:
+        eventId: location-analyze
       responses:
         '200':
           description: Ok
@@ -1313,6 +1372,8 @@ paths:
       tags:
         - Entity
       description: Validate that a passed in entity has no errors in schema.
+      x-backstage-auditor:
+        eventId: entity-validate
       responses:
         '200':
           description: Ok
