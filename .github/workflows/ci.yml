@@ -3,8 +3,8 @@ on:
   # NOTE: If you change these you must update ci-noop.yml as well
   pull_request:
     paths-ignore:
-      - "microsite/**"
-      - "beps/**"
+      - 'microsite/**'
+      - 'beps/**'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
