@@ -395,13 +395,11 @@ const config: Config = {
           items: [
             {
               label: `Stable (${releases[0]})`,
-              href: 'https://backstage.io/api/stable',
-              target: '_self',
+              to: '/api/stable',
             },
             {
               label: 'Next',
-              href: 'https://backstage.io/api/next',
-              target: '_self',
+              to: '/api/next',
             },
           ],
         },
