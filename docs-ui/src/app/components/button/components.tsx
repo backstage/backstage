@@ -18,6 +18,9 @@ export const Variants = () => {
       <Button variant="tertiary" iconStart={<RiCloudLine />}>
         Button
       </Button>
+      <Button variant="danger" iconStart={<RiCloudLine />}>
+        Button
+      </Button>
     </Flex>
   );
 };
@@ -54,6 +57,9 @@ export const Disabled = () => {
       </Button>
       <Button variant="tertiary" isDisabled>
         Tertiary
+      </Button>
+      <Button variant="danger" isDisabled>
+        Danger
       </Button>
     </Flex>
   );

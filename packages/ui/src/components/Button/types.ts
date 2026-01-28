@@ -21,7 +21,7 @@ import type { LeafSurfaceProps, Responsive } from '../../types';
 /** @public */
 export type ButtonOwnProps = LeafSurfaceProps & {
   size?: Responsive<'small' | 'medium'>;
-  variant?: Responsive<'primary' | 'secondary' | 'tertiary'>;
+  variant?: Responsive<'primary' | 'secondary' | 'tertiary' | 'danger'>;
   iconStart?: ReactElement;
   iconEnd?: ReactElement;
   loading?: boolean;
