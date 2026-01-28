@@ -758,6 +758,28 @@ export interface Config {
                * Defaults to `false`.
                */
               noNamespaceAffectsAll?: boolean;
+              /**
+               * Socket settings passed to the Redis client. See
+               * https://github.com/redis/node-redis/blob/master/docs/client-configuration.md.
+               */
+              socket?: {
+                /**
+                 * Enables TCP keepalive. When `true`, uses the Redis client default
+                 * delay (5000ms in node-redis). When a number, it is interpreted as
+                 * the initial delay in milliseconds. If unset, Backstage does not
+                 * override the Redis client defaults.
+                 *
+                 * Do not set a numeric value together with `keepAliveInitialDelay`;
+                 * prefer `keepAlive: true` with `keepAliveInitialDelay`. If only
+                 * `keepAliveInitialDelay` is set, keepalive is enabled with that
+                 * delay.
+                 */
+                keepAlive?: boolean | number;
+                /**
+                 * Initial delay in milliseconds for TCP keepalive probes.
+                 */
+                keepAliveInitialDelay?: number;
+              };
             };
             /**
              * An optional Redis cluster configuration.

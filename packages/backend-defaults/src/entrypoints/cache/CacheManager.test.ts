@@ -211,6 +211,8 @@ describe('CacheManager integration', () => {
 });
 
 describe('CacheManager store options', () => {
+  afterEach(jest.clearAllMocks);
+
   it('uses default options when no store-specific config exists', () => {
     const manager = CacheManager.fromConfig(
       mockServices.rootConfig({
@@ -307,6 +309,9 @@ describe('CacheManager store options', () => {
   });
 
   it('accepts client config for clustered mode', () => {
+    (createCluster as jest.Mock).mockReturnValue({
+      url: 'redis://localhost:6379',
+    });
     const manager = CacheManager.fromConfig(
       mockServices.rootConfig({
         data: {
@@ -329,8 +334,143 @@ describe('CacheManager store options', () => {
     );
     manager.forPlugin('p1');
 
-    expect(KeyvRedis).toHaveBeenCalledWith(expect.anything(), {
-      keyPrefixSeparator: '!',
+    expect(KeyvRedis).toHaveBeenCalledWith(
+      expect.objectContaining({
+        url: 'redis://localhost:6379',
+        socket: expect.any(Object),
+      }),
+      {
+        keyPrefixSeparator: '!',
+      },
+    );
+  });
+
+  it('passes socket keepalive options to the redis client', () => {
+    const manager = CacheManager.fromConfig(
+      mockServices.rootConfig({
+        data: {
+          backend: {
+            cache: {
+              store: 'redis',
+              connection: 'redis://localhost:6379',
+              redis: {
+                client: {
+                  socket: {
+                    keepAliveInitialDelay: 1234,
+                  },
+                },
+              },
+            },
+          },
+        },
+      }),
+    );
+
+    manager.forPlugin('p1');
+
+    expect(KeyvRedis).toHaveBeenCalledWith(
+      {
+        url: 'redis://localhost:6379',
+        socket: expect.objectContaining({ keepAliveInitialDelay: 1234 }),
+      },
+      expect.objectContaining({ keyPrefixSeparator: ':' }),
+    );
+  });
+
+  it('passes numeric keepAlive to the redis client', () => {
+    const manager = CacheManager.fromConfig(
+      mockServices.rootConfig({
+        data: {
+          backend: {
+            cache: {
+              store: 'redis',
+              connection: 'redis://localhost:6379',
+              redis: {
+                client: {
+                  socket: {
+                    keepAlive: 7000,
+                  },
+                },
+              },
+            },
+          },
+        },
+      }),
+    );
+
+    manager.forPlugin('p1');
+
+    expect(KeyvRedis).toHaveBeenCalledWith(
+      {
+        url: 'redis://localhost:6379',
+        socket: expect.objectContaining({ keepAlive: 7000 }),
+      },
+      expect.objectContaining({ keyPrefixSeparator: ':' }),
+    );
+  });
+
+  it('ignores keepAliveInitialDelay when keepAlive is false', () => {
+    const manager = CacheManager.fromConfig(
+      mockServices.rootConfig({
+        data: {
+          backend: {
+            cache: {
+              store: 'redis',
+              connection: 'redis://localhost:6379',
+              redis: {
+                client: {
+                  socket: {
+                    keepAlive: false,
+                    keepAliveInitialDelay: 5000,
+                  },
+                },
+              },
+            },
+          },
+        },
+      }),
+    );
+
+    manager.forPlugin('p1');
+
+    expect(KeyvRedis).toHaveBeenCalledWith(
+      {
+        url: 'redis://localhost:6379',
+        socket: expect.objectContaining({ keepAlive: false }),
+      },
+      expect.objectContaining({ keyPrefixSeparator: ':' }),
+    );
+  });
+
+  it('merges socket options into redis cluster defaults', () => {
+    const manager = CacheManager.fromConfig(
+      mockServices.rootConfig({
+        data: {
+          backend: {
+            cache: {
+              store: 'redis',
+              connection: 'redis://localhost:6379',
+              redis: {
+                client: {
+                  socket: {
+                    keepAliveInitialDelay: 4242,
+                  },
+                },
+                cluster: {
+                  rootNodes: [{ url: 'redis://localhost:6379' }],
+                },
+              },
+            },
+          },
+        },
+      }),
+    );
+
+    manager.forPlugin('p1');
+
+    expect(createCluster).toHaveBeenCalledWith({
+      rootNodes: [{ url: 'redis://localhost:6379' }],
+      defaults: { socket: { keepAliveInitialDelay: 4242 } },
     });
   });
 
