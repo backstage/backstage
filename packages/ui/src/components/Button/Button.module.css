@@ -79,6 +79,39 @@
     }
   }
 
+  .bui-Button[data-variant='primary'][data-destructive='true'] {
+    /* Custom properties matching future token names (without bui- prefix) */
+    --bg-solid-danger: #dc2626;
+    --bg-solid-danger-hover: #b91c1c;
+    --bg-solid-danger-pressed: #991b1b;
+    --bg-solid-danger-disabled: #fca5a5;
+    --fg-solid-danger: var(--bui-white);
+
+    [data-theme-mode='dark'] & {
+      --bg-solid-danger: #ef4444;
+      --bg-solid-danger-hover: #dc2626;
+      --bg-solid-danger-pressed: #b91c1c;
+      --bg-solid-danger-disabled: #7f1d1d;
+    }
+
+    --bg: var(--bg-solid-danger);
+    --bg-hover: var(--bg-solid-danger-hover);
+    --bg-active: var(--bg-solid-danger-pressed);
+    --fg: var(--fg-solid-danger);
+
+    &[data-disabled='true'],
+    &[data-loading='true'] {
+      --bg: var(--bg-solid-danger-disabled);
+      --bg-hover: var(--bg-solid-danger-disabled);
+      --bg-active: var(--bg-solid-danger-disabled);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--bui-border-danger);
+      outline-offset: 2px;
+    }
+  }
+
   .bui-Button[data-variant='secondary'] {
     --bg: var(--bui-bg-neutral-on-surface-0);
     --bg-hover: var(--bui-bg-neutral-on-surface-0-hover);
@@ -117,6 +150,33 @@
     }
   }
 
+  .bui-Button[data-variant='secondary'][data-destructive='true'] {
+    /* Custom properties for hover/active states (no tokens exist yet) */
+    --bg-danger-hover: #fecaca;
+    --bg-danger-pressed: #fca5a5;
+
+    [data-theme-mode='dark'] & {
+      --bg-danger-hover: #450a0a;
+      --bg-danger-pressed: #7f1d1d;
+    }
+
+    --bg: var(--bui-bg-danger);
+    --bg-hover: var(--bg-danger-hover);
+    --bg-active: var(--bg-danger-pressed);
+    --fg: var(--bui-fg-danger);
+
+    &[data-disabled='true'],
+    &[data-loading='true'] {
+      --bg-hover: var(--bg);
+      --bg-active: var(--bg);
+      --fg: var(--bui-fg-disabled);
+    }
+
+    &:focus-visible {
+      box-shadow: inset 0 0 0 2px var(--bui-border-danger);
+    }
+  }
+
   .bui-Button[data-variant='tertiary'] {
     --bg-hover: var(--bui-bg-neutral-on-surface-0-hover);
     --bg-active: var(--bui-bg-neutral-on-surface-0-pressed);
@@ -148,6 +208,32 @@
       outline: none;
       transition: none;
       box-shadow: inset 0 0 0 2px var(--bui-ring);
+    }
+  }
+
+  .bui-Button[data-variant='tertiary'][data-destructive='true'] {
+    /* Custom properties for hover/active states (no tokens exist yet) */
+    --bg-danger-hover: #fecaca;
+    --bg-danger-pressed: #fca5a5;
+
+    [data-theme-mode='dark'] & {
+      --bg-danger-hover: #450a0a;
+      --bg-danger-pressed: #7f1d1d;
+    }
+
+    --bg-hover: var(--bui-bg-danger);
+    --bg-active: var(--bg-danger-pressed);
+    --fg: var(--bui-fg-danger);
+
+    &[data-disabled='true'],
+    &[data-loading='true'] {
+      --bg-hover: var(--bg);
+      --bg-active: var(--bg);
+      --fg: var(--bui-fg-disabled);
+    }
+
+    &:focus-visible {
+      box-shadow: inset 0 0 0 2px var(--bui-border-danger);
     }
   }
 

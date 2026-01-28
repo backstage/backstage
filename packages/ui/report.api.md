@@ -330,6 +330,9 @@ export const ButtonDefinition: {
       readonly dataAttribute: true;
       readonly default: 'primary';
     };
+    readonly destructive: {
+      readonly dataAttribute: true;
+    };
     readonly loading: {
       readonly dataAttribute: true;
     };
@@ -445,6 +448,7 @@ export interface ButtonLinkProps
 export type ButtonOwnProps = LeafSurfaceProps & {
   size?: Responsive<'small' | 'medium'>;
   variant?: Responsive<'primary' | 'secondary' | 'tertiary'>;
+  destructive?: boolean;
   iconStart?: ReactElement;
   iconEnd?: ReactElement;
   loading?: boolean;

@@ -33,6 +33,7 @@ export const ButtonDefinition = defineComponent<ButtonOwnProps>()({
   propDefs: {
     size: { dataAttribute: true, default: 'small' },
     variant: { dataAttribute: true, default: 'primary' },
+    destructive: { dataAttribute: true },
     loading: { dataAttribute: true },
     iconStart: {},
     iconEnd: {},
