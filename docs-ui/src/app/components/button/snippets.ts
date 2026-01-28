@@ -43,6 +43,18 @@ export const disabledSnippet = `<Flex gap="4">
   </Button>
 </Flex>`;
 
+export const destructiveSnippet = `<Flex gap="4">
+  <Button variant="primary" destructive>
+    Primary
+  </Button>
+  <Button variant="secondary" destructive>
+    Secondary
+  </Button>
+  <Button variant="tertiary" destructive>
+    Tertiary
+  </Button>
+</Flex>`;
+
 export const loadingSnippet = `<Button variant="primary" loading={true}>
   Load more items
 </Button>`;

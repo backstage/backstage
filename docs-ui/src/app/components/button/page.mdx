@@ -7,6 +7,7 @@ import {
   sizesSnippet,
   withIconsSnippet,
   disabledSnippet,
+  destructiveSnippet,
   loadingSnippet,
   asLinkSnippet,
   buttonSnippetUsage,
@@ -22,6 +23,7 @@ import {
   Sizes,
   WithIcons,
   Disabled,
+  Destructive,
   Loading,
   AsLink,
 } from './components';
@@ -32,7 +34,7 @@ export const reactAriaUrls = {
 
 <PageTitle
   title="Button"
-  description="A button with primary, secondary, and tertiary variants and loading state."
+  description="A button with primary, secondary, and tertiary variants, destructive styling, and loading state."
 />
 
 <Snippet align="center" py={4} preview={<Variants />} code={variantsSnippet} />
@@ -92,6 +94,19 @@ Icons can appear before or after the label.
   open
   preview={<Disabled />}
   code={disabledSnippet}
+  layout="side-by-side"
+/>
+
+### Destructive
+
+Use the `destructive` prop for dangerous actions like delete or remove.
+
+<Snippet
+  align="center"
+  py={4}
+  open
+  preview={<Destructive />}
+  code={destructiveSnippet}
   layout="side-by-side"
 />
 
