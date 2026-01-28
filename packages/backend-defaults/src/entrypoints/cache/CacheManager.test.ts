@@ -442,6 +442,42 @@ describe('CacheManager store options', () => {
     );
   });
 
+  it('passes ping interval and socket timeout to the redis client', () => {
+    const manager = CacheManager.fromConfig(
+      mockServices.rootConfig({
+        data: {
+          backend: {
+            cache: {
+              store: 'redis',
+              connection: 'redis://localhost:6379',
+              redis: {
+                client: {
+                  socket: {
+                    pingInterval: 15000,
+                    socketTimeout: 20000,
+                  },
+                },
+              },
+            },
+          },
+        },
+      }),
+    );
+
+    manager.forPlugin('p1');
+
+    expect(KeyvRedis).toHaveBeenCalledWith(
+      {
+        url: 'redis://localhost:6379',
+        socket: expect.objectContaining({
+          pingInterval: 15000,
+          socketTimeout: 20000,
+        }),
+      },
+      expect.objectContaining({ keyPrefixSeparator: ':' }),
+    );
+  });
+
   it('merges socket options into redis cluster defaults', () => {
     const manager = CacheManager.fromConfig(
       mockServices.rootConfig({
@@ -471,6 +507,44 @@ describe('CacheManager store options', () => {
     expect(createCluster).toHaveBeenCalledWith({
       rootNodes: [{ url: 'redis://localhost:6379' }],
       defaults: { socket: { keepAliveInitialDelay: 4242 } },
+    });
+  });
+
+  it('merges ping interval and socket timeout into redis cluster defaults', () => {
+    const manager = CacheManager.fromConfig(
+      mockServices.rootConfig({
+        data: {
+          backend: {
+            cache: {
+              store: 'redis',
+              connection: 'redis://localhost:6379',
+              redis: {
+                client: {
+                  socket: {
+                    pingInterval: 10000,
+                    socketTimeout: 12000,
+                  },
+                },
+                cluster: {
+                  rootNodes: [{ url: 'redis://localhost:6379' }],
+                },
+              },
+            },
+          },
+        },
+      }),
+    );
+
+    manager.forPlugin('p1');
+
+    expect(createCluster).toHaveBeenCalledWith({
+      rootNodes: [{ url: 'redis://localhost:6379' }],
+      defaults: {
+        socket: {
+          pingInterval: 10000,
+          socketTimeout: 12000,
+        },
+      },
     });
   });
 

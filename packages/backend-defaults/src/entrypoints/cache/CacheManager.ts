@@ -194,6 +194,8 @@ export class CacheManager {
     const keepAliveInitialDelay = socketConfig?.getOptionalNumber(
       'keepAliveInitialDelay',
     );
+    const pingInterval = socketConfig?.getOptionalNumber('pingInterval');
+    const socketTimeout = socketConfig?.getOptionalNumber('socketTimeout');
 
     if (typeof keepAlive === 'number' && keepAliveInitialDelay !== undefined) {
       logger?.warn(
@@ -224,7 +226,9 @@ export class CacheManager {
 
     const socketOptions =
       keepAliveForSocket !== undefined ||
-      keepAliveInitialDelayForSocket !== undefined
+      keepAliveInitialDelayForSocket !== undefined ||
+      pingInterval !== undefined ||
+      socketTimeout !== undefined
         ? {
             ...(keepAliveForSocket !== undefined
               ? { keepAlive: keepAliveForSocket }
@@ -232,6 +236,8 @@ export class CacheManager {
             ...(keepAliveInitialDelayForSocket !== undefined
               ? { keepAliveInitialDelay: keepAliveInitialDelayForSocket }
               : {}),
+            ...(pingInterval !== undefined ? { pingInterval } : {}),
+            ...(socketTimeout !== undefined ? { socketTimeout } : {}),
           }
         : undefined;
 
