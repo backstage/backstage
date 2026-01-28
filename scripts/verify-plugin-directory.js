@@ -41,15 +41,17 @@ async function main() {
 
   let hasErrors = false;
   for (const pluginDirectoryFile of pluginDirectoryFiles) {
-    if (!pluginDirectoryFile.toLocaleLowerCase().includes('.yaml')) {
-      hasErrors = true;
-      console.log(`${pluginDirectoryFile} is missing the '.yaml' extension`);
-    }
-
     const pluginDirectoryFilePath = join(
       pluginDirectoryPath,
       pluginDirectoryFile,
     );
+
+    if (!pluginDirectoryFile.toLocaleLowerCase().includes('.yaml')) {
+      hasErrors = true;
+      console.log(
+        `${pluginDirectoryFilePath}: The '.yaml' extension is missing`,
+      );
+    }
 
     const pluginDataYaml = yaml.load(
       fs.readFileSync(pluginDirectoryFilePath, { encoding: 'utf-8' }),
@@ -60,12 +62,12 @@ async function main() {
     } catch (error) {
       if (error instanceof z.ZodError) {
         console.log(
-          `YAML data validation failed for ${pluginDirectoryFile}:`,
+          `${pluginDirectoryFilePath}: YAML data validation failed`,
           error.errors,
         );
       } else {
         console.log(
-          `An unexpected error occurred for ${pluginDirectoryFile}:`,
+          `${pluginDirectoryFilePath}: An unexpected error occurred`,
           error,
         );
       }
@@ -78,7 +80,7 @@ async function main() {
   }
 }
 
-main(process.argv.slice(2)).catch(error => {
+main().catch(error => {
   console.error(error.stack || error);
   process.exit(1);
 });
