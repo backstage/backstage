@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-scaffolder-node",
-  "version": "0.12.3",
+  "version": "0.12.4",
   "description": "The plugin-scaffolder-node module for @backstage/plugin-scaffolder-backend",
   "backstage": {
     "role": "node-library",
@@ -72,7 +72,7 @@
     "tar": "^6.1.12",
     "winston": "^3.2.1",
     "winston-transport": "^4.7.0",
-    "zod": "^3.22.4",
+    "zod": "^3.25.76",
     "zod-to-json-schema": "^3.25.1"
   },
   "devDependencies": {

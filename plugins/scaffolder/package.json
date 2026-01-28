@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-scaffolder",
-  "version": "1.35.1",
+  "version": "1.35.2",
   "description": "The Backstage plugin that helps you create new things",
   "backstage": {
     "role": "frontend-plugin",
@@ -101,7 +101,7 @@
     "react-use": "^17.2.4",
     "react-window": "^1.8.10",
     "yaml": "^2.0.0",
-    "zod": "^3.22.4",
+    "zod": "^3.25.76",
     "zod-to-json-schema": "^3.25.1"
   },
   "devDependencies": {

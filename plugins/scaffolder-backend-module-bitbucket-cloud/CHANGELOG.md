@@ -1,5 +1,14 @@
 # @backstage/plugin-scaffolder-backend-module-bitbucket-cloud
 
+## 0.3.2
+
+### Patch Changes
+
+- 5683c85: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.2
+  - @backstage/plugin-scaffolder-node@0.12.4
+
 ## 0.3.1
 
 ### Patch Changes

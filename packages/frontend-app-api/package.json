@@ -1,6 +1,6 @@
 {
   "name": "@backstage/frontend-app-api",
-  "version": "0.14.0",
+  "version": "0.14.1",
   "backstage": {
     "role": "web-library"
   },
@@ -41,7 +41,7 @@
     "@backstage/types": "workspace:^",
     "@backstage/version-bridge": "workspace:^",
     "lodash": "^4.17.21",
-    "zod": "^3.22.4"
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",

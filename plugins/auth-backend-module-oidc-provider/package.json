@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-auth-backend-module-oidc-provider",
-  "version": "0.4.11",
+  "version": "0.4.12",
   "description": "The oidc-provider backend module for the auth plugin.",
   "backstage": {
     "role": "backend-plugin-module",
@@ -42,7 +42,7 @@
     "express": "^4.22.0",
     "openid-client": "^5.5.0",
     "passport": "^0.7.0",
-    "zod": "^3.22.4"
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@backstage/backend-defaults": "workspace:^",

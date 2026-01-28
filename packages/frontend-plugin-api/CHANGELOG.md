@@ -1,5 +1,11 @@
 # @backstage/frontend-plugin-api
 
+## 0.13.4
+
+### Patch Changes
+
+- 5683c85: Bump to latest zod to ensure it has the latest features
+
 ## 0.13.3
 
 ### Patch Changes

@@ -1,5 +1,18 @@
 # @backstage/plugin-catalog-react
 
+## 1.21.6
+
+### Patch Changes
+
+- 5683c85: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/frontend-test-utils@0.4.5
+  - @backstage/frontend-plugin-api@0.13.4
+  - @backstage/plugin-permission-common@0.9.5
+  - @backstage/core-compat-api@0.5.7
+  - @backstage/core-components@0.18.6
+  - @backstage/core-plugin-api@1.12.2
+
 ## 1.21.5
 
 ### Patch Changes

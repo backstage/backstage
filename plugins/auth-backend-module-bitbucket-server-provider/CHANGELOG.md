@@ -1,5 +1,14 @@
 # @backstage/plugin-auth-backend-module-bitbucket-server-provider
 
+## 0.2.11
+
+### Patch Changes
+
+- 5683c85: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.2
+  - @backstage/plugin-auth-node@0.6.12
+
 ## 0.2.10
 
 ### Patch Changes

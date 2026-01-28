@@ -1,6 +1,6 @@
 {
   "name": "@backstage/cli-node",
-  "version": "0.2.16",
+  "version": "0.2.17",
   "description": "Node.js library for Backstage CLIs",
   "backstage": {
     "role": "node-library"
@@ -38,7 +38,7 @@
     "@yarnpkg/parsers": "^3.0.0",
     "fs-extra": "^11.2.0",
     "semver": "^7.5.3",
-    "zod": "^3.22.4"
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@backstage/backend-test-utils": "workspace:^",

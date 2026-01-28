@@ -1,5 +1,11 @@
 # @backstage/ui
 
+## 0.11.2
+
+### Patch Changes
+
+- 3e2fe57: Fixed React 17 compatibility by using `useId` from `react-aria` instead of React's built-in hook which is only available in React 18+.
+
 ## 0.11.1
 
 ### Patch Changes

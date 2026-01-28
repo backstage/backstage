@@ -23,6 +23,7 @@ const DEFAULT_WARNING_CODES: Array<keyof AppErrorTypes> = [
   'INVALID_EXTENSION_CONFIG_KEY',
   'EXTENSION_INPUT_DATA_IGNORED',
   'EXTENSION_OUTPUT_IGNORED',
+  'API_FACTORY_CONFLICT',
 ];
 
 function AppErrorItem(props: { error: AppError }): JSX.Element {

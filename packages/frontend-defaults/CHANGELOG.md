@@ -1,5 +1,16 @@
 # @backstage/frontend-defaults
 
+## 0.3.6
+
+### Patch Changes
+
+- 98f35b4: The `API_FACTORY_CONFLICT` error is now treated as a warning and will not prevent the app from starting.
+- Updated dependencies
+  - @backstage/frontend-app-api@0.14.1
+  - @backstage/frontend-plugin-api@0.13.4
+  - @backstage/core-components@0.18.6
+  - @backstage/plugin-app@0.3.5
+
 ## 0.3.5
 
 ### Patch Changes

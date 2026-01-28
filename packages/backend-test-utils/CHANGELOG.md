@@ -1,5 +1,16 @@
 # @backstage/backend-test-utils
 
+## 1.10.4
+
+### Patch Changes
+
+- 5683c85: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/backend-plugin-api@1.6.2
+  - @backstage/backend-defaults@0.15.1
+  - @backstage/plugin-permission-common@0.9.5
+  - @backstage/plugin-auth-node@0.6.12
+
 ## 1.10.3
 
 ### Patch Changes
