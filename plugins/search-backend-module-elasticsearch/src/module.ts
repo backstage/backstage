@@ -23,6 +23,15 @@ import {
   ElasticSearchQueryTranslator,
   ElasticSearchSearchEngine,
 } from './engines/ElasticSearchSearchEngine';
+import {
+  type ElasticSearchAuthProvider,
+  type ElasticSearchAuthExtensionPoint,
+  elasticsearchAuthExtensionPoint,
+} from './auth';
+
+// Re-export auth types and extension point
+export type { ElasticSearchAuthProvider, ElasticSearchAuthExtensionPoint };
+export { elasticsearchAuthExtensionPoint };
 
 /** @public */
 export interface ElasticSearchQueryTranslatorExtensionPoint {
@@ -49,6 +58,7 @@ export default createBackendModule({
   moduleId: 'elasticsearch-engine',
   register(env) {
     let translator: ElasticSearchQueryTranslator | undefined;
+    let authProvider: ElasticSearchAuthProvider | undefined;
 
     env.registerExtensionPoint(elasticsearchTranslatorExtensionPoint, {
       setTranslator(newTranslator) {
@@ -58,6 +68,15 @@ export default createBackendModule({
           );
         }
         translator = newTranslator;
+      },
+    });
+
+    env.registerExtensionPoint(elasticsearchAuthExtensionPoint, {
+      setAuthProvider(provider) {
+        if (authProvider) {
+          throw new Error('ElasticSearch auth provider may only be set once');
+        }
+        authProvider = provider;
       },
     });
 
@@ -82,11 +101,17 @@ export default createBackendModule({
         if (indexPrefix) {
           logger.info(`Index prefix will be used for indices: ${indexPrefix}`);
         }
+        if (authProvider) {
+          logger.info(
+            'Using custom auth provider for ElasticSearch authentication.',
+          );
+        }
         searchEngineRegistry.setSearchEngine(
           await ElasticSearchSearchEngine.fromConfig({
             logger,
             config,
             translator,
+            authProvider,
             indexPrefix,
           }),
         );
