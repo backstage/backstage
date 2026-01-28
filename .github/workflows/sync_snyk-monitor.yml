@@ -58,6 +58,6 @@ jobs:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
           NODE_OPTIONS: --max-old-space-size=7168
       - name: Upload Snyk report
-        uses: github/codeql-action/upload-sarif@4bdb89f48054571735e3792627da6195c57459e2 # v3.31.10
+        uses: github/codeql-action/upload-sarif@439137e1b50c27ba9e2f9befc93e43091b449c34 # v3.32.0
         with:
           sarif_file: snyk.sarif
