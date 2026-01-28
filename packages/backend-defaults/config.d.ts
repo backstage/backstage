@@ -760,7 +760,8 @@ export interface Config {
               noNamespaceAffectsAll?: boolean;
               /**
                * Socket settings passed to the Redis client. See
-               * https://github.com/redis/node-redis/blob/master/docs/client-configuration.md.
+               * https://github.com/redis/node-redis/blob/master/docs/client-configuration.md
+               * and https://keyv.org/docs/storage-adapters/redis/#keyv-redis-options.
                */
               socket?: {
                 /**
@@ -779,6 +780,16 @@ export interface Config {
                  * Initial delay in milliseconds for TCP keepalive probes.
                  */
                 keepAliveInitialDelay?: number;
+                /**
+                 * Send `PING` command at interval (in milliseconds). Useful for
+                 * environments with idle connection timeouts.
+                 */
+                pingInterval?: number;
+                /**
+                 * The maximum duration (in milliseconds) that the socket can remain
+                 * idle before being automatically closed.
+                 */
+                socketTimeout?: number;
               };
             };
             /**
