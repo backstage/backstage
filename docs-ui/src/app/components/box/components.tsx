@@ -2,11 +2,12 @@
 
 import { Box } from '../../../../../packages/ui/src/components/Box/Box';
 import { Flex } from '../../../../../packages/ui/src/components/Flex/Flex';
+import { DecorativeBox } from '@/components/DecorativeBox';
 
 export const Default = () => {
   return (
-    <Box p="4" surface="1">
-      Hello World
+    <Box width="64px" height="64px">
+      <DecorativeBox />
     </Box>
   );
 };
@@ -36,7 +37,7 @@ export const Responsive = () => {
       p={{ initial: '2', md: '4' }}
       display={{ initial: 'block', md: 'flex' }}
     >
-      Hello World
+      <DecorativeBox>Resize to see change</DecorativeBox>
     </Box>
   );
 };
