@@ -42,6 +42,7 @@ describe('AppRootWrapperBlueprint', () => {
         },
         "configSchema": undefined,
         "disabled": false,
+        "enabled": undefined,
         "factory": [Function],
         "inputs": {},
         "kind": "app-root-wrapper",

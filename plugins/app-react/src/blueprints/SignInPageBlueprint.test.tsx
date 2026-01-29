@@ -37,6 +37,7 @@ describe('SignInPageBlueprint', () => {
         },
         "configSchema": undefined,
         "disabled": false,
+        "enabled": undefined,
         "factory": [Function],
         "inputs": {},
         "kind": "sign-in-page",

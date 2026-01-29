@@ -508,12 +508,13 @@ export function instantiateAppNodeTree(
   apis: ApiHolder,
   collector: ErrorCollector,
   extensionFactoryMiddleware?: ExtensionFactoryMiddleware,
+  disabledNodes: Set<AppNode> = new Set(),
 ): boolean {
   function createInstance(node: AppNode): AppNodeInstance | undefined {
     if (node.instance) {
       return node.instance;
     }
-    if (node.spec.disabled) {
+    if (node.spec.disabled || disabledNodes.has(node)) {
       return undefined;
     }
 

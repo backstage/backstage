@@ -40,6 +40,11 @@ export type AlertMessage = {
 };
 
 // @public
+export function allOf(
+  ...conditions: ExtensionConditionFunc[]
+): ExtensionConditionFunc;
+
+// @public
 export type AnalyticsApi = {
   captureEvent(event: AnalyticsEvent): void;
 };
@@ -139,6 +144,11 @@ export type AnyApiRef = ApiRef<unknown>;
 
 // @public @deprecated (undocumented)
 export type AnyExtensionDataRef = ExtensionDataRef;
+
+// @public
+export function anyOf(
+  ...conditions: ExtensionConditionFunc[]
+): ExtensionConditionFunc;
 
 // @public
 export type AnyRouteRefParams =
@@ -248,6 +258,8 @@ export interface AppNodeSpec {
   readonly config?: unknown;
   // (undocumented)
   readonly disabled: boolean;
+  // (undocumented)
+  readonly enabled?: ExtensionConditionFunc;
   // (undocumented)
   readonly extension: Extension<unknown, unknown>;
   // (undocumented)
@@ -542,6 +554,7 @@ export type CreateExtensionBlueprintOptions<
   attachTo: ExtensionDefinitionAttachTo<UParentInputs> &
     VerifyExtensionAttachTo<UOutput, UParentInputs>;
   disabled?: boolean;
+  enabled?: ExtensionConditionFunc;
   inputs?: TInputs;
   output: Array<UOutput>;
   config?: {
@@ -628,6 +641,7 @@ export type CreateExtensionOptions<
   attachTo: ExtensionDefinitionAttachTo<UParentInputs> &
     VerifyExtensionAttachTo<UOutput, UParentInputs>;
   disabled?: boolean;
+  enabled?: ExtensionConditionFunc;
   inputs?: TInputs;
   output: Array<UOutput>;
   config?: {
@@ -665,6 +679,11 @@ export function createExternalRouteRef<
         [param in TParamKeys]: string;
       }
 >;
+
+// @public
+export function createFeatureFlagCondition(
+  flagName: string,
+): ExtensionConditionFunc;
 
 // @public (undocumented)
 export function createFrontendFeatureLoader(
@@ -928,6 +947,8 @@ export interface Extension<TConfig, TConfigInput = TConfig> {
   // (undocumented)
   readonly disabled: boolean;
   // (undocumented)
+  readonly enabled?: ExtensionConditionFunc;
+  // (undocumented)
   readonly id: string;
 }
 
@@ -961,6 +982,7 @@ export interface ExtensionBlueprint<
     attachTo?: ExtensionDefinitionAttachTo<UParentInputs> &
       VerifyExtensionAttachTo<NonNullable<T['output']>, UParentInputs>;
     disabled?: boolean;
+    enabled?: ExtensionConditionFunc;
     params: TParamsInput extends ExtensionBlueprintDefineParams
       ? TParamsInput
       : T['params'] extends ExtensionBlueprintDefineParams
@@ -996,6 +1018,7 @@ export interface ExtensionBlueprint<
         UParentInputs
       >;
     disabled?: boolean;
+    enabled?: ExtensionConditionFunc;
     inputs?: TExtraInputs & {
       [KName in keyof T['inputs']]?: `Error: Input '${KName &
         string}' is already defined in parent definition`;
@@ -1126,6 +1149,14 @@ export interface ExtensionBoundaryProps {
   // (undocumented)
   node: AppNode;
 }
+
+// @public
+export type ExtensionConditionFunc = (
+  originalDecision: () => Promise<boolean>,
+  context: {
+    apiHolder: ApiHolder;
+  },
+) => Promise<boolean>;
 
 // @public (undocumented)
 export type ExtensionDataContainer<UExtensionData extends ExtensionDataRef> =
@@ -1510,6 +1541,9 @@ export const NavItemBlueprint: ExtensionBlueprint_2<{
   };
 }>;
 
+// @public
+export function not(condition: ExtensionConditionFunc): ExtensionConditionFunc;
+
 // @public (undocumented)
 export const NotFoundErrorPage: {
   (props: NotFoundErrorPageProps): JSX.Element | null;
@@ -1614,6 +1648,7 @@ export interface OverridableExtensionDefinition<
             UParentInputs
           >;
         disabled?: boolean;
+        enabled?: ExtensionConditionFunc;
         inputs?: TExtraInputs & {
           [KName in keyof T['inputs']]?: `Error: Input '${KName &
             string}' is already defined in parent definition`;

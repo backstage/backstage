@@ -42,6 +42,7 @@ describe('ApiBlueprint', () => {
         },
         "configSchema": undefined,
         "disabled": false,
+        "enabled": undefined,
         "factory": [Function],
         "inputs": {},
         "kind": "api",
@@ -195,6 +196,7 @@ describe('ApiBlueprint', () => {
           },
         },
         "disabled": false,
+        "enabled": undefined,
         "factory": [Function],
         "inputs": {
           "test": {

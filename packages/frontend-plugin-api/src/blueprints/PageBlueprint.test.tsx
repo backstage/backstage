@@ -61,6 +61,7 @@ describe('PageBlueprint', () => {
           },
         },
         "disabled": false,
+        "enabled": undefined,
         "factory": [Function],
         "inputs": {},
         "kind": "page",
