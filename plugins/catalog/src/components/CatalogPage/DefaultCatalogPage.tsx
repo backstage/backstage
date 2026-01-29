@@ -30,6 +30,7 @@ import {
   EntityListPagination,
   EntityListProvider,
   EntityOwnerPickerProps,
+  TextFilterFieldsConfig,
   UserListFilterKind,
 } from '@backstage/plugin-catalog-react';
 import { ReactNode } from 'react';
@@ -46,11 +47,17 @@ export type BaseCatalogPageProps = {
   filters: ReactNode;
   content?: ReactNode;
   pagination?: EntityListPagination;
+  textFilterFields?: TextFilterFieldsConfig;
 };
 
 /** @internal */
 export function BaseCatalogPage(props: BaseCatalogPageProps) {
-  const { filters, content = <CatalogTable />, pagination } = props;
+  const {
+    filters,
+    content = <CatalogTable />,
+    pagination,
+    textFilterFields,
+  } = props;
   const orgName =
     useApi(configApiRef).getOptionalString('organization.name') ?? 'Backstage';
   const createComponentLink = useRouteRef(createComponentRouteRef);
@@ -71,7 +78,10 @@ export function BaseCatalogPage(props: BaseCatalogPageProps) {
           )}
           <SupportButton>{t('indexPage.supportButtonContent')}</SupportButton>
         </ContentHeader>
-        <EntityListProvider pagination={pagination}>
+        <EntityListProvider
+          pagination={pagination}
+          textFilterFields={textFilterFields}
+        >
           <CatalogFilterLayout>
             <CatalogFilterLayout.Filters>{filters}</CatalogFilterLayout.Filters>
             <CatalogFilterLayout.Content>{content}</CatalogFilterLayout.Content>
@@ -98,6 +108,7 @@ export interface DefaultCatalogPageProps {
   filters?: ReactNode;
   initiallySelectedNamespaces?: string[];
   pagination?: EntityListPagination;
+  textFilterFields?: TextFilterFieldsConfig;
 }
 
 export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
@@ -112,6 +123,7 @@ export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
     ownerPickerMode,
     filters,
     initiallySelectedNamespaces,
+    textFilterFields,
   } = props;
 
   return (
@@ -135,6 +147,7 @@ export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
         />
       }
       pagination={pagination}
+      textFilterFields={textFilterFields}
     />
   );
 }

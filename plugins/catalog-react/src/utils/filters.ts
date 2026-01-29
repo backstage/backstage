@@ -33,6 +33,7 @@ export interface CatalogFilters {
   filter: Record<string, string | symbol | (string | symbol)[]>;
   fullTextFilter?: {
     term: string;
+    fields?: string[];
   };
   orderFields?: EntityOrderQuery;
 }

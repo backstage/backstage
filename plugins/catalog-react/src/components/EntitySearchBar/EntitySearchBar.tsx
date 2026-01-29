@@ -28,6 +28,35 @@ import { useEntityList } from '../../hooks/useEntityListProvider';
 import { EntityTextFilter } from '../../filters';
 import { catalogReactTranslationRef } from '../../translation';
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { TextFilterFieldsConfig } from '../../types';
+
+function resolveFilterFields(
+  config: TextFilterFieldsConfig | undefined,
+  kind: string | undefined,
+): string[] | undefined {
+  if (!config) {
+    return undefined;
+  }
+
+  // If config is an array, use it directly for all kinds
+  if (Array.isArray(config)) {
+    return config;
+  }
+
+  // If config is a record, look up by kind (case-insensitive)
+  const normalizedKind = kind?.toLowerCase();
+  if (normalizedKind) {
+    const matchingKey = Object.keys(config).find(
+      key => key.toLowerCase() === normalizedKind,
+    );
+    if (matchingKey) {
+      return config[matchingKey];
+    }
+  }
+
+  // No matching kind found, use defaults
+  return undefined;
+}
 
 /** @public */
 export type CatalogReactEntitySearchBarClassKey = 'searchToolbar' | 'input';
@@ -54,6 +83,9 @@ export const EntitySearchBar = () => {
   const {
     updateFilters,
     queryParameters: { text: textParameter },
+    textFilterFields,
+    filters,
+    paginationMode,
   } = useEntityList();
 
   const queryParamTextFilter = useMemo(
@@ -63,14 +95,27 @@ export const EntitySearchBar = () => {
 
   const [search, setSearch] = useState(queryParamTextFilter ?? '');
 
+  // Resolve the filter fields based on current kind
+  // Only use custom fields when pagination is enabled (backend filtering)
+  // In non-paginated mode, custom fields would break client-side filtering
+  const resolvedFilterFields = useMemo(
+    () =>
+      paginationMode !== 'none'
+        ? resolveFilterFields(textFilterFields, filters.kind?.value)
+        : undefined,
+    [textFilterFields, filters.kind?.value, paginationMode],
+  );
+
   useDebounce(
     () => {
       updateFilters({
-        text: search.length ? new EntityTextFilter(search) : undefined,
+        text: search.length
+          ? new EntityTextFilter(search, resolvedFilterFields)
+          : undefined,
       });
     },
     250,
-    [search, updateFilters],
+    [search, resolvedFilterFields, updateFilters],
   );
 
   useEffect(() => {
