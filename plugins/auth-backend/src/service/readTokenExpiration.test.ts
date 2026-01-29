@@ -17,6 +17,7 @@
 import { ConfigReader } from '@backstage/config';
 import {
   readBackstageTokenExpiration,
+  readDcrTokenExpiration,
   readTokenExpiration,
 } from './readTokenExpiration.ts';
 
@@ -100,6 +101,34 @@ describe('Test for default backstage token expiry time', () => {
         defaultExpiration: 1234,
       }),
     ).toBe(1234);
+  });
+
+  it('should not allow dcr token expiration to be lower than backstage token expiration', () => {
+    const config = new ConfigReader({
+      app: {
+        baseUrl: 'http://example.com/extra-path',
+      },
+      auth: {
+        backstageTokenExpiration: { minutes: 30 },
+        experimentalDynamicClientRegistration: {
+          tokenExpiration: { minutes: 10 }, // Cannot be smaller than backstageTokenExpiration
+        },
+      },
+    });
+    expect(readDcrTokenExpiration(config)).toBe(1800);
+  });
+
+  it('should default dcr token expiration to backstage token expiration when not configured', () => {
+    const config = new ConfigReader({
+      app: {
+        baseUrl: 'http://example.com/extra-path',
+      },
+      auth: {
+        backstageTokenExpiration: { hours: 2 }, // 7200 seconds
+        // experimentalDynamicClientRegistration.tokenExpiration not configured
+      },
+    });
+    expect(readDcrTokenExpiration(config)).toBe(7200);
   });
 
   it('will return custom min/max expiration', () => {
