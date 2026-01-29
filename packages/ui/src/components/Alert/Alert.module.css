@@ -18,9 +18,6 @@
 
 @layer components {
   .bui-Alert {
-    --alert-bg: var(--bui-bg-surface-1);
-    --alert-fg: var(--bui-fg-primary);
-
     display: flex;
     gap: var(--bui-space-6);
     padding: var(--bui-space-3) var(--bui-space-3);
@@ -28,30 +25,28 @@
     font-family: var(--bui-font-regular);
     font-size: var(--bui-font-size-3);
     line-height: 1.5;
-
-    /* Apply variables */
-    background-color: var(--alert-bg);
-    color: var(--alert-fg);
+    background-color: var(--bui-bg-surface-1);
+    color: var(--bui-fg-primary);
   }
 
   .bui-Alert[data-status='info'] {
-    --alert-bg: var(--bui-bg-info);
-    --alert-fg: var(--bui-fg-info);
+    background-color: var(--bui-bg-info);
+    color: var(--bui-fg-info);
   }
 
   .bui-Alert[data-status='success'] {
-    --alert-bg: var(--bui-bg-success);
-    --alert-fg: var(--bui-fg-success);
+    background-color: var(--bui-bg-success);
+    color: var(--bui-fg-success);
   }
 
   .bui-Alert[data-status='warning'] {
-    --alert-bg: var(--bui-bg-warning);
-    --alert-fg: var(--bui-fg-warning);
+    background-color: var(--bui-bg-warning);
+    color: var(--bui-fg-warning);
   }
 
   .bui-Alert[data-status='danger'] {
-    --alert-bg: var(--bui-bg-danger);
-    --alert-fg: var(--bui-fg-danger);
+    background-color: var(--bui-bg-danger);
+    color: var(--bui-fg-danger);
   }
 
   .bui-AlertIcon {
