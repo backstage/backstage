@@ -48,7 +48,7 @@ describe('PackageManager', () => {
           'package.json': JSON.stringify({
             name: 'foo',
             workspaces: {
-              packages: [],
+              packages: ['packages/*'],
             },
           }),
         });
@@ -59,7 +59,7 @@ describe('PackageManager', () => {
         mockDir.setContent({
           'package.json': JSON.stringify({
             name: 'foo',
-            workspaces: [],
+            workspaces: ['packages/*'],
           }),
         });
         await detectPackageManager();

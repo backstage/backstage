@@ -16,6 +16,7 @@
 
 import fs from 'node:fs';
 import { dirname, resolve as resolvePath } from 'node:path';
+import { getWorkspacesPatterns } from './workspaces';
 
 /**
  * A function that takes a set of path fragments and resolves them into a
@@ -105,25 +106,6 @@ export function findOwnRootDir(ownDir: string) {
   }
 
   return resolvePath(ownDir, '../..');
-}
-
-/**
- * Gets the workspaces pattern from a package.json object.
- * @param pkgJson - The package.json object to get the workspaces pattern from.
- * @returns The workspaces patterns (glob not resolved).
- * @public
- */
-export function getWorkspacesPatterns(pkgJson: any): string[] {
-  if (Array.isArray(pkgJson.workspaces)) {
-    return pkgJson.workspaces;
-  } else if (
-    typeof pkgJson.workspaces === 'object' &&
-    pkgJson.workspaces !== null &&
-    Array.isArray(pkgJson.workspaces.packages)
-  ) {
-    return pkgJson.workspaces.packages;
-  }
-  return [];
 }
 
 /**
