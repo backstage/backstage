@@ -20,7 +20,7 @@ export function TableOfContents() {
   // Update indicator position when activeId changes
   useLayoutEffect(() => {
     if (!activeId) return;
-    
+
     // Use requestAnimationFrame to defer setState call
     const rafId = requestAnimationFrame(() => {
       const activeElement = document.querySelector(
