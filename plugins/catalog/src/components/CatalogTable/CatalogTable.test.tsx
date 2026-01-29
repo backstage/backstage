@@ -155,7 +155,7 @@ describe('CatalogTable component', () => {
       },
     );
 
-    const editButton = screen.getByTitle('Edit');
+    const editButton = screen.getByRole('button', { name: /Edit/i });
 
     await act(async () => {
       fireEvent.click(editButton);
@@ -187,7 +187,7 @@ describe('CatalogTable component', () => {
       },
     );
 
-    const viewButton = screen.getByTitle('View');
+    const viewButton = screen.getByRole('button', { name: /View/i });
 
     await act(async () => {
       fireEvent.click(viewButton);
@@ -316,10 +316,10 @@ describe('CatalogTable component', () => {
         },
       );
 
-      const columnHeader = screen
-        .getAllByRole('button')
-        .filter(c => c.tagName === 'SPAN');
-      const columnHeaderLabels = columnHeader.map(c => c.textContent);
+      const columnHeader = screen.getAllByRole('columnheader');
+      const columnHeaderLabels = columnHeader.map(
+        c => c.textContent?.trim() || '',
+      );
       expect(columnHeaderLabels).toEqual(expectedColumns);
     },
     20_000,
@@ -379,10 +379,10 @@ describe('CatalogTable component', () => {
       },
     );
 
-    const columnHeader = screen
-      .getAllByRole('button')
-      .filter(c => c.tagName === 'SPAN');
-    const columnHeaderLabels = columnHeader.map(c => c.textContent);
+    const columnHeader = screen.getAllByRole('columnheader');
+    const columnHeaderLabels = columnHeader.map(
+      c => c.textContent?.trim() || '',
+    );
     expect(columnHeaderLabels).toEqual(expectedColumns);
 
     const labelCellValue = screen.getByText('generic');
@@ -439,10 +439,10 @@ describe('CatalogTable component', () => {
       },
     );
 
-    const columnHeader = screen
-      .getAllByRole('button')
-      .filter(c => c.tagName === 'SPAN');
-    const columnHeaderLabels = columnHeader.map(c => c.textContent);
+    const columnHeader = screen.getAllByRole('columnheader');
+    const columnHeaderLabels = columnHeader.map(
+      c => c.textContent?.trim() || '',
+    );
     expect(columnHeaderLabels).toEqual(expectedColumns);
 
     const labelCellValue = screen.getByText('generic');
