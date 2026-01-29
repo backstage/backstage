@@ -39,6 +39,7 @@ import {
 } from '../builder';
 import { productionPack } from './productionPack';
 import {
+  BackstagePackage,
   PackageRoles,
   PackageGraph,
   PackageGraphNode,
@@ -110,12 +111,21 @@ type Options = {
    * If set to true, the generated code will be minified.
    */
   minify?: boolean;
+
+  /**
+   * Optional logger to route console output through. When not provided,
+   * output goes to `console.log` / `console.warn` as before.
+   */
+  logger?: {
+    log(msg: string): void;
+    warn(msg: string): void;
+  };
 };
 
-function prefixLogFunc(prefix: string, out: 'stdout' | 'stderr') {
+function prefixLogFunc(prefix: string, logFn: (msg: string) => void) {
   return (data: Buffer) => {
     for (const line of data.toString('utf8').split(/\r?\n/)) {
-      process[out].write(`${prefix} ${line}\n`);
+      if (line) logFn(`${prefix}${line}`);
     }
   };
 }
@@ -132,21 +142,14 @@ export async function createDistWorkspace(
   packageNames: string[],
   options: Options = {},
 ) {
+  const logger = options.logger ?? { log: console.log, warn: console.warn };
+
   const targetDir =
     options.targetDir ??
     (await fs.mkdtemp(resolvePath(tmpdir(), 'dist-workspace')));
 
   const packages = await PackageGraph.listTargetPackages();
-  const packageGraph = PackageGraph.fromPackages(packages);
-  const targetNames = packageGraph.collectPackageNames(packageNames, node => {
-    // Don't include dependencies of packages that are marked as bundled
-    if (node.packageJson.bundled) {
-      return undefined;
-    }
-
-    return node.publishedLocalDependencies.keys();
-  });
-  const targets = Array.from(targetNames).map(name => packageGraph.get(name)!);
+  const targets = await resolveLocalDependencies(packageNames, packages);
 
   if (options.buildDependencies) {
     const exclude = options.buildExcludes ?? [];
@@ -169,7 +172,7 @@ export async function createDistWorkspace(
       }
       const role = pkg.packageJson.backstage?.role;
       if (!role) {
-        console.warn(
+        logger.warn(
           `Building ${pkg.packageJson.name} separately because it has no role`,
         );
         customBuild.push({ dir: pkg.dir, name: pkg.packageJson.name });
@@ -183,7 +186,7 @@ export async function createDistWorkspace(
       }
 
       if (!buildScript.startsWith('backstage-cli package build')) {
-        console.warn(
+        logger.warn(
           `Building ${pkg.packageJson.name} separately because it has a custom build script, '${buildScript}'`,
         );
         customBuild.push({ dir: pkg.dir, name: pkg.packageJson.name });
@@ -191,7 +194,7 @@ export async function createDistWorkspace(
       }
 
       if (PackageRoles.getRoleInfo(role).output.includes('bundle')) {
-        console.warn(
+        logger.warn(
           `Building ${pkg.packageJson.name} separately because it is a bundled package`,
         );
         const args = buildScript.includes('--config')
@@ -228,8 +231,8 @@ export async function createDistWorkspace(
         worker: async ({ name, dir, args }) => {
           await run(['yarn', 'run', 'build', ...(args || [])], {
             cwd: dir,
-            onStdout: prefixLogFunc(`${name}: `, 'stdout'),
-            onStderr: prefixLogFunc(`${name}: `, 'stderr'),
+            onStdout: prefixLogFunc(`${name}: `, logger.log),
+            onStderr: prefixLogFunc(`${name}: `, logger.warn),
           }).waitForExit();
         },
       });
@@ -241,6 +244,7 @@ export async function createDistWorkspace(
     targets,
     Boolean(options.alwaysPack),
     Boolean(options.enableFeatureDetection),
+    logger,
   );
 
   const files: FileEntry[] = options.files ?? ['yarn.lock', 'package.json'];
@@ -271,7 +275,7 @@ export async function createDistWorkspace(
     );
   }
 
-  return targetDir;
+  return { targetDir, targets };
 }
 
 const FAST_PACK_SCRIPTS = [
@@ -280,11 +284,40 @@ const FAST_PACK_SCRIPTS = [
   'backstage-cli package prepack',
 ];
 
+/**
+ * Runs `yarn pack` on a single package and extracts the resulting tarball
+ * into `targetDir`. This resolves `workspace:^` and `backstage:^` dependency
+ * specs to concrete versions via yarn's `beforeWorkspacePacking` hook.
+ */
+export async function packToDirectory(options: {
+  packageDir: string;
+  packageName: string;
+  targetDir: string;
+  archivePath?: string;
+  logger: { log(msg: string): void; warn(msg: string): void };
+}): Promise<void> {
+  const { packageDir, packageName, targetDir, logger } = options;
+  const archivePath =
+    options.archivePath ?? resolvePath(targetDir, 'temp-archive.tgz');
+  const prefix = `${packageName} [pack]: `;
+
+  await fs.ensureDir(targetDir);
+  await run(['yarn', 'pack', '--filename', archivePath], {
+    cwd: packageDir,
+    onStdout: prefixLogFunc(prefix, logger.log),
+    onStderr: prefixLogFunc(prefix, logger.warn),
+  }).waitForExit();
+
+  await tar.extract({ file: archivePath, cwd: targetDir, strip: 1 });
+  await fs.remove(archivePath);
+}
+
 async function moveToDistWorkspace(
   workspaceDir: string,
   localPackages: PackageGraphNode[],
   alwaysPack: boolean,
   enableFeatureDetection: boolean,
+  logger: { log(msg: string): void; warn(msg: string): void },
 ): Promise<void> {
   const [fastPackPackages, slowPackPackages] = partition(
     localPackages,
@@ -301,7 +334,7 @@ async function moveToDistWorkspace(
   // New an improved flow where we avoid calling `yarn pack`
   await Promise.all(
     fastPackPackages.map(async target => {
-      console.log(`Moving ${target.name} into dist workspace`);
+      logger.log(`Moving ${target.name} into dist workspace`);
 
       const outputDir = relativePath(targetPaths.rootDir, target.dir);
       const absoluteOutputPath = resolvePath(workspaceDir, outputDir);
@@ -316,23 +349,18 @@ async function moveToDistWorkspace(
   // Old flow is below, which calls `yarn pack` and extracts the tarball
 
   async function pack(target: PackageGraphNode, archive: string) {
-    console.log(`Repacking ${target.name} into dist workspace`);
-    const archivePath = resolvePath(workspaceDir, archive);
-
-    await run(['yarn', 'pack', '--filename', archivePath], {
-      cwd: target.dir,
-    }).waitForExit();
-
-    const outputDir = relativePath(targetPaths.rootDir, target.dir);
-    const absoluteOutputPath = resolvePath(workspaceDir, outputDir);
-    await fs.ensureDir(absoluteOutputPath);
-
-    await tar.extract({
-      file: archivePath,
-      cwd: absoluteOutputPath,
-      strip: 1,
+    logger.log(`Repacking ${target.name} into dist workspace`);
+    const absoluteOutputPath = resolvePath(
+      workspaceDir,
+      relativePath(targetPaths.rootDir, target.dir),
+    );
+    await packToDirectory({
+      packageDir: target.dir,
+      packageName: target.name,
+      targetDir: absoluteOutputPath,
+      archivePath: resolvePath(workspaceDir, archive),
+      logger,
     });
-    await fs.remove(archivePath);
 
     // We remove the dependencies from package.json of packages that are marked
     // as bundled, so that yarn doesn't try to install them.
@@ -372,4 +400,29 @@ async function moveToDistWorkspace(
       await pack(target, `temp-package-${index}.tgz`);
     },
   });
+}
+
+/**
+ * Resolves the full set of local (workspace) packages that the given
+ * package names transitively depend on via `publishedLocalDependencies`.
+ * Packages marked as `bundled` have their own dependencies excluded.
+ *
+ * This is the same traversal that `createDistWorkspace` performs internally.
+ * Callers must supply the monorepo package list obtained from
+ * `PackageGraph.listTargetPackages()`.
+ */
+export async function resolveLocalDependencies(
+  packageNames: string[],
+  packages: BackstagePackage[],
+): Promise<PackageGraphNode[]> {
+  const packageGraph = PackageGraph.fromPackages(packages);
+  const targetNames = packageGraph.collectPackageNames(packageNames, node => {
+    // Don't include dependencies of packages that are marked as bundled
+    if (node.packageJson.bundled) {
+      return undefined;
+    }
+
+    return node.publishedLocalDependencies.keys();
+  });
+  return Array.from(targetNames).map(name => packageGraph.get(name)!);
 }
