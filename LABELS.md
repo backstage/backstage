@@ -106,7 +106,7 @@ This is a collection of common issue filters that can help you find issues that 
 These issues are ideal for new contributors to get started and don't require much familiarity with Backstage.
 
 - [Backend](https://github.com/backstage/backstage/issues?q=is%3Aopen%20is%3Aissue%20label%3A%22good%20first%20issue%22%20label%3A%22domain%3Abackend%22%20)
-- [Documentation](https://github.com/backstage/backstage/issues?q=is%3Aopen%20is%3Aissue%20label%3A%22area%3Adocumentation%22)
+- [Documentation](https://github.com/backstage/backstage/issues?q=is%3Aopen%20is%3Aissue%20label%3A%22good%20first%20issue%22%20label%3A%22area%3Adocumentation%22)
 - [Tooling](https://github.com/backstage/backstage/issues?q=is%3Aopen%20is%3Aissue%20label%3A%22good%20first%20issue%22%20label%3A%22domain%3Atooling%22%20)
 - [Web](https://github.com/backstage/backstage/issues?q=is%3Aopen%20is%3Aissue%20label%3A%22good%20first%20issue%22%20label%3A%22domain%3Aweb%22%20)
 
