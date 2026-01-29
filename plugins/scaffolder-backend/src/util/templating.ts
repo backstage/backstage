@@ -26,7 +26,7 @@ import {
 } from '@backstage/plugin-scaffolder-node/alpha';
 import { JsonValue } from '@backstage/types';
 import { Schema } from 'jsonschema';
-import { ZodType, z } from 'zod';
+import { ZodType, z } from 'zod/v3';
 import zodToJsonSchema from 'zod-to-json-schema';
 
 /**

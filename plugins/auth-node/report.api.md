@@ -16,8 +16,8 @@ import { Profile } from 'passport';
 import { Request as Request_2 } from 'express';
 import { Response as Response_2 } from 'express';
 import { Strategy } from 'passport';
-import { ZodSchema } from 'zod';
-import { ZodTypeDef } from 'zod';
+import { ZodSchema } from 'zod/v3';
+import { ZodTypeDef } from 'zod/v3';
 
 // @public (undocumented)
 export interface AuthOwnershipResolutionExtensionPoint {

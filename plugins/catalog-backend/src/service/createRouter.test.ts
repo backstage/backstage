@@ -36,7 +36,7 @@ import {
 import express from 'express';
 import { Server } from 'node:http';
 import request from 'supertest';
-import { z } from 'zod';
+import { z } from 'zod/v3';
 import { Cursor, EntitiesCatalog } from '../catalog/types';
 import { CatalogProcessingOrchestrator } from '../processing/types';
 import { createRouter } from './createRouter';

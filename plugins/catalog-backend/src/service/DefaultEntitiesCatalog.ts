@@ -18,7 +18,7 @@ import { Entity, stringifyEntityRef } from '@backstage/catalog-model';
 import { InputError, NotFoundError } from '@backstage/errors';
 import { Knex } from 'knex';
 import { chunk as lodashChunk, isEqual } from 'lodash';
-import { z } from 'zod';
+import { z } from 'zod/v3';
 import {
   Cursor,
   EntitiesBatchRequest,

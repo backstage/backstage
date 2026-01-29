@@ -26,7 +26,7 @@ yarn --cwd packages/backend add zod @backstage/catalog-model
 import type { Entity } from '@backstage/catalog-model';
 import { catalogEntityPermissionResourceRef } from '@backstage/plugin-catalog-backend/alpha';
 import { createConditionFactory, createPermissionRule } from '@backstage/plugin-permission-node';
-import { z } from 'zod';
+import { z } from 'zod/v3';
 
 export const isInSystemRule = createPermissionRule({
   name: 'IS_IN_SYSTEM',

@@ -33,7 +33,7 @@ import { InputError, serializeError } from '@backstage/errors';
 import { LocationAnalyzer } from '@backstage/plugin-catalog-node';
 import express from 'express';
 import yn from 'yn';
-import { z } from 'zod';
+import { z } from 'zod/v3';
 import { Cursor, EntitiesCatalog } from '../catalog/types';
 import { CatalogProcessingOrchestrator } from '../processing/types';
 import { validateEntityEnvelope } from '../processing/util';
