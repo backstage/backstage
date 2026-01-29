@@ -193,6 +193,7 @@ describe('PgSearchEngine', () => {
       database.transaction.mockImplementation(fn => fn(tx));
       database.query.mockResolvedValue([
         {
+          total_count: '1',
           document: {
             title: 'Hello World',
             text: 'Lorem Ipsum',
@@ -212,6 +213,7 @@ describe('PgSearchEngine', () => {
       });
 
       expect(results).toEqual({
+        numberOfResults: 1,
         results: [
           {
             document: {
@@ -251,6 +253,7 @@ describe('PgSearchEngine', () => {
         Array(30)
           .fill(0)
           .map((_, i) => ({
+            total_count: '30',
             document: {
               title: 'Hello World',
               text: 'Lorem Ipsum',
@@ -270,6 +273,7 @@ describe('PgSearchEngine', () => {
       });
 
       expect(results).toEqual({
+        numberOfResults: 30,
         results: Array(25)
           .fill(0)
           .map((_, i) => ({
@@ -309,6 +313,7 @@ describe('PgSearchEngine', () => {
         Array(30)
           .fill(0)
           .map((_, i) => ({
+            total_count: '30',
             document: {
               title: 'Hello World',
               text: 'Lorem Ipsum',
@@ -330,6 +335,7 @@ describe('PgSearchEngine', () => {
       });
 
       expect(results).toEqual({
+        numberOfResults: 30,
         results: Array(30)
           .fill(0)
           .map((_, i) => ({
