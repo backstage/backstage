@@ -122,7 +122,7 @@ export const cursorParser: z.ZodSchema<Cursor> = z.object({
   orderFieldValues: z.array(z.string().or(z.null())),
   filter: entityFilterParser.optional(),
   isPrevious: z.boolean(),
-  query: z.string().optional(),
+  query: z.any().optional(),
   firstSortFieldValues: z.array(z.string().or(z.null())).optional(),
   totalItems: z.number().optional(),
 });

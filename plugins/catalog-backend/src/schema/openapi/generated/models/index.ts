@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 The Backstage Authors
+ * Copyright 2026 The Backstage Authors
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,14 @@ export * from '../models/EntityFacet.model';
 export * from '../models/EntityFacetsResponse.model';
 export * from '../models/EntityLink.model';
 export * from '../models/EntityMeta.model';
+export * from '../models/EntityPredicate.model';
+export * from '../models/EntityPredicateAll.model';
+export * from '../models/EntityPredicateAny.model';
+export * from '../models/EntityPredicateExists.model';
+export * from '../models/EntityPredicateIn.model';
+export * from '../models/EntityPredicateInInInner.model';
+export * from '../models/EntityPredicateNot.model';
+export * from '../models/EntityPredicateValue.model';
 export * from '../models/EntityRelation.model';
 export * from '../models/ErrorError.model';
 export * from '../models/ErrorRequest.model';
@@ -42,6 +50,9 @@ export * from '../models/LocationInput.model';
 export * from '../models/LocationSpec.model';
 export * from '../models/ModelError.model';
 export * from '../models/NullableEntity.model';
+export * from '../models/QueryEntitiesByPredicate200Response.model';
+export * from '../models/QueryEntitiesByPredicate200ResponsePageInfo.model';
+export * from '../models/QueryEntitiesByPredicateRequest.model';
 export * from '../models/RecursivePartialEntity.model';
 export * from '../models/RecursivePartialEntityMeta.model';
 export * from '../models/RecursivePartialEntityMetaAllOf.model';
