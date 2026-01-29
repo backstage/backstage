@@ -2,6 +2,7 @@ import {
   classNamePropDefs,
   stylePropDefs,
   gapPropDefs,
+  spacingGroupAll,
   type PropDef,
 } from '@/utils/propDefs';
 import { Chip } from '@/components/Chip';
@@ -61,4 +62,5 @@ export const flexPropDefs: Record<string, PropDef> = {
   },
   ...classNamePropDefs,
   ...stylePropDefs,
+  spacing: spacingGroupAll,
 };

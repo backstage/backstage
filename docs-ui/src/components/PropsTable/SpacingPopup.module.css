@@ -1,0 +1,77 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  font-family: monospace;
+  font-size: 13px;
+  border-radius: 6px;
+  padding: 0px 8px;
+  height: 24px;
+  margin-right: 4px;
+  background-color: #f0f0f0;
+  color: #5d5d5d;
+  cursor: pointer;
+  border: none;
+  outline: none;
+  box-shadow: none;
+  transition: background-color 150ms ease;
+}
+
+.button:hover {
+  background-color: #e0e0e0;
+}
+
+[data-theme-mode='dark'] .button {
+  background-color: #2c2c2c;
+  color: #fff;
+}
+
+[data-theme-mode='dark'] .button:hover {
+  background-color: #3c3c3c;
+}
+
+.popover {
+  border: 1px solid var(--border);
+  box-shadow: 0 8px 20px rgba(0 0 0 / 0.1);
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--primary);
+  outline: none;
+  transition: transform 200ms, opacity 200ms;
+  padding: 1rem;
+  margin-top: 6px;
+  max-width: 400px;
+  --origin: translateY(-8px);
+
+  &[data-entering],
+  &[data-exiting] {
+    transform: var(--origin);
+    opacity: 0;
+  }
+}
+
+.arrow svg {
+  display: block;
+  fill: var(--bg);
+  stroke: var(--border);
+  stroke-width: 1px;
+  transform: rotate(180deg);
+}
+
+.title {
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 0.75rem;
+}
+
+.grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.375rem;
+  margin-bottom: 0.75rem;
+}
+
+.note {
+  font-size: 12px;
+  color: var(--text-secondary);
+  font-style: italic;
+}
