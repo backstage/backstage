@@ -1,33 +1,20 @@
 'use client';
 
 import { Container } from '../../../../../packages/ui/src/components/Container/Container';
-import { Box } from '../../../../../packages/ui/src/components/Box/Box';
-import { Text } from '../../../../../packages/ui/src/components/Text/Text';
+import { DecorativeBox } from '@/components/DecorativeBox';
 
-export const Preview = () => {
-  return (
-    <Container py="4">
-      <Text>Content is centered with max-width</Text>
-    </Container>
-  );
-};
-
-export const BasicUsagePreview = () => {
+export const Default = () => {
   return (
     <Container>
-      <Box>Hello World</Box>
-      <Box>Hello World</Box>
-      <Box>Hello World</Box>
+      <DecorativeBox>Page content goes here</DecorativeBox>
     </Container>
   );
 };
 
-export const ResponsiveSpacingPreview = () => {
+export const ResponsiveSpacing = () => {
   return (
-    <Container py={{ initial: '2', md: '4' }}>
-      <Box>Hello World</Box>
-      <Box>Hello World</Box>
-      <Box>Hello World</Box>
+    <Container py={{ initial: '4', md: '8' }}>
+      <DecorativeBox>Content with vertical spacing</DecorativeBox>
     </Container>
   );
 };
