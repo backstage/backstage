@@ -430,6 +430,54 @@ export function fixPluginPackages(
   }
 }
 
+export function fixIntegrationFor(pkg: FixablePackage) {
+  const pkgBackstage = pkg.packageJson.backstage;
+  const role = pkgBackstage?.role;
+  if (!role) {
+    return;
+  }
+
+  const integrationFor = pkgBackstage.integrationFor;
+  if (integrationFor === undefined) {
+    return;
+  }
+
+  // Validate that integrationFor is only used on module packages
+  if (role !== 'backend-plugin-module' && role !== 'frontend-plugin-module') {
+    const path = relativePath(
+      paths.targetRoot,
+      resolvePath(pkg.dir, 'package.json'),
+    );
+    throw new Error(
+      `The 'backstage.integrationFor' field in "${pkg.packageJson.name}" can only be used on module packages (backend-plugin-module or frontend-plugin-module), but package has role '${role}' in "${path}"`,
+    );
+  }
+
+  // Validate that integrationFor is an array
+  if (!Array.isArray(integrationFor)) {
+    const path = relativePath(
+      paths.targetRoot,
+      resolvePath(pkg.dir, 'package.json'),
+    );
+    throw new Error(
+      `Invalid 'backstage.integrationFor' field in "${pkg.packageJson.name}", must be an array of package names in "${path}"`,
+    );
+  }
+
+  // Validate that all entries are non-empty strings
+  for (const entry of integrationFor) {
+    if (typeof entry !== 'string' || entry.length === 0) {
+      const path = relativePath(
+        paths.targetRoot,
+        resolvePath(pkg.dir, 'package.json'),
+      );
+      throw new Error(
+        `Invalid entry in 'backstage.integrationFor' field in "${pkg.packageJson.name}", all entries must be non-empty package name strings in "${path}"`,
+      );
+    }
+  }
+}
+
 type PackageFixer = (pkg: FixablePackage, packages: FixablePackage[]) => void;
 
 export async function command(opts: OptionValues): Promise<void> {
@@ -444,6 +492,7 @@ export async function command(opts: OptionValues): Promise<void> {
       fixRepositoryField,
       fixPluginId,
       fixPluginPackages,
+      fixIntegrationFor,
       // Run the publish preflight check too, to make sure we don't uncover errors during publishing
       publishPreflightCheck,
     );

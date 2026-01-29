@@ -92,6 +92,11 @@ export interface BackstagePackageJson {
     pluginPackages?: string[];
 
     /**
+     * Package names that this module provides integration for. When any of these packages are used, this module should be suggested as a related integration.
+     */
+    integrationFor?: string[];
+
+    /**
      * The feature types exported from the package, indexed by path.
      */
     features?: Record<string, BackstagePackageFeatureType>;
