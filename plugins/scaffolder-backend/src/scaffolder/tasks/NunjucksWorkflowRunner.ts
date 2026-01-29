@@ -36,7 +36,6 @@ import {
 import { TemplateActionRegistry } from '../actions/TemplateActionRegistry';
 import { generateExampleOutput, isTruthy } from './helper';
 import { TaskTrackType, WorkflowResponse, WorkflowRunner } from './types';
-
 import type {
   AuditorService,
   LoggerService,
@@ -270,6 +269,7 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
       if (
         step.if === false ||
         (typeof step.if === 'string' &&
+          step.each === undefined &&
           !isTruthy(this.render(step.if, context, renderTemplate)))
       ) {
         await stepTrack.skipFalsy();
@@ -391,6 +391,21 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
           iteration.each ? `[${iteration.each.key}]` : ''
         }`;
 
+        if (iteration.each && step.if) {
+          if (
+            !isTruthy(
+              this.render(
+                step.if,
+                { ...context, ...iteration },
+                renderTemplate,
+              ),
+            )
+          ) {
+            // No need to check schema or authorization for iterations that will not run
+            continue;
+          }
+        }
+
         if (action.schema?.input) {
           const validateResult = validateJsonSchema(
             iteration.input,
@@ -424,10 +439,30 @@ export class NunjucksWorkflowRunner implements WorkflowRunner {
 
       for (const iteration of iterations) {
         if (iteration.each) {
+          if (step.if) {
+            if (
+              !isTruthy(
+                this.render(
+                  step.if,
+                  { ...context, ...iteration },
+                  renderTemplate,
+                ),
+              )
+            ) {
+              taskLogger.info(
+                `Skipping step each: ${JSON.stringify(
+                  iteration.each,
+                  (k, v) => (k ? String(v) : v),
+                  0,
+                )}`,
+              );
+              continue;
+            }
+          }
           taskLogger.info(
             `Running step each: ${JSON.stringify(
               iteration.each,
-              (k, v) => (k ? v.toString() : v),
+              (k, v) => (k ? String(v) : v),
               0,
             )}`,
           );
