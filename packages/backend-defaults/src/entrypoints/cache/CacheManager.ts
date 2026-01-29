@@ -209,7 +209,7 @@ export class CacheManager {
       );
     }
 
-    let keepAliveForSocket: number | false | undefined;
+    let keepAliveForSocket: number | true | false | undefined;
     let keepAliveInitialDelayForSocket: number | undefined;
 
     if (keepAlive === false) {
@@ -221,7 +221,17 @@ export class CacheManager {
         keepAliveForSocket = keepAlive;
       }
     } else {
-      keepAliveInitialDelayForSocket = keepAliveInitialDelay;
+      if (keepAliveInitialDelay !== undefined) {
+        if (keepAlive !== true) {
+          logger?.warn(
+            'Socket keepalive initial delay is set without keepalive enabled. Enabling keepalive.',
+          );
+        }
+        keepAliveForSocket = true;
+        keepAliveInitialDelayForSocket = keepAliveInitialDelay;
+      } else if (keepAlive === true) {
+        keepAliveForSocket = true;
+      }
     }
 
     const socketOptions =
