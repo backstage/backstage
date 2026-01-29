@@ -442,37 +442,30 @@ export function fixIntegrationFor(pkg: FixablePackage) {
     return;
   }
 
+  const packagePath = relativePath(
+    paths.targetRoot,
+    resolvePath(pkg.dir, 'package.json'),
+  );
+
   // Validate that integrationFor is only used on module packages
   if (role !== 'backend-plugin-module' && role !== 'frontend-plugin-module') {
-    const path = relativePath(
-      paths.targetRoot,
-      resolvePath(pkg.dir, 'package.json'),
-    );
     throw new Error(
-      `The 'backstage.integrationFor' field in "${pkg.packageJson.name}" can only be used on module packages (backend-plugin-module or frontend-plugin-module), but package has role '${role}' in "${path}"`,
+      `The 'backstage.integrationFor' field in "${pkg.packageJson.name}" can only be used on module packages (backend-plugin-module or frontend-plugin-module), but package has role '${role}' in "${packagePath}"`,
     );
   }
 
   // Validate that integrationFor is an array
   if (!Array.isArray(integrationFor)) {
-    const path = relativePath(
-      paths.targetRoot,
-      resolvePath(pkg.dir, 'package.json'),
-    );
     throw new Error(
-      `Invalid 'backstage.integrationFor' field in "${pkg.packageJson.name}", must be an array of package names in "${path}"`,
+      `Invalid 'backstage.integrationFor' field in "${pkg.packageJson.name}", must be an array of package names in "${packagePath}"`,
     );
   }
 
   // Validate that all entries are non-empty strings
   for (const entry of integrationFor) {
     if (typeof entry !== 'string' || entry.length === 0) {
-      const path = relativePath(
-        paths.targetRoot,
-        resolvePath(pkg.dir, 'package.json'),
-      );
       throw new Error(
-        `Invalid entry in 'backstage.integrationFor' field in "${pkg.packageJson.name}", all entries must be non-empty package name strings in "${path}"`,
+        `Invalid entry in 'backstage.integrationFor' field in "${pkg.packageJson.name}", all entries must be non-empty package name strings in "${packagePath}"`,
       );
     }
   }
