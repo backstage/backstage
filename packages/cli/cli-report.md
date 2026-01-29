@@ -260,6 +260,7 @@ Usage: program [options]
 Options:
   --config <path>
   --minify
+  --module-federation
   --role <name>
   --skip-build-dependencies
   --stats

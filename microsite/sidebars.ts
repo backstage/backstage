@@ -583,6 +583,7 @@ export default {
                 'frontend-system/building-apps/configuring-extensions',
                 'frontend-system/building-apps/built-in-extensions',
                 'frontend-system/building-apps/plugin-conversion',
+                'frontend-system/building-apps/module-federation',
                 'frontend-system/building-apps/migrating',
               ],
             ),
