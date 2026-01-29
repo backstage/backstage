@@ -168,6 +168,45 @@ The presence of this field is checked by the `backstage-cli package prepack` com
 }
 ```
 
+### `backstage.integrationFor`
+
+For any module package, this optional field can be set to an array of package names that this module provides integration for. This field enables cross-plugin module discovery by declaring relationships between modules and the plugins they enhance or integrate with.
+
+For example, a Catalog module that provides Scaffolder-related entity processing can declare that it integrates with the Scaffolder backend. Tooling and documentation systems can use this metadata to surface relevant integrations and help users discover modules that work together.
+
+The field uses full package names rather than plugin IDs to allow precise targeting of specific packages. When referencing packages it is preferred to use a matching role, i.e. a `backend-plugin-module` referencing a `backend-plugin` package, but it is not required, in fact any of the packages in the target plugin's `pluginPackages` field can be used.
+
+```js title="Example usage of the backstage.integrationFor field"
+{
+  "name": "@backstage/plugin-catalog-backend-module-scaffolder",
+  "backstage": {
+    "role": "backend-plugin-module",
+    "pluginId": "catalog",
+    "pluginPackage": "@backstage/plugin-catalog-backend",
+    "integrationFor": ["@backstage/plugin-scaffolder-backend"]
+  }
+  ...
+}
+```
+
+A module can declare integration with multiple packages:
+
+```js title="Example of multi-plugin integration"
+{
+  "name": "@example/plugin-catalog-backend-module-ci-status",
+  "backstage": {
+    "role": "backend-plugin-module",
+    "pluginId": "catalog",
+    "pluginPackage": "@backstage/plugin-catalog-backend",
+    "integrationFor": [
+      "@backstage-community/plugin-jenkins-backend",
+      "@backstage-community/plugin-github-actions-backend"
+    ]
+  }
+  ...
+}
+```
+
 ### `backstage.moved`
 
 This field indicates that a package has been renamed and moved to a new location. This field is recognized by the Backstage CLI, where the version bump command will automatically switch to using the new package instead. The value of this field should be the new package name.
