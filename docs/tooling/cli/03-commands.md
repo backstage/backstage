@@ -38,6 +38,7 @@ The `package` command category, `yarn backstage-cli package --help`:
 ```text
 start [options]                  Start a package for local development
 build [options]                  Build a package for production deployment or publishing
+bundle [options]                 Bundle a plugin for dynamic loading (backend or frontend)
 lint [options] [directories...]  Lint a package
 test                             Run tests, forwarding args to Jest, defaulting to watch mode
 clean                            Delete cache directories
@@ -203,6 +204,121 @@ Options:
   --config <path>            Config files to load instead of app-config.yaml. Applies to app packages only. (default: [])
   --module-federation        Build a package as a module federation remote. Applies to frontend plugin packages only.
 ```
+
+## package bundle
+
+Bundle a plugin for dynamic loading. This creates a self-contained plugin
+package that can be deployed independently and loaded dynamically by a Backstage
+application. Supports both backend and frontend plugins.
+
+Unlike regular builds, the bundle command:
+
+- Creates a fully self-contained plugin deliverable
+
+- Produces module federation assets (frontend) or includes plugin dependencies in the plugin's private `node_modules`, building and packing (with `yarn pack`) the local `workspace:^` dependencies first (backend).
+- Generates a config schema from plugin-related packages only.
+- Validates that the plugin exports valid dynamic loading entry points (backend only)
+
+### Usage
+
+```bash
+# Bundle the current package (output: ./bundle/)
+yarn backstage-cli package bundle
+
+# Bundle to a specific directory (output: ../dynamic-plugins/<mangled-package-name>/)
+yarn backstage-cli package bundle --output-destination ../dynamic-plugins
+
+# Override the bundle subdirectory name
+yarn backstage-cli package bundle --output-name my-plugin-bundle
+
+# Clean output before bundling
+yarn backstage-cli package bundle --clean
+
+# Skip building for the plugin and its local dependencies
+yarn backstage-cli package bundle --no-build
+
+# Skip dependency installation and entrypoint validation
+yarn backstage-cli package bundle --no-install
+
+# Stream detailed output from build, pack, and install steps
+yarn backstage-cli package bundle --verbose
+
+# Use a pre-built dist workspace for batch bundling.
+# First, create the workspace with:
+#   backstage-cli build-workspace <output-dir> [packages...] --alwaysPack
+# Then pass <output-dir> as --pre-packed-dir:
+yarn backstage-cli package bundle --pre-packed-dir ../dist-workspace
+```
+
+### Options
+
+```text
+Usage: backstage-cli package bundle [options]
+
+Bundle a plugin for dynamic loading
+
+Options:
+  --output-destination <dir>  Directory in which the bundle subdirectory is created.
+                              Defaults to the current package directory.
+  --output-name <name>        Name of the bundle subdirectory. Defaults to "bundle" when
+                              output stays in the package directory, or to the mangled
+                              package name (e.g. myorg-plugin-foo) when
+                              --output-destination is specified.
+  --clean                     Clean the output directory before bundling
+  --no-build                  Skip building packages (assumes they are already built)
+  --no-install                Skip dependency installation and entrypoint validation.
+  --verbose                   Stream detailed output from internal steps (build, pack,
+                              install) to the console. Without this flag, output is
+                              captured to per-step log files and only shown on error.
+  --pre-packed-dir <dir>      Path to a pre-built dist workspace (from
+                              build-workspace --alwaysPack). Skips local dependency
+                              packing and uses pre-packed packages directly. For frontend
+                              plugins, this also enables yarn.lock generation for SBOM.
+```
+
+### Output Structure
+
+The bundle is created in a directory named after the package. For example,
+`@myorg/plugin-foo` creates `myorg-plugin-foo/` with the following structure:
+
+**Backend plugins:**
+
+```text
+myorg-plugin-foo/
+├── package.json              # Customized for dynamic loading
+├── dist/                     # Built plugin code
+│   ├── index.cjs.js
+│   └── .config-schema.json   # Config schema (local packages only)
+├── embedded/                 # Embedded workspace packages (if any)
+│   └── myorg-plugin-foo-common/
+│       ├── package.json
+│       └── dist/
+└── node_modules/             # All production dependencies
+```
+
+**Frontend plugins** produce module federation assets at the bundle root (no `embedded/` or `node_modules/` unless `--pre-packed-dir` is used).
+
+The `.config-schema.json` contains merged config schemas from the plugin and any
+embedded workspace packages. It excludes schemas from npm dependencies, as those
+should be provided by the host application. The `package.json` is updated to
+reference this generated JSON file instead of any original `.d.ts` schema.
+
+### Environment Variables
+
+The bundle command supports the same environment variables as the Backstage yarn plugin
+for resolving `backstage:^` version specifiers:
+
+- `BACKSTAGE_MANIFEST_FILE`: Path to a local manifest file (for offline usage)
+- `BACKSTAGE_VERSIONS_BASE_URL`: Custom base URL for fetching release manifests
+
+### Supported Package Roles
+
+The bundle command supports packages with the following roles:
+
+- `backend-plugin`
+- `backend-plugin-module`
+- `frontend-plugin`
+- `frontend-plugin-module`
 
 ## package lint
 
@@ -414,8 +530,16 @@ package. This essentially calls `yarn pack` in each included package and unpacks
 the resulting archive in the target `workspace-dir`.
 
 ```text
-Usage: backstage-cli build-workspace [options] <workspace-dir>
+Usage: backstage-cli build-workspace [options] <workspace-dir> [packages...]
+
+Options:
+  --alwaysPack  Force workspace output to be a result of running `yarn pack` on
+                each package (warning: very slow)
 ```
+
+When `--alwaysPack` is used, the output directory can be passed to
+`backstage-cli package bundle --pre-packed-dir` to speed up batch bundling of
+multiple plugins from the same monorepo.
 
 ## create-github-app
 

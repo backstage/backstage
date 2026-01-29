@@ -53,6 +53,47 @@ export function registerPackageCommands(command: Command) {
       'Build a package as a module federation remote. Applies to frontend plugin packages only.',
     )
     .action(lazy(() => import('./commands/package/build'), 'command'));
+
+  command
+    .command('bundle')
+    .description(
+      'Bundle a plugin for dynamic loading. Creates a self-contained plugin ' +
+        'package that can be deployed and loaded dynamically by a Backstage application. ' +
+        'Supports both backend and frontend plugins.',
+    )
+    .option(
+      '--output-destination <dir>',
+      'Directory in which the bundle subdirectory is created. ' +
+        'Defaults to the current package directory.',
+    )
+    .option(
+      '--output-name <name>',
+      'Name of the bundle subdirectory. ' +
+        'Defaults to "bundle" when output stays in the package directory, ' +
+        'or to the mangled package name (e.g. myorg-plugin-foo) when ' +
+        '--output-destination is specified.',
+    )
+    .option('--clean', 'Clean the output directory before bundling')
+    .option(
+      '--no-build',
+      'Skip building packages (assumes they are already built)',
+    )
+    .option(
+      '--no-install',
+      'Skip dependency installation and entrypoint validation.',
+    )
+    .option(
+      '--verbose',
+      'Stream detailed output from internal steps (build, pack, install) to the console. ' +
+        'Without this flag, output is captured to per-step log files and only shown on error.',
+    )
+    .option(
+      '--pre-packed-dir <dir>',
+      'Path to a pre-built dist workspace (from build-workspace --alwaysPack). ' +
+        'Skips local dependency packing and uses pre-packed packages directly. ' +
+        'For frontend plugins, this also enables yarn.lock generation for SBOM.',
+    )
+    .action(lazy(() => import('./commands/package/bundle'), 'command'));
 }
 
 export const buildPlugin = createCliPlugin({
@@ -121,6 +162,53 @@ export const buildPlugin = createCliPlugin({
             'Minify the generated code. Does not apply to app package (app is minified by default).',
           )
           .action(lazy(() => import('./commands/repo/build'), 'command'));
+        await defaultCommand.parseAsync(args, { from: 'user' });
+      },
+    });
+
+    reg.addCommand({
+      path: ['package', 'bundle'],
+      description:
+        'Bundle a plugin for dynamic loading. Creates a self-contained plugin ' +
+        'package that can be deployed and loaded dynamically by a Backstage application. ' +
+        'Supports both backend and frontend plugins.',
+      execute: async ({ args }) => {
+        const command = new Command();
+
+        const defaultCommand = command
+          .option(
+            '--output-destination <dir>',
+            'Directory in which the bundle subdirectory is created. ' +
+              'Defaults to the current package directory.',
+          )
+          .option(
+            '--output-name <name>',
+            'Name of the bundle subdirectory. ' +
+              'Defaults to "bundle" when output stays in the package directory, ' +
+              'or to the mangled package name (e.g. myorg-plugin-foo) when ' +
+              '--output-destination is specified.',
+          )
+          .option('--clean', 'Clean the output directory before bundling')
+          .option(
+            '--no-build',
+            'Skip building packages (assumes they are already built)',
+          )
+          .option(
+            '--no-install',
+            'Skip dependency installation and entrypoint validation.',
+          )
+          .option(
+            '--verbose',
+            'Stream detailed output from internal steps (build, pack, install) to the console. ' +
+              'Without this flag, output is captured to per-step log files and only shown on error.',
+          )
+          .option(
+            '--pre-packed-dir <dir>',
+            'Path to a pre-built dist workspace (from build-workspace --alwaysPack). ' +
+              'Skips local dependency packing and uses pre-packed packages directly. ' +
+              'For frontend plugins, this also enables yarn.lock generation for SBOM.',
+          )
+          .action(lazy(() => import('./commands/package/bundle'), 'command'));
         await defaultCommand.parseAsync(args, { from: 'user' });
       },
     });
