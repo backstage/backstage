@@ -16,17 +16,21 @@
 
 // Internal import to avoid code duplication, this will lead to duplication in build output
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import { StorageApi } from '@backstage/core-plugin-api';
 import { AppLanguageApi } from '@backstage/core-plugin-api/alpha';
 import { Observable } from '@backstage/types';
 import { BehaviorSubject } from '../../../lib';
 
 const STORAGE_KEY = 'language';
 export const DEFAULT_LANGUAGE = 'en';
+const BUCKET_NAME = 'userSettings';
+const CACHE_KEY = `/${BUCKET_NAME}/${STORAGE_KEY}`;
 
 /** @alpha */
 export interface AppLanguageSelectorOptions {
   defaultLanguage?: string;
   availableLanguages?: string[];
+  storageApi?: StorageApi;
 }
 
 /**
@@ -58,31 +62,105 @@ export class AppLanguageSelector implements AppLanguageApi {
 
   static createWithStorage(options?: AppLanguageSelectorOptions) {
     const selector = AppLanguageSelector.create(options);
+    const storageApi = options?.storageApi;
 
-    if (!window.localStorage) {
+    // storageApi isn't available during early boot (before config/other APIs are ready)
+    if (!storageApi) {
       return selector;
     }
 
-    const storedLanguage = window.localStorage.getItem(STORAGE_KEY);
-    const { languages } = selector.getAvailableLanguages();
-    if (storedLanguage && languages.includes(storedLanguage)) {
-      selector.setLanguage(storedLanguage);
+    const readLastKnownValue = (): string | undefined => {
+      if (typeof window === 'undefined' || !window.localStorage) {
+        return undefined;
+      }
+      try {
+        const cached = window.localStorage.getItem(CACHE_KEY);
+        if (cached === null) return undefined;
+        const parsed = JSON.parse(cached);
+        return typeof parsed === 'string' ? parsed : undefined;
+      } catch {
+        return undefined;
+      }
+    };
+
+    const writeLastKnownValue = (language: string | undefined): void => {
+      if (typeof window === 'undefined' || !window.localStorage) {
+        return;
+      }
+      try {
+        if (language === undefined) {
+          window.localStorage.removeItem(CACHE_KEY);
+          return;
+        }
+        window.localStorage.setItem(CACHE_KEY, JSON.stringify(language));
+      } catch {
+        // Ignore localStorage errors
+      }
+    };
+
+    const bucket = storageApi.forBucket(BUCKET_NAME);
+    const snapshot = bucket.snapshot<string | null>(STORAGE_KEY);
+    const useCache = snapshot.presence === 'unknown';
+    let hasLoadedFromStorage = false;
+    if (snapshot.presence !== 'unknown') {
+      const storedLanguage = snapshot.value ?? undefined;
+      const { languages } = selector.getAvailableLanguages();
+      if (storedLanguage && languages.includes(storedLanguage)) {
+        selector.setLanguage(storedLanguage);
+      }
+      if (useCache) {
+        writeLastKnownValue(storedLanguage);
+      }
+      hasLoadedFromStorage = true;
+    } else {
+      const cachedLanguage = readLastKnownValue();
+      const { languages } = selector.getAvailableLanguages();
+      if (cachedLanguage && languages.includes(cachedLanguage)) {
+        selector.setLanguage(cachedLanguage);
+      }
     }
 
-    selector.language$().subscribe(({ language }) => {
-      if (language !== window.localStorage.getItem(STORAGE_KEY)) {
-        window.localStorage.setItem(STORAGE_KEY, language);
+    const writeSubscription = () => {
+      selector.language$().subscribe(({ language }) => {
+        bucket.set(STORAGE_KEY, language).catch(() => {});
+        if (useCache) {
+          writeLastKnownValue(language);
+        }
+      });
+    };
+
+    if (hasLoadedFromStorage) {
+      writeSubscription();
+    }
+
+    bucket.observe$(STORAGE_KEY).subscribe(stored => {
+      const language = stored?.value as string | null | undefined;
+      if (language && language !== selector.getLanguage().language) {
+        selector.setLanguage(language);
+      }
+      if (useCache) {
+        writeLastKnownValue(language ?? undefined);
+      }
+      if (!hasLoadedFromStorage) {
+        hasLoadedFromStorage = true;
+        writeSubscription();
       }
     });
 
-    window.addEventListener('storage', event => {
-      if (event.key === STORAGE_KEY) {
-        const language = localStorage.getItem(STORAGE_KEY) ?? undefined;
-        if (language) {
-          selector.setLanguage(language);
+    if (useCache && typeof window !== 'undefined' && window.addEventListener) {
+      window.addEventListener('storage', event => {
+        if (event.key !== CACHE_KEY) {
+          return;
         }
-      }
-    });
+        const cachedLanguage = readLastKnownValue();
+        if (
+          cachedLanguage &&
+          cachedLanguage !== selector.getLanguage().language
+        ) {
+          selector.setLanguage(cachedLanguage);
+        }
+      });
+    }
 
     return selector;
   }

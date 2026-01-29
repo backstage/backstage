@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { MockStorageApi } from '@backstage/test-utils';
 import { AppLanguageSelector } from './AppLanguageSelector';
 
 const baseOptions = {
@@ -21,10 +22,6 @@ const baseOptions = {
 };
 
 describe('AppLanguageSelector', () => {
-  beforeEach(() => {
-    localStorage.removeItem('language');
-  });
-
   it('should select language', async () => {
     const selector = AppLanguageSelector.create(baseOptions);
 
@@ -87,47 +84,44 @@ describe('AppLanguageSelector', () => {
   });
 
   it('should be initialized from storage', () => {
-    expect(
-      AppLanguageSelector.createWithStorage(baseOptions).getLanguage(),
-    ).toEqual({ language: 'en' });
+    const storageApi = MockStorageApi.create();
+    const selector = AppLanguageSelector.createWithStorage({
+      ...baseOptions,
+      storageApi,
+    });
+    expect(selector.getLanguage()).toEqual({ language: 'en' });
 
-    localStorage.setItem('language', 'de');
-
+    const seededStorage = MockStorageApi.create({
+      userSettings: { language: 'de' },
+    });
     expect(
-      AppLanguageSelector.createWithStorage(baseOptions).getLanguage(),
+      AppLanguageSelector.createWithStorage({
+        ...baseOptions,
+        storageApi: seededStorage,
+      }).getLanguage(),
     ).toEqual({ language: 'de' });
-
-    localStorage.removeItem('language');
-
-    expect(
-      AppLanguageSelector.createWithStorage(baseOptions).getLanguage(),
-    ).toEqual({ language: 'en' });
   });
 
   it('should sync with storage', async () => {
-    const addListenerSpy = jest.spyOn(window, 'addEventListener');
-    const selector = AppLanguageSelector.createWithStorage(baseOptions);
-
-    expect(addListenerSpy).toHaveBeenCalledTimes(1);
-    expect(addListenerSpy).toHaveBeenCalledWith(
-      'storage',
-      expect.any(Function),
-    );
+    const storageApi = MockStorageApi.create({
+      userSettings: { language: 'en' },
+    });
+    const bucket = storageApi.forBucket('userSettings');
+    const selector = AppLanguageSelector.createWithStorage({
+      ...baseOptions,
+      storageApi,
+    });
 
     selector.setLanguage('de');
     await 'wait a tick';
-    expect(localStorage.getItem('language')).toBe('de');
+    expect(bucket.snapshot<string | null>('language').value).toBe('de');
 
     selector.setLanguage('en');
     await 'wait a tick';
-    expect(localStorage.getItem('language')).toBe('en');
+    expect(bucket.snapshot<string | null>('language').value).toBe('en');
 
-    localStorage.setItem('language', 'de');
-    expect(selector.getLanguage()).toEqual({ language: 'en' });
-
-    const listener = addListenerSpy.mock.calls[0][1] as EventListener;
-    listener({ key: 'language' } as StorageEvent);
-
+    await bucket.set('language', 'de');
+    await 'wait a tick';
     expect(selector.getLanguage()).toEqual({ language: 'de' });
   });
 
