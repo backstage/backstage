@@ -386,7 +386,40 @@ describe('CacheManager store options', () => {
     );
   });
 
-  it('passes numeric keepAlive to the redis client', () => {
+  it('passes boolean keepAlive to the redis client', () => {
+    const manager = CacheManager.fromConfig(
+      mockServices.rootConfig({
+        data: {
+          backend: {
+            cache: {
+              store: 'redis',
+              connection: 'redis://localhost:6379',
+              redis: {
+                client: {
+                  socket: {
+                    keepAlive: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      }),
+    );
+
+    manager.forPlugin('p1');
+
+    expect(KeyvRedis).toHaveBeenCalledWith(
+      {
+        url: 'redis://localhost:6379',
+        socket: expect.objectContaining({ keepAlive: true }),
+      },
+      expect.objectContaining({ keyPrefixSeparator: ':' }),
+    );
+  });
+
+  it('warns and ignores numeric keepAlive values', () => {
+    const logger = mockServices.logger.mock();
     const manager = CacheManager.fromConfig(
       mockServices.rootConfig({
         data: {
@@ -405,15 +438,17 @@ describe('CacheManager store options', () => {
           },
         },
       }),
+      { logger },
     );
 
     manager.forPlugin('p1');
 
+    const childLogger = (logger.child as jest.Mock).mock.results[0]?.value;
+    expect(childLogger?.warn).toHaveBeenCalledWith(
+      "Invalid 'client.socket.keepAlive' value. Expected boolean, got number. Ignoring keepAlive.",
+    );
     expect(KeyvRedis).toHaveBeenCalledWith(
-      {
-        url: 'redis://localhost:6379',
-        socket: expect.objectContaining({ keepAlive: 7000 }),
-      },
+      'redis://localhost:6379',
       expect.objectContaining({ keyPrefixSeparator: ':' }),
     );
   });

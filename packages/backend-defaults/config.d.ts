@@ -766,16 +766,15 @@ export interface Config {
               socket?: {
                 /**
                  * Enables TCP keepalive. When `true`, uses the Redis client default
-                 * delay (5000ms in node-redis). When a number, it is interpreted as
-                 * the initial delay in milliseconds. If unset, Backstage does not
-                 * override the Redis client defaults.
-                 *
-                 * Do not set a numeric value together with `keepAliveInitialDelay`;
-                 * prefer `keepAlive: true` with `keepAliveInitialDelay`. If only
+                 * delay (5000ms in node-redis). If unset, Backstage does not
+                 * override the Redis client defaults. If only
                  * `keepAliveInitialDelay` is set, keepalive is enabled with that
                  * delay.
+                 *
+                 * See https://github.com/redis/node-redis/blob/master/docs/client-configuration.md
+                 * and https://nodejs.org/api/net.html#socketsetkeepaliveenable-initialdelay
                  */
-                keepAlive?: boolean | number;
+                keepAlive?: boolean;
                 /**
                  * Initial delay in milliseconds for TCP keepalive probes.
                  */

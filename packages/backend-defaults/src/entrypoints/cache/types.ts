@@ -17,7 +17,7 @@
 import { LoggerService } from '@backstage/backend-plugin-api';
 import { HumanDuration, durationToMilliseconds } from '@backstage/types';
 import {
-  RedisClusterOptions,
+  RedisClusterOptions as KeyvRedisClusterOptions,
   KeyvRedisOptions,
   RedisClientOptions,
 } from '@keyv/redis';
@@ -32,7 +32,23 @@ export type RedisCacheStoreOptions = {
   type: 'redis';
   client?: KeyvRedisOptions;
   cluster?: RedisClusterOptions;
-  socket?: RedisClientOptions['socket'];
+  socket?: RedisSocketOptions;
+};
+
+type RedisSocketOptions = Omit<
+  NonNullable<RedisClientOptions['socket']>,
+  'keepAlive'
+> & {
+  keepAlive?: boolean;
+};
+
+type RedisClusterOptions = Omit<KeyvRedisClusterOptions, 'defaults'> & {
+  defaults?: Omit<
+    NonNullable<KeyvRedisClusterOptions['defaults']>,
+    'socket'
+  > & {
+    socket?: RedisSocketOptions;
+  };
 };
 
 /**
