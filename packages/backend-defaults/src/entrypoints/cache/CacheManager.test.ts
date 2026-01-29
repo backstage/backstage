@@ -211,6 +211,8 @@ describe('CacheManager integration', () => {
 });
 
 describe('CacheManager store options', () => {
+  afterEach(jest.clearAllMocks);
+
   it('uses default options when no store-specific config exists', () => {
     const manager = CacheManager.fromConfig(
       mockServices.rootConfig({
@@ -307,6 +309,9 @@ describe('CacheManager store options', () => {
   });
 
   it('accepts client config for clustered mode', () => {
+    (createCluster as jest.Mock).mockReturnValue({
+      url: 'redis://localhost:6379',
+    });
     const manager = CacheManager.fromConfig(
       mockServices.rootConfig({
         data: {
@@ -329,8 +334,261 @@ describe('CacheManager store options', () => {
     );
     manager.forPlugin('p1');
 
-    expect(KeyvRedis).toHaveBeenCalledWith(expect.anything(), {
-      keyPrefixSeparator: '!',
+    expect(KeyvRedis).toHaveBeenCalledWith(
+      expect.objectContaining({
+        url: 'redis://localhost:6379',
+        socket: expect.any(Object),
+      }),
+      {
+        keyPrefixSeparator: '!',
+      },
+    );
+  });
+
+  it('passes socket keepalive options to the redis client', () => {
+    const logger = mockServices.logger.mock();
+    const manager = CacheManager.fromConfig(
+      mockServices.rootConfig({
+        data: {
+          backend: {
+            cache: {
+              store: 'redis',
+              connection: 'redis://localhost:6379',
+              redis: {
+                client: {
+                  socket: {
+                    keepAliveInitialDelay: 1234,
+                  },
+                },
+              },
+            },
+          },
+        },
+      }),
+      { logger },
+    );
+
+    manager.forPlugin('p1');
+
+    const childLogger = (logger.child as jest.Mock).mock.results[0]?.value;
+    expect(childLogger?.warn).toHaveBeenCalledWith(
+      'Socket keepalive initial delay is set without keepalive enabled. Enabling keepalive.',
+    );
+    expect(KeyvRedis).toHaveBeenCalledWith(
+      {
+        url: 'redis://localhost:6379',
+        socket: expect.objectContaining({
+          keepAlive: true,
+          keepAliveInitialDelay: 1234,
+        }),
+      },
+      expect.objectContaining({ keyPrefixSeparator: ':' }),
+    );
+  });
+
+  it('passes boolean keepAlive to the redis client', () => {
+    const manager = CacheManager.fromConfig(
+      mockServices.rootConfig({
+        data: {
+          backend: {
+            cache: {
+              store: 'redis',
+              connection: 'redis://localhost:6379',
+              redis: {
+                client: {
+                  socket: {
+                    keepAlive: true,
+                  },
+                },
+              },
+            },
+          },
+        },
+      }),
+    );
+
+    manager.forPlugin('p1');
+
+    expect(KeyvRedis).toHaveBeenCalledWith(
+      {
+        url: 'redis://localhost:6379',
+        socket: expect.objectContaining({ keepAlive: true }),
+      },
+      expect.objectContaining({ keyPrefixSeparator: ':' }),
+    );
+  });
+
+  it('warns and ignores numeric keepAlive values', () => {
+    const logger = mockServices.logger.mock();
+    const manager = CacheManager.fromConfig(
+      mockServices.rootConfig({
+        data: {
+          backend: {
+            cache: {
+              store: 'redis',
+              connection: 'redis://localhost:6379',
+              redis: {
+                client: {
+                  socket: {
+                    keepAlive: 7000,
+                  },
+                },
+              },
+            },
+          },
+        },
+      }),
+      { logger },
+    );
+
+    manager.forPlugin('p1');
+
+    const childLogger = (logger.child as jest.Mock).mock.results[0]?.value;
+    expect(childLogger?.warn).toHaveBeenCalledWith(
+      "Invalid 'client.socket.keepAlive' value. Expected boolean, got number. Ignoring keepAlive.",
+    );
+    expect(KeyvRedis).toHaveBeenCalledWith(
+      'redis://localhost:6379',
+      expect.objectContaining({ keyPrefixSeparator: ':' }),
+    );
+  });
+
+  it('ignores keepAliveInitialDelay when keepAlive is false', () => {
+    const manager = CacheManager.fromConfig(
+      mockServices.rootConfig({
+        data: {
+          backend: {
+            cache: {
+              store: 'redis',
+              connection: 'redis://localhost:6379',
+              redis: {
+                client: {
+                  socket: {
+                    keepAlive: false,
+                    keepAliveInitialDelay: 5000,
+                  },
+                },
+              },
+            },
+          },
+        },
+      }),
+    );
+
+    manager.forPlugin('p1');
+
+    expect(KeyvRedis).toHaveBeenCalledWith(
+      {
+        url: 'redis://localhost:6379',
+        socket: expect.objectContaining({ keepAlive: false }),
+      },
+      expect.objectContaining({ keyPrefixSeparator: ':' }),
+    );
+  });
+
+  it('passes ping interval and socket timeout to the redis client', () => {
+    const manager = CacheManager.fromConfig(
+      mockServices.rootConfig({
+        data: {
+          backend: {
+            cache: {
+              store: 'redis',
+              connection: 'redis://localhost:6379',
+              redis: {
+                client: {
+                  socket: {
+                    pingInterval: 15000,
+                    socketTimeout: 20000,
+                  },
+                },
+              },
+            },
+          },
+        },
+      }),
+    );
+
+    manager.forPlugin('p1');
+
+    expect(KeyvRedis).toHaveBeenCalledWith(
+      {
+        url: 'redis://localhost:6379',
+        socket: expect.objectContaining({
+          pingInterval: 15000,
+          socketTimeout: 20000,
+        }),
+      },
+      expect.objectContaining({ keyPrefixSeparator: ':' }),
+    );
+  });
+
+  it('merges socket options into redis cluster defaults', () => {
+    const manager = CacheManager.fromConfig(
+      mockServices.rootConfig({
+        data: {
+          backend: {
+            cache: {
+              store: 'redis',
+              connection: 'redis://localhost:6379',
+              redis: {
+                client: {
+                  socket: {
+                    keepAliveInitialDelay: 4242,
+                  },
+                },
+                cluster: {
+                  rootNodes: [{ url: 'redis://localhost:6379' }],
+                },
+              },
+            },
+          },
+        },
+      }),
+    );
+
+    manager.forPlugin('p1');
+
+    expect(createCluster).toHaveBeenCalledWith({
+      rootNodes: [{ url: 'redis://localhost:6379' }],
+      defaults: { socket: { keepAlive: true, keepAliveInitialDelay: 4242 } },
+    });
+  });
+
+  it('merges ping interval and socket timeout into redis cluster defaults', () => {
+    const manager = CacheManager.fromConfig(
+      mockServices.rootConfig({
+        data: {
+          backend: {
+            cache: {
+              store: 'redis',
+              connection: 'redis://localhost:6379',
+              redis: {
+                client: {
+                  socket: {
+                    pingInterval: 10000,
+                    socketTimeout: 12000,
+                  },
+                },
+                cluster: {
+                  rootNodes: [{ url: 'redis://localhost:6379' }],
+                },
+              },
+            },
+          },
+        },
+      }),
+    );
+
+    manager.forPlugin('p1');
+
+    expect(createCluster).toHaveBeenCalledWith({
+      rootNodes: [{ url: 'redis://localhost:6379' }],
+      defaults: {
+        socket: {
+          pingInterval: 10000,
+          socketTimeout: 12000,
+        },
+      },
     });
   });
 

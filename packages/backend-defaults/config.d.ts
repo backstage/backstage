@@ -758,6 +758,38 @@ export interface Config {
                * Defaults to `false`.
                */
               noNamespaceAffectsAll?: boolean;
+              /**
+               * Socket settings passed to the Redis client. See
+               * https://github.com/redis/node-redis/blob/master/docs/client-configuration.md
+               * and https://keyv.org/docs/storage-adapters/redis/#keyv-redis-options.
+               */
+              socket?: {
+                /**
+                 * Enables TCP keepalive. When `true`, uses the Redis client default
+                 * delay (5000ms in node-redis). If unset, Backstage does not
+                 * override the Redis client defaults. If only
+                 * `keepAliveInitialDelay` is set, keepalive is enabled with that
+                 * delay.
+                 *
+                 * See https://github.com/redis/node-redis/blob/master/docs/client-configuration.md
+                 * and https://nodejs.org/api/net.html#socketsetkeepaliveenable-initialdelay
+                 */
+                keepAlive?: boolean;
+                /**
+                 * Initial delay in milliseconds for TCP keepalive probes.
+                 */
+                keepAliveInitialDelay?: number;
+                /**
+                 * Send `PING` command at interval (in milliseconds). Useful for
+                 * environments with idle connection timeouts.
+                 */
+                pingInterval?: number;
+                /**
+                 * The maximum duration (in milliseconds) that the socket can remain
+                 * idle before being automatically closed.
+                 */
+                socketTimeout?: number;
+              };
             };
             /**
              * An optional Redis cluster configuration.

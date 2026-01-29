@@ -183,6 +183,69 @@ export class CacheManager {
       ),
     };
 
+    const clientConfig = redisConfig.getOptionalConfig('client');
+    const socketConfig = clientConfig?.getOptionalConfig('socket');
+    const keepAliveConfig = socketConfig?.getOptional('keepAlive');
+    const keepAlive =
+      typeof keepAliveConfig === 'boolean' ? keepAliveConfig : undefined;
+    const keepAliveInitialDelay = socketConfig?.getOptionalNumber(
+      'keepAliveInitialDelay',
+    );
+    const pingInterval = socketConfig?.getOptionalNumber('pingInterval');
+    const socketTimeout = socketConfig?.getOptionalNumber('socketTimeout');
+
+    if (typeof keepAliveConfig === 'number') {
+      logger?.warn(
+        "Invalid 'client.socket.keepAlive' value. Expected boolean, got number. Ignoring keepAlive.",
+      );
+    }
+
+    if (keepAlive === false && keepAliveInitialDelay !== undefined) {
+      logger?.warn(
+        "Both 'client.socket.keepAlive' (false) and 'client.socket.keepAliveInitialDelay' are set. Ignoring 'keepAliveInitialDelay' because keepalive is disabled.",
+      );
+    }
+
+    let keepAliveForSocket: boolean | undefined;
+    let keepAliveInitialDelayForSocket: number | undefined;
+
+    if (keepAlive === false) {
+      keepAliveForSocket = false;
+    } else {
+      if (keepAliveInitialDelay !== undefined) {
+        if (keepAlive !== true) {
+          logger?.warn(
+            'Socket keepalive initial delay is set without keepalive enabled. Enabling keepalive.',
+          );
+        }
+        keepAliveForSocket = true;
+        keepAliveInitialDelayForSocket = keepAliveInitialDelay;
+      } else if (keepAlive === true) {
+        keepAliveForSocket = true;
+      }
+    }
+
+    const socketOptions =
+      keepAliveForSocket !== undefined ||
+      keepAliveInitialDelayForSocket !== undefined ||
+      pingInterval !== undefined ||
+      socketTimeout !== undefined
+        ? {
+            ...(keepAliveForSocket !== undefined
+              ? { keepAlive: keepAliveForSocket }
+              : {}),
+            ...(keepAliveInitialDelayForSocket !== undefined
+              ? { keepAliveInitialDelay: keepAliveInitialDelayForSocket }
+              : {}),
+            ...(pingInterval !== undefined ? { pingInterval } : {}),
+            ...(socketTimeout !== undefined ? { socketTimeout } : {}),
+          }
+        : undefined;
+
+    if (socketOptions) {
+      redisOptions.socket = socketOptions;
+    }
+
     if (redisConfig.has('cluster')) {
       const clusterConfig = redisConfig.getConfig('cluster');
 
@@ -204,6 +267,17 @@ export class CacheManager {
           'maxCommandRedirections',
         ),
       };
+
+      if (redisOptions.socket) {
+        redisOptions.cluster.defaults = {
+          ...(redisOptions.cluster.defaults ?? {}),
+          socket: {
+            ...((redisOptions.cluster.defaults as { socket?: object })
+              ?.socket ?? {}),
+            ...redisOptions.socket,
+          },
+        };
+      }
     }
 
     return redisOptions;
@@ -337,17 +411,21 @@ export class CacheManager {
           `Internal error: Wrong config type passed to redis factory: ${this.storeOptions?.type}`,
         );
       }
+      const storeOptions = this.storeOptions as RedisCacheStoreOptions;
       if (!stores[pluginId]) {
-        const redisOptions = this.storeOptions?.client || {
+        const redisOptions = storeOptions.client || {
           keyPrefixSeparator: ':',
         };
-        if (this.storeOptions?.cluster) {
+        if (storeOptions.cluster) {
           // Create a Redis cluster
-          const cluster = createCluster(this.storeOptions?.cluster);
+          const cluster = createCluster(storeOptions.cluster);
           stores[pluginId] = new KeyvRedis(cluster, redisOptions);
         } else {
           // Create a regular Redis connection
-          stores[pluginId] = new KeyvRedis(this.connection, redisOptions);
+          const connection = storeOptions.socket
+            ? { url: this.connection, socket: storeOptions.socket }
+            : this.connection;
+          stores[pluginId] = new KeyvRedis(connection, redisOptions);
         }
 
         // Always provide an error handler to avoid stopping the process
