@@ -1,0 +1,245 @@
+/*
+ * Copyright 2025 The Backstage Authors
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+@layer tokens, base, components, utilities;
+
+@layer components {
+  /* Toast Region - Container for all toasts (bottom-right only) */
+  .bui-ToastRegion {
+    position: fixed;
+    bottom: 1rem;
+    right: 1rem;
+    z-index: 100050;
+    width: 300px;
+    pointer-events: none;
+    outline: none;
+  }
+
+  @media (min-width: 500px) {
+    .bui-ToastRegion {
+      width: 350px;
+      bottom: 2rem;
+      right: 2rem;
+    }
+  }
+
+  /* Individual Toast */
+  .bui-Toast {
+    --toast-bg: var(--bui-bg-surface-1);
+    --toast-fg: var(--bui-fg-primary);
+    --toast-gap: 0.75rem;
+    --toast-peek: 0.75rem;
+    --toast-scale: calc(max(0, 1 - (var(--toast-index) * 0.05)));
+    --toast-shrink: calc(1 - var(--toast-scale));
+
+    position: absolute;
+    right: 0;
+    margin: 0 auto;
+    box-sizing: border-box;
+    display: flex;
+    align-items: flex-start;
+    gap: var(--bui-space-3);
+    width: 100%;
+    padding: var(--bui-space-3);
+    border-radius: var(--bui-radius-3);
+    background-color: var(--toast-bg);
+    color: var(--toast-fg);
+    font-family: var(--bui-font-regular);
+    font-size: var(--bui-font-size-3);
+    line-height: 1.5;
+    box-shadow: var(--bui-shadow);
+    outline: none;
+    cursor: default;
+    user-select: none;
+    z-index: calc(1000 - var(--toast-index));
+    transition:
+      transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 0.5s;
+
+    /* Focus ring */
+    &:focus-visible {
+      outline: 2px solid var(--bui-border-focus);
+      outline-offset: 2px;
+    }
+  }
+
+  /* Stacking from bottom */
+  .bui-Toast {
+    --swipe-x: 0;
+    
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    transform-origin: bottom center;
+    transform: translateY(calc(var(--toast-index) * var(--toast-peek) * -1))
+      scale(var(--toast-scale));
+    opacity: calc(1 - (var(--toast-index) * 0.15));
+    will-change: transform;
+  }
+  
+  /* Disable transitions during swipe for immediate feedback */
+  .bui-Toast[data-swiping] {
+    transition: none !important;
+    opacity: calc((1 - (var(--toast-index) * 0.15)) * (1 - (var(--swipe-x) / 400)));
+  }
+
+  /* Expanded state on hover - show all toasts stacked with gap */
+  .bui-ToastRegion:hover .bui-Toast,
+  .bui-ToastRegion:focus-within .bui-Toast,
+  .bui-ToastRegion[data-hover-locked] .bui-Toast {
+    transform: translateY(calc((var(--toast-index) * -100%) - (var(--toast-index) * var(--bui-space-2)))) scale(1);
+    opacity: 1;
+    pointer-events: auto;
+  }
+  
+  /* Add padding above each toast when expanded to fill the gap */
+  .bui-ToastRegion:hover .bui-Toast::before,
+  .bui-ToastRegion:focus-within .bui-Toast::before,
+  .bui-ToastRegion[data-hover-locked] .bui-Toast::before {
+    content: '';
+    position: absolute;
+    bottom: 100%;
+    left: 0;
+    right: 0;
+    height: var(--bui-space-2);
+  }
+
+  /* Only first toast (index 0) is interactive by default */
+  .bui-Toast {
+    pointer-events: none;
+  }
+  
+  .bui-Toast[style*='--toast-index: 0'] {
+    pointer-events: auto;
+  }
+
+  /* Status variants */
+  .bui-Toast[data-status='info'] {
+    --toast-bg: var(--bui-bg-info);
+    --toast-fg: var(--bui-fg-info);
+    --toast-border: var(--bui-border-info);
+  }
+
+  .bui-Toast[data-status='success'] {
+    --toast-bg: var(--bui-bg-success);
+    --toast-fg: var(--bui-fg-success);
+    --toast-border: var(--bui-border-success);
+  }
+
+  .bui-Toast[data-status='warning'] {
+    --toast-bg: var(--bui-bg-warning);
+    --toast-fg: var(--bui-fg-warning);
+    --toast-border: var(--bui-border-warning);
+  }
+
+  .bui-Toast[data-status='danger'] {
+    --toast-bg: var(--bui-bg-danger);
+    --toast-fg: var(--bui-fg-danger);
+    --toast-border: var(--bui-border-danger);
+  }
+
+  /* Toast Content */
+  .bui-ToastContent {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--bui-space-3);
+    flex: 1;
+    min-width: 0;
+  }
+
+  /* Icon */
+  .bui-ToastIcon {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 0.125rem;
+
+    svg {
+      width: 1rem;
+      height: 1rem;
+    }
+  }
+
+  /* Title */
+  .bui-ToastTitle {
+    font-weight: var(--bui-font-weight-bold);
+    font-size: var(--bui-font-size-3);
+    word-wrap: break-word;
+  }
+
+  /* Description */
+  .bui-ToastDescription {
+    font-size: var(--bui-font-size-2);
+    opacity: 0.9;
+    margin-top: var(--bui-space-1);
+    word-wrap: break-word;
+  }
+
+  /* Close Button */
+  .bui-ToastCloseButton {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.5rem;
+    height: 1.5rem;
+    margin: -0.25rem -0.25rem 0 0;
+    padding: 0;
+    border: none;
+    border-radius: var(--bui-radius-2);
+    background: transparent;
+    color: var(--toast-fg);
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+
+    svg {
+      width: 1rem;
+      height: 1rem;
+    }
+
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.1);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--bui-border-focus);
+      outline-offset: 1px;
+    }
+
+    &:active {
+      background-color: rgba(0, 0, 0, 0.15);
+    }
+  }
+
+  /* Starting state - toast entering */
+  .bui-Toast[data-starting-style] {
+    transform: translateY(calc(100% + 2rem)) scale(1) !important;
+    opacity: 0 !important;
+  }
+
+  /* Reduced motion */
+  @media (prefers-reduced-motion: reduce) {
+    .bui-Toast {
+      transition: none;
+    }
+
+    html.bui-toast-add::view-transition-new(*),
+    html.bui-toast-remove::view-transition-old(*) {
+      animation: none;
+    }
+  }
+}

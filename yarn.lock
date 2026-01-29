@@ -8003,6 +8003,7 @@ __metadata:
   dependencies:
     "@backstage/cli": "workspace:^"
     "@backstage/version-bridge": "workspace:^"
+    "@react-aria/toast": "npm:^3.0.9"
     "@remixicon/react": "npm:^4.6.0"
     "@tanstack/react-table": "npm:^8.21.3"
     "@types/react": "npm:^18.0.0"
