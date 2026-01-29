@@ -5,7 +5,10 @@
   "backstage": {
     "role": "backend-plugin-module",
     "pluginId": "search",
-    "pluginPackage": "@backstage/plugin-search-backend"
+    "pluginPackage": "@backstage/plugin-search-backend",
+    "integrationFor": [
+      "@backstage/plugin-techdocs-backend"
+    ]
   },
   "publishConfig": {
     "access": "public"

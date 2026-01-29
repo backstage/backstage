@@ -5,7 +5,10 @@
   "backstage": {
     "role": "backend-plugin-module",
     "pluginId": "scaffolder",
-    "pluginPackage": "@backstage/plugin-scaffolder-backend"
+    "pluginPackage": "@backstage/plugin-scaffolder-backend",
+    "integrationFor": [
+      "@backstage/plugin-notifications-backend"
+    ]
   },
   "publishConfig": {
     "access": "public",
