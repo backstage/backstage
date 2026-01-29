@@ -9,8 +9,6 @@ const eslintConfig = defineConfig([
       'notice/notice': 'off',
       'react/forbid-elements': 'off',
       'jsx-a11y/alt-text': 'off',
-      '@next/next/no-css-tags': 'off',
-      'react-hooks/set-state-in-effect': 'warn',
     },
   },
 ]);

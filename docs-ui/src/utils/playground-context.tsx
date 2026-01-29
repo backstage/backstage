@@ -22,13 +22,13 @@ const PlaygroundContext = createContext<{
   setSelectedThemeName: (themeName: ThemeName) => void;
 }>({
   selectedScreenSizes: [],
-  setSelectedScreenSizes: () => {},
+  setSelectedScreenSizes: () => { },
   selectedComponents: [],
-  setSelectedComponents: () => {},
+  setSelectedComponents: () => { },
   selectedTheme: new Set(['light']),
-  setSelectedTheme: () => {},
+  setSelectedTheme: () => { },
   selectedThemeName: 'backstage',
-  setSelectedThemeName: () => {},
+  setSelectedThemeName: () => { },
 });
 
 // Create a provider component
@@ -40,37 +40,30 @@ export const PlaygroundProvider = ({ children }: { children: ReactNode }) => {
   const [selectedComponents, setSelectedComponents] = useState<string[]>(
     components.map(component => component.slug),
   );
-  const [selectedTheme, setSelectedTheme] = useState<Set<Theme>>(
-    new Set(['light']),
-  );
-  const [selectedThemeName, setSelectedThemeName] =
-    useState<ThemeName>('backstage');
 
-  // Load saved theme from localStorage after hydration
-  useEffect(() => {
-    if (isBrowser) {
+  // Use lazy initialization to load from localStorage
+  const [selectedTheme, setSelectedTheme] = useState<Set<Theme>>(() => {
+    if (typeof window !== 'undefined') {
       const savedThemeString = localStorage.getItem('theme-mode');
       if (savedThemeString) {
-        // Parse the comma-separated string back into a Set
         const themeArray = savedThemeString
           .split(',')
           .filter(Boolean) as Theme[];
-        setSelectedTheme(new Set(themeArray));
-      } else {
-        setSelectedTheme(new Set(['light']));
+        return new Set(themeArray);
       }
     }
-  }, [isBrowser]);
+    return new Set(['light']);
+  });
 
-  // Load saved theme name from localStorage after hydration
-  useEffect(() => {
-    if (isBrowser) {
+  const [selectedThemeName, setSelectedThemeName] = useState<ThemeName>(() => {
+    if (typeof window !== 'undefined') {
       const savedThemeName = localStorage.getItem('theme-name') as ThemeName;
       if (savedThemeName) {
-        setSelectedThemeName(savedThemeName);
+        return savedThemeName;
       }
     }
-  }, [isBrowser]);
+    return 'backstage';
+  });
 
   useEffect(() => {
     if (isBrowser) {

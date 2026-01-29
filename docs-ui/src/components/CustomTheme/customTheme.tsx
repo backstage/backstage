@@ -46,7 +46,7 @@ const myTheme = createTheme({
 });
 
 export const CustomTheme = () => {
-  const [isClient, setIsClient] = useState(false);
+  const [isClient, setIsClient] = useState(() => typeof window !== 'undefined');
   const [open, setOpen] = useState(true);
   const [customTheme, setCustomTheme] = useState<string | undefined>(undefined);
   const { selectedThemeName } = usePlayground();
@@ -73,7 +73,10 @@ export const CustomTheme = () => {
         storedTheme = defaultTheme;
         localStorage.setItem('customThemeCss', storedTheme);
       }
-      setCustomTheme(storedTheme);
+      // Defer setState to avoid synchronous call in effect
+      requestAnimationFrame(() => {
+        setCustomTheme(storedTheme!);
+      });
       updateStyleElement(storedTheme);
     } else {
       const styleElement = document.getElementById(
@@ -84,10 +87,6 @@ export const CustomTheme = () => {
       }
     }
   }, [selectedThemeName]);
-
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
 
   const handleSave = () => {
     if (customTheme) {
