@@ -15,6 +15,8 @@
  */
 
 import { Entity, CompoundEntityRef } from '@backstage/catalog-model';
+import { TableColumn } from '@backstage/core-components';
+import { JSX } from 'react';
 
 /**
  * Generic representing the metadata structure for a docs table row.
@@ -29,3 +31,40 @@ export type DocsTableRow = {
     ownedByRelations: CompoundEntityRef[];
   };
 };
+
+/**
+ * Column factory functions for DocsTable
+ * @public
+ */
+export interface ColumnFactories {
+  createTitleColumn(options?: { hidden?: boolean }): TableColumn<DocsTableRow>;
+  createNameColumn(): TableColumn<DocsTableRow>;
+  createOwnerColumn(): TableColumn<DocsTableRow>;
+  createKindColumn(): TableColumn<DocsTableRow>;
+  createTypeColumn(): TableColumn<DocsTableRow>;
+}
+
+/**
+ * Action factory functions for DocsTable
+ * @public
+ */
+export interface ActionFactories {
+  createCopyDocsUrlAction(
+    copyToClipboard: Function,
+    t: Function,
+  ): (row: DocsTableRow) => {
+    icon: () => JSX.Element;
+    tooltip: string;
+    onClick: () => void;
+  };
+  createStarEntityAction(
+    isStarredEntity: Function,
+    toggleStarredEntity: Function,
+    t: Function,
+  ): (row: DocsTableRow) => {
+    cellStyle: { paddingLeft: string };
+    icon: () => JSX.Element;
+    tooltip: string;
+    onClick: () => void;
+  };
+}

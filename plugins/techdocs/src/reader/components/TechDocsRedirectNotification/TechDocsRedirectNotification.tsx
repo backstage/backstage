@@ -18,6 +18,8 @@ import { makeStyles } from '@material-ui/core/styles';
 import { useState } from 'react';
 import Snackbar from '@material-ui/core/Snackbar';
 import Button from '@material-ui/core/Button';
+import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
+import { techdocsTranslationRef } from '../../../translation';
 
 type TechDocsRedirectNotificationProps = {
   handleButtonClick: () => void;
@@ -39,6 +41,7 @@ export const TechDocsRedirectNotification = ({
 }: TechDocsRedirectNotificationProps) => {
   const classes = useStyles();
   const [open, setOpen] = useState(true);
+  const { t } = useTranslationRef(techdocsTranslationRef);
 
   const handleClose = () => setOpen(false);
 
@@ -59,7 +62,7 @@ export const TechDocsRedirectNotification = ({
             handleButtonClick();
           }}
         >
-          Redirect now
+          {t('redirectNotification.redirectNow')}
         </Button>
       }
     />
