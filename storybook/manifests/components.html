@@ -123,7 +123,9 @@
       #filter-all:target ~ header .filter-pill[data-k='all'],
       #filter-errors:target ~ header .filter-pill[data-k='errors'],
       #filter-infos:target ~ header .filter-pill[data-k='infos'],
-      #filter-story-errors:target ~ header .filter-pill[data-k='story-errors'] {
+      #filter-story-errors:target ~ header .filter-pill[data-k='story-errors'],
+      #filter-doc-errors:target ~ header .filter-pill[data-k='docs'],
+      #filter-docs:target ~ header .filter-pill[data-k='docs'] {
           box-shadow: 0 0 0 var(--active-ring) currentColor;
           border-color: currentColor;
       }
@@ -132,7 +134,9 @@
       #filter-all,
       #filter-errors,
       #filter-infos,
-      #filter-story-errors {
+      #filter-story-errors,
+      #filter-doc-errors,
+      #filter-docs {
           display: none;
       }
 
@@ -245,6 +249,8 @@
       .tg-err:checked + label.as-toggle,
       .tg-info:checked + label.as-toggle,
       .tg-stories:checked + label.as-toggle,
+      .tg-docs:checked + label.as-toggle,
+      .tg-content:checked + label.as-toggle,
       .tg-props:checked + label.as-toggle {
           box-shadow: 0 0 0 var(--active-ring) currentColor;
           border-color: currentColor;
@@ -270,6 +276,16 @@
       }
 
       .tg-stories:checked ~ .panels .panel-stories {
+          display: grid;
+          gap: 8px;
+      }
+
+      .tg-docs:checked ~ .panels .panel-docs {
+          display: grid;
+          gap: 8px;
+      }
+
+      .tg-content:checked ~ .panels .panel-content {
           display: grid;
           gap: 8px;
       }
@@ -434,6 +450,19 @@
           display: none;
       }
 
+      #filter-doc-errors:target ~ main .card:not(.has-doc-error) {
+          display: none;
+      }
+
+      #filter-docs:target ~ main .card:has(> .tg-docs),
+      #filter-docs:target ~ main .card.is-doc {
+          display: block;
+      }
+
+      #filter-docs:target ~ main .card:not(:has(> .tg-docs)):not(.is-doc) {
+          display: none;
+      }
+
       #filter-all:target ~ main .card {
           display: block;
       }
@@ -446,6 +475,19 @@
       /* Show grouped section only in errors view */
       #filter-errors:target ~ main .error-groups {
           display: block;
+      }
+
+      /* Section titles */
+      .section-title {
+          font-size: 16px;
+          font-weight: 600;
+          color: var(--muted);
+          margin: 24px 0 12px;
+          padding-bottom: 8px;
+          border-bottom: 1px solid var(--border);
+      }
+      .section-title:first-child {
+          margin-top: 0;
       }
 
       /* When a toggle is checked, show the corresponding panel */
@@ -461,10 +503,20 @@
           display: grid;
       }
 
+      .card > .tg-docs:checked ~ .panels .panel-docs {
+          display: grid;
+      }
+
+      .card > .tg-content:checked ~ .panels .panel-content {
+          display: grid;
+      }
+
       /* Add vertical spacing around panels only when any panel is visible */
       .card > .tg-err:checked ~ .panels,
       .card > .tg-info:checked ~ .panels,
       .card > .tg-stories:checked ~ .panels,
+      .card > .tg-docs:checked ~ .panels,
+      .card > .tg-content:checked ~ .panels,
       .card > .tg-props:checked ~ .panels {
           margin: 10px 0;
       }
@@ -474,6 +526,8 @@
           .card:has(.tg-err:checked) label[for$='-err'],
           .card:has(.tg-info:checked) label[for$='-info'],
           .card:has(.tg-stories:checked) label[for$='-stories'],
+          .card:has(.tg-docs:checked) label[for$='-docs'],
+          .card:has(.tg-content:checked) label[for$='-content'],
           .card:has(.tg-props:checked) label[for$='-props'] {
               box-shadow: 0 0 0 1px currentColor;
               border-color: currentColor;
@@ -498,6 +552,17 @@
           word-break: inherit;
           inline-size: min(100%, 120ch);
       }
+
+      /* MDX content container for docs */
+      .mdx-content {
+          background: #0f131b;
+          border: 1px solid var(--border);
+          border-radius: 10px;
+          padding: 12px;
+          max-height: 400px;
+          overflow-y: auto;
+          margin-top: 8px;
+      }
   </style>
 </head>
 <body>
@@ -506,21 +571,25 @@
 <span id="filter-errors"></span>
 <span id="filter-infos"></span>
 <span id="filter-story-errors"></span>
+<span id="filter-doc-errors"></span>
+<span id="filter-docs"></span>
 <header>
   <div class="wrap">
-    <h1>Components Manifest</h1>
+    <h1>Manifest Debugger</h1>
     <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><span class="filter-pill ok" aria-disabled="true">40 components ok</span><a class="filter-pill info" data-k="infos" href="#filter-infos">30/40 infos</a><span class="filter-pill ok" aria-disabled="true">365 stories ok</span></div>
   </div>
 </header>
 <main>
   <div class="wrap">
+    <h2 class="section-title">Components</h2>
     <div class="grid" role="list">
       
 <article
   class="card 
   no-error 
   has-info 
-  no-story-error"
+  no-story-error
+  no-doc-error"
   role="listitem"
   aria-label="Accordion">
   <div class="head">
@@ -530,6 +599,7 @@
         <label for="c-0-backstage-ui-accordion-props" class="badge ok as-toggle">1 prop type</label>
         <label for="c-0-backstage-ui-accordion-info" class="badge info as-toggle">1 info</label>
         <label for="c-0-backstage-ui-accordion-stories" class="badge ok as-toggle">6 stories</label>
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Accordion/Accordion.stories.tsx">backstage-ui-accordion · ./packages/ui/src/components/Accordion/Accordion.stories.tsx</div>
@@ -542,6 +612,7 @@
   
   <input id="c-0-backstage-ui-accordion-info" class="tg tg-info" type="checkbox" hidden />
   <input id="c-0-backstage-ui-accordion-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   <input id="c-0-backstage-ui-accordion-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
@@ -742,13 +813,15 @@
 );</code></pre>
             </div>
         </div>
+    
   </div>
 </article>
 <article
   class="card 
   no-error 
   no-info 
-  no-story-error"
+  no-story-error
+  no-doc-error"
   role="listitem"
   aria-label="Alert">
   <div class="head">
@@ -758,6 +831,7 @@
         <label for="c-1-backstage-ui-alert-props" class="badge ok as-toggle">16 prop types</label>
         
         <label for="c-1-backstage-ui-alert-stories" class="badge ok as-toggle">13 stories</label>
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Alert/Alert.stories.tsx">backstage-ui-alert · ./packages/ui/src/components/Alert/Alert.stories.tsx</div>
@@ -770,6 +844,7 @@
   
   
   <input id="c-1-backstage-ui-alert-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   <input id="c-1-backstage-ui-alert-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
@@ -1202,13 +1277,15 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
 );</code></pre>
             </div>
         </div>
+    
   </div>
 </article>
 <article
   class="card 
   no-error 
   has-info 
-  no-story-error"
+  no-story-error
+  no-doc-error"
   role="listitem"
   aria-label="Avatar">
   <div class="head">
@@ -1218,6 +1295,7 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
         <label for="c-2-backstage-ui-avatar-props" class="badge ok as-toggle">4 prop types</label>
         <label for="c-2-backstage-ui-avatar-info" class="badge info as-toggle">1 info</label>
         <label for="c-2-backstage-ui-avatar-stories" class="badge ok as-toggle">4 stories</label>
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Avatar/Avatar.stories.tsx">backstage-ui-avatar · ./packages/ui/src/components/Avatar/Avatar.stories.tsx</div>
@@ -1230,6 +1308,7 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
   
   <input id="c-2-backstage-ui-avatar-info" class="tg tg-info" type="checkbox" hidden />
   <input id="c-2-backstage-ui-avatar-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   <input id="c-2-backstage-ui-avatar-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
@@ -1363,13 +1442,15 @@ src: string</code></pre>
 &lt;/Flex&gt;;</code></pre>
             </div>
         </div>
+    
   </div>
 </article>
 <article
   class="card 
   no-error 
   has-info 
-  no-story-error"
+  no-story-error
+  no-doc-error"
   role="listitem"
   aria-label="Box">
   <div class="head">
@@ -1379,6 +1460,7 @@ src: string</code></pre>
         <label for="c-3-backstage-ui-box-props" class="badge ok as-toggle">27 prop types</label>
         <label for="c-3-backstage-ui-box-info" class="badge info as-toggle">1 info</label>
         <label for="c-3-backstage-ui-box-stories" class="badge ok as-toggle">13 stories</label>
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Box/Box.stories.tsx">backstage-ui-box · ./packages/ui/src/components/Box/Box.stories.tsx</div>
@@ -1391,6 +1473,7 @@ src: string</code></pre>
   
   <input id="c-3-backstage-ui-box-info" class="tg tg-info" type="checkbox" hidden />
   <input id="c-3-backstage-ui-box-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   <input id="c-3-backstage-ui-box-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
@@ -1854,13 +1937,15 @@ width?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;</code></pre>
 &lt;/Flex&gt;;</code></pre>
             </div>
         </div>
+    
   </div>
 </article>
 <article
   class="card 
   no-error 
   no-info 
-  no-story-error"
+  no-story-error
+  no-doc-error"
   role="listitem"
   aria-label="Button">
   <div class="head">
@@ -1870,6 +1955,7 @@ width?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;</code></pre>
         <label for="c-4-backstage-ui-button-props" class="badge ok as-toggle">10 prop types</label>
         
         <label for="c-4-backstage-ui-button-stories" class="badge ok as-toggle">11 stories</label>
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Button/Button.stories.tsx">backstage-ui-button · ./packages/ui/src/components/Button/Button.stories.tsx</div>
@@ -1882,6 +1968,7 @@ width?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;</code></pre>
   
   
   <input id="c-4-backstage-ui-button-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   <input id="c-4-backstage-ui-button-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
@@ -2410,13 +2497,15 @@ import { RiArrowRightSLine, RiCloudLine } from "@remixicon/react";</code></pre>
 );</code></pre>
             </div>
         </div>
+    
   </div>
 </article>
 <article
   class="card 
   no-error 
   has-info 
-  no-story-error"
+  no-story-error
+  no-doc-error"
   role="listitem"
   aria-label="ButtonIcon">
   <div class="head">
@@ -2426,6 +2515,7 @@ import { RiArrowRightSLine, RiCloudLine } from "@remixicon/react";</code></pre>
         <label for="c-5-backstage-ui-buttonicon-props" class="badge ok as-toggle">7 prop types</label>
         <label for="c-5-backstage-ui-buttonicon-info" class="badge info as-toggle">1 info</label>
         <label for="c-5-backstage-ui-buttonicon-stories" class="badge ok as-toggle">7 stories</label>
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/ButtonIcon/ButtonIcon.stories.tsx">backstage-ui-buttonicon · ./packages/ui/src/components/ButtonIcon/ButtonIcon.stories.tsx</div>
@@ -2438,6 +2528,7 @@ import { RiArrowRightSLine, RiCloudLine } from "@remixicon/react";</code></pre>
   
   <input id="c-5-backstage-ui-buttonicon-info" class="tg tg-info" type="checkbox" hidden />
   <input id="c-5-backstage-ui-buttonicon-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   <input id="c-5-backstage-ui-buttonicon-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
@@ -2658,13 +2749,15 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
 );</code></pre>
             </div>
         </div>
+    
   </div>
 </article>
 <article
   class="card 
   no-error 
   has-info 
-  no-story-error"
+  no-story-error
+  no-doc-error"
   role="listitem"
   aria-label="ButtonLink">
   <div class="head">
@@ -2674,6 +2767,7 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
         <label for="c-6-backstage-ui-buttonlink-props" class="badge ok as-toggle">8 prop types</label>
         <label for="c-6-backstage-ui-buttonlink-info" class="badge info as-toggle">1 info</label>
         <label for="c-6-backstage-ui-buttonlink-stories" class="badge ok as-toggle">7 stories</label>
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/ButtonLink/ButtonLink.stories.tsx">backstage-ui-buttonlink · ./packages/ui/src/components/ButtonLink/ButtonLink.stories.tsx</div>
@@ -2686,6 +2780,7 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
   
   <input id="c-6-backstage-ui-buttonlink-info" class="tg tg-info" type="checkbox" hidden />
   <input id="c-6-backstage-ui-buttonlink-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   <input id="c-6-backstage-ui-buttonlink-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
@@ -2867,13 +2962,15 @@ import { RiArrowRightSLine, RiCloudLine } from "@remixicon/react";</code></pre>
     }}&gt;Button&lt;/ButtonLink&gt;;</code></pre>
             </div>
         </div>
+    
   </div>
 </article>
 <article
   class="card 
   no-error 
   no-info 
-  no-story-error"
+  no-story-error
+  no-doc-error"
   role="listitem"
   aria-label="Card">
   <div class="head">
@@ -2883,6 +2980,7 @@ import { RiArrowRightSLine, RiCloudLine } from "@remixicon/react";</code></pre>
         <label for="c-7-backstage-ui-card-props" class="badge ok as-toggle">1 prop type</label>
         
         <label for="c-7-backstage-ui-card-stories" class="badge ok as-toggle">4 stories</label>
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Card/Card.stories.tsx">backstage-ui-card · ./packages/ui/src/components/Card/Card.stories.tsx</div>
@@ -2895,6 +2993,7 @@ import { RiArrowRightSLine, RiCloudLine } from "@remixicon/react";</code></pre>
   
   
   <input id="c-7-backstage-ui-card-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   <input id="c-7-backstage-ui-card-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
@@ -3025,13 +3124,15 @@ import { RiArrowRightSLine, RiCloudLine } from "@remixicon/react";</code></pre>
 );</code></pre>
             </div>
         </div>
+    
   </div>
 </article>
 <article
   class="card 
   no-error 
   has-info 
-  no-story-error"
+  no-story-error
+  no-doc-error"
   role="listitem"
   aria-label="Checkbox">
   <div class="head">
@@ -3041,6 +3142,7 @@ import { RiArrowRightSLine, RiCloudLine } from "@remixicon/react";</code></pre>
         <label for="c-8-backstage-ui-checkbox-props" class="badge ok as-toggle">1 prop type</label>
         <label for="c-8-backstage-ui-checkbox-info" class="badge info as-toggle">1 info</label>
         <label for="c-8-backstage-ui-checkbox-stories" class="badge ok as-toggle">3 stories</label>
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Checkbox/Checkbox.stories.tsx">backstage-ui-checkbox · ./packages/ui/src/components/Checkbox/Checkbox.stories.tsx</div>
@@ -3053,6 +3155,7 @@ import { RiArrowRightSLine, RiCloudLine } from "@remixicon/react";</code></pre>
   
   <input id="c-8-backstage-ui-checkbox-info" class="tg tg-info" type="checkbox" hidden />
   <input id="c-8-backstage-ui-checkbox-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   <input id="c-8-backstage-ui-checkbox-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
@@ -3131,13 +3234,15 @@ import { RiArrowRightSLine, RiCloudLine } from "@remixicon/react";</code></pre>
 );</code></pre>
             </div>
         </div>
+    
   </div>
 </article>
 <article
   class="card 
   no-error 
   has-info 
-  no-story-error"
+  no-story-error
+  no-doc-error"
   role="listitem"
   aria-label="Container">
   <div class="head">
@@ -3147,6 +3252,7 @@ import { RiArrowRightSLine, RiCloudLine } from "@remixicon/react";</code></pre>
         <label for="c-9-backstage-ui-container-props" class="badge ok as-toggle">9 prop types</label>
         <label for="c-9-backstage-ui-container-info" class="badge info as-toggle">1 info</label>
         <label for="c-9-backstage-ui-container-stories" class="badge ok as-toggle">8 stories</label>
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Container/Container.stories.tsx">backstage-ui-container · ./packages/ui/src/components/Container/Container.stories.tsx</div>
@@ -3159,6 +3265,7 @@ import { RiArrowRightSLine, RiCloudLine } from "@remixicon/react";</code></pre>
   
   <input id="c-9-backstage-ui-container-info" class="tg tg-info" type="checkbox" hidden />
   <input id="c-9-backstage-ui-container-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   <input id="c-9-backstage-ui-container-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
@@ -3289,13 +3396,15 @@ style?: React.CSSProperties</code></pre>
               <pre><code>const WithMarginBottom = () =&gt; &lt;Container mb=&quot;4&quot; /&gt;;</code></pre>
             </div>
         </div>
+    
   </div>
 </article>
 <article
   class="card 
   no-error 
   has-info 
-  no-story-error"
+  no-story-error
+  no-doc-error"
   role="listitem"
   aria-label="dev">
   <div class="head">
@@ -3305,6 +3414,7 @@ style?: React.CSSProperties</code></pre>
         <label for="c-10-backstage-ui-table-dev-props" class="badge ok as-toggle">12 prop types</label>
         <label for="c-10-backstage-ui-table-dev-info" class="badge info as-toggle">1 info</label>
         <label for="c-10-backstage-ui-table-dev-stories" class="badge ok as-toggle">21 stories</label>
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Table/stories/Table.dev.stories.tsx">backstage-ui-table-dev · ./packages/ui/src/components/Table/stories/Table.dev.stories.tsx</div>
@@ -3317,6 +3427,7 @@ style?: React.CSSProperties</code></pre>
   
   <input id="c-10-backstage-ui-table-dev-info" class="tg tg-info" type="checkbox" hidden />
   <input id="c-10-backstage-ui-table-dev-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   <input id="c-10-backstage-ui-table-dev-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
@@ -4402,13 +4513,15 @@ import { Fragment } from "react";</code></pre>
 };</code></pre>
             </div>
         </div>
+    
   </div>
 </article>
 <article
   class="card 
   no-error 
   has-info 
-  no-story-error"
+  no-story-error
+  no-doc-error"
   role="listitem"
   aria-label="Dialog">
   <div class="head">
@@ -4418,6 +4531,7 @@ import { Fragment } from "react";</code></pre>
         <label for="c-11-backstage-ui-dialog-props" class="badge ok as-toggle">4 prop types</label>
         <label for="c-11-backstage-ui-dialog-info" class="badge info as-toggle">1 info</label>
         <label for="c-11-backstage-ui-dialog-stories" class="badge ok as-toggle">11 stories</label>
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Dialog/Dialog.stories.tsx">backstage-ui-dialog · ./packages/ui/src/components/Dialog/Dialog.stories.tsx</div>
@@ -4430,6 +4544,7 @@ import { Fragment } from "react";</code></pre>
   
   <input id="c-11-backstage-ui-dialog-info" class="tg tg-info" type="checkbox" hidden />
   <input id="c-11-backstage-ui-dialog-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   <input id="c-11-backstage-ui-dialog-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
@@ -4692,13 +4807,15 @@ width?: number | string</code></pre>
               <pre><code>const PreviewWithForm = () =&gt; &lt;Dialog isOpen={undefined} defaultOpen={undefined} /&gt;;</code></pre>
             </div>
         </div>
+    
   </div>
 </article>
 <article
   class="card 
   no-error 
   has-info 
-  no-story-error"
+  no-story-error
+  no-doc-error"
   role="listitem"
   aria-label="docs">
   <div class="head">
@@ -4708,6 +4825,7 @@ width?: number | string</code></pre>
         <label for="c-12-backstage-ui-table-docs-props" class="badge ok as-toggle">12 prop types</label>
         <label for="c-12-backstage-ui-table-docs-info" class="badge info as-toggle">1 info</label>
         <label for="c-12-backstage-ui-table-docs-stories" class="badge ok as-toggle">4 stories</label>
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Table/stories/Table.docs.stories.tsx">backstage-ui-table-docs · ./packages/ui/src/components/Table/stories/Table.docs.stories.tsx</div>
@@ -4720,6 +4838,7 @@ width?: number | string</code></pre>
   
   <input id="c-12-backstage-ui-table-docs-info" class="tg tg-info" type="checkbox" hidden />
   <input id="c-12-backstage-ui-table-docs-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   <input id="c-12-backstage-ui-table-docs-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
@@ -4968,13 +5087,15 @@ style?: React.CSSProperties</code></pre>
 };</code></pre>
             </div>
         </div>
+    
   </div>
 </article>
 <article
   class="card 
   no-error 
   has-info 
-  no-story-error"
+  no-story-error
+  no-doc-error"
   role="listitem"
   aria-label="FieldError">
   <div class="head">
@@ -4984,6 +5105,7 @@ style?: React.CSSProperties</code></pre>
         
         <label for="c-13-backstage-ui-fielderror-info" class="badge info as-toggle">1 info</label>
         <label for="c-13-backstage-ui-fielderror-stories" class="badge ok as-toggle">3 stories</label>
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/FieldError/FieldError.stories.tsx">backstage-ui-fielderror · ./packages/ui/src/components/FieldError/FieldError.stories.tsx</div>
@@ -4996,6 +5118,7 @@ style?: React.CSSProperties</code></pre>
   
   <input id="c-13-backstage-ui-fielderror-info" class="tg tg-info" type="checkbox" hidden />
   <input id="c-13-backstage-ui-fielderror-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   
 
   <div class="panels">
@@ -5096,13 +5219,15 @@ import { Form, Input, TextField } from "react-aria-components";</code></pre>
 );</code></pre>
             </div>
         </div>
+    
   </div>
 </article>
 <article
   class="card 
   no-error 
   has-info 
-  no-story-error"
+  no-story-error
+  no-doc-error"
   role="listitem"
   aria-label="FieldLabel">
   <div class="head">
@@ -5112,6 +5237,7 @@ import { Form, Input, TextField } from "react-aria-components";</code></pre>
         <label for="c-14-backstage-ui-fieldlabel-props" class="badge ok as-toggle">5 prop types</label>
         <label for="c-14-backstage-ui-fieldlabel-info" class="badge info as-toggle">1 info</label>
         <label for="c-14-backstage-ui-fieldlabel-stories" class="badge ok as-toggle">4 stories</label>
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/FieldLabel/FieldLabel.stories.tsx">backstage-ui-fieldlabel · ./packages/ui/src/components/FieldLabel/FieldLabel.stories.tsx</div>
@@ -5124,6 +5250,7 @@ import { Form, Input, TextField } from "react-aria-components";</code></pre>
   
   <input id="c-14-backstage-ui-fieldlabel-info" class="tg tg-info" type="checkbox" hidden />
   <input id="c-14-backstage-ui-fieldlabel-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   <input id="c-14-backstage-ui-fieldlabel-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
@@ -5221,13 +5348,15 @@ secondaryLabel?: string | null</code></pre>
               <pre><code>const WithAllFields = () =&gt; &lt;FieldLabel secondaryLabel=&quot;Secondary Label&quot; description=&quot;Description&quot; /&gt;;</code></pre>
             </div>
         </div>
+    
   </div>
 </article>
 <article
   class="card 
   no-error 
   has-info 
-  no-story-error"
+  no-story-error
+  no-doc-error"
   role="listitem"
   aria-label="Flex">
   <div class="head">
@@ -5237,6 +5366,7 @@ secondaryLabel?: string | null</code></pre>
         <label for="c-15-backstage-ui-flex-props" class="badge ok as-toggle">22 prop types</label>
         <label for="c-15-backstage-ui-flex-info" class="badge info as-toggle">1 info</label>
         <label for="c-15-backstage-ui-flex-stories" class="badge ok as-toggle">15 stories</label>
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Flex/Flex.stories.tsx">backstage-ui-flex · ./packages/ui/src/components/Flex/Flex.stories.tsx</div>
@@ -5249,6 +5379,7 @@ secondaryLabel?: string | null</code></pre>
   
   <input id="c-15-backstage-ui-flex-info" class="tg tg-info" type="checkbox" hidden />
   <input id="c-15-backstage-ui-flex-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   <input id="c-15-backstage-ui-flex-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
@@ -5558,13 +5689,15 @@ surface?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;</code></pre>
 &lt;/Flex&gt;;</code></pre>
             </div>
         </div>
+    
   </div>
 </article>
 <article
   class="card 
   no-error 
   no-info 
-  no-story-error"
+  no-story-error
+  no-doc-error"
   role="listitem"
   aria-label="Header">
   <div class="head">
@@ -5574,6 +5707,7 @@ surface?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;</code></pre>
         <label for="c-16-backstage-ui-header-props" class="badge ok as-toggle">7 prop types</label>
         
         <label for="c-16-backstage-ui-header-stories" class="badge ok as-toggle">14 stories</label>
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Header/Header.stories.tsx">backstage-ui-header · ./packages/ui/src/components/Header/Header.stories.tsx</div>
@@ -5586,6 +5720,7 @@ surface?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;</code></pre>
   
   
   <input id="c-16-backstage-ui-header-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   <input id="c-16-backstage-ui-header-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
@@ -5986,13 +6121,15 @@ import { RiCloudy2Line, RiEmotionHappyLine, RiHeartLine, RiMore2Line } from "@re
 &lt;/MemoryRouter&gt;;</code></pre>
             </div>
         </div>
+    
   </div>
 </article>
 <article
   class="card 
   no-error 
   no-info 
-  no-story-error"
+  no-story-error
+  no-doc-error"
   role="listitem"
   aria-label="HeaderPage">
   <div class="head">
@@ -6002,6 +6139,7 @@ import { RiCloudy2Line, RiEmotionHappyLine, RiHeartLine, RiMore2Line } from "@re
         <label for="c-17-backstage-ui-headerpage-props" class="badge ok as-toggle">5 prop types</label>
         
         <label for="c-17-backstage-ui-headerpage-stories" class="badge ok as-toggle">10 stories</label>
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/HeaderPage/HeaderPage.stories.tsx">backstage-ui-headerpage · ./packages/ui/src/components/HeaderPage/HeaderPage.stories.tsx</div>
@@ -6014,6 +6152,7 @@ import { RiCloudy2Line, RiEmotionHappyLine, RiHeartLine, RiMore2Line } from "@re
   
   
   <input id="c-17-backstage-ui-headerpage-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   <input id="c-17-backstage-ui-headerpage-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
@@ -6316,13 +6455,15 @@ import { RiMore2Line } from "@remixicon/react";</code></pre>
 &lt;/MemoryRouter&gt;;</code></pre>
             </div>
         </div>
+    
   </div>
 </article>
 <article
   class="card 
   no-error 
   has-info 
-  no-story-error"
+  no-story-error
+  no-doc-error"
   role="listitem"
   aria-label="Link">
   <div class="head">
@@ -6332,6 +6473,7 @@ import { RiMore2Line } from "@remixicon/react";</code></pre>
         <label for="c-18-backstage-ui-link-props" class="badge ok as-toggle">6 prop types</label>
         <label for="c-18-backstage-ui-link-info" class="badge info as-toggle">1 info</label>
         <label for="c-18-backstage-ui-link-stories" class="badge ok as-toggle">8 stories</label>
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Link/Link.stories.tsx">backstage-ui-link · ./packages/ui/src/components/Link/Link.stories.tsx</div>
@@ -6344,6 +6486,7 @@ import { RiMore2Line } from "@remixicon/react";</code></pre>
   
   <input id="c-18-backstage-ui-link-info" class="tg tg-info" type="checkbox" hidden />
   <input id="c-18-backstage-ui-link-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   <input id="c-18-backstage-ui-link-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
@@ -6643,13 +6786,15 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
 &lt;/Flex&gt;;</code></pre>
             </div>
         </div>
+    
   </div>
 </article>
 <article
   class="card 
   no-error 
   has-info 
-  no-story-error"
+  no-story-error
+  no-doc-error"
   role="listitem"
   aria-label="MenuTrigger">
   <div class="head">
@@ -6659,6 +6804,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
         
         <label for="c-19-backstage-ui-menu-info" class="badge info as-toggle">1 info</label>
         <label for="c-19-backstage-ui-menu-stories" class="badge ok as-toggle">16 stories</label>
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Menu/Menu.stories.tsx">backstage-ui-menu · ./packages/ui/src/components/Menu/Menu.stories.tsx</div>
@@ -6671,6 +6817,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
   
   <input id="c-19-backstage-ui-menu-info" class="tg tg-info" type="checkbox" hidden />
   <input id="c-19-backstage-ui-menu-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   
 
   <div class="panels">
@@ -7126,13 +7273,15 @@ import {
 );</code></pre>
             </div>
         </div>
+    
   </div>
 </article>
 <article
   class="card 
   no-error 
   has-info 
-  no-story-error"
+  no-story-error
+  no-doc-error"
   role="listitem"
   aria-label="MenuTrigger">
   <div class="head">
@@ -7142,6 +7291,7 @@ import {
         
         <label for="c-20-backstage-ui-menuautocomplete-info" class="badge info as-toggle">1 info</label>
         <label for="c-20-backstage-ui-menuautocomplete-stories" class="badge ok as-toggle">5 stories</label>
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Menu/MenuAutocomplete.stories.tsx">backstage-ui-menuautocomplete · ./packages/ui/src/components/Menu/MenuAutocomplete.stories.tsx</div>
@@ -7154,6 +7304,7 @@ import {
   
   <input id="c-20-backstage-ui-menuautocomplete-info" class="tg tg-info" type="checkbox" hidden />
   <input id="c-20-backstage-ui-menuautocomplete-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   
 
   <div class="panels">
@@ -7338,13 +7489,15 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
 );</code></pre>
             </div>
         </div>
+    
   </div>
 </article>
 <article
   class="card 
   no-error 
   has-info 
-  no-story-error"
+  no-story-error
+  no-doc-error"
   role="listitem"
   aria-label="MenuTrigger">
   <div class="head">
@@ -7354,6 +7507,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
         
         <label for="c-21-backstage-ui-menuautocompletelistbox-info" class="badge info as-toggle">1 info</label>
         <label for="c-21-backstage-ui-menuautocompletelistbox-stories" class="badge ok as-toggle">6 stories</label>
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Menu/MenuAutocompleteListBox.stories.tsx">backstage-ui-menuautocompletelistbox · ./packages/ui/src/components/Menu/MenuAutocompleteListBox.stories.tsx</div>
@@ -7366,6 +7520,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
   
   <input id="c-21-backstage-ui-menuautocompletelistbox-info" class="tg tg-info" type="checkbox" hidden />
   <input id="c-21-backstage-ui-menuautocompletelistbox-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   
 
   <div class="panels">
@@ -7624,13 +7779,15 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
 };</code></pre>
             </div>
         </div>
+    
   </div>
 </article>
 <article
   class="card 
   no-error 
   has-info 
-  no-story-error"
+  no-story-error
+  no-doc-error"
   role="listitem"
   aria-label="MenuTrigger">
   <div class="head">
@@ -7640,6 +7797,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
         
         <label for="c-22-backstage-ui-menulistbox-info" class="badge info as-toggle">1 info</label>
         <label for="c-22-backstage-ui-menulistbox-stories" class="badge ok as-toggle">4 stories</label>
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Menu/MenuListBox.stories.tsx">backstage-ui-menulistbox · ./packages/ui/src/components/Menu/MenuListBox.stories.tsx</div>
@@ -7652,6 +7810,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
   
   <input id="c-22-backstage-ui-menulistbox-info" class="tg tg-info" type="checkbox" hidden />
   <input id="c-22-backstage-ui-menulistbox-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   
 
   <div class="panels">
@@ -7810,13 +7969,15 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
 };</code></pre>
             </div>
         </div>
+    
   </div>
 </article>
 <article
   class="card 
   no-error 
   has-info 
-  no-story-error"
+  no-story-error
+  no-doc-error"
   role="listitem"
   aria-label="PasswordField">
   <div class="head">
@@ -7826,6 +7987,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
         <label for="c-23-backstage-ui-passwordfield-props" class="badge ok as-toggle">3 prop types</label>
         <label for="c-23-backstage-ui-passwordfield-info" class="badge info as-toggle">1 info</label>
         <label for="c-23-backstage-ui-passwordfield-stories" class="badge ok as-toggle">12 stories</label>
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/PasswordField/PasswordField.stories.tsx">backstage-ui-passwordfield · ./packages/ui/src/components/PasswordField/PasswordField.stories.tsx</div>
@@ -7838,6 +8000,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
   
   <input id="c-23-backstage-ui-passwordfield-info" class="tg tg-info" type="checkbox" hidden />
   <input id="c-23-backstage-ui-passwordfield-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   <input id="c-23-backstage-ui-passwordfield-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
@@ -8024,13 +8187,15 @@ import { RiSparklingLine } from "@remixicon/react";</code></pre>
 );</code></pre>
             </div>
         </div>
+    
   </div>
 </article>
 <article
   class="card 
   no-error 
   no-info 
-  no-story-error"
+  no-story-error
+  no-doc-error"
   role="listitem"
   aria-label="Popover">
   <div class="head">
@@ -8040,6 +8205,7 @@ import { RiSparklingLine } from "@remixicon/react";</code></pre>
         <label for="c-24-backstage-ui-popover-props" class="badge ok as-toggle">2 prop types</label>
         
         <label for="c-24-backstage-ui-popover-stories" class="badge ok as-toggle">13 stories</label>
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Popover/Popover.stories.tsx">backstage-ui-popover · ./packages/ui/src/components/Popover/Popover.stories.tsx</div>
@@ -8052,6 +8218,7 @@ import { RiSparklingLine } from "@remixicon/react";</code></pre>
   
   
   <input id="c-24-backstage-ui-popover-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   <input id="c-24-backstage-ui-popover-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
@@ -8417,13 +8584,15 @@ hideArrow?: boolean</code></pre>
 );</code></pre>
             </div>
         </div>
+    
   </div>
 </article>
 <article
   class="card 
   no-error 
   has-info 
-  no-story-error"
+  no-story-error
+  no-doc-error"
   role="listitem"
   aria-label="RadioGroup">
   <div class="head">
@@ -8433,6 +8602,7 @@ hideArrow?: boolean</code></pre>
         <label for="c-25-backstage-ui-radiogroup-props" class="badge ok as-toggle">1 prop type</label>
         <label for="c-25-backstage-ui-radiogroup-info" class="badge info as-toggle">1 info</label>
         <label for="c-25-backstage-ui-radiogroup-stories" class="badge ok as-toggle">8 stories</label>
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/RadioGroup/RadioGroup.stories.tsx">backstage-ui-radiogroup · ./packages/ui/src/components/RadioGroup/RadioGroup.stories.tsx</div>
@@ -8445,6 +8615,7 @@ hideArrow?: boolean</code></pre>
   
   <input id="c-25-backstage-ui-radiogroup-info" class="tg tg-info" type="checkbox" hidden />
   <input id="c-25-backstage-ui-radiogroup-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   <input id="c-25-backstage-ui-radiogroup-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
@@ -8594,13 +8765,15 @@ hideArrow?: boolean</code></pre>
 &lt;/RadioGroup&gt;;</code></pre>
             </div>
         </div>
+    
   </div>
 </article>
 <article
   class="card 
   no-error 
   has-info 
-  no-story-error"
+  no-story-error
+  no-doc-error"
   role="listitem"
   aria-label="SearchField">
   <div class="head">
@@ -8610,6 +8783,7 @@ hideArrow?: boolean</code></pre>
         <label for="c-26-backstage-ui-searchfield-props" class="badge ok as-toggle">4 prop types</label>
         <label for="c-26-backstage-ui-searchfield-info" class="badge info as-toggle">1 info</label>
         <label for="c-26-backstage-ui-searchfield-stories" class="badge ok as-toggle">20 stories</label>
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/SearchField/SearchField.stories.tsx">backstage-ui-searchfield · ./packages/ui/src/components/SearchField/SearchField.stories.tsx</div>
@@ -8622,6 +8796,7 @@ hideArrow?: boolean</code></pre>
   
   <input id="c-26-backstage-ui-searchfield-info" class="tg tg-info" type="checkbox" hidden />
   <input id="c-26-backstage-ui-searchfield-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   <input id="c-26-backstage-ui-searchfield-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
@@ -8981,13 +9156,15 @@ import { RiCactusLine, RiEBike2Line } from "@remixicon/react";</code></pre>
 };</code></pre>
             </div>
         </div>
+    
   </div>
 </article>
 <article
   class="card 
   no-error 
   has-info 
-  no-story-error"
+  no-story-error
+  no-doc-error"
   role="listitem"
   aria-label="Select">
   <div class="head">
@@ -8997,6 +9174,7 @@ import { RiCactusLine, RiEBike2Line } from "@remixicon/react";</code></pre>
         <label for="c-27-backstage-ui-select-props" class="badge ok as-toggle">6 prop types</label>
         <label for="c-27-backstage-ui-select-info" class="badge info as-toggle">1 info</label>
         <label for="c-27-backstage-ui-select-stories" class="badge ok as-toggle">21 stories</label>
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Select/Select.stories.tsx">backstage-ui-select · ./packages/ui/src/components/Select/Select.stories.tsx</div>
@@ -9009,6 +9187,7 @@ import { RiCactusLine, RiEBike2Line } from "@remixicon/react";</code></pre>
   
   <input id="c-27-backstage-ui-select-info" class="tg tg-info" type="checkbox" hidden />
   <input id="c-27-backstage-ui-select-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   <input id="c-27-backstage-ui-select-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
@@ -9362,13 +9541,15 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
 &lt;/Flex&gt;;</code></pre>
             </div>
         </div>
+    
   </div>
 </article>
 <article
   class="card 
   no-error 
   has-info 
-  no-story-error"
+  no-story-error
+  no-doc-error"
   role="listitem"
   aria-label="Skeleton">
   <div class="head">
@@ -9378,6 +9559,7 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
         <label for="c-28-backstage-ui-skeleton-props" class="badge ok as-toggle">3 prop types</label>
         <label for="c-28-backstage-ui-skeleton-info" class="badge info as-toggle">1 info</label>
         <label for="c-28-backstage-ui-skeleton-stories" class="badge ok as-toggle">4 stories</label>
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Skeleton/Skeleton.stories.tsx">backstage-ui-skeleton · ./packages/ui/src/components/Skeleton/Skeleton.stories.tsx</div>
@@ -9390,6 +9572,7 @@ import { RiCloudLine } from "@remixicon/react";</code></pre>
   
   <input id="c-28-backstage-ui-skeleton-info" class="tg tg-info" type="checkbox" hidden />
   <input id="c-28-backstage-ui-skeleton-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   <input id="c-28-backstage-ui-skeleton-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
@@ -9487,13 +9670,15 @@ width?: number | string</code></pre>
 );</code></pre>
             </div>
         </div>
+    
   </div>
 </article>
 <article
   class="card 
   no-error 
   has-info 
-  no-story-error"
+  no-story-error
+  no-doc-error"
   role="listitem"
   aria-label="Switch">
   <div class="head">
@@ -9503,6 +9688,7 @@ width?: number | string</code></pre>
         <label for="c-29-backstage-ui-switch-props" class="badge ok as-toggle">1 prop type</label>
         <label for="c-29-backstage-ui-switch-info" class="badge info as-toggle">1 info</label>
         <label for="c-29-backstage-ui-switch-stories" class="badge ok as-toggle">2 stories</label>
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Switch/Switch.stories.tsx">backstage-ui-switch · ./packages/ui/src/components/Switch/Switch.stories.tsx</div>
@@ -9515,6 +9701,7 @@ width?: number | string</code></pre>
   
   <input id="c-29-backstage-ui-switch-info" class="tg tg-info" type="checkbox" hidden />
   <input id="c-29-backstage-ui-switch-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   <input id="c-29-backstage-ui-switch-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
@@ -9574,13 +9761,15 @@ label?: string</code></pre>
               <pre><code>const Disabled = () =&gt; &lt;Switch isDisabled /&gt;;</code></pre>
             </div>
         </div>
+    
   </div>
 </article>
 <article
   class="card 
   no-error 
   no-info 
-  no-story-error"
+  no-story-error
+  no-doc-error"
   role="listitem"
   aria-label="TablePagination">
   <div class="head">
@@ -9590,6 +9779,7 @@ label?: string</code></pre>
         <label for="c-30-backstage-ui-tablepagination-props" class="badge ok as-toggle">11 prop types</label>
         
         <label for="c-30-backstage-ui-tablepagination-stories" class="badge ok as-toggle">8 stories</label>
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/TablePagination/TablePagination.stories.tsx">backstage-ui-tablepagination · ./packages/ui/src/components/TablePagination/TablePagination.stories.tsx</div>
@@ -9602,6 +9792,7 @@ label?: string</code></pre>
   
   
   <input id="c-30-backstage-ui-tablepagination-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   <input id="c-30-backstage-ui-tablepagination-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
@@ -9752,13 +9943,15 @@ totalCount?: number</code></pre>
               <pre><code>const EmptyState = () =&gt; &lt;TablePagination totalCount={0} hasNextPage={false} /&gt;;</code></pre>
             </div>
         </div>
+    
   </div>
 </article>
 <article
   class="card 
   no-error 
   no-info 
-  no-story-error"
+  no-story-error
+  no-doc-error"
   role="listitem"
   aria-label="Tabs">
   <div class="head">
@@ -9768,6 +9961,7 @@ totalCount?: number</code></pre>
         
         
         <label for="c-31-backstage-ui-tabs-stories" class="badge ok as-toggle">13 stories</label>
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Tabs/Tabs.stories.tsx">backstage-ui-tabs · ./packages/ui/src/components/Tabs/Tabs.stories.tsx</div>
@@ -9780,6 +9974,7 @@ totalCount?: number</code></pre>
   
   
   <input id="c-31-backstage-ui-tabs-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   
 
   <div class="panels">
@@ -10302,13 +10497,15 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
 );</code></pre>
             </div>
         </div>
+    
   </div>
 </article>
 <article
   class="card 
   no-error 
   no-info 
-  no-story-error"
+  no-story-error
+  no-doc-error"
   role="listitem"
   aria-label="TagGroup">
   <div class="head">
@@ -10318,6 +10515,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
         
         
         <label for="c-32-backstage-ui-taggroup-stories" class="badge ok as-toggle">9 stories</label>
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/TagGroup/TagGroup.stories.tsx">backstage-ui-taggroup · ./packages/ui/src/components/TagGroup/TagGroup.stories.tsx</div>
@@ -10330,6 +10528,7 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
   
   
   <input id="c-32-backstage-ui-taggroup-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   
 
   <div class="panels">
@@ -10532,13 +10731,15 @@ import { RiAccountCircleLine, RiBugLine, RiEyeLine, RiHeartLine } from "@remixic
 };</code></pre>
             </div>
         </div>
+    
   </div>
 </article>
 <article
   class="card 
   no-error 
   has-info 
-  no-story-error"
+  no-story-error
+  no-doc-error"
   role="listitem"
   aria-label="Text">
   <div class="head">
@@ -10548,6 +10749,7 @@ import { RiAccountCircleLine, RiBugLine, RiEyeLine, RiHeartLine } from "@remixic
         <label for="c-33-backstage-ui-text-props" class="badge ok as-toggle">5 prop types</label>
         <label for="c-33-backstage-ui-text-info" class="badge info as-toggle">1 info</label>
         <label for="c-33-backstage-ui-text-stories" class="badge ok as-toggle">9 stories</label>
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Text/Text.stories.tsx">backstage-ui-text · ./packages/ui/src/components/Text/Text.stories.tsx</div>
@@ -10560,6 +10762,7 @@ import { RiAccountCircleLine, RiBugLine, RiEyeLine, RiHeartLine } from "@remixic
   
   <input id="c-33-backstage-ui-text-info" class="tg tg-info" type="checkbox" hidden />
   <input id="c-33-backstage-ui-text-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   <input id="c-33-backstage-ui-text-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
@@ -10783,13 +10986,15 @@ weight?: TextWeights | Partial&lt;Record&lt;Breakpoint, TextWeights&gt;&gt;</cod
 );</code></pre>
             </div>
         </div>
+    
   </div>
 </article>
 <article
   class="card 
   no-error 
   has-info 
-  no-story-error"
+  no-story-error
+  no-doc-error"
   role="listitem"
   aria-label="TextField">
   <div class="head">
@@ -10799,6 +11004,7 @@ weight?: TextWeights | Partial&lt;Record&lt;Breakpoint, TextWeights&gt;&gt;</cod
         <label for="c-34-backstage-ui-textfield-props" class="badge ok as-toggle">4 prop types</label>
         <label for="c-34-backstage-ui-textfield-info" class="badge info as-toggle">1 info</label>
         <label for="c-34-backstage-ui-textfield-stories" class="badge ok as-toggle">12 stories</label>
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/TextField/TextField.stories.tsx">backstage-ui-textfield · ./packages/ui/src/components/TextField/TextField.stories.tsx</div>
@@ -10811,6 +11017,7 @@ weight?: TextWeights | Partial&lt;Record&lt;Breakpoint, TextWeights&gt;&gt;</cod
   
   <input id="c-34-backstage-ui-textfield-info" class="tg tg-info" type="checkbox" hidden />
   <input id="c-34-backstage-ui-textfield-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   <input id="c-34-backstage-ui-textfield-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
@@ -11006,13 +11213,15 @@ import { RiEyeLine, RiSparklingLine } from "@remixicon/react";</code></pre>
 );</code></pre>
             </div>
         </div>
+    
   </div>
 </article>
 <article
   class="card 
   no-error 
   has-info 
-  no-story-error"
+  no-story-error
+  no-doc-error"
   role="listitem"
   aria-label="ToggleButton">
   <div class="head">
@@ -11022,6 +11231,7 @@ import { RiEyeLine, RiSparklingLine } from "@remixicon/react";</code></pre>
         <label for="c-35-backstage-ui-togglebutton-props" class="badge ok as-toggle">4 prop types</label>
         <label for="c-35-backstage-ui-togglebutton-info" class="badge info as-toggle">1 info</label>
         <label for="c-35-backstage-ui-togglebutton-stories" class="badge ok as-toggle">10 stories</label>
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/ToggleButton/ToggleButton.stories.tsx">backstage-ui-togglebutton · ./packages/ui/src/components/ToggleButton/ToggleButton.stories.tsx</div>
@@ -11034,6 +11244,7 @@ import { RiEyeLine, RiSparklingLine } from "@remixicon/react";</code></pre>
   
   <input id="c-35-backstage-ui-togglebutton-info" class="tg tg-info" type="checkbox" hidden />
   <input id="c-35-backstage-ui-togglebutton-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   <input id="c-35-backstage-ui-togglebutton-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
@@ -11371,13 +11582,15 @@ import { RiArrowRightSLine, RiCheckLine, RiCloudLine, RiStarFill, RiStarLine } f
 };</code></pre>
             </div>
         </div>
+    
   </div>
 </article>
 <article
   class="card 
   no-error 
   has-info 
-  no-story-error"
+  no-story-error
+  no-doc-error"
   role="listitem"
   aria-label="ToggleButtonGroup">
   <div class="head">
@@ -11387,6 +11600,7 @@ import { RiArrowRightSLine, RiCheckLine, RiCloudLine, RiStarFill, RiStarLine } f
         <label for="c-36-backstage-ui-togglebuttongroup-props" class="badge ok as-toggle">1 prop type</label>
         <label for="c-36-backstage-ui-togglebuttongroup-info" class="badge info as-toggle">1 info</label>
         <label for="c-36-backstage-ui-togglebuttongroup-stories" class="badge ok as-toggle">10 stories</label>
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/ToggleButtonGroup/ToggleButtonGroup.stories.tsx">backstage-ui-togglebuttongroup · ./packages/ui/src/components/ToggleButtonGroup/ToggleButtonGroup.stories.tsx</div>
@@ -11399,6 +11613,7 @@ import { RiArrowRightSLine, RiCheckLine, RiCloudLine, RiStarFill, RiStarLine } f
   
   <input id="c-36-backstage-ui-togglebuttongroup-info" class="tg tg-info" type="checkbox" hidden />
   <input id="c-36-backstage-ui-togglebuttongroup-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   <input id="c-36-backstage-ui-togglebuttongroup-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
@@ -11667,13 +11882,15 @@ import { RiArrowRightSLine, RiCloudLine, RiStarFill, RiStarLine } from "@remixic
 );</code></pre>
             </div>
         </div>
+    
   </div>
 </article>
 <article
   class="card 
   no-error 
   has-info 
-  no-story-error"
+  no-story-error
+  no-doc-error"
   role="listitem"
   aria-label="TooltipTrigger">
   <div class="head">
@@ -11683,6 +11900,7 @@ import { RiArrowRightSLine, RiCloudLine, RiStarFill, RiStarLine } from "@remixic
         
         <label for="c-37-backstage-ui-tooltip-info" class="badge info as-toggle">1 info</label>
         <label for="c-37-backstage-ui-tooltip-stories" class="badge ok as-toggle">6 stories</label>
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Tooltip/Tooltip.stories.tsx">backstage-ui-tooltip · ./packages/ui/src/components/Tooltip/Tooltip.stories.tsx</div>
@@ -11695,6 +11913,7 @@ import { RiArrowRightSLine, RiCloudLine, RiStarFill, RiStarLine } from "@remixic
   
   <input id="c-37-backstage-ui-tooltip-info" class="tg tg-info" type="checkbox" hidden />
   <input id="c-37-backstage-ui-tooltip-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   
 
   <div class="panels">
@@ -11836,13 +12055,15 @@ import { RiArrowRightSLine, RiCloudLine, RiStarFill, RiStarLine } from "@remixic
 );</code></pre>
             </div>
         </div>
+    
   </div>
 </article>
 <article
   class="card 
   no-error 
   has-info 
-  no-story-error"
+  no-story-error
+  no-doc-error"
   role="listitem"
   aria-label="visual">
   <div class="head">
@@ -11852,6 +12073,7 @@ import { RiArrowRightSLine, RiCloudLine, RiStarFill, RiStarLine } from "@remixic
         <label for="c-38-backstage-ui-table-visual-props" class="badge ok as-toggle">12 prop types</label>
         <label for="c-38-backstage-ui-table-visual-info" class="badge info as-toggle">1 info</label>
         <label for="c-38-backstage-ui-table-visual-stories" class="badge ok as-toggle">9 stories</label>
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Table/stories/Table.visual.stories.tsx">backstage-ui-table-visual · ./packages/ui/src/components/Table/stories/Table.visual.stories.tsx</div>
@@ -11864,6 +12086,7 @@ import { RiArrowRightSLine, RiCloudLine, RiStarFill, RiStarLine } from "@remixic
   
   <input id="c-38-backstage-ui-table-visual-info" class="tg tg-info" type="checkbox" hidden />
   <input id="c-38-backstage-ui-table-visual-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   <input id="c-38-backstage-ui-table-visual-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
@@ -12296,13 +12519,15 @@ style?: React.CSSProperties</code></pre>
 };</code></pre>
             </div>
         </div>
+    
   </div>
 </article>
 <article
   class="card 
   no-error 
   no-info 
-  no-story-error"
+  no-story-error
+  no-doc-error"
   role="listitem"
   aria-label="VisuallyHidden">
   <div class="head">
@@ -12312,6 +12537,7 @@ style?: React.CSSProperties</code></pre>
         <label for="c-39-backstage-ui-visuallyhidden-props" class="badge ok as-toggle">1 prop type</label>
         
         <label for="c-39-backstage-ui-visuallyhidden-stories" class="badge ok as-toggle">2 stories</label>
+        
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/VisuallyHidden/VisuallyHidden.stories.tsx">backstage-ui-visuallyhidden · ./packages/ui/src/components/VisuallyHidden/VisuallyHidden.stories.tsx</div>
@@ -12324,6 +12550,7 @@ style?: React.CSSProperties</code></pre>
   
   
   <input id="c-39-backstage-ui-visuallyhidden-stories" class="tg tg-stories" type="checkbox" hidden />
+  
   <input id="c-39-backstage-ui-visuallyhidden-props" class="tg tg-props" type="checkbox" hidden />
 
   <div class="panels">
@@ -12402,9 +12629,12 @@ style?: React.CSSProperties</code></pre>
 );</code></pre>
             </div>
         </div>
+    
   </div>
 </article>
     </div>
+    
+    
     
   </div>
 </main>

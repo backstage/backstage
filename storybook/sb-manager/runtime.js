@@ -9,6 +9,9 @@ var __require = /* @__PURE__ */ ((x2) => typeof require < "u" ? require : typeof
   if (typeof require < "u") return require.apply(this, arguments);
   throw Error('Dynamic require of "' + x2 + '" is not supported');
 });
+var __esm = (fn, res) => function() {
+  return fn && (res = (0, fn[__getOwnPropNames(fn)[0]])(fn = 0)), res;
+};
 var __commonJS = (cb, mod) => function() {
   return mod || (0, cb[__getOwnPropNames(cb)[0]])((mod = { exports: {} }).exports, mod), mod.exports;
 };
@@ -28,7 +31,54 @@ var __toESM = (mod, isNodeMode, target) => (target = mod != null ? __create(__ge
   // "default" to the CommonJS "module.exports" for node compatibility.
   isNodeMode || !mod || !mod.__esModule ? __defProp(target, "default", { value: mod, enumerable: !0 }) : target,
   mod
-));
+)), __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: !0 }), mod);
+
+// global-externals:react
+var react_exports = {};
+__export(react_exports, {
+  Children: () => Children,
+  Component: () => Component,
+  Fragment: () => Fragment,
+  Profiler: () => Profiler,
+  PureComponent: () => PureComponent,
+  StrictMode: () => StrictMode,
+  Suspense: () => Suspense,
+  __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED: () => __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED,
+  act: () => act,
+  cloneElement: () => cloneElement,
+  createContext: () => createContext,
+  createElement: () => createElement,
+  createFactory: () => createFactory,
+  createRef: () => createRef,
+  default: () => react_default,
+  forwardRef: () => forwardRef,
+  isValidElement: () => isValidElement,
+  lazy: () => lazy,
+  memo: () => memo,
+  startTransition: () => startTransition,
+  unstable_act: () => unstable_act,
+  useCallback: () => useCallback,
+  useContext: () => useContext,
+  useDebugValue: () => useDebugValue,
+  useDeferredValue: () => useDeferredValue,
+  useEffect: () => useEffect,
+  useId: () => useId,
+  useImperativeHandle: () => useImperativeHandle,
+  useInsertionEffect: () => useInsertionEffect,
+  useLayoutEffect: () => useLayoutEffect,
+  useMemo: () => useMemo,
+  useReducer: () => useReducer,
+  useRef: () => useRef,
+  useState: () => useState,
+  useSyncExternalStore: () => useSyncExternalStore,
+  useTransition: () => useTransition,
+  version: () => version
+});
+var react_default, Children, Component, Fragment, Profiler, PureComponent, StrictMode, Suspense, __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED, act, cloneElement, createContext, createElement, createFactory, createRef, forwardRef, isValidElement, lazy, memo, startTransition, unstable_act, useCallback, useContext, useDebugValue, useDeferredValue, useEffect, useId, useImperativeHandle, useInsertionEffect, useLayoutEffect, useMemo, useReducer, useRef, useState, useSyncExternalStore, useTransition, version, init_react = __esm({
+  "global-externals:react"() {
+    react_default = __REACT__, { Children, Component, Fragment, Profiler, PureComponent, StrictMode, Suspense, __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED, act, cloneElement, createContext, createElement, createFactory, createRef, forwardRef, isValidElement, lazy, memo, startTransition, unstable_act, useCallback, useContext, useDebugValue, useDeferredValue, useEffect, useId, useImperativeHandle, useInsertionEffect, useLayoutEffect, useMemo, useReducer, useRef, useState, useSyncExternalStore, useTransition, version } = __REACT__;
+  }
+});
 
 // ../../node_modules/prop-types/lib/ReactPropTypesSecret.js
 var require_ReactPropTypesSecret = __commonJS({
@@ -213,6 +263,57 @@ var require_shallowequal = __commonJS({
   }
 });
 
+// ../../node_modules/use-sync-external-store/cjs/use-sync-external-store-shim.production.js
+var require_use_sync_external_store_shim_production = __commonJS({
+  "../../node_modules/use-sync-external-store/cjs/use-sync-external-store-shim.production.js"(exports) {
+    "use strict";
+    var React = (init_react(), __toCommonJS(react_exports));
+    function is4(x2, y2) {
+      return x2 === y2 && (x2 !== 0 || 1 / x2 === 1 / y2) || x2 !== x2 && y2 !== y2;
+    }
+    var objectIs = typeof Object.is == "function" ? Object.is : is4, useState2 = React.useState, useEffect2 = React.useEffect, useLayoutEffect2 = React.useLayoutEffect, useDebugValue2 = React.useDebugValue;
+    function useSyncExternalStore$2(subscribe, getSnapshot) {
+      var value = getSnapshot(), _useState = useState2({ inst: { value, getSnapshot } }), inst = _useState[0].inst, forceUpdate = _useState[1];
+      return useLayoutEffect2(
+        function() {
+          inst.value = value, inst.getSnapshot = getSnapshot, checkIfSnapshotChanged(inst) && forceUpdate({ inst });
+        },
+        [subscribe, value, getSnapshot]
+      ), useEffect2(
+        function() {
+          return checkIfSnapshotChanged(inst) && forceUpdate({ inst }), subscribe(function() {
+            checkIfSnapshotChanged(inst) && forceUpdate({ inst });
+          });
+        },
+        [subscribe]
+      ), useDebugValue2(value), value;
+    }
+    function checkIfSnapshotChanged(inst) {
+      var latestGetSnapshot = inst.getSnapshot;
+      inst = inst.value;
+      try {
+        var nextValue = latestGetSnapshot();
+        return !objectIs(inst, nextValue);
+      } catch {
+        return !0;
+      }
+    }
+    function useSyncExternalStore$1(subscribe, getSnapshot) {
+      return getSnapshot();
+    }
+    var shim = typeof window > "u" || typeof window.document > "u" || typeof window.document.createElement > "u" ? useSyncExternalStore$1 : useSyncExternalStore$2;
+    exports.useSyncExternalStore = React.useSyncExternalStore !== void 0 ? React.useSyncExternalStore : shim;
+  }
+});
+
+// ../../node_modules/use-sync-external-store/shim/index.js
+var require_shim = __commonJS({
+  "../../node_modules/use-sync-external-store/shim/index.js"(exports, module) {
+    "use strict";
+    module.exports = require_use_sync_external_store_shim_production();
+  }
+});
+
 // ../../node_modules/memoizerific/memoizerific.js
 var require_memoizerific = __commonJS({
   "../../node_modules/memoizerific/memoizerific.js"(exports, module) {
@@ -338,778 +439,6 @@ var require_memoizerific = __commonJS({
         }
       }, { "map-or-similar": 1 }] }, {}, [3])(3);
     });
-  }
-});
-
-// ../../node_modules/picoquery/lib/string-util.js
-var require_string_util = __commonJS({
-  "../../node_modules/picoquery/lib/string-util.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: !0 });
-    exports.encodeString = encodeString;
-    var hexTable = Array.from({ length: 256 }, (_2, i2) => "%" + ((i2 < 16 ? "0" : "") + i2.toString(16)).toUpperCase()), noEscape = new Int8Array([
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      1,
-      0,
-      0,
-      0,
-      0,
-      0,
-      1,
-      1,
-      1,
-      1,
-      0,
-      0,
-      1,
-      1,
-      0,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      0,
-      0,
-      0,
-      0,
-      1,
-      0,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      0,
-      0,
-      0,
-      1,
-      0
-    ]);
-    function encodeString(str) {
-      let len = str.length;
-      if (len === 0)
-        return "";
-      let out = "", lastPos = 0, i2 = 0;
-      outer: for (; i2 < len; i2++) {
-        let c2 = str.charCodeAt(i2);
-        for (; c2 < 128; ) {
-          if (noEscape[c2] !== 1 && (lastPos < i2 && (out += str.slice(lastPos, i2)), lastPos = i2 + 1, out += hexTable[c2]), ++i2 === len)
-            break outer;
-          c2 = str.charCodeAt(i2);
-        }
-        if (lastPos < i2 && (out += str.slice(lastPos, i2)), c2 < 2048) {
-          lastPos = i2 + 1, out += hexTable[192 | c2 >> 6] + hexTable[128 | c2 & 63];
-          continue;
-        }
-        if (c2 < 55296 || c2 >= 57344) {
-          lastPos = i2 + 1, out += hexTable[224 | c2 >> 12] + hexTable[128 | c2 >> 6 & 63] + hexTable[128 | c2 & 63];
-          continue;
-        }
-        if (++i2, i2 >= len)
-          throw new Error("URI malformed");
-        let c22 = str.charCodeAt(i2) & 1023;
-        lastPos = i2 + 1, c2 = 65536 + ((c2 & 1023) << 10 | c22), out += hexTable[240 | c2 >> 18] + hexTable[128 | c2 >> 12 & 63] + hexTable[128 | c2 >> 6 & 63] + hexTable[128 | c2 & 63];
-      }
-      return lastPos === 0 ? str : lastPos < len ? out + str.slice(lastPos) : out;
-    }
-  }
-});
-
-// ../../node_modules/picoquery/lib/shared.js
-var require_shared = __commonJS({
-  "../../node_modules/picoquery/lib/shared.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: !0 });
-    exports.defaultOptions = exports.defaultShouldSerializeObject = exports.defaultValueSerializer = void 0;
-    var string_util_js_1 = require_string_util(), defaultValueSerializer = (value) => {
-      switch (typeof value) {
-        case "string":
-          return (0, string_util_js_1.encodeString)(value);
-        case "bigint":
-        case "boolean":
-          return "" + value;
-        case "number":
-          if (Number.isFinite(value))
-            return value < 1e21 ? "" + value : (0, string_util_js_1.encodeString)("" + value);
-          break;
-      }
-      return value instanceof Date ? (0, string_util_js_1.encodeString)(value.toISOString()) : "";
-    };
-    exports.defaultValueSerializer = defaultValueSerializer;
-    var defaultShouldSerializeObject = (val) => val instanceof Date;
-    exports.defaultShouldSerializeObject = defaultShouldSerializeObject;
-    var identityFunc = (v2) => v2;
-    exports.defaultOptions = {
-      nesting: !0,
-      nestingSyntax: "dot",
-      arrayRepeat: !1,
-      arrayRepeatSyntax: "repeat",
-      delimiter: 38,
-      valueDeserializer: identityFunc,
-      valueSerializer: exports.defaultValueSerializer,
-      keyDeserializer: identityFunc,
-      shouldSerializeObject: exports.defaultShouldSerializeObject
-    };
-  }
-});
-
-// ../../node_modules/picoquery/lib/object-util.js
-var require_object_util = __commonJS({
-  "../../node_modules/picoquery/lib/object-util.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: !0 });
-    exports.getDeepObject = getDeepObject;
-    exports.stringifyObject = stringifyObject;
-    var shared_js_1 = require_shared(), string_util_js_1 = require_string_util();
-    function isPrototypeKey(value) {
-      return value === "__proto__" || value === "constructor" || value === "prototype";
-    }
-    function getDeepObject(obj, key, nextKey, forceObject, forceArray) {
-      if (isPrototypeKey(key))
-        return obj;
-      let currObj = obj[key];
-      return typeof currObj == "object" && currObj !== null ? currObj : !forceObject && (forceArray || typeof nextKey == "number" || typeof nextKey == "string" && nextKey * 0 === 0 && nextKey.indexOf(".") === -1) ? obj[key] = [] : obj[key] = {};
-    }
-    var MAX_DEPTH = 20, strBracketPair = "[]", strBracketLeft = "[", strBracketRight = "]", strDot = ".";
-    function stringifyObject(obj, options2, depth = 0, parentKey, isProbableArray) {
-      let { nestingSyntax = shared_js_1.defaultOptions.nestingSyntax, arrayRepeat = shared_js_1.defaultOptions.arrayRepeat, arrayRepeatSyntax = shared_js_1.defaultOptions.arrayRepeatSyntax, nesting = shared_js_1.defaultOptions.nesting, delimiter = shared_js_1.defaultOptions.delimiter, valueSerializer = shared_js_1.defaultOptions.valueSerializer, shouldSerializeObject = shared_js_1.defaultOptions.shouldSerializeObject } = options2, strDelimiter = typeof delimiter == "number" ? String.fromCharCode(delimiter) : delimiter, useArrayRepeatKey = isProbableArray === !0 && arrayRepeat, shouldUseDot = nestingSyntax === "dot" || nestingSyntax === "js" && !isProbableArray;
-      if (depth > MAX_DEPTH)
-        return "";
-      let result = "", firstKey = !0, valueIsProbableArray = !1;
-      for (let key in obj) {
-        let value = obj[key];
-        if (value === void 0)
-          continue;
-        let path;
-        parentKey ? (path = parentKey, useArrayRepeatKey ? arrayRepeatSyntax === "bracket" && (path += strBracketPair) : shouldUseDot ? (path += strDot, path += key) : (path += strBracketLeft, path += key, path += strBracketRight)) : path = key, firstKey || (result += strDelimiter), typeof value == "object" && value !== null && !shouldSerializeObject(value) ? (valueIsProbableArray = value.pop !== void 0, (nesting || arrayRepeat && valueIsProbableArray) && (result += stringifyObject(value, options2, depth + 1, path, valueIsProbableArray))) : (result += (0, string_util_js_1.encodeString)(path), result += "=", result += valueSerializer(value, key)), firstKey && (firstKey = !1);
-      }
-      return result;
-    }
-  }
-});
-
-// ../../node_modules/picoquery/lib/decode-uri-component.js
-var require_decode_uri_component = __commonJS({
-  "../../node_modules/picoquery/lib/decode-uri-component.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: !0 });
-    exports.decodeURIComponent = decodeURIComponent;
-    var UTF8_ACCEPT = 12, UTF8_REJECT = 0, UTF8_DATA = [
-      // The first part of the table maps bytes to character to a transition.
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      1,
-      2,
-      2,
-      2,
-      2,
-      2,
-      2,
-      2,
-      2,
-      2,
-      2,
-      2,
-      2,
-      2,
-      2,
-      2,
-      2,
-      3,
-      3,
-      3,
-      3,
-      3,
-      3,
-      3,
-      3,
-      3,
-      3,
-      3,
-      3,
-      3,
-      3,
-      3,
-      3,
-      3,
-      3,
-      3,
-      3,
-      3,
-      3,
-      3,
-      3,
-      3,
-      3,
-      3,
-      3,
-      3,
-      3,
-      3,
-      3,
-      4,
-      4,
-      5,
-      5,
-      5,
-      5,
-      5,
-      5,
-      5,
-      5,
-      5,
-      5,
-      5,
-      5,
-      5,
-      5,
-      5,
-      5,
-      5,
-      5,
-      5,
-      5,
-      5,
-      5,
-      5,
-      5,
-      5,
-      5,
-      5,
-      5,
-      5,
-      5,
-      6,
-      7,
-      7,
-      7,
-      7,
-      7,
-      7,
-      7,
-      7,
-      7,
-      7,
-      7,
-      7,
-      8,
-      7,
-      7,
-      10,
-      9,
-      9,
-      9,
-      11,
-      4,
-      4,
-      4,
-      4,
-      4,
-      4,
-      4,
-      4,
-      4,
-      4,
-      4,
-      // The second part of the table maps a state to a new state when adding a
-      // transition.
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      12,
-      0,
-      0,
-      0,
-      0,
-      24,
-      36,
-      48,
-      60,
-      72,
-      84,
-      96,
-      0,
-      12,
-      12,
-      12,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      24,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      24,
-      24,
-      24,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      24,
-      24,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      48,
-      48,
-      48,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      48,
-      48,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      48,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      0,
-      // The third part maps the current transition to a mask that needs to apply
-      // to the byte.
-      127,
-      63,
-      63,
-      63,
-      0,
-      31,
-      15,
-      15,
-      15,
-      7,
-      7,
-      7
-    ];
-    function decodeURIComponent(uri) {
-      let percentPosition = uri.indexOf("%");
-      if (percentPosition === -1)
-        return uri;
-      let length = uri.length, decoded = "", last = 0, codepoint = 0, startOfOctets = percentPosition, state = UTF8_ACCEPT;
-      for (; percentPosition > -1 && percentPosition < length; ) {
-        let high = hexCodeToInt(uri[percentPosition + 1], 4), low = hexCodeToInt(uri[percentPosition + 2], 0), byte = high | low, type = UTF8_DATA[byte];
-        if (state = UTF8_DATA[256 + state + type], codepoint = codepoint << 6 | byte & UTF8_DATA[364 + type], state === UTF8_ACCEPT)
-          decoded += uri.slice(last, startOfOctets), decoded += codepoint <= 65535 ? String.fromCharCode(codepoint) : String.fromCharCode(55232 + (codepoint >> 10), 56320 + (codepoint & 1023)), codepoint = 0, last = percentPosition + 3, percentPosition = startOfOctets = uri.indexOf("%", last);
-        else {
-          if (state === UTF8_REJECT)
-            return null;
-          if (percentPosition += 3, percentPosition < length && uri.charCodeAt(percentPosition) === 37)
-            continue;
-          return null;
-        }
-      }
-      return decoded + uri.slice(last);
-    }
-    var HEX = {
-      0: 0,
-      1: 1,
-      2: 2,
-      3: 3,
-      4: 4,
-      5: 5,
-      6: 6,
-      7: 7,
-      8: 8,
-      9: 9,
-      a: 10,
-      A: 10,
-      b: 11,
-      B: 11,
-      c: 12,
-      C: 12,
-      d: 13,
-      D: 13,
-      e: 14,
-      E: 14,
-      f: 15,
-      F: 15
-    };
-    function hexCodeToInt(c2, shift2) {
-      let i2 = HEX[c2];
-      return i2 === void 0 ? 255 : i2 << shift2;
-    }
-  }
-});
-
-// ../../node_modules/picoquery/lib/parse.js
-var require_parse = __commonJS({
-  "../../node_modules/picoquery/lib/parse.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: !0 });
-    exports.numberValueDeserializer = exports.numberKeyDeserializer = void 0;
-    exports.parse = parse;
-    var object_util_js_1 = require_object_util(), shared_js_1 = require_shared(), decode_uri_component_js_1 = require_decode_uri_component(), numberKeyDeserializer = (key) => {
-      let asNumber = Number(key);
-      return Number.isNaN(asNumber) ? key : asNumber;
-    };
-    exports.numberKeyDeserializer = numberKeyDeserializer;
-    var numberValueDeserializer = (value) => {
-      let asNumber = Number(value);
-      return Number.isNaN(asNumber) ? value : asNumber;
-    };
-    exports.numberValueDeserializer = numberValueDeserializer;
-    var regexPlus = /\+/g, Empty = function() {
-    };
-    Empty.prototype = /* @__PURE__ */ Object.create(null);
-    function computeKeySlice(input, startIndex, endIndex, keyHasPlus, shouldDecodeKey) {
-      let chunk = input.substring(startIndex, endIndex);
-      return keyHasPlus && (chunk = chunk.replace(regexPlus, " ")), shouldDecodeKey && (chunk = (0, decode_uri_component_js_1.decodeURIComponent)(chunk) || chunk), chunk;
-    }
-    function parse(input, options2) {
-      let { valueDeserializer = shared_js_1.defaultOptions.valueDeserializer, keyDeserializer = shared_js_1.defaultOptions.keyDeserializer, arrayRepeatSyntax = shared_js_1.defaultOptions.arrayRepeatSyntax, nesting = shared_js_1.defaultOptions.nesting, arrayRepeat = shared_js_1.defaultOptions.arrayRepeat, nestingSyntax = shared_js_1.defaultOptions.nestingSyntax, delimiter = shared_js_1.defaultOptions.delimiter } = options2 ?? {}, charDelimiter = typeof delimiter == "string" ? delimiter.charCodeAt(0) : delimiter, isJsNestingSyntax = nestingSyntax === "js", result = new Empty();
-      if (typeof input != "string")
-        return result;
-      let inputLength = input.length, value = "", startingIndex = -1, equalityIndex = -1, keySeparatorIndex = -1, currentObj = result, lastKey, currentKey = "", keyChunk = "", shouldDecodeKey = !1, shouldDecodeValue = !1, keyHasPlus = !1, valueHasPlus = !1, keyIsDot = !1, hasBothKeyValuePair = !1, c2 = 0, arrayRepeatBracketIndex = -1, prevIndex = -1, prevChar = -1;
-      for (let i2 = 0; i2 < inputLength + 1; i2++) {
-        if (c2 = i2 !== inputLength ? input.charCodeAt(i2) : charDelimiter, c2 === charDelimiter) {
-          if (hasBothKeyValuePair = equalityIndex > startingIndex, hasBothKeyValuePair || (equalityIndex = i2), keySeparatorIndex !== equalityIndex - 1 && (keyChunk = computeKeySlice(input, keySeparatorIndex + 1, arrayRepeatBracketIndex > -1 ? arrayRepeatBracketIndex : equalityIndex, keyHasPlus, shouldDecodeKey), currentKey = keyDeserializer(keyChunk), lastKey !== void 0 && (currentObj = (0, object_util_js_1.getDeepObject)(currentObj, lastKey, currentKey, isJsNestingSyntax && keyIsDot, void 0))), hasBothKeyValuePair || currentKey !== "") {
-            hasBothKeyValuePair && (value = input.slice(equalityIndex + 1, i2), valueHasPlus && (value = value.replace(regexPlus, " ")), shouldDecodeValue && (value = (0, decode_uri_component_js_1.decodeURIComponent)(value) || value));
-            let newValue = valueDeserializer(value, currentKey);
-            if (arrayRepeat) {
-              let currentValue = currentObj[currentKey];
-              currentValue === void 0 ? arrayRepeatBracketIndex > -1 ? currentObj[currentKey] = [newValue] : currentObj[currentKey] = newValue : currentValue.pop ? currentValue.push(newValue) : currentObj[currentKey] = [currentValue, newValue];
-            } else
-              currentObj[currentKey] = newValue;
-          }
-          value = "", startingIndex = i2, equalityIndex = i2, shouldDecodeKey = !1, shouldDecodeValue = !1, keyHasPlus = !1, valueHasPlus = !1, keyIsDot = !1, arrayRepeatBracketIndex = -1, keySeparatorIndex = i2, currentObj = result, lastKey = void 0, currentKey = "";
-        } else c2 === 93 ? (arrayRepeat && arrayRepeatSyntax === "bracket" && prevChar === 91 && (arrayRepeatBracketIndex = prevIndex), nesting && (nestingSyntax === "index" || isJsNestingSyntax) && equalityIndex <= startingIndex && (keySeparatorIndex !== prevIndex && (keyChunk = computeKeySlice(input, keySeparatorIndex + 1, i2, keyHasPlus, shouldDecodeKey), currentKey = keyDeserializer(keyChunk), lastKey !== void 0 && (currentObj = (0, object_util_js_1.getDeepObject)(currentObj, lastKey, currentKey, void 0, void 0)), lastKey = currentKey, keyHasPlus = !1, shouldDecodeKey = !1), keySeparatorIndex = i2, keyIsDot = !1)) : c2 === 46 ? nesting && (nestingSyntax === "dot" || isJsNestingSyntax) && equalityIndex <= startingIndex && (keySeparatorIndex !== prevIndex && (keyChunk = computeKeySlice(input, keySeparatorIndex + 1, i2, keyHasPlus, shouldDecodeKey), currentKey = keyDeserializer(keyChunk), lastKey !== void 0 && (currentObj = (0, object_util_js_1.getDeepObject)(currentObj, lastKey, currentKey, isJsNestingSyntax)), lastKey = currentKey, keyHasPlus = !1, shouldDecodeKey = !1), keyIsDot = !0, keySeparatorIndex = i2) : c2 === 91 ? nesting && (nestingSyntax === "index" || isJsNestingSyntax) && equalityIndex <= startingIndex && (keySeparatorIndex !== prevIndex && (keyChunk = computeKeySlice(input, keySeparatorIndex + 1, i2, keyHasPlus, shouldDecodeKey), currentKey = keyDeserializer(keyChunk), isJsNestingSyntax && lastKey !== void 0 && (currentObj = (0, object_util_js_1.getDeepObject)(currentObj, lastKey, currentKey, isJsNestingSyntax)), lastKey = currentKey, keyHasPlus = !1, shouldDecodeKey = !1, keyIsDot = !1), keySeparatorIndex = i2) : c2 === 61 ? equalityIndex <= startingIndex ? equalityIndex = i2 : shouldDecodeValue = !0 : c2 === 43 ? equalityIndex > startingIndex ? valueHasPlus = !0 : keyHasPlus = !0 : c2 === 37 && (equalityIndex > startingIndex ? shouldDecodeValue = !0 : shouldDecodeKey = !0);
-        prevIndex = i2, prevChar = c2;
-      }
-      return result;
-    }
-  }
-});
-
-// ../../node_modules/picoquery/lib/stringify.js
-var require_stringify = __commonJS({
-  "../../node_modules/picoquery/lib/stringify.js"(exports) {
-    "use strict";
-    Object.defineProperty(exports, "__esModule", { value: !0 });
-    exports.stringify = stringify2;
-    var object_util_js_1 = require_object_util();
-    function stringify2(input, options2) {
-      if (input === null || typeof input != "object")
-        return "";
-      let optionsObj = options2 ?? {};
-      return (0, object_util_js_1.stringifyObject)(input, optionsObj);
-    }
-  }
-});
-
-// ../../node_modules/picoquery/lib/main.js
-var require_main = __commonJS({
-  "../../node_modules/picoquery/lib/main.js"(exports) {
-    "use strict";
-    var __createBinding = exports && exports.__createBinding || (Object.create ? (function(o3, m2, k2, k22) {
-      k22 === void 0 && (k22 = k2);
-      var desc = Object.getOwnPropertyDescriptor(m2, k2);
-      (!desc || ("get" in desc ? !m2.__esModule : desc.writable || desc.configurable)) && (desc = { enumerable: !0, get: function() {
-        return m2[k2];
-      } }), Object.defineProperty(o3, k22, desc);
-    }) : (function(o3, m2, k2, k22) {
-      k22 === void 0 && (k22 = k2), o3[k22] = m2[k2];
-    })), __exportStar = exports && exports.__exportStar || function(m2, exports2) {
-      for (var p2 in m2) p2 !== "default" && !Object.prototype.hasOwnProperty.call(exports2, p2) && __createBinding(exports2, m2, p2);
-    };
-    Object.defineProperty(exports, "__esModule", { value: !0 });
-    exports.stringify = exports.parse = void 0;
-    var parse_js_1 = require_parse();
-    Object.defineProperty(exports, "parse", { enumerable: !0, get: function() {
-      return parse_js_1.parse;
-    } });
-    var stringify_js_1 = require_stringify();
-    Object.defineProperty(exports, "stringify", { enumerable: !0, get: function() {
-      return stringify_js_1.stringify;
-    } });
-    __exportStar(require_shared(), exports);
   }
 });
 
@@ -1981,14 +1310,14 @@ var require_store2 = __commonJS({
   }
 });
 
-// global-externals:react
-var react_default = __REACT__, { Children, Component, Fragment, Profiler, PureComponent, StrictMode, Suspense, __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED, act, cloneElement, createContext, createElement, createFactory, createRef, forwardRef, isValidElement, lazy, memo, startTransition, unstable_act, useCallback, useContext, useDebugValue, useDeferredValue, useEffect, useId, useImperativeHandle, useInsertionEffect, useLayoutEffect, useMemo, useReducer, useRef, useState, useSyncExternalStore, useTransition, version } = __REACT__;
+// src/manager/runtime.tsx
+init_react();
 
 // global-externals:storybook/internal/channels
 var channels_default = __STORYBOOK_CHANNELS__, { Channel, HEARTBEAT_INTERVAL, HEARTBEAT_MAX_LATENCY, PostMessageTransport, WebsocketTransport, createBrowserChannel } = __STORYBOOK_CHANNELS__;
 
 // global-externals:storybook/internal/core-events
-var core_events_default = __STORYBOOK_CORE_EVENTS__, { ARGTYPES_INFO_REQUEST, ARGTYPES_INFO_RESPONSE, CHANNEL_CREATED, CHANNEL_WS_DISCONNECT, CONFIG_ERROR, CREATE_NEW_STORYFILE_REQUEST, CREATE_NEW_STORYFILE_RESPONSE, CURRENT_STORY_WAS_SET, DOCS_PREPARED, DOCS_RENDERED, FILE_COMPONENT_SEARCH_REQUEST, FILE_COMPONENT_SEARCH_RESPONSE, FORCE_REMOUNT, FORCE_RE_RENDER, GLOBALS_UPDATED, MANAGER_INERT_ATTRIBUTE_CHANGED, NAVIGATE_URL, OPEN_IN_EDITOR_REQUEST, OPEN_IN_EDITOR_RESPONSE, PLAY_FUNCTION_THREW_EXCEPTION, PRELOAD_ENTRIES, PREVIEW_BUILDER_PROGRESS, PREVIEW_INITIALIZED, PREVIEW_KEYDOWN, REGISTER_SUBSCRIPTION, REQUEST_WHATS_NEW_DATA, RESET_STORY_ARGS, RESULT_WHATS_NEW_DATA, SAVE_STORY_REQUEST, SAVE_STORY_RESPONSE, SELECT_STORY, SET_CONFIG, SET_CURRENT_STORY, SET_FILTER, SET_GLOBALS, SET_INDEX, SET_STORIES, SET_WHATS_NEW_CACHE, SHARED_STATE_CHANGED, SHARED_STATE_SET, STORIES_COLLAPSE_ALL, STORIES_EXPAND_ALL, STORY_ARGS_UPDATED, STORY_CHANGED, STORY_ERRORED, STORY_FINISHED, STORY_HOT_UPDATED, STORY_INDEX_INVALIDATED, STORY_MISSING, STORY_PREPARED, STORY_RENDERED, STORY_RENDER_PHASE_CHANGED, STORY_SPECIFIED, STORY_THREW_EXCEPTION, STORY_UNCHANGED, TELEMETRY_ERROR, TOGGLE_WHATS_NEW_NOTIFICATIONS, UNHANDLED_ERRORS_WHILE_PLAYING, UPDATE_GLOBALS, UPDATE_QUERY_PARAMS, UPDATE_STORY_ARGS } = __STORYBOOK_CORE_EVENTS__;
+var core_events_default = __STORYBOOK_CORE_EVENTS__, { ARGTYPES_INFO_REQUEST, ARGTYPES_INFO_RESPONSE, CHANNEL_CREATED, CHANNEL_WS_DISCONNECT, CONFIG_ERROR, CREATE_NEW_STORYFILE_REQUEST, CREATE_NEW_STORYFILE_RESPONSE, CURRENT_STORY_WAS_SET, DOCS_PREPARED, DOCS_RENDERED, FILE_COMPONENT_SEARCH_REQUEST, FILE_COMPONENT_SEARCH_RESPONSE, FORCE_REMOUNT, FORCE_RE_RENDER, GHOST_STORIES_REQUEST, GHOST_STORIES_RESPONSE, GLOBALS_UPDATED, MANAGER_INERT_ATTRIBUTE_CHANGED, NAVIGATE_URL, OPEN_IN_EDITOR_REQUEST, OPEN_IN_EDITOR_RESPONSE, PLAY_FUNCTION_THREW_EXCEPTION, PRELOAD_ENTRIES, PREVIEW_BUILDER_PROGRESS, PREVIEW_INITIALIZED, PREVIEW_KEYDOWN, REGISTER_SUBSCRIPTION, REQUEST_WHATS_NEW_DATA, RESET_STORY_ARGS, RESULT_WHATS_NEW_DATA, SAVE_STORY_REQUEST, SAVE_STORY_RESPONSE, SELECT_STORY, SET_CONFIG, SET_CURRENT_STORY, SET_FILTER, SET_GLOBALS, SET_INDEX, SET_STORIES, SET_WHATS_NEW_CACHE, SHARED_STATE_CHANGED, SHARED_STATE_SET, STORIES_COLLAPSE_ALL, STORIES_EXPAND_ALL, STORY_ARGS_UPDATED, STORY_CHANGED, STORY_ERRORED, STORY_FINISHED, STORY_HOT_UPDATED, STORY_INDEX_INVALIDATED, STORY_MISSING, STORY_PREPARED, STORY_RENDERED, STORY_RENDER_PHASE_CHANGED, STORY_SPECIFIED, STORY_THREW_EXCEPTION, STORY_UNCHANGED, TELEMETRY_ERROR, TOGGLE_WHATS_NEW_NOTIFICATIONS, UNHANDLED_ERRORS_WHILE_PLAYING, UPDATE_GLOBALS, UPDATE_QUERY_PARAMS, UPDATE_STORY_ARGS } = __STORYBOOK_CORE_EVENTS__;
 
 // ../../node_modules/@storybook/global/dist/index.mjs
 var scope = (() => {
@@ -2256,10 +1585,13 @@ __export(icons_exports, {
 var icons_default = __STORYBOOK_ICONS__, { AccessibilityAltIcon, AccessibilityIcon, AccessibilityIgnoredIcon, AddIcon, AdminIcon, AlertAltIcon, AlertIcon, AlignLeftIcon, AlignRightIcon, AppleIcon, ArrowBottomLeftIcon, ArrowBottomRightIcon, ArrowDownIcon, ArrowLeftIcon, ArrowRightIcon, ArrowSolidDownIcon, ArrowSolidLeftIcon, ArrowSolidRightIcon, ArrowSolidUpIcon, ArrowTopLeftIcon, ArrowTopRightIcon, ArrowUpIcon, AzureDevOpsIcon, BackIcon, BasketIcon, BatchAcceptIcon, BatchDenyIcon, BeakerIcon, BellIcon, BitbucketIcon, BoldIcon, BookIcon, BookmarkHollowIcon, BookmarkIcon, BottomBarIcon, BottomBarToggleIcon, BoxIcon, BranchIcon, BrowserIcon, BugIcon, ButtonIcon, CPUIcon, CalendarIcon, CameraIcon, CameraStabilizeIcon, CategoryIcon, CertificateIcon, ChangedIcon, ChatIcon, CheckIcon, ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon, ChevronSmallDownIcon, ChevronSmallLeftIcon, ChevronSmallRightIcon, ChevronSmallUpIcon, ChevronUpIcon, ChromaticIcon, ChromeIcon, CircleHollowIcon, CircleIcon, ClearIcon, CloseAltIcon, CloseIcon, CloudHollowIcon, CloudIcon, CogIcon, CollapseIcon, CommandIcon, CommentAddIcon, CommentIcon, CommentsIcon, CommitIcon, CompassIcon, ComponentDrivenIcon, ComponentIcon, ContrastIcon, ContrastIgnoredIcon, ControlsIcon, CopyIcon, CreditIcon, CrossIcon, DashboardIcon, DatabaseIcon, DeleteIcon, DiamondIcon, DirectionIcon, DiscordIcon, DocChartIcon, DocListIcon, DocumentIcon, DownloadIcon, DragIcon, EditIcon, EditorIcon, EllipsisIcon, EmailIcon, ExpandAltIcon, ExpandIcon, EyeCloseIcon, EyeIcon, FaceHappyIcon, FaceNeutralIcon, FaceSadIcon, FacebookIcon, FailedIcon, FastForwardIcon, FigmaIcon, FilterIcon, FlagIcon, FolderIcon, FormIcon, GDriveIcon, GiftIcon, GithubIcon, GitlabIcon, GlobeIcon, GoogleIcon, GraphBarIcon, GraphLineIcon, GraphqlIcon, GridAltIcon, GridIcon, GrowIcon, HeartHollowIcon, HeartIcon, HomeIcon, HourglassIcon, InfoIcon, ItalicIcon, JumpToIcon, KeyIcon, LightningIcon, LightningOffIcon, LinkBrokenIcon, LinkIcon, LinkedinIcon, LinuxIcon, ListOrderedIcon, ListUnorderedIcon, LocationIcon, LockIcon, MarkdownIcon, MarkupIcon, MediumIcon, MemoryIcon, MenuIcon, MergeIcon, MirrorIcon, MobileIcon, MoonIcon, NutIcon, OutboxIcon, OutlineIcon, PaintBrushAltIcon, PaintBrushIcon, PaperClipIcon, ParagraphIcon, PassedIcon, PhoneIcon, PhotoDragIcon, PhotoIcon, PhotoStabilizeIcon, PinAltIcon, PinIcon, PlayAllHollowIcon, PlayBackIcon, PlayHollowIcon, PlayIcon, PlayNextIcon, PlusIcon, PointerDefaultIcon, PointerHandIcon, PowerIcon, PrintIcon, ProceedIcon, ProfileIcon, PullRequestIcon, QuestionIcon, RSSIcon, RedirectIcon, ReduxIcon, RefreshIcon, ReplyIcon, RepoIcon, RequestChangeIcon, RewindIcon, RulerIcon, SaveIcon, SearchIcon, ShareAltIcon, ShareIcon, ShieldIcon, SideBySideIcon, SidebarAltIcon, SidebarAltToggleIcon, SidebarIcon, SidebarToggleIcon, SortDownIcon, SortUpIcon, SpeakerIcon, StackedIcon, StarHollowIcon, StarIcon, StatusFailIcon, StatusIcon, StatusPassIcon, StatusWarnIcon, StickerIcon, StopAltHollowIcon, StopAltIcon, StopIcon, StorybookIcon, StructureIcon, SubtractIcon, SunIcon, SupportIcon, SweepIcon, SwitchAltIcon, SyncIcon, TabletIcon, ThumbsUpIcon, TimeIcon, TimerIcon, TransferIcon, TrashIcon, TwitterIcon, TypeIcon, UbuntuIcon, UndoIcon, UnfoldIcon, UnlockIcon, UnpinIcon, UploadIcon, UserAddIcon, UserAltIcon, UserIcon, UsersIcon, VSCodeIcon, VerifiedIcon, VideoIcon, WandIcon, WatchIcon, WindowsIcon, WrenchIcon, XIcon, YoutubeIcon, ZoomIcon, ZoomOutIcon, ZoomResetIcon, iconList } = __STORYBOOK_ICONS__;
 
 // global-externals:storybook/manager-api
-var manager_api_default = __STORYBOOK_API__, { ActiveTabs, Consumer, ManagerContext, Provider, RequestResponseError, addons, combineParameters, controlOrMetaKey, controlOrMetaSymbol, eventMatchesShortcut, eventToShortcut, experimental_MockUniversalStore, experimental_UniversalStore, experimental_getStatusStore, experimental_getTestProviderStore, experimental_requestResponse, experimental_useStatusStore, experimental_useTestProviderStore, experimental_useUniversalStore, internal_checklistStore, internal_fullStatusStore, internal_fullTestProviderStore, internal_universalChecklistStore, internal_universalStatusStore, internal_universalTestProviderStore, isMacLike, isShortcutTaken, keyToSymbol, merge, mockChannel, optionOrAltSymbol, shortcutMatchesShortcut, shortcutToAriaKeyshortcuts, shortcutToHumanString, types, useAddonState, useArgTypes, useArgs, useChannel, useGlobalTypes, useGlobals, useParameter, useSharedState, useStoryPrepared, useStorybookApi, useStorybookState } = __STORYBOOK_API__;
+var manager_api_default = __STORYBOOK_API__, { ActiveTabs, Consumer, ManagerContext, Provider, RequestResponseError, Tag, addons, combineParameters, controlOrMetaKey, controlOrMetaSymbol, eventMatchesShortcut, eventToShortcut, experimental_MockUniversalStore, experimental_UniversalStore, experimental_getStatusStore, experimental_getTestProviderStore, experimental_requestResponse, experimental_useStatusStore, experimental_useTestProviderStore, experimental_useUniversalStore, internal_checklistStore, internal_fullStatusStore, internal_fullTestProviderStore, internal_universalChecklistStore, internal_universalStatusStore, internal_universalTestProviderStore, isMacLike, isShortcutTaken, keyToSymbol, merge, mockChannel, optionOrAltSymbol, shortcutMatchesShortcut, shortcutToAriaKeyshortcuts, shortcutToHumanString, types, useAddonState, useArgTypes, useArgs, useChannel, useGlobalTypes, useGlobals, useParameter, useSharedState, useStoryPrepared, useStorybookApi, useStorybookState } = __STORYBOOK_API__;
 
 // global-externals:storybook/theming
 var theming_default = __STORYBOOK_THEMING__, { CacheProvider, ClassNames, Global, ThemeProvider, background, color, convert, create, createCache, createGlobal, createReset, css, darken, ensure, getPreferredColorScheme, ignoreSsrWarning, isPropValid, jsx, keyframes, lighten, styled, themes, tokens, typography, useTheme, withTheme } = __STORYBOOK_THEMING__;
+
+// src/toolbar/components/ToolbarManager.tsx
+init_react();
 
 // global-externals:storybook/internal/components
 var components_default = __STORYBOOK_COMPONENTS__, { A, AbstractToolbar, ActionBar, ActionList, AddonPanel, Badge, Bar, Blockquote, Button, Card, ClipboardCode, Code, Collapsible, DL, Div, DocumentWrapper, EmptyTabContent, ErrorFormatter, FlexBar, Form, H1, H2, H3, H4, H5, H6, HR, IconButton, Img, LI, Link, ListItem, Loader, Modal, ModalDecorator, OL, P, Placeholder, Popover, PopoverProvider, Pre, ProgressSpinner, ResetWrapper, ScrollArea, Select, Separator, Spaced, Span, StatelessTab, StatelessTabList, StatelessTabPanel, StatelessTabsView, StorybookIcon: StorybookIcon2, StorybookLogo, SyntaxHighlighter, TT, TabBar, TabButton, TabList, TabPanel, TabWrapper, Table, Tabs, TabsState, TabsView, ToggleButton, Toolbar, Tooltip, TooltipLinkList, TooltipMessage, TooltipNote, TooltipProvider, UL, WithTooltip, WithTooltipPure, Zoom, codeCommon, components, convertToReactAriaPlacement, createCopyToClipboardFunction, getStoryHref, interleaveSeparators, nameSpaceClassNames, resetComponents, useTabsState, withReset } = __STORYBOOK_COMPONENTS__;
@@ -2268,18 +1600,27 @@ var components_default = __STORYBOOK_COMPONENTS__, { A, AbstractToolbar, ActionB
 var defaultItemValues = {
   type: "item",
   value: ""
-}, normalizeArgType = (key, argType) => ({
-  ...argType,
-  name: argType.name || key,
-  description: argType.description || key,
-  toolbar: {
-    ...argType.toolbar,
-    items: argType.toolbar.items.map((_item) => {
-      let item = typeof _item == "string" ? { value: _item, title: _item } : _item;
-      return item.type === "reset" && argType.toolbar.icon && (item.icon = argType.toolbar.icon, item.hideIcon = !0, item.value = void 0), { ...defaultItemValues, ...item };
-    })
-  }
-});
+}, normalizeArgType = (key, argType) => {
+  let toolbar = argType.toolbar;
+  return toolbar ? {
+    ...argType,
+    name: argType.name || key,
+    description: argType.description || key,
+    toolbar: {
+      ...argType.toolbar,
+      items: toolbar.items.map((_item) => {
+        let item = typeof _item == "string" ? { value: _item, title: _item } : _item;
+        return item.type === "reset" && toolbar.icon && (item.icon = toolbar.icon, item.hideIcon = !0, item.value = void 0), { ...defaultItemValues, ...item };
+      })
+    }
+  } : null;
+};
+
+// src/toolbar/components/ToolbarMenuSelect.tsx
+init_react();
+
+// src/components/components/icon/icon.tsx
+init_react();
 
 // global-externals:storybook/internal/client-logger
 var client_logger_default = __STORYBOOK_CLIENT_LOGGER__, { deprecate, logger, once, pretty } = __STORYBOOK_CLIENT_LOGGER__;
@@ -2527,66 +1868,30 @@ var NEW_ICON_MAP = icons_exports, Svg = styled.svg`
   vscode: "VSCodeIcon"
 };
 
-// src/toolbar/utils/create-cycle-value-array.ts
-var disallowedCycleableItemTypes = ["reset"], createCycleValueArray = (items) => items.filter((item) => !disallowedCycleableItemTypes.includes(item.type)).map((item) => item.value);
+// src/toolbar/utils/get-selected.ts
+var getSelectedItem = ({ currentValue, items }) => items.find((item) => item.value === currentValue && item.type !== "reset");
 
 // src/toolbar/constants.ts
 var TOOLBAR_ID = "toolbar";
 
 // src/toolbar/utils/register-shortcuts.ts
 var registerShortcuts = async (api, id, shortcuts) => {
-  shortcuts && shortcuts.next && await api.setAddonShortcut(TOOLBAR_ID, {
+  shortcuts.next && await api.setAddonShortcut(TOOLBAR_ID, {
     label: shortcuts.next.label,
     defaultShortcut: shortcuts.next.keys,
     actionName: `${id}:next`,
     action: shortcuts.next.action
-  }), shortcuts && shortcuts.previous && await api.setAddonShortcut(TOOLBAR_ID, {
+  }), shortcuts.previous && await api.setAddonShortcut(TOOLBAR_ID, {
     label: shortcuts.previous.label,
     defaultShortcut: shortcuts.previous.keys,
     actionName: `${id}:previous`,
     action: shortcuts.previous.action
-  }), shortcuts && shortcuts.reset && await api.setAddonShortcut(TOOLBAR_ID, {
+  }), shortcuts.reset && await api.setAddonShortcut(TOOLBAR_ID, {
     label: shortcuts.reset.label,
     defaultShortcut: shortcuts.reset.keys,
     actionName: `${id}:reset`,
     action: shortcuts.reset.action
   });
-};
-
-// src/toolbar/hoc/withKeyboardCycle.tsx
-var withKeyboardCycle = (Component2) => (props) => {
-  let {
-    id,
-    toolbar: { items, shortcuts }
-  } = props, api = useStorybookApi(), [globals, updateGlobals] = useGlobals(), cycleValues = useRef([]), currentValue = globals[id], reset = useCallback(() => {
-    updateGlobals({ [id]: "" });
-  }, [updateGlobals]), setNext = useCallback(() => {
-    let values = cycleValues.current, currentIndex = values.indexOf(currentValue), newCurrentIndex = currentIndex === values.length - 1 ? 0 : currentIndex + 1, newCurrent = cycleValues.current[newCurrentIndex];
-    updateGlobals({ [id]: newCurrent });
-  }, [cycleValues, currentValue, updateGlobals]), setPrevious = useCallback(() => {
-    let values = cycleValues.current, indexOf = values.indexOf(currentValue), currentIndex = indexOf > -1 ? indexOf : 0, newCurrentIndex = currentIndex === 0 ? values.length - 1 : currentIndex - 1, newCurrent = cycleValues.current[newCurrentIndex];
-    updateGlobals({ [id]: newCurrent });
-  }, [cycleValues, currentValue, updateGlobals]);
-  return useEffect(() => {
-    shortcuts && registerShortcuts(api, id, {
-      next: { ...shortcuts.next, action: setNext },
-      previous: { ...shortcuts.previous, action: setPrevious },
-      reset: { ...shortcuts.reset, action: reset }
-    });
-  }, [api, id, shortcuts, setNext, setPrevious, reset]), useEffect(() => {
-    cycleValues.current = createCycleValueArray(items);
-  }, []), react_default.createElement(Component2, { cycleValues: cycleValues.current, ...props });
-};
-
-// src/toolbar/utils/get-selected.ts
-var getSelectedItem = ({ currentValue, items }) => currentValue != null && items.find((item) => item.value === currentValue && item.type !== "reset"), getSelectedIcon = ({ currentValue, items }) => {
-  let selectedItem = getSelectedItem({ currentValue, items });
-  if (selectedItem)
-    return selectedItem.icon;
-}, getSelectedTitle = ({ currentValue, items }) => {
-  let selectedItem = getSelectedItem({ currentValue, items });
-  if (selectedItem)
-    return selectedItem.title;
 };
 
 // src/toolbar/components/ToolbarMenuSelect.tsx
@@ -2597,16 +1902,16 @@ var ToolbarMenuItemContainer = styled("div")({
   gap: 8
 }), ToolbarMenuItemMiddle = styled("div")({
   flex: 1
-}), ToolbarMenuSelect = withKeyboardCycle(
-  ({
-    id,
-    name,
-    description,
-    toolbar: { icon: _icon, items, title: _title, preventDynamicIcon, dynamicTitle }
-  }) => {
-    let [globals, updateGlobals, storyGlobals] = useGlobals(), currentValue = globals[id], isOverridden = id in storyGlobals, icon = _icon, title2 = _title;
-    preventDynamicIcon || (icon = getSelectedIcon({ currentValue, items }) || icon), dynamicTitle && (title2 = getSelectedTitle({ currentValue, items }) || title2), !title2 && !icon && console.warn(`Toolbar '${name}' has no title or icon`);
-    let resetItem = items.find((item) => item.type === "reset"), resetLabel = resetItem?.title, options2 = items.filter((item) => item.type === "item").map((item) => {
+}), ToolbarMenuSelect = ({
+  id,
+  name,
+  description,
+  toolbar: { icon: _icon, items, title: _title, preventDynamicIcon, dynamicTitle, shortcuts }
+}) => {
+  let api = useStorybookApi(), [globals, updateGlobals, storyGlobals] = useGlobals(), currentValue = globals[id], isOverridden = id in storyGlobals, icon = _icon, title2 = _title;
+  preventDynamicIcon || (icon = getSelectedItem({ currentValue, items })?.icon || icon), dynamicTitle && (title2 = getSelectedItem({ currentValue, items })?.title || title2), !title2 && !icon && console.warn(`Toolbar '${name}' has no title or icon`);
+  let resetItem = items.find((item) => item.type === "reset"), resetLabel = resetItem?.title, options2 = react_default.useMemo(
+    () => items.filter((item) => item.type === "item").map((item) => {
       let itemTitle = item.title ?? item.value ?? "Untitled", iconComponent = !item.hideIcon && item.icon ? react_default.createElement(Icons, { icon: item.icon, __suppressDeprecationWarning: !0 }) : void 0;
       return item.right ? {
         title: itemTitle,
@@ -2617,33 +1922,65 @@ var ToolbarMenuItemContainer = styled("div")({
         value: item.value,
         icon: iconComponent
       };
-    }), ariaLabel = description || title2 || name || id;
-    return react_default.createElement(
-      Select,
-      {
-        defaultOptions: [currentValue],
-        options: options2,
-        disabled: isOverridden,
-        ariaLabel,
-        tooltip: ariaLabel,
-        resetLabel,
-        onReset: resetItem ? () => updateGlobals({ [id]: resetItem?.value }) : void 0,
-        onSelect: (selected) => updateGlobals({ [id]: selected }),
-        icon: icon && react_default.createElement(Icons, { icon, __suppressDeprecationWarning: !0 })
-      },
-      title2
-    );
-  }
-);
+    }),
+    [items]
+  );
+  react_default.useEffect(() => {
+    if (shortcuts) {
+      let length = options2.length;
+      registerShortcuts(api, id, {
+        next: {
+          ...shortcuts.next,
+          action: () => {
+            let idx = options2.findIndex((i2) => i2.value === globals[id]), nextIdx = idx < 0 ? 0 : (idx + 1) % length;
+            updateGlobals({ [id]: options2[nextIdx].value });
+          }
+        },
+        previous: {
+          ...shortcuts.previous,
+          action: () => {
+            let idx = options2.findIndex((i2) => i2.value === globals[id]), previousIdx = idx < 0 ? length - 1 : (idx + length - 1) % length;
+            updateGlobals({ [id]: options2[previousIdx].value });
+          }
+        },
+        reset: {
+          ...shortcuts.reset,
+          action: () => {
+            updateGlobals({ [id]: void 0 });
+          }
+        }
+      });
+    }
+  }, [api, id, shortcuts, globals, options2, updateGlobals]);
+  let ariaLabel = description || title2 || name || id;
+  return react_default.createElement(
+    Select,
+    {
+      defaultOptions: [currentValue],
+      options: options2,
+      disabled: isOverridden,
+      ariaLabel,
+      tooltip: ariaLabel,
+      resetLabel,
+      onReset: resetItem ? () => updateGlobals({ [id]: resetItem?.value }) : void 0,
+      onSelect: (selected) => updateGlobals({ [id]: selected }),
+      icon: icon && react_default.createElement(Icons, { icon, __suppressDeprecationWarning: !0 })
+    },
+    title2
+  );
+};
 
 // src/toolbar/components/ToolbarManager.tsx
 var ToolbarManager = () => {
-  let globalTypes = useGlobalTypes(), globalIds = Object.keys(globalTypes).filter((id) => !!globalTypes[id].toolbar);
-  return globalIds.length ? react_default.createElement(react_default.Fragment, null, react_default.createElement(Separator, null), globalIds.map((id) => {
+  let globalTypes = useGlobalTypes();
+  return Object.keys(globalTypes).some((id) => !!globalTypes[id].toolbar) ? react_default.createElement(react_default.Fragment, null, react_default.createElement(Separator, null), Object.keys(globalTypes).map((id) => {
     let normalizedArgType = normalizeArgType(id, globalTypes[id]);
-    return react_default.createElement(ToolbarMenuSelect, { key: id, id, ...normalizedArgType });
+    return normalizedArgType && react_default.createElement(ToolbarMenuSelect, { key: id, id, ...normalizedArgType });
   })) : null;
 };
+
+// src/manager/index.tsx
+init_react();
 
 // global-externals:react-dom/client
 var client_default = __REACT_DOM_CLIENT__, { createRoot, hydrateRoot } = __REACT_DOM_CLIENT__;
@@ -2655,6 +1992,7 @@ var manager_errors_default = __STORYBOOK_CORE_EVENTS_MANAGER_ERRORS__, { Categor
 var router_default = __STORYBOOK_ROUTER__, { BaseLocationProvider, DEEPLY_EQUAL, Link: Link2, Location, LocationProvider, Match, Route, buildArgsParam, deepDiff, getMatch, parsePath, queryFromLocation, stringifyQuery, useNavigate } = __STORYBOOK_ROUTER__;
 
 // ../../node_modules/react-helmet-async/lib/index.module.js
+init_react();
 var import_prop_types = __toESM(require_prop_types()), import_react_fast_compare = __toESM(require_react_fast_compare()), import_invariant = __toESM(require_browser()), import_shallowequal = __toESM(require_shallowequal());
 function a() {
   return a = Object.assign || function(t2) {
@@ -2998,61 +2336,11 @@ var F = ["children"], G = ["children"], W = (function(e2) {
 })(Component);
 W.propTypes = { base: import_prop_types.default.object, bodyAttributes: import_prop_types.default.object, children: import_prop_types.default.oneOfType([import_prop_types.default.arrayOf(import_prop_types.default.node), import_prop_types.default.node]), defaultTitle: import_prop_types.default.string, defer: import_prop_types.default.bool, encodeSpecialCharacters: import_prop_types.default.bool, htmlAttributes: import_prop_types.default.object, link: import_prop_types.default.arrayOf(import_prop_types.default.object), meta: import_prop_types.default.arrayOf(import_prop_types.default.object), noscript: import_prop_types.default.arrayOf(import_prop_types.default.object), onChangeClientState: import_prop_types.default.func, script: import_prop_types.default.arrayOf(import_prop_types.default.object), style: import_prop_types.default.arrayOf(import_prop_types.default.object), title: import_prop_types.default.string, titleAttributes: import_prop_types.default.object, titleTemplate: import_prop_types.default.string, prioritizeSeoTags: import_prop_types.default.bool, helmetData: import_prop_types.default.object }, W.defaultProps = { defer: !0, encodeSpecialCharacters: !0, prioritizeSeoTags: !1 }, W.displayName = "Helmet";
 
-// src/manager/constants.ts
-var MEDIA_DESKTOP_BREAKPOINT = "@media (min-width: 600px)";
+// src/manager/App.tsx
+init_react();
 
-// src/manager/hooks/useMedia.tsx
-function useMediaQuery(query) {
-  let getMatches = (queryMatch) => typeof window < "u" ? window.matchMedia(queryMatch).matches : !1, [matches, setMatches] = useState(getMatches(query));
-  function handleChange() {
-    setMatches(getMatches(query));
-  }
-  return useEffect(() => {
-    let matchMedia = window.matchMedia(query);
-    return handleChange(), matchMedia.addEventListener("change", handleChange), () => {
-      matchMedia.removeEventListener("change", handleChange);
-    };
-  }, [query]), matches;
-}
-
-// src/manager/components/layout/LayoutProvider.tsx
-var LayoutContext = createContext({
-  isMobileMenuOpen: !1,
-  setMobileMenuOpen: () => {
-  },
-  isMobileAboutOpen: !1,
-  setMobileAboutOpen: () => {
-  },
-  isMobilePanelOpen: !1,
-  setMobilePanelOpen: () => {
-  },
-  isDesktop: !1,
-  isMobile: !1
-}), LayoutProvider = ({ children, forceDesktop }) => {
-  let [isMobileMenuOpen, setMobileMenuOpen] = useState(!1), [isMobileAboutOpen, setMobileAboutOpen] = useState(!1), [isMobilePanelOpen, setMobilePanelOpen] = useState(!1), isDesktop = forceDesktop ?? useMediaQuery(`(min-width: ${600}px)`), isMobile2 = !isDesktop, contextValue = useMemo(
-    () => ({
-      isMobileMenuOpen,
-      setMobileMenuOpen,
-      isMobileAboutOpen,
-      setMobileAboutOpen,
-      isMobilePanelOpen,
-      setMobilePanelOpen,
-      isDesktop,
-      isMobile: isMobile2
-    }),
-    [
-      isMobileMenuOpen,
-      setMobileMenuOpen,
-      isMobileAboutOpen,
-      setMobileAboutOpen,
-      isMobilePanelOpen,
-      setMobilePanelOpen,
-      isDesktop,
-      isMobile2
-    ]
-  );
-  return react_default.createElement(LayoutContext.Provider, { value: contextValue }, children);
-}, useLayout = () => useContext(LayoutContext);
+// src/manager/components/error-boundary/ManagerErrorBoundary.tsx
+init_react();
 
 // ../../node_modules/@babel/runtime/helpers/esm/extends.js
 function _extends() {
@@ -3128,19 +2416,19 @@ function _wrapNativeSuper(t2) {
     if (typeof t3 != "function") throw new TypeError("Super expression must either be null or a function");
     if (r3 !== void 0) {
       if (r3.has(t3)) return r3.get(t3);
-      r3.set(t3, Wrapper6);
+      r3.set(t3, Wrapper8);
     }
-    function Wrapper6() {
+    function Wrapper8() {
       return _construct(t3, arguments, _getPrototypeOf(this).constructor);
     }
-    return Wrapper6.prototype = Object.create(t3.prototype, {
+    return Wrapper8.prototype = Object.create(t3.prototype, {
       constructor: {
-        value: Wrapper6,
+        value: Wrapper8,
         enumerable: !1,
         writable: !0,
         configurable: !0
       }
-    }), _setPrototypeOf(Wrapper6, t3);
+    }), _setPrototypeOf(Wrapper8, t3);
   }, _wrapNativeSuper(t2);
 }
 
@@ -3650,7 +2938,195 @@ function transparentize(amount, color2) {
 }
 var curriedTransparentize = curry(transparentize), curriedTransparentize$1 = curriedTransparentize;
 
+// src/manager/components/error-boundary/ManagerErrorBoundary.tsx
+var Container = styled.div(({ theme }) => ({
+  display: "flex",
+  justifyContent: "center",
+  alignItems: "center",
+  width: "100vw",
+  height: "100vh",
+  backgroundColor: theme.background.app,
+  color: theme.color.defaultText,
+  fontFamily: theme.typography.fonts.base
+})), Content = styled.div(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "space-between",
+  width: "80%",
+  height: "80%",
+  padding: 20,
+  gap: 20,
+  backgroundColor: theme.background.content,
+  borderRadius: theme.appBorderRadius,
+  border: `1px solid ${theme.color.negative}`,
+  boxShadow: "0 0 64px rgba(0, 0, 0, 0.1)",
+  overflow: "auto"
+})), Info = styled.div(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "start",
+  gap: 15
+})), Heading = styled.h1(({ theme }) => ({
+  display: "flex",
+  alignItems: "center",
+  margin: 0,
+  gap: 10,
+  fontSize: theme.typography.size.s2,
+  fontWeight: theme.typography.weight.bold,
+  color: theme.color.defaultText
+})), SubHeading = styled.p(({ theme }) => ({
+  fontSize: theme.typography.size.s2,
+  color: theme.textMutedColor,
+  margin: 0,
+  lineHeight: 1.4,
+  textWrap: "balance"
+})), ErrorWrapper = styled.div(({ theme }) => ({
+  display: "flex",
+  flexDirection: "column-reverse",
+  width: "100%",
+  flex: "0 0 auto",
+  border: `1px solid ${theme.appBorderColor}`,
+  borderRadius: theme.appBorderRadius,
+  pre: {
+    borderRadius: 0
+  }
+})), CollapseToggle = styled.div(({ theme }) => ({
+  flex: "0 0 auto",
+  display: "flex",
+  alignItems: "center",
+  gap: 10,
+  height: 40,
+  width: "100%",
+  padding: "0 10px",
+  cursor: "pointer",
+  fontSize: theme.typography.size.s2,
+  fontWeight: theme.typography.weight.bold,
+  color: theme.color.defaultText,
+  userSelect: "none",
+  "&:hover": {
+    backgroundColor: theme.base === "light" ? "rgba(0, 0, 0, 0.02)" : "rgba(255, 255, 255, 0.03)"
+  },
+  svg: {
+    color: theme.textMutedColor
+  }
+})), ErrorMessage = styled.pre(({ theme }) => ({
+  order: 1,
+  padding: "11px 15px",
+  margin: 0,
+  fontSize: theme.typography.size.s1,
+  color: theme.color.negativeText,
+  backgroundColor: curriedTransparentize$1(theme.base === "light" ? 0.95 : 0.9, theme.color.negative),
+  borderBottom: `1px solid ${theme.appBorderColor}`,
+  whiteSpace: "pre-wrap",
+  wordBreak: "break-word",
+  fontFamily: theme.typography.fonts.mono,
+  lineHeight: "18px"
+})), ErrorStack = styled.pre(({ theme }) => ({
+  padding: 15,
+  margin: 0,
+  fontSize: theme.typography.size.s1,
+  color: theme.textMutedColor,
+  borderBottom: `1px solid ${theme.appBorderColor}`,
+  borderRadius: 0,
+  whiteSpace: "pre-wrap",
+  wordBreak: "break-word",
+  fontFamily: theme.typography.fonts.mono
+})), ErrorFallback = ({ error, errorInfo }) => react_default.createElement(Container, { "data-testid": "manager-error-boundary" }, react_default.createElement(Content, null, react_default.createElement(Info, null, react_default.createElement(Heading, null, react_default.createElement(Badge, { status: "negative" }, "Error"), react_default.createElement("span", null, "Something went wrong")), react_default.createElement(SubHeading, null, "The Storybook Manager UI encountered an error. This is usually caused by custom addon code or configuration. Please check your browser console for more details. Try clearing browser storage if the issue persists."), react_default.createElement(Button, { asChild: !0, size: "medium" }, react_default.createElement("a", { href: window.location.origin + window.location.pathname.replace("iframe.html", "") }, react_default.createElement(SyncIcon, { size: 14 }), "Reload Storybook"))), react_default.createElement(ErrorWrapper, null, react_default.createElement(ErrorMessage, null, error.message || "Unknown error"), react_default.createElement(
+  Collapsible,
+  {
+    collapsed: !0,
+    summary: ({ isCollapsed, toggleCollapsed }) => react_default.createElement(CollapseToggle, { onClick: toggleCollapsed }, react_default.createElement(UnfoldIcon, null), isCollapsed ? "Expand error" : "Collapse error")
+  },
+  (error.stack || errorInfo?.componentStack) && react_default.createElement(ErrorStack, null, error.stack, errorInfo?.componentStack && `
+
+Component Stack:${errorInfo.componentStack}`)
+)))), ManagerErrorBoundary = class extends Component {
+  constructor(props) {
+    super(props), this.state = { hasError: !1, error: null, errorInfo: null };
+  }
+  static getDerivedStateFromError(error) {
+    return { hasError: !0, error };
+  }
+  componentDidCatch(error, errorInfo) {
+    console.error("Storybook Manager UI Error:", error), console.error("Component Stack:", errorInfo.componentStack), this.setState({ errorInfo });
+  }
+  render() {
+    let { hasError, error, errorInfo } = this.state, { children } = this.props;
+    return hasError && error ? react_default.createElement(ErrorFallback, { error, errorInfo }) : children;
+  }
+};
+
+// src/manager/components/layout/Layout.tsx
+init_react();
+
+// src/manager/constants.ts
+var MEDIA_DESKTOP_BREAKPOINT = "@media (min-width: 600px)";
+
+// src/manager/container/Notifications.tsx
+init_react();
+
+// src/manager/components/notifications/NotificationList.tsx
+init_react();
+
+// src/manager/components/layout/LayoutProvider.tsx
+init_react();
+
+// src/manager/hooks/useMedia.tsx
+init_react();
+function useMediaQuery(query) {
+  let getMatches = (queryMatch) => typeof window < "u" ? window.matchMedia(queryMatch).matches : !1, [matches, setMatches] = useState(getMatches(query));
+  function handleChange() {
+    setMatches(getMatches(query));
+  }
+  return useEffect(() => {
+    let matchMedia = window.matchMedia(query);
+    return handleChange(), matchMedia.addEventListener("change", handleChange), () => {
+      matchMedia.removeEventListener("change", handleChange);
+    };
+  }, [query]), matches;
+}
+
+// src/manager/components/layout/LayoutProvider.tsx
+var LayoutContext = createContext({
+  isMobileMenuOpen: !1,
+  setMobileMenuOpen: () => {
+  },
+  isMobileAboutOpen: !1,
+  setMobileAboutOpen: () => {
+  },
+  isMobilePanelOpen: !1,
+  setMobilePanelOpen: () => {
+  },
+  isDesktop: !1,
+  isMobile: !1
+}), LayoutProvider = ({ children, forceDesktop }) => {
+  let [isMobileMenuOpen, setMobileMenuOpen] = useState(!1), [isMobileAboutOpen, setMobileAboutOpen] = useState(!1), [isMobilePanelOpen, setMobilePanelOpen] = useState(!1), isDesktop = forceDesktop ?? useMediaQuery(`(min-width: ${600}px)`), isMobile2 = !isDesktop, contextValue = useMemo(
+    () => ({
+      isMobileMenuOpen,
+      setMobileMenuOpen,
+      isMobileAboutOpen,
+      setMobileAboutOpen,
+      isMobilePanelOpen,
+      setMobilePanelOpen,
+      isDesktop,
+      isMobile: isMobile2
+    }),
+    [
+      isMobileMenuOpen,
+      setMobileMenuOpen,
+      isMobileAboutOpen,
+      setMobileAboutOpen,
+      isMobilePanelOpen,
+      setMobilePanelOpen,
+      isDesktop,
+      isMobile2
+    ]
+  );
+  return react_default.createElement(LayoutContext.Provider, { value: contextValue }, children);
+}, useLayout = () => useContext(LayoutContext);
+
 // src/manager/components/notifications/NotificationItem.tsx
+init_react();
 var slideIn = keyframes({
   "0%": {
     opacity: 0,
@@ -3829,14 +3305,22 @@ var mapper = ({ state, api }) => ({
   clearNotification: api.clearNotification
 }), Notifications = (props) => react_default.createElement(Consumer, { filter: mapper }, (fromState) => react_default.createElement(NotificationList, { ...props, ...fromState }));
 
+// src/manager/components/mobile/navigation/MobileNavigation.tsx
+init_react();
+
 // ../../node_modules/@react-aria/utils/dist/useLayoutEffect.mjs
+init_react();
 var $f0a04ccd8dbdd83b$export$e5c5a5f917a5871c = typeof document < "u" ? react_default.useLayoutEffect : () => {
 };
 
-// ../../node_modules/@react-aria/utils/dist/useEffectEvent.mjs
-var $8ae05eaa5c114e9c$var$_React_useInsertionEffect, $8ae05eaa5c114e9c$var$useEarlyEffect = ($8ae05eaa5c114e9c$var$_React_useInsertionEffect = react_default.useInsertionEffect) !== null && $8ae05eaa5c114e9c$var$_React_useInsertionEffect !== void 0 ? $8ae05eaa5c114e9c$var$_React_useInsertionEffect : $f0a04ccd8dbdd83b$export$e5c5a5f917a5871c;
+// ../../node_modules/@react-aria/utils/dist/useValueEffect.mjs
+init_react();
+
+// ../../node_modules/@react-aria/utils/dist/useId.mjs
+init_react();
 
 // ../../node_modules/@react-aria/ssr/dist/SSRProvider.mjs
+init_react();
 var $b5e257d569688ac6$var$defaultContext = {
   prefix: String(Math.round(Math.random() * 1e10)),
   current: 0
@@ -3990,6 +3474,7 @@ var $c87311424ea30a05$export$9ac100e40613ea10 = $c87311424ea30a05$var$cached(fun
 });
 
 // ../../node_modules/@react-aria/utils/dist/openLink.mjs
+init_react();
 var $ea8dcbcb9ea1b556$var$RouterContext = createContext({
   isNative: !0,
   open: $ea8dcbcb9ea1b556$var$openSyntheticLink,
@@ -4010,6 +3495,7 @@ function $ea8dcbcb9ea1b556$export$95185d699e05d4d7(target, modifiers2, setOpenin
     ctrlKey,
     altKey,
     shiftKey,
+    detail: 1,
     bubbles: !0,
     cancelable: !0
   });
@@ -4052,11 +3538,58 @@ function $bbed8b41f857bcc0$var$setupGlobalEvents() {
 }
 typeof document < "u" && (document.readyState !== "loading" ? $bbed8b41f857bcc0$var$setupGlobalEvents() : document.addEventListener("DOMContentLoaded", $bbed8b41f857bcc0$var$setupGlobalEvents));
 
+// ../../node_modules/@react-aria/utils/dist/useDrag1D.mjs
+init_react();
+
+// ../../node_modules/@react-aria/utils/dist/useGlobalListeners.mjs
+init_react();
+
+// ../../node_modules/@react-aria/utils/dist/useObjectRef.mjs
+init_react();
+
+// ../../node_modules/@react-aria/utils/dist/useEffectEvent.mjs
+init_react();
+var $8ae05eaa5c114e9c$var$_React_useInsertionEffect, $8ae05eaa5c114e9c$var$useEarlyEffect = ($8ae05eaa5c114e9c$var$_React_useInsertionEffect = react_default.useInsertionEffect) !== null && $8ae05eaa5c114e9c$var$_React_useInsertionEffect !== void 0 ? $8ae05eaa5c114e9c$var$_React_useInsertionEffect : $f0a04ccd8dbdd83b$export$e5c5a5f917a5871c;
+
+// ../../node_modules/@react-aria/utils/dist/useUpdateEffect.mjs
+init_react();
+
+// ../../node_modules/@react-aria/utils/dist/useUpdateLayoutEffect.mjs
+init_react();
+
+// ../../node_modules/@react-aria/utils/dist/useResizeObserver.mjs
+init_react();
+
 // ../../node_modules/@react-aria/utils/dist/useViewportSize.mjs
+init_react();
 var $5df64b3807dc15ee$var$visualViewport = typeof document < "u" && window.visualViewport;
+
+// ../../node_modules/@react-aria/utils/dist/useDescription.mjs
+init_react();
+
+// ../../node_modules/@react-aria/utils/dist/useEvent.mjs
+init_react();
+
+// ../../node_modules/@react-aria/utils/dist/useDeepMemo.mjs
+init_react();
+
+// ../../node_modules/@react-aria/utils/dist/useFormReset.mjs
+init_react();
+
+// ../../node_modules/@react-aria/utils/dist/useLoadMore.mjs
+init_react();
+
+// ../../node_modules/@react-aria/utils/dist/useLoadMoreSentinel.mjs
+init_react();
+
+// ../../node_modules/@react-aria/utils/dist/inertValue.mjs
+init_react();
 
 // global-externals:react-dom
 var react_dom_default = __REACT_DOM__, { __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED: __SECRET_INTERNALS_DO_NOT_USE_OR_YOU_WILL_BE_FIRED2, createPortal, createRoot: createRoot2, findDOMNode, flushSync, hydrate, hydrateRoot: hydrateRoot2, render, unmountComponentAtNode, unstable_batchedUpdates, unstable_renderSubtreeIntoContainer, version: version2 } = __REACT_DOM__;
+
+// ../../node_modules/@react-aria/utils/dist/animation.mjs
+init_react();
 
 // ../../node_modules/@react-aria/utils/dist/isElementVisible.mjs
 var $7d2416ea0959daaa$var$supportsCheckVisibility = typeof Element < "u" && "checkVisibility" in Element.prototype;
@@ -4081,18 +3614,291 @@ var $b4b717babfbb907b$var$focusableElements = [
 $b4b717babfbb907b$var$focusableElements.push('[tabindex]:not([tabindex="-1"]):not([disabled])');
 var $b4b717babfbb907b$var$TABBABLE_ELEMENT_SELECTOR = $b4b717babfbb907b$var$focusableElements.join(':not([hidden]):not([tabindex="-1"]),');
 
+// ../../node_modules/@react-stately/utils/dist/useControlledState.mjs
+init_react();
+var $458b0a5536c1a7cf$var$_React_useInsertionEffect, $458b0a5536c1a7cf$var$useEarlyEffect = typeof document < "u" ? ($458b0a5536c1a7cf$var$_React_useInsertionEffect = react_default.useInsertionEffect) !== null && $458b0a5536c1a7cf$var$_React_useInsertionEffect !== void 0 ? $458b0a5536c1a7cf$var$_React_useInsertionEffect : react_default.useLayoutEffect : () => {
+};
+
+// ../../node_modules/@react-aria/landmark/dist/useLandmark.mjs
+init_react();
+var import_shim = __toESM(require_shim(), 1), $a86207c5d7f7e1fb$var$LANDMARK_API_VERSION = 1, $a86207c5d7f7e1fb$var$landmarkSymbol = Symbol.for("react-aria-landmark-manager");
+function $a86207c5d7f7e1fb$var$subscribe(fn) {
+  return document.addEventListener("react-aria-landmark-manager-change", fn), () => document.removeEventListener("react-aria-landmark-manager-change", fn);
+}
+function $a86207c5d7f7e1fb$var$getLandmarkManager() {
+  if (typeof document > "u") return null;
+  let instance = document[$a86207c5d7f7e1fb$var$landmarkSymbol];
+  return instance && instance.version >= $a86207c5d7f7e1fb$var$LANDMARK_API_VERSION ? instance : (document[$a86207c5d7f7e1fb$var$landmarkSymbol] = new $a86207c5d7f7e1fb$var$LandmarkManager(), document.dispatchEvent(new CustomEvent("react-aria-landmark-manager-change")), document[$a86207c5d7f7e1fb$var$landmarkSymbol]);
+}
+function $a86207c5d7f7e1fb$var$useLandmarkManager() {
+  return (0, import_shim.useSyncExternalStore)($a86207c5d7f7e1fb$var$subscribe, $a86207c5d7f7e1fb$var$getLandmarkManager, $a86207c5d7f7e1fb$var$getLandmarkManager);
+}
+var $a86207c5d7f7e1fb$var$LandmarkManager = class {
+  setupIfNeeded() {
+    this.isListening || (document.addEventListener("keydown", this.f6Handler, {
+      capture: !0
+    }), document.addEventListener("focusin", this.focusinHandler, {
+      capture: !0
+    }), document.addEventListener("focusout", this.focusoutHandler, {
+      capture: !0
+    }), this.isListening = !0);
+  }
+  teardownIfNeeded() {
+    !this.isListening || this.landmarks.length > 0 || this.refCount > 0 || (document.removeEventListener("keydown", this.f6Handler, {
+      capture: !0
+    }), document.removeEventListener("focusin", this.focusinHandler, {
+      capture: !0
+    }), document.removeEventListener("focusout", this.focusoutHandler, {
+      capture: !0
+    }), this.isListening = !1);
+  }
+  focusLandmark(landmark, direction) {
+    var _this_landmarks_find_focus, _this_landmarks_find;
+    (_this_landmarks_find = this.landmarks.find((l3) => l3.ref.current === landmark)) === null || _this_landmarks_find === void 0 || (_this_landmarks_find_focus = _this_landmarks_find.focus) === null || _this_landmarks_find_focus === void 0 || _this_landmarks_find_focus.call(_this_landmarks_find, direction);
+  }
+  /**
+  * Return set of landmarks with a specific role.
+  */
+  getLandmarksByRole(role) {
+    return new Set(this.landmarks.filter((l3) => l3.role === role));
+  }
+  /**
+  * Return first landmark with a specific role.
+  */
+  getLandmarkByRole(role) {
+    return this.landmarks.find((l3) => l3.role === role);
+  }
+  addLandmark(newLandmark) {
+    if (this.setupIfNeeded(), this.landmarks.find((landmark) => landmark.ref === newLandmark.ref) || !newLandmark.ref.current) return;
+    if (this.landmarks.filter((landmark) => landmark.role === "main").length > 1, this.landmarks.length === 0) {
+      this.landmarks = [
+        newLandmark
+      ], this.checkLabels(newLandmark.role);
+      return;
+    }
+    let start = 0, end = this.landmarks.length - 1;
+    for (; start <= end; ) {
+      let mid = Math.floor((start + end) / 2), comparedPosition = newLandmark.ref.current.compareDocumentPosition(this.landmarks[mid].ref.current);
+      !!(comparedPosition & Node.DOCUMENT_POSITION_PRECEDING || comparedPosition & Node.DOCUMENT_POSITION_CONTAINS) ? start = mid + 1 : end = mid - 1;
+    }
+    this.landmarks.splice(start, 0, newLandmark), this.checkLabels(newLandmark.role);
+  }
+  updateLandmark(landmark) {
+    let index = this.landmarks.findIndex((l3) => l3.ref === landmark.ref);
+    index >= 0 && (this.landmarks[index] = {
+      ...this.landmarks[index],
+      ...landmark
+    }, this.checkLabels(this.landmarks[index].role));
+  }
+  removeLandmark(ref) {
+    this.landmarks = this.landmarks.filter((landmark) => landmark.ref !== ref), this.teardownIfNeeded();
+  }
+  /**
+  * Warn if there are 2+ landmarks with the same role but no label.
+  * Labels for landmarks with the same role must also be unique.
+  *
+  * See https://www.w3.org/WAI/ARIA/apg/practices/landmark-regions/.
+  */
+  checkLabels(role) {
+    let landmarksWithRole = this.getLandmarksByRole(role);
+    landmarksWithRole.size > 1 && [
+      ...landmarksWithRole
+    ].filter((landmark) => !landmark.label).length > 0;
+  }
+  /**
+  * Get the landmark that is the closest parent in the DOM.
+  * Returns undefined if no parent is a landmark.
+  */
+  closestLandmark(element) {
+    let landmarkMap = new Map(this.landmarks.map((l3) => [
+      l3.ref.current,
+      l3
+    ])), currentElement = element;
+    for (; currentElement && !landmarkMap.has(currentElement) && currentElement !== document.body && currentElement.parentElement; ) currentElement = currentElement.parentElement;
+    return landmarkMap.get(currentElement);
+  }
+  /**
+  * Gets the next landmark, in DOM focus order, or previous if backwards is specified.
+  * If last landmark, next should be the first landmark.
+  * If not inside a landmark, will return first landmark.
+  * Returns undefined if there are no landmarks.
+  */
+  getNextLandmark(element, { backward }) {
+    var _this_landmarks_nextLandmarkIndex_ref_current;
+    let currentLandmark = this.closestLandmark(element), nextLandmarkIndex = backward ? this.landmarks.length - 1 : 0;
+    currentLandmark && (nextLandmarkIndex = this.landmarks.indexOf(currentLandmark) + (backward ? -1 : 1));
+    let wrapIfNeeded = () => {
+      if (nextLandmarkIndex < 0) {
+        if (!element.dispatchEvent(new CustomEvent("react-aria-landmark-navigation", {
+          detail: {
+            direction: "backward"
+          },
+          bubbles: !0,
+          cancelable: !0
+        }))) return !0;
+        nextLandmarkIndex = this.landmarks.length - 1;
+      } else if (nextLandmarkIndex >= this.landmarks.length) {
+        if (!element.dispatchEvent(new CustomEvent("react-aria-landmark-navigation", {
+          detail: {
+            direction: "forward"
+          },
+          bubbles: !0,
+          cancelable: !0
+        }))) return !0;
+        nextLandmarkIndex = 0;
+      }
+      return nextLandmarkIndex < 0 || nextLandmarkIndex >= this.landmarks.length;
+    };
+    if (wrapIfNeeded()) return;
+    let i2 = nextLandmarkIndex;
+    for (; !((_this_landmarks_nextLandmarkIndex_ref_current = this.landmarks[nextLandmarkIndex].ref.current) === null || _this_landmarks_nextLandmarkIndex_ref_current === void 0) && _this_landmarks_nextLandmarkIndex_ref_current.closest("[aria-hidden=true]"); ) {
+      if (nextLandmarkIndex += backward ? -1 : 1, wrapIfNeeded()) return;
+      if (nextLandmarkIndex === i2) break;
+    }
+    return this.landmarks[nextLandmarkIndex];
+  }
+  /**
+  * Look at next landmark. If an element was previously focused inside, restore focus there.
+  * If not, focus the landmark itself.
+  * If no landmarks at all, or none with focusable elements, don't move focus.
+  */
+  f6Handler(e2) {
+    e2.key === "F6" && (e2.altKey ? this.focusMain() : this.navigate(e2.target, e2.shiftKey)) && (e2.preventDefault(), e2.stopPropagation());
+  }
+  focusMain() {
+    let main = this.getLandmarkByRole("main");
+    return main && main.ref.current && document.contains(main.ref.current) ? (this.focusLandmark(main.ref.current, "forward"), !0) : !1;
+  }
+  navigate(from, backward) {
+    let nextLandmark = this.getNextLandmark(from, {
+      backward
+    });
+    if (!nextLandmark) return !1;
+    if (nextLandmark.lastFocused) {
+      let lastFocused = nextLandmark.lastFocused;
+      if (document.body.contains(lastFocused))
+        return lastFocused.focus(), !0;
+    }
+    return nextLandmark.ref.current && document.contains(nextLandmark.ref.current) ? (this.focusLandmark(nextLandmark.ref.current, backward ? "backward" : "forward"), !0) : !1;
+  }
+  /**
+  * Sets lastFocused for a landmark, if focus is moved within that landmark.
+  * Lets the last focused landmark know it was blurred if something else is focused.
+  */
+  focusinHandler(e2) {
+    let currentLandmark = this.closestLandmark(e2.target);
+    currentLandmark && currentLandmark.ref.current !== e2.target && this.updateLandmark({
+      ref: currentLandmark.ref,
+      lastFocused: e2.target
+    });
+    let previousFocusedElement = e2.relatedTarget;
+    if (previousFocusedElement) {
+      let closestPreviousLandmark = this.closestLandmark(previousFocusedElement);
+      closestPreviousLandmark && closestPreviousLandmark.ref.current === previousFocusedElement && closestPreviousLandmark.blur();
+    }
+  }
+  /**
+  * Track if the focus is lost to the body. If it is, do cleanup on the landmark that last had focus.
+  */
+  focusoutHandler(e2) {
+    let previousFocusedElement = e2.target, nextFocusedElement = e2.relatedTarget;
+    if (!nextFocusedElement || nextFocusedElement === document) {
+      let closestPreviousLandmark = this.closestLandmark(previousFocusedElement);
+      closestPreviousLandmark && closestPreviousLandmark.ref.current === previousFocusedElement && closestPreviousLandmark.blur();
+    }
+  }
+  createLandmarkController() {
+    let instance = this;
+    return instance.refCount++, instance.setupIfNeeded(), {
+      navigate(direction, opts) {
+        let element = opts?.from || document.activeElement;
+        return instance.navigate(element, direction === "backward");
+      },
+      focusNext(opts) {
+        let element = opts?.from || document.activeElement;
+        return instance.navigate(element, !1);
+      },
+      focusPrevious(opts) {
+        let element = opts?.from || document.activeElement;
+        return instance.navigate(element, !0);
+      },
+      focusMain() {
+        return instance.focusMain();
+      },
+      dispose() {
+        instance && (instance.refCount--, instance.teardownIfNeeded(), instance = null);
+      }
+    };
+  }
+  registerLandmark(landmark) {
+    return this.landmarks.find((l3) => l3.ref === landmark.ref) ? this.updateLandmark(landmark) : this.addLandmark(landmark), () => this.removeLandmark(landmark.ref);
+  }
+  constructor() {
+    this.landmarks = [], this.isListening = !1, this.refCount = 0, this.version = $a86207c5d7f7e1fb$var$LANDMARK_API_VERSION, this.f6Handler = this.f6Handler.bind(this), this.focusinHandler = this.focusinHandler.bind(this), this.focusoutHandler = this.focusoutHandler.bind(this);
+  }
+};
+function $a86207c5d7f7e1fb$export$4cc632584fd87fae(props, ref) {
+  let { role, "aria-label": ariaLabel, "aria-labelledby": ariaLabelledby, focus } = props, manager = $a86207c5d7f7e1fb$var$useLandmarkManager(), label = ariaLabel || ariaLabelledby, [isLandmarkFocused, setIsLandmarkFocused] = useState(!1), defaultFocus = useCallback(() => {
+    setIsLandmarkFocused(!0);
+  }, [
+    setIsLandmarkFocused
+  ]), blur = useCallback(() => {
+    setIsLandmarkFocused(!1);
+  }, [
+    setIsLandmarkFocused
+  ]);
+  return $f0a04ccd8dbdd83b$export$e5c5a5f917a5871c(() => {
+    if (manager) return manager.registerLandmark({
+      ref,
+      label,
+      role,
+      focus: focus || defaultFocus,
+      blur
+    });
+  }, [
+    manager,
+    label,
+    ref,
+    role,
+    focus,
+    defaultFocus,
+    blur
+  ]), useEffect(() => {
+    var _ref_current;
+    isLandmarkFocused && ((_ref_current = ref.current) === null || _ref_current === void 0 || _ref_current.focus());
+  }, [
+    isLandmarkFocused,
+    ref
+  ]), {
+    landmarkProps: {
+      role,
+      tabIndex: isLandmarkFocused ? -1 : void 0,
+      "aria-label": ariaLabel,
+      "aria-labelledby": ariaLabelledby
+    }
+  };
+}
+
+// src/manager/hooks/useLandmark.ts
+function useLandmark(props, ref) {
+  let { landmarkProps } = $a86207c5d7f7e1fb$export$4cc632584fd87fae(props, ref);
+  return {
+    landmarkProps: {
+      ...landmarkProps,
+      "data-sb-landmark": !0
+    }
+  };
+}
+
 // src/manager/components/mobile/navigation/MobileAddonsDrawer.tsx
-var StyledModal = styled(Modal)(({ theme }) => ({
-  background: theme.background.content,
-  borderRadius: "10px 10px 0 0",
-  border: "none"
-})), MobileAddonsDrawer = ({
+init_react();
+var MobileAddonsDrawer = ({
   children,
   id,
   isOpen,
   onOpenChange
 }) => react_default.createElement(
-  StyledModal,
+  Modal,
   {
     ariaLabel: "Addon panel",
     transitionDuration: 300,
@@ -4104,6 +3910,15 @@ var StyledModal = styled(Modal)(({ theme }) => ({
   },
   children
 );
+
+// src/manager/components/mobile/navigation/MobileMenuDrawer.tsx
+init_react();
+
+// src/manager/components/mobile/about/MobileAbout.tsx
+init_react();
+
+// ../../node_modules/react-transition-state/dist/esm/hooks/useTransitionState.mjs
+init_react();
 
 // ../../node_modules/react-transition-state/dist/esm/hooks/utils.mjs
 var STATUS = ["preEnter", "entering", "entered", "preExit", "exiting", "exited", "unmounted"], getState = (status) => ({
@@ -4167,6 +3982,7 @@ var updateState = (status, setState, latestState, timeoutId, onChange) => {
 };
 
 // ../../node_modules/react-transition-state/dist/esm/hooks/useTransitionMap.mjs
+init_react();
 var updateState2 = (key, status, setStateMap, latestStateMap, timeoutId, onChange) => {
   clearTimeout(timeoutId);
   let state = getState(status), stateMap = new Map(latestStateMap.current);
@@ -4236,10 +4052,11 @@ var updateState2 = (key, status, setStateMap, latestStateMap, timeoutId, onChang
 };
 
 // src/manager/components/upgrade/UpgradeBlock.tsx
+init_react();
 var UpgradeBlock = ({ onNavigateToWhatsNew }) => {
   let api = useStorybookApi(), [activeTab, setActiveTab] = useState("npm");
-  return react_default.createElement(Container, null, react_default.createElement("strong", null, "You are on Storybook ", api.getCurrentVersion().version), react_default.createElement("p", null, "Run the following script to check for updates and upgrade to the latest version."), react_default.createElement(Tabs2, null, react_default.createElement(ButtonTab, { active: activeTab === "npm", onClick: () => setActiveTab("npm") }, "npm"), react_default.createElement(ButtonTab, { active: activeTab === "yarn", onClick: () => setActiveTab("yarn") }, "yarn"), react_default.createElement(ButtonTab, { active: activeTab === "pnpm", onClick: () => setActiveTab("pnpm") }, "pnpm")), react_default.createElement(Code2, null, activeTab === "npm" ? "npx storybook@latest upgrade" : `${activeTab} dlx storybook@latest upgrade`), onNavigateToWhatsNew && react_default.createElement(Link, { onClick: onNavigateToWhatsNew }, "See what's new in Storybook"));
-}, Container = styled.div(({ theme }) => ({
+  return react_default.createElement(Container2, null, react_default.createElement("strong", null, "You are on Storybook ", api.getCurrentVersion().version), react_default.createElement("p", null, "Run the following script to check for updates and upgrade to the latest version."), react_default.createElement(Tabs2, null, react_default.createElement(ButtonTab, { active: activeTab === "npm", onClick: () => setActiveTab("npm") }, "npm"), react_default.createElement(ButtonTab, { active: activeTab === "yarn", onClick: () => setActiveTab("yarn") }, "yarn"), react_default.createElement(ButtonTab, { active: activeTab === "pnpm", onClick: () => setActiveTab("pnpm") }, "pnpm")), react_default.createElement(Code2, null, activeTab === "npm" ? "npx storybook@latest upgrade" : `${activeTab} dlx storybook@latest upgrade`), onNavigateToWhatsNew && react_default.createElement(Link, { onClick: onNavigateToWhatsNew }, "See what's new in Storybook"));
+}, Container2 = styled.div(({ theme }) => ({
   border: "1px solid",
   borderRadius: 5,
   padding: 20,
@@ -4280,7 +4097,7 @@ var MobileAbout = () => {
   return useEffect(() => {
     toggle(isMobileAboutOpen);
   }, [isMobileAboutOpen, toggle]), state.isMounted ? react_default.createElement(
-    Container2,
+    Container3,
     {
       ref: aboutRef,
       $status: state.status,
@@ -4341,11 +4158,12 @@ var MobileAbout = () => {
     opacity: 0,
     transform: "translate(20px, 0)"
   }
-}), Container2 = styled.div(
+}), Container3 = styled.div(
   ({ theme, $status, $transitionDuration }) => ({
     position: "absolute",
     width: "100%",
     height: "100%",
+    borderRadius: "10px 10px 0 0",
     top: 0,
     left: 0,
     zIndex: 11,
@@ -4385,17 +4203,13 @@ var MobileAbout = () => {
 });
 
 // src/manager/components/mobile/navigation/MobileMenuDrawer.tsx
-var StyledModal2 = styled(Modal)(({ theme }) => ({
-  background: theme.background.content,
-  borderRadius: "10px 10px 0 0",
-  border: "none"
-})), MobileMenuDrawer = ({
+var MobileMenuDrawer = ({
   children,
   id,
   isOpen,
   onOpenChange
 }) => react_default.createElement(
-  StyledModal2,
+  Modal,
   {
     ariaLabel: "Menu",
     transitionDuration: 300,
@@ -4430,8 +4244,11 @@ var useFullStoryName = () => {
   showPanel,
   ...props
 }) => {
-  let { isMobileMenuOpen, isMobilePanelOpen, setMobileMenuOpen, setMobilePanelOpen } = useLayout(), fullStoryName = useFullStoryName(), headingId = $bdb11010cef70236$export$f680877a34711e37();
-  return react_default.createElement(Container3, { ...props }, react_default.createElement(
+  let { isMobileMenuOpen, isMobilePanelOpen, setMobileMenuOpen, setMobilePanelOpen } = useLayout(), fullStoryName = useFullStoryName(), headingId = $bdb11010cef70236$export$f680877a34711e37(), sectionRef = useRef(null), { landmarkProps } = useLandmark(
+    { "aria-labelledby": headingId, role: "banner" },
+    sectionRef
+  );
+  return react_default.createElement(Container4, { ...props }, react_default.createElement(
     MobileMenuDrawer,
     {
       id: "storybook-mobile-menu",
@@ -4447,7 +4264,7 @@ var useFullStoryName = () => {
       onOpenChange: setMobilePanelOpen
     },
     panel
-  ), !isMobilePanelOpen && react_default.createElement(MobileBottomBar, { className: "sb-bar", "aria-labelledby": headingId }, react_default.createElement("h2", { id: headingId, className: "sb-sr-only" }, "Navigation controls"), react_default.createElement(
+  ), !isMobilePanelOpen && react_default.createElement(MobileBottomBar, { className: "sb-bar", ...landmarkProps, ref: sectionRef }, react_default.createElement("h2", { id: headingId, className: "sb-sr-only" }, "Navigation controls"), react_default.createElement(
     BottomBarButton,
     {
       padding: "small",
@@ -4471,14 +4288,14 @@ var useFullStoryName = () => {
     },
     react_default.createElement(BottomBarToggleIcon, null)
   )));
-}, Container3 = styled.div(({ theme }) => ({
+}, Container4 = styled.section(({ theme }) => ({
   bottom: 0,
   left: 0,
   width: "100%",
   zIndex: 10,
   background: theme.barBg,
   borderTop: `1px solid ${theme.appBorderColor}`
-})), MobileBottomBar = styled.section({
+})), MobileBottomBar = styled.header({
   display: "flex",
   alignItems: "center",
   justifyContent: "space-between",
@@ -4511,6 +4328,7 @@ var useFullStoryName = () => {
 });
 
 // src/manager/components/layout/useDragging.ts
+init_react();
 var SNAP_THRESHOLD_PX = 30, SIDEBAR_MIN_WIDTH_PX = 240, RIGHT_PANEL_MIN_WIDTH_PX = 270, MIN_WIDTH_STIFFNESS = 0.9;
 function clamp(value, min, max) {
   return Math.min(Math.max(value, min), max);
@@ -4525,7 +4343,7 @@ function useDragging({
 }) {
   let panelResizerRef = useRef(null), sidebarResizerRef = useRef(null);
   return useEffect(() => {
-    let panelResizer = panelResizerRef.current, sidebarResizer = sidebarResizerRef.current, previewIframe = document.querySelector("#storybook-preview-wrapper"), draggedElement = null, onDragStart = (e2) => {
+    let panelResizer = panelResizerRef.current, sidebarResizer = sidebarResizerRef.current, previewIframe = document.querySelector("#storybook-preview-iframe"), draggedElement = null, onDragStart = (e2) => {
       e2.preventDefault(), setState((state) => ({
         ...state,
         isDragging: !0
@@ -4610,6 +4428,45 @@ function useDragging({
   ]), { panelResizerRef, sidebarResizerRef };
 }
 
+// src/manager/components/layout/useLandmarkIndicator.ts
+init_react();
+function findActiveLandmarkElement() {
+  let currentElement = document.activeElement, landmarkElement = null;
+  for (; currentElement; ) {
+    if (currentElement instanceof HTMLElement && currentElement.hasAttribute("data-sb-landmark")) {
+      landmarkElement = currentElement;
+      break;
+    }
+    currentElement = currentElement.parentElement;
+  }
+  return landmarkElement;
+}
+function useLandmarkIndicator() {
+  let theme = useTheme(), reducedMotion = useMediaQuery("(prefers-reduced-motion: reduce)"), currentAnimationRef = useRef(null);
+  useEffect(() => {
+    let handleKeyDown = (e2) => {
+      if (e2.key !== "F6")
+        return;
+      let landmarkElement = findActiveLandmarkElement();
+      if (landmarkElement && (currentAnimationRef.current && (currentAnimationRef.current.cancel(), currentAnimationRef.current = null), !reducedMotion)) {
+        let animation = landmarkElement.animate(
+          [{ border: `2px solid ${theme.color.primary}` }, { border: "2px solid transparent" }],
+          {
+            duration: 1500,
+            pseudoElement: "::after"
+          }
+        );
+        currentAnimationRef.current = animation, animation.onfinish = () => {
+          currentAnimationRef.current = null;
+        };
+      }
+    };
+    return document.addEventListener("keydown", handleKeyDown, { capture: !0 }), () => {
+      document.removeEventListener("keydown", handleKeyDown, { capture: !0 });
+    };
+  }, [reducedMotion, theme.color.primary]);
+}
+
 // src/manager/components/layout/Layout.tsx
 var MINIMUM_CONTENT_WIDTH_PX = 100, layoutStateIsEqual = (state, other) => state.navSize === other.navSize && state.bottomPanelHeight === other.bottomPanelHeight && state.rightPanelWidth === other.rightPanelWidth && state.panelPosition === other.panelPosition, useLayoutSyncingState = ({
   api,
@@ -4669,56 +4526,54 @@ var MINIMUM_CONTENT_WIDTH_PX = 100, layoutStateIsEqual = (state, other) => state
     showPanel,
     isDragging
   } = useLayoutSyncingState({ api, managerLayoutState, setManagerLayoutState, isDesktop, hasTab });
-  return react_default.createElement(
+  return useLandmarkIndicator(), react_default.createElement(
     LayoutContainer,
     {
-      navSize,
-      rightPanelWidth,
-      bottomPanelHeight,
       panelPosition: managerLayoutState.panelPosition,
-      isDragging,
-      viewMode: managerLayoutState.viewMode,
-      showPanel
+      showPanel,
+      style: {
+        "--nav-width": `${navSize}px`,
+        "--right-panel-width": `${rightPanelWidth}px`,
+        "--bottom-panel-height": `${bottomPanelHeight}px`
+      }
     },
     showPages && react_default.createElement(PagesContainer, null, slots.slotPages),
-    isDesktop && react_default.createElement(react_default.Fragment, null, react_default.createElement(SidebarContainer, null, react_default.createElement(Drag, { ref: sidebarResizerRef }), slots.slotSidebar), react_default.createElement(MainContentMatcher, null, slots.slotMain), showPanel && react_default.createElement(PanelContainer, { position: panelPosition }, react_default.createElement(
-      Drag,
-      {
-        orientation: panelPosition === "bottom" ? "horizontal" : "vertical",
-        position: panelPosition === "bottom" ? "left" : "right",
-        ref: panelResizerRef
-      }
-    ), slots.slotPanel)),
-    isMobile2 && react_default.createElement(react_default.Fragment, null, react_default.createElement(
+    react_default.createElement(react_default.Fragment, null, isDesktop && react_default.createElement(SidebarContainer, null, react_default.createElement(Drag, { ref: sidebarResizerRef }), slots.slotSidebar), isMobile2 && react_default.createElement(
       OrderedMobileNavigation,
       {
         menu: slots.slotSidebar,
         panel: slots.slotPanel,
         showPanel
       }
-    ), react_default.createElement(MainContentMatcher, null, slots.slotMain), react_default.createElement(Notifications, null))
+    ), react_default.createElement(MainContentMatcher, null, slots.slotMain), isDesktop && showPanel && react_default.createElement(PanelContainer, { position: panelPosition }, react_default.createElement(
+      Drag,
+      {
+        orientation: panelPosition === "bottom" ? "horizontal" : "vertical",
+        overlapping: panelPosition === "bottom" ? !!bottomPanelHeight : !!rightPanelWidth,
+        position: panelPosition === "bottom" ? "left" : "right",
+        ref: panelResizerRef
+      }
+    ), slots.slotPanel), isMobile2 && react_default.createElement(Notifications, null))
   );
-}, LayoutContainer = styled.div(
-  ({ navSize, rightPanelWidth, bottomPanelHeight, viewMode, panelPosition, showPanel }) => ({
-    width: "100%",
-    height: ["100vh", "100dvh"],
-    // This array is a special Emotion syntax to set a fallback if 100dvh is not supported
-    overflow: "hidden",
-    display: "flex",
-    flexDirection: "column",
-    colorScheme: "light dark",
-    [MEDIA_DESKTOP_BREAKPOINT]: {
-      display: "grid",
-      gap: 0,
-      gridTemplateColumns: `minmax(0, ${navSize}px) minmax(${MINIMUM_CONTENT_WIDTH_PX}px, 1fr) minmax(0, ${rightPanelWidth}px)`,
-      gridTemplateRows: `1fr minmax(0, ${bottomPanelHeight}px)`,
-      gridTemplateAreas: showPanel ? panelPosition === "right" ? `"sidebar content panel"
+}, LayoutContainer = styled.div(({ panelPosition, showPanel }) => ({
+  width: "100%",
+  height: ["100vh", "100dvh"],
+  overflow: "hidden",
+  display: "flex",
+  flexDirection: "column",
+  colorScheme: "light dark",
+  [MEDIA_DESKTOP_BREAKPOINT]: {
+    display: "grid",
+    gap: 0,
+    // This uses CSS variables to prevent Emotion from generating a new CSS className for every possible value
+    gridTemplateColumns: `minmax(0, var(--nav-width)) minmax(${MINIMUM_CONTENT_WIDTH_PX}px, 1fr) minmax(0, var(--right-panel-width))`,
+    gridTemplateRows: "1fr minmax(0, var(--bottom-panel-height))",
+    gridTemplateAreas: showPanel ? panelPosition === "right" ? `"sidebar content panel"
                   "sidebar content panel"` : `"sidebar content content"
                 "sidebar panel   panel"` : `"sidebar content content"
                   "sidebar content content"`
-    }
-  })
-), SidebarContainer = styled.div(({ theme }) => ({
+  }
+})), SidebarContainer = styled.div(({ theme }) => ({
   backgroundColor: theme.appBg,
   gridArea: "sidebar",
   position: "relative",
@@ -4749,7 +4604,10 @@ var MINIMUM_CONTENT_WIDTH_PX = 100, layoutStateIsEqual = (state, other) => state
     position: "relative",
     backgroundColor: theme.appContentBg,
     borderTop: position === "bottom" ? `1px solid ${theme.appBorderColor}` : void 0,
-    borderLeft: position === "right" ? `1px solid ${theme.appBorderColor}` : void 0
+    borderLeft: position === "right" ? `1px solid ${theme.appBorderColor}` : void 0,
+    "& > aside": {
+      overflow: "hidden"
+    }
   })
 ), Drag = styled.div(
   ({ theme }) => ({
@@ -4766,12 +4624,12 @@ var MINIMUM_CONTENT_WIDTH_PX = 100, layoutStateIsEqual = (state, other) => state
       opacity: 1
     }
   }),
-  ({ orientation = "vertical", position = "left" }) => orientation === "vertical" ? {
-    width: position === "left" ? 10 : 13,
+  ({ orientation = "vertical", overlapping = !0, position = "left" }) => orientation === "vertical" ? {
+    width: overlapping ? position === "left" ? 10 : 13 : 7,
     height: "100%",
     top: 0,
-    right: position === "left" ? "-7px" : void 0,
-    left: position === "right" ? "-7px" : void 0,
+    right: position === "left" ? -7 : void 0,
+    left: position === "right" ? -7 : void 0,
     "&:after": {
       width: 1,
       height: "100%",
@@ -4782,8 +4640,8 @@ var MINIMUM_CONTENT_WIDTH_PX = 100, layoutStateIsEqual = (state, other) => state
     }
   } : {
     width: "100%",
-    height: "13px",
-    top: "-7px",
+    height: overlapping ? 13 : 7,
+    top: -7,
     left: 0,
     "&:after": {
       width: "100%",
@@ -4796,11 +4654,14 @@ var MINIMUM_CONTENT_WIDTH_PX = 100, layoutStateIsEqual = (state, other) => state
   }
 );
 
+// src/manager/container/Panel.tsx
+init_react();
+
 // global-externals:storybook/internal/types
 var types_default = __STORYBOOK_TYPES__, { Addon_TypesEnum, CoreWebpackCompiler, Feature, SupportedBuilder, SupportedFramework, SupportedLanguage, SupportedRenderer } = __STORYBOOK_TYPES__;
 
 // src/core-events/index.ts
-var events = /* @__PURE__ */ ((events2) => (events2.CHANNEL_WS_DISCONNECT = "channelWSDisconnect", events2.CHANNEL_CREATED = "channelCreated", events2.CONFIG_ERROR = "configError", events2.STORY_INDEX_INVALIDATED = "storyIndexInvalidated", events2.STORY_SPECIFIED = "storySpecified", events2.SET_CONFIG = "setConfig", events2.SET_STORIES = "setStories", events2.SET_INDEX = "setIndex", events2.SET_CURRENT_STORY = "setCurrentStory", events2.CURRENT_STORY_WAS_SET = "currentStoryWasSet", events2.FORCE_RE_RENDER = "forceReRender", events2.FORCE_REMOUNT = "forceRemount", events2.PRELOAD_ENTRIES = "preloadStories", events2.STORY_PREPARED = "storyPrepared", events2.DOCS_PREPARED = "docsPrepared", events2.STORY_CHANGED = "storyChanged", events2.STORY_UNCHANGED = "storyUnchanged", events2.STORY_RENDERED = "storyRendered", events2.STORY_FINISHED = "storyFinished", events2.STORY_MISSING = "storyMissing", events2.STORY_ERRORED = "storyErrored", events2.STORY_THREW_EXCEPTION = "storyThrewException", events2.STORY_RENDER_PHASE_CHANGED = "storyRenderPhaseChanged", events2.STORY_HOT_UPDATED = "storyHotUpdated", events2.PLAY_FUNCTION_THREW_EXCEPTION = "playFunctionThrewException", events2.UNHANDLED_ERRORS_WHILE_PLAYING = "unhandledErrorsWhilePlaying", events2.UPDATE_STORY_ARGS = "updateStoryArgs", events2.STORY_ARGS_UPDATED = "storyArgsUpdated", events2.RESET_STORY_ARGS = "resetStoryArgs", events2.SET_FILTER = "setFilter", events2.SET_GLOBALS = "setGlobals", events2.UPDATE_GLOBALS = "updateGlobals", events2.GLOBALS_UPDATED = "globalsUpdated", events2.REGISTER_SUBSCRIPTION = "registerSubscription", events2.PREVIEW_INITIALIZED = "previewInitialized", events2.PREVIEW_KEYDOWN = "previewKeydown", events2.PREVIEW_BUILDER_PROGRESS = "preview_builder_progress", events2.SELECT_STORY = "selectStory", events2.STORIES_COLLAPSE_ALL = "storiesCollapseAll", events2.STORIES_EXPAND_ALL = "storiesExpandAll", events2.DOCS_RENDERED = "docsRendered", events2.SHARED_STATE_CHANGED = "sharedStateChanged", events2.SHARED_STATE_SET = "sharedStateSet", events2.NAVIGATE_URL = "navigateUrl", events2.UPDATE_QUERY_PARAMS = "updateQueryParams", events2.REQUEST_WHATS_NEW_DATA = "requestWhatsNewData", events2.RESULT_WHATS_NEW_DATA = "resultWhatsNewData", events2.SET_WHATS_NEW_CACHE = "setWhatsNewCache", events2.TOGGLE_WHATS_NEW_NOTIFICATIONS = "toggleWhatsNewNotifications", events2.TELEMETRY_ERROR = "telemetryError", events2.FILE_COMPONENT_SEARCH_REQUEST = "fileComponentSearchRequest", events2.FILE_COMPONENT_SEARCH_RESPONSE = "fileComponentSearchResponse", events2.SAVE_STORY_REQUEST = "saveStoryRequest", events2.SAVE_STORY_RESPONSE = "saveStoryResponse", events2.ARGTYPES_INFO_REQUEST = "argtypesInfoRequest", events2.ARGTYPES_INFO_RESPONSE = "argtypesInfoResponse", events2.CREATE_NEW_STORYFILE_REQUEST = "createNewStoryfileRequest", events2.CREATE_NEW_STORYFILE_RESPONSE = "createNewStoryfileResponse", events2.OPEN_IN_EDITOR_REQUEST = "openInEditorRequest", events2.OPEN_IN_EDITOR_RESPONSE = "openInEditorResponse", events2.MANAGER_INERT_ATTRIBUTE_CHANGED = "managerInertAttributeChanged", events2))(events || {});
+var events = /* @__PURE__ */ ((events2) => (events2.CHANNEL_WS_DISCONNECT = "channelWSDisconnect", events2.CHANNEL_CREATED = "channelCreated", events2.CONFIG_ERROR = "configError", events2.STORY_INDEX_INVALIDATED = "storyIndexInvalidated", events2.STORY_SPECIFIED = "storySpecified", events2.SET_CONFIG = "setConfig", events2.SET_STORIES = "setStories", events2.SET_INDEX = "setIndex", events2.SET_CURRENT_STORY = "setCurrentStory", events2.CURRENT_STORY_WAS_SET = "currentStoryWasSet", events2.FORCE_RE_RENDER = "forceReRender", events2.FORCE_REMOUNT = "forceRemount", events2.PRELOAD_ENTRIES = "preloadStories", events2.STORY_PREPARED = "storyPrepared", events2.DOCS_PREPARED = "docsPrepared", events2.STORY_CHANGED = "storyChanged", events2.STORY_UNCHANGED = "storyUnchanged", events2.STORY_RENDERED = "storyRendered", events2.STORY_FINISHED = "storyFinished", events2.STORY_MISSING = "storyMissing", events2.STORY_ERRORED = "storyErrored", events2.STORY_THREW_EXCEPTION = "storyThrewException", events2.STORY_RENDER_PHASE_CHANGED = "storyRenderPhaseChanged", events2.STORY_HOT_UPDATED = "storyHotUpdated", events2.PLAY_FUNCTION_THREW_EXCEPTION = "playFunctionThrewException", events2.UNHANDLED_ERRORS_WHILE_PLAYING = "unhandledErrorsWhilePlaying", events2.UPDATE_STORY_ARGS = "updateStoryArgs", events2.STORY_ARGS_UPDATED = "storyArgsUpdated", events2.RESET_STORY_ARGS = "resetStoryArgs", events2.SET_FILTER = "setFilter", events2.SET_GLOBALS = "setGlobals", events2.UPDATE_GLOBALS = "updateGlobals", events2.GLOBALS_UPDATED = "globalsUpdated", events2.REGISTER_SUBSCRIPTION = "registerSubscription", events2.PREVIEW_INITIALIZED = "previewInitialized", events2.PREVIEW_KEYDOWN = "previewKeydown", events2.PREVIEW_BUILDER_PROGRESS = "preview_builder_progress", events2.SELECT_STORY = "selectStory", events2.STORIES_COLLAPSE_ALL = "storiesCollapseAll", events2.STORIES_EXPAND_ALL = "storiesExpandAll", events2.DOCS_RENDERED = "docsRendered", events2.SHARED_STATE_CHANGED = "sharedStateChanged", events2.SHARED_STATE_SET = "sharedStateSet", events2.NAVIGATE_URL = "navigateUrl", events2.UPDATE_QUERY_PARAMS = "updateQueryParams", events2.REQUEST_WHATS_NEW_DATA = "requestWhatsNewData", events2.RESULT_WHATS_NEW_DATA = "resultWhatsNewData", events2.SET_WHATS_NEW_CACHE = "setWhatsNewCache", events2.TOGGLE_WHATS_NEW_NOTIFICATIONS = "toggleWhatsNewNotifications", events2.TELEMETRY_ERROR = "telemetryError", events2.FILE_COMPONENT_SEARCH_REQUEST = "fileComponentSearchRequest", events2.FILE_COMPONENT_SEARCH_RESPONSE = "fileComponentSearchResponse", events2.SAVE_STORY_REQUEST = "saveStoryRequest", events2.SAVE_STORY_RESPONSE = "saveStoryResponse", events2.ARGTYPES_INFO_REQUEST = "argtypesInfoRequest", events2.ARGTYPES_INFO_RESPONSE = "argtypesInfoResponse", events2.CREATE_NEW_STORYFILE_REQUEST = "createNewStoryfileRequest", events2.CREATE_NEW_STORYFILE_RESPONSE = "createNewStoryfileResponse", events2.GHOST_STORIES_REQUEST = "ghostStoriesRequest", events2.GHOST_STORIES_RESPONSE = "ghostStoriesResponse", events2.OPEN_IN_EDITOR_REQUEST = "openInEditorRequest", events2.OPEN_IN_EDITOR_RESPONSE = "openInEditorResponse", events2.MANAGER_INERT_ATTRIBUTE_CHANGED = "managerInertAttributeChanged", events2))(events || {});
 var {
   CHANNEL_WS_DISCONNECT: CHANNEL_WS_DISCONNECT2,
   CHANNEL_CREATED: CHANNEL_CREATED2,
@@ -4860,12 +4721,15 @@ var {
   SAVE_STORY_RESPONSE: SAVE_STORY_RESPONSE2,
   ARGTYPES_INFO_REQUEST: ARGTYPES_INFO_REQUEST2,
   ARGTYPES_INFO_RESPONSE: ARGTYPES_INFO_RESPONSE2,
+  GHOST_STORIES_REQUEST: GHOST_STORIES_REQUEST2,
+  GHOST_STORIES_RESPONSE: GHOST_STORIES_RESPONSE2,
   OPEN_IN_EDITOR_REQUEST: OPEN_IN_EDITOR_REQUEST2,
   OPEN_IN_EDITOR_RESPONSE: OPEN_IN_EDITOR_RESPONSE2,
   MANAGER_INERT_ATTRIBUTE_CHANGED: MANAGER_INERT_ATTRIBUTE_CHANGED2
 } = events;
 
 // src/manager/components/panel/Panel.tsx
+init_react();
 var TabErrorBoundary = class extends Component {
   constructor(props) {
     super(props), this.state = { hasError: !1 };
@@ -4889,11 +4753,15 @@ var TabErrorBoundary = class extends Component {
     let { children } = this.props;
     return children;
   }
-}, Section = styled.section({
+}, Aside = styled.aside({
   height: "100%",
   display: "flex",
   flexDirection: "column"
-}), PreRenderAddons = ({ panels }) => Object.entries(panels).map(([k2, v2]) => react_default.createElement(StatelessTabPanel, { key: k2, name: k2, hasScrollbar: !1 }, react_default.createElement(TabErrorBoundary, { key: k2 }, v2.render({ active: !0 })))), AddonPanel2 = react_default.memo(({ panels, shortcuts, actions, selectedPanel = null, panelPosition = "right" }) => {
+});
+function renderChild(RenderProp) {
+  return react_default.createElement(RenderProp, { active: !0 });
+}
+var PreRenderAddons = ({ panels }) => Object.entries(panels).map(([k2, v2]) => react_default.createElement(StatelessTabPanel, { key: k2, name: k2, hasScrollbar: !1 }, react_default.createElement(TabErrorBoundary, { key: k2 }, renderChild(v2.render)))), AddonPanel2 = react_default.memo(({ panels, shortcuts, actions, selectedPanel = null, panelPosition = "right" }) => {
   let { isDesktop, setMobilePanelOpen } = useLayout(), emptyState = react_default.createElement(
     EmptyTabContent,
     {
@@ -4936,8 +4804,11 @@ var TabErrorBoundary = class extends Component {
       react_default.createElement(CloseIcon, null)
     )),
     [actions, isDesktop, panelPosition, setMobilePanelOpen, shortcuts]
+  ), asideRef = useRef(null), { landmarkProps } = useLandmark(
+    { "aria-labelledby": "storybook-panel-heading", role: "region" },
+    asideRef
   );
-  return react_default.createElement(Section, { "aria-labelledby": "storybook-panel-heading" }, react_default.createElement("h2", { id: "storybook-panel-heading", className: "sb-sr-only" }, "Addon panel"), react_default.createElement(
+  return react_default.createElement(Aside, { ref: asideRef, ...landmarkProps }, react_default.createElement("h2", { id: "storybook-panel-heading", className: "sb-sr-only" }, "Addon panel"), react_default.createElement(
     StatelessTabsView,
     {
       id: "storybook-panel-root",
@@ -5000,20 +4871,210 @@ var Panel = (props) => {
 }, Panel_default = Panel;
 
 // src/manager/container/Preview.tsx
+init_react();
 var import_memoizerific = __toESM(require_memoizerific(), 1);
 
+// src/manager/components/preview/Preview.tsx
+init_react();
+
+// src/manager/components/preview/FramesRenderer.tsx
+init_react();
+
+// src/manager/components/preview/Viewport.tsx
+init_react();
+
+// src/viewport/useViewport.ts
+init_react();
+
+// src/viewport/constants.ts
+var ADDON_ID = "storybook/viewport", PARAM_KEY = "viewport", PANEL_ID = `${ADDON_ID}/panel`, TOOL_ID = `${ADDON_ID}/tool`;
+
+// src/viewport/defaults.ts
+var MINIMAL_VIEWPORTS = {
+  mobile1: {
+    name: "Small mobile",
+    styles: {
+      height: "568px",
+      width: "320px"
+    },
+    type: "mobile"
+  },
+  mobile2: {
+    name: "Large mobile",
+    styles: {
+      height: "896px",
+      width: "414px"
+    },
+    type: "mobile"
+  },
+  tablet: {
+    name: "Tablet",
+    styles: {
+      height: "1112px",
+      width: "834px"
+    },
+    type: "tablet"
+  },
+  desktop: {
+    name: "Desktop",
+    styles: {
+      height: "1024px",
+      width: "1280px"
+    },
+    type: "desktop"
+  }
+};
+
+// src/viewport/useViewport.ts
+var URL_VALUE_PATTERN = /^([0-9]{1,4})([a-z]{0,4})-([0-9]{1,4})([a-z]{0,4})$/, VIEWPORT_MIN_WIDTH = 40, VIEWPORT_MIN_HEIGHT = 40, cycle = (viewports, current, direction = 1) => {
+  let keys = Object.keys(viewports), nextIndex = (current ? keys.indexOf(current) : -1) + direction;
+  return nextIndex < 0 ? keys[keys.length - 1] : nextIndex >= keys.length ? keys[0] : keys[nextIndex];
+}, normalizeGlobal = (value, defaultIsRotated) => typeof value == "string" ? { value, isRotated: defaultIsRotated } : { value: value?.value, isRotated: value?.isRotated ?? defaultIsRotated }, parseGlobals = (globals, storyGlobals, userGlobals, options2, lastSelectedOption, disable, viewMode) => {
+  if (viewMode !== "story")
+    return {
+      name: "Responsive",
+      type: "desktop",
+      width: "100%",
+      height: "100%",
+      value: "100pct-100pct",
+      option: void 0,
+      isCustom: !1,
+      isDefault: !0,
+      isLocked: !0,
+      isRotated: !1
+    };
+  let global2 = normalizeGlobal(globals?.[PARAM_KEY]), userGlobal = normalizeGlobal(userGlobals?.[PARAM_KEY]), storyGlobal = normalizeGlobal(storyGlobals?.[PARAM_KEY]), value = userGlobal?.value ?? storyGlobal?.value ?? global2?.value, isRotated = userGlobal?.isRotated ?? storyGlobal?.isRotated ?? global2?.isRotated ?? !1, keys = Object.keys(options2), isLocked = disable || PARAM_KEY in storyGlobals || !keys.length, [match, vx, ux, vy, uy] = value?.match(URL_VALUE_PATTERN) || [];
+  if (match) {
+    let x2 = ux && ux !== "px" ? vx : Math.max(Number(vx), VIEWPORT_MIN_WIDTH), y2 = uy && uy !== "px" ? vy : Math.max(Number(vy), VIEWPORT_MIN_HEIGHT), width = `${x2}${ux === "pct" ? "%" : ux || "px"}`, height = `${y2}${uy === "pct" ? "%" : uy || "px"}`, selection = lastSelectedOption ? options2[lastSelectedOption] : void 0;
+    return {
+      name: selection?.name ?? "Custom",
+      type: selection?.type ?? "other",
+      width: isRotated ? height : width,
+      height: isRotated ? width : height,
+      value: match,
+      option: void 0,
+      isCustom: !0,
+      isDefault: !1,
+      isLocked,
+      isRotated
+    };
+  }
+  if (value && keys.length) {
+    let { name, styles: styles2, type = "other" } = options2[value] ?? options2[keys[0]];
+    return {
+      name,
+      type,
+      width: isRotated ? styles2.height : styles2.width,
+      height: isRotated ? styles2.width : styles2.height,
+      value,
+      option: value,
+      isCustom: !1,
+      isDefault: !1,
+      isLocked,
+      isRotated
+    };
+  }
+  return {
+    name: "Responsive",
+    type: "desktop",
+    width: "100%",
+    height: "100%",
+    value: "100pct-100pct",
+    option: void 0,
+    isCustom: !1,
+    isDefault: !0,
+    isLocked,
+    isRotated: !1
+  };
+}, useViewport = () => {
+  let api = useStorybookApi(), { viewMode } = api.getUrlState(), lastSelectedOption = useRef(), parameter = useParameter(PARAM_KEY), [globals, updateGlobals, storyGlobals, userGlobals] = useGlobals(), { options: options2 = MINIMAL_VIEWPORTS, disable = !1 } = parameter || {}, { name, type, width, height, value, option, isCustom, isDefault, isLocked, isRotated } = parseGlobals(
+    globals,
+    storyGlobals,
+    userGlobals,
+    options2,
+    lastSelectedOption.current,
+    disable,
+    viewMode
+  ), update2 = useCallback(
+    (input) => updateGlobals({ [PARAM_KEY]: normalizeGlobal(input, !1) }),
+    [updateGlobals]
+  ), resize = useCallback(
+    (width2, height2) => {
+      let w2 = width2.replace(/px$/, "").replace(/%$/, "pct"), h2 = height2.replace(/px$/, "").replace(/%$/, "pct"), value2 = isRotated ? `${h2}-${w2}` : `${w2}-${h2}`, [match, vx, ux, vy, uy] = value2.match(URL_VALUE_PATTERN) || [];
+      match && (ux || Number(vx) >= 40) && (uy || Number(vy) >= 40) && update2({ value: match, isRotated });
+    },
+    [update2, isRotated]
+  );
+  return useEffect(() => {
+    PARAM_KEY in storyGlobals && (update2(normalizeGlobal(storyGlobals?.[PARAM_KEY], !1)), lastSelectedOption.current = void 0);
+  }, [storyGlobals, update2]), useEffect(() => {
+    option && (Object.hasOwn(options2, option) ? lastSelectedOption.current = option : (lastSelectedOption.current = void 0, update2(normalizeGlobal(storyGlobals?.[PARAM_KEY], !1))));
+  }, [storyGlobals, options2, option, update2]), useEffect(() => {
+    api.setAddonShortcut(ADDON_ID, {
+      label: "Next viewport",
+      defaultShortcut: ["alt", "V"],
+      actionName: "next",
+      action: () => update2({ value: cycle(options2, lastSelectedOption.current), isRotated })
+    }), api.setAddonShortcut(ADDON_ID, {
+      label: "Previous viewport",
+      defaultShortcut: ["alt", "shift", "V"],
+      actionName: "previous",
+      action: () => update2({ value: cycle(options2, lastSelectedOption.current, -1), isRotated })
+    }), api.setAddonShortcut(ADDON_ID, {
+      label: "Reset viewport",
+      defaultShortcut: ["alt", "control", "V"],
+      actionName: "reset",
+      action: () => update2({ value: void 0, isRotated: !1 })
+    });
+  }, [api, update2, options2, isRotated]), useMemo(
+    () => ({
+      name,
+      type,
+      width,
+      height,
+      value,
+      option,
+      isCustom,
+      isDefault,
+      isLocked,
+      isRotated,
+      options: options2,
+      lastSelectedOption: lastSelectedOption.current,
+      resize,
+      reset: () => update2({ value: void 0, isRotated: !1 }),
+      rotate: () => update2({ value, isRotated: !isRotated }),
+      select: (value2) => update2({ value: value2, isRotated })
+    }),
+    [
+      name,
+      type,
+      width,
+      height,
+      value,
+      option,
+      isCustom,
+      isDefault,
+      isRotated,
+      isLocked,
+      options2,
+      resize,
+      update2
+    ]
+  );
+};
+
 // src/manager/components/preview/Iframe.tsx
+init_react();
 var StyledIframe = styled.iframe(({ theme }) => ({
   backgroundColor: theme.background.preview,
   display: "block",
   boxSizing: "content-box",
   height: "100%",
   width: "100%",
-  border: "0 none",
+  border: "none",
   transition: "background-position 0s, visibility 0s",
   backgroundPosition: "-1px -1px, -1px -1px, -1px -1px, -1px -1px",
-  margin: "auto",
-  boxShadow: "0 0 100px 100vw rgba(0,0,0,0.5)"
+  margin: "auto"
 }));
 function IFrame(props) {
   let { active, id, title: title2, src, allowFullScreen, scale, ...rest2 } = props, iFrameRef = react_default.useRef(null);
@@ -5033,10 +5094,413 @@ function IFrame(props) {
   ));
 }
 
-// src/manager/components/preview/utils/stringifyQueryParams.tsx
-var import_picoquery = __toESM(require_main(), 1), stringifyQueryParams = (queryParams) => {
-  let result = (0, import_picoquery.stringify)(queryParams);
-  return result === "" ? "" : `&${result}`;
+// src/manager/components/preview/NumericInput.tsx
+init_react();
+var Wrapper = styled.div(
+  ({ after: after2, before: before2, theme }) => ({
+    position: "relative",
+    display: "flex",
+    alignItems: "center",
+    width: "100%",
+    height: 32,
+    paddingInline: 9,
+    fontSize: theme.typography.size.s1,
+    color: theme.textMutedColor,
+    background: theme.input.background,
+    boxShadow: `${theme.input.border} 0 0 0 1px inset`,
+    borderRadius: theme.input.borderRadius,
+    svg: {
+      display: "block"
+    },
+    input: {
+      width: "100%",
+      height: "100%",
+      minHeight: "100%",
+      flex: "1 1 auto",
+      paddingInline: 0,
+      fontSize: "inherit",
+      background: "transparent",
+      border: "none",
+      boxShadow: "none",
+      color: theme.input.color,
+      "&:focus, &:focus-visible": {
+        boxShadow: "none",
+        outline: "none"
+      }
+    },
+    "input + div": {
+      paddingInline: 0,
+      fontSize: "inherit"
+    },
+    "&:has(input:focus-visible)": {
+      outline: `2px solid ${theme.color.secondary}`,
+      outlineOffset: -2
+    },
+    ...after2 && { paddingRight: 2 },
+    ...before2 && { paddingLeft: 2 }
+  })
+), NumericInput = forwardRef(function({
+  label,
+  before: before2,
+  after: after2,
+  value,
+  setValue,
+  minValue = -1 / 0,
+  maxValue = 1 / 0,
+  unit: fixedUnit,
+  baseUnit = fixedUnit,
+  className,
+  style,
+  ...props
+}, forwardedRef) {
+  let baseUnitRegex = useMemo(() => baseUnit && new RegExp(`${baseUnit}$`), [baseUnit]), inputId = $bdb11010cef70236$export$f680877a34711e37(), inputRef = useRef(null), [inputValue, setInputValue] = useState(
+    baseUnitRegex ? value.replace(baseUnitRegex, "") : value
+  ), id = props.id || inputId;
+  useImperativeHandle(forwardedRef, () => inputRef.current);
+  let parseValue = useCallback(
+    (value2) => {
+      let [, inputValue2, unit = fixedUnit || baseUnit || ""] = value2.match(/(-?\d+(?:\.\d+)?)(\%|[a-z]{1,4})?$/) || [];
+      return { number: Math.max(minValue, Math.min(parseFloat(inputValue2), maxValue)), unit };
+    },
+    [minValue, maxValue, fixedUnit, baseUnit]
+  ), updateValue = useCallback(
+    (value2) => {
+      let { number, unit } = parseValue(value2);
+      Number.isNaN(number) ? setInputValue(value2) : (setInputValue(`${number}${unit === baseUnit ? "" : unit}`), setValue(`${number}${unit}`));
+    },
+    [parseValue, setValue, baseUnit]
+  ), onChange = useCallback(
+    (e2) => updateValue(e2.target.value),
+    [updateValue]
+  ), setInputSelection = useCallback(() => {
+    requestAnimationFrame(() => {
+      let input = inputRef.current, index = input?.value.search(/[^-\d.]/) ?? -1;
+      input && index >= 0 && input.setSelectionRange(index, index);
+    });
+  }, []), updateInputValue = useCallback(
+    () => setInputValue(baseUnitRegex ? value.replace(baseUnitRegex, "") : value),
+    [value, baseUnitRegex]
+  );
+  return useEffect(() => {
+    inputRef.current !== document.activeElement && updateInputValue();
+  }, [updateInputValue]), useEffect(() => {
+    let handleKeyDown = (e2) => {
+      if (e2.key !== "ArrowUp" && e2.key !== "ArrowDown")
+        return;
+      e2.preventDefault();
+      let { number, unit } = parseValue(inputValue);
+      Number.isNaN(number) || (updateValue(`${e2.key === "ArrowUp" ? number + 1 : number - 1}${unit}`), setInputSelection());
+    }, input = inputRef.current;
+    if (input)
+      return input.addEventListener("keydown", handleKeyDown), () => input.removeEventListener("keydown", handleKeyDown);
+  }, [inputValue, parseValue, updateValue, setInputSelection]), react_default.createElement(Wrapper, { after: after2, before: before2, className, style }, before2 && react_default.createElement("div", null, before2), label && react_default.createElement("label", { htmlFor: id, className: "sb-sr-only" }, label), react_default.createElement(
+    Form.Input,
+    {
+      ...props,
+      id,
+      ref: inputRef,
+      value: inputValue,
+      suffix: fixedUnit || inputValue && baseUnit,
+      onChange,
+      onFocus: setInputSelection,
+      onBlur: updateInputValue
+    }
+  ), after2 && react_default.createElement("div", null, after2));
+});
+
+// src/manager/components/preview/Viewport.tsx
+var ViewportWrapper = styled.div(({ active, isDefault, theme }) => ({
+  gridArea: "1 / 1",
+  alignSelf: "start",
+  justifySelf: "start",
+  display: active ? "inline-flex" : "none",
+  flexDirection: "column",
+  gap: 6,
+  width: "100%",
+  height: "100%",
+  paddingTop: isDefault ? 0 : 6,
+  paddingBottom: isDefault ? 0 : 40,
+  paddingInline: isDefault ? 0 : 40,
+  '&:has([data-size-input="width"]:focus-visible)': {
+    "[data-dragging]": {
+      borderRightColor: theme.color.secondary,
+      boxShadow: `4px 0 5px -2px ${theme.background.hoverable}`
+    }
+  },
+  '&:has([data-size-input="height"]:focus-visible)': {
+    "[data-dragging]": {
+      borderBottomColor: theme.color.secondary,
+      boxShadow: `0 4px 5px -2px ${theme.background.hoverable}`
+    }
+  }
+})), ViewportControls = styled.div({
+  display: "flex",
+  gap: 6
+}), ViewportDimensions = styled.div({
+  display: "flex",
+  gap: 2
+}), FrameWrapper = styled.div(({ isDefault, "data-dragging": dragging, theme }) => ({
+  position: "relative",
+  minWidth: VIEWPORT_MIN_WIDTH,
+  minHeight: VIEWPORT_MIN_HEIGHT,
+  boxSizing: "content-box",
+  // we're sizing the contents, not the box itself
+  border: `1px solid ${theme.button.border}`,
+  borderWidth: isDefault ? 0 : 1,
+  borderRadius: isDefault ? 0 : 4,
+  transition: "border-color 0.2s, box-shadow 0.2s",
+  '&:has([data-side="right"]:hover), &[data-dragging="right"]': {
+    borderRightColor: theme.color.secondary,
+    boxShadow: `4px 0 5px -2px ${theme.background.hoverable}`,
+    '[data-side="right"]::after': {
+      opacity: 1
+    }
+  },
+  '&:has([data-side="bottom"]:hover), &[data-dragging="bottom"]': {
+    borderBottomColor: theme.color.secondary,
+    boxShadow: `0 4px 5px -2px ${theme.background.hoverable}`,
+    '[data-side="bottom"]::after': {
+      opacity: 1
+    }
+  },
+  '&:has([data-side="both"]:hover), &[data-dragging="both"]': {
+    boxShadow: `3px 3px 5px -2px ${theme.background.hoverable}`,
+    "&::after, [data-side]::after": {
+      opacity: 1
+    }
+  },
+  "&::after": {
+    content: '""',
+    display: "block",
+    position: "absolute",
+    pointerEvents: "none",
+    bottom: 1,
+    right: 1,
+    width: 12,
+    height: 12,
+    opacity: 0,
+    transition: "opacity 0.2s",
+    background: `linear-gradient(to top left,
+      rgba(0,0,0,0) 0%,
+      rgba(0,0,0,0) calc(25% - 1px),
+      ${theme.color.secondary} 25%,
+      rgba(0,0,0,0) calc(25% + 1px),
+      rgba(0,0,0,0) calc(45% - 1px),
+      ${theme.color.secondary} 45%,
+      rgba(0,0,0,0) calc(45% + 1px),
+      rgba(0,0,0,0) 100%)`
+  },
+  iframe: {
+    pointerEvents: dragging === "none" ? "auto" : "none"
+  }
+})), DragHandle = styled.div(
+  { display: "none" },
+  ({ theme, isDefault }) => !isDefault && {
+    display: "block",
+    position: "absolute",
+    fontSize: 10,
+    '&[data-side="both"]': {
+      right: -12,
+      bottom: -12,
+      width: 25,
+      height: 25,
+      cursor: "nwse-resize"
+    },
+    '&[data-side="bottom"]': {
+      left: 0,
+      right: 13,
+      bottom: -12,
+      height: 20,
+      cursor: "row-resize",
+      "&::after": {
+        content: "attr(data-value)",
+        position: "absolute",
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%, -50%)",
+        borderRadius: 4,
+        backgroundColor: theme.background.hoverable,
+        padding: "2px 4px",
+        opacity: 0,
+        transition: "opacity 0.2s"
+      }
+    },
+    '&[data-side="right"]': {
+      top: 0,
+      right: -12,
+      bottom: 13,
+      width: 20,
+      cursor: "col-resize",
+      "&::after": {
+        content: "attr(data-value)",
+        position: "absolute",
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%, -50%)",
+        borderRadius: 4,
+        backgroundColor: theme.background.hoverable,
+        padding: "2px 4px",
+        opacity: 0,
+        transition: "opacity 0.2s"
+      }
+    }
+  }
+), ScrollEdge = styled.div({
+  position: "absolute",
+  pointerEvents: "none",
+  width: 0,
+  height: 0,
+  '&[data-edge="right"]': {
+    right: -40,
+    height: "100%"
+  },
+  '&[data-edge="bottom"]': {
+    bottom: -40,
+    width: "100%"
+  },
+  '&[data-edge="both"]': {
+    right: -40,
+    bottom: -40
+  }
+}), SizeInput = styled(NumericInput)({
+  width: 85,
+  height: 28,
+  minHeight: 28
+}), parseNumber = (value) => {
+  let [match, number, unit] = value.match(/^(\d+(?:\.\d+)?)(\%|[a-z]{0,4})?$/) || [];
+  return match ? { number: Number(number), unit } : void 0;
+}, Viewport = ({
+  active,
+  id,
+  src,
+  scale
+}) => {
+  let { width, height, isCustom, isDefault, lastSelectedOption, resize, rotate, select } = useViewport(), [dragging, setDragging] = useState("none"), targetRef = useRef(null), dragRefX = useRef(null), dragRefY = useRef(null), dragRefXY = useRef(null), dragSide = useRef("none"), dragStart = useRef(), dragScrollTarget = useRef(null);
+  useEffect(() => {
+    let onDrag = (e2) => {
+      if (!(!targetRef.current || !dragStart.current)) {
+        if (dragRefX.current && (dragSide.current === "both" || dragSide.current === "right")) {
+          let newWidth = Math.max(VIEWPORT_MIN_WIDTH, dragStart.current[0] + e2.clientX);
+          targetRef.current.style.width = `${newWidth}px`, dragRefX.current.dataset.value = `${Math.round(newWidth / scale)}`;
+        }
+        if (dragRefY.current && (dragSide.current === "both" || dragSide.current === "bottom")) {
+          let newHeight = Math.max(VIEWPORT_MIN_HEIGHT, dragStart.current[1] + e2.clientY);
+          targetRef.current.style.height = `${newHeight}px`, dragRefY.current.dataset.value = `${Math.round(newHeight / scale)}`;
+        }
+        dragScrollTarget.current && dragScrollTarget.current.scrollIntoView({ block: "center", inline: "center" });
+      }
+    }, onEnd = () => {
+      if (window.removeEventListener("mouseup", onEnd), window.removeEventListener("mousemove", onDrag), setDragging("none"), dragStart.current = void 0, targetRef.current) {
+        let { clientWidth, clientHeight, dataset } = targetRef.current, scale2 = Number(dataset.scale) || 1;
+        resize(`${Math.round(clientWidth / scale2)}px`, `${Math.round(clientHeight / scale2)}px`);
+      }
+    }, onStart = (e2) => {
+      e2.preventDefault(), window.addEventListener("mouseup", onEnd), window.addEventListener("mousemove", onDrag), dragSide.current = e2.currentTarget.dataset.side, dragStart.current = [
+        (targetRef.current?.clientWidth ?? 0) - e2.clientX,
+        (targetRef.current?.clientHeight ?? 0) - e2.clientY
+      ], dragScrollTarget.current = targetRef.current?.querySelector(
+        `[data-edge="${dragSide.current}"]`
+      ), setDragging(dragSide.current);
+    }, handles = [dragRefX.current, dragRefY.current, dragRefXY.current];
+    return handles.forEach((el) => el?.addEventListener("mousedown", onStart)), () => handles.forEach((el) => el?.removeEventListener("mousedown", onStart));
+  }, [resize, scale]);
+  let dimensions = useMemo(() => {
+    let { number: nx, unit: ux = "px" } = parseNumber(width) ?? { number: 0, unit: "px" }, { number: ny, unit: uy = "px" } = parseNumber(height) ?? { number: 0, unit: "px" }, frameWidth = Math.max(VIEWPORT_MIN_WIDTH, nx * scale), frameHeight = Math.max(VIEWPORT_MIN_HEIGHT, ny * scale);
+    return {
+      frame: {
+        width: `${frameWidth}${ux}`,
+        height: `${frameHeight}${uy}`
+      },
+      display: {
+        width: `${nx}${ux === "px" ? "" : ux}`,
+        height: `${ny}${uy === "px" ? "" : uy}`
+      }
+    };
+  }, [width, height, scale]);
+  return react_default.createElement(ViewportWrapper, { key: id, active, isDefault }, !isDefault && react_default.createElement(ViewportControls, null, react_default.createElement(ViewportDimensions, null, react_default.createElement(
+    SizeInput,
+    {
+      "aria-label": "Viewport width",
+      "data-size-input": "width",
+      label: "Viewport width",
+      before: react_default.createElement(ActionList.Action, { size: "small", readOnly: !0, "aria-hidden": !0 }, "W"),
+      value: width,
+      minValue: 0,
+      setValue: (value) => resize(value, height)
+    }
+  ), react_default.createElement(
+    ActionList.Button,
+    {
+      key: "viewport-rotate",
+      size: "small",
+      padding: "small",
+      ariaLabel: "Rotate viewport",
+      onClick: rotate
+    },
+    react_default.createElement(TransferIcon, null)
+  ), react_default.createElement(
+    SizeInput,
+    {
+      "aria-label": "Viewport height",
+      "data-size-input": "height",
+      label: "Viewport height",
+      before: react_default.createElement(ActionList.Action, { size: "small", readOnly: !0, "aria-hidden": !0 }, "H"),
+      value: height,
+      minValue: 0,
+      setValue: (value) => resize(width, value)
+    }
+  ), isCustom && lastSelectedOption && react_default.createElement(
+    ActionList.Button,
+    {
+      key: "viewport-restore",
+      size: "small",
+      padding: "small",
+      ariaLabel: "Restore viewport",
+      onClick: () => select(lastSelectedOption)
+    },
+    react_default.createElement(UndoIcon, null)
+  ))), react_default.createElement(
+    FrameWrapper,
+    {
+      isDefault,
+      "data-dragging": dragging,
+      "data-scale": scale,
+      style: isDefault ? { height: "100%", width: "100%" } : dimensions.frame,
+      ref: targetRef
+    },
+    react_default.createElement(
+      "div",
+      {
+        style: {
+          height: `${1 / scale * 100}%`,
+          width: `${1 / scale * 100}%`,
+          transform: scale !== 1 ? `scale(${scale})` : "none",
+          transformOrigin: "top left"
+        }
+      },
+      react_default.createElement(IFrame, { allowFullScreen: !0, active, key: id, id, title: id, src, scale: 1 }),
+      !isDefault && react_default.createElement(react_default.Fragment, null, react_default.createElement(ScrollEdge, { "data-edge": "right" }), react_default.createElement(ScrollEdge, { "data-edge": "bottom" }), react_default.createElement(ScrollEdge, { "data-edge": "both" }))
+    ),
+    react_default.createElement(
+      DragHandle,
+      {
+        ref: dragRefX,
+        isDefault,
+        "data-side": "right",
+        "data-value": dimensions.display.width
+      }
+    ),
+    react_default.createElement(
+      DragHandle,
+      {
+        ref: dragRefY,
+        isDefault,
+        "data-side": "bottom",
+        "data-value": dimensions.display.height
+      }
+    ),
+    react_default.createElement(DragHandle, { ref: dragRefXY, isDefault, "data-side": "both" })
+  ));
 };
 
 // src/manager/components/preview/FramesRenderer.tsx
@@ -5067,43 +5531,31 @@ var getActive = (refId, refs) => refId && refs[refId] ? `storybook-ref-${refId}`
     display: "block"
   }
 }, FramesRenderer = ({
+  api,
   refs,
   scale,
   viewMode = "story",
   refId,
   queryParams = {},
-  baseUrl,
   storyId = "*"
 }) => {
-  let version3 = refs[refId]?.version, stringifiedQueryParams = stringifyQueryParams({
-    ...queryParams,
-    ...version3 && { version: version3 }
-  }), active = getActive(refId, refs), { current: frames } = useRef({}), refsToLoad = Object.values(refs).filter((ref) => ref.type === "auto-inject" || ref.id === refId, {});
-  return frames["storybook-preview-iframe"] || (frames["storybook-preview-iframe"] = getStoryHref(baseUrl, storyId, {
-    ...queryParams,
-    ...version3 && { version: version3 },
+  let version3 = refs[refId]?.version, active = getActive(refId, refs), { current: frames } = useRef({}), refsToLoad = Object.values(refs).filter((ref) => ref.type === "auto-inject" || ref.id === refId, {});
+  return frames["storybook-preview-iframe"] || (frames["storybook-preview-iframe"] = api.getStoryHrefs(storyId, {
+    queryParams: { ...queryParams, ...version3 && { version: version3 } },
+    refId,
     viewMode
-  })), refsToLoad.forEach((ref) => {
-    let id = `storybook-ref-${ref.id}`, existingUrl = frames[id]?.split("/iframe.html")[0];
-    if (!existingUrl || ref.url !== existingUrl) {
-      let newUrl = `${ref.url}/iframe.html?id=${storyId}&viewMode=${viewMode}&refId=${ref.id}${stringifiedQueryParams}`;
-      frames[id] = newUrl;
-    }
-  }), react_default.createElement(Fragment, null, react_default.createElement(Global, { styles }), react_default.createElement(Consumer, { filter: whenSidebarIsVisible }, ({ isFullscreen, isNavShown, selectedStoryId }) => isFullscreen || !isNavShown || !selectedStoryId ? null : react_default.createElement(SkipToSidebarLink, { ariaLabel: !1, asChild: !0 }, react_default.createElement("a", { href: `#${selectedStoryId}`, tabIndex: 0, title: "Skip to sidebar" }, "Skip to sidebar"))), Object.entries(frames).map(([id, src]) => react_default.createElement(Fragment, { key: id }, react_default.createElement(
-    IFrame,
-    {
-      active: id === active,
-      key: id,
-      id,
-      title: id,
-      src,
-      allowFullScreen: !0,
-      scale
-    }
-  ))));
+  }).previewHref), refsToLoad.forEach((ref) => {
+    let id = `storybook-ref-${ref.id}`;
+    frames[id]?.startsWith(ref.url) || (frames[id] = api.getStoryHrefs(storyId, {
+      queryParams: { ...queryParams, ...version3 && { version: version3 } },
+      refId: ref.id,
+      viewMode
+    }).previewHref);
+  }), react_default.createElement(Fragment, null, react_default.createElement(Global, { styles }), react_default.createElement(Consumer, { filter: whenSidebarIsVisible }, ({ isFullscreen, isNavShown, selectedStoryId }) => isFullscreen || !isNavShown || !selectedStoryId ? null : react_default.createElement(SkipToSidebarLink, { ariaLabel: !1, asChild: !0 }, react_default.createElement("a", { href: `#${selectedStoryId}`, tabIndex: 0 }, "Skip to sidebar"))), Object.entries(frames).map(([id, src]) => react_default.createElement(Viewport, { key: id, id, src, active: id === active, scale })));
 };
 
 // src/manager/components/preview/Toolbar.tsx
+init_react();
 var fullScreenMapper = ({ api, state }) => ({
   toggle: api.toggleFullscreen,
   isFullscreen: api.getIsFullscreen(),
@@ -5138,13 +5590,18 @@ var fullScreenMapper = ({ api, state }) => ({
   tabs,
   tabState
 }) {
+  let sectionRef = useRef(null), { landmarkProps } = useLandmark(
+    { "aria-labelledby": "sb-preview-toolbar-title", role: "region" },
+    sectionRef
+  );
   return isShown && (tabs || tools || toolsExtra) ? react_default.createElement(
     StyledSection,
     {
       className: "sb-bar",
       key: "toolbar",
       "data-testid": "sb-preview-toolbar",
-      "aria-labelledby": "sb-preview-toolbar-title"
+      ref: sectionRef,
+      ...landmarkProps
     },
     react_default.createElement("h2", { id: "sb-preview-toolbar-title", className: "sb-sr-only" }, "Toolbar"),
     tabs.length > 1 ? react_default.createElement(react_default.Fragment, null, react_default.createElement(TabList, { state: tabState }), react_default.createElement(Separator, null)) : null,
@@ -5205,14 +5662,17 @@ var StyledSection = styled.section(({ theme }) => ({
   alignItems: "center"
 });
 
+// src/manager/components/preview/Wrappers.tsx
+init_react();
+
 // src/manager/components/preview/utils/components.ts
-var PreviewContainer = styled.main({
+var PreviewContainer = styled.div({
   display: "flex",
   flexDirection: "column",
   width: "100%",
   height: "100%",
   overflow: "hidden"
-}), FrameWrap = styled.section({
+}), FrameWrap = styled.main({
   overflow: "auto",
   width: "100%",
   zIndex: 3,
@@ -5228,8 +5688,8 @@ var PreviewContainer = styled.main({
     gridTemplateColumns: "100%",
     gridTemplateRows: "100%",
     position: "relative",
-    width: "100%",
-    height: "100%"
+    minWidth: "100%",
+    minHeight: "100%"
   },
   ({ show }) => ({ display: show ? "grid" : "none" })
 ), UnstyledLink = styled(Link2)({
@@ -5281,67 +5741,166 @@ var ApplyWrappers = ({
 ];
 
 // src/manager/components/preview/tools/zoom.tsx
-var initialZoom = 1, Context = createContext({ value: initialZoom, set: (v2) => {
-} }), ZoomProvider = class extends Component {
+init_react();
+
+// src/manager/components/Shortcut.tsx
+init_react();
+var Wrapper2 = styled.span(({ theme }) => ({
+  display: "inline-flex",
+  alignItems: "center",
+  justifyContent: "center",
+  height: 16,
+  fontSize: "11px",
+  fontWeight: theme.typography.weight.regular,
+  background: theme.base === "light" ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.05)",
+  color: theme.base === "light" ? theme.color.dark : theme.textMutedColor,
+  borderRadius: 2,
+  userSelect: "none",
+  pointerEvents: "none",
+  padding: "0 4px"
+})), Key = styled.kbd(({ theme }) => ({
+  padding: 0,
+  fontFamily: theme.typography.fonts.base,
+  verticalAlign: "middle",
+  "& + &": {
+    marginLeft: 6
+  }
+})), Shortcut = ({ keys }) => react_default.createElement(Wrapper2, null, keys.map((key) => react_default.createElement(Key, { key }, shortcutToHumanString([key]))));
+
+// src/manager/components/preview/tools/zoom.tsx
+var ZOOM_LEVELS = [0.25, 0.5, 0.75, 0.9, 1, 1.1, 1.25, 1.5, 2, 3, 4, 8], INITIAL_ZOOM_LEVEL = 1, ZoomButton = styled(Button)({
+  minWidth: 48
+}), Context = createContext({ value: INITIAL_ZOOM_LEVEL, set: (v2) => {
+} }), ZoomInput = styled(NumericInput)({
+  input: {
+    width: 100
+  }
+}), ZoomConsumer = Context.Consumer, ZoomProvider = class extends Component {
   constructor() {
     super(...arguments);
     this.state = {
-      value: initialZoom
+      value: INITIAL_ZOOM_LEVEL
     };
     this.set = (value) => this.setState({ value });
   }
   render() {
     let { children, shouldScale } = this.props, { set } = this, { value } = this.state;
-    return react_default.createElement(Context.Provider, { value: { value: shouldScale ? value : initialZoom, set } }, children);
+    return react_default.createElement(Context.Provider, { value: { value: shouldScale ? value : INITIAL_ZOOM_LEVEL, set } }, children);
   }
-}, { Consumer: ZoomConsumer } = Context, Zoom2 = memo(function({ zoomIn, zoomOut, reset }) {
-  return react_default.createElement(react_default.Fragment, null, react_default.createElement(Button, { key: "zoomin", padding: "small", variant: "ghost", onClick: zoomIn, ariaLabel: "Zoom in" }, react_default.createElement(ZoomIcon, null)), react_default.createElement(Button, { key: "zoomout", padding: "small", variant: "ghost", onClick: zoomOut, ariaLabel: "Zoom out" }, react_default.createElement(ZoomOutIcon, null)), react_default.createElement(
-    Button,
+}, Zoom2 = memo(function({ value, zoomIn, zoomOut, zoomTo }) {
+  let inputRef = useRef(null);
+  return react_default.createElement(
+    PopoverProvider,
     {
-      key: "zoomreset",
-      padding: "small",
-      variant: "ghost",
-      onClick: reset,
-      ariaLabel: "Reset zoom"
+      padding: "none",
+      onVisibleChange: (isVisible) => {
+        isVisible && requestAnimationFrame(() => inputRef.current?.select());
+      },
+      popover: react_default.createElement(react_default.Fragment, null, react_default.createElement(ActionList, null, react_default.createElement(ActionList.Item, null, react_default.createElement(
+        ZoomInput,
+        {
+          "aria-label": "Zoom percentage",
+          ref: inputRef,
+          unit: "%",
+          before: react_default.createElement(ActionList.Button, { size: "small", padding: "small", readOnly: !0, "aria-hidden": !0 }, react_default.createElement(ZoomIcon, null)),
+          after: react_default.createElement(
+            ActionList.Button,
+            {
+              size: "small",
+              padding: "small",
+              disabled: value === INITIAL_ZOOM_LEVEL,
+              onClick: () => zoomTo(INITIAL_ZOOM_LEVEL),
+              ariaLabel: "Reset zoom"
+            },
+            react_default.createElement(UndoIcon, null)
+          ),
+          value: `${Math.round(value * 100)}%`,
+          minValue: 1,
+          maxValue: 800,
+          setValue: (value2) => {
+            let zoomLevel = parseInt(value2, 10) / 100;
+            Number.isNaN(zoomLevel) || zoomTo(zoomLevel);
+          }
+        }
+      ))), react_default.createElement(ActionList, null, react_default.createElement(ActionList.Item, null, react_default.createElement(
+        ActionList.Action,
+        {
+          onClick: zoomIn,
+          ariaLabel: "Zoom in",
+          disabled: value >= ZOOM_LEVELS.at(-1)
+        },
+        react_default.createElement(ActionList.Text, null, "Zoom in"),
+        react_default.createElement(Shortcut, { keys: ["alt", "+"] })
+      )), react_default.createElement(ActionList.Item, null, react_default.createElement(
+        ActionList.Action,
+        {
+          onClick: zoomOut,
+          ariaLabel: "Zoom out",
+          disabled: value <= ZOOM_LEVELS.at(0)
+        },
+        react_default.createElement(ActionList.Text, null, "Zoom out"),
+        react_default.createElement(Shortcut, { keys: ["alt", "-"] })
+      )), react_default.createElement(ActionList.Item, { active: value === 0.5 }, react_default.createElement(ActionList.Action, { onClick: () => zoomTo(0.5), ariaLabel: "Zoom to 50%" }, react_default.createElement(ActionList.Text, null, "50%"))), react_default.createElement(ActionList.Item, { active: value === 1 }, react_default.createElement(ActionList.Action, { onClick: () => zoomTo(1), ariaLabel: "Zoom to 100%" }, react_default.createElement(ActionList.Text, null, "100%"), react_default.createElement(Shortcut, { keys: ["alt", "0"] }))), react_default.createElement(ActionList.Item, { active: value === 2 }, react_default.createElement(ActionList.Action, { onClick: () => zoomTo(2), ariaLabel: "Zoom to 200%" }, "200%"))))
     },
-    react_default.createElement(ZoomResetIcon, null)
-  ));
-});
-var ZoomWrapper = memo(function({
-  set,
-  value
-}) {
-  let zoomIn = useCallback(
-    (e2) => {
-      e2.preventDefault(), set(0.8 * value);
-    },
-    [set, value]
-  ), zoomOut = useCallback(
-    (e2) => {
-      e2.preventDefault(), set(1.25 * value);
-    },
-    [set, value]
-  ), reset = useCallback(
-    (e2) => {
-      e2.preventDefault(), set(initialZoom);
-    },
-    [set, initialZoom]
+    react_default.createElement(
+      ZoomButton,
+      {
+        padding: "small",
+        variant: "ghost",
+        ariaLabel: "Change zoom level",
+        active: value !== INITIAL_ZOOM_LEVEL
+      },
+      Math.round(value * 100),
+      "%"
+    )
   );
-  return react_default.createElement(Zoom2, { key: "zoom", zoomIn, zoomOut, reset });
-});
-function ZoomToolRenderer() {
-  return react_default.createElement(react_default.Fragment, null, react_default.createElement(ZoomConsumer, null, ({ set, value }) => react_default.createElement(ZoomWrapper, { set, value })), react_default.createElement(Separator, null));
-}
-var zoomTool = {
+}), ZoomWrapper = memo(function({ set, value }) {
+  let api = useStorybookApi(), zoomIn = useCallback(() => {
+    let higherZoomLevel = ZOOM_LEVELS.find((level) => level > value);
+    higherZoomLevel && set(higherZoomLevel);
+  }, [set, value]), zoomOut = useCallback(() => {
+    let lowerZoomLevel = ZOOM_LEVELS.findLast((level) => level < value);
+    lowerZoomLevel && set(lowerZoomLevel);
+  }, [set, value]), zoomTo = useCallback(
+    (value2) => {
+      set(value2);
+    },
+    [set]
+  );
+  return useEffect(() => {
+    api.setAddonShortcut("zoom", {
+      label: "Zoom to 100%",
+      defaultShortcut: ["alt", "0"],
+      actionName: "zoomReset",
+      action: () => zoomTo(1)
+    }), api.setAddonShortcut("zoom", {
+      label: "Zoom in",
+      defaultShortcut: ["alt", "="],
+      actionName: "zoomIn",
+      action: zoomIn
+    }), api.setAddonShortcut("zoom", {
+      label: "Zoom in",
+      defaultShortcut: ["alt", "+"],
+      actionName: "zoomPlus",
+      action: zoomIn
+    }), api.setAddonShortcut("zoom", {
+      label: "Zoom out",
+      defaultShortcut: ["alt", "-"],
+      actionName: "zoomOut",
+      action: zoomOut
+    });
+  }, [api, zoomIn, zoomOut, zoomTo]), react_default.createElement(Zoom2, { key: "zoom", value, zoomIn, zoomOut, zoomTo });
+}), zoomTool = {
   title: "zoom",
   id: "zoom",
   type: types.TOOL,
   match: ({ viewMode, tabId }) => viewMode === "story" && !tabId,
-  render: ZoomToolRenderer
+  render: () => react_default.createElement(ZoomConsumer, null, (zoomContext) => react_default.createElement(ZoomWrapper, { ...zoomContext }))
 };
 
 // src/manager/components/preview/Preview.tsx
 var canvasMapper = ({ state, api }) => ({
+  api,
   storyId: state.storyId,
   refId: state.refId,
   viewMode: state.viewMode,
@@ -5388,7 +5947,7 @@ var canvasMapper = ({ state, api }) => ({
   });
   tabs.length > 1 && deprecate("Addon tabs are deprecated and will be removed in Storybook 11.");
   let tabContent = tabs.find((tab) => tab.id === tabId)?.render, shouldScale = viewMode === "story", { showToolbar } = options2, customisedShowToolbar = api.getShowToolbarWithCustomisations(showToolbar), previousStoryId = useRef(storyId);
-  return useEffect(() => {
+  useEffect(() => {
     if (entry && viewMode) {
       if (storyId === previousStoryId.current)
         return;
@@ -5401,7 +5960,12 @@ var canvasMapper = ({ state, api }) => ({
         });
       }
     }
-  }, [entry, viewMode, storyId, api]), react_default.createElement(Fragment, null, previewId === "main" && react_default.createElement(W, { key: "description" }, react_default.createElement("title", null, description)), react_default.createElement(ZoomProvider, { shouldScale }, react_default.createElement(PreviewContainer, null, react_default.createElement(
+  }, [entry, viewMode, storyId, api]);
+  let mainRef = useRef(null), { landmarkProps } = useLandmark(
+    { "aria-labelledby": "main-preview-heading", role: "main" },
+    mainRef
+  );
+  return react_default.createElement(Fragment, null, previewId === "main" && react_default.createElement(W, { key: "description" }, react_default.createElement("title", null, description)), react_default.createElement(ZoomProvider, { shouldScale }, react_default.createElement(PreviewContainer, null, react_default.createElement(
     ToolbarComp,
     {
       key: "tools",
@@ -5411,9 +5975,10 @@ var canvasMapper = ({ state, api }) => ({
       tools,
       toolsExtra
     }
-  ), react_default.createElement(FrameWrap, { "aria-labelledby": "main-preview-heading" }, react_default.createElement("h2", { id: "main-preview-heading", className: "sb-sr-only" }, "Main preview area"), tabContent && react_default.createElement(IframeWrapper, null, tabContent({ active: !0 })), react_default.createElement(CanvasWrap, { show: !tabId || tabId === "canvas" }, react_default.createElement(Canvas, { withLoader, baseUrl, wrappers }))))));
+  ), react_default.createElement(FrameWrap, { ref: mainRef, ...landmarkProps }, react_default.createElement("h2", { id: "main-preview-heading", className: "sb-sr-only" }, "Main preview area"), tabContent && react_default.createElement(IframeWrapper, null, tabContent({ active: !0 })), react_default.createElement(CanvasWrap, { show: !tabId || tabId === "canvas" }, react_default.createElement(Canvas, { withLoader, baseUrl, wrappers }))))));
 });
 var Canvas = ({ baseUrl, withLoader, wrappers }) => react_default.createElement(Consumer, { filter: canvasMapper }, ({
+  api,
   entry,
   refs,
   customCanvas,
@@ -5437,7 +6002,7 @@ var Canvas = ({ baseUrl, withLoader, wrappers }) => react_default.createElement(
   return react_default.createElement(ZoomConsumer, null, ({ value: scale }) => react_default.createElement(react_default.Fragment, null, withLoader && isLoading && react_default.createElement(LoaderWrapper, null, react_default.createElement(Loader, { id: "preview-loader", role: "progressbar", progress })), react_default.createElement(ApplyWrappers, { id, storyId, viewMode, wrappers }, customCanvas ? customCanvas(storyId, viewMode, id, baseUrl, scale, queryParams) : react_default.createElement(
     FramesRenderer,
     {
-      baseUrl,
+      api,
       refs,
       scale,
       entry,
@@ -5476,6 +6041,7 @@ function filterTabs(panels, parameters) {
 }
 
 // src/manager/components/preview/tools/addons.tsx
+init_react();
 var menuMapper = ({ api, state }) => ({
   isVisible: api.getIsPanelShown(),
   singleStory: state.singleStory,
@@ -5500,6 +6066,7 @@ var menuMapper = ({ api, state }) => ({
 };
 
 // src/manager/components/preview/tools/menu.tsx
+init_react();
 var menuMapper2 = ({ api, state }) => ({
   isVisible: api.getIsNavShown(),
   singleStory: state.singleStory,
@@ -5524,6 +6091,7 @@ var menuMapper2 = ({ api, state }) => ({
 };
 
 // src/manager/components/preview/tools/open-in-editor.tsx
+init_react();
 var mapper2 = ({ state, api }) => {
   let { storyId, refId } = state, entry = api.getData(storyId, refId);
   return {
@@ -5555,6 +6123,7 @@ var mapper2 = ({ state, api }) => {
 };
 
 // src/manager/components/preview/tools/remount.tsx
+init_react();
 var StyledAnimatedButton = styled(Button)(({ theme, animating, disabled }) => ({
   opacity: disabled ? 0.5 : 1,
   svg: {
@@ -5597,9 +6166,11 @@ var StyledAnimatedButton = styled(Button)(({ theme, animating, disabled }) => ({
 };
 
 // src/manager/components/preview/tools/share.tsx
+init_react();
 var import_copy_to_clipboard = __toESM(require_copy_to_clipboard(), 1);
 
 // ../../node_modules/qrcode.react/lib/esm/index.js
+init_react();
 var __defProp2 = Object.defineProperty, __getOwnPropSymbols = Object.getOwnPropertySymbols, __hasOwnProp2 = Object.prototype.hasOwnProperty, __propIsEnum = Object.prototype.propertyIsEnumerable, __defNormalProp = (obj, key, value) => key in obj ? __defProp2(obj, key, { enumerable: !0, configurable: !0, writable: !0, value }) : obj[key] = value, __spreadValues = (a2, b2) => {
   for (var prop in b2 || (b2 = {}))
     __hasOwnProp2.call(b2, prop) && __defNormalProp(a2, prop, b2[prop]);
@@ -6422,6 +6993,324 @@ var QRCodeSVG = react_default.forwardRef(
 );
 QRCodeSVG.displayName = "QRCodeSVG";
 
+// src/manager/components/preview/tools/share.tsx
+var mapper3 = ({ api, state }) => {
+  let { storyId, refId } = state;
+  return { api, refId, storyId };
+}, QRContainer = styled.div(() => ({
+  display: "flex",
+  alignItems: "center",
+  padding: 8,
+  maxWidth: 200
+})), QRImageContainer = styled.div(() => ({
+  width: 64,
+  height: 64,
+  marginRight: 12,
+  backgroundColor: "white",
+  padding: 2
+})), QRImage = ({ value }) => {
+  let theme = useTheme();
+  return react_default.createElement(QRImageContainer, null, react_default.createElement(QRCodeSVG, { value, marginSize: 0, size: 60, fgColor: theme.color.darkest }));
+}, QRContent = styled.div(() => ({})), QRTitle = styled.div(({ theme }) => ({
+  fontWeight: theme.typography.weight.bold,
+  fontSize: theme.typography.size.s1,
+  marginBottom: 4
+})), QRDescription = styled.div(({ theme }) => ({
+  fontSize: theme.typography.size.s1,
+  color: theme.textMutedColor
+})), ShareMenu = react_default.memo(function({
+  api,
+  storyId,
+  refId
+}) {
+  let shortcutKeys = api.getShortcutKeys(), enableShortcuts = !!shortcutKeys, [copied, setCopied] = useState(!1), copyStoryLink = shortcutKeys?.copyStoryLink, openInIsolation = shortcutKeys?.openInIsolation, links = useMemo(() => {
+    let copyTitle = copied ? "Copied!" : "Copy story link", originHrefs = api.getStoryHrefs(storyId, { base: "origin", refId }), networkHrefs = api.getStoryHrefs(storyId, { base: "network", refId });
+    return [
+      [
+        {
+          id: "copy-link",
+          title: copyTitle,
+          icon: react_default.createElement(LinkIcon, null),
+          right: enableShortcuts ? react_default.createElement(Shortcut, { keys: copyStoryLink }) : null,
+          onClick: () => {
+            (0, import_copy_to_clipboard.default)(originHrefs.managerHref), setCopied(!0), setTimeout(() => setCopied(!1), 2e3);
+          }
+        },
+        {
+          id: "open-new-tab",
+          title: "Open in isolation mode",
+          icon: react_default.createElement(ShareAltIcon, null),
+          right: enableShortcuts ? react_default.createElement(Shortcut, { keys: openInIsolation }) : null,
+          href: originHrefs.previewHref,
+          target: "_blank",
+          rel: "noopener noreferrer"
+        }
+      ],
+      [
+        {
+          id: "qr-section",
+          content: react_default.createElement(QRContainer, null, react_default.createElement(QRImage, { value: networkHrefs.managerHref }), react_default.createElement(QRContent, null, react_default.createElement(QRTitle, null, "Scan to open"), react_default.createElement(QRDescription, null, scope.CONFIG_TYPE === "DEVELOPMENT" ? "Device must be on the same network." : "View story on another device.")))
+        }
+      ]
+    ];
+  }, [api, storyId, refId, copied, enableShortcuts, copyStoryLink, openInIsolation]);
+  return react_default.createElement(TooltipLinkList, { links, style: { width: 240 } });
+}), shareTool = {
+  title: "share",
+  id: "share",
+  type: types.TOOL,
+  match: ({ viewMode, tabId }) => viewMode === "story" && !tabId,
+  render: () => react_default.createElement(Consumer, { filter: mapper3 }, ({ api, storyId, refId }) => storyId ? react_default.createElement(
+    PopoverProvider,
+    {
+      hasChrome: !0,
+      placement: "bottom",
+      padding: 0,
+      popover: react_default.createElement(ShareMenu, { api, storyId, refId })
+    },
+    react_default.createElement(Button, { padding: "small", variant: "ghost", ariaLabel: "Share", tooltip: "Share..." }, react_default.createElement(ShareIcon, null))
+  ) : null)
+};
+
+// src/manager/container/Preview.tsx
+var defaultTabs = [createCanvasTab()], defaultTools = [menuTool, remountTool], defaultToolsExtra = [zoomTool, addonsTool, fullScreenTool, shareTool, openInEditorTool], emptyTabsList = [], memoizedTabs = (0, import_memoizerific.default)(1)(
+  (_2, tabElements, parameters, showTabs) => showTabs ? filterTabs([...defaultTabs, ...Object.values(tabElements)], parameters) : emptyTabsList
+), memoizedTools = (0, import_memoizerific.default)(1)(
+  (_2, toolElements, filterProps) => filterToolsSide([...defaultTools, ...Object.values(toolElements)], ...filterProps)
+), memoizedExtra = (0, import_memoizerific.default)(1)(
+  (_2, extraElements, filterProps) => filterToolsSide([...defaultToolsExtra, ...Object.values(extraElements)], ...filterProps)
+), memoizedWrapper = (0, import_memoizerific.default)(1)((_2, previewElements) => [
+  ...defaultWrappers,
+  ...Object.values(previewElements)
+]), { PREVIEW_URL } = scope, splitTitleAddExtraSpace = (input) => input.split("/").join(" / ").replace(/\s\s/, " "), getDescription = (item) => {
+  if (item?.type === "story" || item?.type === "docs") {
+    let { title: title2, name } = item;
+    return title2 && name ? splitTitleAddExtraSpace(`${title2} - ${name} \u22C5 Storybook`) : "Storybook";
+  }
+  return item?.name ? `${item.name} \u22C5 Storybook` : "Storybook";
+}, mapper4 = ({
+  api,
+  state
+  // @ts-expect-error (non strict)
+}) => {
+  let { layout, location: location2, customQueryParams, storyId, refs, viewMode, path, refId } = state, entry = api.getData(storyId, refId), tabsList = Object.values(api.getElements(Addon_TypesEnum.TAB)), wrapperList = Object.values(api.getElements(Addon_TypesEnum.PREVIEW)), toolsList = Object.values(api.getElements(Addon_TypesEnum.TOOL)), toolsExtraList = Object.values(api.getElements(Addon_TypesEnum.TOOLEXTRA)), tabId = api.getQueryParam("tab"), tools = memoizedTools(toolsList.length, api.getElements(Addon_TypesEnum.TOOL), [
+    entry,
+    viewMode,
+    location2,
+    path,
+    // @ts-expect-error (non strict)
+    tabId
+  ]), toolsExtra = memoizedExtra(
+    toolsExtraList.length,
+    api.getElements(Addon_TypesEnum.TOOLEXTRA),
+    // @ts-expect-error (non strict)
+    [entry, viewMode, location2, path, tabId]
+  );
+  return {
+    api,
+    entry,
+    options: layout,
+    description: getDescription(entry),
+    viewMode,
+    refs,
+    storyId,
+    baseUrl: PREVIEW_URL || "iframe.html",
+    queryParams: customQueryParams,
+    tools,
+    toolsExtra,
+    tabs: memoizedTabs(
+      tabsList.length,
+      api.getElements(Addon_TypesEnum.TAB),
+      entry ? entry.parameters : void 0,
+      layout.showTabs
+    ),
+    wrappers: memoizedWrapper(
+      wrapperList.length,
+      api.getElements(Addon_TypesEnum.PREVIEW)
+    ),
+    tabId
+  };
+}, PreviewConnected = react_default.memo(function(props) {
+  return react_default.createElement(Consumer, { filter: mapper4 }, (fromState) => react_default.createElement(Preview, { ...props, ...fromState }));
+}), Preview_default = PreviewConnected;
+
+// src/manager/container/Sidebar.tsx
+init_react();
+
+// src/manager/components/sidebar/Sidebar.tsx
+init_react();
+
+// src/manager/components/sidebar/ChecklistWidget.tsx
+init_react();
+
+// src/manager/components/Optional/Optional.tsx
+init_react();
+var Wrapper3 = styled.div({
+  display: "inline-grid",
+  gridTemplateColumns: "max-content",
+  overflow: "hidden"
+}), Content2 = styled.div(({ isHidden }) => ({
+  display: "inline-block",
+  gridArea: "1/1",
+  opacity: isHidden === null ? 0 : 1,
+  visibility: isHidden ? "hidden" : "visible"
+})), Optional = ({
+  content,
+  fallback
+}) => {
+  let contentRef = useRef(null), wrapperRef = useRef(null), [hidden, setHidden] = useState(null), contentWidth = useRef(contentRef.current?.offsetWidth ?? 0), wrapperWidth = useRef(wrapperRef.current?.offsetWidth ?? 0);
+  return useEffect(() => {
+    if (contentRef.current && wrapperRef.current) {
+      let resizeObserver = new ResizeObserver(() => {
+        wrapperWidth.current = wrapperRef.current?.offsetWidth || wrapperWidth.current, contentWidth.current = contentRef.current?.offsetWidth || contentWidth.current, setHidden(contentWidth.current > wrapperWidth.current);
+      });
+      return resizeObserver.observe(wrapperRef.current), () => resizeObserver.disconnect();
+    }
+  }, []), react_default.createElement(Wrapper3, { ref: wrapperRef }, react_default.createElement(Content2, { isHidden: hidden, ref: contentRef }, content), fallback && react_default.createElement(Content2, { isHidden: !hidden }, fallback));
+};
+
+// src/manager/components/Particles/Particles.tsx
+init_react();
+var Shape = styled.svg(({ color: color2 }) => ({
+  fill: color2,
+  position: "absolute",
+  inset: "0",
+  margin: "auto",
+  width: "12px",
+  height: "12px",
+  pointerEvents: "none"
+})), Donut = (props) => react_default.createElement(Shape, { viewBox: "0 0 90 90", xmlns: "http://www.w3.org/2000/svg", color: "red", ...props }, react_default.createElement("path", { d: "M45 0c24.853 0 45 20.147 45 45S69.853 90 45 90 0 69.853 0 45 20.147 0 45 0zm.5 27C35.283 27 27 35.283 27 45.5S35.283 64 45.5 64 64 55.717 64 45.5 55.717 27 45.5 27z" })), L2 = (props) => react_default.createElement(Shape, { viewBox: "0 0 55 89", xmlns: "http://www.w3.org/2000/svg", color: "#66BF3C", ...props }, react_default.createElement("path", { d: "M55 3v83a3 3 0 01-3 3H3a3 3 0 01-3-3V64a3 3 0 013-3h21a3 3 0 003-3V3a3 3 0 013-3h22a3 3 0 013 3z" })), Slice = (props) => react_default.createElement(Shape, { viewBox: "0 0 92 92", xmlns: "http://www.w3.org/2000/svg", color: "#FF4785", ...props }, react_default.createElement("path", { d: "M92 89V3c0-3-2.056-3-3-3C39.294 0 0 39.294 0 89c0 0 0 3 3 3h86a3 3 0 003-3z" })), Square = ({ style, ...props }) => react_default.createElement(
+  Shape,
+  {
+    viewBox: "0 0 90 90",
+    xmlns: "http://www.w3.org/2000/svg",
+    color: "#1EA7FD",
+    ...props,
+    style: { borderRadius: 5, ...style }
+  },
+  react_default.createElement("path", { d: "M0 0h90v90H0z" })
+), Triangle = (props) => react_default.createElement(Shape, { viewBox: "0 0 96 88", xmlns: "http://www.w3.org/2000/svg", color: "#FFAE00", ...props }, react_default.createElement("path", { d: "M50.63 1.785l44.928 81.77A3 3 0 0192.928 88H3.072a3 3 0 01-2.629-4.445l44.929-81.77a3 3 0 015.258 0z" })), T2 = (props) => react_default.createElement(Shape, { viewBox: "0 0 92 62", xmlns: "http://www.w3.org/2000/svg", color: "#FC521F", ...props }, react_default.createElement("path", { d: "M63 3v25a3 3 0 003 3h23a3 3 0 013 3v25a3 3 0 01-3 3H3a3 3 0 01-3-3V34a3 3 0 013-3h24a3 3 0 003-3V3a3 3 0 013-3h27a3 3 0 013 3z" })), Z = (props) => react_default.createElement(Shape, { viewBox: "0 0 56 90", xmlns: "http://www.w3.org/2000/svg", color: "#6F2CAC", ...props }, react_default.createElement("path", { d: "M28 3v25a3 3 0 003 3h22a3 3 0 013 3v53a3 3 0 01-3 3H31a3 3 0 01-3-3V62a3 3 0 00-3-3H3a3 3 0 01-3-3V3a3 3 0 013-3h22a3 3 0 013 3z" })), fadeToTransparent = keyframes`
+  to {
+    opacity: 0;
+  }
+`, disperse = keyframes`
+  to {
+    transform: translate(
+      calc(cos(var(--angle)) * var(--distance)),
+      calc(sin(var(--angle)) * var(--distance))
+    ) rotate(var(--rotation));
+  }
+`, slideDown = keyframes`
+  to {
+    transform: translateY(50px);
+  }
+`, Container5 = styled.div({
+  position: "absolute",
+  display: "flex",
+  flexDirection: "row",
+  flexWrap: "wrap",
+  gap: 10,
+  "--particle-curve": "cubic-bezier(0.2, 0.56, 0, 1)",
+  animation: `${slideDown} 1000ms forwards cubic-bezier(0.587, -0.381, 0.583, 0.599)`,
+  animationDelay: "150ms",
+  zIndex: 999,
+  svg: {
+    width: 15,
+    height: 15,
+    animation: `${fadeToTransparent} var(--fade-duration) forwards, ${disperse} 1000ms forwards var(--particle-curve)`
+  }
+}), FADE_DURATION = 1200, NUM_OF_PARTICLES = 8, JITTER = 15, random = (min, max) => Math.random() * (max - min) + min, sortRandomly = (array) => array.sort(() => Math.random() - 0.5), Particles = memo(function({
+  anchor: Anchor
+}) {
+  let anchorRef = useRef(null), [left, setLeft] = useState(0), [top, setTop] = useState(0), shapes = sortRandomly([Donut, L2, Slice, Square, Triangle, T2, Z]), colors = sortRandomly([
+    "#FF0000",
+    "#FF4787",
+    "#66BF3C",
+    "#1EA7FD",
+    "#FC521F",
+    "#6F2CAC",
+    "#FFAE00"
+  ]);
+  return useLayoutEffect(() => {
+    let rect = anchorRef.current?.getBoundingClientRect();
+    rect && (setLeft(rect.left + rect.width / 2), setTop(rect.top + rect.height / 2));
+  }, []), react_default.createElement("div", { ref: anchorRef }, react_default.createElement(Anchor, null), createPortal(
+    react_default.createElement(Container5, { style: { top: top + "px", left: left + "px" } }, shapes.map((Particle, index) => {
+      let angle = 360 / NUM_OF_PARTICLES * index + random(-JITTER, JITTER), distance = random(50, 80), rotation = random(-360, 360), style = {
+        "--angle": angle + "deg",
+        "--distance": distance + "px",
+        "--rotation": rotation + "deg",
+        "--fade-duration": FADE_DURATION + "ms"
+      };
+      return react_default.createElement(Particle, { key: Particle.name, style, color: colors[index] });
+    })),
+    document.getElementById("root") ?? document.body
+  ));
+});
+
+// src/manager/components/TextFlip.tsx
+init_react();
+var slideIn2 = keyframes({
+  from: {
+    transform: "translateY(var(--slide-in-from))",
+    opacity: 0
+  }
+}), slideOut = keyframes({
+  to: {
+    transform: "translateY(var(--slide-out-to))",
+    opacity: 0
+  }
+}), Container6 = styled.div({
+  display: "inline-grid",
+  gridTemplateColumns: "1fr",
+  justifyContent: "center",
+  alignItems: "center"
+}), Placeholder2 = styled.div({
+  gridArea: "1 / 1",
+  userSelect: "none",
+  visibility: "hidden"
+}), Text2 = styled.span(({ duration, isExiting, isEntering, reverse }) => {
+  let animation;
+  return isExiting ? animation = `${slideOut} ${duration}ms forwards` : isEntering && (animation = `${slideIn2} ${duration}ms forwards`), {
+    gridArea: "1 / 1",
+    animation,
+    pointerEvents: isExiting ? "none" : "auto",
+    userSelect: isExiting ? "none" : "text",
+    "--slide-in-from": reverse ? "-100%" : "100%",
+    "--slide-out-to": reverse ? "100%" : "-100%",
+    "@media (prefers-reduced-motion: reduce)": {
+      animation: "none",
+      opacity: isExiting ? 0 : 1,
+      transform: "translateY(0)"
+    }
+  };
+}), TextFlip = ({
+  text,
+  duration = 250,
+  placeholder,
+  ...props
+}) => {
+  let textRef = useRef(text), [staleValue, setStaleValue] = useState(text), isAnimating = text !== staleValue, reverse = isAnimating && numericCompare(staleValue, text);
+  return textRef.current = text, react_default.createElement(Container6, { ...props }, isAnimating && react_default.createElement(
+    Text2,
+    {
+      "aria-hidden": !0,
+      duration,
+      reverse,
+      isExiting: !0,
+      onAnimationEnd: () => setStaleValue(textRef.current)
+    },
+    staleValue
+  ), react_default.createElement(Text2, { duration, reverse, isEntering: isAnimating }, text), placeholder && react_default.createElement(Placeholder2, { "aria-hidden": !0 }, placeholder));
+};
+function numericCompare(a2, b2) {
+  let na = Number(a2), nb = Number(b2);
+  return Number.isNaN(na) || Number.isNaN(nb) ? a2.localeCompare(b2, void 0, { numeric: !0 }) > 0 : na > nb;
+}
+
+// src/manager/components/sidebar/useChecklist.ts
+init_react();
+
 // ../../node_modules/es-toolkit/dist/function/debounce.mjs
 function debounce(func, debounceMs, { signal, edges } = {}) {
   let pendingThis, pendingArgs = null, leading = edges != null && edges.includes("leading"), trailing = edges == null || edges.includes("trailing"), invoke = () => {
@@ -6437,7 +7326,7 @@ function debounce(func, debounceMs, { signal, edges } = {}) {
   }, cancel = () => {
     cancelTimer(), pendingThis = void 0, pendingArgs = null;
   }, flush = () => {
-    cancelTimer(), invoke();
+    invoke();
   }, debounced = function(...args) {
     if (signal?.aborted)
       return;
@@ -6481,27 +7370,37 @@ var DEFAULT_RETRIES = Number.POSITIVE_INFINITY;
 
 // ../../node_modules/es-toolkit/dist/function/throttle.mjs
 function throttle(func, throttleMs, { signal, edges = ["leading", "trailing"] } = {}) {
-  let pendingAt = null, debounced = debounce(func, throttleMs, { signal, edges }), throttled = function(...args) {
-    pendingAt == null ? pendingAt = Date.now() : Date.now() - pendingAt >= throttleMs && (pendingAt = Date.now(), debounced.cancel()), debounced(...args);
+  let pendingAt = null, debounced = debounce(function(...args) {
+    pendingAt = Date.now(), func.apply(this, args);
+  }, throttleMs, { signal, edges }), throttled = function(...args) {
+    if (pendingAt == null && (pendingAt = Date.now()), Date.now() - pendingAt >= throttleMs) {
+      pendingAt = Date.now(), func.apply(this, args), debounced.cancel(), debounced.schedule();
+      return;
+    }
+    debounced.apply(this, args);
   };
   return throttled.cancel = debounced.cancel, throttled.flush = debounced.flush, throttled;
 }
 
+// src/shared/checklist-store/checklistData.tsx
+init_react();
+
 // ../addons/a11y/src/constants.ts
-var ADDON_ID = "storybook/a11y", PANEL_ID = `${ADDON_ID}/panel`;
-var UI_STATE_ID = `${ADDON_ID}/ui`, RESULT = `${ADDON_ID}/result`, REQUEST = `${ADDON_ID}/request`, RUNNING = `${ADDON_ID}/running`, ERROR = `${ADDON_ID}/error`, MANUAL = `${ADDON_ID}/manual`, SELECT = `${ADDON_ID}/select`, DOCUMENTATION_LINK = "writing-tests/accessibility-testing", DOCUMENTATION_DISCREPANCY_LINK = `${DOCUMENTATION_LINK}#why-are-my-tests-failing-in-different-environments`;
+var ADDON_ID2 = "storybook/a11y", PANEL_ID2 = `${ADDON_ID2}/panel`;
+var UI_STATE_ID = `${ADDON_ID2}/ui`, RESULT = `${ADDON_ID2}/result`, REQUEST = `${ADDON_ID2}/request`, RUNNING = `${ADDON_ID2}/running`, ERROR = `${ADDON_ID2}/error`, MANUAL = `${ADDON_ID2}/manual`, SELECT = `${ADDON_ID2}/select`, DOCUMENTATION_LINK = "writing-tests/accessibility-testing", DOCUMENTATION_DISCREPANCY_LINK = `${DOCUMENTATION_LINK}#why-are-my-tests-failing-in-different-environments`;
 
 // ../addons/onboarding/src/constants.ts
-var ADDON_ID2 = "storybook/onboarding", ADDON_ONBOARDING_CHANNEL = `${ADDON_ID2}/channel`;
+var ADDON_ID3 = "storybook/onboarding", ADDON_ONBOARDING_CHANNEL = `${ADDON_ID3}/channel`;
 
 // src/component-testing/constants.ts
-var ADDON_ID3 = "storybook/interactions", PANEL_ID2 = `${ADDON_ID3}/panel`, DOCUMENTATION_LINK2 = "writing-tests/integrations/vitest-addon", DOCUMENTATION_DISCREPANCY_LINK2 = `${DOCUMENTATION_LINK2}#what-happens-when-there-are-different-test-results-in-multiple-environments`;
+var ADDON_ID4 = "storybook/interactions", PANEL_ID3 = `${ADDON_ID4}/panel`;
+var DOCUMENTATION_LINK2 = "writing-tests/integrations/vitest-addon", DOCUMENTATION_DISCREPANCY_LINK2 = `${DOCUMENTATION_LINK2}#what-happens-when-there-are-different-test-results-in-multiple-environments`;
 
 // ../addons/vitest/src/constants.ts
-var ADDON_ID4 = "storybook/test", TEST_PROVIDER_ID = `${ADDON_ID4}/test-provider`, STORYBOOK_ADDON_TEST_CHANNEL = `${ADDON_ID4}/channel`;
+var ADDON_ID5 = "storybook/test", TEST_PROVIDER_ID = `${ADDON_ID5}/test-provider`, STORYBOOK_ADDON_TEST_CHANNEL = `${ADDON_ID5}/channel`;
 var DOCUMENTATION_LINK3 = "writing-tests/integrations/vitest-addon", DOCUMENTATION_FATAL_ERROR_LINK = `${DOCUMENTATION_LINK3}#what-happens-if-vitest-itself-has-an-error`;
 var storeOptions = {
-  id: ADDON_ID4,
+  id: ADDON_ID5,
   initialState: {
     config: {
       coverage: !1,
@@ -6553,8 +7452,14 @@ var SUPPORTED_FRAMEWORKS = [
 ];
 
 // src/docs-tools/shared.ts
-var ADDON_ID5 = "storybook/docs", PANEL_ID3 = `${ADDON_ID5}/panel`;
-var SNIPPET_RENDERED = `${ADDON_ID5}/snippet-rendered`;
+var ADDON_ID6 = "storybook/docs", PANEL_ID4 = `${ADDON_ID6}/panel`;
+var SNIPPET_RENDERED = `${ADDON_ID6}/snippet-rendered`;
+
+// src/manager/components/TourGuide/TourGuide.tsx
+init_react();
+
+// ../../node_modules/react-joyride/dist/index.mjs
+init_react();
 
 // ../../node_modules/@gilbarbara/deep-equal/dist/index.mjs
 function isOfType(type) {
@@ -6886,11 +7791,17 @@ function treeChanges(previousData, data) {
 
 // ../../node_modules/react-joyride/dist/index.mjs
 var import_scroll = __toESM(require_scroll(), 1), import_scrollparent = __toESM(require_scrollparent(), 1);
+init_react();
 var import_react_innertext = __toESM(require_react_innertext(), 1);
 var import_deepmerge2 = __toESM(require_cjs(), 1);
 var import_deepmerge3 = __toESM(require_cjs(), 1);
+init_react();
+init_react();
+init_react();
+init_react();
 
 // ../../node_modules/react-floater/es/index.js
+init_react();
 var import_prop_types2 = __toESM(require_prop_types());
 
 // ../../node_modules/popper.js/dist/esm/popper.js
@@ -6995,8 +7906,8 @@ function getBordersSize(styles2, axis) {
 function getSize(axis, body, html, computedStyle) {
   return Math.max(body["offset" + axis], body["scroll" + axis], html["client" + axis], html["offset" + axis], html["scroll" + axis], isIE(10) ? parseInt(html["offset" + axis]) + parseInt(computedStyle["margin" + (axis === "Height" ? "Top" : "Left")]) + parseInt(computedStyle["margin" + (axis === "Height" ? "Bottom" : "Right")]) : 0);
 }
-function getWindowSizes(document11) {
-  var body = document11.body, html = document11.documentElement, computedStyle = isIE(10) && getComputedStyle(html);
+function getWindowSizes(document10) {
+  var body = document10.body, html = document10.documentElement, computedStyle = isIE(10) && getComputedStyle(html);
   return {
     height: getSize("Height", body, html, computedStyle),
     width: getSize("Width", body, html, computedStyle)
@@ -8967,6 +9878,10 @@ _defineProperty(ReactFloater, "propTypes", { autoOpen: import_prop_types2.defaul
 _defineProperty(ReactFloater, "defaultProps", { autoOpen: !1, callback: noop2, debug: !1, disableAnimation: !1, disableFlip: !1, disableHoverToClick: !1, event: "click", eventDelay: 0.4, getPopper: noop2, hideArrow: !1, offset: 15, placement: "bottom", showCloseButton: !1, styles: {}, target: null, wrapperOptions: { position: !1 } });
 
 // ../../node_modules/react-joyride/dist/index.mjs
+init_react();
+init_react();
+init_react();
+init_react();
 var __defProp3 = Object.defineProperty, __defNormalProp2 = (obj, key, value) => key in obj ? __defProp3(obj, key, { enumerable: !0, configurable: !0, writable: !0, value }) : obj[key] = value, __publicField = (obj, key, value) => __defNormalProp2(obj, typeof key != "symbol" ? key + "" : key, value), ACTIONS = {
   INIT: "init",
   START: "start",
@@ -10416,6 +11331,7 @@ __publicField(Joyride, "defaultProps", defaultProps);
 var components_default2 = Joyride;
 
 // src/manager/components/TourGuide/HighlightElement.tsx
+init_react();
 var HIGHLIGHT_KEYFRAMES_ID = "storybook-highlight-element-keyframes", keyframes2 = `
   @keyframes sb-highlight-pulsate {
     0% {
@@ -10479,10 +11395,11 @@ function HighlightElement({
 }
 
 // src/manager/components/TourGuide/TourTooltip.tsx
+init_react();
 var ONBOARDING_ARROW_STYLE_ID = "storybook-onboarding-arrow-style", TooltipBody = styled.div`
   padding: 15px;
   border-radius: 5px;
-`, Wrapper = styled.div`
+`, Wrapper4 = styled.div`
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -10546,7 +11463,7 @@ var ONBOARDING_ARROW_STYLE_ID = "storybook-onboarding-arrow-style", TooltipBody 
         .__floater__arrow span { flex-direction: column; }
       }
     `, document.head.appendChild(style), () => document.getElementById(ONBOARDING_ARROW_STYLE_ID)?.remove();
-}, []), react_default.createElement(TooltipBody, { ...tooltipProps, style: step.styles?.tooltip }, react_default.createElement(Wrapper, null, react_default.createElement(TooltipHeader, null, step.title && react_default.createElement(TooltipTitle, null, step.title), react_default.createElement(
+}, []), react_default.createElement(TooltipBody, { ...tooltipProps, style: step.styles?.tooltip }, react_default.createElement(Wrapper4, null, react_default.createElement(TooltipHeader, null, step.title && react_default.createElement(TooltipTitle, null, step.title), react_default.createElement(
   Button,
   {
     ...closeProps,
@@ -10641,7 +11558,7 @@ var TourGuide = ({
 TourGuide.render = (props) => {
   let container = document.getElementById("storybook-tour");
   container || (container = document.createElement("div"), container.id = "storybook-tour", document.body.appendChild(container)), root = root ?? createRoot(container), root.render(
-    react_default.createElement(ThemeProvider, { theme: convert(themes.light) }, react_default.createElement(
+    props ? react_default.createElement(ThemeProvider, { theme: convert(themes.light) }, react_default.createElement(
       TourGuide,
       {
         ...props,
@@ -10652,11 +11569,12 @@ TourGuide.render = (props) => {
           props.onDismiss?.(), root?.render(null), root = null;
         }
       }
-    ))
+    )) : null
   );
 };
 
 // src/manager/hooks/useLocation.ts
+init_react();
 var LocationMonitor = {
   _currentHref: globalThis.window?.location.href ?? "",
   _intervalId: null,
@@ -10711,7 +11629,7 @@ var CodeWrapper = styled.div(({ theme }) => ({
         {
           id: "guidedTour",
           label: "Take the guided tour",
-          available: ({ index }) => !!index && "example-button--primary" in index && !!globalThis?.FEATURES?.controls && addons.experimental_getRegisteredAddons().includes(ADDON_ID2),
+          available: ({ index }) => !!index && "example-button--primary" in index && !!globalThis?.FEATURES?.controls && addons.experimental_getRegisteredAddons().includes(ADDON_ID3),
           criteria: "Guided tour is completed",
           subscribe: ({ api, accept }) => api.on(ADDON_ONBOARDING_CHANNEL, ({ step, type }) => {
             type !== "dismiss" && ["6:IntentSurvey", "7:FinishedOnboarding"].includes(step) && accept();
@@ -10719,6 +11637,7 @@ var CodeWrapper = styled.div(({ theme }) => ({
           action: {
             label: "Start",
             onClick: ({ api }) => {
+              api.toggleNav(!0);
               let path = api.getUrlState().path || "";
               path.startsWith("/story/") ? document.location.href = `/?path=${path}&onboarding=true` : document.location.href = "/?onboarding=true";
             }
@@ -10727,7 +11646,7 @@ var CodeWrapper = styled.div(({ theme }) => ({
         {
           id: "onboardingSurvey",
           label: "Complete the onboarding survey",
-          available: () => addons.experimental_getRegisteredAddons().includes(ADDON_ID2),
+          available: () => addons.experimental_getRegisteredAddons().includes(ADDON_ID3),
           afterCompletion: "immutable",
           criteria: "Onboarding survey is completed",
           subscribe: ({ api, accept }) => api.on(ADDON_ONBOARDING_CHANNEL, ({ type }) => type === "survey" && accept()),
@@ -10987,7 +11906,7 @@ export default {
           available: () => !!globalThis.STORYBOOK_FRAMEWORK && SUPPORTED_FRAMEWORKS.includes(globalThis.STORYBOOK_FRAMEWORK),
           criteria: "@storybook/addon-vitest registered in .storybook/main.js|ts",
           subscribe: ({ done }) => {
-            addons.experimental_getRegisteredAddons().includes(ADDON_ID4) && done();
+            addons.experimental_getRegisteredAddons().includes(ADDON_ID5) && done();
           },
           content: ({ api }) => react_default.createElement(react_default.Fragment, null, react_default.createElement("p", null, "Run this command to install the Vitest addon, enabling you to run component tests on your stories inside Storybook\u2019s UI:"), react_default.createElement(CodeSnippet, { language: "bash" }, "npx storybook add @storybook/addon-vitest"), react_default.createElement("p", null, react_default.createElement("em", null, "Restart your Storybook after installing the addon.")), react_default.createElement(
             "img",
@@ -11017,36 +11936,38 @@ export default {
           after: ["installVitest"],
           label: "Test your components",
           criteria: "Component tests are run from the test widget in the sidebar",
-          subscribe: ({ done }) => internal_universalTestProviderStore.onStateChange(
-            (state) => state["storybook/test"] === "test-provider-state:succeeded" && done()
-          ),
+          subscribe: ({ done }) => internal_universalTestProviderStore.onStateChange((state) => {
+            state["storybook/test"] === "test-provider-state:running" && (TourGuide.render(null), done());
+          }),
           action: {
             label: "Start",
-            onClick: () => TourGuide.render({
-              // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-              // @ts-ignore Circular reference in Step type
-              steps: [
-                {
-                  title: "Testing widget",
-                  content: "Run tests right from your Storybook sidebar using the testing widget.",
-                  placement: "right-end",
-                  target: "#storybook-testing-module",
-                  highlight: "#storybook-testing-module",
-                  onNext: ({ next }) => {
-                    let toggle = document.getElementById("testing-module-collapse-toggle");
-                    toggle?.getAttribute("aria-label") === "Expand testing module" ? (toggle.click(), setTimeout(next, 300)) : next();
+            onClick: ({ api }) => {
+              api.toggleNav(!0), TourGuide.render({
+                // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+                // @ts-ignore Circular reference in Step type
+                steps: [
+                  {
+                    title: "Testing widget",
+                    content: "Run tests right from your Storybook sidebar using the testing widget.",
+                    placement: "right-end",
+                    target: "#storybook-testing-module",
+                    highlight: "#storybook-testing-module",
+                    onNext: ({ next }) => {
+                      let toggle = document.getElementById("testing-module-collapse-toggle");
+                      toggle?.getAttribute("aria-label") === "Expand testing module" ? (toggle.click(), setTimeout(next, 300)) : next();
+                    }
+                  },
+                  {
+                    title: "Start a test run",
+                    content: "Start a test run at the click of a button using Vitest.",
+                    placement: "right",
+                    target: '[data-module-id="storybook/test/test-provider"] button[aria-label="Start test run"]',
+                    highlight: '[data-module-id="storybook/test/test-provider"] button[aria-label="Start test run"]',
+                    hideNextButton: !0
                   }
-                },
-                {
-                  title: "Start a test run",
-                  content: "Start a test run at the click of a button using Vitest.",
-                  placement: "right",
-                  target: '[data-module-id="storybook/test/test-provider"] button[aria-label="Start test run"]',
-                  highlight: '[data-module-id="storybook/test/test-provider"] button[aria-label="Start test run"]',
-                  hideNextButton: !0
-                }
-              ]
-            })
+                ]
+              });
+            }
           },
           content: ({ api }) => react_default.createElement(react_default.Fragment, null, react_default.createElement("p", null, "Stories make great test cases. You can quickly test all of your stories directly from the test widget, at the bottom of the sidebar."), react_default.createElement(
             "img",
@@ -11086,7 +12007,7 @@ export default {
           criteria: "At least one story with a play or test function",
           subscribe: subscribeToIndex(
             (entries) => Object.values(entries).some(
-              (entry) => entry.tags?.includes("play-fn") || entry.tags?.includes("test-fn")
+              (entry) => entry.tags?.includes(Tag.PLAY_FN) || entry.tags?.includes(Tag.TEST_FN)
             )
           ),
           content: ({ api }) => react_default.createElement(react_default.Fragment, null, react_default.createElement("p", null, "When you need to test non-visual or particularly complex behavior of a component, add a play function."), react_default.createElement(CodeSnippet, { language: "typescript" }, `// Button.stories.ts
@@ -11150,7 +12071,7 @@ export const Disabled: Story = {
           afterCompletion: "unavailable",
           criteria: "@storybook/addon-a11y registered in .storybook/main.js|ts",
           subscribe: ({ done }) => {
-            addons.experimental_getRegisteredAddons().includes(ADDON_ID) && done();
+            addons.experimental_getRegisteredAddons().includes(ADDON_ID2) && done();
           },
           content: ({ api }) => react_default.createElement(react_default.Fragment, null, react_default.createElement("p", null, "Accessibility tests help ensure your UI is usable by everyone, no matter their ability."), react_default.createElement("p", null, "If you are not yet using the accessibility addon, run this command to install and set it up, enabling you to run accessibility checks alongside your component tests:"), react_default.createElement(CodeSnippet, { language: "bash" }, "npx storybook add @storybook/addon-a11y"), react_default.createElement("p", null, react_default.createElement("em", null, "Restart your Storybook after installing the addon.")), react_default.createElement("p", null, react_default.createElement(
             Link,
@@ -11336,7 +12257,7 @@ export const Disabled: Story = {
           afterCompletion: "unavailable",
           criteria: "@storybook/addon-docs registered in .storybook/main.js|ts",
           subscribe: ({ done }) => {
-            addons.experimental_getRegisteredAddons().includes(ADDON_ID5) && done();
+            addons.experimental_getRegisteredAddons().includes(ADDON_ID6) && done();
           },
           content: ({ api }) => react_default.createElement(react_default.Fragment, null, react_default.createElement("p", null, "Storybook Docs transforms your Storybook stories into component documentation. Add the Docs addon to your Storybook project to get started:"), react_default.createElement(CodeSnippet, { language: "bash" }, "npx storybook add @storybook/addon-docs"), react_default.createElement("p", null, react_default.createElement("em", null, "Restart your Storybook after installing the addon.")), react_default.createElement("p", null, react_default.createElement(
             Link,
@@ -11358,7 +12279,7 @@ export const Disabled: Story = {
           label: "Automatically document your components",
           criteria: "At least one component with the autodocs tag applied",
           subscribe: subscribeToIndex(
-            (entries) => Object.values(entries).some((entry) => entry.tags?.includes("autodocs"))
+            (entries) => Object.values(entries).some((entry) => entry.tags?.includes(Tag.AUTODOCS))
           ),
           content: ({ api }) => react_default.createElement(react_default.Fragment, null, react_default.createElement("p", null, "Add the autodocs tag to a component's meta to automatically generate documentation for that component, complete with examples, source code, an API table, and a description."), react_default.createElement(CodeSnippet, { language: "typescript" }, `// Button.stories.js
 
@@ -11557,502 +12478,6 @@ var subscriptions = /* @__PURE__ */ new Map(), useStoryIndex = () => {
   };
 };
 
-// src/manager/container/Menu.tsx
-var Key = styled.span(({ theme }) => ({
-  display: "inline-flex",
-  alignItems: "center",
-  justifyContent: "center",
-  height: 16,
-  fontSize: "11px",
-  fontWeight: theme.typography.weight.regular,
-  background: theme.base === "light" ? "rgba(0,0,0,0.05)" : "rgba(255,255,255,0.05)",
-  color: theme.base === "light" ? theme.color.dark : theme.textMutedColor,
-  borderRadius: 2,
-  userSelect: "none",
-  pointerEvents: "none",
-  padding: "0 4px"
-})), KeyChild = styled.code(({ theme }) => ({
-  padding: 0,
-  fontFamily: theme.typography.fonts.base,
-  verticalAlign: "middle",
-  "& + &": {
-    marginLeft: 6
-  }
-})), ProgressCircle = styled(ProgressSpinner)(({ theme }) => ({
-  color: theme.color.secondary
-})), Shortcut = ({ keys }) => react_default.createElement(Key, null, keys.map((key) => react_default.createElement(KeyChild, { key }, shortcutToHumanString([key])))), useMenu = ({
-  api,
-  showToolbar,
-  isPanelShown,
-  isNavShown,
-  enableShortcuts
-}) => {
-  let shortcutKeys = api.getShortcutKeys(), { progress } = useChecklist(), about = useMemo(
-    () => ({
-      id: "about",
-      title: "About your Storybook",
-      onClick: () => api.changeSettingsTab("about"),
-      closeOnClick: !0,
-      icon: react_default.createElement(InfoIcon, null)
-    }),
-    [api]
-  ), guide = useMemo(
-    () => ({
-      id: "guide",
-      title: "Onboarding guide",
-      onClick: () => api.changeSettingsTab("guide"),
-      closeOnClick: !0,
-      icon: react_default.createElement(ListUnorderedIcon, null),
-      right: progress < 100 && react_default.createElement(ActionList.Button, { as: "div", readOnly: !0, padding: "none", ariaLabel: `${progress}% completed` }, react_default.createElement(ProgressCircle, { percentage: progress, running: !1, size: 16, width: 1.5 }), progress, "%")
-    }),
-    [api, progress]
-  ), shortcuts = useMemo(
-    () => ({
-      id: "shortcuts",
-      title: "Keyboard shortcuts",
-      onClick: () => api.changeSettingsTab("shortcuts"),
-      closeOnClick: !0,
-      right: enableShortcuts ? react_default.createElement(Shortcut, { keys: shortcutKeys.shortcutsPage }) : null,
-      icon: react_default.createElement(CommandIcon, null)
-    }),
-    [api, enableShortcuts, shortcutKeys.shortcutsPage]
-  ), sidebarToggle = useMemo(
-    () => ({
-      id: "S",
-      title: "Show sidebar",
-      onClick: () => api.toggleNav(),
-      closeOnClick: !0,
-      active: isNavShown,
-      right: enableShortcuts ? react_default.createElement(Shortcut, { keys: shortcutKeys.toggleNav }) : null,
-      icon: isNavShown ? react_default.createElement(CheckIcon, null) : react_default.createElement(react_default.Fragment, null)
-    }),
-    [api, enableShortcuts, shortcutKeys, isNavShown]
-  ), toolbarToogle = useMemo(
-    () => ({
-      id: "T",
-      title: "Show toolbar",
-      onClick: () => api.toggleToolbar(),
-      active: showToolbar,
-      right: enableShortcuts ? react_default.createElement(Shortcut, { keys: shortcutKeys.toolbar }) : null,
-      icon: showToolbar ? react_default.createElement(CheckIcon, null) : react_default.createElement(react_default.Fragment, null)
-    }),
-    [api, enableShortcuts, shortcutKeys, showToolbar]
-  ), addonsToggle = useMemo(
-    () => ({
-      id: "A",
-      title: "Show addons panel",
-      onClick: () => api.togglePanel(),
-      active: isPanelShown,
-      right: enableShortcuts ? react_default.createElement(Shortcut, { keys: shortcutKeys.togglePanel }) : null,
-      icon: isPanelShown ? react_default.createElement(CheckIcon, null) : react_default.createElement(react_default.Fragment, null)
-    }),
-    [api, enableShortcuts, shortcutKeys, isPanelShown]
-  ), up = useMemo(
-    () => ({
-      id: "up",
-      title: "Previous component",
-      onClick: () => api.jumpToComponent(-1),
-      right: enableShortcuts ? react_default.createElement(Shortcut, { keys: shortcutKeys.prevComponent }) : null,
-      icon: react_default.createElement(react_default.Fragment, null)
-    }),
-    [api, enableShortcuts, shortcutKeys]
-  ), down = useMemo(
-    () => ({
-      id: "down",
-      title: "Next component",
-      onClick: () => api.jumpToComponent(1),
-      right: enableShortcuts ? react_default.createElement(Shortcut, { keys: shortcutKeys.nextComponent }) : null,
-      icon: react_default.createElement(react_default.Fragment, null)
-    }),
-    [api, enableShortcuts, shortcutKeys]
-  ), prev = useMemo(
-    () => ({
-      id: "prev",
-      title: "Previous story",
-      onClick: () => api.jumpToStory(-1),
-      right: enableShortcuts ? react_default.createElement(Shortcut, { keys: shortcutKeys.prevStory }) : null,
-      icon: react_default.createElement(react_default.Fragment, null)
-    }),
-    [api, enableShortcuts, shortcutKeys]
-  ), next = useMemo(
-    () => ({
-      id: "next",
-      title: "Next story",
-      onClick: () => api.jumpToStory(1),
-      right: enableShortcuts ? react_default.createElement(Shortcut, { keys: shortcutKeys.nextStory }) : null,
-      icon: react_default.createElement(react_default.Fragment, null)
-    }),
-    [api, enableShortcuts, shortcutKeys]
-  ), collapse = useMemo(
-    () => ({
-      id: "collapse",
-      title: "Collapse all",
-      onClick: () => api.emit(STORIES_COLLAPSE_ALL),
-      right: enableShortcuts ? react_default.createElement(Shortcut, { keys: shortcutKeys.collapseAll }) : null,
-      icon: react_default.createElement(react_default.Fragment, null)
-    }),
-    [api, enableShortcuts, shortcutKeys]
-  ), documentation = useMemo(() => ({
-    id: "documentation",
-    title: "Documentation",
-    closeOnClick: !0,
-    href: api.getDocsUrl({ versioned: !0, renderer: !0 }),
-    right: react_default.createElement(ActionList.Icon, null, react_default.createElement(ShareAltIcon, null)),
-    icon: react_default.createElement(DocumentIcon, null)
-  }), [api]), getAddonsShortcuts = useCallback(() => {
-    let addonsShortcuts = api.getAddonsShortcuts(), keys = shortcutKeys;
-    return Object.entries(addonsShortcuts).filter(([_2, { showInMenu }]) => showInMenu).map(([actionName, { label, action }]) => ({
-      id: actionName,
-      title: label,
-      onClick: () => action(),
-      right: enableShortcuts ? react_default.createElement(Shortcut, { keys: keys[actionName] }) : null
-    }));
-  }, [api, enableShortcuts, shortcutKeys]);
-  return useMemo(
-    () => [
-      [
-        about,
-        ...scope.CONFIG_TYPE === "DEVELOPMENT" ? [guide] : [],
-        ...enableShortcuts ? [shortcuts] : []
-      ],
-      [sidebarToggle, toolbarToogle, addonsToggle, up, down, prev, next, collapse],
-      getAddonsShortcuts(),
-      [documentation]
-    ],
-    [
-      about,
-      guide,
-      documentation,
-      shortcuts,
-      sidebarToggle,
-      toolbarToogle,
-      addonsToggle,
-      up,
-      down,
-      prev,
-      next,
-      collapse,
-      getAddonsShortcuts,
-      enableShortcuts
-    ]
-  );
-};
-
-// src/manager/components/preview/tools/share.tsx
-var { PREVIEW_URL, document: document2 } = scope, mapper3 = ({ state }) => {
-  let { storyId, refId, refs } = state, { location: location2 } = document2, ref = refs[refId], baseUrl = `${location2.origin}${location2.pathname}`;
-  return baseUrl.endsWith("/") || (baseUrl += "/"), {
-    refId,
-    baseUrl: ref ? `${ref.url}/iframe.html` : PREVIEW_URL || `${baseUrl}iframe.html`,
-    storyId,
-    queryParams: state.customQueryParams
-  };
-}, QRContainer = styled.div(() => ({
-  display: "flex",
-  alignItems: "center",
-  padding: 8,
-  maxWidth: 200
-})), QRImageContainer = styled.div(() => ({
-  width: 64,
-  height: 64,
-  marginRight: 12,
-  backgroundColor: "white",
-  padding: 2
-})), QRImage = ({ value }) => {
-  let theme = useTheme();
-  return react_default.createElement(QRImageContainer, null, react_default.createElement(QRCodeSVG, { value, marginSize: 0, size: 60, fgColor: theme.color.darkest }));
-}, QRContent = styled.div(() => ({})), QRTitle = styled.div(({ theme }) => ({
-  fontWeight: theme.typography.weight.bold,
-  fontSize: theme.typography.size.s1,
-  marginBottom: 4
-})), QRDescription = styled.div(({ theme }) => ({
-  fontSize: theme.typography.size.s1,
-  color: theme.textMutedColor
-}));
-function ShareMenu({
-  baseUrl,
-  storyId,
-  queryParams,
-  qrUrl,
-  isDevelopment
-}) {
-  let shortcutKeys = useStorybookApi().getShortcutKeys(), enableShortcuts = !!shortcutKeys, [copied, setCopied] = useState(!1), copyStoryLink = shortcutKeys?.copyStoryLink, links = useMemo(() => {
-    let baseLinks = [
-      [
-        {
-          id: "copy-link",
-          title: copied ? "Copied!" : "Copy story link",
-          icon: react_default.createElement(LinkIcon, null),
-          right: enableShortcuts ? react_default.createElement(Shortcut, { keys: copyStoryLink }) : null,
-          onClick: () => {
-            (0, import_copy_to_clipboard.default)(window.location.href), setCopied(!0), setTimeout(() => setCopied(!1), 2e3);
-          }
-        },
-        {
-          id: "open-new-tab",
-          title: "Open in isolation mode",
-          icon: react_default.createElement(BugIcon, null),
-          onClick: () => {
-            let href = getStoryHref(baseUrl, storyId, queryParams);
-            window.open(href, "_blank", "noopener,noreferrer");
-          }
-        }
-      ]
-    ];
-    return baseLinks.push([
-      {
-        id: "qr-section",
-        // @ts-expect-error (non strict)
-        content: react_default.createElement(QRContainer, null, react_default.createElement(QRImage, { value: qrUrl }), react_default.createElement(QRContent, null, react_default.createElement(QRTitle, null, "Scan to open"), react_default.createElement(QRDescription, null, isDevelopment ? "Device must be on the same network." : "View story on another device.")))
-      }
-    ]), baseLinks;
-  }, [baseUrl, storyId, queryParams, copied, qrUrl, enableShortcuts, copyStoryLink, isDevelopment]);
-  return react_default.createElement(TooltipLinkList, { links, style: { width: 210 } });
-}
-var shareTool = {
-  title: "share",
-  id: "share",
-  type: types.TOOL,
-  match: ({ viewMode, tabId }) => viewMode === "story" && !tabId,
-  render: () => react_default.createElement(Consumer, { filter: mapper3 }, ({ baseUrl, storyId, queryParams }) => {
-    let isDevelopment = scope.CONFIG_TYPE === "DEVELOPMENT", storyUrl = scope.STORYBOOK_NETWORK_ADDRESS ? new URL(window.location.search, scope.STORYBOOK_NETWORK_ADDRESS).href : window.location.href;
-    return storyId ? react_default.createElement(
-      PopoverProvider,
-      {
-        hasChrome: !0,
-        placement: "bottom",
-        padding: 0,
-        popover: react_default.createElement(ShareMenu, { baseUrl, storyId, queryParams, qrUrl: storyUrl, isDevelopment })
-      },
-      react_default.createElement(Button, { padding: "small", variant: "ghost", ariaLabel: "Share", tooltip: "Share..." }, react_default.createElement(ShareIcon, null))
-    ) : null;
-  })
-};
-
-// src/manager/container/Preview.tsx
-var defaultTabs = [createCanvasTab()], defaultTools = [menuTool, remountTool, zoomTool], defaultToolsExtra = [addonsTool, fullScreenTool, shareTool, openInEditorTool], emptyTabsList = [], memoizedTabs = (0, import_memoizerific.default)(1)(
-  (_2, tabElements, parameters, showTabs) => showTabs ? filterTabs([...defaultTabs, ...Object.values(tabElements)], parameters) : emptyTabsList
-), memoizedTools = (0, import_memoizerific.default)(1)(
-  (_2, toolElements, filterProps) => filterToolsSide([...defaultTools, ...Object.values(toolElements)], ...filterProps)
-), memoizedExtra = (0, import_memoizerific.default)(1)(
-  (_2, extraElements, filterProps) => filterToolsSide([...defaultToolsExtra, ...Object.values(extraElements)], ...filterProps)
-), memoizedWrapper = (0, import_memoizerific.default)(1)((_2, previewElements) => [
-  ...defaultWrappers,
-  ...Object.values(previewElements)
-]), { PREVIEW_URL: PREVIEW_URL2 } = scope, splitTitleAddExtraSpace = (input) => input.split("/").join(" / ").replace(/\s\s/, " "), getDescription = (item) => {
-  if (item?.type === "story" || item?.type === "docs") {
-    let { title: title2, name } = item;
-    return title2 && name ? splitTitleAddExtraSpace(`${title2} - ${name} \u22C5 Storybook`) : "Storybook";
-  }
-  return item?.name ? `${item.name} \u22C5 Storybook` : "Storybook";
-}, mapper4 = ({
-  api,
-  state
-  // @ts-expect-error (non strict)
-}) => {
-  let { layout, location: location2, customQueryParams, storyId, refs, viewMode, path, refId } = state, entry = api.getData(storyId, refId), tabsList = Object.values(api.getElements(Addon_TypesEnum.TAB)), wrapperList = Object.values(api.getElements(Addon_TypesEnum.PREVIEW)), toolsList = Object.values(api.getElements(Addon_TypesEnum.TOOL)), toolsExtraList = Object.values(api.getElements(Addon_TypesEnum.TOOLEXTRA)), tabId = api.getQueryParam("tab"), tools = memoizedTools(toolsList.length, api.getElements(Addon_TypesEnum.TOOL), [
-    entry,
-    viewMode,
-    location2,
-    path,
-    // @ts-expect-error (non strict)
-    tabId
-  ]), toolsExtra = memoizedExtra(
-    toolsExtraList.length,
-    api.getElements(Addon_TypesEnum.TOOLEXTRA),
-    // @ts-expect-error (non strict)
-    [entry, viewMode, location2, path, tabId]
-  );
-  return {
-    api,
-    entry,
-    options: layout,
-    description: getDescription(entry),
-    viewMode,
-    refs,
-    storyId,
-    baseUrl: PREVIEW_URL2 || "iframe.html",
-    queryParams: customQueryParams,
-    tools,
-    toolsExtra,
-    tabs: memoizedTabs(
-      tabsList.length,
-      api.getElements(Addon_TypesEnum.TAB),
-      entry ? entry.parameters : void 0,
-      layout.showTabs
-    ),
-    wrappers: memoizedWrapper(
-      wrapperList.length,
-      api.getElements(Addon_TypesEnum.PREVIEW)
-    ),
-    tabId
-  };
-}, PreviewConnected = react_default.memo(function(props) {
-  return react_default.createElement(Consumer, { filter: mapper4 }, (fromState) => react_default.createElement(Preview, { ...props, ...fromState }));
-}), Preview_default = PreviewConnected;
-
-// src/manager/components/Optional/Optional.tsx
-var Wrapper2 = styled.div({
-  display: "inline-grid",
-  gridTemplateColumns: "max-content",
-  overflow: "hidden"
-}), Content = styled.div(({ isHidden }) => ({
-  display: "inline-block",
-  gridArea: "1/1",
-  opacity: isHidden === null ? 0 : 1,
-  visibility: isHidden ? "hidden" : "visible"
-})), Optional = ({
-  content,
-  fallback
-}) => {
-  let contentRef = useRef(null), wrapperRef = useRef(null), [hidden, setHidden] = useState(null), contentWidth = useRef(contentRef.current?.offsetWidth ?? 0), wrapperWidth = useRef(wrapperRef.current?.offsetWidth ?? 0);
-  return useEffect(() => {
-    if (contentRef.current && wrapperRef.current) {
-      let resizeObserver = new ResizeObserver(() => {
-        wrapperWidth.current = wrapperRef.current?.offsetWidth || wrapperWidth.current, contentWidth.current = contentRef.current?.offsetWidth || contentWidth.current, setHidden(contentWidth.current > wrapperWidth.current);
-      });
-      return resizeObserver.observe(wrapperRef.current), () => resizeObserver.disconnect();
-    }
-  }, []), react_default.createElement(Wrapper2, { ref: wrapperRef }, react_default.createElement(Content, { isHidden: hidden, ref: contentRef }, content), fallback && react_default.createElement(Content, { isHidden: !hidden }, fallback));
-};
-
-// src/manager/components/Particles/Particles.tsx
-var Shape = styled.svg(({ color: color2 }) => ({
-  fill: color2,
-  position: "absolute",
-  inset: "0",
-  margin: "auto",
-  width: "12px",
-  height: "12px",
-  pointerEvents: "none"
-})), Donut = (props) => react_default.createElement(Shape, { viewBox: "0 0 90 90", xmlns: "http://www.w3.org/2000/svg", color: "red", ...props }, react_default.createElement("path", { d: "M45 0c24.853 0 45 20.147 45 45S69.853 90 45 90 0 69.853 0 45 20.147 0 45 0zm.5 27C35.283 27 27 35.283 27 45.5S35.283 64 45.5 64 64 55.717 64 45.5 55.717 27 45.5 27z" })), L2 = (props) => react_default.createElement(Shape, { viewBox: "0 0 55 89", xmlns: "http://www.w3.org/2000/svg", color: "#66BF3C", ...props }, react_default.createElement("path", { d: "M55 3v83a3 3 0 01-3 3H3a3 3 0 01-3-3V64a3 3 0 013-3h21a3 3 0 003-3V3a3 3 0 013-3h22a3 3 0 013 3z" })), Slice = (props) => react_default.createElement(Shape, { viewBox: "0 0 92 92", xmlns: "http://www.w3.org/2000/svg", color: "#FF4785", ...props }, react_default.createElement("path", { d: "M92 89V3c0-3-2.056-3-3-3C39.294 0 0 39.294 0 89c0 0 0 3 3 3h86a3 3 0 003-3z" })), Square = ({ style, ...props }) => react_default.createElement(
-  Shape,
-  {
-    viewBox: "0 0 90 90",
-    xmlns: "http://www.w3.org/2000/svg",
-    color: "#1EA7FD",
-    ...props,
-    style: { borderRadius: 5, ...style }
-  },
-  react_default.createElement("path", { d: "M0 0h90v90H0z" })
-), Triangle = (props) => react_default.createElement(Shape, { viewBox: "0 0 96 88", xmlns: "http://www.w3.org/2000/svg", color: "#FFAE00", ...props }, react_default.createElement("path", { d: "M50.63 1.785l44.928 81.77A3 3 0 0192.928 88H3.072a3 3 0 01-2.629-4.445l44.929-81.77a3 3 0 015.258 0z" })), T2 = (props) => react_default.createElement(Shape, { viewBox: "0 0 92 62", xmlns: "http://www.w3.org/2000/svg", color: "#FC521F", ...props }, react_default.createElement("path", { d: "M63 3v25a3 3 0 003 3h23a3 3 0 013 3v25a3 3 0 01-3 3H3a3 3 0 01-3-3V34a3 3 0 013-3h24a3 3 0 003-3V3a3 3 0 013-3h27a3 3 0 013 3z" })), Z = (props) => react_default.createElement(Shape, { viewBox: "0 0 56 90", xmlns: "http://www.w3.org/2000/svg", color: "#6F2CAC", ...props }, react_default.createElement("path", { d: "M28 3v25a3 3 0 003 3h22a3 3 0 013 3v53a3 3 0 01-3 3H31a3 3 0 01-3-3V62a3 3 0 00-3-3H3a3 3 0 01-3-3V3a3 3 0 013-3h22a3 3 0 013 3z" })), fadeToTransparent = keyframes`
-  to {
-    opacity: 0;
-  }
-`, disperse = keyframes`
-  to {
-    transform: translate(
-      calc(cos(var(--angle)) * var(--distance)),
-      calc(sin(var(--angle)) * var(--distance))
-    ) rotate(var(--rotation));
-  }
-`, slideDown = keyframes`
-  to {
-    transform: translateY(50px);
-  }
-`, Container4 = styled.div({
-  position: "absolute",
-  display: "flex",
-  flexDirection: "row",
-  flexWrap: "wrap",
-  gap: 10,
-  "--particle-curve": "cubic-bezier(0.2, 0.56, 0, 1)",
-  animation: `${slideDown} 1000ms forwards cubic-bezier(0.587, -0.381, 0.583, 0.599)`,
-  animationDelay: "150ms",
-  zIndex: 999,
-  svg: {
-    width: 15,
-    height: 15,
-    animation: `${fadeToTransparent} var(--fade-duration) forwards, ${disperse} 1000ms forwards var(--particle-curve)`
-  }
-}), FADE_DURATION = 1200, NUM_OF_PARTICLES = 8, JITTER = 15, random = (min, max) => Math.random() * (max - min) + min, sortRandomly = (array) => array.sort(() => Math.random() - 0.5), Particles = memo(function({
-  anchor: Anchor
-}) {
-  let anchorRef = useRef(null), [left, setLeft] = useState(0), [top, setTop] = useState(0), shapes = sortRandomly([Donut, L2, Slice, Square, Triangle, T2, Z]), colors = sortRandomly([
-    "#FF0000",
-    "#FF4787",
-    "#66BF3C",
-    "#1EA7FD",
-    "#FC521F",
-    "#6F2CAC",
-    "#FFAE00"
-  ]);
-  return useLayoutEffect(() => {
-    let rect = anchorRef.current?.getBoundingClientRect();
-    rect && (setLeft(rect.left + rect.width / 2), setTop(rect.top + rect.height / 2));
-  }, []), react_default.createElement("div", { ref: anchorRef }, react_default.createElement(Anchor, null), createPortal(
-    react_default.createElement(Container4, { style: { top: top + "px", left: left + "px" } }, shapes.map((Particle, index) => {
-      let angle = 360 / NUM_OF_PARTICLES * index + random(-JITTER, JITTER), distance = random(50, 80), rotation = random(-360, 360), style = {
-        "--angle": angle + "deg",
-        "--distance": distance + "px",
-        "--rotation": rotation + "deg",
-        "--fade-duration": FADE_DURATION + "ms"
-      };
-      return react_default.createElement(Particle, { key: Particle.name, style, color: colors[index] });
-    })),
-    document.getElementById("root") ?? document.body
-  ));
-});
-
-// src/manager/components/TextFlip.tsx
-var slideIn2 = keyframes({
-  from: {
-    transform: "translateY(var(--slide-in-from))",
-    opacity: 0
-  }
-}), slideOut = keyframes({
-  to: {
-    transform: "translateY(var(--slide-out-to))",
-    opacity: 0
-  }
-}), Container5 = styled.div({
-  display: "inline-grid",
-  gridTemplateColumns: "1fr",
-  justifyContent: "center",
-  alignItems: "center"
-}), Placeholder2 = styled.div({
-  gridArea: "1 / 1",
-  userSelect: "none",
-  visibility: "hidden"
-}), Text2 = styled.span(({ duration, isExiting, isEntering, reverse }) => {
-  let animation;
-  return isExiting ? animation = `${slideOut} ${duration}ms forwards` : isEntering && (animation = `${slideIn2} ${duration}ms forwards`), {
-    gridArea: "1 / 1",
-    animation,
-    pointerEvents: isExiting ? "none" : "auto",
-    userSelect: isExiting ? "none" : "text",
-    "--slide-in-from": reverse ? "-100%" : "100%",
-    "--slide-out-to": reverse ? "100%" : "-100%",
-    "@media (prefers-reduced-motion: reduce)": {
-      animation: "none",
-      opacity: isExiting ? 0 : 1,
-      transform: "translateY(0)"
-    }
-  };
-}), TextFlip = ({
-  text,
-  duration = 250,
-  placeholder,
-  ...props
-}) => {
-  let textRef = useRef(text), [staleValue, setStaleValue] = useState(text), isAnimating = text !== staleValue, reverse = isAnimating && numericCompare(staleValue, text);
-  return textRef.current = text, react_default.createElement(Container5, { ...props }, isAnimating && react_default.createElement(
-    Text2,
-    {
-      "aria-hidden": !0,
-      duration,
-      reverse,
-      isExiting: !0,
-      onAnimationEnd: () => setStaleValue(textRef.current)
-    },
-    staleValue
-  ), react_default.createElement(Text2, { duration, reverse, isEntering: isAnimating }, text), placeholder && react_default.createElement(Placeholder2, { "aria-hidden": !0 }, placeholder));
-};
-function numericCompare(a2, b2) {
-  let na = Number(a2), nb = Number(b2);
-  return Number.isNaN(na) || Number.isNaN(nb) ? a2.localeCompare(b2, void 0, { numeric: !0 }) > 0 : na > nb;
-}
-
 // src/manager/components/sidebar/ChecklistWidget.tsx
 var fadeScaleIn = keyframes`
   from {
@@ -12093,13 +12518,13 @@ var fadeScaleIn = keyframes`
   "&:hover #checklist-module-collapse-toggle": {
     opacity: 1
   }
-}), CollapseToggle = styled(ActionList.Button)({
+}), CollapseToggle2 = styled(ActionList.Button)({
   opacity: 0,
   transition: "opacity var(--transition-duration, 0.2s)",
   "&:focus, &:hover": {
     opacity: 1
   }
-}), ProgressCircle2 = styled(ProgressSpinner)(({ theme }) => ({
+}), ProgressCircle = styled(ProgressSpinner)(({ theme }) => ({
   color: theme.color.secondary
 })), Checked = styled(StatusPassIcon)(({ theme }) => ({
   padding: 1,
@@ -12116,6 +12541,7 @@ var fadeScaleIn = keyframes`
     transition: "color 500ms"
   }),
   ({ theme, isSkipped }) => isSkipped && {
+    alignSelf: "flex-start",
     "&:after": {
       content: '""',
       position: "absolute",
@@ -12179,7 +12605,7 @@ var fadeScaleIn = keyframes`
     keyFn: (item) => item.id,
     timeout: animated ? 300 : 0
   });
-  return react_default.createElement(CollapsibleWithMargin, { collapsed: !hasItems || !loaded }, react_default.createElement(HoverCard, { id: "storybook-checklist-widget", outlineAnimation: "rainbow" }, react_default.createElement(
+  return api.getIsNavShown() ? react_default.createElement(CollapsibleWithMargin, { collapsed: !hasItems || !loaded }, react_default.createElement(HoverCard, { id: "storybook-checklist-widget", outlineAnimation: "rainbow" }, react_default.createElement(
     Collapsible,
     {
       storageKey: "checklist-widget",
@@ -12192,7 +12618,7 @@ var fadeScaleIn = keyframes`
           fallback: react_default.createElement(OpenGuideButton, null)
         }
       )), react_default.createElement(ActionList.Item, { as: "div" }, react_default.createElement(
-        CollapseToggle,
+        CollapseToggle2,
         {
           ...toggleProps,
           id: "checklist-module-collapse-toggle",
@@ -12231,7 +12657,7 @@ var fadeScaleIn = keyframes`
             onClick: (e2) => e2.stopPropagation()
           },
           react_default.createElement(
-            ProgressCircle2,
+            ProgressCircle,
             {
               percentage: progress,
               running: !1,
@@ -12267,10 +12693,14 @@ var fadeScaleIn = keyframes`
         item.action.label
       ))
     ))
-  )));
+  ))) : null;
 };
 
+// src/manager/components/sidebar/CreateNewStoryFileModal.tsx
+init_react();
+
 // src/manager/hooks/useDebounce.ts
+init_react();
 function useDebounce(value, delay2) {
   let [debouncedValue, setDebouncedValue] = useState(value);
   return useEffect(() => {
@@ -12283,7 +12713,11 @@ function useDebounce(value, delay2) {
   }, [value, delay2]), debouncedValue;
 }
 
+// src/manager/components/sidebar/FileSearchModal.tsx
+init_react();
+
 // src/manager/hooks/useMeasure.tsx
+init_react();
 function useMeasure() {
   let [dimensions, setDimensions] = react_default.useState({
     width: null,
@@ -12301,6 +12735,12 @@ function useMeasure() {
     }
   }, []), dimensions];
 }
+
+// src/manager/components/sidebar/FileSearchList.tsx
+init_react();
+
+// ../../node_modules/@tanstack/react-virtual/dist/esm/index.js
+init_react();
 
 // ../../node_modules/@tanstack/virtual-core/dist/esm/utils.js
 function memo2(getDeps, fn, opts) {
@@ -12854,6 +13294,7 @@ function useVirtualizer(options2) {
 }
 
 // src/manager/components/sidebar/FIleSearchList.utils.tsx
+init_react();
 var useArrowKeyNavigation = ({
   parentRef,
   rowVirtualizer,
@@ -13069,6 +13510,7 @@ var FileListWrapper = styled("div")(({ theme }) => ({
 }));
 
 // src/manager/components/sidebar/FileSearchListSkeleton.tsx
+init_react();
 var FileListItemContentWrapperSkeleton = styled("div")(({ theme }) => ({
   display: "flex",
   alignItems: "flex-start",
@@ -13425,78 +13867,6 @@ var MODAL_HEIGHT = 418, ModalStyled = styled(Modal)(() => ({
 };
 
 // src/manager/components/sidebar/FileSearchModal.utils.tsx
-function extractSeededRequiredArgs(argTypes) {
-  return Object.keys(argTypes).reduce(
-    (acc, key) => {
-      let argType = argTypes[key];
-      if (typeof argType.control == "object" && "type" in argType.control)
-        switch (argType.control.type) {
-          case "object":
-            acc[key] = {};
-            break;
-          case "inline-radio":
-          case "radio":
-          case "inline-check":
-          case "check":
-          case "select":
-          case "multi-select":
-            acc[key] = argType.control.options?.[0];
-            break;
-          case "color":
-            acc[key] = "#000000";
-            break;
-          default:
-            break;
-        }
-      return setArgType(argType.type, acc, key), acc;
-    },
-    {}
-  );
-}
-function setArgType(type, obj, objKey) {
-  if (!(typeof type == "string" || !type.required))
-    switch (type.name) {
-      case "boolean":
-        obj[objKey] = !0;
-        break;
-      case "number":
-        obj[objKey] = 0;
-        break;
-      case "string":
-        obj[objKey] = objKey;
-        break;
-      case "array":
-        obj[objKey] = [];
-        break;
-      case "object":
-        obj[objKey] = {}, Object.entries(type.value ?? {}).forEach(([typeKey, typeVal]) => {
-          setArgType(typeVal, obj[objKey], typeKey);
-        });
-        break;
-      case "function":
-        obj[objKey] = () => {
-        };
-        break;
-      case "intersection":
-        type.value?.every((v2) => v2.name === "object") && (obj[objKey] = {}, type.value?.forEach((typeVal) => {
-          typeVal.name === "object" && Object.entries(typeVal.value ?? {}).forEach(([typeValKey, typeValVal]) => {
-            setArgType(typeValVal, obj[objKey], typeValKey);
-          });
-        }));
-        break;
-      case "union":
-        type.value?.[0] !== void 0 && setArgType(type.value[0], obj, objKey);
-        break;
-      case "enum":
-        type.value?.[0] !== void 0 && (obj[objKey] = type.value?.[0]);
-        break;
-      case "other":
-        typeof type.value == "string" && type.value === "tuple" && (obj[objKey] = []);
-        break;
-      default:
-        break;
-    }
-}
 async function trySelectNewStory(selectStory, storyId, attempt = 1) {
   if (attempt > 10)
     throw new Error("We could not select the new story. Please try again.");
@@ -13508,10 +13878,10 @@ async function trySelectNewStory(selectStory, storyId, attempt = 1) {
 }
 
 // src/manager/components/sidebar/CreateNewStoryFileModal.tsx
-var stringifyArgs = (args) => JSON.stringify(args, (_2, value) => typeof value == "function" ? "__sb_empty_function_arg__" : value), CreateNewStoryFileModal = ({ open, onOpenChange }) => {
+var isRendererReact = scope.STORYBOOK_RENDERER === "react", CreateNewStoryFileModal = ({ open, onOpenChange }) => {
   let [isLoading, setLoading] = useState(!1), [fileSearchQuery, setFileSearchQuery] = useState(""), fileSearchQueryDebounced = useDebounce(fileSearchQuery, 600), fileSearchQueryDeferred = useDeferredValue(fileSearchQueryDebounced), emittedValue = useRef(null), [error, setError] = useState(
     null
-  ), api = useStorybookApi(), [searchResults, setSearchResults] = useState(null), handleSuccessfullyCreatedStory = useCallback(
+  ), api = useStorybookApi(), hasRunGhostStoriesFlow = useRef(!1), [searchResults, setSearchResults] = useState(null), handleSuccessfullyCreatedStory = useCallback(
     (componentExportName) => {
       api.addNotification({
         id: "create-new-story-file-success",
@@ -13562,24 +13932,7 @@ var stringifyArgs = (args) => JSON.stringify(args, (_2, value) => typeof value =
         });
         setError(null);
         let storyId = createNewStoryResult.storyId;
-        await trySelectNewStory(api.selectStory, storyId);
-        try {
-          let argTypes = (await experimental_requestResponse(channel, ARGTYPES_INFO_REQUEST, ARGTYPES_INFO_RESPONSE, {
-            storyId
-          })).argTypes, requiredArgs = extractSeededRequiredArgs(argTypes);
-          await experimental_requestResponse(
-            channel,
-            SAVE_STORY_REQUEST,
-            SAVE_STORY_RESPONSE,
-            {
-              args: stringifyArgs(requiredArgs),
-              importPath: createNewStoryResult.storyFilePath,
-              csfId: storyId
-            }
-          );
-        } catch {
-        }
-        handleSuccessfullyCreatedStory(componentExportName), handleFileSearch();
+        await trySelectNewStory(api.selectStory, storyId), handleSuccessfullyCreatedStory(componentExportName), handleFileSearch();
       } catch (e2) {
         switch (e2?.payload?.type) {
           case "STORY_FILE_EXISTS":
@@ -13594,9 +13947,15 @@ var stringifyArgs = (args) => JSON.stringify(args, (_2, value) => typeof value =
     },
     [api?.selectStory, handleSuccessfullyCreatedStory, handleFileSearch, handleStoryAlreadyExists]
   );
-  return useEffect(() => {
+  useEffect(() => {
     setError(null);
-  }, [fileSearchQueryDeferred]), useEffect(() => handleFileSearch(), [handleFileSearch]), react_default.createElement(
+  }, [fileSearchQueryDeferred]), useEffect(() => handleFileSearch(), [handleFileSearch]);
+  let executeGhostStoriesFlow = useCallback(async () => {
+    addons.getChannel().emit(GHOST_STORIES_REQUEST);
+  }, []);
+  return useEffect(() => {
+    open && isRendererReact && !hasRunGhostStoriesFlow.current && (hasRunGhostStoriesFlow.current = !0, executeGhostStoriesFlow());
+  }, [open, executeGhostStoriesFlow]), react_default.createElement(
     FileSearchModal,
     {
       error,
@@ -13613,7 +13972,11 @@ var stringifyArgs = (args) => JSON.stringify(args, (_2, value) => typeof value =
   );
 };
 
+// src/manager/components/sidebar/Explorer.tsx
+init_react();
+
 // src/manager/components/sidebar/HighlightStyles.tsx
+init_react();
 var HighlightStyles = ({ refId, itemId }) => react_default.createElement(
   Global,
   {
@@ -13636,9 +13999,12 @@ var HighlightStyles = ({ refId, itemId }) => react_default.createElement(
   }
 );
 
+// src/manager/components/sidebar/Refs.tsx
+init_react();
+
 // src/manager/utils/tree.ts
 var import_memoizerific2 = __toESM(require_memoizerific(), 1);
-var { document: document3, window: globalWindow } = scope, createId = (itemId, refId) => !refId || refId === DEFAULT_REF_ID ? itemId : `${refId}_${itemId}`, getLink = (item, refId) => `${document3.location.pathname}?path=/${item.type}/${createId(item.id, refId)}`;
+var { document: document2, window: globalWindow } = scope, createId = (itemId, refId) => !refId || refId === DEFAULT_REF_ID ? itemId : `${refId}_${itemId}`, getLink = (item, refId) => `${document2.location.pathname}?path=/${item.type}/${createId(item.id, refId)}`;
 var get = (0, import_memoizerific2.default)(1e3)((id, dataset) => dataset[id]), getParent = (0, import_memoizerific2.default)(1e3)((id, dataset) => {
   let item = get(id, dataset);
   return item && item.type !== "root" ? get(item.parent, dataset) : void 0;
@@ -13659,7 +14025,7 @@ function getPath(item, ref) {
   return parent ? [...getPath(parent, ref), parent.name] : ref.id === DEFAULT_REF_ID ? [] : [ref.title || ref.id];
 }
 var searchItem = (item, ref) => ({ ...item, refId: ref.id, path: getPath(item, ref) });
-function cycle(array, index, delta) {
+function cycle2(array, index, delta) {
   let next = index + delta % array.length;
   return next < 0 && (next = array.length + next), next >= array.length && (next -= array.length), next;
 }
@@ -13669,7 +14035,7 @@ var scrollIntoView = (element, center = !1) => {
   let { top, bottom } = element.getBoundingClientRect();
   if (!top || !bottom)
     return;
-  let bottomOffset = document3?.querySelector("#sidebar-bottom-wrapper")?.getBoundingClientRect().top || globalWindow.innerHeight || document3.documentElement.clientHeight;
+  let bottomOffset = document2?.querySelector("#sidebar-bottom-wrapper")?.getBoundingClientRect().top || globalWindow.innerHeight || document2.documentElement.clientHeight;
   bottom > bottomOffset && element.scrollIntoView({ block: center ? "center" : "nearest" });
 }, getStateType = (isLoading, isAuthRequired, isError, isEmpty) => {
   switch (!0) {
@@ -13686,7 +14052,11 @@ var scrollIntoView = (element, center = !1) => {
   }
 }, isAncestor = (element, maybeAncestor) => !element || !maybeAncestor ? !1 : element === maybeAncestor ? !0 : isAncestor(element.parentElement || void 0, maybeAncestor), removeNoiseFromName = (storyName) => storyName.replaceAll(/(\s|-|_)/gi, ""), isStoryHoistable = (storyName, componentName) => removeNoiseFromName(storyName) === removeNoiseFromName(componentName);
 
+// src/manager/components/sidebar/RefBlocks.tsx
+init_react();
+
 // src/manager/components/sidebar/Loader.tsx
+init_react();
 var LOADER_SEQUENCE = [0, 0, 1, 1, 2, 3, 3, 3, 1, 1, 1, 2, 2, 2, 3], Loadingitem = styled.div(
   {
     cursor: "progress",
@@ -13810,7 +14180,8 @@ var { window: globalWindow2 } = scope, TextStyle = styled.div(({ theme }) => ({
 ), " ", "in your story files.", " "))) : react_default.createElement(Text3, null, "This composed Storybook is empty. Perhaps no stories match your selected filters.")))), LoaderBlock = ({ isMain }) => react_default.createElement(Contained, null, react_default.createElement(Loader2, { size: isMain ? 17 : 5 }));
 
 // src/manager/components/sidebar/RefIndicator.tsx
-var { document: document4, window: globalWindow3 } = scope, IndicatorPlacement = styled.div(({ theme }) => ({
+init_react();
+var { document: document3, window: globalWindow3 } = scope, IndicatorPlacement = styled.div(({ theme }) => ({
   height: 16,
   display: "flex",
   alignItems: "center",
@@ -13945,7 +14316,7 @@ var { document: document4, window: globalWindow3 } = scope, IndicatorPlacement =
         `storybook_auth_${id}`,
         "resizable,scrollbars"
       ), timer = setInterval(() => {
-        childWindow ? childWindow.closed && (clearInterval(timer), document4.location.reload()) : clearInterval(timer);
+        childWindow ? childWindow.closed && (clearInterval(timer), document3.location.reload()) : clearInterval(timer);
       }, 1e3);
     },
     [id, loginUrl]
@@ -13965,10 +14336,15 @@ var { document: document4, window: globalWindow3 } = scope, IndicatorPlacement =
   return react_default.createElement(Message, { href: "https://storybook.js.org/docs/sharing/storybook-composition?ref=ui" }, react_default.createElement(LightningIcon, { color: theme.color.gold }), react_default.createElement("div", null, react_default.createElement(MessageTitle, null, "Reduce lag"), react_default.createElement("div", null, "Learn how to speed up Composition performance.")));
 };
 
+// src/manager/components/sidebar/Tree.tsx
+init_react();
+
 // src/manager/utils/status.tsx
+init_react();
 var import_memoizerific3 = __toESM(require_memoizerific(), 1);
 
 // src/manager/components/sidebar/IconSymbols.tsx
+init_react();
 var Svg2 = styled.svg`
   position: absolute;
   width: 0;
@@ -14097,9 +14473,11 @@ function getGroupStatus(collapsedData, allStatuses) {
 }
 
 // src/manager/components/sidebar/ContextMenu.tsx
+init_react();
 var import_copy_to_clipboard2 = __toESM(require_copy_to_clipboard(), 1);
 
 // src/manager/components/sidebar/StatusButton.tsx
+init_react();
 var withStatusColor = ({ theme, status }) => {
   let defaultColor = theme.base === "light" ? curriedTransparentize$1(0.3, theme.color.defaultText) : curriedTransparentize$1(0.6, theme.color.defaultText);
   return {
@@ -14152,6 +14530,7 @@ var withStatusColor = ({ theme, status }) => {
 StatusButton.displayName = "StatusButton";
 
 // src/manager/components/sidebar/StatusContext.tsx
+init_react();
 var StatusContext = createContext({});
 
 // src/manager/components/sidebar/ContextMenu.tsx
@@ -14171,15 +14550,13 @@ var empty = {
 }), useContextMenu = (context, links, api) => {
   let [hoverCount, setHoverCount] = useState(0), [isOpen, setIsOpen] = useState(!1), [copyText, setCopyText] = react_default.useState("Copy story name"), { allStatuses, groupStatus } = useContext(StatusContext), shortcutKeys = api.getShortcutKeys(), enableShortcuts = !!shortcutKeys, topLinks = useMemo(() => {
     let defaultLinks = [];
-    return context && "importPath" in context && defaultLinks.push({
+    return context && "importPath" in context && context.importPath && defaultLinks.push({
       id: "open-in-editor",
       title: "Open in editor",
       icon: react_default.createElement(EditorIcon, null),
       right: enableShortcuts ? react_default.createElement(Shortcut, { keys: shortcutKeys.openInEditor }) : null,
       onClick: (e2) => {
-        e2.preventDefault(), api.openInEditor({
-          file: context.importPath
-        });
+        context.importPath && (e2.preventDefault(), api.openInEditor({ file: context.importPath }));
       }
     }), context.type === "story" && defaultLinks.push({
       id: "copy-story-name",
@@ -14272,7 +14649,11 @@ function generateTestProviderLinks(registeredTestProviders, context) {
   }).filter(Boolean);
 }
 
+// src/manager/components/sidebar/TreeNode.tsx
+init_react();
+
 // src/manager/components/sidebar/components/CollapseIcon.tsx
+init_react();
 var CollapseIconWrapper = styled.div(({ theme, isExpanded }) => ({
   width: 8,
   height: 8,
@@ -14323,6 +14704,7 @@ var TypeIcon2 = styled.svg(
   paddingLeft: `${(isExpandable ? 8 : 22) + depth * 18}px`,
   paddingTop: 5,
   paddingBottom: 4,
+  paddingRight: 6,
   overflowWrap: "break-word",
   wordWrap: "break-word",
   wordBreak: "break-word"
@@ -14335,7 +14717,7 @@ var TypeIcon2 = styled.svg(
   "&:first-of-type": {
     marginTop: 0
   }
-}), Wrapper3 = styled.div({
+}), Wrapper5 = styled.div({
   display: "flex",
   alignItems: "center",
   gap: 6,
@@ -14346,7 +14728,7 @@ var TypeIcon2 = styled.svg(
   isExpandable = !1,
   ...props
 }) {
-  return react_default.createElement(BranchNode, { isExpandable, tabIndex: -1, ...props }, react_default.createElement(Wrapper3, null, isExpandable && react_default.createElement(CollapseIcon2, { isExpanded }), react_default.createElement(TypeIcon2, { viewBox: "0 0 14 14", width: "14", height: "14", type: "group" }, react_default.createElement(UseSymbol, { type: "group" }))), children);
+  return react_default.createElement(BranchNode, { isExpandable, tabIndex: -1, ...props }, react_default.createElement(Wrapper5, null, isExpandable && react_default.createElement(CollapseIcon2, { isExpanded }), react_default.createElement(TypeIcon2, { viewBox: "0 0 14 14", width: "14", height: "14", type: "group" }, react_default.createElement(UseSymbol, { type: "group" }))), children);
 }), ComponentNode = react_default.memo(
   function({
     theme,
@@ -14356,26 +14738,37 @@ var TypeIcon2 = styled.svg(
     isSelected,
     ...props
   }) {
-    return react_default.createElement(BranchNode, { isExpandable, tabIndex: -1, ...props }, react_default.createElement(Wrapper3, null, isExpandable && react_default.createElement(CollapseIcon2, { isExpanded }), react_default.createElement(TypeIcon2, { viewBox: "0 0 14 14", width: "12", height: "12", type: "component" }, react_default.createElement(UseSymbol, { type: "component" }))), children);
+    return react_default.createElement(BranchNode, { isExpandable, tabIndex: -1, ...props }, react_default.createElement(Wrapper5, null, isExpandable && react_default.createElement(CollapseIcon2, { isExpanded }), react_default.createElement(TypeIcon2, { viewBox: "0 0 14 14", width: "12", height: "12", type: "component" }, react_default.createElement(UseSymbol, { type: "component" }))), children);
   }
 ), DocumentNode = react_default.memo(function({ theme, children, docsMode, ...props }) {
-  return react_default.createElement(LeafNode, { tabIndex: -1, ...props }, react_default.createElement(Wrapper3, null, react_default.createElement(TypeIcon2, { viewBox: "0 0 14 14", width: "12", height: "12", type: "document" }, react_default.createElement(UseSymbol, { type: "document" }))), children);
-}), StoryNode = react_default.memo(function({
+  return react_default.createElement(LeafNode, { tabIndex: -1, rel: "canonical", ...props }, react_default.createElement(Wrapper5, null, react_default.createElement(TypeIcon2, { viewBox: "0 0 14 14", width: "12", height: "12", type: "document" }, react_default.createElement(UseSymbol, { type: "document" }))), children);
+}), StoryBranchNode = react_default.memo(
+  function({
+    theme,
+    children,
+    isExpandable = !1,
+    isExpanded = !1,
+    isSelected,
+    ...props
+  }) {
+    return react_default.createElement(BranchNode, { isExpandable, tabIndex: -1, ...props }, react_default.createElement(Wrapper5, null, isExpandable && react_default.createElement(CollapseIcon2, { isExpanded }), react_default.createElement(TypeIcon2, { viewBox: "0 0 14 14", width: "12", height: "12", type: "story" }, react_default.createElement(UseSymbol, { type: "story" }))), children);
+  }
+), StoryLeafNode = react_default.memo(function({
   theme,
   children,
-  isExpandable = !1,
-  isExpanded = !1,
-  isSelected,
   ...props
 }) {
-  return react_default.createElement(BranchNode, { isExpandable, tabIndex: -1, ...props }, react_default.createElement(Wrapper3, null, isExpandable && react_default.createElement(CollapseIcon2, { isExpanded }), react_default.createElement(TypeIcon2, { viewBox: "0 0 14 14", width: "12", height: "12", type: "story" }, react_default.createElement(UseSymbol, { type: "story" }))), children);
+  return react_default.createElement(LeafNode, { tabIndex: -1, rel: "canonical", ...props }, react_default.createElement(Wrapper5, null, react_default.createElement(TypeIcon2, { viewBox: "0 0 14 14", width: "12", height: "12", type: "story" }, react_default.createElement(UseSymbol, { type: "story" }))), children);
 }), TestNode = react_default.memo(function({
   theme,
   children,
   ...props
 }) {
-  return react_default.createElement(LeafNode, { tabIndex: -1, ...props }, react_default.createElement(Wrapper3, null, react_default.createElement(TypeIcon2, { viewBox: "0 0 14 14", width: "12", height: "12", type: "test" }, react_default.createElement(UseSymbol, { type: "test" }))), children);
+  return react_default.createElement(LeafNode, { tabIndex: -1, rel: "canonical", ...props }, react_default.createElement(Wrapper5, null, react_default.createElement(TypeIcon2, { viewBox: "0 0 14 14", width: "12", height: "12", type: "test" }, react_default.createElement(UseSymbol, { type: "test" }))), children);
 });
+
+// src/manager/components/sidebar/useExpanded.ts
+init_react();
 
 // src/manager/keybinding.ts
 var codeToKeyMap = {
@@ -14394,7 +14787,7 @@ var codeToKeyMap = {
 }, matchesKeyCode = (code, event) => event.code ? event.code === code : event.key === codeToKeyMap[code];
 
 // src/manager/components/sidebar/useExpanded.ts
-var { document: document5 } = scope, initializeExpanded = ({
+var { document: document4 } = scope, initializeExpanded = ({
   refId,
   data,
   initialExpanded,
@@ -14457,7 +14850,7 @@ var { document: document5 } = scope, initializeExpanded = ({
   return useEffect(() => api ? (api.on(STORIES_COLLAPSE_ALL, collapseAll), api.on(STORIES_EXPAND_ALL, expandAll), () => {
     api.off(STORIES_COLLAPSE_ALL, collapseAll), api.off(STORIES_EXPAND_ALL, expandAll);
   }) : noop3, [api, collapseAll, expandAll]), useEffect(() => {
-    let menuElement = document5.getElementById("storybook-explorer-menu"), navigateTree = throttle((event) => {
+    let menuElement = document4.getElementById("storybook-explorer-menu"), navigateTree = throttle((event) => {
       let highlightedItemId = highlightedRef.current?.refId === refId && highlightedRef.current?.itemId;
       if (!isBrowsing || !containerRef.current || !highlightedItemId || event.repeat || !matchesModifiers(!1, event))
         return;
@@ -14493,7 +14886,7 @@ var { document: document5 } = scope, initializeExpanded = ({
       }
       isArrowRight && (isExpanded === "false" ? updateExpanded({ ids: [highlightedItemId], value: !0 }) : isExpanded === "true" && updateExpanded({ ids: getDescendantIds(data, highlightedItemId, !0), value: !0 }));
     }, 60);
-    return document5.addEventListener("keydown", navigateTree), () => document5.removeEventListener("keydown", navigateTree);
+    return document4.addEventListener("keydown", navigateTree), () => document4.removeEventListener("keydown", navigateTree);
   }, [
     containerRef,
     isBrowsing,
@@ -14629,7 +15022,7 @@ var statusOrder = [
   })) : [], [item.id, item.type, onSelectStoryId, statuses]), id = createId(item.id, refId), contextMenu = refId === "storybook_internal" ? useContextMenu(item, statusLinks, api) : { node: null, onMouseEnter: () => {
   } };
   if (item.type === "story" && !("children" in item && item.children) && (!("subtype" in item) || item.subtype !== "test") || item.type === "docs") {
-    let LeafNode3 = item.type === "docs" ? DocumentNode : StoryNode, statusValue = getMostCriticalStatusValue(
+    let LeafNode3 = item.type === "docs" ? DocumentNode : StoryLeafNode, statusValue = getMostCriticalStatusValue(
       Object.values(statuses || {}).map((s2) => s2.value)
     ), [icon, textColor] = getStatus(theme, statusValue);
     return react_default.createElement(
@@ -14659,7 +15052,7 @@ var statusOrder = [
         },
         item.renderLabel?.(item, api) || item.name
       ),
-      isSelected && react_default.createElement(SkipToContentLink, { asChild: !0, ariaLabel: !1 }, react_default.createElement("a", { href: "#storybook-preview-wrapper" }, "Skip to canvas")),
+      isSelected && react_default.createElement(SkipToContentLink, { asChild: !0, ariaLabel: !1 }, react_default.createElement("a", { href: "#storybook-preview-wrapper" }, "Skip to content")),
       contextMenu.node,
       icon ? react_default.createElement(
         StatusButton,
@@ -14728,7 +15121,7 @@ var statusOrder = [
     itemIcon
   ) : null;
   if (item.type === "component" || item.type === "group" || item.type === "story" && "children" in item && item.children) {
-    let { children = [] } = item, BranchNode2 = { component: ComponentNode, group: GroupNode, story: StoryNode }[item.type], status = getMostCriticalStatusValue([itemStatus, groupStatus?.[item.id]]), color2 = status ? getStatus(theme, status)[1] : null, showBranchStatus = status === "status-value:error" || status === "status-value:warning";
+    let { children = [] } = item, BranchNode2 = { component: ComponentNode, group: GroupNode, story: StoryBranchNode }[item.type], status = getMostCriticalStatusValue([itemStatus, groupStatus?.[item.id]]), color2 = status ? getStatus(theme, status)[1] : null, showBranchStatus = status === "status-value:error" || status === "status-value:warning";
     return react_default.createElement(
       LeafNodeStyleWrapper,
       {
@@ -14764,7 +15157,7 @@ var statusOrder = [
         },
         item.renderLabel?.(item, api) || item.name
       ),
-      isSelected && react_default.createElement(SkipToContentLink, { asChild: !0, ariaLabel: !1 }, react_default.createElement("a", { href: "#storybook-preview-wrapper" }, "Skip to canvas")),
+      isSelected && react_default.createElement(SkipToContentLink, { asChild: !0, ariaLabel: !1 }, react_default.createElement("a", { href: "#storybook-preview-wrapper" }, "Skip to content")),
       contextMenu.node,
       showBranchStatus ? react_default.createElement(
         StatusButton,
@@ -14779,7 +15172,7 @@ var statusOrder = [
       ) : itemStatusButton
     );
   }
-  let isTest = item.type === "story" && item.subtype === "test", LeafNode2 = isTest ? TestNode : { docs: DocumentNode, story: StoryNode }[item.type], nodeType = isTest ? "test" : { docs: "document", story: "story" }[item.type];
+  let isTest = item.type === "story" && item.subtype === "test", LeafNode2 = isTest ? TestNode : { docs: DocumentNode, story: StoryLeafNode }[item.type], nodeType = isTest ? "test" : { docs: "document", story: "story" }[item.type];
   return react_default.createElement(
     LeafNodeStyleWrapper,
     {
@@ -14806,7 +15199,7 @@ var statusOrder = [
       },
       item.renderLabel?.(item, api) || item.name
     ),
-    isSelected && react_default.createElement(SkipToContentLink, { ariaLabel: !1, asChild: !0 }, react_default.createElement("a", { href: "#storybook-preview-wrapper" }, "Skip to canvas")),
+    isSelected && react_default.createElement(SkipToContentLink, { ariaLabel: !1, asChild: !0 }, react_default.createElement("a", { href: "#storybook-preview-wrapper" }, "Skip to content")),
     contextMenu.node,
     itemStatusButton
   );
@@ -14961,11 +15354,11 @@ var statusOrder = [
     setExpanded,
     allStatuses
   ]);
-  return react_default.createElement(StatusContext.Provider, { value: { data, allStatuses, groupStatus } }, react_default.createElement("div", { ref: containerRef }, react_default.createElement(IconSymbols, null), treeItems));
+  return react_default.createElement(StatusContext.Provider, { value: { data, allStatuses, groupStatus } }, react_default.createElement("div", { ref: containerRef }, treeItems));
 });
 
 // src/manager/components/sidebar/Refs.tsx
-var Wrapper4 = styled.div(({ isMain }) => ({
+var Wrapper6 = styled.div(({ isMain }) => ({
   position: "relative",
   marginTop: isMain ? void 0 : 0
 })), RefHead = styled.div(({ theme }) => ({
@@ -15040,7 +15433,7 @@ var Wrapper4 = styled.div(({ isMain }) => ({
     },
     react_default.createElement(CollapseButton2, { "data-action": "collapse-ref", onClick: handleClick }, react_default.createElement(CollapseIcon2, { isExpanded }), react_default.createElement(RefTitle, { title: title2 }, title2)),
     react_default.createElement(RefIndicator, { ...props, state, ref: indicatorRef })
-  ), isExpanded && react_default.createElement(Wrapper4, { "data-title": title2, isMain }, state === "auth" && react_default.createElement(AuthBlock, { id: refId, loginUrl }), state === "error" && react_default.createElement(ErrorBlock, { error: indexError }), state === "loading" && react_default.createElement(LoaderBlock, { isMain }), state === "empty" && react_default.createElement(EmptyBlock, { isMain, hasEntries }), state === "ready" && react_default.createElement(
+  ), isExpanded && react_default.createElement(Wrapper6, { "data-title": title2, isMain }, state === "auth" && react_default.createElement(AuthBlock, { id: refId, loginUrl }), state === "error" && react_default.createElement(ErrorBlock, { error: indexError }), state === "loading" && react_default.createElement(LoaderBlock, { isMain }), state === "empty" && react_default.createElement(EmptyBlock, { isMain, hasEntries }), state === "ready" && react_default.createElement(
     Tree,
     {
       allStatuses,
@@ -15058,8 +15451,9 @@ var Wrapper4 = styled.div(({ isMain }) => ({
 });
 
 // src/manager/components/sidebar/useHighlighted.ts
-var { document: document6, window: globalWindow4 } = scope, fromSelection = (selection) => selection ? { itemId: selection.storyId, refId: selection.refId } : null, scrollToSelector = (selector, options2 = {}, _attempt = 1) => {
-  let { containerRef, center = !1, attempts = 3, delay: delay2 = 500 } = options2, element = (containerRef ? containerRef.current : document6)?.querySelector(selector);
+init_react();
+var { document: document5, window: globalWindow4 } = scope, fromSelection = (selection) => selection ? { itemId: selection.storyId, refId: selection.refId } : null, scrollToSelector = (selector, options2 = {}, _attempt = 1) => {
+  let { containerRef, center = !1, attempts = 3, delay: delay2 = 500 } = options2, element = (containerRef ? containerRef.current : document5)?.querySelector(selector);
   element ? scrollIntoView(element, center) : _attempt <= attempts && setTimeout(scrollToSelector, delay2, selector, options2, _attempt + 1);
 }, useHighlighted = ({
   containerRef,
@@ -15086,7 +15480,7 @@ var { document: document6, window: globalWindow4 } = scope, fromSelection = (sel
       center: !0
     });
   }, [containerRef, selected, updateHighlighted]), useEffect(() => {
-    let menuElement = document6.getElementById("storybook-explorer-menu"), lastRequestId, navigateTree = (event) => {
+    let menuElement = document5.getElementById("storybook-explorer-menu"), lastRequestId, navigateTree = (event) => {
       if (isLoading || !isBrowsing || !containerRef.current || !matchesModifiers(!1, event))
         return;
       let isArrowUp = matchesKeyCode("ArrowUp", event), isArrowDown = matchesKeyCode("ArrowDown", event);
@@ -15102,7 +15496,7 @@ var { document: document6, window: globalWindow4 } = scope, fromSelection = (sel
           containerRef.current?.querySelectorAll("[data-highlightable=true]") || []
         ), currentIndex = highlightable.findIndex(
           (el) => el.getAttribute("data-item-id") === highlightedRef.current?.itemId && el.getAttribute("data-ref-id") === highlightedRef.current?.refId
-        ), nextIndex = cycle(highlightable, currentIndex, isArrowUp ? -1 : 1), didRunAround = isArrowUp ? nextIndex === highlightable.length - 1 : nextIndex === 0;
+        ), nextIndex = cycle2(highlightable, currentIndex, isArrowUp ? -1 : 1), didRunAround = isArrowUp ? nextIndex === highlightable.length - 1 : nextIndex === 0;
         if (highlightElement(highlightable[nextIndex], didRunAround), highlightable[nextIndex].getAttribute("data-nodetype") === "component") {
           let { itemId, refId } = highlightedRef.current, item = api.resolveStory(itemId, refId === "storybook_internal" ? void 0 : refId);
           item?.type === "component" && api.emit(PRELOAD_ENTRIES, {
@@ -15112,7 +15506,7 @@ var { document: document6, window: globalWindow4 } = scope, fromSelection = (sel
         }
       });
     };
-    return document6.addEventListener("keydown", navigateTree), () => document6.removeEventListener("keydown", navigateTree);
+    return document5.addEventListener("keydown", navigateTree), () => document5.removeEventListener("keydown", navigateTree);
   }, [api, containerRef, isLoading, isBrowsing, highlightedRef, highlightElement]), [highlighted, updateHighlighted, highlightedRef];
 };
 
@@ -15121,23 +15515,34 @@ var Explorer = react_default.memo(function({
   hasEntries,
   isLoading,
   isBrowsing,
+  isHidden,
   dataset,
-  selected
+  selected,
+  ...restProps
 }) {
   let containerRef = useRef(null), [highlighted, setHighlighted, highlightedRef] = useHighlighted({
     containerRef,
     isLoading,
     isBrowsing,
     selected
-  });
+  }), { landmarkProps } = useLandmark(
+    { "aria-labelledby": "storybook-explorer-tree-heading", role: "navigation" },
+    containerRef
+  );
   return react_default.createElement(
-    "div",
+    "nav",
     {
+      hidden: isHidden || void 0,
+      "aria-hidden": isHidden || void 0,
+      className: isBrowsing ? void 0 : "sb-sr-only",
       ref: containerRef,
       id: "storybook-explorer-tree",
       "data-highlighted-ref-id": highlighted?.refId,
-      "data-highlighted-item-id": highlighted?.itemId
+      "data-highlighted-item-id": highlighted?.itemId,
+      ...landmarkProps,
+      ...restProps
     },
+    react_default.createElement("h2", { id: "storybook-explorer-tree-heading", className: "sb-sr-only" }, "Stories"),
     highlighted && react_default.createElement(HighlightStyles, { ...highlighted }),
     dataset.entries.map(([refId, ref]) => react_default.createElement(
       Ref,
@@ -15155,7 +15560,11 @@ var Explorer = react_default.memo(function({
   );
 });
 
+// src/manager/components/sidebar/Heading.tsx
+init_react();
+
 // src/manager/components/sidebar/Brand.tsx
+init_react();
 var StorybookLogoStyled = styled(StorybookLogo)(({ theme }) => ({
   width: "auto",
   height: "22px !important",
@@ -15188,6 +15597,7 @@ var StorybookLogoStyled = styled(StorybookLogo)(({ theme }) => ({
 });
 
 // src/manager/components/sidebar/Menu.tsx
+init_react();
 var buttonStyleAdditions = ({
   highlighted,
   isMobile: isMobile2,
@@ -15226,36 +15636,45 @@ var buttonStyleAdditions = ({
       box-shadow: 0 0 0 2px ${curriedTransparentize$1(0.88, theme.color.secondary)};
     }
   `}
-`, Container6 = styled.div({
+`, Container7 = styled.div({
   minWidth: 250
 }), SidebarButton = styled(Button)(buttonStyleAdditions), SidebarToggleButton = styled(ToggleButton)(buttonStyleAdditions), MenuButtonGroup = styled.div({
   display: "flex",
   gap: 6
-}), SidebarMenuList = ({ menu, onHide }) => react_default.createElement(Container6, null, menu.filter((links) => links.length).flatMap((links) => react_default.createElement(ActionList, { key: links.map((link) => link.id).join("_") }, links.map((link) => react_default.createElement(ActionList.Item, { key: link.id, active: link.active }, react_default.createElement(
-  ActionList.Action,
-  {
-    ...link.href && { as: "a", href: link.href, target: "_blank" },
-    ariaLabel: !1,
-    id: `list-item-${link.id}`,
-    disabled: link.disabled,
-    onClick: (e2) => {
-      if (link.disabled) {
-        e2.preventDefault();
-        return;
+}), SidebarMenuList = ({ menu, onHide }) => react_default.createElement(Container7, null, menu.filter((links) => links.length).flatMap((links) => react_default.createElement(ActionList, { key: links.map((link) => link.id).join("_") }, links.map((link) => {
+  let linkContent = react_default.createElement(react_default.Fragment, null, (link.icon || link.input) && react_default.createElement(ActionList.Icon, null, link.icon || link.input), (link.title || link.center) && react_default.createElement(ActionList.Text, null, link.title || link.center), link.right);
+  return react_default.createElement(ActionList.Item, { key: link.id, active: link.active }, react_default.createElement(
+    ActionList.Action,
+    {
+      asChild: !!link.href,
+      ariaLabel: !1,
+      id: `list-item-${link.id}`,
+      disabled: link.disabled,
+      onClick: (e2) => {
+        if (link.disabled) {
+          e2.preventDefault();
+          return;
+        }
+        link.href && link.internal && e2.preventDefault(), link.onClick?.(e2, {
+          id: link.id,
+          active: link.active,
+          disabled: link.disabled,
+          title: link.title,
+          href: link.href
+        }), link.closeOnClick && onHide();
       }
-      link.onClick?.(e2, {
-        id: link.id,
-        active: link.active,
-        disabled: link.disabled,
-        title: link.title,
-        href: link.href
-      }), link.closeOnClick && onHide();
-    }
-  },
-  (link.icon || link.input) && react_default.createElement(ActionList.Icon, null, link.icon || link.input),
-  (link.title || link.center) && react_default.createElement(ActionList.Text, null, link.title || link.center),
-  link.right
-)))))), SidebarMenu = ({ menu, isHighlighted, onClick }) => {
+    },
+    link.href ? react_default.createElement(
+      "a",
+      {
+        href: link.href,
+        target: link.internal ? void 0 : "_blank",
+        rel: link.internal ? "canonical" : "noreferrer"
+      },
+      linkContent
+    ) : linkContent
+  ));
+})))), SidebarMenu = ({ menu, isHighlighted, onClick }) => {
   let [isTooltipVisible, setIsTooltipVisible] = useState(!1), { isMobile: isMobile2, setMobileMenuOpen } = useLayout();
   return isMobile2 ? react_default.createElement(MenuButtonGroup, null, react_default.createElement(
     SidebarButton,
@@ -15264,10 +15683,13 @@ var buttonStyleAdditions = ({
       variant: "ghost",
       ariaLabel: "About Storybook",
       highlighted: !!isHighlighted,
-      onClick,
-      isMobile: !0
+      onClick: (e2) => {
+        onClick?.(e2), e2.preventDefault();
+      },
+      isMobile: !0,
+      asChild: !0
     },
-    react_default.createElement(CogIcon, null)
+    react_default.createElement("a", { href: "./?path=/settings/about", rel: "canonical" }, react_default.createElement(CogIcon, null))
   ), react_default.createElement(
     SidebarButton,
     {
@@ -15357,14 +15779,17 @@ var BrandArea = styled.div(({ theme }) => ({
       zIndex: 3
     }
   }
-})), Heading = ({
+})), Heading2 = ({
   menuHighlighted = !1,
   menu,
   skipLinkHref,
   isLoading,
   onMenuClick,
   ...props
-}) => react_default.createElement(HeadingWrapper, { ...props }, skipLinkHref && react_default.createElement(SkipToCanvasLink, { ariaLabel: !1, asChild: !0 }, react_default.createElement("a", { href: skipLinkHref, tabIndex: 0 }, "Skip to canvas")), react_default.createElement(BrandArea, null, react_default.createElement(Brand, null)), react_default.createElement(SidebarMenu, { menu, isHighlighted: menuHighlighted, onClick: onMenuClick }));
+}) => react_default.createElement(HeadingWrapper, { ...props }, skipLinkHref && react_default.createElement(SkipToCanvasLink, { ariaLabel: !1, asChild: !0 }, react_default.createElement("a", { href: skipLinkHref, tabIndex: 0 }, "Skip to content")), react_default.createElement(BrandArea, null, react_default.createElement(Brand, null)), react_default.createElement(SidebarMenu, { menu, isHighlighted: menuHighlighted, onClick: onMenuClick }));
+
+// src/manager/components/sidebar/Search.tsx
+init_react();
 
 // ../../node_modules/@babel/runtime/helpers/esm/objectWithoutPropertiesLoose.js
 function _objectWithoutPropertiesLoose2(r3, e2) {
@@ -15379,6 +15804,7 @@ function _objectWithoutPropertiesLoose2(r3, e2) {
 
 // ../../node_modules/downshift/dist/downshift.esm.js
 var import_prop_types3 = __toESM(require_prop_types());
+init_react();
 var import_react_is = __toESM(require_react_is());
 
 // ../../node_modules/compute-scroll-into-view/dist/index.js
@@ -16130,8 +16556,8 @@ function invokeOnChangeHandler(key, action, state, newState) {
 function stateReducer(s2, a2) {
   return a2.changes;
 }
-var updateA11yStatus = debounce4(function(status, document11) {
-  setStatus(status, document11);
+var updateA11yStatus = debounce4(function(status, document10) {
+  setStatus(status, document10);
 }, 200), useIsomorphicLayoutEffect2 = typeof window < "u" && typeof window.document < "u" && typeof window.document.createElement < "u" ? useLayoutEffect : useEffect, useElementIds = "useId" in react_default ? function(_ref) {
   var id = _ref.id, labelId = _ref.labelId, menuId = _ref.menuId, getItemId = _ref.getItemId, toggleButtonId = _ref.toggleButtonId, inputId = _ref.inputId, reactId = "downshift-" + react_default.useId();
   id || (id = reactId);
@@ -16279,17 +16705,17 @@ var useGetterPropsCalledChecker = function() {
 };
 function useA11yMessageStatus(getA11yStatusMessage2, options2, dependencyArray, environment) {
   environment === void 0 && (environment = {});
-  var document11 = environment.document, isInitialMount = useIsInitialMount();
+  var document10 = environment.document, isInitialMount = useIsInitialMount();
   useEffect(function() {
-    if (!(!getA11yStatusMessage2 || isInitialMount || !document11)) {
+    if (!(!getA11yStatusMessage2 || isInitialMount || !document10)) {
       var status = getA11yStatusMessage2(options2);
-      updateA11yStatus(status, document11);
+      updateA11yStatus(status, document10);
     }
   }, dependencyArray), useEffect(function() {
     return function() {
-      updateA11yStatus.cancel(), cleanupStatusDiv(document11);
+      updateA11yStatus.cancel(), cleanupStatusDiv(document10);
     };
-  }, [document11]);
+  }, [document10]);
 }
 function useScrollIntoView(_ref3) {
   var highlightedIndex = _ref3.highlightedIndex, isOpen = _ref3.isOpen, itemRefs = _ref3.itemRefs, getItemNodeFromIndex = _ref3.getItemNodeFromIndex, menuElement = _ref3.menuElement, scrollIntoViewProp = _ref3.scrollIntoView, shouldScrollRef = useRef(!0);
@@ -17445,7 +17871,7 @@ function isSearchResult(x2) {
 }
 
 // src/manager/components/sidebar/Search.tsx
-var { document: document7 } = scope, DEFAULT_MAX_SEARCH_RESULTS = 50, options = {
+var { document: document6 } = scope, DEFAULT_MAX_SEARCH_RESULTS = 50, options = {
   shouldSort: !0,
   tokenize: !0,
   findAllMatches: !0,
@@ -17619,7 +18045,7 @@ var { document: document7 } = scope, DEFAULT_MAX_SEARCH_RESULTS = 50, options = 
       }
     },
     []
-  ), { isMobile: isMobile2 } = useLayout();
+  ), { isMobile: isMobile2 } = useLayout(), searchLandmarkRef = useRef(null), { landmarkProps } = useLandmark({ role: "search" }, searchLandmarkRef);
   return (
     // @ts-expect-error (non strict)
     react_default.createElement(
@@ -17670,7 +18096,7 @@ var { document: document7 } = scope, DEFAULT_MAX_SEARCH_RESULTS = 50, options = 
         }), labelProps = getLabelProps({
           htmlFor: inputId
         });
-        return react_default.createElement(react_default.Fragment, null, react_default.createElement(ScreenReaderLabel, { ...labelProps }, "Search for components"), react_default.createElement(SearchBar, null, react_default.createElement(
+        return react_default.createElement(react_default.Fragment, null, react_default.createElement(ScreenReaderLabel, { ...labelProps }, "Search for components"), react_default.createElement(SearchBar, { ref: searchLandmarkRef, ...landmarkProps }, react_default.createElement(
           SearchField2,
           {
             ...getRootProps({ refKey: "" }, { suppressRefError: !0 }),
@@ -17695,7 +18121,9 @@ var { document: document7 } = scope, DEFAULT_MAX_SEARCH_RESULTS = 50, options = 
         ), searchBarContent), react_default.createElement(FocusContainer, { tabIndex: 0, id: "storybook-explorer-menu" }, children({
           query: input,
           results,
-          isBrowsing: !isOpen && document7.activeElement !== inputRef.current,
+          isNavVisible: !isOpen && document6.activeElement !== inputRef.current,
+          isNavReachable: !isOpen || input.length === 0,
+          isSearchResultRendered: isOpen,
           closeMenu,
           getMenuProps,
           getItemProps,
@@ -17707,7 +18135,8 @@ var { document: document7 } = scope, DEFAULT_MAX_SEARCH_RESULTS = 50, options = 
 });
 
 // src/manager/components/sidebar/SearchResults.tsx
-var { document: document8 } = scope, ResultsList = styled.ol({
+init_react();
+var { document: document7 } = scope, ResultsList = styled.ol({
   listStyle: "none",
   margin: 0,
   padding: 0
@@ -17741,7 +18170,11 @@ var { document: document8 } = scope, ResultsList = styled.ol({
   flexDirection: "column"
 }), Mark = styled.mark(({ theme }) => ({
   background: "transparent",
-  color: theme.color.secondary
+  color: theme.color.secondary,
+  "@media (forced-colors: active)": {
+    color: "HighlightText",
+    background: "Highlight"
+  }
 })), MoreWrapper = styled.div({
   marginTop: 8
 }), RecentlyOpenedTitle = styled.div(({ theme }) => ({
@@ -17834,7 +18267,7 @@ var { document: document8 } = scope, ResultsList = styled.ol({
         event.preventDefault(), closeMenu();
       }
     };
-    return document8.addEventListener("keydown", handleEscape), () => document8.removeEventListener("keydown", handleEscape);
+    return document7.addEventListener("keydown", handleEscape), () => document7.removeEventListener("keydown", handleEscape);
   }, [closeMenu, enableShortcuts, isLoading]);
   let mouseOverHandler = useCallback((event) => {
     if (!api)
@@ -17880,7 +18313,14 @@ var { document: document8 } = scope, ResultsList = styled.ol({
   }));
 });
 
+// src/manager/components/sidebar/SidebarBottom.tsx
+init_react();
+
+// src/manager/components/sidebar/TestingWidget.tsx
+init_react();
+
 // src/manager/components/sidebar/useDynamicFavicon.ts
+init_react();
 var STATUSES = ["active", "critical", "negative", "positive", "warning"], initialIcon, getFaviconUrl = (initialHref = "./favicon.svg", status) => {
   initialIcon ??= initialHref;
   let href = initialIcon + (status && STATUSES.includes(status) ? `?status=${status}` : "");
@@ -17916,7 +18356,7 @@ var DEFAULT_HEIGHT = 500, HoverCard2 = styled(Card)({
 }), Collapsible2 = styled.div(({ theme }) => ({
   overflow: "hidden",
   boxShadow: `inset 0 -1px 0 ${theme.appBorderColor}`
-})), Content2 = styled.div({
+})), Content3 = styled.div({
   display: "flex",
   flexDirection: "column"
 }), Bar2 = styled.div(({ onClick }) => ({
@@ -17937,7 +18377,7 @@ var DEFAULT_HEIGHT = 500, HoverCard2 = styled(Card)({
   display: "flex",
   justifyContent: "flex-end",
   gap: 4
-}), CollapseToggle2 = styled(ActionList.Button)({
+}), CollapseToggle3 = styled(ActionList.Button)({
   opacity: 0,
   transition: "opacity 250ms",
   "&:focus, &:hover": {
@@ -18034,18 +18474,26 @@ var DEFAULT_HEIGHT = 500, HoverCard2 = styled(Card)({
   ), isCrashed = Object.values(testProviderStates).some(
     (testProviderState) => testProviderState === "test-provider-state:crashed"
   ), hasTestProviders = Object.values(registeredTestProviders).length > 0;
-  return useEffect(() => {
+  useEffect(() => {
     isCrashed && isCollapsed && toggleCollapsed(void 0, !1);
   }, [isCrashed, isCollapsed, toggleCollapsed]), useDynamicFavicon(
     isCrashed ? "critical" : errorCount > 0 ? "negative" : warningCount > 0 ? "warning" : isRunning ? "active" : successCount > 0 ? "positive" : void 0
-  ), !hasTestProviders && !errorCount && !warningCount ? null : react_default.createElement(
+  );
+  let cardRef = useRef(null), { landmarkProps } = useLandmark(
+    { "aria-labelledby": "storybook-testing-widget-heading", role: "region" },
+    cardRef
+  );
+  return !hasTestProviders && !errorCount && !warningCount ? null : react_default.createElement(
     HoverCard2,
     {
       id: "storybook-testing-module",
       "data-updated": isUpdated,
       outlineAnimation: isRunning ? "spin" : "none",
-      outlineColor: isCrashed || isRunning && errorCount > 0 ? "negative" : isUpdated ? "positive" : void 0
+      outlineColor: isCrashed || isRunning && errorCount > 0 ? "negative" : isUpdated ? "positive" : void 0,
+      ref: cardRef,
+      outlineAttrs: landmarkProps
     },
+    react_default.createElement("h2", { id: "storybook-testing-widget-heading", className: "sb-sr-only" }, "Component tests"),
     react_default.createElement(Bar2, { ...hasTestProviders ? { onClick: (e2) => toggleCollapsed(e2) } : {} }, react_default.createElement(Action, null, hasTestProviders && react_default.createElement(
       Optional,
       {
@@ -18053,7 +18501,7 @@ var DEFAULT_HEIGHT = 500, HoverCard2 = styled(Card)({
         fallback: react_default.createElement(RunButton, { isRunning, onRunAll })
       }
     )), react_default.createElement(Filters, null, hasTestProviders && react_default.createElement(
-      CollapseToggle2,
+      CollapseToggle3,
       {
         onClick: (e2) => toggleCollapsed(e2),
         id: "testing-module-collapse-toggle",
@@ -18123,7 +18571,7 @@ var DEFAULT_HEIGHT = 500, HoverCard2 = styled(Card)({
           maxHeight: isCollapsed ? 0 : maxHeight
         }
       },
-      react_default.createElement(Content2, { ref: contentRef }, Object.values(registeredTestProviders).map((registeredTestProvider) => {
+      react_default.createElement(Content3, { ref: contentRef }, Object.values(registeredTestProviders).map((registeredTestProvider) => {
         let { render: Render, id } = registeredTestProvider;
         return Render ? react_default.createElement(TestProvider, { key: id, "data-module-id": id }, react_default.createElement(Render, null)) : (once.warn(
           `No render function found for test provider with id '${id}', skipping...`
@@ -18138,7 +18586,7 @@ var SIDEBAR_BOTTOM_SPACER_ID = "sidebar-bottom-spacer", SIDEBAR_BOTTOM_WRAPPER_I
   ({ value }) => ["status-value:warning", "status-value:error"].includes(value)
 ), getFilter = (warningsActive = !1, errorsActive = !1) => warningsActive && errorsActive ? filterBoth : warningsActive ? filterWarn : errorsActive ? filterError : filterNone, Spacer = styled.div({
   pointerEvents: "none"
-}), Content3 = styled.div(({ theme }) => ({
+}), Content4 = styled.div(({ theme }) => ({
   position: "absolute",
   zIndex: 1,
   bottom: 0,
@@ -18182,7 +18630,7 @@ var SIDEBAR_BOTTOM_SPACER_ID = "sidebar-bottom-spacer", SIDEBAR_BOTTOM_WRAPPER_I
   }, []), useEffect(() => {
     let filter = getFilter(warningCount > 0 && warningsActive, errorCount > 0 && errorsActive);
     api.experimental_setFilter("sidebar-bottom-filter", filter);
-  }, [api, warningCount, errorCount, warningsActive, errorsActive]), !warningCount && !errorCount && Object.values(registeredTestProviders).length === 0 && notifications.length === 0 ? null : react_default.createElement(Fragment, null, react_default.createElement(Spacer, { id: SIDEBAR_BOTTOM_SPACER_ID, ref: spacerRef }), react_default.createElement(Content3, { id: SIDEBAR_BOTTOM_WRAPPER_ID, ref: wrapperRef }, react_default.createElement(NotificationList, { notifications, clearNotification: api.clearNotification }), isDevelopment && react_default.createElement(
+  }, [api, warningCount, errorCount, warningsActive, errorsActive]), !warningCount && !errorCount && Object.values(registeredTestProviders).length === 0 && notifications.length === 0 ? null : react_default.createElement(Fragment, null, react_default.createElement(Spacer, { id: SIDEBAR_BOTTOM_SPACER_ID, ref: spacerRef }), react_default.createElement(Content4, { id: SIDEBAR_BOTTOM_WRAPPER_ID, ref: wrapperRef }, react_default.createElement(NotificationList, { notifications, clearNotification: api.clearNotification }), isDevelopment && react_default.createElement(
     TestingWidget,
     {
       registeredTestProviders,
@@ -18229,11 +18677,15 @@ var SIDEBAR_BOTTOM_SPACER_ID = "sidebar-bottom-spacer", SIDEBAR_BOTTOM_WRAPPER_I
   );
 };
 
+// src/manager/components/sidebar/TagsFilter.tsx
+init_react();
+
 // src/manager/components/sidebar/TagsFilterPanel.tsx
+init_react();
 var groupByType = (filters) => filters.reduce(
   (acc, filter) => (acc[filter.type] = acc[filter.type] || [], acc[filter.type].push(filter), acc),
   {}
-), Wrapper5 = styled.div({
+), Wrapper7 = styled.div({
   minWidth: 240,
   maxWidth: 300,
   maxHeight: 15.5 * 32 + 8,
@@ -18286,7 +18738,7 @@ var groupByType = (filters) => filters.reduce(
   }, groups = groupByType(Object.values(filtersById)), links = Object.values(groups).map(
     (group) => group.sort((a2, b2) => a2.id.localeCompare(b2.id)).map((filter) => renderLink(filter)).filter((value) => !!value)
   ).filter((value) => value.length > 0), hasItems = links.length > 0, hasUserTags = Object.values(filtersById).some(({ type }) => type === "tag"), isNothingSelectedYet = includedFilters.size === 0 && excludedFilters.size === 0;
-  return react_default.createElement(Wrapper5, { ref }, hasItems && react_default.createElement(ActionList, { as: "div" }, react_default.createElement(ActionList.Item, { as: "div" }, isNothingSelectedYet ? react_default.createElement(
+  return react_default.createElement(Wrapper7, { ref }, hasItems && react_default.createElement(ActionList, { as: "div" }, react_default.createElement(ActionList.Item, { as: "div" }, isNothingSelectedYet ? react_default.createElement(
     ActionList.Button,
     {
       ariaLabel: !1,
@@ -18331,15 +18783,7 @@ var groupByType = (filters) => filters.reduce(
 };
 
 // src/manager/components/sidebar/TagsFilter.tsx
-var TAGS_FILTER = "tags-filter", BUILT_IN_TAGS = /* @__PURE__ */ new Set([
-  "dev",
-  "test",
-  "autodocs",
-  "attached-mdx",
-  "unattached-mdx",
-  "play-fn",
-  "test-fn"
-]), StyledButton2 = styled(Button)(({ isHighlighted, theme }) => ({
+var TAGS_FILTER = "tags-filter", BUILT_IN_TAGS = new Set(Object.values(Tag)), StyledButton2 = styled(Button)(({ isHighlighted, theme }) => ({
   "&:focus-visible": {
     outlineOffset: 4
   },
@@ -18397,7 +18841,7 @@ var TAGS_FILTER = "tags-filter", BUILT_IN_TAGS = /* @__PURE__ */ new Set([
         title: "Play",
         icon: react_default.createElement(PlayHollowIcon, { color: color.seafoam }),
         ...withCount(
-          (entry, excluded) => excluded ? entry.type !== "story" || !entry.tags?.includes("play-fn") : entry.type === "story" && !!entry.tags?.includes("play-fn")
+          (entry, excluded) => excluded ? entry.type !== "story" || !entry.tags?.includes(Tag.PLAY_FN) : entry.type === "story" && !!entry.tags?.includes(Tag.PLAY_FN)
         )
       },
       _test: {
@@ -18484,6 +18928,7 @@ var TAGS_FILTER = "tags-filter", BUILT_IN_TAGS = /* @__PURE__ */ new Set([
 };
 
 // src/manager/components/sidebar/useLastViewed.ts
+init_react();
 var import_store2 = __toESM(require_store2(), 1), save = debounce((value) => import_store2.default.set("lastViewedStoryIds", value), 1e3), useLastViewed = (selection) => {
   let initialLastViewedStoryIds = useMemo(() => {
     let items = import_store2.default.get("lastViewedStoryIds");
@@ -18508,7 +18953,7 @@ var import_store2 = __toESM(require_store2(), 1), save = debounce((value) => imp
 };
 
 // src/manager/components/sidebar/Sidebar.tsx
-var DEFAULT_REF_ID = "storybook_internal", Container7 = styled.nav(({ theme }) => ({
+var DEFAULT_REF_ID = "storybook_internal", Container8 = styled.header(({ theme }) => ({
   position: "absolute",
   zIndex: 1,
   left: 0,
@@ -18533,13 +18978,7 @@ var DEFAULT_REF_ID = "storybook_internal", Container7 = styled.nav(({ theme }) =
   width: isMobile2 ? 36 : 32,
   height: isMobile2 ? 36 : 32,
   borderRadius: theme.appBorderRadius + 2
-})), Swap = react_default.memo(function({
-  children,
-  condition
-}) {
-  let [a2, b2] = react_default.Children.toArray(children);
-  return react_default.createElement(react_default.Fragment, null, react_default.createElement("div", { style: { display: condition ? "block" : "none" } }, a2), react_default.createElement("div", { style: { display: condition ? "none" : "block" } }, b2));
-}), useCombination = (index, indexError, previewInitialized, allStatuses, refs) => {
+})), useCombination = (index, indexError, previewInitialized, allStatuses, refs) => {
   let hash = useMemo(
     () => ({
       [DEFAULT_REF_ID]: {
@@ -18557,7 +18996,7 @@ var DEFAULT_REF_ID = "storybook_internal", Container7 = styled.nav(({ theme }) =
     [refs, index, indexError, previewInitialized, allStatuses]
   );
   return useMemo(() => ({ hash, entries: Object.entries(hash) }), [hash]);
-}, isRendererReact = scope.STORYBOOK_RENDERER === "react", Sidebar = react_default.memo(function({
+}, isRendererReact2 = scope.STORYBOOK_RENDERER === "react", Sidebar = react_default.memo(function({
   // @ts-expect-error (non strict)
   storyId = null,
   refId = DEFAULT_REF_ID,
@@ -18572,7 +19011,7 @@ var DEFAULT_REF_ID = "storybook_internal", Container7 = styled.nav(({ theme }) =
   isDevelopment = scope.CONFIG_TYPE === "DEVELOPMENT",
   refs = {},
   onMenuClick,
-  showCreateStoryButton = isDevelopment && isRendererReact
+  showCreateStoryButton = isDevelopment && isRendererReact2
 }) {
   let [isFileSearchModalOpen, setIsFileSearchModalOpen] = useState(!1), selected = useMemo(() => storyId && { storyId, refId }, [storyId, refId]), dataset = useCombination(index, indexError, previewInitialized, allStatuses, refs), isLoading = !index && !indexError, hasEntries = Object.keys(indexJson?.entries ?? {}).length > 0, lastViewedProps = useLastViewed(selected), { isMobile: isMobile2 } = useLayout(), api = useStorybookApi(), tagPresets = useMemo(
     () => Object.entries(scope.TAGS_OPTIONS ?? {}).reduce((acc, entry) => {
@@ -18580,9 +19019,12 @@ var DEFAULT_REF_ID = "storybook_internal", Container7 = styled.nav(({ theme }) =
       return acc[tag] = option, acc;
     }, {}),
     []
+  ), headerRef = useRef(null), { landmarkProps } = useLandmark(
+    { "aria-labelledby": "global-site-h1", role: "banner" },
+    headerRef
   );
-  return react_default.createElement(Container7, { className: "container sidebar-container", "aria-label": "Global" }, react_default.createElement(ScrollArea, { vertical: !0, offset: 3, scrollbarSize: 6, scrollPadding: "4rem" }, react_default.createElement(Stack, null, react_default.createElement("div", null, react_default.createElement(
-    Heading,
+  return react_default.createElement(Container8, { className: "container sidebar-container", ref: headerRef, ...landmarkProps }, react_default.createElement("h1", { id: "global-site-h1", className: "sb-sr-only" }, "Storybook"), react_default.createElement(IconSymbols, null), react_default.createElement(ScrollArea, { vertical: !0, offset: 3, scrollbarSize: 6, scrollPadding: "4rem" }, react_default.createElement(Stack, null, react_default.createElement("div", null, react_default.createElement(
+    Heading2,
     {
       className: "sidebar-header",
       menuHighlighted,
@@ -18591,7 +19033,7 @@ var DEFAULT_REF_ID = "storybook_internal", Container7 = styled.nav(({ theme }) =
       isLoading,
       onMenuClick
     }
-  ), !isLoading && scope.CONFIG_TYPE === "DEVELOPMENT" && react_default.createElement(ChecklistWidget, null)), react_default.createElement(
+  ), !isLoading && scope.CONFIG_TYPE === "DEVELOPMENT" && scope.FEATURES?.sidebarOnboardingChecklist !== !1 && react_default.createElement(ChecklistWidget, null)), react_default.createElement(
     Search,
     {
       dataset,
@@ -18621,21 +19063,24 @@ var DEFAULT_REF_ID = "storybook_internal", Container7 = styled.nav(({ theme }) =
     ({
       query,
       results,
-      isBrowsing,
+      isNavVisible,
+      isNavReachable,
+      isSearchResultRendered,
       closeMenu,
       getMenuProps,
       getItemProps,
       highlightedIndex
-    }) => react_default.createElement(Swap, { condition: isBrowsing }, react_default.createElement(
+    }) => react_default.createElement(react_default.Fragment, null, react_default.createElement(
       Explorer,
       {
         dataset,
         selected,
         isLoading,
-        isBrowsing,
+        isBrowsing: isNavVisible,
+        isHidden: !isNavReachable,
         hasEntries
       }
-    ), react_default.createElement(
+    ), isSearchResultRendered && react_default.createElement(
       SearchResults,
       {
         query,
@@ -18651,6 +19096,174 @@ var DEFAULT_REF_ID = "storybook_internal", Container7 = styled.nav(({ theme }) =
     ))
   )), isMobile2 || isLoading ? null : react_default.createElement(SidebarBottom, { isDevelopment })));
 });
+
+// src/manager/container/Menu.tsx
+init_react();
+var ProgressCircle2 = styled(ProgressSpinner)(({ theme }) => ({
+  color: theme.color.secondary
+})), useMenu = ({
+  api,
+  showToolbar,
+  isPanelShown,
+  isNavShown,
+  enableShortcuts
+}) => {
+  let shortcutKeys = api.getShortcutKeys(), { progress } = useChecklist(), about = useMemo(
+    () => ({
+      id: "about",
+      title: "About your Storybook",
+      onClick: () => api.changeSettingsTab("about"),
+      href: "./?path=/settings/about",
+      internal: !0,
+      closeOnClick: !0,
+      icon: react_default.createElement(InfoIcon, null)
+    }),
+    [api]
+  ), guide = useMemo(
+    () => ({
+      id: "guide",
+      title: "Onboarding guide",
+      onClick: () => api.changeSettingsTab("guide"),
+      href: "./?path=/settings/guide",
+      internal: !0,
+      closeOnClick: !0,
+      icon: react_default.createElement(ListUnorderedIcon, null),
+      right: progress < 100 && react_default.createElement(ActionList.Button, { as: "div", readOnly: !0, padding: "none", ariaLabel: `${progress}% completed` }, react_default.createElement(ProgressCircle2, { percentage: progress, running: !1, size: 16, width: 1.5 }), progress, "%")
+    }),
+    [api, progress]
+  ), shortcuts = useMemo(
+    () => ({
+      id: "shortcuts",
+      title: "Keyboard shortcuts",
+      onClick: () => api.changeSettingsTab("shortcuts"),
+      href: "./?path=/settings/shortcuts",
+      internal: !0,
+      closeOnClick: !0,
+      right: enableShortcuts ? react_default.createElement(Shortcut, { keys: shortcutKeys.shortcutsPage }) : null,
+      icon: react_default.createElement(CommandIcon, null)
+    }),
+    [api, enableShortcuts, shortcutKeys.shortcutsPage]
+  ), sidebarToggle = useMemo(
+    () => ({
+      id: "S",
+      title: "Show sidebar",
+      onClick: () => api.toggleNav(),
+      closeOnClick: !0,
+      active: isNavShown,
+      right: enableShortcuts ? react_default.createElement(Shortcut, { keys: shortcutKeys.toggleNav }) : null,
+      icon: isNavShown ? react_default.createElement(CheckIcon, null) : react_default.createElement(react_default.Fragment, null)
+    }),
+    [api, enableShortcuts, shortcutKeys, isNavShown]
+  ), toolbarToogle = useMemo(
+    () => ({
+      id: "T",
+      title: "Show toolbar",
+      onClick: () => api.toggleToolbar(),
+      active: showToolbar,
+      right: enableShortcuts ? react_default.createElement(Shortcut, { keys: shortcutKeys.toolbar }) : null,
+      icon: showToolbar ? react_default.createElement(CheckIcon, null) : react_default.createElement(react_default.Fragment, null)
+    }),
+    [api, enableShortcuts, shortcutKeys, showToolbar]
+  ), addonsToggle = useMemo(
+    () => ({
+      id: "A",
+      title: "Show addons panel",
+      onClick: () => api.togglePanel(),
+      active: isPanelShown,
+      right: enableShortcuts ? react_default.createElement(Shortcut, { keys: shortcutKeys.togglePanel }) : null,
+      icon: isPanelShown ? react_default.createElement(CheckIcon, null) : react_default.createElement(react_default.Fragment, null)
+    }),
+    [api, enableShortcuts, shortcutKeys, isPanelShown]
+  ), up = useMemo(
+    () => ({
+      id: "up",
+      title: "Previous component",
+      onClick: () => api.jumpToComponent(-1),
+      right: enableShortcuts ? react_default.createElement(Shortcut, { keys: shortcutKeys.prevComponent }) : null,
+      icon: react_default.createElement(react_default.Fragment, null)
+    }),
+    [api, enableShortcuts, shortcutKeys]
+  ), down = useMemo(
+    () => ({
+      id: "down",
+      title: "Next component",
+      onClick: () => api.jumpToComponent(1),
+      right: enableShortcuts ? react_default.createElement(Shortcut, { keys: shortcutKeys.nextComponent }) : null,
+      icon: react_default.createElement(react_default.Fragment, null)
+    }),
+    [api, enableShortcuts, shortcutKeys]
+  ), prev = useMemo(
+    () => ({
+      id: "prev",
+      title: "Previous story",
+      onClick: () => api.jumpToStory(-1),
+      right: enableShortcuts ? react_default.createElement(Shortcut, { keys: shortcutKeys.prevStory }) : null,
+      icon: react_default.createElement(react_default.Fragment, null)
+    }),
+    [api, enableShortcuts, shortcutKeys]
+  ), next = useMemo(
+    () => ({
+      id: "next",
+      title: "Next story",
+      onClick: () => api.jumpToStory(1),
+      right: enableShortcuts ? react_default.createElement(Shortcut, { keys: shortcutKeys.nextStory }) : null,
+      icon: react_default.createElement(react_default.Fragment, null)
+    }),
+    [api, enableShortcuts, shortcutKeys]
+  ), collapse = useMemo(
+    () => ({
+      id: "collapse",
+      title: "Collapse all",
+      onClick: () => api.emit(STORIES_COLLAPSE_ALL),
+      right: enableShortcuts ? react_default.createElement(Shortcut, { keys: shortcutKeys.collapseAll }) : null,
+      icon: react_default.createElement(react_default.Fragment, null)
+    }),
+    [api, enableShortcuts, shortcutKeys]
+  ), documentation = useMemo(() => ({
+    id: "documentation",
+    title: "Documentation",
+    closeOnClick: !0,
+    href: api.getDocsUrl({ versioned: !0, renderer: !0 }),
+    right: react_default.createElement(ActionList.Icon, null, react_default.createElement(ShareAltIcon, null)),
+    icon: react_default.createElement(DocumentIcon, null)
+  }), [api]), getAddonsShortcuts = useCallback(() => {
+    let addonsShortcuts = api.getAddonsShortcuts(), keys = shortcutKeys;
+    return Object.entries(addonsShortcuts).filter(([_2, { showInMenu }]) => showInMenu).map(([actionName, { label, action }]) => ({
+      id: actionName,
+      title: label,
+      onClick: () => action(),
+      right: enableShortcuts ? react_default.createElement(Shortcut, { keys: keys[actionName] }) : null
+    }));
+  }, [api, enableShortcuts, shortcutKeys]);
+  return useMemo(
+    () => [
+      [
+        about,
+        ...scope.CONFIG_TYPE === "DEVELOPMENT" ? [guide] : [],
+        ...enableShortcuts ? [shortcuts] : []
+      ],
+      [sidebarToggle, toolbarToogle, addonsToggle, up, down, prev, next, collapse],
+      getAddonsShortcuts(),
+      [documentation]
+    ],
+    [
+      about,
+      guide,
+      documentation,
+      shortcuts,
+      sidebarToggle,
+      toolbarToogle,
+      addonsToggle,
+      up,
+      down,
+      prev,
+      next,
+      collapse,
+      getAddonsShortcuts,
+      enableShortcuts
+    ]
+  );
+};
 
 // src/manager/container/Sidebar.tsx
 var Sidebar3 = react_default.memo(function({ onMenuClick }) {
@@ -18719,7 +19332,7 @@ var App = ({ managerLayoutState, setManagerLayoutState, pages, hasTab }) => {
       attributes: !0,
       attributeFilter: ["inert"]
     }), () => observer.disconnect();
-  }, []), react_default.createElement(react_default.Fragment, null, react_default.createElement(Global, { styles: createGlobal }), react_default.createElement(
+  }, []), react_default.createElement(react_default.Fragment, null, react_default.createElement(Global, { styles: createGlobal }), react_default.createElement(ManagerErrorBoundary, null, react_default.createElement(
     Layout,
     {
       hasTab,
@@ -18728,9 +19341,9 @@ var App = ({ managerLayoutState, setManagerLayoutState, pages, hasTab }) => {
       slotMain: react_default.createElement(Preview_default, { id: "main", withLoader: !0 }),
       slotSidebar: react_default.createElement(Sidebar_default, { onMenuClick: () => setMobileAboutOpen((state) => !state) }),
       slotPanel: react_default.createElement(Panel_default, null),
-      slotPages: pages.map(({ id, render: Content5 }) => react_default.createElement(Content5, { key: id }))
+      slotPages: pages.map(({ id, render: Content6 }) => react_default.createElement(Content6, { key: id }))
     }
-  ));
+  )));
 };
 
 // src/manager/provider.ts
@@ -18746,8 +19359,15 @@ var Provider2 = class {
   }
 };
 
+// src/manager/settings/index.tsx
+init_react();
+
+// src/manager/settings/AboutPage.tsx
+init_react();
+
 // src/manager/settings/About.tsx
-var Container8 = styled.div({
+init_react();
+var Container9 = styled.div({
   display: "flex",
   alignItems: "center",
   flexDirection: "column",
@@ -18784,7 +19404,7 @@ var Container8 = styled.div({
   "&:hover": {
     color: theme.base === "light" ? theme.color.darkest : theme.color.lightest
   }
-})), AboutScreen = ({ onNavigateToWhatsNew }) => react_default.createElement(Container8, null, react_default.createElement(Header, null, react_default.createElement(StorybookLogo, { alt: "Storybook" })), react_default.createElement(UpgradeBlock, { onNavigateToWhatsNew }), react_default.createElement(Footer, null, react_default.createElement(Actions2, null, react_default.createElement(Button, { ariaLabel: !1, asChild: !0 }, react_default.createElement("a", { href: "https://github.com/storybookjs/storybook" }, react_default.createElement(GithubIcon, null), "GitHub")), react_default.createElement(Button, { ariaLabel: !1, asChild: !0 }, react_default.createElement("a", { href: "https://storybook.js.org/docs?ref=ui" }, react_default.createElement(DocumentIcon, { style: { display: "inline", marginRight: 5 } }), "Documentation"))), react_default.createElement("div", null, "Open source software maintained by", " ", react_default.createElement(StyledLink, { href: "https://www.chromatic.com/" }, "Chromatic"), " and the", " ", react_default.createElement(StyledLink, { href: "https://github.com/storybookjs/storybook/graphs/contributors" }, "Storybook Community"))));
+})), AboutScreen = ({ onNavigateToWhatsNew }) => react_default.createElement(Container9, null, react_default.createElement(Header, null, react_default.createElement(StorybookLogo, { alt: "Storybook" })), react_default.createElement(UpgradeBlock, { onNavigateToWhatsNew }), react_default.createElement(Footer, null, react_default.createElement(Actions2, null, react_default.createElement(Button, { ariaLabel: !1, asChild: !0 }, react_default.createElement("a", { href: "https://github.com/storybookjs/storybook" }, react_default.createElement(GithubIcon, null), "GitHub")), react_default.createElement(Button, { ariaLabel: !1, asChild: !0 }, react_default.createElement("a", { href: "https://storybook.js.org/docs?ref=ui" }, react_default.createElement(DocumentIcon, { style: { display: "inline", marginRight: 5 } }), "Documentation"))), react_default.createElement("div", null, "Open source software maintained by", " ", react_default.createElement(StyledLink, { href: "https://www.chromatic.com/" }, "Chromatic"), " and the", " ", react_default.createElement(StyledLink, { href: "https://github.com/storybookjs/storybook/graphs/contributors" }, "Storybook Community"))));
 
 // src/manager/settings/AboutPage.tsx
 var NotificationClearer = class extends Component {
@@ -18808,7 +19428,14 @@ var NotificationClearer = class extends Component {
   ));
 };
 
+// src/manager/settings/GuidePage.tsx
+init_react();
+
+// src/manager/settings/Checklist/Checklist.tsx
+init_react();
+
 // src/manager/components/Focus/Focus.tsx
+init_react();
 var FocusOutline = styled.div(
   ({ theme, active = !1, outlineOffset = 0 }) => ({
     width: "100%",
@@ -19193,7 +19820,7 @@ var Sections = styled.ol(({ theme }) => ({
 };
 
 // src/manager/settings/GuidePage.tsx
-var Container9 = styled.div(({ theme }) => ({
+var Container10 = styled.div(({ theme }) => ({
   display: "flex",
   flexDirection: "column",
   maxWidth: 600,
@@ -19216,10 +19843,17 @@ var Container9 = styled.div(({ theme }) => ({
   }
 })), GuidePage = () => {
   let checklist = useChecklist();
-  return react_default.createElement(Container9, null, react_default.createElement(Intro, null, react_default.createElement("h1", null, "Guide"), react_default.createElement("p", null, "Whether you're just getting started or looking for ways to level up, this checklist will help you make the most of your Storybook.")), react_default.createElement(Checklist, { ...checklist }), checklist.openItems.length === 0 ? react_default.createElement("center", null, "Your work here is done!") : checklist.widget.disable || checklist.openItems.every((item) => item.isMuted) ? react_default.createElement("center", null, "Want to see this in the sidebar?", " ", react_default.createElement(Link, { onClick: () => checklist.disable(!1) }, "Show in sidebar")) : react_default.createElement("center", null, "Don't want to see this in the sidebar?", " ", react_default.createElement(Link, { onClick: () => checklist.mute(checklist.allItems.map(({ id }) => id)) }, "Remove from sidebar")));
+  return react_default.createElement(Container10, null, react_default.createElement(Intro, null, react_default.createElement("h1", null, "Guide"), react_default.createElement("p", null, "Whether you're just getting started or looking for ways to level up, this checklist will help you make the most of your Storybook.")), react_default.createElement(Checklist, { ...checklist }), scope.FEATURES?.sidebarOnboardingChecklist !== !1 && react_default.createElement(react_default.Fragment, null, checklist.openItems.length === 0 ? react_default.createElement("center", null, "Your work here is done!") : checklist.widget.disable || checklist.openItems.every((item) => item.isMuted) ? react_default.createElement("center", null, "Want to see this in the sidebar?", " ", react_default.createElement(Link, { onClick: () => checklist.disable(!1) }, "Show in sidebar")) : react_default.createElement("center", null, "Don't want to see this in the sidebar?", " ", react_default.createElement(Link, { onClick: () => checklist.mute(checklist.allItems.map(({ id }) => id)) }, "Remove from sidebar"))));
 };
 
+// src/manager/settings/ShortcutsPage.tsx
+init_react();
+
+// src/manager/settings/shortcuts.tsx
+init_react();
+
 // src/manager/settings/SettingsFooter.tsx
+init_react();
 var Footer2 = styled.div(({ theme }) => ({
   display: "flex",
   paddingTop: 20,
@@ -19301,7 +19935,7 @@ var Header2 = styled.header(({ theme }) => ({
     height: 14,
     width: 14
   }
-), Container10 = styled.div(({ theme }) => ({
+), Container11 = styled.div(({ theme }) => ({
   fontSize: theme.typography.size.s2,
   padding: "3rem 20px",
   maxWidth: 600,
@@ -19326,16 +19960,22 @@ var Header2 = styled.header(({ theme }) => ({
   expandAll: "Expand all items on sidebar",
   remount: "Reload story",
   openInEditor: "Open story in editor",
-  copyStoryLink: "Copy story link to clipboard"
+  openInIsolation: "Open story in isolation",
+  copyStoryLink: "Copy story link to clipboard",
+  goToPreviousLandmark: "Go to previous landmark",
+  goToNextLandmark: "Go to next landmark"
   // TODO: bring this back once we want to add shortcuts for this
   // copyStoryName: 'Copy story name to clipboard',
-}, fixedShortcuts = ["escape"];
+}, fixedShortcuts = ["escape"], hardcodedShortcuts = ["goToPreviousLandmark", "goToNextLandmark"];
 function toShortcutState(shortcutKeys) {
-  return Object.entries(shortcutKeys).reduce(
-    // @ts-expect-error (non strict)
-    (acc, [feature, shortcut]) => fixedShortcuts.includes(feature) ? acc : { ...acc, [feature]: { shortcut, error: !1 } },
-    {}
-  );
+  let state = {};
+  for (let key of Object.keys(shortcutKeys).filter((k2) => !fixedShortcuts.includes(k2)))
+    state[key] = {
+      shortcut: shortcutKeys[key],
+      error: !1,
+      hardcoded: hardcodedShortcuts.includes(key)
+    };
+  return state;
 }
 var ShortcutsScreen = class extends Component {
   constructor(props) {
@@ -19403,20 +20043,37 @@ var ShortcutsScreen = class extends Component {
       let { shortcutKeys, addonsShortcutLabels } = this.state;
       return Object.entries(shortcutKeys).filter(
         ([feature]) => shortcutLabels[feature] !== void 0 || addonsShortcutLabels && addonsShortcutLabels[feature]
-      ).map(([feature, { shortcut }]) => react_default.createElement(Row, { key: feature }, react_default.createElement(Description, null, shortcutLabels[feature] || addonsShortcutLabels[feature]), react_default.createElement(
-        TextInput,
-        {
-          spellCheck: "false",
-          valid: this.displayError(feature),
-          className: "modalInput",
-          onBlur: this.onBlur,
-          onFocus: this.onFocus(feature),
-          onKeyDown: this.onKeyDown,
-          value: shortcut ? shortcutToHumanString(shortcut) : "",
-          placeholder: "Type keys",
-          readOnly: !0
-        }
-      ), react_default.createElement(SuccessIcon, { valid: this.displaySuccessMessage(feature) })));
+      ).map(
+        ([feature, { shortcut, hardcoded }]) => react_default.createElement(Row, { key: feature }, react_default.createElement(Description, null, shortcutLabels[feature] || addonsShortcutLabels[feature]), hardcoded ? react_default.createElement(react_default.Fragment, null, react_default.createElement(
+          TooltipProvider,
+          {
+            tooltip: react_default.createElement(Tooltip, { hasChrome: !0 }, "This shortcut cannot be changed."),
+            placement: "right"
+          },
+          react_default.createElement(
+            TextInput,
+            {
+              "aria-disabled": !0,
+              readOnly: !0,
+              valid: void 0,
+              value: shortcut ? shortcutToHumanString(shortcut) : ""
+            }
+          )
+        )) : react_default.createElement(
+          TextInput,
+          {
+            spellCheck: "false",
+            valid: this.displayError(feature),
+            className: "modalInput",
+            onBlur: this.onBlur,
+            onFocus: this.onFocus(feature),
+            onKeyDown: this.onKeyDown,
+            value: shortcut ? shortcutToHumanString(shortcut) : "",
+            placeholder: "Type keys",
+            readOnly: !0
+          }
+        ), react_default.createElement(SuccessIcon, { valid: this.displaySuccessMessage(feature) }))
+      );
     };
     this.renderKeyForm = () => react_default.createElement(GridWrapper, null, react_default.createElement(GridHeaderRow, null, react_default.createElement(HeaderItem, null, "Commands"), react_default.createElement(HeaderItem, null, "Shortcut")), this.renderKeyInput());
     this.state = {
@@ -19427,14 +20084,13 @@ var ShortcutsScreen = class extends Component {
       // The initial shortcutKeys that come from props are the defaults/what was saved
       // As the user interacts with the page, the state stores the temporary, unsaved shortcuts
       // This object also includes the error attached to each shortcut
-      // @ts-expect-error (non strict)
       shortcutKeys: toShortcutState(props.shortcutKeys),
       addonsShortcutLabels: props.addonsShortcutLabels
     };
   }
   render() {
     let layout = this.renderKeyForm();
-    return react_default.createElement(Container10, null, react_default.createElement(Header2, null, "Keyboard shortcuts"), layout, react_default.createElement(
+    return react_default.createElement(Container11, null, react_default.createElement(Header2, null, "Keyboard shortcuts"), layout, react_default.createElement(
       Button,
       {
         ariaLabel: !1,
@@ -19468,7 +20124,11 @@ var ShortcutsPage = () => react_default.createElement(Consumer, null, ({
   }
 ));
 
+// src/manager/settings/whats_new_page.tsx
+init_react();
+
 // src/manager/settings/whats_new.tsx
+init_react();
 var Centered = styled.div({
   top: "50%",
   position: "absolute",
@@ -19485,7 +20145,7 @@ var Centered = styled.div({
   margin: "0 auto",
   fontSize: `${theme.typography.size.s1}px`,
   lineHeight: "16px"
-})), Container11 = styled.div(({ theme }) => ({
+})), Container12 = styled.div(({ theme }) => ({
   position: "absolute",
   width: "100%",
   height: 40,
@@ -19505,7 +20165,7 @@ var Centered = styled.div({
   let theme = useTheme(), [copyText, setCopyText] = useState("Copy Link"), copyLink = () => {
     onCopyLink(), setCopyText("Copied!"), setTimeout(() => setCopyText("Copy Link"), 4e3);
   };
-  return react_default.createElement(Container11, null, react_default.createElement("div", { style: { display: "flex", alignItems: "center", gap: 10 } }, react_default.createElement(HeartIcon, { color: theme.color.mediumdark }), react_default.createElement("div", null, "Share this with your team."), react_default.createElement(Button, { ariaLabel: !1, onClick: copyLink, size: "small", variant: "ghost" }, copyText)), isNotificationsEnabled ? react_default.createElement(Button, { ariaLabel: !1, size: "small", variant: "ghost", onClick: onToggleNotifications }, react_default.createElement(EyeCloseIcon, null), "Hide notifications") : react_default.createElement(Button, { ariaLabel: !1, size: "small", variant: "ghost", onClick: onToggleNotifications }, react_default.createElement(EyeIcon, null), "Show notifications"));
+  return react_default.createElement(Container12, null, react_default.createElement("div", { style: { display: "flex", alignItems: "center", gap: 10 } }, react_default.createElement(HeartIcon, { color: theme.color.mediumdark }), react_default.createElement("div", null, "Share this with your team."), react_default.createElement(Button, { ariaLabel: !1, onClick: copyLink, size: "small", variant: "ghost" }, copyText)), isNotificationsEnabled ? react_default.createElement(Button, { ariaLabel: !1, size: "small", variant: "ghost", onClick: onToggleNotifications }, react_default.createElement(EyeCloseIcon, null), "Hide notifications") : react_default.createElement(Button, { ariaLabel: !1, size: "small", variant: "ghost", onClick: onToggleNotifications }, react_default.createElement(EyeIcon, null), "Show notifications"));
 }, Iframe = styled.iframe(
   {
     position: "absolute",
@@ -19573,14 +20233,24 @@ var Centered = styled.div({
 var WhatsNewPage = () => react_default.createElement(WhatsNewScreen, null);
 
 // src/manager/settings/index.tsx
-var { document: document9 } = scope, Content4 = styled(ScrollArea)(({ theme }) => ({
+var { document: document8 } = scope, Content5 = styled(ScrollArea)(({ theme }) => ({
   background: theme.background.content
-})), RouteWrapper = ({ children, path }) => react_default.createElement(Content4, { vertical: !0, horizontal: !1 }, react_default.createElement(Route, { path }, children)), Pages = ({ changeTab, onClose, enableShortcuts = !0, enableWhatsNew }) => {
+})), SidebarToggle = styled.div({
+  // Extra specificity is necessary here
+  "&&:has(*)": {
+    order: 0,
+    display: "flex",
+    alignItems: "center",
+    marginLeft: 10,
+    marginRight: 6,
+    gap: 6
+  }
+}), RouteWrapper = ({ children, path }) => react_default.createElement(Content5, { vertical: !0, horizontal: !1 }, react_default.createElement(Route, { path }, children)), Pages = ({ changeTab, onClose, enableShortcuts = !0, enableWhatsNew }) => {
   react_default.useEffect(() => {
     let handleEscape = (event) => {
       !enableShortcuts || event.repeat || matchesModifiers(!1, event) && matchesKeyCode("Escape", event) && (event.preventDefault(), onClose());
     };
-    return document9.addEventListener("keydown", handleEscape), () => document9.removeEventListener("keydown", handleEscape);
+    return document8.addEventListener("keydown", handleEscape), () => document8.removeEventListener("keydown", handleEscape);
   }, [enableShortcuts, onClose]);
   let tabs = useMemo(() => {
     let tabsToInclude = [
@@ -19610,7 +20280,7 @@ var { document: document9 } = scope, Content4 = styled(ScrollArea)(({ theme }) =
       TabsView,
       {
         tabs,
-        tools: react_default.createElement(
+        tools: react_default.createElement(react_default.Fragment, null, react_default.createElement(SidebarToggle, null, menuTool.render({})), react_default.createElement(
           Button,
           {
             padding: "small",
@@ -19619,7 +20289,7 @@ var { document: document9 } = scope, Content4 = styled(ScrollArea)(({ theme }) =
             ariaLabel: "Close settings page"
           },
           react_default.createElement(CloseIcon, null)
-        ),
+        )),
         selected,
         onSelectionChange: changeTab
       }
@@ -19727,7 +20397,7 @@ var ReactProvider = class extends Provider2 {
       });
     });
   }
-}, { document: document10 } = scope, rootEl = document10.getElementById("root");
+}, { document: document9 } = scope, rootEl = document9.getElementById("root");
 setTimeout(() => {
   renderStorybookUI(rootEl, new ReactProvider());
 }, 0);
