@@ -22,13 +22,13 @@ const PlaygroundContext = createContext<{
   setSelectedThemeName: (themeName: ThemeName) => void;
 }>({
   selectedScreenSizes: [],
-  setSelectedScreenSizes: () => { },
+  setSelectedScreenSizes: () => {},
   selectedComponents: [],
-  setSelectedComponents: () => { },
+  setSelectedComponents: () => {},
   selectedTheme: new Set(['light']),
-  setSelectedTheme: () => { },
+  setSelectedTheme: () => {},
   selectedThemeName: 'backstage',
-  setSelectedThemeName: () => { },
+  setSelectedThemeName: () => {},
 });
 
 // Create a provider component
