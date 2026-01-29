@@ -1,1 +1,0 @@
-Rolls back the immediate breaking change of API factory conflicts in the new frontend system, making it a deprecation warning instead.
