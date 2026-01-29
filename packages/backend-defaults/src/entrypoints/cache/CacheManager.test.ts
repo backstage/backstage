@@ -346,6 +346,7 @@ describe('CacheManager store options', () => {
   });
 
   it('passes socket keepalive options to the redis client', () => {
+    const logger = mockServices.logger.mock();
     const manager = CacheManager.fromConfig(
       mockServices.rootConfig({
         data: {
@@ -364,14 +365,22 @@ describe('CacheManager store options', () => {
           },
         },
       }),
+      { logger },
     );
 
     manager.forPlugin('p1');
 
+    const childLogger = (logger.child as jest.Mock).mock.results[0]?.value;
+    expect(childLogger?.warn).toHaveBeenCalledWith(
+      'Socket keepalive initial delay is set without keepalive enabled. Enabling keepalive.',
+    );
     expect(KeyvRedis).toHaveBeenCalledWith(
       {
         url: 'redis://localhost:6379',
-        socket: expect.objectContaining({ keepAliveInitialDelay: 1234 }),
+        socket: expect.objectContaining({
+          keepAlive: true,
+          keepAliveInitialDelay: 1234,
+        }),
       },
       expect.objectContaining({ keyPrefixSeparator: ':' }),
     );
@@ -506,7 +515,7 @@ describe('CacheManager store options', () => {
 
     expect(createCluster).toHaveBeenCalledWith({
       rootNodes: [{ url: 'redis://localhost:6379' }],
-      defaults: { socket: { keepAliveInitialDelay: 4242 } },
+      defaults: { socket: { keepAlive: true, keepAliveInitialDelay: 4242 } },
     });
   });
 
