@@ -18,9 +18,7 @@ import { createApp } from '@backstage/frontend-defaults';
 import { pagesPlugin } from './examples/pagesPlugin';
 import notFoundErrorPage from './examples/notFoundErrorPageExtension';
 import userSettingsPlugin from '@backstage/plugin-user-settings/alpha';
-import homePlugin, {
-  titleExtensionDataRef,
-} from '@backstage/plugin-home/alpha';
+import homePlugin from '@backstage/plugin-home/alpha';
 
 import {
   coreExtensionData,
@@ -102,11 +100,11 @@ const customHomePageModule = createFrontendModule({
     createExtension({
       name: 'my-home-page',
       attachTo: { id: 'page:home', input: 'props' },
-      output: [coreExtensionData.reactElement, titleExtensionDataRef],
+      output: [coreExtensionData.reactElement, coreExtensionData.title],
       factory() {
         return [
           coreExtensionData.reactElement(homePage),
-          titleExtensionDataRef('just a title'),
+          coreExtensionData.title('just a title'),
         ];
       },
     }),
