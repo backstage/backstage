@@ -51,6 +51,17 @@ export const catalogPage = PageBlueprint.makeWithOverrides({
             }),
           ])
           .default(true),
+      textFilterFields: z =>
+        z
+          .union([
+            z.array(z.string()),
+            z.record(z.string(), z.array(z.string())),
+          ])
+          .default([
+            'metadata.name',
+            'metadata.title',
+            'spec.profile.displayName',
+          ]),
     },
   },
   factory(originalFactory, { inputs, config }) {
@@ -66,6 +77,7 @@ export const catalogPage = PageBlueprint.makeWithOverrides({
           <BaseCatalogPage
             filters={<>{filters}</>}
             pagination={config.pagination}
+            textFilterFields={config.textFilterFields}
           />
         );
       },

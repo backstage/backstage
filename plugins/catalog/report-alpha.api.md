@@ -974,6 +974,7 @@ const _default: OverridableFrontendPlugin<
               offset?: number | undefined;
               limit?: number | undefined;
             };
+        textFilterFields: string[] | Record<string, string[]>;
         path: string | undefined;
       };
       configInput: {
@@ -985,6 +986,7 @@ const _default: OverridableFrontendPlugin<
               limit?: number | undefined;
             }
           | undefined;
+        textFilterFields?: string[] | Record<string, string[]> | undefined;
         path?: string | undefined;
       };
       output:

@@ -101,13 +101,28 @@ export class EntityTagFilter implements EntityFilter {
  * @public
  */
 export class EntityTextFilter implements EntityFilter {
-  readonly value: string;
+  static readonly DEFAULT_FIELDS = [
+    'metadata.name',
+    'metadata.title',
+    'spec.profile.displayName',
+  ];
 
-  constructor(value: string) {
+  readonly value: string;
+  readonly fields?: string[];
+
+  constructor(value: string, fields?: string[]) {
     this.value = value;
+    this.fields = fields;
   }
 
   filterEntity(entity: Entity): boolean {
+    // When custom fields are specified, trust the backend filtering
+    // and skip client-side filtering to avoid mismatches
+    if (this.fields !== undefined) {
+      return true;
+    }
+
+    // Fallback client-side filtering for non-paginated mode using default fields
     const words = this.toUpperArray(this.value.split(/\s/));
     const exactMatch = this.toUpperArray([entity.metadata.tags]);
     const partialMatch = this.toUpperArray([
@@ -131,12 +146,11 @@ export class EntityTextFilter implements EntityFilter {
   getFullTextFilters() {
     return {
       term: this.value,
-      // Update this to be more dynamic based on table columns.
-      fields: ['metadata.name', 'metadata.title', 'spec.profile.displayName'],
+      fields: this.fields ?? EntityTextFilter.DEFAULT_FIELDS,
     };
   }
 
-  toQueryValue() {
+  toQueryValue(): string {
     return this.value;
   }
 

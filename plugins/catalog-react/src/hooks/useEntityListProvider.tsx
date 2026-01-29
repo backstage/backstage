@@ -52,7 +52,11 @@ import {
   EntityUserFilter,
   UserListFilter,
 } from '../filters';
-import { EntityFilter, EntityListPagination } from '../types';
+import {
+  EntityFilter,
+  EntityListPagination,
+  TextFilterFieldsConfig,
+} from '../types';
 import {
   reduceBackendCatalogFilters,
   reduceCatalogFilters,
@@ -125,6 +129,8 @@ export type EntityListContextProps<
   setLimit: (limit: number) => void;
   setOffset?: (offset: number) => void;
   paginationMode: PaginationMode;
+
+  textFilterFields?: TextFilterFieldsConfig;
 };
 
 // This context has support for multiple concurrent versions of this package.
@@ -157,6 +163,7 @@ type OutputState<EntityFilters extends DefaultEntityFilters> = {
  */
 export type EntityListProviderProps = PropsWithChildren<{
   pagination?: EntityListPagination;
+  textFilterFields?: TextFilterFieldsConfig;
 }>;
 
 /**
@@ -483,6 +490,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
       setLimit,
       setOffset,
       paginationMode,
+      textFilterFields: props.textFilterFields,
     }),
     [
       outputState,
@@ -496,6 +504,7 @@ export const EntityListProvider = <EntityFilters extends DefaultEntityFilters>(
       paginationMode,
       setLimit,
       setOffset,
+      props.textFilterFields,
     ],
   );
 

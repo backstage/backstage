@@ -52,3 +52,11 @@ export type EntityListPagination =
   | boolean
   | { mode?: 'cursor'; limit?: number }
   | { mode: 'offset'; limit?: number; offset?: number };
+
+/**
+ * Configuration for text filter fields.
+ * Can be either a static array of fields for all kinds,
+ * or a record mapping kind names to their specific fields.
+ * @public
+ */
+export type TextFilterFieldsConfig = string[] | Record<string, string[]>;
