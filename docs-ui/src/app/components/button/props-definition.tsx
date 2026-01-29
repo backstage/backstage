@@ -5,14 +5,14 @@ import { Chip } from '@/components/Chip';
 export const buttonPropDefs: Record<string, PropDef> = {
   variant: {
     type: 'enum',
-    values: ['primary', 'secondary', 'tertiary'],
+    values: ['primary', 'secondary', 'tertiary', 'danger'],
     default: 'primary',
     responsive: true,
     description: (
       <>
         Visual style. Use <Chip>primary</Chip> for main actions,{' '}
         <Chip>secondary</Chip> for alternatives, <Chip>tertiary</Chip> for
-        low-emphasis.
+        low-emphasis, <Chip>danger</Chip> for destructive actions.
       </>
     ),
   },

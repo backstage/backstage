@@ -16,6 +16,9 @@ export const variantsSnippet = `<Flex>
   <Button variant="tertiary" iconStart={<RiCloudLine />}>
     Button
   </Button>
+  <Button variant="danger" iconStart={<RiCloudLine />}>
+    Button
+  </Button>
 </Flex>`;
 
 export const sizesSnippet = `<Flex align="center">
@@ -40,6 +43,9 @@ export const disabledSnippet = `<Flex gap="4">
   </Button>
   <Button variant="tertiary" isDisabled>
     Tertiary
+  </Button>
+  <Button variant="danger" isDisabled>
+    Danger
   </Button>
 </Flex>`;
 
