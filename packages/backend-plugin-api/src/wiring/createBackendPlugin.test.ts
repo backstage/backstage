@@ -15,6 +15,7 @@
  */
 
 import { createServiceRef } from '../services';
+import { ID_PATTERN } from './constants';
 import { createBackendPlugin } from './createBackendPlugin';
 import { createExtensionPoint } from './createExtensionPoint';
 import { InternalBackendRegistrations } from './types';
@@ -89,5 +90,20 @@ describe('createBackendPlugin', () => {
     });
 
     expect(plugin.$$type).toEqual('@backstage/BackendFeature');
+  });
+  it('should reject plugins with invalid pluginId', async () => {
+    expect(() =>
+      createBackendPlugin({
+        pluginId: 'test:invalid&id',
+        register(reg) {
+          reg.registerInit({
+            deps: {},
+            async init() {},
+          });
+        },
+      }),
+    ).toThrow(
+      `Invalid pluginId 'test:invalid&id', must match the pattern ${ID_PATTERN} (letters, digits, and dashes only, starting with a letter)`,
+    );
   });
 });

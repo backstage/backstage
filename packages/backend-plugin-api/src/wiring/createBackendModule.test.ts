@@ -15,6 +15,7 @@
  */
 
 import { createServiceRef } from '../services';
+import { ID_PATTERN } from './constants';
 import { createBackendModule } from './createBackendModule';
 import { createExtensionPoint } from './createExtensionPoint';
 import { InternalBackendRegistrations } from './types';
@@ -76,5 +77,21 @@ describe('createBackendModule', () => {
     });
 
     expect(plugin.$$type).toEqual('@backstage/BackendFeature');
+  });
+  it('should reject modules with invalid moduleId', async () => {
+    expect(() =>
+      createBackendModule({
+        pluginId: 'test',
+        moduleId: 'invalid:module&id',
+        register(reg) {
+          reg.registerInit({
+            deps: {},
+            async init() {},
+          });
+        },
+      }),
+    ).toThrow(
+      `Invalid moduleId 'invalid:module&id' for plugin 'test', must match the pattern ${ID_PATTERN} (letters, digits, and dashes only, starting with a letter)`,
+    );
   });
 });
