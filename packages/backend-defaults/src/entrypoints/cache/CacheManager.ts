@@ -187,19 +187,16 @@ export class CacheManager {
     const socketConfig = clientConfig?.getOptionalConfig('socket');
     const keepAliveConfig = socketConfig?.getOptional('keepAlive');
     const keepAlive =
-      typeof keepAliveConfig === 'boolean' ||
-      typeof keepAliveConfig === 'number'
-        ? keepAliveConfig
-        : undefined;
+      typeof keepAliveConfig === 'boolean' ? keepAliveConfig : undefined;
     const keepAliveInitialDelay = socketConfig?.getOptionalNumber(
       'keepAliveInitialDelay',
     );
     const pingInterval = socketConfig?.getOptionalNumber('pingInterval');
     const socketTimeout = socketConfig?.getOptionalNumber('socketTimeout');
 
-    if (typeof keepAlive === 'number' && keepAliveInitialDelay !== undefined) {
+    if (typeof keepAliveConfig === 'number') {
       logger?.warn(
-        "Both 'client.socket.keepAlive' (number) and 'client.socket.keepAliveInitialDelay' are set. Prefer 'keepAlive: true' with 'keepAliveInitialDelay'. Using 'keepAliveInitialDelay' and treating keepAlive as enabled.",
+        "Invalid 'client.socket.keepAlive' value. Expected boolean, got number. Ignoring keepAlive.",
       );
     }
 
@@ -209,17 +206,11 @@ export class CacheManager {
       );
     }
 
-    let keepAliveForSocket: number | true | false | undefined;
+    let keepAliveForSocket: boolean | undefined;
     let keepAliveInitialDelayForSocket: number | undefined;
 
     if (keepAlive === false) {
       keepAliveForSocket = false;
-    } else if (typeof keepAlive === 'number') {
-      if (keepAliveInitialDelay !== undefined) {
-        keepAliveInitialDelayForSocket = keepAliveInitialDelay;
-      } else {
-        keepAliveForSocket = keepAlive;
-      }
     } else {
       if (keepAliveInitialDelay !== undefined) {
         if (keepAlive !== true) {
