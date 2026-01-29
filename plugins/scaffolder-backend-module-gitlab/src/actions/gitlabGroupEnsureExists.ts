@@ -88,12 +88,18 @@ export const createGitlabGroupEnsureExistsAction = (options: {
       let parentId: number | null = null;
       for (const { name, slug } of pathIterator(path)) {
         const fullPath: string = currentPath ? `${currentPath}/${slug}` : slug;
-        const result = (await api.Groups.search(
-          fullPath,
-        )) as unknown as Array<GroupSchema>; // recast since the return type for search is wrong in the gitbeaker typings
-        const subGroup = result.find(
-          searchPathElem => searchPathElem.full_path === fullPath,
-        );
+        let subGroup: GroupSchema | undefined;
+        try {
+          subGroup = (await api.Groups.show(
+            fullPath,
+          )) as unknown as GroupSchema;
+        } catch (error: any) {
+          // 404 means the group doesn't exist - we'll create it below
+          // Any other error should be thrown
+          if (error.cause?.response?.status !== 404) {
+            throw error;
+          }
+        }
         if (!subGroup) {
           ctx.logger.info(`creating missing group ${fullPath}`);
 
