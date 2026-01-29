@@ -3,6 +3,7 @@ import {
   classNamePropDefs,
   gapPropDefs,
   stylePropDefs,
+  spacingGroupAll,
   type PropDef,
 } from '@/utils/propDefs';
 import { Chip } from '@/components/Chip';
@@ -67,6 +68,7 @@ export const gridPropDefs: Record<string, PropDef> = {
   ...childrenPropDefs,
   ...classNamePropDefs,
   ...stylePropDefs,
+  spacing: spacingGroupAll,
 };
 
 export const gridItemPropDefs: Record<string, PropDef> = {

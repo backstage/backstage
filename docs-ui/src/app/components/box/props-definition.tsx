@@ -4,6 +4,7 @@ import {
   positionPropDefs,
   stylePropDefs,
   widthPropDefs,
+  spacingGroupAll,
   type PropDef,
 } from '@/utils/propDefs';
 import { Chip } from '@/components/Chip';
@@ -43,4 +44,5 @@ export const boxPropDefs: Record<string, PropDef> = {
   },
   ...classNamePropDefs,
   ...stylePropDefs,
+  spacing: spacingGroupAll,
 };

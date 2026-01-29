@@ -1,5 +1,5 @@
 {
-  "extends": ["next/core-web-vitals", "next/typescript"],
+  "extends": "next/core-web-vitals",
   "rules": {
     "notice/notice": "off",
     "react/forbid-elements": "off",
