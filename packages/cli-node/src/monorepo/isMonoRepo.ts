@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import { getWorkspacesPatterns } from '@backstage/cli-common';
 import { paths } from '../paths';
 import fs from 'fs-extra';
 
@@ -26,7 +27,7 @@ export async function isMonoRepo(): Promise<boolean> {
   const rootPackageJsonPath = paths.resolveTargetRoot('package.json');
   try {
     const pkg = await fs.readJson(rootPackageJsonPath);
-    return Boolean(pkg?.workspaces?.packages);
+    return getWorkspacesPatterns(pkg).length > 0;
   } catch (error) {
     return false;
   }

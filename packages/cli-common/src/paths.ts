@@ -108,6 +108,25 @@ export function findOwnRootDir(ownDir: string) {
 }
 
 /**
+ * Gets the workspaces pattern from a package.json object.
+ * @param pkgJson - The package.json object to get the workspaces pattern from.
+ * @returns The workspaces patterns (glob not resolved).
+ * @public
+ */
+export function getWorkspacesPatterns(pkgJson: any): string[] {
+  if (Array.isArray(pkgJson.workspaces)) {
+    return pkgJson.workspaces;
+  } else if (
+    typeof pkgJson.workspaces === 'object' &&
+    pkgJson.workspaces !== null &&
+    Array.isArray(pkgJson.workspaces.packages)
+  ) {
+    return pkgJson.workspaces.packages;
+  }
+  return [];
+}
+
+/**
  * Find paths related to a package and its execution context.
  *
  * @public
@@ -141,7 +160,7 @@ export function findPaths(searchDir: string): Paths {
           try {
             const content = fs.readFileSync(path, 'utf8');
             const data = JSON.parse(content);
-            return Boolean(data.workspaces);
+            return getWorkspacesPatterns(data).length > 0;
           } catch (error) {
             throw new Error(
               `Failed to parse package.json file while searching for root, ${error}`,
