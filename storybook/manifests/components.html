@@ -509,7 +509,7 @@
 <header>
   <div class="wrap">
     <h1>Components Manifest</h1>
-    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><span class="filter-pill ok" aria-disabled="true">40 components ok</span><a class="filter-pill info" data-k="infos" href="#filter-infos">30/40 infos</a><span class="filter-pill ok" aria-disabled="true">364 stories ok</span></div>
+    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><span class="filter-pill ok" aria-disabled="true">40 components ok</span><a class="filter-pill info" data-k="infos" href="#filter-infos">30/40 infos</a><span class="filter-pill ok" aria-disabled="true">365 stories ok</span></div>
   </div>
 </header>
 <main>
@@ -1867,9 +1867,9 @@ width?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Button</h2>
       <div class="badges">
-        <label for="c-4-backstage-ui-button-props" class="badge ok as-toggle">9 prop types</label>
+        <label for="c-4-backstage-ui-button-props" class="badge ok as-toggle">10 prop types</label>
         
-        <label for="c-4-backstage-ui-button-stories" class="badge ok as-toggle">10 stories</label>
+        <label for="c-4-backstage-ui-button-stories" class="badge ok as-toggle">11 stories</label>
       </div>
     </div>
     <div class="meta" title="./packages/ui/src/components/Button/Button.stories.tsx">backstage-ui-button · ./packages/ui/src/components/Button/Button.stories.tsx</div>
@@ -1892,13 +1892,15 @@ width?: T | Partial&lt;Record&lt;Breakpoint, T&gt;&gt;</code></pre>
           <div class="note ok">
             <div class="row">
               <span class="ex-name">Prop types</span>
-              <span class="badge ok">9 prop types</span>
+              <span class="badge ok">10 prop types</span>
             </div>
             <pre><code>Component: packages/ui/src/components/Button/Button.tsx::Button</code></pre>
             <pre><code>Props:</code></pre>
             <pre><code>children?: ReactNode
 
 className?: string
+
+destructive?: boolean
 
 iconEnd?: ReactElement
 
@@ -1959,6 +1961,15 @@ import { RiArrowRightSLine, RiCloudLine } from "@remixicon/react";</code></pre>
         &lt;Button iconStart={&lt;RiCloudLine /&gt;} variant=&quot;tertiary&quot;&gt;
           Button
         &lt;/Button&gt;
+        &lt;Button iconStart={&lt;RiCloudLine /&gt;} variant=&quot;primary&quot; destructive&gt;
+          Button
+        &lt;/Button&gt;
+        &lt;Button iconStart={&lt;RiCloudLine /&gt;} variant=&quot;secondary&quot; destructive&gt;
+          Button
+        &lt;/Button&gt;
+        &lt;Button iconStart={&lt;RiCloudLine /&gt;} variant=&quot;tertiary&quot; destructive&gt;
+          Button
+        &lt;/Button&gt;
       &lt;/Flex&gt;
     &lt;/Flex&gt;
     &lt;Flex direction=&quot;column&quot; gap=&quot;4&quot;&gt;
@@ -1971,6 +1982,15 @@ import { RiArrowRightSLine, RiCloudLine } from "@remixicon/react";</code></pre>
           Button
         &lt;/Button&gt;
         &lt;Button iconStart={&lt;RiCloudLine /&gt;} variant=&quot;tertiary&quot;&gt;
+          Button
+        &lt;/Button&gt;
+        &lt;Button iconStart={&lt;RiCloudLine /&gt;} variant=&quot;primary&quot; destructive&gt;
+          Button
+        &lt;/Button&gt;
+        &lt;Button iconStart={&lt;RiCloudLine /&gt;} variant=&quot;secondary&quot; destructive&gt;
+          Button
+        &lt;/Button&gt;
+        &lt;Button iconStart={&lt;RiCloudLine /&gt;} variant=&quot;tertiary&quot; destructive&gt;
           Button
         &lt;/Button&gt;
       &lt;/Flex&gt;
@@ -1987,6 +2007,15 @@ import { RiArrowRightSLine, RiCloudLine } from "@remixicon/react";</code></pre>
         &lt;Button iconStart={&lt;RiCloudLine /&gt;} variant=&quot;tertiary&quot;&gt;
           Button
         &lt;/Button&gt;
+        &lt;Button iconStart={&lt;RiCloudLine /&gt;} variant=&quot;primary&quot; destructive&gt;
+          Button
+        &lt;/Button&gt;
+        &lt;Button iconStart={&lt;RiCloudLine /&gt;} variant=&quot;secondary&quot; destructive&gt;
+          Button
+        &lt;/Button&gt;
+        &lt;Button iconStart={&lt;RiCloudLine /&gt;} variant=&quot;tertiary&quot; destructive&gt;
+          Button
+        &lt;/Button&gt;
       &lt;/Flex&gt;
     &lt;/Flex&gt;
     &lt;Flex direction=&quot;column&quot; gap=&quot;4&quot;&gt;
@@ -1999,6 +2028,15 @@ import { RiArrowRightSLine, RiCloudLine } from "@remixicon/react";</code></pre>
           Button
         &lt;/Button&gt;
         &lt;Button iconStart={&lt;RiCloudLine /&gt;} variant=&quot;tertiary&quot;&gt;
+          Button
+        &lt;/Button&gt;
+        &lt;Button iconStart={&lt;RiCloudLine /&gt;} variant=&quot;primary&quot; destructive&gt;
+          Button
+        &lt;/Button&gt;
+        &lt;Button iconStart={&lt;RiCloudLine /&gt;} variant=&quot;secondary&quot; destructive&gt;
+          Button
+        &lt;/Button&gt;
+        &lt;Button iconStart={&lt;RiCloudLine /&gt;} variant=&quot;tertiary&quot; destructive&gt;
           Button
         &lt;/Button&gt;
       &lt;/Flex&gt;
@@ -2014,6 +2052,103 @@ import { RiArrowRightSLine, RiCloudLine } from "@remixicon/react";</code></pre>
         &lt;/Button&gt;
         &lt;Button iconStart={&lt;RiCloudLine /&gt;} variant=&quot;tertiary&quot;&gt;
           Button
+        &lt;/Button&gt;
+        &lt;Button iconStart={&lt;RiCloudLine /&gt;} variant=&quot;primary&quot; destructive&gt;
+          Button
+        &lt;/Button&gt;
+        &lt;Button iconStart={&lt;RiCloudLine /&gt;} variant=&quot;secondary&quot; destructive&gt;
+          Button
+        &lt;/Button&gt;
+        &lt;Button iconStart={&lt;RiCloudLine /&gt;} variant=&quot;tertiary&quot; destructive&gt;
+          Button
+        &lt;/Button&gt;
+      &lt;/Flex&gt;
+    &lt;/Flex&gt;
+  &lt;/Flex&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">Destructive</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Destructive = () =&gt; (
+  &lt;Flex direction=&quot;column&quot; gap=&quot;4&quot;&gt;
+    &lt;Flex direction=&quot;column&quot; gap=&quot;4&quot;&gt;
+      &lt;Text&gt;Primary Destructive&lt;/Text&gt;
+      &lt;Flex align=&quot;center&quot; p=&quot;4&quot; gap=&quot;4&quot;&gt;
+        &lt;Button variant=&quot;primary&quot; destructive&gt;
+          Delete
+        &lt;/Button&gt;
+        &lt;Button variant=&quot;primary&quot; destructive iconStart={&lt;RiCloudLine /&gt;}&gt;
+          Delete
+        &lt;/Button&gt;
+        &lt;Button variant=&quot;primary&quot; destructive isDisabled&gt;
+          Disabled
+        &lt;/Button&gt;
+        &lt;Button variant=&quot;primary&quot; destructive loading&gt;
+          Loading
+        &lt;/Button&gt;
+      &lt;/Flex&gt;
+    &lt;/Flex&gt;
+    &lt;Flex direction=&quot;column&quot; gap=&quot;4&quot;&gt;
+      &lt;Text&gt;Secondary Destructive&lt;/Text&gt;
+      &lt;Flex align=&quot;center&quot; p=&quot;4&quot; gap=&quot;4&quot;&gt;
+        &lt;Button variant=&quot;secondary&quot; destructive&gt;
+          Delete
+        &lt;/Button&gt;
+        &lt;Button variant=&quot;secondary&quot; destructive iconStart={&lt;RiCloudLine /&gt;}&gt;
+          Delete
+        &lt;/Button&gt;
+        &lt;Button variant=&quot;secondary&quot; destructive isDisabled&gt;
+          Disabled
+        &lt;/Button&gt;
+        &lt;Button variant=&quot;secondary&quot; destructive loading&gt;
+          Loading
+        &lt;/Button&gt;
+      &lt;/Flex&gt;
+    &lt;/Flex&gt;
+    &lt;Flex direction=&quot;column&quot; gap=&quot;4&quot;&gt;
+      &lt;Text&gt;Tertiary Destructive&lt;/Text&gt;
+      &lt;Flex align=&quot;center&quot; p=&quot;4&quot; gap=&quot;4&quot;&gt;
+        &lt;Button variant=&quot;tertiary&quot; destructive&gt;
+          Delete
+        &lt;/Button&gt;
+        &lt;Button variant=&quot;tertiary&quot; destructive iconStart={&lt;RiCloudLine /&gt;}&gt;
+          Delete
+        &lt;/Button&gt;
+        &lt;Button variant=&quot;tertiary&quot; destructive isDisabled&gt;
+          Disabled
+        &lt;/Button&gt;
+        &lt;Button variant=&quot;tertiary&quot; destructive loading&gt;
+          Loading
+        &lt;/Button&gt;
+      &lt;/Flex&gt;
+    &lt;/Flex&gt;
+    &lt;Flex direction=&quot;column&quot; gap=&quot;4&quot;&gt;
+      &lt;Text&gt;On Surface 1&lt;/Text&gt;
+      &lt;Flex align=&quot;center&quot; surface=&quot;1&quot; p=&quot;4&quot; gap=&quot;4&quot;&gt;
+        &lt;Button variant=&quot;primary&quot; destructive&gt;
+          Primary
+        &lt;/Button&gt;
+        &lt;Button variant=&quot;secondary&quot; destructive&gt;
+          Secondary
+        &lt;/Button&gt;
+        &lt;Button variant=&quot;tertiary&quot; destructive&gt;
+          Tertiary
+        &lt;/Button&gt;
+      &lt;/Flex&gt;
+    &lt;/Flex&gt;
+    &lt;Flex direction=&quot;column&quot; gap=&quot;4&quot;&gt;
+      &lt;Text&gt;Sizes&lt;/Text&gt;
+      &lt;Flex align=&quot;center&quot; p=&quot;4&quot; gap=&quot;4&quot;&gt;
+        &lt;Button variant=&quot;primary&quot; destructive size=&quot;small&quot;&gt;
+          Small
+        &lt;/Button&gt;
+        &lt;Button variant=&quot;primary&quot; destructive size=&quot;medium&quot;&gt;
+          Medium
         &lt;/Button&gt;
       &lt;/Flex&gt;
     &lt;/Flex&gt;
@@ -2072,16 +2207,29 @@ import { RiArrowRightSLine, RiCloudLine } from "@remixicon/react";</code></pre>
               
               
               <pre><code>const Disabled = () =&gt; (
-  &lt;Flex direction=&quot;row&quot; gap=&quot;4&quot;&gt;
-    &lt;Button variant=&quot;primary&quot; isDisabled&gt;
-      Primary
-    &lt;/Button&gt;
-    &lt;Button variant=&quot;secondary&quot; isDisabled&gt;
-      Secondary
-    &lt;/Button&gt;
-    &lt;Button variant=&quot;tertiary&quot; isDisabled&gt;
-      Tertiary
-    &lt;/Button&gt;
+  &lt;Flex direction=&quot;column&quot; gap=&quot;4&quot;&gt;
+    &lt;Flex direction=&quot;row&quot; gap=&quot;4&quot;&gt;
+      &lt;Button variant=&quot;primary&quot; isDisabled&gt;
+        Primary
+      &lt;/Button&gt;
+      &lt;Button variant=&quot;secondary&quot; isDisabled&gt;
+        Secondary
+      &lt;/Button&gt;
+      &lt;Button variant=&quot;tertiary&quot; isDisabled&gt;
+        Tertiary
+      &lt;/Button&gt;
+    &lt;/Flex&gt;
+    &lt;Flex direction=&quot;row&quot; gap=&quot;4&quot;&gt;
+      &lt;Button variant=&quot;primary&quot; destructive isDisabled&gt;
+        Primary Destructive
+      &lt;/Button&gt;
+      &lt;Button variant=&quot;secondary&quot; destructive isDisabled&gt;
+        Secondary Destructive
+      &lt;/Button&gt;
+      &lt;Button variant=&quot;tertiary&quot; destructive isDisabled&gt;
+        Tertiary Destructive
+      &lt;/Button&gt;
+    &lt;/Flex&gt;
   &lt;/Flex&gt;
 );</code></pre>
             </div>
@@ -2170,6 +2318,24 @@ import { RiArrowRightSLine, RiCloudLine } from "@remixicon/react";</code></pre>
         Medium Loading
       &lt;/Button&gt;
       &lt;Button variant=&quot;tertiary&quot; loading iconStart={&lt;RiCloudLine /&gt;}&gt;
+        With Icon
+      &lt;/Button&gt;
+    &lt;/Flex&gt;
+
+    &lt;Text&gt;Primary Destructive&lt;/Text&gt;
+    &lt;Flex align=&quot;center&quot; gap=&quot;4&quot;&gt;
+      &lt;Button variant=&quot;primary&quot; destructive size=&quot;small&quot; loading&gt;
+        Small Loading
+      &lt;/Button&gt;
+      &lt;Button variant=&quot;primary&quot; destructive size=&quot;medium&quot; loading&gt;
+        Medium Loading
+      &lt;/Button&gt;
+      &lt;Button
+        variant=&quot;primary&quot;
+        destructive
+        loading
+        iconStart={&lt;RiCloudLine /&gt;}
+      &gt;
         With Icon
       &lt;/Button&gt;
     &lt;/Flex&gt;
