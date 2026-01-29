@@ -16,7 +16,7 @@
 
 import fs from 'fs-extra';
 import { resolve as resolvePath } from 'node:path';
-import { buildBundle, getModuleFederationOptions } from './bundler';
+import { buildBundle, getModuleFederationRemoteOptions } from './bundler';
 import { getEnvironmentParallelism } from '../../../lib/parallel';
 import { loadCliConfig } from '../../config/lib/config';
 import { BackstagePackageJson } from '@backstage/cli-node';
@@ -25,7 +25,7 @@ interface BuildAppOptions {
   targetDir: string;
   writeStats: boolean;
   configPaths: string[];
-  isModuleFederationRemote?: true;
+  isModuleFederationRemote?: boolean;
   webpack?: typeof import('webpack');
 }
 
@@ -39,11 +39,12 @@ export async function buildFrontend(options: BuildAppOptions) {
     entry: 'src/index',
     parallelism: getEnvironmentParallelism(),
     statsJsonEnabled: writeStats,
-    moduleFederation: await getModuleFederationOptions(
-      packageJson,
-      resolvePath(targetDir),
-      options.isModuleFederationRemote,
-    ),
+    moduleFederationRemote: options.isModuleFederationRemote
+      ? await getModuleFederationRemoteOptions(
+          packageJson,
+          resolvePath(targetDir),
+        )
+      : undefined,
     ...(await loadCliConfig({
       args: configPaths,
       fromPackage: packageJson.name,
