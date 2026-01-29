@@ -34,6 +34,19 @@ describe('<EntityTable />', () => {
     expect(screen.getByText('EMPTY')).toBeInTheDocument();
   });
 
+  it('renders custom title element', async () => {
+    await renderInTestApp(
+      <EntityTable
+        title={<div>CUSTOM TITLE</div>}
+        entities={[]}
+        emptyContent={<div>EMPTY</div>}
+        columns={[]}
+      />,
+    );
+
+    expect(screen.getByText('CUSTOM TITLE')).toBeInTheDocument();
+  });
+
   it('shows entities', async () => {
     const entities: Entity[] = [
       {
