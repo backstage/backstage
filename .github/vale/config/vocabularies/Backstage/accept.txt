@@ -527,6 +527,7 @@ transpilers
 trixie
 truthy
 tsconfig
+Turbopack
 TSDoc
 typeahead
 ui
