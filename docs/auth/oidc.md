@@ -141,7 +141,7 @@ If none of the built-in resolvers are suitable, you can alternatively write a cu
 First, install the OIDC provider module:
 
 ```bash
-yarn ./packages/backend add @backstage/plugin-auth-backend-module-oidc-provider
+yarn --cwd packages/backend add @backstage/plugin-auth-backend-module-oidc-provider
 ```
 
 Then create a custom resolver as shown below:
