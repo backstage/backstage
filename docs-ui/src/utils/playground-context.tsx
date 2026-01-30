@@ -4,6 +4,7 @@ import {
   ReactNode,
   useState,
   useEffect,
+  useSyncExternalStore,
 } from 'react';
 import { components } from './data';
 
@@ -31,6 +32,14 @@ const PlaygroundContext = createContext<{
   setSelectedThemeName: () => {},
 });
 
+// Stable server snapshots (outside component to avoid recreating)
+const defaultThemeSet = new Set<Theme>(['light']);
+const defaultThemeName: ThemeName = 'backstage';
+
+// Cache for theme Sets to avoid creating new objects on every getSnapshot call
+let cachedThemeValue: string | null = null;
+let cachedThemeSet: Set<Theme> = defaultThemeSet;
+
 // Create a provider component
 export const PlaygroundProvider = ({ children }: { children: ReactNode }) => {
   // Check if running in a browser environment
@@ -41,49 +50,71 @@ export const PlaygroundProvider = ({ children }: { children: ReactNode }) => {
     components.map(component => component.slug),
   );
 
-  // Use lazy initialization to load from localStorage
-  const [selectedTheme, setSelectedTheme] = useState<Set<Theme>>(() => {
-    if (typeof window !== 'undefined') {
-      const savedThemeString = localStorage.getItem('theme-mode');
-      if (savedThemeString) {
-        const themeArray = savedThemeString
-          .split(',')
-          .filter(Boolean) as Theme[];
-        return new Set(themeArray);
-      }
-    }
-    return new Set(['light']);
-  });
+  // Use useSyncExternalStore for SSR-safe localStorage access
+  const selectedTheme = useSyncExternalStore(
+    callback => {
+      window.addEventListener('storage', callback);
+      return () => window.removeEventListener('storage', callback);
+    },
+    () => {
+      const saved = localStorage.getItem('theme-mode');
 
-  const [selectedThemeName, setSelectedThemeName] = useState<ThemeName>(() => {
-    if (typeof window !== 'undefined') {
-      const savedThemeName = localStorage.getItem('theme-name') as ThemeName;
-      if (savedThemeName) {
-        return savedThemeName;
+      // Return cached Set if value hasn't changed
+      if (saved === cachedThemeValue) {
+        return cachedThemeSet;
       }
-    }
-    return 'backstage';
-  });
+
+      // Update cache with new value
+      cachedThemeValue = saved;
+      if (saved) {
+        const themeArray = saved.split(',').filter(Boolean) as Theme[];
+        cachedThemeSet = new Set(themeArray);
+      } else {
+        cachedThemeSet = defaultThemeSet;
+      }
+
+      return cachedThemeSet;
+    },
+    () => defaultThemeSet, // Stable server snapshot
+  );
+
+  const selectedThemeName = useSyncExternalStore(
+    callback => {
+      window.addEventListener('storage', callback);
+      return () => window.removeEventListener('storage', callback);
+    },
+    () => {
+      const saved = localStorage.getItem('theme-name') as ThemeName;
+      return saved || defaultThemeName;
+    },
+    () => defaultThemeName, // Stable server snapshot
+  );
+
+  // Keep setter functions that update both state and localStorage
+  const setSelectedTheme = (keys: Set<Theme>) => {
+    const value = Array.from(keys).join(',');
+    localStorage.setItem('theme-mode', value);
+    // Invalidate cache
+    cachedThemeValue = null;
+    window.dispatchEvent(new Event('storage'));
+  };
+
+  const setSelectedThemeName = (name: ThemeName) => {
+    localStorage.setItem('theme-name', name);
+    window.dispatchEvent(new Event('storage'));
+  };
+
+  // Sync to DOM attributes when values change
+  useEffect(() => {
+    document.documentElement.setAttribute(
+      'data-theme-mode',
+      Array.from(selectedTheme).join(','),
+    );
+  }, [selectedTheme]);
 
   useEffect(() => {
-    if (isBrowser) {
-      document.documentElement.setAttribute(
-        'data-theme-mode',
-        Array.from(selectedTheme).join(','),
-      );
-      localStorage.setItem('theme-mode', Array.from(selectedTheme).join(','));
-    }
-  }, [selectedTheme, isBrowser]);
-
-  useEffect(() => {
-    if (isBrowser) {
-      document.documentElement.setAttribute(
-        'data-theme-name',
-        selectedThemeName || 'backstage',
-      );
-      localStorage.setItem('theme-name', selectedThemeName || 'backstage');
-    }
-  }, [selectedThemeName, isBrowser]);
+    document.documentElement.setAttribute('data-theme-name', selectedThemeName);
+  }, [selectedThemeName]);
 
   return (
     <PlaygroundContext.Provider

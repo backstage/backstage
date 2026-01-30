@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useCallback } from 'react';
+import { useEffect, useState, useCallback, useSyncExternalStore } from 'react';
 import CodeMirror from '@uiw/react-codemirror';
 import { sass } from '@codemirror/lang-sass';
 import styles from './styles.module.css';
@@ -13,6 +13,10 @@ import { RiArrowDownSLine } from '@remixicon/react';
 const defaultTheme = `:root {
   --bui-bg-solid: #000;
 }`;
+
+// Stable server snapshots for useSyncExternalStore
+const serverIsClient = false;
+const serverDefaultTheme = defaultTheme;
 
 const myTheme = createTheme({
   theme: 'light',
@@ -46,11 +50,40 @@ const myTheme = createTheme({
 });
 
 export const CustomTheme = () => {
-  const [isClient, setIsClient] = useState(() => typeof window !== 'undefined');
   const [open, setOpen] = useState(true);
-  const [customTheme, setCustomTheme] = useState<string | undefined>(undefined);
   const { selectedThemeName } = usePlayground();
   const [savedMessage, setSavedMessage] = useState<string>('Save');
+
+  // SSR-safe client detection
+  const isClient = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => serverIsClient,
+  );
+
+  // SSR-safe localStorage access for custom theme
+  const customThemeFromStorage = useSyncExternalStore(
+    callback => {
+      window.addEventListener('storage', callback);
+      return () => window.removeEventListener('storage', callback);
+    },
+    () => {
+      const stored = localStorage.getItem('customThemeCss');
+      if (!stored) {
+        localStorage.setItem('customThemeCss', defaultTheme);
+        return defaultTheme;
+      }
+      return stored;
+    },
+    () => serverDefaultTheme,
+  );
+
+  const [customTheme, setCustomTheme] = useState(customThemeFromStorage);
+
+  // Sync from storage when it changes
+  useEffect(() => {
+    setCustomTheme(customThemeFromStorage);
+  }, [customThemeFromStorage]);
 
   const updateStyleElement = (theme: string) => {
     let styleElement = document.getElementById(
@@ -66,19 +99,11 @@ export const CustomTheme = () => {
     styleElement.textContent = theme;
   };
 
+  // Apply custom theme to DOM
   useEffect(() => {
-    if (selectedThemeName === 'custom') {
-      let storedTheme = localStorage.getItem('customThemeCss');
-      if (!storedTheme) {
-        storedTheme = defaultTheme;
-        localStorage.setItem('customThemeCss', storedTheme);
-      }
-      // This setState is intentional - we're syncing component state with localStorage
-      // when the user switches to the custom theme. This is a valid effect pattern.
-      // eslint-disable-next-line react-hooks/set-state-in-effect
-      setCustomTheme(storedTheme);
-      updateStyleElement(storedTheme);
-    } else {
+    if (selectedThemeName === 'custom' && customTheme && isClient) {
+      updateStyleElement(customTheme);
+    } else if (isClient) {
       const styleElement = document.getElementById(
         'custom-theme-style',
       ) as HTMLStyleElement;
@@ -86,7 +111,7 @@ export const CustomTheme = () => {
         styleElement.remove();
       }
     }
-  }, [selectedThemeName]);
+  }, [selectedThemeName, customTheme, isClient]);
 
   const handleSave = () => {
     if (customTheme) {
