@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { InputError } from '@backstage/errors';
-import { lookup } from 'dns/promises';
+import { InputError, isError } from '@backstage/errors';
+import { lookup } from 'node:dns/promises';
 import ipaddr from 'ipaddr.js';
 
 const FETCH_TIMEOUT_MS = 10000;
@@ -158,7 +158,7 @@ async function validateHostNotPrivate(hostname: string): Promise<void> {
       throw new InputError('Invalid client_id URL');
     }
   } catch (error) {
-    if (error instanceof InputError) throw error;
+    if (isError(error) && error.name === 'InputError') throw error;
     throw new InputError('Failed to fetch client metadata');
   }
 }

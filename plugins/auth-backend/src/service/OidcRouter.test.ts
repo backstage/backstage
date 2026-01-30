@@ -37,9 +37,7 @@ import { TokenIssuer } from '../identity/types';
 import { CimdClientInfo, isCimdUrl } from './CimdClient';
 
 jest.mock('./CimdClient', () => {
-  const actual = jest.requireActual(
-    './CimdClient',
-  ) as typeof import('./CimdClient');
+  const actual = jest.requireActual('./CimdClient');
   return {
     ...actual,
     fetchCimdMetadata: jest.fn(),
