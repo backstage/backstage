@@ -1,8 +1,0 @@
-site_name: Test
-plugins:
-  - techdocs-core
-extra:
-  array_hooks: &array_hooks
-    hooks:
-      - custom_hook.py
-<<: *array_hooks

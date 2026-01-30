@@ -1,5 +1,0 @@
-site_name: Test site name
-site_description: Test site description
-hooks:
-  - hooks/my_hook.py
-  - hooks/another_hook.py
