@@ -765,7 +765,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@aws-sdk/client-sesv2@npm:^3.839.0, @aws-sdk/client-sesv2@npm:^3.911.0":
+"@aws-sdk/client-sesv2@npm:^3.911.0":
   version: 3.946.0
   resolution: "@aws-sdk/client-sesv2@npm:3.946.0"
   dependencies:
@@ -21579,12 +21579,11 @@ __metadata:
   linkType: hard
 
 "@types/nodemailer@npm:^7.0.0":
-  version: 7.0.5
-  resolution: "@types/nodemailer@npm:7.0.5"
+  version: 7.0.9
+  resolution: "@types/nodemailer@npm:7.0.9"
   dependencies:
-    "@aws-sdk/client-sesv2": "npm:^3.839.0"
     "@types/node": "npm:*"
-  checksum: 10/2defc792256092b18ee7ca2ef18ba47343ce5239da32ad9d5219f8f6d57279fa1540415219105ce690f5fb9bf343288e81c315d41deb3e3e8f293d91c382ab4f
+  checksum: 10/6bfca388af668a05a68e750a7acbd5736a3dcdf96f34f23bf4211ab152572d55008fd813e38bf03f944c6edbd002a7f98d6cee048343b8e840b3b91a00befac9
   languageName: node
   linkType: hard
 
