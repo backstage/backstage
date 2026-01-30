@@ -8,8 +8,8 @@ import { MobileBottomNav } from '@/components/MobileBottomNav';
 import styles from './layout.module.css';
 
 import '../css/globals.css';
-import '/public/theme-backstage.css';
-import '/public/theme-spotify.css';
+import '../css/theme-backstage.css';
+import '../css/theme-spotify.css';
 
 export const metadata: Metadata = {
   title: 'Backstage UI',

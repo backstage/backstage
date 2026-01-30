@@ -5,7 +5,7 @@
   "scripts": {
     "prebuild": "yarn sync:css",
     "build": "next build",
-    "lint": "next lint",
+    "lint": "eslint .",
     "prestart": "yarn sync:css",
     "start": "next dev",
     "sync:changelog": "node scripts/sync-changelog.mjs",
@@ -47,7 +47,7 @@
     "@types/react": "19.2.10",
     "@types/react-dom": "19.2.3",
     "chokidar": "^3.6.0",
-    "eslint": "^8",
+    "eslint": "^9",
     "eslint-config-next": "16.1.6",
     "lightningcss": "^1.28.2",
     "typescript": "^5",
