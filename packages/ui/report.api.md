@@ -1113,6 +1113,7 @@ export const LinkDefinition: {
       'danger',
       'warning',
       'success',
+      'info',
     ];
     readonly truncate: readonly [true, false];
     readonly standalone: readonly [true, false];
@@ -1925,6 +1926,7 @@ export const TextDefinition: {
       'danger',
       'warning',
       'success',
+      'info',
     ];
     readonly truncate: readonly [true, false];
   };
