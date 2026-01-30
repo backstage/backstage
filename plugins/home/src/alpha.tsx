@@ -62,10 +62,10 @@ const homePage = PageBlueprint.makeWithOverrides({
       routeRef: rootRouteRef,
       loader: () =>
         import('./components/').then(m => (
-            <m.HomepageCompositionRoot
-              children={inputs.props?.get(coreExtensionData.reactElement)}
-              title={inputs.props?.get(coreExtensionData.title)}
-            />,
+          <m.HomepageCompositionRoot
+            children={inputs.props?.get(coreExtensionData.reactElement)}
+            title={inputs.props?.get(coreExtensionData.title)}
+          />
         )),
     });
   },
