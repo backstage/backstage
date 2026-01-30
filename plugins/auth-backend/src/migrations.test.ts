@@ -385,4 +385,67 @@ describe('migrations', () => {
       await knex.destroy();
     },
   );
+
+  it.each(databases.eachSupportedId())(
+    '20251217120000_drop_oidc_clients_fk.js, %p',
+    async databaseId => {
+      const knex = await databases.init(databaseId);
+
+      await migrateUntilBefore(knex, '20251217120000_drop_oidc_clients_fk.js');
+
+      // Create a client for DCR sessions
+      await knex
+        .insert({
+          client_id: 'dcr-client-id',
+          client_secret: 'test-client-secret',
+          client_name: 'DCR Client',
+          response_types: JSON.stringify(['code']),
+          grant_types: JSON.stringify(['authorization_code']),
+          redirect_uris: JSON.stringify(['https://example.com/callback']),
+        })
+        .into('oidc_clients');
+
+      // Create a DCR session (has matching client in oidc_clients)
+      await knex
+        .insert({
+          id: 'dcr-session',
+          client_id: 'dcr-client-id',
+          redirect_uri: 'https://example.com/callback',
+          response_type: 'code',
+          status: 'pending',
+          expires_at: new Date(Date.now() + 3600000),
+        })
+        .into('oauth_authorization_sessions');
+
+      // Apply migration - drops FK constraint
+      await migrateUpOnce(knex);
+
+      // Now we can insert a CIMD session (URL-based client_id not in oidc_clients)
+      await knex
+        .insert({
+          id: 'cimd-session',
+          client_id: 'https://example.com/.well-known/oauth-client/cli',
+          redirect_uri: 'http://localhost:8080/callback',
+          response_type: 'code',
+          status: 'pending',
+          expires_at: new Date(Date.now() + 3600000),
+        })
+        .into('oauth_authorization_sessions');
+
+      // Verify both sessions exist
+      await expect(
+        knex('oauth_authorization_sessions').select('id').orderBy('id'),
+      ).resolves.toEqual([{ id: 'cimd-session' }, { id: 'dcr-session' }]);
+
+      // Rollback - should delete CIMD sessions and re-add FK
+      await migrateDownOnce(knex);
+
+      // CIMD session should be deleted, DCR session should remain
+      await expect(
+        knex('oauth_authorization_sessions').select('id'),
+      ).resolves.toEqual([{ id: 'dcr-session' }]);
+
+      await knex.destroy();
+    },
+  );
 });

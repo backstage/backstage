@@ -26,6 +26,7 @@ import crypto from 'node:crypto';
 import { OidcDatabase } from '../database/OidcDatabase';
 import { DateTime } from 'luxon';
 import matcher from 'matcher';
+import { isCimdUrl, fetchCimdMetadata } from './CimdClient';
 
 export class OidcService {
   private readonly auth: AuthService;
@@ -70,6 +71,13 @@ export class OidcService {
   }
 
   public getConfiguration() {
+    const cimdEnabled = this.config.getOptionalBoolean(
+      'auth.experimentalClientIdMetadataDocuments.enabled',
+    );
+    const dcrEnabled = this.config.getOptionalBoolean(
+      'auth.experimentalDynamicClientRegistration.enabled',
+    );
+
     return {
       issuer: this.baseUrl,
       token_endpoint: `${this.baseUrl}/v1/token`,
@@ -97,8 +105,11 @@ export class OidcService {
       claims_supported: ['sub', 'ent'],
       grant_types_supported: ['authorization_code'],
       authorization_endpoint: `${this.baseUrl}/v1/authorize`,
-      registration_endpoint: `${this.baseUrl}/v1/register`,
       code_challenge_methods_supported: ['S256', 'plain'],
+      ...(dcrEnabled && {
+        registration_endpoint: `${this.baseUrl}/v1/register`,
+      }),
+      ...(cimdEnabled && { client_id_metadata_document_supported: true }),
     };
   }
 
@@ -184,14 +195,8 @@ export class OidcService {
       throw new InputError('Only authorization code flow is supported');
     }
 
-    const client = await this.oidc.getClient({ clientId });
-    if (!client) {
-      throw new InputError('Invalid client_id');
-    }
-
-    if (!client.redirectUris.includes(redirectUri)) {
-      throw new InputError('Invalid redirect_uri');
-    }
+    // Determine if this is a CIMD client (URL-based client_id) or DCR client
+    const client = await this.resolveClient(clientId, redirectUri);
 
     if (codeChallenge) {
       if (
@@ -223,6 +228,97 @@ export class OidcService {
       clientName: client.clientName,
       scope,
       redirectUri,
+    };
+  }
+
+  /**
+   * Resolves the client name for a given client ID.
+   * For CIMD clients (URL-based), fetches metadata from the URL.
+   * For DCR clients, looks up the client in the database.
+   */
+  private async getClientName(clientId: string): Promise<string> {
+    if (isCimdUrl(clientId)) {
+      const cimdClient = await fetchCimdMetadata(clientId);
+      return cimdClient.clientName;
+    }
+
+    const client = await this.oidc.getClient({ clientId });
+    if (!client) {
+      throw new InputError('Invalid client_id');
+    }
+    return client.clientName;
+  }
+
+  private async resolveClient(
+    clientId: string,
+    redirectUri: string,
+  ): Promise<{ clientName: string; redirectUris: string[] }> {
+    const cimdEnabled = this.config.getOptionalBoolean(
+      'auth.experimentalClientIdMetadataDocuments.enabled',
+    );
+
+    // Check if client_id is a CIMD URL
+    if (isCimdUrl(clientId)) {
+      if (!cimdEnabled) {
+        throw new InputError('Client ID metadata documents not enabled');
+      }
+
+      // Validate client_id against allowedClientIdPatterns
+      const allowedClientIdPatterns = this.config.getOptionalStringArray(
+        'auth.experimentalClientIdMetadataDocuments.allowedClientIdPatterns',
+      ) ?? ['*'];
+
+      if (
+        !allowedClientIdPatterns.some(pattern =>
+          matcher.isMatch(clientId, pattern),
+        )
+      ) {
+        throw new InputError('Invalid client_id');
+      }
+
+      const cimdClient = await fetchCimdMetadata(clientId);
+
+      // Validate redirect_uri against CIMD allowedRedirectUriPatterns
+      const allowedRedirectUriPatterns = this.config.getOptionalStringArray(
+        'auth.experimentalClientIdMetadataDocuments.allowedRedirectUriPatterns',
+      ) ?? ['*'];
+
+      if (
+        !allowedRedirectUriPatterns.some(pattern =>
+          matcher.isMatch(redirectUri, pattern),
+        )
+      ) {
+        throw new InputError('Invalid redirect_uri');
+      }
+
+      // Validate redirect_uri matches one of the client's registered URI patterns
+      if (
+        !cimdClient.redirectUris.some(pattern =>
+          matcher.isMatch(redirectUri, pattern),
+        )
+      ) {
+        throw new InputError('Redirect URI not registered');
+      }
+
+      return {
+        clientName: cimdClient.clientName,
+        redirectUris: cimdClient.redirectUris,
+      };
+    }
+
+    // Fall back to database client lookup (DCR or pre-registered clients)
+    const client = await this.oidc.getClient({ clientId });
+    if (!client) {
+      throw new InputError('Invalid client_id');
+    }
+
+    if (!client.redirectUris.includes(redirectUri)) {
+      throw new InputError('Invalid redirect_uri');
+    }
+
+    return {
+      clientName: client.clientName,
+      redirectUris: client.redirectUris,
     };
   }
 
@@ -292,15 +388,12 @@ export class OidcService {
       throw new NotFoundError('Authorization session not found or expired');
     }
 
-    const client = await this.oidc.getClient({ clientId: session.clientId });
-    if (!client) {
-      throw new InputError('Invalid client_id');
-    }
+    const clientName = await this.getClientName(session.clientId);
 
     return {
       id: session.id,
       clientId: session.clientId,
-      clientName: client.clientName,
+      clientName,
       redirectUri: session.redirectUri,
       scope: session.scope,
       state: session.state,
