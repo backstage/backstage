@@ -1,5 +1,11 @@
 # @backstage/plugin-techdocs-node
 
+## 1.13.11
+
+### Patch Changes
+
+- Backport security fixes
+
 ## 1.13.10
 
 ### Patch Changes
