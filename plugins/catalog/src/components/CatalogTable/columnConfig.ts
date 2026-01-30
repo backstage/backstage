@@ -158,8 +158,10 @@ export function createCustomColumn(
       ? ({ entity: entity1 }, { entity: entity2 }) => {
           const value1 = resolveFieldPath(entity1, field);
           const value2 = resolveFieldPath(entity2, field);
-          const str1 = value1 != null ? String(value1) : '';
-          const str2 = value2 != null ? String(value2) : '';
+          const str1 =
+            value1 !== null && value1 !== undefined ? String(value1) : '';
+          const str2 =
+            value2 !== null && value2 !== undefined ? String(value2) : '';
           return str1.localeCompare(str2);
         }
       : undefined,
