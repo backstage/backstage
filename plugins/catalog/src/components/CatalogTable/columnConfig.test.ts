@@ -145,7 +145,7 @@ describe('createCustomColumn', () => {
       },
     };
 
-    const rendered = column.render!(row, 'asc');
+    const rendered = column.render!(row, 'row');
     expect(rendered).toBe('service');
   });
 
@@ -173,7 +173,7 @@ describe('createCustomColumn', () => {
       },
     };
 
-    const rendered = column.render!(row, 'asc');
+    const rendered = column.render!(row, 'row');
     expect(rendered).toBe('N/A');
   });
 
@@ -218,8 +218,8 @@ describe('createCustomColumn', () => {
       },
     };
 
-    expect(column.render!(componentRow, 'asc')).toBe('service');
-    expect(column.render!(apiRow, 'asc')).toBeNull();
+    expect(column.render!(componentRow, 'row')).toBe('service');
+    expect(column.render!(apiRow, 'row')).toBeNull();
   });
 });
 
