@@ -467,6 +467,7 @@ export default {
               {
                 label: 'Architecture',
                 description: 'Architecture of the backend system.',
+                differentiator: 'backend-system/',
               },
               [
                 'backend-system/architecture/index',
@@ -546,6 +547,7 @@ export default {
               {
                 label: 'Architecture',
                 description: 'Architecture of the new frontend system.',
+                differentiator: 'frontend-system/',
               },
               [
                 'frontend-system/architecture/index',
