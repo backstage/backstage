@@ -75,6 +75,9 @@ const DEFAULT_WIDGET_ATTACH_POINT = {
 export const HomepageWidgetBlueprint = createExtensionBlueprint({
   kind: 'home-widget',
   attachTo: DEFAULT_WIDGET_ATTACH_POINT,
+  dataRefs: {
+    widget: homePageWidgetDataRef,
+  },
   output: [homePageWidgetDataRef],
   *factory(params: HomepageWidgetBlueprintParams, { node }) {
     const isCustomizable = params.settings?.schema !== undefined;

@@ -47,7 +47,13 @@ export const HomepageWidgetBlueprint: ExtensionBlueprint<{
   inputs: {};
   config: {};
   configInput: {};
-  dataRefs: never;
+  dataRefs: {
+    widget: ConfigurableExtensionDataRef<
+      HomePageWidgetData,
+      'home.widget.data',
+      {}
+    >;
+  };
 }>;
 
 // @alpha (undocumented)
