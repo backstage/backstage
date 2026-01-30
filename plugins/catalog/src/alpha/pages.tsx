@@ -34,6 +34,25 @@ import { rootRouteRef } from '../routes';
 import { useEntityFromUrl } from '../components/CatalogEntityPage/useEntityFromUrl';
 import { buildFilterFn } from './filter/FilterWrapper';
 
+const customColumnSchema = (z: typeof import('zod').z) =>
+  z.object({
+    title: z.string(),
+    field: z.string(),
+    width: z.number().optional(),
+    sortable: z.boolean().optional(),
+    defaultValue: z.string().optional(),
+    kind: z.union([z.string(), z.array(z.string())]).optional(),
+  });
+
+const columnsConfigSchema = (z: typeof import('zod').z) =>
+  z
+    .object({
+      include: z.array(z.string()).optional(),
+      exclude: z.array(z.string()).optional(),
+      custom: z.array(customColumnSchema(z)).optional(),
+    })
+    .optional();
+
 export const catalogPage = PageBlueprint.makeWithOverrides({
   inputs: {
     filters: createExtensionInput([coreExtensionData.reactElement]),
@@ -51,6 +70,7 @@ export const catalogPage = PageBlueprint.makeWithOverrides({
             }),
           ])
           .default(true),
+      columns: columnsConfigSchema,
     },
   },
   factory(originalFactory, { inputs, config }) {
@@ -66,6 +86,7 @@ export const catalogPage = PageBlueprint.makeWithOverrides({
           <BaseCatalogPage
             filters={<>{filters}</>}
             pagination={config.pagination}
+            columnsConfig={config.columns}
           />
         );
       },

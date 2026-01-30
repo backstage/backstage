@@ -40,17 +40,22 @@ import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { CatalogTableColumnsFunc } from '../CatalogTable/types';
 import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common/alpha';
 import { usePermission } from '@backstage/plugin-permission-react';
+import { ColumnConfig } from '../CatalogTable/columnConfig';
 
 /** @internal */
 export type BaseCatalogPageProps = {
   filters: ReactNode;
   content?: ReactNode;
   pagination?: EntityListPagination;
+  columnsConfig?: ColumnConfig;
 };
 
 /** @internal */
 export function BaseCatalogPage(props: BaseCatalogPageProps) {
-  const { filters, content = <CatalogTable />, pagination } = props;
+  const { filters, content, pagination, columnsConfig } = props;
+  const catalogTableContent = content ?? (
+    <CatalogTable columnsConfig={columnsConfig} />
+  );
   const orgName =
     useApi(configApiRef).getOptionalString('organization.name') ?? 'Backstage';
   const createComponentLink = useRouteRef(createComponentRouteRef);
@@ -74,7 +79,9 @@ export function BaseCatalogPage(props: BaseCatalogPageProps) {
         <EntityListProvider pagination={pagination}>
           <CatalogFilterLayout>
             <CatalogFilterLayout.Filters>{filters}</CatalogFilterLayout.Filters>
-            <CatalogFilterLayout.Content>{content}</CatalogFilterLayout.Content>
+            <CatalogFilterLayout.Content>
+              {catalogTableContent}
+            </CatalogFilterLayout.Content>
           </CatalogFilterLayout>
         </EntityListProvider>
       </Content>
