@@ -4,8 +4,6 @@
 
 **BREAKING**: Removed link and tint color tokens, added new status foreground tokens, and improved Link component styling
 
-**Removed Tokens (BREAKING):**
-
 The following color tokens have been removed:
 
 - `--bui-fg-link` (and all related tokens: `-hover`, `-pressed`, `-disabled`)

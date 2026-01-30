@@ -242,30 +242,6 @@ color of your app.
     </Table.Row>
     <Table.Row>
       <Table.Cell>
-        <Chip head>--bui-bg-tint</Chip>
-      </Table.Cell>
-      <Table.Cell>Used for tint background colors.</Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <Chip head>--bui-bg-tint-hover</Chip>
-      </Table.Cell>
-      <Table.Cell>Used for tint background colors when hovered.</Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <Chip head>--bui-bg-tint-focus</Chip>
-      </Table.Cell>
-      <Table.Cell>Used for tint background colors when active.</Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <Chip head>--bui-bg-tint-disabled</Chip>
-      </Table.Cell>
-      <Table.Cell>Used for tint background colors when disabled.</Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
         <Chip head>--bui-bg-danger</Chip>
       </Table.Cell>
       <Table.Cell>Used to show errors information.</Table.Cell>
@@ -281,6 +257,12 @@ color of your app.
         <Chip head>--bui-bg-success</Chip>
       </Table.Cell>
       <Table.Cell>Used to show success information.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-bg-info</Chip>
+      </Table.Cell>
+      <Table.Cell>Used to show informational content.</Table.Cell>
     </Table.Row>
   </Table.Body>
 </Table.Root>
@@ -317,22 +299,6 @@ are prefixed with `fg` to make it easier to identify.
     </Table.Row>
     <Table.Row>
       <Table.Cell>
-        <Chip head>--bui-fg-link</Chip>
-      </Table.Cell>
-      <Table.Cell>
-        It should be used on top of main background surfaces.
-      </Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <Chip head>--bui-fg-link-hover</Chip>
-      </Table.Cell>
-      <Table.Cell>
-        It should be used on top of main background surfaces.
-      </Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
         <Chip head>--bui-fg-disabled</Chip>
       </Table.Cell>
       <Table.Cell>
@@ -349,26 +315,10 @@ are prefixed with `fg` to make it easier to identify.
     </Table.Row>
     <Table.Row>
       <Table.Cell>
-        <Chip head>--bui-fg-tint</Chip>
-      </Table.Cell>
-      <Table.Cell>
-        It should be used on top of tint background colors.
-      </Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
-        <Chip head>--bui-fg-tint-disabled</Chip>
-      </Table.Cell>
-      <Table.Cell>
-        It should be used on top of tint background colors when disabled.
-      </Table.Cell>
-    </Table.Row>
-    <Table.Row>
-      <Table.Cell>
         <Chip head>--bui-fg-danger</Chip>
       </Table.Cell>
       <Table.Cell>
-        It should be used on top of danger background colors.
+        Used for error states and destructive actions.
       </Table.Cell>
     </Table.Row>
     <Table.Row>
@@ -376,7 +326,7 @@ are prefixed with `fg` to make it easier to identify.
         <Chip head>--bui-fg-warning</Chip>
       </Table.Cell>
       <Table.Cell>
-        It should be used on top of warning background colors.
+        Used for warning states and cautionary information.
       </Table.Cell>
     </Table.Row>
     <Table.Row>
@@ -384,7 +334,47 @@ are prefixed with `fg` to make it easier to identify.
         <Chip head>--bui-fg-success</Chip>
       </Table.Cell>
       <Table.Cell>
+        Used for success states and positive feedback.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-fg-info</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        Used for informational content and neutral status.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-fg-danger-on-bg</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        It should be used on top of danger background colors.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-fg-warning-on-bg</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        It should be used on top of warning background colors.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-fg-success-on-bg</Chip>
+      </Table.Cell>
+      <Table.Cell>
         It should be used on top of success background colors.
+      </Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-fg-info-on-bg</Chip>
+      </Table.Cell>
+      <Table.Cell>
+        It should be used on top of info background colors.
       </Table.Cell>
     </Table.Row>
   </Table.Body>
@@ -448,6 +438,12 @@ low contrast to help as a separator with the different background colors.
         <Chip head>--bui-border-success</Chip>
       </Table.Cell>
       <Table.Cell>It should be used on top of `--bui-bg-success`.</Table.Cell>
+    </Table.Row>
+    <Table.Row>
+      <Table.Cell>
+        <Chip head>--bui-border-info</Chip>
+      </Table.Cell>
+      <Table.Cell>It should be used on top of `--bui-bg-info`.</Table.Cell>
     </Table.Row>
   </Table.Body>
 </Table.Root>
