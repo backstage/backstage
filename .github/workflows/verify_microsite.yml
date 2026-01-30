@@ -43,7 +43,7 @@ jobs:
               per_page: 100,
             })
 
-            const [{branch}] = data
+            const results = data
               .map(i => i.name)
               .filter(branch => branch.match(/^patch\/v\d+\.\d+\.\d+$/))
               .map(branch => ({
@@ -55,6 +55,10 @@ jobs:
                   .reduce((val, part) => Number(val) * 1000 + Number(part))
               }))
               .sort((a, b) => b.val - a.val)
+            console.log(results, data, data
+              .map(i => i.name)
+              .filter(branch => branch.match(/^patch\/v\d+\.\d+\.\d+$/)))
+            const [{branch}] = results;
 
             return branch
           result-encoding: string
