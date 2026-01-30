@@ -39,4 +39,4 @@ Custom columns support:
 
 - Dot notation for field paths (e.g., `spec.type`)
 - Bracket notation for annotations/labels (e.g., `metadata.annotations['key']`)
-- Optional width, sortable, defaultValue, and kind filtering
+- Optional `width`, `sortable`, `defaultValue`, and `kind` filtering

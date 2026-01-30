@@ -128,7 +128,7 @@ export function createCustomColumn(
   return {
     title,
     field: `entity.${field}`,
-    width: width ? `${width}px` : 'auto',
+    width: width !== undefined ? `${width}px` : 'auto',
     sorting: sortable,
     render: ({ entity }) => {
       // Check if kind filter applies
@@ -158,8 +158,10 @@ export function createCustomColumn(
       ? ({ entity: entity1 }, { entity: entity2 }) => {
           const value1 = resolveFieldPath(entity1, field);
           const value2 = resolveFieldPath(entity2, field);
-          const str1 = value1 != null ? String(value1) : '';
-          const str2 = value2 != null ? String(value2) : '';
+          const str1 =
+            value1 !== null && value1 !== undefined ? String(value1) : '';
+          const str2 =
+            value2 !== null && value2 !== undefined ? String(value2) : '';
           return str1.localeCompare(str2);
         }
       : undefined,
@@ -184,8 +186,10 @@ export function applyColumnConfig(
   if (config.include && config.include.length > 0) {
     const includeSet = new Set(config.include.map(id => id.toLowerCase()));
     result = result.filter(col => {
+      // Always preserve hidden columns (e.g., the title column used for search)
+      if (col.hidden) return true;
       const colId = getColumnId(col);
-      return colId && includeSet.has(colId.toLowerCase());
+      return colId ? includeSet.has(colId.toLowerCase()) : false;
     });
   }
 

@@ -53,13 +53,17 @@ export type BaseCatalogPageProps = {
 
 function CatalogPageContent(props: BaseCatalogPageProps) {
   const { filters, content, pagination, columnsConfig } = props;
-  const tableContent = content ?? <CatalogTable columnsConfig={columnsConfig} />;
+  const tableContent = content ?? (
+    <CatalogTable columnsConfig={columnsConfig} />
+  );
 
   return (
     <EntityListProvider pagination={pagination}>
       <CatalogFilterLayout>
         <CatalogFilterLayout.Filters>{filters}</CatalogFilterLayout.Filters>
-        <CatalogFilterLayout.Content>{tableContent}</CatalogFilterLayout.Content>
+        <CatalogFilterLayout.Content>
+          {tableContent}
+        </CatalogFilterLayout.Content>
       </CatalogFilterLayout>
     </EntityListProvider>
   );
@@ -67,6 +71,36 @@ function CatalogPageContent(props: BaseCatalogPageProps) {
 
 /** @internal */
 export function BaseCatalogPage(props: BaseCatalogPageProps) {
+  const orgName =
+    useApi(configApiRef).getOptionalString('organization.name') ?? 'Backstage';
+  const createComponentLink = useRouteRef(createComponentRouteRef);
+  const { t } = useTranslationRef(catalogTranslationRef);
+  const { allowed } = usePermission({
+    permission: catalogEntityCreatePermission,
+  });
+  const headerActions = (
+    <>
+      {allowed && (
+        <CreateButton
+          title={t('indexPage.createButtonTitle')}
+          to={createComponentLink && createComponentLink()}
+        />
+      )}
+      <SupportButton>{t('indexPage.supportButtonContent')}</SupportButton>
+    </>
+  );
+
+  return (
+    <PageWithHeader title={t('indexPage.title', { orgName })} themeId="home">
+      <Content>
+        <ContentHeader title="">{headerActions}</ContentHeader>
+        <CatalogPageContent {...props} />
+      </Content>
+    </PageWithHeader>
+  );
+}
+
+function NfsBaseCatalogPage(props: BaseCatalogPageProps) {
   const orgName =
     useApi(configApiRef).getOptionalString('organization.name') ?? 'Backstage';
   const createComponentLink = useRouteRef(createComponentRouteRef);
@@ -92,7 +126,6 @@ export function BaseCatalogPage(props: BaseCatalogPageProps) {
         }
       />
       <Content>
-<<<<<<< HEAD
         <CatalogPageContent {...props} />
       </Content>
     </>
