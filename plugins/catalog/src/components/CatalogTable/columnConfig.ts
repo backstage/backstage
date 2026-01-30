@@ -66,6 +66,7 @@ export type BuiltinColumnId = (typeof BUILTIN_COLUMN_IDS)[number];
  *   - "metadata.name"
  *   - "metadata.annotations['backstage.io/techdocs-ref']"
  *   - "spec.type"
+ * @public
  */
 export function resolveFieldPath(entity: Entity, fieldPath: string): unknown {
   const parts: string[] = [];
@@ -248,9 +249,7 @@ function getColumnId(column: TableColumn<CatalogTableRow>): string | undefined {
 
   // Fallback to title-based matching
   const title =
-    typeof column.title === 'string'
-      ? column.title.toLowerCase()
-      : undefined;
+    typeof column.title === 'string' ? column.title.toLowerCase() : undefined;
 
   if (title) {
     for (const id of BUILTIN_COLUMN_IDS) {

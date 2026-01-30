@@ -49,7 +49,9 @@ describe('resolveFieldPath', () => {
   };
 
   it('should resolve simple dot notation paths', () => {
-    expect(resolveFieldPath(testEntity, 'metadata.name')).toBe('test-component');
+    expect(resolveFieldPath(testEntity, 'metadata.name')).toBe(
+      'test-component',
+    );
     expect(resolveFieldPath(testEntity, 'spec.type')).toBe('service');
     expect(resolveFieldPath(testEntity, 'kind')).toBe('Component');
   });
@@ -67,16 +69,18 @@ describe('resolveFieldPath', () => {
   });
 
   it('should resolve bracket notation for labels', () => {
-    expect(
-      resolveFieldPath(testEntity, "metadata.labels['cost-center']"),
-    ).toBe('engineering');
+    expect(resolveFieldPath(testEntity, "metadata.labels['cost-center']")).toBe(
+      'engineering',
+    );
     expect(resolveFieldPath(testEntity, "metadata.labels['team']")).toBe(
       'platform',
     );
   });
 
   it('should return undefined for non-existent paths', () => {
-    expect(resolveFieldPath(testEntity, 'metadata.nonexistent')).toBeUndefined();
+    expect(
+      resolveFieldPath(testEntity, 'metadata.nonexistent'),
+    ).toBeUndefined();
     expect(
       resolveFieldPath(testEntity, "metadata.annotations['nonexistent']"),
     ).toBeUndefined();
