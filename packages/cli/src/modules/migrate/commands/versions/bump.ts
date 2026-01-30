@@ -27,6 +27,7 @@ import { isError, NotFoundError } from '@backstage/errors';
 import { resolve as resolvePath } from 'node:path';
 import { paths } from '../../../../lib/paths';
 import { getHasYarnPlugin } from '../../../../lib/yarnPlugin';
+import { getHasPnpm, updatePnpmCatalog } from '../../../../lib/pnpmCatalog';
 import {
   fetchPackageInfo,
   Lockfile,
@@ -71,6 +72,7 @@ export default async (opts: OptionValues) => {
   const lockfilePath = paths.resolveTargetRoot('yarn.lock');
   const lockfile = await Lockfile.load(lockfilePath);
   const hasYarnPlugin = await getHasYarnPlugin();
+  const hasPnpm = getHasPnpm();
 
   let pattern = opts.pattern;
 
@@ -244,6 +246,29 @@ export default async (opts: OptionValues) => {
 
     console.log();
 
+    // Update pnpm catalog if pnpm is detected
+    if (hasPnpm && extendsDefaultPattern(pattern)) {
+      // Collect all Backstage packages that are used in the workspace
+      const usedBackstagePackages = new Set<string>();
+      for (const deps of versionBumps.values()) {
+        for (const dep of deps) {
+          if (dep.name.startsWith('@backstage/')) {
+            usedBackstagePackages.add(dep.name);
+          }
+        }
+      }
+
+      const catalogUpdated = await updatePnpmCatalog(
+        releaseManifest,
+        usedBackstagePackages,
+      );
+
+      if (catalogUpdated) {
+        console.log(chalk.cyan('Updated pnpm catalog in pnpm-workspace.yaml'));
+        console.log();
+      }
+    }
+
     // Do not update backstage.json when default pattern is not covered
     if (extendsDefaultPattern(pattern)) {
       await bumpBackstageJsonVersion(
@@ -323,6 +348,21 @@ export default async (opts: OptionValues) => {
             `yarn plugin was detected in the repository. To migrate back to explicit npm versions, ` +
             `remove the plugin by running "yarn plugin remove @yarnpkg/plugin-backstage", then ` +
             `repeat this command.`,
+        ),
+      );
+      console.log();
+    }
+
+    if (hasPnpm && !hasYarnPlugin) {
+      console.log();
+      console.log(
+        chalk.blue(
+          `${chalk.bold(
+            'NOTE',
+          )}: pnpm was detected in this repository. The Backstage package versions have been ` +
+            `updated in pnpm-workspace.yaml under the 'catalog' field. You can use 'catalog:' ` +
+            `as the version specifier in your package.json files to reference these versions ` +
+            `(e.g., "@backstage/core-plugin-api": "catalog:").`,
         ),
       );
       console.log();

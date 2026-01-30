@@ -568,6 +568,99 @@ describe('bump', () => {
     });
   });
 
+  it('should update pnpm catalog when pnpm-workspace.yaml exists', async () => {
+    mockDir.setContent({
+      'yarn.lock': lockfileMock,
+      'pnpm-workspace.yaml': `packages:
+  - "packages/*"
+catalog:
+  "@backstage/core": "^1.0.3"
+`,
+      'package.json': JSON.stringify({
+        workspaces: {
+          packages: ['packages/*'],
+        },
+      }),
+      packages: {
+        a: {
+          'package.json': JSON.stringify({
+            name: 'a',
+            dependencies: {
+              '@backstage/core': '^1.0.5',
+            },
+          }),
+        },
+        b: {
+          'package.json': JSON.stringify({
+            name: 'b',
+            dependencies: {
+              '@backstage/core': '^1.0.3',
+              '@backstage/theme': '^1.0.0',
+            },
+          }),
+        },
+      },
+    });
+
+    jest.spyOn(runObj, 'run').mockReturnValue({
+      exitCode: null,
+      waitForExit: jest.fn().mockResolvedValue(undefined),
+    } as any);
+    worker.use(
+      rest.get(
+        'https://versions.backstage.io/v1/tags/main/manifest.json',
+        (_, res, ctx) =>
+          res(
+            ctx.status(200),
+            ctx.json({
+              releaseVersion: '1.5.0',
+              packages: [
+                {
+                  name: '@backstage/core',
+                  version: '1.5.0',
+                },
+                {
+                  name: '@backstage/theme',
+                  version: '2.0.0',
+                },
+              ],
+            }),
+          ),
+      ),
+    );
+    const { log: logs } = await withLogCollector(['log', 'warn'], async () => {
+      await bump({ pattern: null, release: 'main' } as unknown as Command);
+    });
+    expectLogsToMatch(logs, [
+      'Using default pattern glob @backstage/*',
+      'Checking for updates of @backstage/core',
+      'Checking for updates of @backstage/theme',
+      'Some packages are outdated, updating',
+      'bumping @backstage/core in a to ^1.5.0',
+      'bumping @backstage/core in b to ^1.5.0',
+      'bumping @backstage/theme in b to ^2.0.0',
+      'Updated pnpm catalog in pnpm-workspace.yaml',
+      'Your project is now at version 1.5.0, which has been written to backstage.json',
+      'Running yarn install to install new versions',
+      'Checking for moved packages to the @backstage-community namespace...',
+      '⚠️  The following packages may have breaking changes:',
+      '  @backstage/theme : 1.0.0 ~> 2.0.0',
+      '    https://github.com/backstage/backstage/blob/master/packages/theme/CHANGELOG.md',
+      'NOTE: pnpm was detected in this repository. The Backstage package versions have been updated in pnpm-workspace.yaml under the \'catalog\' field. You can use \'catalog:\' as the version specifier in your package.json files to reference these versions (e.g., "@backstage/core-plugin-api": "catalog:").',
+      'Version bump complete!',
+    ]);
+
+    // Check that pnpm-workspace.yaml was updated
+    const workspaceYaml = await fs.readFile(
+      mockDir.resolve('pnpm-workspace.yaml'),
+      'utf-8',
+    );
+    expect(workspaceYaml).toContain('@backstage/core');
+    expect(workspaceYaml).toContain('^1.5.0');
+    expect(workspaceYaml).toContain('@backstage/theme');
+    expect(workspaceYaml).toContain('^2.0.0');
+  });
+
   it('should only bump packages in the manifest when a specific release is specified', async () => {
     mockDir.setContent({
       'yarn.lock': lockfileMock,
