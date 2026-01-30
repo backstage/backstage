@@ -27,7 +27,7 @@
 <script src="/js/medium-zoom.js"></script>
 <script src="/js/dismissable-banner.js"></script>
 <script src="/js/scroll-nav-to-view-in-docs.js"></script><link rel="stylesheet" href="/assets/css/styles.4d1696bf.css">
-<script src="/assets/js/runtime~main.6dc16656.js" defer="defer"></script>
+<script src="/assets/js/runtime~main.41397643.js" defer="defer"></script>
 <script src="/assets/js/main.635978e4.js" defer="defer"></script>
 </head>
 <body class="navigation-with-keyboard">
@@ -70,8 +70,8 @@ in some way so that they won&#x27;t collide with future built-in actions that we
 may ship with the <code>scaffolder-backend</code> plugin.</li>
 <li class=""><code>description</code> - An optional field to describe the purpose of the action. This will populate in the <code>/create/actions</code>
 endpoint.</li>
-<li class=""><code>schema.input</code> - A <code>zod</code> or JSON schema object for input values to your function</li>
-<li class=""><code>schema.output</code> - A <code>zod</code> or JSON schema object for values which are output from the
+<li class=""><code>schema.input</code> - A <code>zod</code> schema object for input values to your function</li>
+<li class=""><code>schema.output</code> - A <code>zod</code> schema object for values which are output from the
 function using <code>ctx.output</code></li>
 <li class=""><code>handler</code> - the actual code which is run as part of the action, with a context</li>
 </ul>
@@ -112,7 +112,7 @@ by not re-running the same function again if it was
 executed successfully on the previous run.</li>
 <li class=""><code>ctx.logger</code> - a <a class="" href="/docs/next/backend-system/core-services/logger">LoggerService</a> instance for additional logging inside your action</li>
 <li class=""><code>ctx.workspacePath</code> - a string of the working directory of the template run</li>
-<li class=""><code>ctx.input</code> - an object which should match the <code>zod</code> or JSON schema provided in the
+<li class=""><code>ctx.input</code> - an object which should match the <code>zod</code> schema provided in the
 <code>schema.input</code> part of the action definition</li>
 <li class=""><code>ctx.output</code> - a function which you can call to set outputs that match the
 <code>zod</code> schema in <code>schema.output</code> for ex. <code>ctx.output(&#x27;downloadUrl&#x27;, myDownloadUrl)</code></li>
