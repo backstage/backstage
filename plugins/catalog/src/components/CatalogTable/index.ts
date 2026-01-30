@@ -18,3 +18,9 @@ export { CatalogTable } from './CatalogTable';
 export type { CatalogTableProps } from './CatalogTable';
 export type { CatalogTableToolbarClassKey } from './CatalogTableToolbar';
 export type { CatalogTableRow, CatalogTableColumnsFunc } from './types';
+export type { ColumnConfig, CustomColumnConfig } from './columnConfig';
+export {
+  applyColumnConfig,
+  resolveFieldPath,
+  BUILTIN_COLUMN_IDS,
+} from './columnConfig';

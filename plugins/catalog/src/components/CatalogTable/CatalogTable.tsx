@@ -50,6 +50,7 @@ import { defaultCatalogTableColumnsFunc } from './defaultCatalogTableColumnsFunc
 import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { catalogTranslationRef } from '../../alpha';
 import { FavoriteToggleIcon } from '@backstage/core-components';
+import { applyColumnConfig, ColumnConfig } from './columnConfig';
 
 /**
  * Props for {@link CatalogTable}.
@@ -67,6 +68,11 @@ export interface CatalogTableProps {
    */
   title?: string;
   subtitle?: string;
+  /**
+   * Configuration for customizing which columns are displayed.
+   * Allows including/excluding built-in columns and adding custom columns.
+   */
+  columnsConfig?: ColumnConfig;
 }
 
 const refCompare = (a: Entity, b: Entity) => {
@@ -95,6 +101,7 @@ export const CatalogTable = (props: CatalogTableProps) => {
     tableOptions,
     subtitle,
     emptyContent,
+    columnsConfig,
   } = props;
   const { isStarredEntity, toggleStarredEntity } = useStarredEntities();
   const entityListContext = useEntityList();
@@ -117,11 +124,11 @@ export const CatalogTable = (props: CatalogTableProps) => {
   const isLoading =
     paginationMode === 'none' ? loading && entities.length === 0 : loading;
 
-  const tableColumns = useMemo(
-    () =>
-      typeof columns === 'function' ? columns(entityListContext) : columns,
-    [columns, entityListContext],
-  );
+  const tableColumns = useMemo(() => {
+    const baseColumns =
+      typeof columns === 'function' ? columns(entityListContext) : columns;
+    return applyColumnConfig(baseColumns, columnsConfig);
+  }, [columns, entityListContext, columnsConfig]);
   const { t } = useTranslationRef(catalogTranslationRef);
 
   if (error) {

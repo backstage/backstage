@@ -41,22 +41,25 @@ import { useTranslationRef } from '@backstage/core-plugin-api/alpha';
 import { CatalogTableColumnsFunc } from '../CatalogTable/types';
 import { catalogEntityCreatePermission } from '@backstage/plugin-catalog-common/alpha';
 import { usePermission } from '@backstage/plugin-permission-react';
+import { ColumnConfig } from '../CatalogTable/columnConfig';
 
 /** @internal */
 export type BaseCatalogPageProps = {
   filters: ReactNode;
   content?: ReactNode;
   pagination?: EntityListPagination;
+  columnsConfig?: ColumnConfig;
 };
 
 function CatalogPageContent(props: BaseCatalogPageProps) {
-  const { filters, content = <CatalogTable />, pagination } = props;
+  const { filters, content, pagination, columnsConfig } = props;
+  const tableContent = content ?? <CatalogTable columnsConfig={columnsConfig} />;
 
   return (
     <EntityListProvider pagination={pagination}>
       <CatalogFilterLayout>
         <CatalogFilterLayout.Filters>{filters}</CatalogFilterLayout.Filters>
-        <CatalogFilterLayout.Content>{content}</CatalogFilterLayout.Content>
+        <CatalogFilterLayout.Content>{tableContent}</CatalogFilterLayout.Content>
       </CatalogFilterLayout>
     </EntityListProvider>
   );
@@ -64,36 +67,6 @@ function CatalogPageContent(props: BaseCatalogPageProps) {
 
 /** @internal */
 export function BaseCatalogPage(props: BaseCatalogPageProps) {
-  const orgName =
-    useApi(configApiRef).getOptionalString('organization.name') ?? 'Backstage';
-  const createComponentLink = useRouteRef(createComponentRouteRef);
-  const { t } = useTranslationRef(catalogTranslationRef);
-  const { allowed } = usePermission({
-    permission: catalogEntityCreatePermission,
-  });
-  const headerActions = (
-    <>
-      {allowed && (
-        <CreateButton
-          title={t('indexPage.createButtonTitle')}
-          to={createComponentLink && createComponentLink()}
-        />
-      )}
-      <SupportButton>{t('indexPage.supportButtonContent')}</SupportButton>
-    </>
-  );
-
-  return (
-    <PageWithHeader title={t('indexPage.title', { orgName })} themeId="home">
-      <Content>
-        <ContentHeader title="">{headerActions}</ContentHeader>
-        <CatalogPageContent {...props} />
-      </Content>
-    </PageWithHeader>
-  );
-}
-
-function NfsBaseCatalogPage(props: BaseCatalogPageProps) {
   const orgName =
     useApi(configApiRef).getOptionalString('organization.name') ?? 'Backstage';
   const createComponentLink = useRouteRef(createComponentRouteRef);
@@ -119,6 +92,7 @@ function NfsBaseCatalogPage(props: BaseCatalogPageProps) {
         }
       />
       <Content>
+<<<<<<< HEAD
         <CatalogPageContent {...props} />
       </Content>
     </>
@@ -141,6 +115,7 @@ export interface DefaultCatalogPageProps {
   filters?: ReactNode;
   initiallySelectedNamespaces?: string[];
   pagination?: EntityListPagination;
+  columnsConfig?: ColumnConfig;
 }
 
 export function DefaultCatalogPage(props: DefaultCatalogPageProps) {
@@ -194,6 +169,7 @@ export function NfsDefaultCatalogPage(props: DefaultCatalogPageProps) {
     ownerPickerMode,
     filters,
     initiallySelectedNamespaces,
+    columnsConfig,
   } = props;
 
   return (
@@ -214,6 +190,7 @@ export function NfsDefaultCatalogPage(props: DefaultCatalogPageProps) {
           actions={actions}
           tableOptions={tableOptions}
           emptyContent={emptyContent}
+          columnsConfig={columnsConfig}
         />
       }
       pagination={pagination}
