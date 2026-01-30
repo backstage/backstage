@@ -48,7 +48,7 @@ benefits. A few are:
 ## Decision
 
 We will stop using default exports except when absolutely necessary (such as
-[`React.lazy`](https://reactjs.org/docs/code-splitting.html#reactlazy) modules).
+[`React.lazy`](https://react.dev/reference/react/lazy) modules).
 A workaround exists for those that would prefer to never use `default`:
 
 ```ts

@@ -45,7 +45,7 @@ export const MyPluginEntityContent = () => {
 ```
 
 Internally `useEntity` makes use of
-[react `Context`s](https://reactjs.org/docs/context.html). The entity context is
+[react `Contexts`](https://react.dev/learn/passing-data-deeply-with-context). The entity context is
 provided by the entity page into which your plugin will be embedded.
 
 ### Import your plugin and embed in the entities page
@@ -63,7 +63,7 @@ To add your component to the Entity view, you will need to modify the
 your plugin, you may only care about certain kinds of
 [entities](https://backstage.io/docs/features/software-catalog/descriptor-format),
 each of which has its own
-[element](https://reactjs.org/docs/rendering-elements.html) for rendering. This
+[element](https://react.dev/learn/rendering-lists) for rendering. This
 functionality is handled by the `EntitySwitch` component:
 
 ```tsx
