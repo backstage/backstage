@@ -22,11 +22,11 @@ app:
               - namespace
               - tags
             custom:
-              - title: "Security Tier"
+              - title: 'Security Tier'
                 field: "metadata.annotations['security/tier']"
                 width: 120
-                defaultValue: "Not Set"
-              - title: "Cost Center"
+                defaultValue: 'Not Set'
+              - title: 'Cost Center'
                 field: "metadata.labels['cost-center']"
                 kind:
                   - Component
@@ -36,6 +36,7 @@ app:
 Available built-in column IDs: `name`, `owner`, `type`, `lifecycle`, `description`, `tags`, `namespace`, `system`, `targets`.
 
 Custom columns support:
+
 - Dot notation for field paths (e.g., `spec.type`)
 - Bracket notation for annotations/labels (e.g., `metadata.annotations['key']`)
 - Optional width, sortable, defaultValue, and kind filtering
