@@ -30,11 +30,13 @@ import {
   getRepoUrlFromLocationAnnotation,
   patchIndexPreBuild,
   storeEtagMetadata,
+  validateDocsDirectory,
   validateMkdocsYaml,
 } from './helpers';
 import {
   patchMkdocsYmlPreBuild,
   patchMkdocsYmlWithPlugins,
+  sanitizeMkdocsYml,
 } from './mkdocsPatchers';
 import yaml from 'js-yaml';
 
@@ -91,6 +93,24 @@ const mkdocsYmlWithAdditionalPluginsWithConfig = fs.readFileSync(
 );
 const mkdocsYmlWithEnvTag = fs.readFileSync(
   resolvePath(__filename, '../__fixtures__/mkdocs_with_env_tag.yml'),
+);
+const mkdocsYmlWithHooks = fs.readFileSync(
+  resolvePath(__filename, '../__fixtures__/mkdocs_with_hooks.yml'),
+);
+const mkdocsYmlWithMergeKeyHooks = fs.readFileSync(
+  resolvePath(__filename, '../__fixtures__/mkdocs_with_merge_key_hooks.yml'),
+);
+const mkdocsYmlWithParserDifferentialHooks = fs.readFileSync(
+  resolvePath(
+    __filename,
+    '../__fixtures__/mkdocs_with_parser_differential_hooks.yml',
+  ),
+);
+const mkdocsYmlWithDuplicateMergeHooks = fs.readFileSync(
+  resolvePath(
+    __filename,
+    '../__fixtures__/mkdocs_with_duplicate_merge_hooks.yml',
+  ),
 );
 const mockLogger = mockServices.logger.mock();
 const warn = jest.spyOn(mockLogger, 'warn');
@@ -441,8 +461,6 @@ describe('helpers', () => {
       };
       expect(parsedYml.plugins).toHaveLength(4);
       expect(parsedYml.plugins).toContain('techdocs-core');
-      // we want our original object with its properties to be preserved, and for the basic string form of the plugin
-      // to NOT be added as well.
       expect(parsedYml.plugins).not.toContain('custom-plugin');
       expect(parsedYml.plugins).toContainEqual({
         'custom-plugin': { with: { configuration: 1 } },
@@ -724,6 +742,290 @@ describe('helpers', () => {
     it('should validate files with custom yaml tags (sequence)', async () => {
       await expect(
         validateMkdocsYaml(inputDir, mkdocsYmlWithEnvTag.toString()),
+      ).resolves.toBeUndefined();
+    });
+  });
+
+  describe('sanitizeMkdocsYml', () => {
+    beforeEach(() => {
+      warn.mockClear();
+      mockDir.setContent({
+        'mkdocs_with_hooks.yml': mkdocsYmlWithHooks,
+        'mkdocs.yml': mkdocsYml,
+      });
+    });
+
+    it('should remove disallowed keys from mkdocs.yml and log a warning', async () => {
+      await sanitizeMkdocsYml(
+        mockDir.resolve('mkdocs_with_hooks.yml'),
+        mockLogger,
+      );
+
+      const updatedMkdocsYml = await fs.readFile(
+        mockDir.resolve('mkdocs_with_hooks.yml'),
+      );
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as {
+        hooks?: string[];
+        site_name: string;
+      };
+      expect(parsedYml.hooks).toBeUndefined();
+      expect(parsedYml.site_name).toBe('Test site name');
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringContaining(
+          'Removed the following unsupported configuration keys from mkdocs.yml: hooks',
+        ),
+      );
+    });
+
+    it('should not modify mkdocs.yml when no disallowed keys are present', async () => {
+      await sanitizeMkdocsYml(mockDir.resolve('mkdocs.yml'), mockLogger);
+
+      const updatedMkdocsYml = await fs.readFile(mockDir.resolve('mkdocs.yml'));
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as {
+        hooks?: string[];
+        site_name: string;
+      };
+      expect(parsedYml.hooks).toBeUndefined();
+      expect(parsedYml.site_name).toBe('Test site name');
+      expect(warn).not.toHaveBeenCalled();
+    });
+
+    it('should remove multiple disallowed keys and list them all in the warning', async () => {
+      const mkdocsWithMultipleDisallowed = `site_name: Test
+hooks:
+  - hook.py
+some_unknown_key: value
+another_unknown: true
+`;
+      mockDir.setContent({
+        'mkdocs_multiple.yml': mkdocsWithMultipleDisallowed,
+      });
+
+      await sanitizeMkdocsYml(
+        mockDir.resolve('mkdocs_multiple.yml'),
+        mockLogger,
+      );
+
+      const updatedMkdocsYml = await fs.readFile(
+        mockDir.resolve('mkdocs_multiple.yml'),
+      );
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as Record<
+        string,
+        unknown
+      >;
+      expect(parsedYml.hooks).toBeUndefined();
+      expect(parsedYml.some_unknown_key).toBeUndefined();
+      expect(parsedYml.another_unknown).toBeUndefined();
+      expect(parsedYml.site_name).toBe('Test');
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringMatching(
+          /Removed the following unsupported configuration keys.*hooks.*some_unknown_key.*another_unknown|Removed the following unsupported configuration keys.*hooks.*another_unknown.*some_unknown_key/,
+        ),
+      );
+    });
+
+    it('should remove hooks introduced via YAML merge keys', async () => {
+      mockDir.setContent({
+        'mkdocs_merge_keys.yml': mkdocsYmlWithMergeKeyHooks,
+      });
+
+      await sanitizeMkdocsYml(
+        mockDir.resolve('mkdocs_merge_keys.yml'),
+        mockLogger,
+      );
+
+      const updatedMkdocsYml = await fs.readFile(
+        mockDir.resolve('mkdocs_merge_keys.yml'),
+      );
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as Record<
+        string,
+        unknown
+      >;
+
+      expect(parsedYml.hooks).toBeUndefined();
+      expect(parsedYml.site_name).toBe('Test');
+      expect(parsedYml.plugins).toEqual(['techdocs-core']);
+      expect(updatedMkdocsYml.toString()).not.toContain('<<:');
+
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringContaining(
+          'Removed the following unsupported configuration keys from mkdocs.yml: hooks',
+        ),
+      );
+    });
+
+    it('should remove hooks when parsers interpret duplicate merge keys differently', async () => {
+      mockDir.setContent({
+        'mkdocs_parser_diff.yml': mkdocsYmlWithParserDifferentialHooks,
+      });
+
+      await sanitizeMkdocsYml(
+        mockDir.resolve('mkdocs_parser_diff.yml'),
+        mockLogger,
+      );
+
+      const updatedMkdocsYml = await fs.readFile(
+        mockDir.resolve('mkdocs_parser_diff.yml'),
+      );
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as Record<
+        string,
+        unknown
+      >;
+
+      expect(parsedYml.hooks).toBeUndefined();
+      expect(parsedYml.site_name).toBe('Test');
+      expect(parsedYml.plugins).toEqual(['techdocs-core']);
+      expect(parsedYml.extra).toBeDefined();
+      expect(updatedMkdocsYml.toString()).not.toContain('<<:');
+
+      expect(warn).toHaveBeenCalledWith(
+        expect.stringContaining(
+          'Removed the following unsupported configuration keys from mkdocs.yml: hooks',
+        ),
+      );
+    });
+
+    it('should remove hooks with duplicate merge keys and top-level anchors', async () => {
+      mockDir.setContent({
+        'mkdocs_duplicate_merge.yml': mkdocsYmlWithDuplicateMergeHooks,
+      });
+
+      await sanitizeMkdocsYml(
+        mockDir.resolve('mkdocs_duplicate_merge.yml'),
+        mockLogger,
+      );
+
+      const updatedMkdocsYml = await fs.readFile(
+        mockDir.resolve('mkdocs_duplicate_merge.yml'),
+      );
+      const parsedYml = yaml.load(updatedMkdocsYml.toString()) as Record<
+        string,
+        unknown
+      >;
+
+      expect(parsedYml.hooks).toBeUndefined();
+      expect(parsedYml.site_name).toBe('Test');
+      expect(parsedYml.plugins).toEqual(['techdocs-core']);
+      expect(updatedMkdocsYml.toString()).not.toContain('<<:');
+
+      expect(warn).toHaveBeenCalledWith(expect.stringContaining('hooks'));
+    });
+  });
+
+  describe('validateDocsDirectory', () => {
+    it('should pass for a valid docs directory with no symlinks', async () => {
+      mockDir.setContent({
+        docs: {
+          'index.md': 'Hello',
+          'guide.md': 'Guide content',
+        },
+      });
+
+      await expect(
+        validateDocsDirectory(mockDir.resolve('docs'), mockDir.path),
+      ).resolves.toBeUndefined();
+    });
+
+    it('should pass for symlinks pointing within the input directory', async () => {
+      mockDir.setContent({
+        docs: {
+          'index.md': 'Hello',
+        },
+        'other.md': 'Other content',
+      });
+
+      // Create a symlink within the input directory
+      await fs.symlink(
+        mockDir.resolve('other.md'),
+        mockDir.resolve('docs/link.md'),
+      );
+
+      await expect(
+        validateDocsDirectory(mockDir.resolve('docs'), mockDir.path),
+      ).resolves.toBeUndefined();
+    });
+
+    it('should reject symlinks pointing outside the input directory', async () => {
+      mockDir.setContent({
+        docs: {
+          'index.md': 'Hello',
+        },
+      });
+
+      // Create a symlink pointing outside the input directory
+      await fs.symlink('/tmp', mockDir.resolve('docs/escape.md'));
+
+      await expect(
+        validateDocsDirectory(mockDir.resolve('docs'), mockDir.path),
+      ).rejects.toThrow(/not allowed to refer to a location outside/i);
+    });
+
+    it('should reject symlinks to sensitive files like /etc/passwd', async () => {
+      mockDir.setContent({
+        docs: {
+          'index.md': 'Hello',
+        },
+      });
+
+      // Create a symlink to /etc/passwd
+      await fs.symlink('/etc/passwd', mockDir.resolve('docs/passwd.md'));
+
+      await expect(
+        validateDocsDirectory(mockDir.resolve('docs'), mockDir.path),
+      ).rejects.toThrow(/not allowed to refer to a location outside/i);
+    });
+
+    it('should reject symlinks in nested directories', async () => {
+      mockDir.setContent({
+        docs: {
+          'index.md': 'Hello',
+          nested: {
+            'page.md': 'Nested page',
+          },
+        },
+      });
+
+      // Create a symlink in a nested directory pointing outside
+      await fs.symlink('/etc/passwd', mockDir.resolve('docs/nested/escape.md'));
+
+      await expect(
+        validateDocsDirectory(mockDir.resolve('docs'), mockDir.path),
+      ).rejects.toThrow(/not allowed to refer to a location outside/i);
+    });
+
+    it('should reject directory symlinks pointing outside', async () => {
+      mockDir.setContent({
+        docs: {
+          'index.md': 'Hello',
+        },
+      });
+
+      // Create a directory symlink pointing outside
+      await fs.symlink('/tmp', mockDir.resolve('docs/external-dir'));
+
+      await expect(
+        validateDocsDirectory(mockDir.resolve('docs'), mockDir.path),
+      ).rejects.toThrow(/not allowed to refer to a location outside/i);
+    });
+
+    it('should pass for directory symlinks within input directory', async () => {
+      mockDir.setContent({
+        docs: {
+          'index.md': 'Hello',
+        },
+        assets: {
+          'image.png': 'binary content',
+        },
+      });
+
+      // Create a directory symlink within input directory
+      await fs.symlink(
+        mockDir.resolve('assets'),
+        mockDir.resolve('docs/assets'),
+      );
+
+      await expect(
+        validateDocsDirectory(mockDir.resolve('docs'), mockDir.path),
       ).resolves.toBeUndefined();
     });
   });
