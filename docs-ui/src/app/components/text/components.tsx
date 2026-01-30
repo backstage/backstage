@@ -30,6 +30,7 @@ export const Colors = () => {
       <Text color="danger">Danger</Text>
       <Text color="warning">Warning</Text>
       <Text color="success">Success</Text>
+      <Text color="info">Info</Text>
     </Flex>
   );
 };
