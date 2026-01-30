@@ -29,5 +29,6 @@ export const LinkDefinition = {
     weight: ['regular', 'bold'] as const,
     color: ['primary', 'secondary', 'danger', 'warning', 'success'] as const,
     truncate: [true, false] as const,
+    standalone: [true, false] as const,
   },
 } as const satisfies ComponentDefinition;

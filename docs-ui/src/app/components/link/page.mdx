@@ -10,6 +10,7 @@ import {
   allVariantsSnippet,
   allColorsSnippet,
   weightSnippet,
+  standaloneSnippet,
 } from './snippets';
 import {
   Default,
@@ -17,6 +18,7 @@ import {
   AllVariants,
   AllColors,
   Weight,
+  Standalone,
 } from './components';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
@@ -55,6 +57,7 @@ Use `target="_blank"` to open links in a new tab.
   py={4}
   preview={<ExternalLink />}
   code={externalLinkSnippet}
+  layout="side-by-side"
 />
 
 ### Variants
@@ -79,7 +82,13 @@ Status colors for contextual links.
 
 ### Weight
 
-<Snippet align="center" py={4} preview={<Weight />} code={weightSnippet} />
+<Snippet align="center" py={4} preview={<Weight />} code={weightSnippet} layout="side-by-side" />
+
+### Standalone
+
+Use `standalone` to remove the underline by default. The underline will appear on hover.
+
+<Snippet align="center" py={4} preview={<Standalone />} code={standaloneSnippet} layout="side-by-side" />
 
 <Theming definition={LinkDefinition} />
 

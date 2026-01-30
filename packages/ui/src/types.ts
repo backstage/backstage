@@ -131,7 +131,7 @@ export type TextVariants =
 export type TextColors = 'primary' | 'secondary';
 
 /** @public */
-export type TextColorStatus = 'danger' | 'warning' | 'success';
+export type TextColorStatus = 'danger' | 'warning' | 'success' | 'info';
 
 /** @public */
 export type TextWeights = 'regular' | 'bold';
