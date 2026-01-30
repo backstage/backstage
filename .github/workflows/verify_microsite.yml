@@ -32,36 +32,37 @@ jobs:
         with:
           egress-policy: audit
 
-      - name: find latest release
+      - name: find latest release branch
         uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
         id: find-release
         with:
           script: |
-            const { data } = await github.rest.repos.listTags({
+            const { data } = await github.rest.repos.listBranches({
               owner: context.repo.owner,
               repo: context.repo.repo,
               per_page: 100,
             })
 
-            const [{tag}] = data
+            const [{branch}] = data
               .map(i => i.name)
-              .filter(tag => tag.match(/^v\d+\.\d+\.\d+$/))
-              .map(tag => ({
-                tag,
-                val: tag
+              .filter(branch => branch.match(/^patch\/v\d+\.\d+\.\d+$/))
+              .map(branch => ({
+                branch,
+                val: branch
+                  .split('/')[1]
                   .slice(1)
                   .split('.')
                   .reduce((val, part) => Number(val) * 1000 + Number(part))
               }))
               .sort((a, b) => b.val - a.val)
 
-            return tag
+            return branch
           result-encoding: string
 
       - name: checkout latest release
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
         with:
-          ref: refs/tags/${{ steps.find-release.outputs.result }}
+          ref: refs/heads/${{ steps.find-release.outputs.result }}
 
       - name: Use Node.js 22.x
         uses: actions/setup-node@6044e13b5dc448c55e2357c09f80417699197238 # v6.2.0
