@@ -73,10 +73,10 @@ export const CustomTheme = () => {
         storedTheme = defaultTheme;
         localStorage.setItem('customThemeCss', storedTheme);
       }
-      // Defer setState to avoid synchronous call in effect
-      requestAnimationFrame(() => {
-        setCustomTheme(storedTheme!);
-      });
+      // This setState is intentional - we're syncing component state with localStorage
+      // when the user switches to the custom theme. This is a valid effect pattern.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
+      setCustomTheme(storedTheme);
       updateStyleElement(storedTheme);
     } else {
       const styleElement = document.getElementById(
