@@ -7,7 +7,9 @@ import { MemoryRouter } from 'react-router-dom';
 export const Default = () => {
   return (
     <MemoryRouter>
-      <Link href="/">Sign up for Backstage</Link>
+      <Link href="/" variant="body-large">
+        Sign up for Backstage
+      </Link>
     </MemoryRouter>
   );
 };
@@ -15,7 +17,7 @@ export const Default = () => {
 export const ExternalLink = () => {
   return (
     <MemoryRouter>
-      <Link href="https://backstage.io" target="_blank">
+      <Link href="https://backstage.io" target="_blank" variant="body-large">
         Sign up for Backstage
       </Link>
     </MemoryRouter>
@@ -58,21 +60,24 @@ export const AllVariants = () => {
 export const AllColors = () => {
   return (
     <MemoryRouter>
-      <Flex gap="4" direction="column">
-        <Link href="#" color="primary">
+      <Flex gap="2" direction="column">
+        <Link href="#" color="primary" variant="body-large">
           Primary
         </Link>
-        <Link href="#" color="secondary">
+        <Link href="#" color="secondary" variant="body-large">
           Secondary
         </Link>
-        <Link href="#" color="danger">
+        <Link href="#" color="danger" variant="body-large">
           Danger
         </Link>
-        <Link href="#" color="warning">
+        <Link href="#" color="warning" variant="body-large">
           Warning
         </Link>
-        <Link href="#" color="success">
+        <Link href="#" color="success" variant="body-large">
           Success
+        </Link>
+        <Link href="#" color="info" variant="body-large">
+          Info
         </Link>
       </Flex>
     </MemoryRouter>
@@ -83,11 +88,26 @@ export const Weight = () => {
   return (
     <MemoryRouter>
       <Flex gap="4">
-        <Link href="#" weight="regular">
+        <Link href="#" weight="regular" variant="body-large">
           Regular
         </Link>
-        <Link href="#" weight="bold">
+        <Link href="#" weight="bold" variant="body-large">
           Bold
+        </Link>
+      </Flex>
+    </MemoryRouter>
+  );
+};
+
+export const Standalone = () => {
+  return (
+    <MemoryRouter>
+      <Flex gap="4">
+        <Link href="#" variant="body-large">
+          Default link
+        </Link>
+        <Link href="#" variant="body-large" standalone>
+          Standalone link
         </Link>
       </Flex>
     </MemoryRouter>
