@@ -142,7 +142,7 @@ Example:
 
 ```ts
 import { createBackendModule } from '@backstage/backend-plugin-api';
-import { proxyEndpointsExtensionPoint } from '@backstage/plugin-proxy-node';
+import { proxyEndpointsExtensionPoint } from '@backstage/plugin-proxy-node/alpha';
 
 backend.add(
   createBackendModule({
