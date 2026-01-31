@@ -293,9 +293,9 @@ techdocs:
 
 `techdocs.publisher.awsS3.accountId`
 
-The AWS account ID where the storage bucket is located. Credentials for the account ID must be configured in the 'aws' app config section. See the [integration-aws-node package](https://www.npmjs.com/package/@backstage/integration-aws-node) for details on how to configure credentials in the 'aws' app config section.
+The AWS account ID where the storage bucket is located. Credentials for the account ID must be configured in the `aws` app config section. See the [integration-aws-node package](https://www.npmjs.com/package/@backstage/integration-aws-node) for details on how to configure credentials in the `aws` app config section.
 
-If account ID is not set and no credentials are set, environment variables or aws config file will be used to authenticate.
+If account ID is not set and no credentials are set, environment variables or AWS config file will be used to authenticate.
 
 https://www.npmjs.com/package/@aws-sdk/credential-provider-node
 https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/setting-credentials-node.html
@@ -315,9 +315,9 @@ techdocs:
 
 `techdocs.publisher.awsS3.credentials`
 
-(Optional) AWS credentials to use to write to the storage bucket. This configuration section is now **deprecated**. Configuring the account ID is now preferred, with credentials in the 'aws' app config section.
+(Optional) AWS credentials to use to write to the storage bucket. This configuration section is now **deprecated**. Configuring the account ID is now preferred, with credentials in the `aws` app config section.
 
-If credentials are not set and no account ID is set, environment variables or aws config file will be used to authenticate.
+If credentials are not set and no account ID is set, environment variables or AWS config file will be used to authenticate.
 
 https://www.npmjs.com/package/@aws-sdk/credential-provider-node
 https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/setting-credentials-node.html
@@ -340,7 +340,7 @@ techdocs:
 `techdocs.publisher.awsS3.region`
 
 (Optional) The AWS Region of the bucket.
-If not set, `AWS_REGION` environment variable or aws config file will be used.
+If not set, `AWS_REGION` environment variable or AWS config file will be used.
 
 https://docs.aws.amazon.com/sdk-for-javascript/v3/developer-guide/setting-region.html
 
