@@ -20,5 +20,10 @@ export {
   type ExtensionQuery,
 } from './createExtensionTester';
 
+export {
+  shallowExtensionInstance,
+  type ShallowExtensionInstanceOptions,
+} from './shallowExtensionInstance';
+
 export { renderInTestApp, type TestAppOptions } from './renderInTestApp';
 export { renderTestApp, type RenderTestAppOptions } from './renderTestApp';
