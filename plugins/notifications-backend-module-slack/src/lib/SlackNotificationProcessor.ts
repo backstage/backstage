@@ -19,6 +19,7 @@ import {
   Entity,
   isUserEntity,
   parseEntityRef,
+  stringifyEntityRef,
   UserEntity,
 } from '@backstage/catalog-model';
 import { Config, readDurationFromConfig } from '@backstage/config';
@@ -33,7 +34,10 @@ import { Counter, metrics } from '@opentelemetry/api';
 import { ChatPostMessageArguments, WebClient } from '@slack/web-api';
 import DataLoader from 'dataloader';
 import pThrottle from 'p-throttle';
-import { ANNOTATION_SLACK_BOT_NOTIFY } from './constants';
+import {
+  ANNOTATION_SLACK_BOT_NOTIFY,
+  USER_REFS_FROM_REQUEST_KEY,
+} from './constants';
 import { BroadcastRoute } from './types';
 import { ExpiryMap, toChatPostMessageArgs } from './util';
 import { CatalogService } from '@backstage/plugin-catalog-node';
@@ -210,12 +214,14 @@ export class SlackNotificationProcessor implements NotificationProcessor {
 
     const entityRefs = [options.recipients.entityRef].flat();
 
+    const userEntityRefs: string[] = [];
     const outbound: ChatPostMessageArguments[] = [];
     await Promise.all(
       entityRefs.map(async entityRef => {
         const compoundEntityRef = parseEntityRef(entityRef);
         // skip users as they are sent direct messages
         if (compoundEntityRef.kind === 'user') {
+          userEntityRefs.push(stringifyEntityRef(compoundEntityRef));
           return;
         }
 
@@ -257,7 +263,18 @@ export class SlackNotificationProcessor implements NotificationProcessor {
 
     await this.sendNotifications(outbound);
 
-    return options;
+    const enrichedPayload = {
+      ...options.payload,
+      metadata: {
+        ...options.payload.metadata,
+        [USER_REFS_FROM_REQUEST_KEY]: userEntityRefs,
+      },
+    };
+
+    return {
+      ...options,
+      payload: enrichedPayload,
+    };
   }
 
   async postProcess(
@@ -272,10 +289,25 @@ export class SlackNotificationProcessor implements NotificationProcessor {
       destinations.push(...routedChannels);
     } else if (options.recipients.type === 'entity') {
       // Handle user-specific notification
-      const entityRefs = [options.recipients.entityRef].flat();
-      if (entityRefs.some(e => parseEntityRef(e).kind === 'group')) {
-        // We've already dispatched a slack channel message, so let's not send a DM.
-        return;
+      const rawUserRefs =
+        options.payload.metadata?.[USER_REFS_FROM_REQUEST_KEY];
+
+      const normalizedUserRef = stringifyEntityRef(
+        parseEntityRef(notification.user),
+      );
+      const hasValidUserRefs =
+        Array.isArray(rawUserRefs) &&
+        rawUserRefs.every(ref => typeof ref === 'string');
+      const explicitUserEntityRefs = hasValidUserRefs
+        ? rawUserRefs.map(ref => stringifyEntityRef(parseEntityRef(ref)))
+        : undefined;
+
+      if (!explicitUserEntityRefs?.includes(normalizedUserRef)) {
+        const entityRefs = [options.recipients.entityRef].flat();
+        if (entityRefs.some(e => parseEntityRef(e).kind === 'group')) {
+          // This user was resolved from a non-user entity and we've already send a channel DM so let's not send another.
+          return;
+        }
       }
 
       const destination = await this.getSlackNotificationTarget(
