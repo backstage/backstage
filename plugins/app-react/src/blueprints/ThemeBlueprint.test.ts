@@ -15,7 +15,7 @@
  */
 import { AppTheme } from '@backstage/frontend-plugin-api';
 import { ThemeBlueprint } from './ThemeBlueprint';
-import { createExtensionTester } from '@backstage/frontend-test-utils';
+import { shallowExtensionInstance } from '@backstage/frontend-test-utils';
 
 describe('ThemeBlueprint', () => {
   const theme = {
@@ -56,7 +56,7 @@ describe('ThemeBlueprint', () => {
     const extension = ThemeBlueprint.make({ params: { theme } });
 
     expect(
-      createExtensionTester(extension).get(ThemeBlueprint.dataRefs.theme),
+      shallowExtensionInstance(extension).get(ThemeBlueprint.dataRefs.theme),
     ).toEqual(theme);
   });
 });

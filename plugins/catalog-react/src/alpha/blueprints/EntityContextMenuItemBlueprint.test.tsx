@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 import {
+  shallowExtensionInstance,
   createExtensionTester,
   renderInTestApp,
 } from '@backstage/frontend-test-utils';
@@ -256,9 +257,9 @@ describe('EntityContextMenuItemBlueprint', () => {
       },
     });
 
-    const tester = createExtensionTester(extension);
+    const instance = shallowExtensionInstance(extension);
 
-    const filterFn = tester.get(
+    const filterFn = instance.get(
       EntityContextMenuItemBlueprint.dataRefs.filterFunction,
     );
 

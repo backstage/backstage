@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createExtensionTester } from '@backstage/frontend-test-utils';
+import { shallowExtensionInstance } from '@backstage/frontend-test-utils';
 import { createRouteRef } from '../routing';
 import { NavItemBlueprint } from './NavItemBlueprint';
 
@@ -75,9 +75,9 @@ describe('NavItemBlueprint', () => {
       },
     });
 
-    const tester = createExtensionTester(extension);
+    const instance = shallowExtensionInstance(extension);
 
-    expect(tester.get(NavItemBlueprint.dataRefs.target)).toEqual({
+    expect(instance.get(NavItemBlueprint.dataRefs.target)).toEqual({
       title: 'TEST',
       icon: MockIcon,
       routeRef: mockRouteRef,
@@ -93,11 +93,11 @@ describe('NavItemBlueprint', () => {
       },
     });
 
-    const tester = createExtensionTester(extension, {
+    const instance = shallowExtensionInstance(extension, {
       config: { title: 'OVERRIDDEN' },
     });
 
-    expect(tester.get(NavItemBlueprint.dataRefs.target)).toEqual({
+    expect(instance.get(NavItemBlueprint.dataRefs.target)).toEqual({
       title: 'OVERRIDDEN',
       icon: MockIcon,
       routeRef: mockRouteRef,

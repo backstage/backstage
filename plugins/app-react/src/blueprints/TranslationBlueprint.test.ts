@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import { createExtensionTester } from '@backstage/frontend-test-utils';
+import { shallowExtensionInstance } from '@backstage/frontend-test-utils';
 import {
   createTranslationMessages,
   createTranslationRef,
@@ -76,7 +76,7 @@ describe('TranslationBlueprint', () => {
     });
 
     expect(
-      createExtensionTester(extension).get(
+      shallowExtensionInstance(extension).get(
         TranslationBlueprint.dataRefs.translation,
       ),
     ).toBe(messages);

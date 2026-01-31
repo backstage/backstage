@@ -16,7 +16,7 @@
 
 import { createRouteRef } from '@backstage/frontend-plugin-api';
 import { NavContentBlueprint } from './NavContentBlueprint';
-import { createExtensionTester } from '@backstage/frontend-test-utils';
+import { shallowExtensionInstance } from '@backstage/frontend-test-utils';
 
 const routeRef = createRouteRef();
 
@@ -60,10 +60,10 @@ describe('NavContentBlueprint', () => {
       },
     });
 
-    const tester = createExtensionTester(extension);
+    const instance = shallowExtensionInstance(extension);
 
     expect(
-      tester.get(NavContentBlueprint.dataRefs.component)({ items: [] }),
+      instance.get(NavContentBlueprint.dataRefs.component)({ items: [] }),
     ).toEqual(<div>Nav content</div>);
   });
 
@@ -84,10 +84,10 @@ describe('NavContentBlueprint', () => {
       },
     });
 
-    const tester = createExtensionTester(extension);
+    const instance = shallowExtensionInstance(extension);
 
     expect(
-      tester.get(NavContentBlueprint.dataRefs.component)({
+      instance.get(NavContentBlueprint.dataRefs.component)({
         items: [
           {
             to: '/',

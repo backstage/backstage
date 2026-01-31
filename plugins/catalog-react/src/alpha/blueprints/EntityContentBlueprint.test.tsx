@@ -15,6 +15,7 @@
  */
 import { EntityContentBlueprint } from './EntityContentBlueprint';
 import {
+  shallowExtensionInstance,
   createExtensionTester,
   renderInTestApp,
 } from '@backstage/frontend-test-utils';
@@ -263,12 +264,12 @@ describe('EntityContentBlueprint', () => {
       },
     });
 
-    const tester = createExtensionTester(extension);
+    const instance = shallowExtensionInstance(extension);
 
     // todo(blam): route paths are always set to / in the createExtensionTester. This will work eventually.
     // expect(tester.get(coreExtensionData.routePath)).toBe('/test');
 
-    expect(tester.get(coreExtensionData.routeRef)).toBe(mockRouteRef);
+    expect(instance.get(coreExtensionData.routeRef)).toBe(mockRouteRef);
     expect(tester.get(EntityContentBlueprint.dataRefs.title)).toBe('Test');
   });
 
@@ -276,7 +277,7 @@ describe('EntityContentBlueprint', () => {
     const mockFilter = (_entity: Entity) => true;
 
     expect(
-      createExtensionTester(
+      shallowExtensionInstance(
         EntityContentBlueprint.make({
           name: 'test',
           params: {
@@ -290,7 +291,7 @@ describe('EntityContentBlueprint', () => {
     ).toBe('test');
 
     expect(
-      createExtensionTester(
+      shallowExtensionInstance(
         EntityContentBlueprint.make({
           name: 'test',
           params: {
@@ -304,7 +305,7 @@ describe('EntityContentBlueprint', () => {
     ).toBe('test');
 
     expect(
-      createExtensionTester(
+      shallowExtensionInstance(
         EntityContentBlueprint.make({
           name: 'test',
           params: {

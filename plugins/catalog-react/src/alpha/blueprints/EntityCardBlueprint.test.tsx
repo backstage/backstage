@@ -20,6 +20,7 @@ import {
   createExtensionInput,
 } from '@backstage/frontend-plugin-api';
 import {
+  shallowExtensionInstance,
   createExtensionTester,
   renderInTestApp,
 } from '@backstage/frontend-test-utils';
@@ -233,7 +234,7 @@ describe('EntityCardBlueprint', () => {
     const mockFilter = (_entity: Entity) => true;
 
     expect(
-      createExtensionTester(
+      shallowExtensionInstance(
         EntityCardBlueprint.make({
           name: 'test',
           params: {
@@ -245,7 +246,7 @@ describe('EntityCardBlueprint', () => {
     ).toBe('test');
 
     expect(
-      createExtensionTester(
+      shallowExtensionInstance(
         EntityCardBlueprint.make({
           name: 'test',
           params: {
@@ -257,7 +258,7 @@ describe('EntityCardBlueprint', () => {
     ).toBe('test');
 
     expect(
-      createExtensionTester(
+      shallowExtensionInstance(
         EntityCardBlueprint.make({
           name: 'test',
           params: {
