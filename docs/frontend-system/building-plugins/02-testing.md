@@ -76,6 +76,45 @@ describe('Entity details component', () => {
 
 This pattern also works for many other context providers. An important example is the `EntityProvider` from the `@backstage/plugin-catalog-react` package, which you can use to provide a mocked entity context to the component.
 
+Alternatively, you can pass API overrides directly to `renderInTestApp` using the `apis` option:
+
+```tsx
+import { screen } from '@testing-library/react';
+import { renderInTestApp } from '@backstage/frontend-test-utils';
+import { catalogApiRef } from '@backstage/plugin-catalog-react';
+import { EntityDetails } from './plugin';
+
+describe('Entity details component', () => {
+  it('should render the entity name and owner', async () => {
+    const catalogApiMock = {
+      async getEntityFacets() {
+        return {
+          facets: {
+            'relations.ownedBy': [{ count: 1, value: 'group:default/tools' }],
+          },
+        },
+      }
+    } satisfies Partial<typeof catalogApiRef.T>;
+
+    const entityRef = stringifyEntityRef({
+      kind: 'Component',
+      namespace: 'default',
+      name: 'test',
+    });
+
+    await renderInTestApp(<EntityDetails entityRef={entityRef} />, {
+      apis: [[catalogApiRef, catalogApiMock]],
+    });
+
+    await expect(
+      screen.findByText('The entity "test" is owned by "tools"'),
+    ).resolves.toBeInTheDocument();
+  });
+});
+```
+
+This approach provides the API overrides at the app level, which is useful when testing extensions that depend on APIs deep in the component tree.
+
 ## Testing extensions
 
 To facilitate testing of frontend extensions, the `@backstage/frontend-test-utils` package provides a tester class which starts up an entire frontend harness, complete with a number of default features. You can then provide overrides for extensions whose behavior you need to adjust for the test run.
@@ -102,7 +141,29 @@ describe('Index page', () => {
 });
 ```
 
-This pattern also allows you to wrap the extension with context providers, such as the `TestApiProvider` that was introduced [above](#testing-react-components).
+This pattern also allows you to wrap the extension with context providers, such as the `TestApiProvider` that was introduced [above](#testing-react-components). Alternatively, you can provide API overrides directly to `createExtensionTester`:
+
+```tsx
+import { screen } from '@testing-library/react';
+import { createExtensionTester } from '@backstage/frontend-test-utils';
+import { analyticsApiRef } from '@backstage/frontend-plugin-api';
+import { indexPageExtension } from './plugin';
+
+describe('Index page', () => {
+  it('should render and track analytics', async () => {
+    const analyticsApiMock = { captureEvent: jest.fn() };
+
+    await renderInTestApp(
+      createExtensionTester(indexPageExtension, {
+        apis: [[analyticsApiRef, analyticsApiMock]],
+      }).reactElement(),
+    );
+
+    expect(screen.getByText('Index Page')).toBeInTheDocument();
+    expect(analyticsApiMock.captureEvent).toHaveBeenCalled();
+  });
+});
+```
 
 Note that the `.reactElement()` method will look for the `coreExtensionData.reactElement` data in the extension outputs. If that doesn't exist and the extension outputs something else that you want to test, you can access the output data using the `.get(dataRef)` method instead.
 

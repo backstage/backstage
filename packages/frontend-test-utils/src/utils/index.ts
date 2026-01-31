@@ -14,19 +14,11 @@
  * limitations under the License.
  */
 
-/**
- * @packageDocumentation
- *
- * Contains utilities that can be used when testing frontend features such as extensions.
- */
-
-export * from './apis';
-export * from './app';
-export * from './utils';
-
-// Explicit export to satisfy API Extractor
-export type { TestApiPairs } from './utils';
-
-export { withLogCollector } from '@backstage/test-utils';
-
-export { registerMswTestHooks } from '@backstage/test-utils';
+export {
+  TestApiProvider,
+  TestApiRegistry,
+  type TestApiProviderPropsApiPair,
+  type TestApiProviderPropsApiPairs,
+  type TestApiPairs,
+} from './TestApiProvider';
+export type { TestApiProviderProps } from './TestApiProvider';

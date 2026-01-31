@@ -31,9 +31,11 @@ import {
   createFrontendPlugin,
   FrontendFeature,
   createFrontendModule,
+  ApiBlueprint,
 } from '@backstage/frontend-plugin-api';
 import { RouterBlueprint } from '@backstage/plugin-app-react';
 import appPlugin from '@backstage/plugin-app';
+import { type TestApiPairs } from '../utils';
 
 const DEFAULT_MOCK_CONFIG = {
   app: { baseUrl: 'http://localhost:3000' },
@@ -44,7 +46,7 @@ const DEFAULT_MOCK_CONFIG = {
  * Options to customize the behavior of the test app.
  * @public
  */
-export type TestAppOptions = {
+export type TestAppOptions<TApiPairs extends any[] = any[]> = {
   /**
    * An object of paths to mount route ref on, with the key being the path and the value
    * being the RouteRef that the path will be bound to. This allows the route refs to be
@@ -77,6 +79,21 @@ export type TestAppOptions = {
    * Initial route entries to use for the router.
    */
   initialRouteEntries?: string[];
+
+  /**
+   * API overrides to provide to the test app.
+   *
+   * @example
+   * ```ts
+   * renderInTestApp(<MyComponent />, {
+   *   apis: [
+   *     [errorApiRef, mockErrorApi],
+   *     [analyticsApiRef, mockAnalyticsApi],
+   *   ]
+   * })
+   * ```
+   */
+  apis?: readonly [...TestApiPairs<TApiPairs>];
 };
 
 const NavItem = (props: {
@@ -143,9 +160,9 @@ const appPluginOverride = appPlugin.withOverrides({
  * @public
  * Renders the given element in a test app, for use in unit tests.
  */
-export function renderInTestApp(
+export function renderInTestApp<TApiPairs extends any[] = any[]>(
   element: JSX.Element,
-  options?: TestAppOptions,
+  options?: TestAppOptions<TApiPairs>,
 ): RenderResult {
   const extensions: Array<ExtensionDefinition> = [
     createExtension({
@@ -204,6 +221,27 @@ export function renderInTestApp(
 
   if (options?.features) {
     features.push(...options.features);
+  }
+
+  // If API overrides are provided, add them as a module for the 'app' plugin
+  // This must come after appPluginOverride so it can override app's default APIs
+  if (options?.apis) {
+    features.push(
+      createFrontendModule({
+        pluginId: 'app',
+        extensions: options.apis.map(([apiRef, implementation], index) =>
+          ApiBlueprint.make({
+            name: `test-api-override-${index}`,
+            params: defineParams =>
+              defineParams({
+                api: apiRef,
+                deps: {},
+                factory: () => implementation,
+              }),
+          }),
+        ),
+      }),
+    );
   }
 
   const app = createSpecializedApp({
