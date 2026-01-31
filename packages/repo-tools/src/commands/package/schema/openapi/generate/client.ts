@@ -25,6 +25,7 @@ import {
 } from '../../../../../lib/openapi/constants';
 import { deduplicateImports } from '../../../../../lib/openapi/dedupe-imports';
 import {
+  getOpenApiGeneratorKey,
   getPathToCurrentOpenApiSpec,
   toGeneratorAdditionalProperties,
 } from '../../../../../lib/openapi/helpers';
@@ -43,6 +44,7 @@ async function generate(
   const additionalProperties = toGeneratorAdditionalProperties({
     initialValue: clientAdditionalProperties,
   });
+  const generatorKey = await getOpenApiGeneratorKey(resolvedOpenapiPath);
 
   await fs.emptyDir(resolvedOutputDirectory);
 
@@ -68,7 +70,7 @@ async function generate(
         'templates/typescript-backstage-client.yaml',
       ),
       '--generator-key',
-      'v3.1',
+      generatorKey,
       additionalProperties
         ? `--additional-properties=${additionalProperties}`
         : '',
