@@ -1,5 +1,21 @@
 # @backstage/plugin-notifications-backend
 
+## 0.6.2-next.0
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- Updated dependencies
+  - @backstage/plugin-catalog-node@1.21.0-next.0
+  - @backstage/backend-plugin-api@1.7.0-next.0
+  - @backstage/plugin-notifications-node@0.2.23-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/types@1.2.2
+  - @backstage/plugin-notifications-common@0.2.0
+  - @backstage/plugin-signals-node@0.1.28-next.0
+
 ## 0.6.1
 
 ### Patch Changes

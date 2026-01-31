@@ -15,7 +15,7 @@
  */
 
 import { ForwardedError, InputError, NotFoundError } from '@backstage/errors';
-import { resolveSrv, SrvRecord } from 'dns';
+import { resolveSrv, SrvRecord } from 'node:dns';
 
 const PROTOCOL_SUFFIX = '+srv:';
 

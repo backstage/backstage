@@ -7,9 +7,4 @@ description: The Infracost plug-in works in conjunction with terraform and provi
 documentation: https://platform.vee.codes/plugin/Infracost
 iconUrl: https://veecode-platform.github.io/support/imgs/logo_5.svg
 npmPackageName: '@veecode-platform/backstage-plugin-infracost'
-tags:
-  - finops
-  - infracost
-  - estimate
-  - terraform
 addedDate: '2024-07-25'

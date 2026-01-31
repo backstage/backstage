@@ -19,7 +19,7 @@ import {
   IndexableDocument,
 } from '@backstage/plugin-search-common';
 import { Config } from '@backstage/config';
-import { Readable } from 'stream';
+import { Readable } from 'node:stream';
 
 import qs from 'qs';
 import { LoggerService } from '@backstage/backend-plugin-api';

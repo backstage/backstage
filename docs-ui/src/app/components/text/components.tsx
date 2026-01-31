@@ -25,12 +25,11 @@ export const Variants = () => {
 export const Colors = () => {
   return (
     <Flex direction="column" gap="2">
-      <Text color="primary">Primary color</Text>
-      <Text color="secondary">Secondary color</Text>
-      <Text color="tertiary">Tertiary color</Text>
-      <Text color="danger">Danger color</Text>
-      <Text color="warning">Warning color</Text>
-      <Text color="success">Success color</Text>
+      <Text color="primary">Primary</Text>
+      <Text color="secondary">Secondary</Text>
+      <Text color="danger">Danger</Text>
+      <Text color="warning">Warning</Text>
+      <Text color="success">Success</Text>
     </Flex>
   );
 };
@@ -57,7 +56,7 @@ export const AsElement = () => {
 export const Truncate = () => {
   return (
     <div style={{ width: '200px' }}>
-      <Text truncate>
+      <Text truncate style={{ display: 'block' }}>
         This is a very long text that will be truncated when it exceeds the
         container width
       </Text>

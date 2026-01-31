@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { PassThrough } from 'stream';
+import { PassThrough } from 'node:stream';
 import {
   createMockDirectory,
   mockCredentials,

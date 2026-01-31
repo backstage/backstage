@@ -4,7 +4,7 @@
   "private": true,
   "license": "Apache-2.0",
   "scripts": {
-    "build": "node scripts/pre-build.js && docusaurus build",
+    "build": "docusaurus build",
     "deploy": "docusaurus deploy",
     "docusaurus": "docusaurus",
     "generate-openapi-docs": "yarn docusaurus clean-api-docs all && yarn docusaurus gen-api-docs all",
@@ -12,7 +12,7 @@
     "prettier:fix": "prettier --write .",
     "publish-gh-pages": "docusaurus-publish",
     "rename-version": "docusaurus-rename-version",
-    "start": "node scripts/pre-build.js && docusaurus start",
+    "start": "docusaurus start",
     "swizzle": "docusaurus swizzle",
     "verify:sidebars": "node ./scripts/verify-sidebars",
     "version": "docusaurus-version",
@@ -20,13 +20,16 @@
   },
   "prettier": "@backstage/cli/config/prettier",
   "resolutions": {
+    "@swc/core": "1.15.3",
+    "@swc/html": "1.15.3",
     "node-polyfill-webpack-plugin": "^3.0.0"
   },
   "dependencies": {
-    "@docusaurus/core": "^3.1.1",
-    "@docusaurus/plugin-client-redirects": "^3.1.1",
-    "@docusaurus/preset-classic": "^3.1.1",
-    "@docusaurus/types": "^3.1.1",
+    "@docusaurus/core": "^3.9.0",
+    "@docusaurus/faster": "^3.9.0",
+    "@docusaurus/plugin-client-redirects": "^3.9.0",
+    "@docusaurus/preset-classic": "^3.9.0",
+    "@docusaurus/types": "^3.9.0",
     "@mdx-js/react": "^3.0.0",
     "@swc/core": "^1.15.6",
     "clsx": "^2.0.0",

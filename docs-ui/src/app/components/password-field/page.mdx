@@ -1,22 +1,35 @@
 import { PropsTable } from '@/components/PropsTable';
 import { Snippet } from '@/components/Snippet';
-import { inputPropDefs } from './props-definition';
+import { passwordFieldPropDefs } from './props-definition';
 import {
   passwordFieldUsageSnippet,
   withLabelSnippet,
   sizesSnippet,
   withDescriptionSnippet,
+  withIconSnippet,
+  validationSnippet,
 } from './snippets';
-import { WithLabel, Sizes, WithDescription } from './components';
+import {
+  WithLabel,
+  Sizes,
+  WithDescription,
+  WithIcon,
+  Validation,
+} from './components';
 import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
 import { ChangelogComponent } from '@/components/ChangelogComponent';
 import { CodeBlock } from '@/components/CodeBlock';
 import { PasswordFieldDefinition } from '../../../utils/definitions';
+import { ReactAriaLink } from '@/components/ReactAriaLink';
+
+export const reactAriaUrls = {
+  textField: 'https://react-aria.adobe.com/TextField',
+};
 
 <PageTitle
   title="PasswordField"
-  description="A password field component for your forms."
+  description="A password input with visibility toggle, icon, and validation support."
 />
 
 <Snippet
@@ -32,26 +45,41 @@ import { PasswordFieldDefinition } from '../../../utils/definitions';
 
 ## API reference
 
-<PropsTable data={inputPropDefs} />
+<PropsTable data={passwordFieldPropDefs} />
+
+<ReactAriaLink component="TextField" href={reactAriaUrls.textField} />
 
 ## Examples
 
 ### Sizes
 
-We support two different sizes: `small`, `medium`.
-
-<Snippet align="center" py={4} open preview={<Sizes />} code={sizesSnippet} />
+<Snippet layout="side-by-side" open preview={<Sizes />} code={sizesSnippet} />
 
 ### With description
 
-Here's a simple PasswordField with a description.
-
 <Snippet
-  align="center"
-  py={4}
+  layout="side-by-side"
   open
   preview={<WithDescription />}
   code={withDescriptionSnippet}
+/>
+
+### With icon
+
+<Snippet
+  layout="side-by-side"
+  open
+  preview={<WithIcon />}
+  code={withIconSnippet}
+/>
+
+### Validation
+
+<Snippet
+  layout="side-by-side"
+  open
+  preview={<Validation />}
+  code={validationSnippet}
 />
 
 <Theming definition={PasswordFieldDefinition} />

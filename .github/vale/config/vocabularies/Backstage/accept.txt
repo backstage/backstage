@@ -345,6 +345,7 @@ parallelization
 param
 params
 parseable
+passwordless
 Patrik
 pattison
 Peloton
@@ -527,6 +528,7 @@ transpilers
 trixie
 truthy
 tsconfig
+Turbopack
 TSDoc
 typeahead
 ui

@@ -1,5 +1,21 @@
 # @backstage/frontend-test-utils
 
+## 0.4.5-next.0
+
+### Patch Changes
+
+- d7dd5bd: Fixed Router deprecation warning and switched to using new `RouterBlueprint` from `@backstage/plugin-app-api`.
+- 69d880e: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/frontend-app-api@0.14.1-next.0
+  - @backstage/frontend-plugin-api@0.14.0-next.0
+  - @backstage/plugin-app@0.4.0-next.0
+  - @backstage/plugin-app-react@0.1.1-next.0
+  - @backstage/config@1.3.6
+  - @backstage/test-utils@1.7.15-next.0
+  - @backstage/types@1.2.2
+  - @backstage/version-bridge@1.0.11
+
 ## 0.4.3
 
 ### Patch Changes

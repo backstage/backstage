@@ -1,5 +1,14 @@
 # @backstage/plugin-app-react
 
+## 0.1.1-next.0
+
+### Patch Changes
+
+- 409af72: Internal refactor to move implementation of blueprints from `@backstage/frontend-plugin-api` to this package.
+- Updated dependencies
+  - @backstage/frontend-plugin-api@0.14.0-next.0
+  - @backstage/core-plugin-api@1.12.2-next.0
+
 ## 0.1.0
 
 ### Minor Changes

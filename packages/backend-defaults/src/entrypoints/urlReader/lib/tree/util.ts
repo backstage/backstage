@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import { Readable, pipeline as pipelineCb } from 'stream';
-import { promisify } from 'util';
+import { Readable, pipeline as pipelineCb } from 'node:stream';
+import { promisify } from 'node:util';
 import concatStream from 'concat-stream';
 
 const pipeline = promisify(pipelineCb);

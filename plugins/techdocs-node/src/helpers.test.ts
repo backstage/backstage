@@ -17,9 +17,9 @@
 import { Entity, getEntitySourceLocation } from '@backstage/catalog-model';
 import { ConfigReader } from '@backstage/config';
 import { ScmIntegrations } from '@backstage/integration';
-import os from 'os';
-import path from 'path';
-import { Readable } from 'stream';
+import os from 'node:os';
+import path from 'node:path';
+import { Readable } from 'node:stream';
 import { TECHDOCS_ANNOTATION } from '@backstage/plugin-techdocs-common';
 import {
   getDocFilesFromRepository,

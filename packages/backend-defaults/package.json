@@ -1,6 +1,6 @@
 {
   "name": "@backstage/backend-defaults",
-  "version": "0.15.0",
+  "version": "0.15.1-next.0",
   "description": "Backend defaults used by Backstage backend apps",
   "backstage": {
     "role": "node-library"
@@ -131,6 +131,7 @@
     "@aws-sdk/client-s3": "^3.350.0",
     "@aws-sdk/credential-providers": "^3.350.0",
     "@aws-sdk/types": "^3.347.0",
+    "@azure/identity": "^4.0.0",
     "@azure/storage-blob": "^12.5.0",
     "@backstage/backend-app-api": "workspace:^",
     "@backstage/backend-dev-utils": "workspace:^",
@@ -187,14 +188,14 @@
     "rate-limit-redis": "^4.2.0",
     "raw-body": "^2.4.1",
     "selfsigned": "^2.0.0",
-    "tar": "^6.1.12",
+    "tar": "^7.5.6",
     "triple-beam": "^1.4.1",
     "uuid": "^11.0.0",
     "winston": "^3.2.1",
     "winston-transport": "^4.5.0",
     "yauzl": "^3.0.0",
     "yn": "^4.0.0",
-    "zod": "^3.22.4",
+    "zod": "^3.25.76",
     "zod-to-json-schema": "^3.25.1"
   },
   "devDependencies": {

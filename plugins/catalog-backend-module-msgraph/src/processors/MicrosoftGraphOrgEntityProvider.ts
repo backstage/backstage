@@ -364,7 +364,11 @@ export class MicrosoftGraphOrgEntityProvider implements EntityProvider {
       },
     );
 
-    const { markCommitComplete } = markReadComplete({ users, groups });
+    const { markCommitComplete } = markReadComplete({
+      users,
+      groups,
+      tenantId: provider.tenantId,
+    });
 
     await this.connection.applyMutation({
       type: 'full',
@@ -374,7 +378,7 @@ export class MicrosoftGraphOrgEntityProvider implements EntityProvider {
       })),
     });
 
-    markCommitComplete();
+    markCommitComplete(groups.length, users.length, provider.tenantId);
   }
 
   private schedule(taskRunner: SchedulerServiceTaskRunner) {
@@ -410,17 +414,35 @@ function trackProgress(logger: LoggerService) {
 
   logger.info('Reading msgraph users and groups');
 
-  function markReadComplete(read: { users: unknown[]; groups: unknown[] }) {
+  function markReadComplete(read: {
+    users: unknown[];
+    groups: unknown[];
+    tenantId: string;
+  }) {
     summary = `${read.users.length} msgraph users and ${read.groups.length} msgraph groups`;
     const readDuration = ((Date.now() - timestamp) / 1000).toFixed(1);
     timestamp = Date.now();
-    logger.info(`Read ${summary} in ${readDuration} seconds. Committing...`);
+    logger.info(`Read ${summary} in ${readDuration} seconds. Committing...`, {
+      readDuration,
+      tenantId: read.tenantId,
+      usersCount: read.users.length,
+      groupsCount: read.groups.length,
+    });
     return { markCommitComplete };
   }
 
-  function markCommitComplete() {
+  function markCommitComplete(
+    groupsCount: number,
+    usersCount: number,
+    tenantId: string,
+  ) {
     const commitDuration = ((Date.now() - timestamp) / 1000).toFixed(1);
-    logger.info(`Committed ${summary} in ${commitDuration} seconds.`);
+    logger.info(`Committed ${summary} in ${commitDuration} seconds.`, {
+      commitDuration,
+      tenantId,
+      usersCount,
+      groupsCount,
+    });
   }
 
   return { markReadComplete };

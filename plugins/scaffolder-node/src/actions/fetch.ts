@@ -22,7 +22,7 @@ import {
 import { InputError } from '@backstage/errors';
 import { ScmIntegrations } from '@backstage/integration';
 import fs from 'fs-extra';
-import path from 'path';
+import path from 'node:path';
 
 /**
  * A helper function that reads the contents of a directory from the given URL.

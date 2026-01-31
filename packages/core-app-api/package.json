@@ -1,6 +1,6 @@
 {
   "name": "@backstage/core-app-api",
-  "version": "1.19.3",
+  "version": "1.19.4-next.0",
   "description": "Core app API used by Backstage apps",
   "backstage": {
     "role": "web-library"
@@ -57,7 +57,7 @@
     "prop-types": "^15.7.2",
     "react-use": "^17.2.4",
     "zen-observable": "^0.10.0",
-    "zod": "^3.22.4"
+    "zod": "^3.25.76"
   },
   "devDependencies": {
     "@backstage/cli": "workspace:^",

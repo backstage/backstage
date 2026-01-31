@@ -16,13 +16,11 @@
 
 import { forwardRef, useRef } from 'react';
 import { useLink } from 'react-aria';
-import { RouterProvider } from 'react-aria-components';
 import clsx from 'clsx';
 import { useStyles } from '../../hooks/useStyles';
 import { LinkDefinition } from './definition';
 import type { LinkProps } from './types';
-import { useNavigate, useHref } from 'react-router-dom';
-import { isExternalLink } from '../../utils/isExternalLink';
+import { InternalLinkProvider } from '../InternalLinkProvider';
 import styles from './Link.module.css';
 
 const LinkInternal = forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
@@ -83,19 +81,10 @@ LinkInternal.displayName = 'LinkInternal';
 
 /** @public */
 export const Link = forwardRef<HTMLAnchorElement, LinkProps>((props, ref) => {
-  const navigate = useNavigate();
-  const isExternal = isExternalLink(props.href);
-
-  // If it's an external link, render without RouterProvider
-  if (isExternal) {
-    return <LinkInternal {...props} ref={ref} />;
-  }
-
-  // For internal links, wrap in RouterProvider so useLink can access the router
   return (
-    <RouterProvider navigate={navigate} useHref={useHref}>
+    <InternalLinkProvider href={props.href}>
       <LinkInternal {...props} ref={ref} />
-    </RouterProvider>
+    </InternalLinkProvider>
   );
 });
 

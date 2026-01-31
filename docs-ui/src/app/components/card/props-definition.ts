@@ -1,30 +1,38 @@
 import {
   classNamePropDefs,
   stylePropDefs,
-  childrenPropDefs,
   type PropDef,
 } from '@/utils/propDefs';
 
+const optionalChildrenPropDef: Record<string, PropDef> = {
+  children: {
+    type: 'enum',
+    values: ['ReactNode'],
+    responsive: false,
+    description: 'Content to display inside the component.',
+  },
+};
+
 export const cardPropDefs: Record<string, PropDef> = {
-  ...childrenPropDefs,
+  ...optionalChildrenPropDef,
   ...classNamePropDefs,
   ...stylePropDefs,
 };
 
 export const cardHeaderPropDefs: Record<string, PropDef> = {
-  ...childrenPropDefs,
+  ...optionalChildrenPropDef,
   ...classNamePropDefs,
   ...stylePropDefs,
 };
 
 export const cardBodyPropDefs: Record<string, PropDef> = {
-  ...childrenPropDefs,
+  ...optionalChildrenPropDef,
   ...classNamePropDefs,
   ...stylePropDefs,
 };
 
 export const cardFooterPropDefs: Record<string, PropDef> = {
-  ...childrenPropDefs,
+  ...optionalChildrenPropDef,
   ...classNamePropDefs,
   ...stylePropDefs,
 };

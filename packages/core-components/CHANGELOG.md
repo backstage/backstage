@@ -1,5 +1,19 @@
 # @backstage/core-components
 
+## 0.18.6-next.0
+
+### Patch Changes
+
+- 7455dae: Use node prefix on native imports
+- cebfea7: Removed link styles from LinkButton to avoid styling inconsistencies related to import order.
+- 69d880e: Bump to latest zod to ensure it has the latest features
+- Updated dependencies
+  - @backstage/core-plugin-api@1.12.2-next.0
+  - @backstage/config@1.3.6
+  - @backstage/errors@1.2.7
+  - @backstage/theme@0.7.1
+  - @backstage/version-bridge@1.0.11
+
 ## 0.18.5
 
 ### Patch Changes

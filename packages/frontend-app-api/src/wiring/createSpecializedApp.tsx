@@ -401,7 +401,7 @@ function createApiFactories(options: {
     if (apiFactory) {
       const apiRefId = apiFactory.api.id;
       const ownerId = getApiOwnerId(apiRefId);
-      const pluginId = apiNode.spec.plugin.id ?? 'app';
+      const pluginId = apiNode.spec.plugin.pluginId ?? 'app';
       const existingFactory = factoriesById.get(apiRefId);
 
       // This allows modules to override factories provided by the plugin, but

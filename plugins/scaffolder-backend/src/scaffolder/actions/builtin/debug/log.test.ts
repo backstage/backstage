@@ -17,7 +17,7 @@
 import { createMockActionContext } from '@backstage/plugin-scaffolder-node-test-utils';
 import { Logger } from 'winston';
 import { createDebugLogAction } from './log';
-import { join } from 'path';
+import { join } from 'node:path';
 import yaml from 'yaml';
 import { createMockDirectory } from '@backstage/backend-test-utils';
 import fs from 'fs-extra';

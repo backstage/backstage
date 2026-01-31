@@ -6,77 +6,115 @@ import { TypePopup } from './TypePopup';
 
 import { PropDef } from '@/utils/propDefs';
 
-// Use the proper PropDef type
 type PropData = PropDef;
 
-// Modify the PropsTable component to use the new type
+type ColumnType = 'prop' | 'type' | 'default' | 'description' | 'responsive';
+
+interface ColumnConfig {
+  key: ColumnType;
+  width: string;
+}
+
+const defaultColumns: ColumnConfig[] = [
+  { key: 'prop' as const, width: '15%' },
+  { key: 'type' as const, width: '25%' },
+  { key: 'default' as const, width: '15%' },
+  { key: 'description' as const, width: '45%' },
+];
+
+const columnLabels: Record<ColumnType, string> = {
+  prop: 'Prop',
+  type: 'Type',
+  default: 'Default',
+  description: 'Description',
+  responsive: 'Responsive',
+};
+
 export const PropsTable = <T extends Record<string, PropData>>({
   data,
+  columns = defaultColumns,
 }: {
   data: T;
+  columns?: ColumnConfig[];
 }) => {
   if (!data) return null;
+
+  const renderCell = (
+    propName: string,
+    propData: PropData,
+    column: ColumnType,
+  ) => {
+    const enumValues =
+      Array.isArray(propData.values) &&
+      propData.values.map(t => <Chip key={t}>{t}</Chip>);
+
+    switch (column) {
+      case 'prop':
+        return <Chip head>{propName}</Chip>;
+
+      case 'type':
+        return (
+          <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.375rem' }}>
+            {propData.type === 'string' && <Chip>string</Chip>}
+            {propData.type === 'number' && <Chip>number</Chip>}
+            {propData.type === 'boolean' && <Chip>boolean</Chip>}
+            {propData.type === 'enum' && enumValues}
+            {propData.type === 'spacing' && (
+              <>
+                <Chip>0.5, 1, 1.5, 2, 3, ..., 14</Chip>
+                <Chip>string</Chip>
+              </>
+            )}
+            {propData.type === 'complex' && propData.complexType && (
+              <TypePopup
+                complexType={propData.complexType}
+                name={propData.complexType.name}
+              />
+            )}
+            {propData.type === 'enum | string' && (
+              <>
+                {enumValues}
+                <Chip>string</Chip>
+              </>
+            )}
+          </div>
+        );
+
+      case 'default':
+        return propData.default ? <Chip>{propData.default}</Chip> : null;
+
+      case 'description':
+        return propData.description || null;
+
+      case 'responsive':
+        return <Chip>{propData.responsive ? 'Yes' : 'No'}</Chip>;
+
+      default:
+        return null;
+    }
+  };
 
   return (
     <Table.Root>
       <Table.Header>
         <Table.HeaderRow>
-          <Table.HeaderCell style={{ width: '16%' }}>Prop</Table.HeaderCell>
-          <Table.HeaderCell style={{ width: '50%' }}>Type</Table.HeaderCell>
-          <Table.HeaderCell style={{ width: '20%' }}>Default</Table.HeaderCell>
-          <Table.HeaderCell style={{ width: '14%' }}>
-            Responsive
-          </Table.HeaderCell>
+          {columns.map(col => (
+            <Table.HeaderCell key={col.key} style={{ width: col.width }}>
+              {columnLabels[col.key]}
+            </Table.HeaderCell>
+          ))}
         </Table.HeaderRow>
       </Table.Header>
       <Table.Body>
-        {Object.keys(data).map(n => {
-          const enumValues =
-            Array.isArray(data[n].values) &&
-            data[n].values.map(t => <Chip key={t}>{t}</Chip>);
-
-          return (
-            <Table.Row key={n}>
-              <Table.Cell style={{ width: '16%' }}>
-                <Chip head>{n}</Chip>
+        {Object.keys(data).map(n => (
+          <Table.Row key={n}>
+            {columns.map(col => (
+              <Table.Cell key={col.key} style={{ width: col.width }}>
+                {renderCell(n, data[n], col.key)}
               </Table.Cell>
-              <Table.Cell style={{ width: '50%' }}>
-                <div
-                  style={{ display: 'flex', flexWrap: 'wrap', gap: '0.375rem' }}
-                >
-                  {data[n].type === 'string' && <Chip>string</Chip>}
-                  {data[n].type === 'number' && <Chip>number</Chip>}
-                  {data[n].type === 'boolean' && <Chip>boolean</Chip>}
-                  {data[n].type === 'enum' && enumValues}
-                  {data[n].type === 'spacing' && (
-                    <>
-                      <Chip>0.5, 1, 1.5, 2, 3, ..., 14</Chip>
-                      <Chip>string</Chip>
-                    </>
-                  )}
-                  {data[n].type === 'complex' && data[n].complexType && (
-                    <TypePopup
-                      complexType={data[n].complexType}
-                      name={data[n].complexType.name}
-                    />
-                  )}
-                  {data[n].type === 'enum | string' && (
-                    <>
-                      {enumValues}
-                      <Chip>string</Chip>
-                    </>
-                  )}
-                </div>
-              </Table.Cell>
-              <Table.Cell style={{ width: '20%' }}>
-                <Chip>{data[n].default ? data[n].default : '-'}</Chip>
-              </Table.Cell>
-              <Table.Cell style={{ width: '14%' }}>
-                <Chip>{data[n].responsive ? 'Yes' : 'No'}</Chip>
-              </Table.Cell>
-            </Table.Row>
-          );
-        })}
+            ))}
+          </Table.Row>
+        ))}
       </Table.Body>
     </Table.Root>
   );

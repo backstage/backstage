@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { posix, win32 } from 'path';
+import { posix, win32 } from 'node:path';
 
 describe('isChildPath', () => {
   it('should check child posix paths', () => {

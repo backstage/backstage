@@ -34,7 +34,7 @@ describe('createBackendPlugin', () => {
     expect(plugin.getRegistrations).toEqual(expect.any(Function));
     expect(plugin.getRegistrations()).toEqual([
       {
-        type: 'plugin',
+        type: 'plugin-v1.1',
         pluginId: 'x',
         extensionPoints: [],
         init: {

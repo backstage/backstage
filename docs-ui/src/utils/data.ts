@@ -29,6 +29,10 @@ export const components: Page[] = [
     slug: 'accordion',
   },
   {
+    title: 'Alert',
+    slug: 'alert',
+  },
+  {
     title: 'Avatar',
     slug: 'avatar',
   },

@@ -17,7 +17,7 @@
 import { PackageRole } from '@backstage/cli-node';
 import { startBackend, startBackendPlugin } from './startBackend';
 import { startFrontend } from './startFrontend';
-import { parse, resolve, join } from 'path';
+import { parse, resolve, join } from 'node:path';
 import { glob } from 'glob';
 
 export function resolveEntryPath(

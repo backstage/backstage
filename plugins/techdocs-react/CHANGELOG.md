@@ -1,5 +1,22 @@
 # @backstage/plugin-techdocs-react
 
+## 1.3.8-next.0
+
+### Patch Changes
+
+- 22dce2b: TechDocs addons in the new frontend system now use a Utility API pattern instead of multiple attachment points. The `AddonBlueprint` now uses this new approach, and while addons created with older versions still work, they will produce a deprecation warning and will stop working in a future release.
+
+  As part of this change, the `techDocsAddonDataRef` alpha export was removed.
+
+- Updated dependencies
+  - @backstage/core-components@0.18.6-next.0
+  - @backstage/frontend-plugin-api@0.14.0-next.0
+  - @backstage/core-plugin-api@1.12.2-next.0
+  - @backstage/catalog-model@1.7.6
+  - @backstage/config@1.3.6
+  - @backstage/version-bridge@1.0.11
+  - @backstage/plugin-techdocs-common@0.1.1
+
 ## 1.3.7
 
 ### Patch Changes

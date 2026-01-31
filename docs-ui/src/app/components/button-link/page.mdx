@@ -14,10 +14,15 @@ import { PageTitle } from '@/components/PageTitle';
 import { Theming } from '@/components/Theming';
 import { ButtonLinkDefinition } from '../../../utils/definitions';
 import { ChangelogComponent } from '@/components/ChangelogComponent';
+import { ReactAriaLink } from '@/components/ReactAriaLink';
+
+export const reactAriaUrls = {
+  link: 'https://react-aria.adobe.com/Link',
+};
 
 <PageTitle
   title="ButtonLink"
-  description="A button component that can be used as a link."
+  description="A button-styled link with primary, secondary, and tertiary variants."
 />
 
 <Snippet align="center" py={4} preview={<Variants />} code={variantsSnippet} />
@@ -30,29 +35,15 @@ import { ChangelogComponent } from '@/components/ChangelogComponent';
 
 <PropsTable data={buttonLinkPropDefs} />
 
+<ReactAriaLink component="Link" href={reactAriaUrls.link} />
+
 ## Examples
 
-### Variants
-
-Here's a view when buttons have different variants.
-
-<Snippet
-  align="center"
-  py={4}
-  open
-  preview={<Variants />}
-  code={variantsSnippet}
-/>
-
 ### Sizes
-
-Here's a view when buttons have different sizes.
 
 <Snippet align="center" py={4} open preview={<Sizes />} code={sizesSnippet} />
 
 ### With Icons
-
-Here's a view when buttons have icons.
 
 <Snippet
   align="center"
@@ -63,8 +54,6 @@ Here's a view when buttons have icons.
 />
 
 ### Disabled
-
-Here's a view when buttons are disabled.
 
 <Snippet
   align="center"

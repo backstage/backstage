@@ -141,6 +141,9 @@ registered in this manner.
 Example:
 
 ```ts
+import { createBackendModule } from '@backstage/backend-plugin-api';
+import { proxyEndpointsExtensionPoint } from '@backstage/plugin-proxy-node';
+
 backend.add(
   createBackendModule({
     pluginId: 'proxy',

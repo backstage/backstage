@@ -15,7 +15,7 @@
  */
 
 import { RuleTester } from 'eslint';
-import path from 'path';
+import path from 'node:path';
 import rule from '../rules/no-mixed-plugin-imports';
 
 const RULE = 'no-mixed-plugin-imports';

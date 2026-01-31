@@ -1,3 +1,4 @@
+import type { ReactNode } from 'react';
 import type { Breakpoint } from '@backstage/ui/src/types';
 
 const breakpoints = ['initial', 'xs', 'sm', 'md', 'lg', 'xl'] as Breakpoint[];
@@ -28,13 +29,14 @@ export type PropDef = {
   default?: string;
   required?: boolean;
   responsive?: boolean;
-  description?: string;
+  description?: ReactNode;
 };
 
 export { breakpoints };
 export type { Breakpoint };
 
 export const spacingValues = [
+  '0',
   '0.5',
   '1',
   '1.5',
@@ -49,8 +51,7 @@ export const spacingValues = [
   '10',
   '11',
   '12',
-  '13',
-  '14',
+  'auto',
 ];
 
 export const paddingPropDefs = (
@@ -60,36 +61,43 @@ export const paddingPropDefs = (
     type: 'enum | string',
     values: spacingValues,
     responsive: true,
+    description: 'Padding on all sides.',
   },
   px: {
     type: 'enum | string',
     values: spacingValues,
     responsive: true,
+    description: 'Horizontal padding (left and right).',
   },
   py: {
     type: 'enum | string',
     values: spacingValues,
     responsive: true,
+    description: 'Vertical padding (top and bottom).',
   },
   pt: {
     type: 'enum | string',
     values: spacingValues,
     responsive: true,
+    description: 'Padding on the top.',
   },
   pr: {
     type: 'enum | string',
     values: spacingValues,
     responsive: true,
+    description: 'Padding on the right.',
   },
   pb: {
     type: 'enum | string',
     values: spacingValues,
     responsive: true,
+    description: 'Padding on the bottom.',
   },
   pl: {
     type: 'enum | string',
     values: spacingValues,
     responsive: true,
+    description: 'Padding on the left.',
   },
 });
 
@@ -100,36 +108,43 @@ export const marginPropDefs = (
     type: 'enum | string',
     values: spacingValues,
     responsive: true,
+    description: 'Margin on all sides.',
   },
   mx: {
     type: 'enum | string',
     values: spacingValues,
     responsive: true,
+    description: 'Horizontal margin (left and right).',
   },
   my: {
     type: 'enum | string',
     values: spacingValues,
     responsive: true,
+    description: 'Vertical margin (top and bottom).',
   },
   mt: {
     type: 'enum | string',
     values: spacingValues,
     responsive: true,
+    description: 'Margin on the top.',
   },
   mr: {
     type: 'enum | string',
     values: spacingValues,
     responsive: true,
+    description: 'Margin on the right.',
   },
   mb: {
     type: 'enum | string',
     values: spacingValues,
     responsive: true,
+    description: 'Margin on the bottom.',
   },
   ml: {
     type: 'enum | string',
     values: spacingValues,
     responsive: true,
+    description: 'Margin on the left.',
   },
 });
 
@@ -159,36 +174,36 @@ export const gapPropDefs: Record<string, PropDef> = {
 export const widthPropDefs: Record<string, PropDef> = {
   width: {
     type: 'string',
-    default: '0',
     responsive: true,
+    description: 'Sets the width of the element. Accepts CSS values.',
   },
   minWidth: {
     type: 'string',
-    default: '0',
     responsive: true,
+    description: 'Sets the minimum width. Element cannot shrink below this.',
   },
   maxWidth: {
     type: 'string',
-    default: '0',
     responsive: true,
+    description: 'Sets the maximum width. Element cannot grow beyond this.',
   },
 };
 
 export const heightPropDefs: Record<string, PropDef> = {
   height: {
     type: 'string',
-    default: '0',
     responsive: true,
+    description: 'Sets the height of the element. Accepts CSS values.',
   },
   minHeight: {
     type: 'string',
-    default: '0',
     responsive: true,
+    description: 'Sets the minimum height. Element cannot shrink below this.',
   },
   maxHeight: {
     type: 'string',
-    default: '0',
     responsive: true,
+    description: 'Sets the maximum height. Element cannot grow beyond this.',
   },
 };
 
@@ -196,8 +211,8 @@ export const positionPropDefs: Record<string, PropDef> = {
   position: {
     type: 'enum',
     values: ['static', 'relative', 'absolute', 'fixed', 'sticky'],
-    default: 'static',
     responsive: true,
+    description: 'CSS positioning scheme for the element.',
   },
 };
 
@@ -205,6 +220,7 @@ export const classNamePropDefs: Record<string, PropDef> = {
   className: {
     type: 'string',
     responsive: false,
+    description: 'Additional CSS class name for custom styling.',
   },
 };
 
@@ -213,6 +229,7 @@ export const stylePropDefs: Record<string, PropDef> = {
     type: 'enum',
     values: ['CSSProperties'],
     responsive: false,
+    description: 'Inline CSS styles object.',
   },
 };
 

@@ -58,6 +58,10 @@ export interface RawDocumentRow {
 
 /** @public */
 export interface DocumentResultRow {
+  /**
+   * Total number of documents matching the query, regardless of pagination.
+   */
+  total_count: string;
   document: IndexableDocument;
   type: string;
   highlight: IndexableDocument;

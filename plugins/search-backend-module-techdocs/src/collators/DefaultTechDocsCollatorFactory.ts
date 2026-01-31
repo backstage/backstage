@@ -32,7 +32,7 @@ import { Permission } from '@backstage/plugin-permission-common';
 import { DocumentCollatorFactory } from '@backstage/plugin-search-common';
 import { TechDocsDocument } from '@backstage/plugin-techdocs-node';
 import pLimit from 'p-limit';
-import { Readable } from 'stream';
+import { Readable } from 'node:stream';
 import { TechDocsCollatorEntityTransformer } from './TechDocsCollatorEntityTransformer';
 import {
   MkSearchIndexDoc,

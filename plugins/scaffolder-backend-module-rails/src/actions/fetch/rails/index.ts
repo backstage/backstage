@@ -22,9 +22,9 @@ import {
   fetchContents,
 } from '@backstage/plugin-scaffolder-node';
 
-import { resolve as resolvePath } from 'path';
+import { resolve as resolvePath } from 'node:path';
 import { RailsNewRunner } from './railsNewRunner';
-import { PassThrough } from 'stream';
+import { PassThrough } from 'node:stream';
 import { examples } from './index.examples';
 import { UrlReaderService } from '@backstage/backend-plugin-api';
 import { ContainerRunner } from './ContainerRunner';

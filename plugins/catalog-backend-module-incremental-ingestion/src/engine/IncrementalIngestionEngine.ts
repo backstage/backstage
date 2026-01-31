@@ -18,7 +18,7 @@ import type { DeferredEntity } from '@backstage/plugin-catalog-node';
 import { Gauge, metrics } from '@opentelemetry/api';
 import { IterationEngine, IterationEngineOptions } from '../types';
 import { IncrementalIngestionDatabaseManager } from '../database/IncrementalIngestionDatabaseManager';
-import { performance } from 'perf_hooks';
+import { performance } from 'node:perf_hooks';
 import { Duration } from 'luxon';
 import { v4 } from 'uuid';
 import { stringifyError } from '@backstage/errors';

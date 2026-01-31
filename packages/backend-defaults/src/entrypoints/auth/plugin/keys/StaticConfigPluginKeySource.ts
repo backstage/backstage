@@ -16,7 +16,7 @@
 
 import { Config } from '@backstage/config';
 import { HumanDuration, durationToMilliseconds } from '@backstage/types';
-import { promises as fs } from 'fs';
+import { promises as fs } from 'node:fs';
 import { JWK, exportJWK, importPKCS8, importSPKI } from 'jose';
 import { KeyLike } from 'jose';
 import { KeyPayload } from './types';

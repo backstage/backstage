@@ -17,7 +17,7 @@
 import { BatchSearchEngineIndexer } from '@backstage/plugin-search-backend-node';
 import { ElasticSearchClientWrapper } from './ElasticSearchClientWrapper';
 import { IndexableDocument } from '@backstage/plugin-search-common';
-import { Readable } from 'stream';
+import { Readable } from 'node:stream';
 import { LoggerService } from '@backstage/backend-plugin-api';
 
 /**

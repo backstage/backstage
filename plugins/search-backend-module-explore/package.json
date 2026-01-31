@@ -1,6 +1,6 @@
 {
   "name": "@backstage/plugin-search-backend-module-explore",
-  "version": "0.3.10",
+  "version": "0.3.11-next.0",
   "description": "A module for the search backend that exports explore modules",
   "backstage": {
     "moved": "@backstage-community/plugin-search-backend-module-explore",

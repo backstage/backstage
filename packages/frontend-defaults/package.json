@@ -1,6 +1,6 @@
 {
   "name": "@backstage/frontend-defaults",
-  "version": "0.3.5",
+  "version": "0.3.6-next.0",
   "backstage": {
     "role": "web-library"
   },
@@ -42,6 +42,7 @@
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@backstage/core-plugin-api": "workspace:^",
+    "@backstage/plugin-app-react": "workspace:^",
     "@backstage/test-utils": "workspace:^",
     "@testing-library/jest-dom": "^6.0.0",
     "@testing-library/react": "^16.0.0",

@@ -15,7 +15,7 @@
  */
 
 import { Config } from '@backstage/config';
-import path from 'path';
+import path from 'node:path';
 import {
   ScmIntegrationRegistry,
   ScmIntegrations,
@@ -26,12 +26,14 @@ import {
   patchIndexPreBuild,
   runCommand,
   storeEtagMetadata,
+  validateDocsDirectory,
   validateMkdocsYaml,
 } from './helpers';
 
 import {
   patchMkdocsYmlPreBuild,
   patchMkdocsYmlWithPlugins,
+  sanitizeMkdocsYml,
 } from './mkdocsPatchers';
 import {
   GeneratorBase,
@@ -111,6 +113,14 @@ export class TechdocsGenerator implements GeneratorBase {
 
     // validate the docs_dir first
     const docsDir = await validateMkdocsYaml(inputDir, content);
+
+    // Remove unsupported configuration keys
+    await sanitizeMkdocsYml(mkdocsYmlPath, childLogger);
+
+    // Validate that no symlinks in the docs directory point outside the input directory
+    // This prevents path traversal attacks where malicious symlinks could leak host files
+    const resolvedDocsDir = path.join(inputDir, docsDir ?? 'docs');
+    await validateDocsDirectory(resolvedDocsDir, inputDir);
 
     if (parsedLocationAnnotation) {
       await patchMkdocsYmlPreBuild(
