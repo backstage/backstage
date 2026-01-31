@@ -576,7 +576,7 @@
 <header>
   <div class="wrap">
     <h1>Manifest Debugger</h1>
-    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><span class="filter-pill ok" aria-disabled="true">40 components ok</span><a class="filter-pill info" data-k="infos" href="#filter-infos">30/40 infos</a><span class="filter-pill ok" aria-disabled="true">365 stories ok</span></div>
+    <div class="summary"><a class="filter-pill all" data-k="all" href="#filter-all">All</a><span class="filter-pill ok" aria-disabled="true">40 components ok</span><a class="filter-pill info" data-k="infos" href="#filter-infos">30/40 infos</a><span class="filter-pill ok" aria-disabled="true">366 stories ok</span></div>
   </div>
 </header>
 <main>
@@ -6470,9 +6470,9 @@ import { RiMore2Line } from "@remixicon/react";</code></pre>
     <div class="title">
       <h2><span class="status-dot dot-ok"></span> Link</h2>
       <div class="badges">
-        <label for="c-18-backstage-ui-link-props" class="badge ok as-toggle">6 prop types</label>
+        <label for="c-18-backstage-ui-link-props" class="badge ok as-toggle">7 prop types</label>
         <label for="c-18-backstage-ui-link-info" class="badge info as-toggle">1 info</label>
-        <label for="c-18-backstage-ui-link-stories" class="badge ok as-toggle">8 stories</label>
+        <label for="c-18-backstage-ui-link-stories" class="badge ok as-toggle">9 stories</label>
         
       </div>
     </div>
@@ -6504,7 +6504,7 @@ import { RiMore2Line } from "@remixicon/react";</code></pre>
           <div class="note ok">
             <div class="row">
               <span class="ex-name">Prop types</span>
-              <span class="badge ok">6 prop types</span>
+              <span class="badge ok">7 prop types</span>
             </div>
             <pre><code>Component: packages/ui/src/components/Link/Link.tsx::Link</code></pre>
             <pre><code>Props:</code></pre>
@@ -6513,6 +6513,8 @@ import { RiMore2Line } from "@remixicon/react";</code></pre>
 color?: | TextColors
 | TextColorStatus
 | Partial&lt;Record&lt;Breakpoint, TextColors | TextColorStatus&gt;&gt;
+
+standalone?: boolean
 
 title?: string
 
@@ -6611,6 +6613,12 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
       variant=&quot;title-small&quot;
       color=&quot;success&quot;
       children=&quot;I am success&quot;
+    /&gt;
+    &lt;Link
+      href=&quot;https://ui.backstage.io&quot;
+      variant=&quot;title-small&quot;
+      color=&quot;info&quot;
+      children=&quot;I am info&quot;
     /&gt;
   &lt;/Flex&gt;
 );</code></pre>
@@ -6750,6 +6758,31 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
             </div>
             <div class="note ok">
               <div class="row">
+                <span class="ex-name">Standalone</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const Standalone = () =&gt; &lt;Link href=&quot;/&quot; standalone&gt;Standalone link (no underline by default)&lt;/Link&gt;;</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
+                <span class="ex-name">StandaloneComparison</span>
+                <span class="badge ok">story ok</span>
+              </div>
+              
+              
+              <pre><code>const StandaloneComparison = () =&gt; (
+  &lt;Flex gap=&quot;4&quot; direction=&quot;column&quot;&gt;
+    &lt;Text&gt;Default link (underline by default):&lt;/Text&gt;
+    &lt;Link href=&quot;/&quot; children=&quot;Sign up for Backstage&quot; /&gt;
+    &lt;Text&gt;Standalone link (underline on hover only):&lt;/Text&gt;
+    &lt;Link href=&quot;/&quot; standalone children=&quot;Sign up for Backstage&quot; /&gt;
+  &lt;/Flex&gt;
+);</code></pre>
+            </div>
+            <div class="note ok">
+              <div class="row">
                 <span class="ex-name">Responsive</span>
                 <span class="badge ok">story ok</span>
               </div>
@@ -6760,30 +6793,6 @@ import { MemoryRouter } from "react-router-dom";</code></pre>
       xs: &#39;title-x-small&#39;,
       md: &#39;body-x-small&#39;,
     }}&gt;Link&lt;/Link&gt;;</code></pre>
-            </div>
-            <div class="note ok">
-              <div class="row">
-                <span class="ex-name">Playground</span>
-                <span class="badge ok">story ok</span>
-              </div>
-              
-              
-              <pre><code>const Playground = () =&gt; &lt;Flex gap=&quot;4&quot; direction=&quot;column&quot;&gt;
-    &lt;Text&gt;Title X Small&lt;/Text&gt;
-    &lt;Link variant=&quot;title-x-small&quot; style={{ maxWidth: &#39;600px&#39; }}&gt;Link&lt;/Link&gt;
-    &lt;Text&gt;Body X Small&lt;/Text&gt;
-    &lt;Link variant=&quot;body-x-small&quot; style={{ maxWidth: &#39;600px&#39; }}&gt;Link&lt;/Link&gt;
-    &lt;Text&gt;Body Small&lt;/Text&gt;
-    &lt;Link variant=&quot;body-small&quot; style={{ maxWidth: &#39;600px&#39; }}&gt;Link&lt;/Link&gt;
-    &lt;Text&gt;Body Medium&lt;/Text&gt;
-    &lt;Link variant=&quot;body-medium&quot; style={{ maxWidth: &#39;600px&#39; }}&gt;Link&lt;/Link&gt;
-    &lt;Text&gt;Body Large&lt;/Text&gt;
-    &lt;Link variant=&quot;body-large&quot; style={{ maxWidth: &#39;600px&#39; }}&gt;Link&lt;/Link&gt;
-    &lt;Text&gt;Title Small&lt;/Text&gt;
-    &lt;Link variant=&quot;title-small&quot; style={{ maxWidth: &#39;600px&#39; }}&gt;Link&lt;/Link&gt;
-    &lt;Text&gt;Title Medium&lt;/Text&gt;
-    &lt;Link variant=&quot;title-medium&quot; style={{ maxWidth: &#39;600px&#39; }}&gt;Link&lt;/Link&gt;
-&lt;/Flex&gt;;</code></pre>
             </div>
         </div>
     
@@ -10907,6 +10916,7 @@ weight?: TextWeights | Partial&lt;Record&lt;Breakpoint, TextWeights&gt;&gt;</cod
     &lt;Text color=&quot;danger&quot; children=&quot;I am danger&quot;&gt;Text&lt;/Text&gt;
     &lt;Text color=&quot;warning&quot; children=&quot;I am warning&quot;&gt;Text&lt;/Text&gt;
     &lt;Text color=&quot;success&quot; children=&quot;I am success&quot;&gt;Text&lt;/Text&gt;
+    &lt;Text color=&quot;info&quot; children=&quot;I am info&quot;&gt;Text&lt;/Text&gt;
 &lt;/Flex&gt;;</code></pre>
             </div>
             <div class="note ok">
