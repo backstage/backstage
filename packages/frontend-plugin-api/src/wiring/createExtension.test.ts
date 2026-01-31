@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-import { createExtensionTester } from '@backstage/frontend-test-utils';
+import {
+  shallowExtensionInstance,
+  createExtensionTester,
+} from '@backstage/frontend-test-utils';
 import { createExtension } from './createExtension';
 import { createExtensionDataRef } from './createExtensionDataRef';
 import { createExtensionInput } from './createExtensionInput';
@@ -845,12 +848,12 @@ describe('createExtension', () => {
         },
       });
 
-      expect(createExtensionTester(overridden).get(stringDataRef)).toBe(
+      expect(shallowExtensionInstance(overridden).get(stringDataRef)).toBe(
         'foo-boom-override-hello',
       );
 
       expect(
-        createExtensionTester(overridden, {
+        shallowExtensionInstance(overridden, {
           config: { foo: 'hello', bar: 'world' },
         }).get(stringDataRef),
       ).toBe('foo-hello-override-world');

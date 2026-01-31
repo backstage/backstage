@@ -21,6 +21,7 @@ import {
   ExtensionBlueprintParams,
 } from './createExtensionBlueprint';
 import {
+  shallowExtensionInstance,
   createExtensionTester,
   renderInTestApp,
 } from '@backstage/frontend-test-utils';
@@ -1648,7 +1649,7 @@ describe('createExtensionBlueprint', () => {
         version: 'v2',
       });
 
-      expect(createExtensionTester(extension).get(testDataRef)).toBe('x x');
+      expect(shallowExtensionInstance(extension).get(testDataRef)).toBe('x x');
 
       extension.override({
         // @ts-expect-error not using define func
@@ -1685,7 +1686,7 @@ describe('createExtensionBlueprint', () => {
           }),
       });
 
-      expect(createExtensionTester(override).get(testDataRef)).toBe('z z');
+      expect(shallowExtensionInstance(override).get(testDataRef)).toBe('z z');
     });
 
     it('should allow overriding of the default factory', () => {
@@ -1742,7 +1743,7 @@ describe('createExtensionBlueprint', () => {
         version: 'v2',
       });
 
-      expect(createExtensionTester(extension).get(testDataRef)).toBe('x x');
+      expect(shallowExtensionInstance(extension).get(testDataRef)).toBe('x x');
 
       extension.override({
         // @ts-expect-error not using define func
@@ -1769,7 +1770,7 @@ describe('createExtensionBlueprint', () => {
           }),
       });
 
-      expect(createExtensionTester(override).get(testDataRef)).toBe('z z');
+      expect(shallowExtensionInstance(override).get(testDataRef)).toBe('z z');
     });
 
     it('should allow the params definer to transform the params', () => {
@@ -1796,10 +1797,10 @@ describe('createExtensionBlueprint', () => {
           }),
       });
 
-      expect(createExtensionTester(extension).get(testDataRef)).toBe(`1 11`);
+      expect(shallowExtensionInstance(extension).get(testDataRef)).toBe(`1 11`);
 
       expect(
-        createExtensionTester(
+        shallowExtensionInstance(
           extension.override({
             params: defineParams =>
               defineParams({
@@ -1829,7 +1830,7 @@ describe('createExtensionBlueprint', () => {
         params: defineParams => defineParams({ x: 1 }),
       });
 
-      expect(createExtensionTester(extension).get(testDataRef)).toBe(`x: 1`);
+      expect(shallowExtensionInstance(extension).get(testDataRef)).toBe(`x: 1`);
 
       TestTransformExtensionBlueprint.make({
         params: defineParams => defineParams({ x: 2 }),
