@@ -101,10 +101,10 @@ These labels indicate a workflow status for the owners.
 
 The following labels indicate the status of a pull request:
 
-- `status:needs-review` - The pull request needs a review and will be visible in the review queue unless already assigned an owner.
-- `status:needs-changes` - Changes have been requested by a reviewer and the pull request will not receive a review until the changes are made. A comment made on the pull request by the author will also push it back into the review queue.
-- `status:needs-decision` - The pull request has been marked as more complex and needs a decision from the owners. Progress can still be made and discussion can continue, but expect the review to take longer. These pull requests are often good candidates to bring to a [SIG](https://github.com/backstage/community/tree/main/sigs) meeting.
-- `status:awaiting-merge` - The pull request has been approved and is awaiting merge. If you have write access and authored the pull request you can merge it yourself. If you do not have access to merge and the pull request has not been merged within a day of approval, please notify the assigned reviewer.
+- `waiting-for:review` - The pull request needs a review and will be visible in the review queue unless already assigned an owner.
+- `waiting-for:author` - Changes have been requested by a reviewer and the pull request will not receive a review until the changes are made. A comment made on the pull request by the author will also push it back into the review queue.
+- `waiting-for:decision` - The pull request has been marked as more complex and needs a decision from the owners. Progress can still be made and discussion can continue, but expect the review to take longer. These pull requests are often good candidates to bring to a [SIG](https://github.com/backstage/community/tree/main/sigs) meeting.
+- `waiting-for:merge` - The pull request has been approved and is awaiting merge. If you have write access and authored the pull request you can merge it yourself. If you do not have access to merge and the pull request has not been merged within a day of approval, please notify the assigned reviewer.
 
 The following labels indicate the size of a pull request:
 
