@@ -31,11 +31,13 @@ import {
   createFrontendPlugin,
   FrontendFeature,
   createFrontendModule,
-  ApiBlueprint,
+  createApiFactory,
 } from '@backstage/frontend-plugin-api';
 import { RouterBlueprint } from '@backstage/plugin-app-react';
 import appPlugin from '@backstage/plugin-app';
 import { type TestApiPairs } from '../utils';
+// eslint-disable-next-line @backstage/no-relative-monorepo-imports
+import type { CreateSpecializedAppInternalOptions } from '../../../frontend-app-api/src/wiring/createSpecializedApp';
 
 const DEFAULT_MOCK_CONFIG = {
   app: { baseUrl: 'http://localhost:3000' },
@@ -223,27 +225,6 @@ export function renderInTestApp<TApiPairs extends any[] = any[]>(
     features.push(...options.features);
   }
 
-  // If API overrides are provided, add them as a module for the 'app' plugin
-  // This must come after appPluginOverride so it can override app's default APIs
-  if (options?.apis) {
-    features.push(
-      createFrontendModule({
-        pluginId: 'app',
-        extensions: options.apis.map(([apiRef, implementation], index) =>
-          ApiBlueprint.make({
-            name: `test-api-override-${index}`,
-            params: defineParams =>
-              defineParams({
-                api: apiRef,
-                deps: {},
-                factory: () => implementation,
-              }),
-          }),
-        ),
-      }),
-    );
-  }
-
   const app = createSpecializedApp({
     features,
     config: ConfigReader.fromConfigs([
@@ -252,7 +233,12 @@ export function renderInTestApp<TApiPairs extends any[] = any[]>(
         data: options?.config ?? DEFAULT_MOCK_CONFIG,
       },
     ]),
-  });
+    __internal: options?.apis && {
+      apiFactoryOverrides: options.apis.map(([apiRef, implementation]) =>
+        createApiFactory(apiRef, implementation),
+      ),
+    },
+  } as CreateSpecializedAppInternalOptions);
 
   return render(
     app.tree.root.instance!.getData(coreExtensionData.reactElement),
