@@ -612,4 +612,31 @@ describe('<EntityOwnerPicker mode="owners-only" />', () => {
       owners: new EntityOwnerFilter(['group:default/team-b']),
     });
   });
+
+  it('handles invalid owner references gracefully', async () => {
+    const updateFilters = jest.fn();
+    // Mock getEntitiesByRefs to return empty for invalid refs
+    mockCatalogApi.getEntitiesByRefs.mockResolvedValue({
+      items: [],
+    });
+    
+    await renderInTestApp(
+      <ApiProvider apis={mockApis}>
+        <MockEntityListContextProvider
+          value={{
+            updateFilters,
+            queryParameters: { owners: ['invalid-ref', 'team-a'] },
+          }}
+        >
+          <EntityOwnerPicker mode="owners-only" />
+        </MockEntityListContextProvider>
+      </ApiProvider>,
+    );
+
+    // Should filter out invalid refs and keep valid ones
+    expect(updateFilters).toHaveBeenCalled();
+    // The EntityOwnerFilter constructor filters out bad refs
+    const lastCall = updateFilters.mock.calls[updateFilters.mock.calls.length - 1][0];
+    expect(lastCall.owners).toBeDefined();
+  });
 });

@@ -195,15 +195,27 @@ export const EntityOwnerPicker = (props?: EntityOwnerPickerProps) => {
           return o === v;
         }}
         getOptionLabel={o => {
-          const entity =
-            typeof o === 'string'
-              ? cache.getEntity(o) ||
-                parseEntityRef(o, {
-                  defaultKind: 'group',
-                  defaultNamespace: 'default',
-                })
-              : o;
-          return humanizeEntity(entity, humanizeEntityRef(entity));
+          if (typeof o === 'string') {
+            const cachedEntity = cache.getEntity(o);
+            if (cachedEntity) {
+              return humanizeEntity(
+                cachedEntity,
+                humanizeEntityRef(cachedEntity),
+              );
+            }
+            // If not in cache, try to parse the ref and use it directly
+            try {
+              const parsedRef = parseEntityRef(o, {
+                defaultKind: 'group',
+                defaultNamespace: 'default',
+              });
+              return humanizeEntityRef(parsedRef);
+            } catch {
+              // If parsing fails, return the original string
+              return o;
+            }
+          }
+          return humanizeEntity(o, humanizeEntityRef(o));
         }}
         onChange={(_: object, owners) => {
           setText('');
