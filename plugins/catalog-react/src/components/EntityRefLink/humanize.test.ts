@@ -210,6 +210,28 @@ describe('humanizeEntityRef', () => {
     });
     expect(title).toEqual('component:default/software');
   });
+
+  it('handles entity ref with undefined kind gracefully', () => {
+    const entityName = {
+      kind: undefined as any,
+      namespace: 'default',
+      name: 'software',
+    };
+
+    const title = humanizeEntityRef(entityName);
+    expect(title).toEqual('software');
+  });
+
+  it('handles entity ref with undefined kind and namespace', () => {
+    const entityName = {
+      kind: undefined as any,
+      namespace: 'test',
+      name: 'software',
+    };
+
+    const title = humanizeEntityRef(entityName);
+    expect(title).toEqual('test/software');
+  });
 });
 
 describe('humanizeEntity', () => {

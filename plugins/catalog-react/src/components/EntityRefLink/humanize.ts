@@ -60,11 +60,13 @@ export function humanizeEntityRef(
     namespace = undefined;
   }
 
-  kind = kind.toLocaleLowerCase('en-US');
-  kind =
-    defaultKind && defaultKind.toLocaleLowerCase('en-US') === kind
-      ? undefined
-      : kind;
+  if (kind) {
+    kind = kind.toLocaleLowerCase('en-US');
+    kind =
+      defaultKind && defaultKind.toLocaleLowerCase('en-US') === kind
+        ? undefined
+        : kind;
+  }
   return `${kind ? `${kind}:` : ''}${namespace ? `${namespace}/` : ''}${name}`;
 }
 
