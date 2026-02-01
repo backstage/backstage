@@ -52,9 +52,14 @@ export type TestApiProviderProps<TApiPairs extends any[]> = {
 };
 
 /**
- * The `TestApiRegistry` is an {@link @backstage/core-plugin-api#ApiHolder} implementation
+ * The `TestApiRegistry` is an {@link @backstage/frontend-plugin-api#ApiHolder} implementation
  * that is particularly well suited for development and test environments such as
  * unit tests, storybooks, and isolated plugin development setups.
+ *
+ * @remarks
+ *
+ * For most test scenarios, prefer using the `apis` option in `renderInTestApp` or
+ * `createExtensionTester` instead of creating a registry directly.
  *
  * @public
  */
@@ -67,9 +72,11 @@ export class TestApiRegistry implements ApiHolder {
    *
    * @example
    * ```ts
+   * import { identityApiRef } from '@backstage/frontend-plugin-api';
+   * import { mockApis } from '@backstage/frontend-test-utils';
+   *
    * const apis = TestApiRegistry.from(
-   *   [configApiRef, new ConfigReader({})],
-   *   [identityApiRef, { getUserId: () => 'tester' }],
+   *   [identityApiRef, mockApis.identity({ userEntityRef: 'user:default/guest' })],
    * );
    * ```
    *
@@ -97,43 +104,31 @@ export class TestApiRegistry implements ApiHolder {
 }
 
 /**
- * The `TestApiProvider` is a Utility API context provider that is particularly
- * well suited for development and test environments such as unit tests, storybooks,
- * and isolated plugin development setups.
+ * The `TestApiProvider` is a Utility API context provider for standalone rendering
+ * scenarios where you're not using `renderInTestApp` or other test utilities.
  *
  * It lets you provide any number of API implementations, without necessarily
  * having to fully implement each of the APIs.
  *
  * @remarks
- * todo: remove this remark tag and ship in the api-reference. There's some odd formatting going on when this is made into a markdown doc, that there's no line break between
- * the emitted <p> for To the following </p> so what happens is that when parsing in docusaurus, it thinks that the code block is mdx rather than a code
- * snippet. Just omitting this from the report for now until we can work out how to fix later.
- * A migration from `ApiRegistry` and `ApiProvider` might look like this, from:
  *
+ * For most test scenarios, prefer using the `apis` option in `renderInTestApp` or
+ * `createExtensionTester` instead of wrapping components with `TestApiProvider`.
+ *
+ * @example
  * ```tsx
- * renderInTestApp(
- *   <ApiProvider
- *     apis={ApiRegistry.from([
- *       [identityApiRef, mockIdentityApi as unknown as IdentityApi]
- *     ])}
+ * import { render } from '\@testing-library/react';
+ * import { identityApiRef } from '\@backstage/frontend-plugin-api';
+ * import { TestApiProvider, mockApis } from '\@backstage/frontend-test-utils';
+ *
+ * render(
+ *   <TestApiProvider
+ *     apis={[[identityApiRef, mockApis.identity({ userEntityRef: 'user:default/guest' })]]}
  *   >
- *    ...
- *   </ApiProvider>
- * )
- * ```
- *
- * To the following:
- *
- * ```tsx
- * renderInTestApp(
- *   <TestApiProvider apis={[[identityApiRef, mockIdentityApi]]}>
- *     ...
+ *     <MyComponent />
  *   </TestApiProvider>
- * )
+ * );
  * ```
- *
- * Note that the cast to `IdentityApi` is no longer needed as long as the mock API
- * implements a subset of the `IdentityApi`.
  *
  * @public
  */
