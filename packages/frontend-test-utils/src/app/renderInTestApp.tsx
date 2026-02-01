@@ -83,15 +83,16 @@ export type TestAppOptions<TApiPairs extends any[] = any[]> = {
   initialRouteEntries?: string[];
 
   /**
-   * API overrides to provide to the test app.
+   * API overrides to provide to the test app. Use `mockApis` helpers
+   * from `@backstage/frontend-test-utils` to create mock implementations.
    *
    * @example
    * ```ts
+   * import { identityApiRef } from '@backstage/frontend-plugin-api';
+   * import { mockApis } from '@backstage/frontend-test-utils';
+   *
    * renderInTestApp(<MyComponent />, {
-   *   apis: [
-   *     [errorApiRef, mockErrorApi],
-   *     [analyticsApiRef, mockAnalyticsApi],
-   *   ]
+   *   apis: [[identityApiRef, mockApis.identity({ userEntityRef: 'user:default/guest' })]],
    * })
    * ```
    */

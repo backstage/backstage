@@ -2,21 +2,29 @@
 '@backstage/frontend-test-utils': patch
 ---
 
-Added support for API overrides in `createExtensionTester` and `renderInTestApp`. You can now pass an `apis` option to override specific APIs when testing extensions:
+Added an `apis` option to `createExtensionTester` and `renderInTestApp` to override APIs when testing extensions. Use the `mockApis` helpers to create mock implementations:
 
 ```typescript
+import { identityApiRef } from '@backstage/frontend-plugin-api';
+import { mockApis } from '@backstage/frontend-test-utils';
+
 // Override APIs in createExtensionTester
 const tester = createExtensionTester(myExtension, {
   apis: [
-    [errorApiRef, mockErrorApi],
-    [analyticsApiRef, mockAnalyticsApi],
+    [
+      identityApiRef,
+      mockApis.identity({ userEntityRef: 'user:default/guest' }),
+    ],
   ],
 });
 
 // Override APIs in renderInTestApp
 renderInTestApp(<MyComponent />, {
-  apis: [[errorApiRef, mockErrorApi]],
+  apis: [
+    [
+      identityApiRef,
+      mockApis.identity({ userEntityRef: 'user:default/guest' }),
+    ],
+  ],
 });
 ```
-
-The package now also exports its own implementations of `TestApiProvider`, `TestApiRegistry`, and related types, rather than re-exporting them from `@backstage/test-utils`. This consolidates common types used internally by the test utilities.
