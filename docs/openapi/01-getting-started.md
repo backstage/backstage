@@ -29,7 +29,7 @@ This tutorial assumes that you're already familiar with the following,
 3. OpenAPI 3.1 schemas
 
 :::note OpenAPI Version Support
-Backstage supports OpenAPI 3.1 specifications. If you have existing OpenAPI 3.0 specs, you'll need to migrate them to 3.1. The main changes are:
+Backstage supports both OpenAPI 3.0 and 3.1 specifications. If you have existing OpenAPI 3.0 specs, we recommend that you migrate them to 3.1. The main changes are:
 
 - Replace `nullable: true` with `type: ['string', 'null']` or use `anyOf`/`oneOf`
 - Remove `allowReserved` from path parameters (only valid on query/cookie parameters in 3.1)
