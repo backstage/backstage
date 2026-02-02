@@ -648,12 +648,13 @@ describe('createSpecializedApp', () => {
               output: [coreExtensionData.reactElement],
               factory: () => [coreExtensionData.reactElement(<div />)],
             }),
+            // Test backward compatibility - runtime still supports multiple attachment points
             createExtension({
               name: 'cloned',
               attachTo: [
                 { id: 'test/a', input: 'children' },
                 { id: 'test/b', input: 'children' },
-              ],
+              ] as any,
               output: [coreExtensionData.reactElement],
               factory: () => [coreExtensionData.reactElement(<div />)],
             }),

@@ -32,12 +32,10 @@ describe('AnalyticsBlueprint', () => {
       {
         "$$type": "@backstage/ExtensionDefinition",
         "T": undefined,
-        "attachTo": [
-          {
-            "id": "api:app/analytics",
-            "input": "implementations",
-          },
-        ],
+        "attachTo": {
+          "id": "api:app/analytics",
+          "input": "implementations",
+        },
         "configSchema": undefined,
         "disabled": false,
         "factory": [Function],
