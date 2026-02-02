@@ -40,6 +40,22 @@ import { createErrorCollector } from '../../../frontend-app-api/src/wiring/creat
 import { OpaqueExtensionDefinition } from '@internal/frontend';
 import { TestApiRegistry, type TestApiPairs } from '../utils';
 
+/**
+ * Represents a snapshot of an extension in the app tree.
+ *
+ * @public
+ */
+export interface ExtensionSnapshotNode {
+  /** The ID of the extension */
+  id: string;
+  /** The IDs of output data refs produced by this extension */
+  outputs?: string[];
+  /** Child extensions organized by input name */
+  children?: Record<string, ExtensionSnapshotNode[]>;
+  /** Whether this extension is disabled */
+  disabled?: true;
+}
+
 /** @public */
 export class ExtensionQuery<UOutput extends ExtensionDataRef> {
   #node: AppNode;
@@ -190,6 +206,54 @@ export class ExtensionTester<UOutput extends ExtensionDataRef> {
     }
 
     return element;
+  }
+
+  /**
+   * Returns a snapshot of the extension tree structure for testing and debugging.
+   * Convenient to use with Jest's inline snapshot testing.
+   *
+   * @example
+   * ```tsx
+   * const tester = createExtensionTester(myExtension);
+   * expect(tester.snapshot()).toMatchInlineSnapshot();
+   * ```
+   */
+  snapshot(): ExtensionSnapshotNode {
+    const tree = this.#resolveTree();
+
+    const buildNode = (node: AppNode): ExtensionSnapshotNode => {
+      const outputs = node.instance
+        ? Array.from(node.instance.getDataRefs())
+            .map(ref => ref.id)
+            .sort()
+        : [];
+
+      const children: Record<string, ExtensionSnapshotNode[]> = {};
+      for (const [inputName, attachedNodes] of node.edges.attachments) {
+        children[inputName] = attachedNodes
+          .map(n => buildNode(n))
+          .sort((a, b) => a.id.localeCompare(b.id));
+      }
+
+      const result: ExtensionSnapshotNode = {
+        id: node.spec.id,
+      };
+
+      // Only include non-empty/non-default fields
+      if (outputs.length > 0) {
+        result.outputs = outputs;
+      }
+      if (Object.keys(children).length > 0) {
+        result.children = children;
+      }
+      if (node.spec.disabled) {
+        result.disabled = true;
+      }
+
+      return result;
+    };
+
+    return buildNode(tree.root);
   }
 
   #resolveTree() {
