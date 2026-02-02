@@ -165,7 +165,7 @@ export class CacheManager {
     config: RootConfigService,
     logger?: LoggerService,
   ): RedisCacheStoreOptions {
-    const redisOptions: RedisCacheStoreOptions = {
+    const redisOptions: RedisCacheStoreOptions & { socket?: object } = {
       type: 'redis',
     };
 
@@ -216,6 +216,39 @@ export class CacheManager {
         if (keepAlive !== true) {
           logger?.warn(
             'Socket keepalive initial delay is set without keepalive enabled. Enabling keepalive.',
+    const reconnectConfig =
+      socketConfig?.getOptionalConfig('reconnectStrategy');
+    const baseDelayMs = reconnectConfig?.getOptionalNumber('baseDelayMs');
+    const maxDelayMs = reconnectConfig?.getOptionalNumber('maxDelayMs');
+    const jitterMs = reconnectConfig?.getOptionalNumber('jitterMs');
+    const maxRetries = reconnectConfig?.getOptionalNumber('maxRetries');
+    const stopOnSocketTimeout = reconnectConfig?.getOptionalBoolean(
+      'stopOnSocketTimeout',
+    );
+    const hasReconnectConfig =
+      baseDelayMs !== undefined ||
+      maxDelayMs !== undefined ||
+      jitterMs !== undefined ||
+      maxRetries !== undefined ||
+      stopOnSocketTimeout !== undefined;
+
+    const reconnectStrategy = hasReconnectConfig
+      ? (retries: number, cause: Error) => {
+          if (
+            stopOnSocketTimeout &&
+            (cause as { name?: string }).name === 'SocketTimeoutError'
+          ) {
+            return false;
+          }
+          if (maxRetries !== undefined && retries > maxRetries) {
+            return false;
+          }
+          const resolvedBaseDelay = Math.max(0, baseDelayMs ?? 100);
+          const resolvedMaxDelay = Math.max(0, maxDelayMs ?? 2000);
+          const resolvedJitter = Math.max(0, jitterMs ?? 50);
+          const backoff = Math.min(
+            Math.pow(2, retries) * resolvedBaseDelay,
+            resolvedMaxDelay,
           );
         }
         keepAliveForSocket = true;
@@ -239,6 +272,8 @@ export class CacheManager {
               : {}),
             ...(pingInterval !== undefined ? { pingInterval } : {}),
             ...(socketTimeout !== undefined ? { socketTimeout } : {}),
+      reconnectStrategy !== undefined
+        ? {
             ...(reconnectStrategy !== undefined ? { reconnectStrategy } : {}),
           }
         : undefined;

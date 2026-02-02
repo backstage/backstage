@@ -510,6 +510,9 @@ describe('CacheManager store options', () => {
 
     const connection = (KeyvRedis as jest.Mock).mock.calls[0][0];
     expect(connection.socket.reconnectStrategy).toBeUndefined();
+    expect(KeyvRedis).toHaveBeenCalledWith('redis://localhost:6379', {
+      keyPrefixSeparator: '!',
+    });
   });
 
   it('passes reconnect strategy options to the redis client', () => {
@@ -600,7 +603,6 @@ describe('CacheManager store options', () => {
 
   it('merges ping interval and socket timeout into redis cluster defaults', () => {
       defaults: { socket: { keepAliveInitialDelay: 4242 } },
-    });
   });
 
   it('merges reconnect strategy into redis cluster defaults', () => {

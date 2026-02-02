@@ -49,6 +49,7 @@ type RedisClusterOptions = Omit<KeyvRedisClusterOptions, 'defaults'> & {
   > & {
     socket?: RedisSocketOptions;
   };
+  socket?: RedisClientOptions['socket'];
 };
 
 /**
