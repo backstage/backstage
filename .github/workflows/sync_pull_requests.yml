@@ -1,0 +1,29 @@
+name: Sync Pull Requests
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+  pull_request_review:
+    types: [submitted, dismissed]
+  issue_comment:
+    types: [created, edited]
+
+jobs:
+  label:
+    # prevent running towards forks and from bots
+    if: github.repository == 'backstage/backstage' && github.event.sender.type != 'Bot'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@df199fb7be9f65074067a9eb93f12bb4c5547cf2 # v2.13.3
+        with:
+          egress-policy: audit
+
+      - name: Backstage PR automation
+        uses: backstage/actions/pr-automation@67179ab45898a95ba94a4b196131a3241d72a2a1 # v0.7.0
+        with:
+          app-id: ${{ secrets.BACKSTAGE_GOALIE_APPLICATION_ID }}
+          private-key: ${{ secrets.BACKSTAGE_GOALIE_PRIVATE_KEY }}
+          installation-id: ${{ secrets.BACKSTAGE_GOALIE_INSTALLATION_ID }}
+          project-owner: backstage
+          project-number: '14'
