@@ -59,7 +59,12 @@ import {
   vmwareCloudAuthApiRef,
   openshiftAuthApiRef,
 } from '@backstage/core-plugin-api';
-import { ApiBlueprint, dialogApiRef } from '@backstage/frontend-plugin-api';
+import {
+  ApiBlueprint,
+  dialogApiRef,
+  routerApiRef,
+} from '@backstage/frontend-plugin-api';
+import { ReactRouter6RouterApi } from '@backstage/frontend-module-react-router-v6';
 import {
   ScmAuth,
   ScmIntegrationsApi,
@@ -73,6 +78,15 @@ import { DefaultDialogApi } from './apis/DefaultDialogApi';
 import { analyticsApi } from './extensions/AnalyticsApi';
 
 export const apis = [
+  ApiBlueprint.make({
+    name: 'router',
+    params: defineParams =>
+      defineParams({
+        api: routerApiRef,
+        deps: {},
+        factory: () => new ReactRouter6RouterApi(),
+      }),
+  }),
   ApiBlueprint.make({
     name: 'dialog',
     params: defineParams =>

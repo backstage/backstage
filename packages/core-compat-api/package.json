@@ -32,6 +32,7 @@
   },
   "dependencies": {
     "@backstage/core-plugin-api": "workspace:^",
+    "@backstage/frontend-module-react-router-v6": "workspace:^",
     "@backstage/frontend-plugin-api": "workspace:^",
     "@backstage/plugin-app-react": "workspace:^",
     "@backstage/plugin-catalog-react": "workspace:^",
@@ -43,7 +44,6 @@
   "devDependencies": {
     "@backstage/cli": "workspace:^",
     "@backstage/core-app-api": "workspace:^",
-    "@backstage/frontend-app-api": "workspace:^",
     "@backstage/frontend-test-utils": "workspace:^",
     "@backstage/plugin-catalog": "workspace:^",
     "@backstage/test-utils": "workspace:^",

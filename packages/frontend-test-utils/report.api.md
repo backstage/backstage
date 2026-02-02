@@ -8,12 +8,16 @@ import { AnalyticsEvent } from '@backstage/frontend-plugin-api';
 import { ApiMock } from '@backstage/test-utils';
 import { AppNode } from '@backstage/frontend-plugin-api';
 import { AppNodeInstance } from '@backstage/frontend-plugin-api';
+import { ComponentType } from 'react';
 import { ErrorWithContext } from '@backstage/test-utils';
 import { ExtensionDataRef } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinition } from '@backstage/frontend-plugin-api';
 import { ExtensionDefinitionParameters } from '@backstage/frontend-plugin-api';
 import { FrontendFeature } from '@backstage/frontend-plugin-api';
 import { JsonObject } from '@backstage/types';
+import { JSX as JSX_2 } from 'react/jsx-runtime';
+import type { LinkProps } from '@backstage/frontend-plugin-api';
+import type { Location as Location_2 } from '@backstage/frontend-plugin-api';
 import { mockApis } from '@backstage/test-utils';
 import { MockConfigApi } from '@backstage/test-utils';
 import { MockErrorApi } from '@backstage/test-utils';
@@ -23,13 +27,23 @@ import { MockFetchApiOptions } from '@backstage/test-utils';
 import { MockPermissionApi } from '@backstage/test-utils';
 import { MockStorageApi } from '@backstage/test-utils';
 import { MockStorageBucket } from '@backstage/test-utils';
+import type { NavigateFunction } from '@backstage/frontend-plugin-api';
+import type { NavLinkProps } from '@backstage/frontend-plugin-api';
+import type { Path } from '@backstage/frontend-plugin-api';
+import { ReactElement } from 'react';
+import { ReactNode } from 'react';
 import { registerMswTestHooks } from '@backstage/test-utils';
 import { RenderResult } from '@testing-library/react';
+import type { RouteMatch } from '@backstage/frontend-plugin-api';
+import type { RouteObject } from '@backstage/frontend-plugin-api';
+import type { RouterApi } from '@backstage/frontend-plugin-api';
 import { RouteRef } from '@backstage/frontend-plugin-api';
+import { SetURLSearchParams } from 'react-router-dom';
 import { TestApiProvider } from '@backstage/test-utils';
 import { TestApiProviderProps } from '@backstage/test-utils';
 import { TestApiRegistry } from '@backstage/test-utils';
 import { testingLibraryDomTypesQueries } from '@testing-library/dom/types/queries';
+import type { To } from '@backstage/frontend-plugin-api';
 import { withLogCollector } from '@backstage/test-utils';
 
 export { ApiMock };
@@ -96,6 +110,62 @@ export class MockAnalyticsApi implements AnalyticsApi {
 
 export { mockApis };
 
+// @public
+export class MockBrowserRouterApi implements RouterApi {
+  constructor(options?: MockBrowserRouterApiOptions);
+  // (undocumented)
+  generatePath(
+    path: string,
+    params?: Record<string, string | undefined>,
+  ): string;
+  // (undocumented)
+  Link: ComponentType<LinkProps>;
+  // (undocumented)
+  matchRoutes<T extends RouteObject>(
+    routes: T[],
+    location: {
+      pathname: string;
+    },
+  ): RouteMatch<T>[] | null;
+  // (undocumented)
+  Navigate: RouterApi['Navigate'];
+  // (undocumented)
+  NavLink: ComponentType<NavLinkProps>;
+  // (undocumented)
+  Outlet: RouterApi['Outlet'];
+  // (undocumented)
+  resolvePath(to: To, fromPathname?: string): Path;
+  // (undocumented)
+  Router: ComponentType<{
+    children: ReactNode;
+    basePath: string;
+  }>;
+  // (undocumented)
+  useHref(to: To): string;
+  // (undocumented)
+  useLocation(): Location_2;
+  // (undocumented)
+  useNavigate(): NavigateFunction;
+  // (undocumented)
+  useOutlet(context?: unknown): ReactElement | null;
+  // (undocumented)
+  useParams<T extends Record<string, string | undefined>>(): T;
+  // (undocumented)
+  useResolvedPath(to: To): Path;
+  // (undocumented)
+  useRoutes(
+    routes: RouteObject[],
+    location?: Partial<Location_2> | string,
+  ): ReactElement | null;
+  // (undocumented)
+  useSearchParams(): [URLSearchParams, SetURLSearchParams];
+}
+
+// @public
+export interface MockBrowserRouterApiOptions {
+  basePath?: string;
+}
+
 export { MockConfigApi };
 
 export { MockErrorApi };
@@ -105,6 +175,63 @@ export { MockErrorApiOptions };
 export { MockFetchApi };
 
 export { MockFetchApiOptions };
+
+// @public
+export class MockMemoryRouterApi implements RouterApi {
+  constructor(options?: MockMemoryRouterApiOptions);
+  // (undocumented)
+  generatePath(
+    path: string,
+    params?: Record<string, string | undefined>,
+  ): string;
+  // (undocumented)
+  Link: ComponentType<LinkProps>;
+  // (undocumented)
+  matchRoutes<T extends RouteObject>(
+    routes: T[],
+    location: {
+      pathname: string;
+    },
+  ): RouteMatch<T>[] | null;
+  // (undocumented)
+  Navigate: RouterApi['Navigate'];
+  // (undocumented)
+  NavLink: ComponentType<NavLinkProps>;
+  // (undocumented)
+  Outlet: RouterApi['Outlet'];
+  // (undocumented)
+  resolvePath(to: To, fromPathname?: string): Path;
+  // (undocumented)
+  Router: ComponentType<{
+    children: ReactNode;
+    basePath: string;
+  }>;
+  // (undocumented)
+  useHref(to: To): string;
+  // (undocumented)
+  useLocation(): Location_2;
+  // (undocumented)
+  useNavigate(): NavigateFunction;
+  // (undocumented)
+  useOutlet(context?: unknown): ReactElement | null;
+  // (undocumented)
+  useParams<T extends Record<string, string | undefined>>(): T;
+  // (undocumented)
+  useResolvedPath(to: To): Path;
+  // (undocumented)
+  useRoutes(
+    routes: RouteObject[],
+    location?: Partial<Location_2> | string,
+  ): ReactElement | null;
+  // (undocumented)
+  useSearchParams(): [URLSearchParams, SetURLSearchParams];
+}
+
+// @public
+export interface MockMemoryRouterApiOptions {
+  initialEntries?: string[];
+  initialIndex?: number;
+}
 
 export { MockPermissionApi };
 
@@ -148,6 +275,31 @@ export type TestAppOptions = {
   features?: FrontendFeature[];
   initialRouteEntries?: string[];
 };
+
+// @public
+export const TestBrowserRouterProvider: ({
+  children,
+  basePath,
+}: TestBrowserRouterProviderProps) => JSX_2.Element;
+
+// @public
+export interface TestBrowserRouterProviderProps
+  extends MockBrowserRouterApiOptions {
+  children: ReactNode;
+}
+
+// @public
+export const TestMemoryRouterProvider: ({
+  children,
+  initialEntries,
+  initialIndex,
+}: TestMemoryRouterProviderProps) => JSX_2.Element;
+
+// @public
+export interface TestMemoryRouterProviderProps
+  extends MockMemoryRouterApiOptions {
+  children: ReactNode;
+}
 
 export { withLogCollector };
 ```

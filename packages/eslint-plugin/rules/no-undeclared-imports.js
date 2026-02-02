@@ -55,8 +55,6 @@ function getExpectedDepType(
       switch (impPath) {
         case 'react':
         case 'react-dom':
-        case 'react-router':
-        case 'react-router-dom':
           return 'peer';
       }
       break;

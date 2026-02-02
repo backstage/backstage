@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { generatePath, matchRoutes } from 'react-router-dom';
 import {
   RouteRef,
   ExternalRouteRef,
@@ -22,6 +21,7 @@ import {
   AnyRouteRefParams,
   RouteFunc,
   RouteResolutionApi,
+  RouterApi,
 } from '@backstage/frontend-plugin-api';
 import mapValues from 'lodash/mapValues';
 import { AnyRouteRef, BackstageRouteObject } from './types';
@@ -99,10 +99,11 @@ function resolveTargetRef(
  */
 function resolveBasePath(
   targetRef: RouteRef,
-  sourceLocation: Parameters<typeof matchRoutes>[1],
+  sourceLocation: string,
   routePaths: Map<RouteRef, string>,
   routeParents: Map<RouteRef, RouteRef | undefined>,
   routeObjects: BackstageRouteObject[],
+  matchRoutes: RouterApi['matchRoutes'],
 ) {
   // While traversing the app element tree we build up the routeObjects structure
   // used here. It is the same kind of structure that react-router creates, with the
@@ -110,7 +111,7 @@ function resolveBasePath(
   // us look up all route refs that can be reached from our source location.
   // Because of the similar route object structure, we can use `matchRoutes` from
   // react-router to do the lookup of our current location.
-  const match = matchRoutes(routeObjects, sourceLocation) ?? [];
+  const match = matchRoutes(routeObjects, { pathname: sourceLocation }) ?? [];
 
   // While we search for a common routing root between our current location and
   // the target route, we build a list of all route refs we find that we need
@@ -179,6 +180,8 @@ export class RouteResolver implements RouteResolutionApi {
   private readonly appBasePath: string; // base path without a trailing slash
   private readonly routeAliasResolver: RouteAliasResolver;
   private readonly routeRefsById: Map<string, RouteRef | SubRouteRef>;
+  private readonly matchRoutes: RouterApi['matchRoutes'];
+  private readonly generatePath: RouterApi['generatePath'];
 
   constructor(
     routePaths: Map<RouteRef, string>,
@@ -188,6 +191,8 @@ export class RouteResolver implements RouteResolutionApi {
     appBasePath: string, // base path without a trailing slash
     routeAliasResolver: RouteAliasResolver,
     routeRefsById: Map<string, RouteRef | SubRouteRef>,
+    matchRoutes: RouterApi['matchRoutes'],
+    generatePath: RouterApi['generatePath'],
   ) {
     this.routePaths = routePaths;
     this.routeParents = routeParents;
@@ -196,6 +201,8 @@ export class RouteResolver implements RouteResolutionApi {
     this.appBasePath = appBasePath;
     this.routeAliasResolver = routeAliasResolver;
     this.routeRefsById = routeRefsById;
+    this.matchRoutes = matchRoutes;
+    this.generatePath = generatePath;
   }
 
   resolve<TParams extends AnyRouteRefParams>(
@@ -231,6 +238,7 @@ export class RouteResolver implements RouteResolutionApi {
       this.routePaths,
       this.routeParents,
       this.routeObjects,
+      this.matchRoutes,
     );
 
     const routeFunc: RouteFunc<TParams> = (...[params]) => {
@@ -246,11 +254,11 @@ export class RouteResolver implements RouteResolutionApi {
         params &&
         mapValues(params, value => {
           if (typeof value === 'string') {
-            return value.replaceAll(/[&?#;\/]/g, c => encodeURIComponent(c));
+            return value.replaceAll(/[&?#;/]/g, c => encodeURIComponent(c));
           }
           return value;
         });
-      return joinPaths(basePath, generatePath(targetPath, encodedParams));
+      return joinPaths(basePath, this.generatePath(targetPath, encodedParams));
     };
     return routeFunc;
   }

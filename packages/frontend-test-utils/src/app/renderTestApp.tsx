@@ -26,8 +26,8 @@ import { render } from '@testing-library/react';
 import appPlugin from '@backstage/plugin-app';
 import { JsonObject } from '@backstage/types';
 import { ConfigReader } from '@backstage/config';
-import { MemoryRouter } from 'react-router-dom';
 import { RouterBlueprint } from '@backstage/plugin-app-react';
+import { TestMemoryRouterProvider } from '../routing/TestMemoryRouterProvider';
 
 const DEFAULT_MOCK_CONFIG = {
   app: { baseUrl: 'http://localhost:3000' },
@@ -84,9 +84,11 @@ export function renderTestApp(options: RenderTestAppOptions) {
         RouterBlueprint.make({
           params: {
             component: ({ children }) => (
-              <MemoryRouter initialEntries={options.initialRouteEntries}>
+              <TestMemoryRouterProvider
+                initialEntries={options.initialRouteEntries}
+              >
                 {children}
-              </MemoryRouter>
+              </TestMemoryRouterProvider>
             ),
           },
         }),

@@ -37,10 +37,12 @@ import {
   swappableComponentsApiRef,
   iconsApiRef,
   routeResolutionApiRef,
+  routerApiRef,
   Progress,
   NotFoundErrorPage,
   ErrorDisplay,
 } from '@backstage/frontend-plugin-api';
+import { ReactRouter6RouterApi } from '@backstage/frontend-module-react-router-v6';
 import { ComponentType, useMemo } from 'react';
 import { ReactNode } from 'react';
 import { toLegacyPlugin } from './BackwardsCompatProvider';
@@ -145,6 +147,10 @@ class ForwardsCompatApis implements ApiHolder {
       return this.#iconsApi as T;
     } else if (ref.id === routeResolutionApiRef.id) {
       return this.#routeResolutionApi as T;
+    } else if (ref.id === routerApiRef.id) {
+      // Use the react-router-6 router API - we're already inside a router
+      // from the old app, so we just need to provide the API for hooks
+      return new ReactRouter6RouterApi() as T;
     }
     return undefined;
   }
