@@ -75,6 +75,7 @@
     "@backstage/plugin-techdocs-common": "workspace:^",
     "@backstage/plugin-techdocs-react": "workspace:^",
     "@backstage/types": "workspace:^",
+    "@backstage/ui": "workspace:^",
     "@backstage/version-bridge": "workspace:^",
     "@material-ui/core": "^4.12.2",
     "@material-ui/icons": "^4.9.1",
