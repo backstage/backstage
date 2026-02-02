@@ -792,7 +792,20 @@ export interface Config {
                 /**
                  * Optional reconnect strategy configuration. When set, Backstage
                  * creates a reconnect strategy function and passes it to the Redis
-                 * client. See
+                 * client. The strategy is used when node-redis detects a socket
+                 * close or error (e.g. the connection was dropped by a load
+                 * balancer or NAT).
+                 *
+                 * Note: half-open connections are not always detected by TCP. If
+                 * the socket stays idle and the network silently drops it, the
+                 * reconnect strategy will not run until the client observes an
+                 * error. Use periodic traffic (pinger) or infrastructure/OS
+                 * keepalive settings to avoid long idle periods.
+                 *
+                 * The strategy implements exponential backoff with jitter:
+                 * delay = min(2^retries * baseDelayMs, maxDelayMs) ± jitterMs.
+                 *
+                 * See
                  * https://keyv.org/docs/storage-adapters/redis/#gracefully-handling-errors-and-timeouts.
                  */
                 reconnectStrategy?: {
@@ -817,7 +830,9 @@ export interface Config {
                    */
                   maxRetries?: number;
                   /**
-                   * When true, stop reconnecting on socket timeout errors.
+                   * When true, stop reconnecting on socket timeout errors. This is
+                   * useful when you want timeouts to be treated as fatal and rely
+                   * on higher-level retry logic.
                    */
                   stopOnSocketTimeout?: boolean;
                 };
