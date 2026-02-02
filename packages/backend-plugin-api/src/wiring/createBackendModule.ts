@@ -15,6 +15,7 @@
  */
 
 import { BackendFeature } from '../types';
+import { ID_PATTERN, ID_PATTERN_OLD } from './constants';
 import {
   BackendModuleRegistrationPoints,
   ExtensionPoint,
@@ -55,6 +56,17 @@ export interface CreateBackendModuleOptions {
 export function createBackendModule(
   options: CreateBackendModuleOptions,
 ): BackendFeature {
+  if (!ID_PATTERN.test(options.moduleId)) {
+    console.warn(
+      `WARNING: The moduleId '${options.moduleId}' for plugin '${options.pluginId}', will be invalid soon, please change it to match the pattern ${ID_PATTERN} (letters, digits, and dashes only, starting with a letter)`,
+    );
+  }
+  if (!ID_PATTERN_OLD.test(options.moduleId)) {
+    throw new Error(
+      `Invalid moduleId '${options.moduleId}' for plugin '${options.pluginId}', must match the pattern ${ID_PATTERN} (letters, digits, and dashes only, starting with a letter)`,
+    );
+  }
+
   function getRegistrations() {
     const extensionPoints: InternalBackendModuleRegistrationV1_1['extensionPoints'] =
       [];
