@@ -25,7 +25,7 @@ export interface BackstagePackageJson {
     pluginId?: string | null;
     pluginPackage?: string;
     pluginPackages?: string[];
-    integrationFor?: string[];
+    peerModules?: string[];
     features?: Record<string, BackstagePackageFeatureType>;
   };
   // (undocumented)

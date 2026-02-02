@@ -430,15 +430,15 @@ export function fixPluginPackages(
   }
 }
 
-export function fixIntegrationFor(pkg: FixablePackage) {
+export function fixPeerModules(pkg: FixablePackage) {
   const pkgBackstage = pkg.packageJson.backstage;
   const role = pkgBackstage?.role;
   if (!role) {
     return;
   }
 
-  const integrationFor = pkgBackstage.integrationFor;
-  if (integrationFor === undefined) {
+  const peerModules = pkgBackstage.peerModules;
+  if (peerModules === undefined) {
     return;
   }
 
@@ -447,25 +447,25 @@ export function fixIntegrationFor(pkg: FixablePackage) {
     resolvePath(pkg.dir, 'package.json'),
   );
 
-  // Validate that integrationFor is only used on module packages
-  if (role !== 'backend-plugin-module' && role !== 'frontend-plugin-module') {
+  // Validate that peerModules is only used on plugin packages
+  if (role !== 'backend-plugin' && role !== 'frontend-plugin') {
     throw new Error(
-      `The 'backstage.integrationFor' field in "${pkg.packageJson.name}" can only be used on module packages (backend-plugin-module or frontend-plugin-module), but package has role '${role}' in "${packagePath}"`,
+      `The 'backstage.peerModules' field in "${pkg.packageJson.name}" can only be used on plugin packages (backend-plugin or frontend-plugin), but package has role '${role}' in "${packagePath}"`,
     );
   }
 
-  // Validate that integrationFor is an array
-  if (!Array.isArray(integrationFor)) {
+  // Validate that peerModules is an array
+  if (!Array.isArray(peerModules)) {
     throw new Error(
-      `Invalid 'backstage.integrationFor' field in "${pkg.packageJson.name}", must be an array of package names in "${packagePath}"`,
+      `Invalid 'backstage.peerModules' field in "${pkg.packageJson.name}", must be an array of package names in "${packagePath}"`,
     );
   }
 
   // Validate that all entries are non-empty strings
-  for (const entry of integrationFor) {
+  for (const entry of peerModules) {
     if (typeof entry !== 'string' || entry.length === 0) {
       throw new Error(
-        `Invalid entry in 'backstage.integrationFor' field in "${pkg.packageJson.name}", all entries must be non-empty package name strings in "${packagePath}"`,
+        `Invalid entry in 'backstage.peerModules' field in "${pkg.packageJson.name}", all entries must be non-empty package name strings in "${packagePath}"`,
       );
     }
   }
@@ -485,7 +485,7 @@ export async function command(opts: OptionValues): Promise<void> {
       fixRepositoryField,
       fixPluginId,
       fixPluginPackages,
-      fixIntegrationFor,
+      fixPeerModules,
       // Run the publish preflight check too, to make sure we don't uncover errors during publishing
       publishPreflightCheck,
     );

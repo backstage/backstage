@@ -11,6 +11,9 @@
       "@backstage/plugin-techdocs-common",
       "@backstage/plugin-techdocs-node",
       "@backstage/plugin-techdocs-react"
+    ],
+    "peerModules": [
+      "@backstage/plugin-search-backend-module-techdocs"
     ]
   },
   "publishConfig": {

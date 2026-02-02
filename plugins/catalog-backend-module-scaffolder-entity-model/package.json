@@ -5,10 +5,7 @@
   "backstage": {
     "role": "backend-plugin-module",
     "pluginId": "catalog",
-    "pluginPackage": "@backstage/plugin-catalog-backend",
-    "integrationFor": [
-      "@backstage/plugin-scaffolder-backend"
-    ]
+    "pluginPackage": "@backstage/plugin-catalog-backend"
   },
   "publishConfig": {
     "access": "public"

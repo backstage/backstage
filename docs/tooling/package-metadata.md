@@ -168,39 +168,39 @@ The presence of this field is checked by the `backstage-cli package prepack` com
 }
 ```
 
-### `backstage.integrationFor`
+### `backstage.peerModules`
 
-For any module package, this optional field can be set to an array of package names that this module provides integration for. This field enables cross-plugin module discovery by declaring relationships between modules and the plugins they enhance or integrate with.
+For plugin packages, this optional field declares modules that should be installed alongside this plugin for cross-plugin integrations. If the peer module's target plugin is present in the Backstage installation, you should typically have the peer module installed as well.
 
-For example, a Catalog module that provides Scaffolder-related entity processing can declare that it integrates with the Scaffolder backend. Tooling and documentation systems can use this metadata to surface relevant integrations and help users discover modules that work together.
+For example, if you use `@backstage/plugin-scaffolder-backend`, you should also install `@backstage/plugin-catalog-backend-module-scaffolder-entity-model` to enable catalog support for scaffolder entity templates. The scaffolder plugin declares this relationship through `peerModules`.
 
-The field uses full package names rather than plugin IDs to allow precise targeting of specific packages. When referencing packages it is preferred to use a matching role, i.e. a `backend-plugin-module` referencing a `backend-plugin` package, but it is not required, in fact any of the packages in the target plugin's `pluginPackages` field can be used.
+The field uses full package names to allow precise targeting of specific modules. This field can only be used on plugin packages (`backend-plugin` or `frontend-plugin` roles).
 
-```js title="Example usage of the backstage.integrationFor field"
+```js title="Example usage of the backstage.peerModules field"
 {
-  "name": "@backstage/plugin-catalog-backend-module-scaffolder",
+  "name": "@backstage/plugin-scaffolder-backend",
   "backstage": {
-    "role": "backend-plugin-module",
-    "pluginId": "catalog",
-    "pluginPackage": "@backstage/plugin-catalog-backend",
-    "integrationFor": ["@backstage/plugin-scaffolder-backend"]
+    "role": "backend-plugin",
+    "pluginId": "scaffolder",
+    "peerModules": [
+      "@backstage/plugin-catalog-backend-module-scaffolder-entity-model"
+    ]
   }
   ...
 }
 ```
 
-A module can declare integration with multiple packages:
+A plugin can declare multiple peer modules:
 
-```js title="Example of multi-plugin integration"
+```js title="Example of multiple peer modules"
 {
-  "name": "@example/plugin-catalog-backend-module-ci-status",
+  "name": "@example/plugin-catalog-backend",
   "backstage": {
-    "role": "backend-plugin-module",
+    "role": "backend-plugin",
     "pluginId": "catalog",
-    "pluginPackage": "@backstage/plugin-catalog-backend",
-    "integrationFor": [
-      "@backstage-community/plugin-jenkins-backend",
-      "@backstage-community/plugin-github-actions-backend"
+    "peerModules": [
+      "@example/plugin-search-backend-module-catalog",
+      "@example/plugin-explore-backend-module-catalog"
     ]
   }
   ...

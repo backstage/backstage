@@ -92,9 +92,10 @@ export interface BackstagePackageJson {
     pluginPackages?: string[];
 
     /**
-     * Package names that this module provides integration for. When any of these packages are used, this module should be suggested as a related integration.
+     * Module packages that should be installed alongside this plugin for cross-plugin integrations.
+     * If the peer module's target plugin is present, you should have the peer module installed.
      */
-    integrationFor?: string[];
+    peerModules?: string[];
 
     /**
      * The feature types exported from the package, indexed by path.

@@ -5,10 +5,7 @@
   "backstage": {
     "role": "backend-plugin-module",
     "pluginId": "search",
-    "pluginPackage": "@backstage/plugin-search-backend",
-    "integrationFor": [
-      "@backstage/plugin-catalog-backend"
-    ]
+    "pluginPackage": "@backstage/plugin-search-backend"
   },
   "publishConfig": {
     "access": "public",

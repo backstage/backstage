@@ -11,6 +11,9 @@
       "@backstage/plugin-catalog-common",
       "@backstage/plugin-catalog-node",
       "@backstage/plugin-catalog-react"
+    ],
+    "peerModules": [
+      "@backstage/plugin-search-backend-module-catalog"
     ]
   },
   "publishConfig": {
