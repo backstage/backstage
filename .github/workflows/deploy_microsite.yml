@@ -309,7 +309,7 @@ jobs:
         run: ls microsite/build && ls microsite/build/storybook && ls microsite/build/api/stable && ls microsite/build/api/next
 
       - name: Deploy both microsite and storybook to gh-pages
-        uses: JamesIves/github-pages-deploy-action@9d877eea73427180ae43cf98e8914934fe157a1a # v4.7.6
+        uses: JamesIves/github-pages-deploy-action@d92aa235d04922e8f08b40ce78cc5442fcfbfa2f # v4.8.0
         with:
           branch: gh-pages
           folder: microsite/build
