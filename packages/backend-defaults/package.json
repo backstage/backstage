@@ -39,6 +39,7 @@
     "./scheduler": "./src/entrypoints/scheduler/index.ts",
     "./urlReader": "./src/entrypoints/urlReader/index.ts",
     "./userInfo": "./src/entrypoints/userInfo/index.ts",
+    "./queue": "./src/entrypoints/queue/index.ts",
     "./alpha": "./src/alpha/index.ts",
     "./package.json": "./package.json"
   },
@@ -103,6 +104,9 @@
       "userInfo": [
         "src/entrypoints/userInfo/index.ts"
       ],
+      "queue": [
+        "src/entrypoints/queue/index.ts"
+      ],
       "alpha": [
         "src/alpha/index.ts"
       ],
@@ -129,6 +133,7 @@
     "@aws-sdk/abort-controller": "^3.347.0",
     "@aws-sdk/client-codecommit": "^3.350.0",
     "@aws-sdk/client-s3": "^3.350.0",
+    "@aws-sdk/client-sqs": "^3.350.0",
     "@aws-sdk/credential-providers": "^3.350.0",
     "@aws-sdk/types": "^3.347.0",
     "@azure/identity": "^4.0.0",
@@ -169,8 +174,10 @@
     "git-url-parse": "^15.0.0",
     "helmet": "^6.0.0",
     "infinispan": "^0.12.0",
+    "ioredis": "^5.9.2",
     "is-glob": "^4.0.3",
     "jose": "^5.0.0",
+    "kafkajs": "^2.2.4",
     "keyv": "^5.2.1",
     "knex": "^3.0.0",
     "lodash": "^4.17.21",
@@ -183,6 +190,7 @@
     "p-limit": "^3.1.0",
     "path-to-regexp": "^8.0.0",
     "pg": "^8.11.3",
+    "pg-boss": "^10.0.0",
     "pg-connection-string": "^2.3.0",
     "pg-format": "^1.0.4",
     "rate-limit-redis": "^4.2.0",

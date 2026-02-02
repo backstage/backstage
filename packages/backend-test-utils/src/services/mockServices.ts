@@ -31,19 +31,20 @@ import {
   AuthService,
   BackstageCredentials,
   BackstageUserInfo,
+  coreServices,
+  createServiceFactory,
   DatabaseService,
   DiscoveryService,
   HttpAuthService,
-  RootInstanceMetadataService,
   PermissionsService,
+  QueueService,
   RootConfigService,
+  RootInstanceMetadataService,
+  RootLoggerService,
   SchedulerService,
   ServiceFactory,
   ServiceRef,
   UserInfoService,
-  coreServices,
-  createServiceFactory,
-  RootLoggerService,
 } from '@backstage/backend-plugin-api';
 import { ConfigReader } from '@backstage/config';
 import { EventsService, eventsServiceRef } from '@backstage/plugin-events-node';
@@ -59,6 +60,7 @@ import { MockEventsService } from './MockEventsService';
 import { MockPermissionsService } from './MockPermissionsService';
 import { simpleMock } from './simpleMock';
 import { MockSchedulerService } from './MockSchedulerService';
+import { MockQueueService } from './MockQueueService';
 // eslint-disable-next-line @backstage/no-relative-monorepo-imports
 import { ObservableConfigProxy } from '../../../config-loader/src/sources/ObservableConfigProxy';
 
@@ -572,5 +574,28 @@ export namespace mockServices {
       coreServices.rootInstanceMetadata,
       rootInstanceMetadata,
     );
+  }
+
+  /**
+   * Creates a functional mock implementation of the
+   * {@link @backstage/backend-plugin-api#QueueService}.
+   */
+  export function queue(): QueueService {
+    return new MockQueueService();
+  }
+  export namespace queue {
+    /**
+     * Creates a mock factory for the
+     * {@link @backstage/backend-plugin-api#coreServices.queue}.
+     */
+    export const factory = simpleFactoryWithOptions(coreServices.queue, queue);
+    /**
+     * Creates a mock of the
+     * {@link @backstage/backend-plugin-api#coreServices.queue},
+     * optionally with some given method implementations.
+     */
+    export const mock = simpleMock(coreServices.queue, () => ({
+      getQueue: jest.fn(),
+    }));
   }
 }
