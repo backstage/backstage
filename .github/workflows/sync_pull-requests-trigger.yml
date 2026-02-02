@@ -1,0 +1,65 @@
+name: Sync Pull Requests Trigger
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened, labeled, unlabeled]
+  pull_request_review:
+    types: [submitted, dismissed]
+  issue_comment:
+    types: [created]
+
+concurrency:
+  group: sync-pr-trigger-${{ github.event.pull_request.number || github.event.issue.number }}
+  cancel-in-progress: true
+
+jobs:
+  # Run directly for pull_request_target since it has secrets access
+  label:
+    if: >
+      github.repository == 'backstage/backstage' &&
+      github.event.sender.type != 'Bot' &&
+      github.event_name == 'pull_request_target'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@df199fb7be9f65074067a9eb93f12bb4c5547cf2 # v2.13.3
+        with:
+          egress-policy: audit
+
+      - name: Backstage PR automation
+        uses: backstage/actions/pr-automation@c0110c14def021f64b4774335b0d55ac705b9318 # v0.7.1
+        with:
+          app-id: ${{ secrets.BACKSTAGE_GOALIE_APPLICATION_ID }}
+          private-key: ${{ secrets.BACKSTAGE_GOALIE_PRIVATE_KEY }}
+          installation-id: ${{ secrets.BACKSTAGE_GOALIE_INSTALLATION_ID }}
+          project-owner: backstage
+          project-number: '14'
+
+  # Dispatch event for other triggers to be processed with secrets access
+  trigger:
+    if: >
+      github.repository == 'backstage/backstage' &&
+      github.event.sender.type != 'Bot' &&
+      github.event_name != 'pull_request_target' &&
+      (github.event.pull_request || github.event.issue.pull_request)
+    runs-on: ubuntu-latest
+    steps:
+      - name: Harden Runner
+        uses: step-security/harden-runner@df199fb7be9f65074067a9eb93f12bb4c5547cf2 # v2.13.3
+        with:
+          egress-policy: audit
+
+      - name: Dispatch sync event
+        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
+        with:
+          script: |
+            await github.rest.repos.createDispatchEvent({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              event_type: 'sync-pull-requests',
+              client_payload: {
+                'pr-number': String(context.payload.pull_request?.number || context.payload.issue?.number),
+                'label-added': context.payload.action === 'labeled' ? context.payload.label?.name : '',
+                'review-state': context.payload.review?.state || '',
+              },
+            });
