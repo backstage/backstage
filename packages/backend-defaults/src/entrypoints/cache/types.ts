@@ -32,14 +32,7 @@ export type RedisCacheStoreOptions = {
   type: 'redis';
   client?: KeyvRedisOptions;
   cluster?: RedisClusterOptions;
-  socket?: RedisSocketOptions;
-};
-
-type RedisSocketOptions = Omit<
-  NonNullable<RedisClientOptions['socket']>,
-  'keepAlive'
-> & {
-  keepAlive?: boolean;
+  socket?: RedisClientOptions['socket'];
 };
 
 type RedisClusterOptions = Omit<KeyvRedisClusterOptions, 'defaults'> & {
@@ -47,9 +40,8 @@ type RedisClusterOptions = Omit<KeyvRedisClusterOptions, 'defaults'> & {
     NonNullable<KeyvRedisClusterOptions['defaults']>,
     'socket'
   > & {
-    socket?: RedisSocketOptions;
+    socket?: RedisClientOptions['socket'];
   };
-  socket?: RedisClientOptions['socket'];
 };
 
 /**

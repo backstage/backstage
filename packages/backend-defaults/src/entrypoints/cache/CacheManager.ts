@@ -186,8 +186,7 @@ export class CacheManager {
     const clientConfig = redisConfig.getOptionalConfig('client');
     const socketConfig = clientConfig?.getOptionalConfig('socket');
     const keepAliveConfig = socketConfig?.getOptional('keepAlive');
-    const keepAlive =
-      typeof keepAliveConfig === 'boolean' ? keepAliveConfig : undefined;
+    const keepAlive = redisConfig.getOptionalBoolean('client.socket.keepAlive');
     const keepAliveInitialDelay = socketConfig?.getOptionalNumber(
       'keepAliveInitialDelay',
     );
@@ -216,6 +215,15 @@ export class CacheManager {
         if (keepAlive !== true) {
           logger?.warn(
             'Socket keepalive initial delay is set without keepalive enabled. Enabling keepalive.',
+          );
+        }
+        keepAliveForSocket = true;
+        keepAliveInitialDelayForSocket = keepAliveInitialDelay;
+      } else if (keepAlive === true) {
+        keepAliveForSocket = true;
+      }
+    }
+
     const reconnectConfig =
       socketConfig?.getOptionalConfig('reconnectStrategy');
     const baseDelayMs = reconnectConfig?.getOptionalNumber('baseDelayMs');
@@ -252,19 +260,20 @@ export class CacheManager {
             Math.pow(2, retries) * resolvedBaseDelay,
             resolvedMaxDelay,
           );
+          const jitter =
+            resolvedJitter === 0
+              ? 0
+              : (Math.random() - 0.5) * 2 * resolvedJitter;
+          return backoff + jitter;
         }
-        keepAliveForSocket = true;
-        keepAliveInitialDelayForSocket = keepAliveInitialDelay;
-      } else if (keepAlive === true) {
-        keepAliveForSocket = true;
-      }
-    }
+      : undefined;
 
     const socketOptions =
       keepAliveForSocket !== undefined ||
       keepAliveInitialDelayForSocket !== undefined ||
       pingInterval !== undefined ||
-      socketTimeout !== undefined
+      socketTimeout !== undefined ||
+      reconnectStrategy !== undefined
         ? {
             ...(keepAliveForSocket !== undefined
               ? { keepAlive: keepAliveForSocket }
@@ -274,8 +283,6 @@ export class CacheManager {
               : {}),
             ...(pingInterval !== undefined ? { pingInterval } : {}),
             ...(socketTimeout !== undefined ? { socketTimeout } : {}),
-      reconnectStrategy !== undefined
-        ? {
             ...(reconnectStrategy !== undefined ? { reconnectStrategy } : {}),
           }
         : undefined;
