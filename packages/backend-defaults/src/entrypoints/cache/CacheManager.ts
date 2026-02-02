@@ -234,6 +234,8 @@ export class CacheManager {
 
     const reconnectStrategy = hasReconnectConfig
       ? (retries: number, cause: Error) => {
+          // Exponential backoff with jitter; return false to stop reconnecting.
+          // This only runs when node-redis observes a socket close/error.
           if (
             stopOnSocketTimeout &&
             (cause as { name?: string }).name === 'SocketTimeoutError'
