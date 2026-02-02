@@ -29,6 +29,9 @@ import {
 import { AuthDatabase } from '../database/AuthDatabase';
 import { OidcDatabase } from '../database/OidcDatabase';
 import { UserInfoDatabase } from '../database/UserInfoDatabase';
+import { OfflineSessionDatabase } from '../database/OfflineSessionDatabase';
+import { OfflineAccessService } from './OfflineAccessService';
+import { getRefreshTokenId } from '../lib/refreshToken';
 import crypto from 'node:crypto';
 import { AnyJWK, TokenIssuer } from '../identity/types';
 import { CimdClientInfo } from './CimdClient';
@@ -85,6 +88,20 @@ describe('OidcService', () => {
     } as unknown as jest.Mocked<UserInfoDatabase>;
 
     const config = mockServices.rootConfig({ data: configData });
+    const mockLogger = mockServices.logger.mock();
+
+    // Create offline access service for refresh token support
+    const offlineSessionDb = OfflineSessionDatabase.create({
+      knex,
+      tokenLifetimeSeconds: 30 * 24 * 60 * 60, // 30 days
+      maxRotationLifetimeSeconds: 365 * 24 * 60 * 60, // 1 year
+      maxTokensPerUser: 20,
+    });
+
+    const offlineAccess = OfflineAccessService.create({
+      offlineSessionDb,
+      logger: mockLogger,
+    });
 
     return {
       service: OidcService.create({
@@ -94,12 +111,14 @@ describe('OidcService', () => {
         userInfo: mockUserInfo,
         oidc: oidcDatabase,
         config,
+        offlineAccess,
       }),
       mocks: {
         auth: mockAuth,
         tokenIssuer: mockTokenIssuer,
         userInfo: mockUserInfo,
       },
+      knex,
     };
   }
 
@@ -129,13 +148,17 @@ describe('OidcService', () => {
             'PS512',
             'EdDSA',
           ],
-          scopes_supported: ['openid'],
+          scopes_supported: ['openid', 'offline_access'],
           token_endpoint_auth_methods_supported: [
             'client_secret_basic',
             'client_secret_post',
           ],
+          revocation_endpoint_auth_methods_supported: [
+            'client_secret_post',
+            'client_secret_basic',
+          ],
           claims_supported: ['sub', 'ent'],
-          grant_types_supported: ['authorization_code'],
+          grant_types_supported: ['authorization_code', 'refresh_token'],
           authorization_endpoint: 'http://mock-base-url/v1/authorize',
           code_challenge_methods_supported: ['S256', 'plain'],
         });
@@ -713,6 +736,10 @@ describe('OidcService', () => {
           redirectUri: 'https://example.com/callback',
           grantType: 'authorization_code',
           expiresIn: 3600,
+          clientCredentials: {
+            clientId: client.clientId,
+            clientSecret: client.clientSecret,
+          },
         });
 
         expect(tokenResult).toEqual({
@@ -753,6 +780,10 @@ describe('OidcService', () => {
           redirectUri: 'https://example.com/callback',
           grantType: 'authorization_code',
           expiresIn: 6000,
+          clientCredentials: {
+            clientId: client.clientId,
+            clientSecret: client.clientSecret,
+          },
         });
 
         expect(tokenResult).toEqual({
@@ -773,6 +804,10 @@ describe('OidcService', () => {
             redirectUri: 'https://example.com/callback',
             grantType: 'client_credentials',
             expiresIn: 3600,
+            clientCredentials: {
+              clientId: 'test-client',
+              clientSecret: 'test-secret',
+            },
           }),
         ).rejects.toThrow('Unsupported grant type');
       });
@@ -814,6 +849,10 @@ describe('OidcService', () => {
           grantType: 'authorization_code',
           codeVerifier,
           expiresIn: 3600,
+          clientCredentials: {
+            clientId: client.clientId,
+            clientSecret: client.clientSecret,
+          },
         });
 
         expect(tokenResult.accessToken).toBe(mockToken);
@@ -850,6 +889,10 @@ describe('OidcService', () => {
             grantType: 'authorization_code',
             codeVerifier: 'invalid-verifier',
             expiresIn: 3600,
+            clientCredentials: {
+              clientId: client.clientId,
+              clientSecret: client.clientSecret,
+            },
           }),
         ).rejects.toThrow('Invalid code verifier');
       });
@@ -1293,6 +1336,220 @@ describe('OidcService', () => {
           expect(authSession.clientName).toBe('CIMD Test Client');
           expect(mockFetchCimdMetadata).toHaveBeenCalledWith(cimdClientId);
         });
+      });
+    });
+
+    describe('refresh tokens', () => {
+      it('should issue refresh token when offline_access scope is requested', async () => {
+        const { service, mocks } = await createOidcService({ databaseId });
+        const mockToken = 'mock-jwt-token';
+        mocks.tokenIssuer.issueToken.mockResolvedValue({ token: mockToken });
+
+        const client = await service.registerClient({
+          clientName: 'Test Client',
+          redirectUris: ['https://example.com/callback'],
+        });
+
+        const authSession = await service.createAuthorizationSession({
+          clientId: client.clientId,
+          redirectUri: 'https://example.com/callback',
+          responseType: 'code',
+          scope: 'openid offline_access',
+        });
+
+        const authResult = await service.approveAuthorizationSession({
+          sessionId: authSession.id,
+          userEntityRef: 'user:default/test',
+        });
+
+        const code = new URL(authResult.redirectUrl).searchParams.get('code')!;
+
+        const tokenResult = await service.exchangeCodeForToken({
+          code,
+          redirectUri: 'https://example.com/callback',
+          grantType: 'authorization_code',
+          expiresIn: 3600,
+          clientCredentials: {
+            clientId: client.clientId,
+            clientSecret: client.clientSecret,
+          },
+        });
+
+        expect(tokenResult.accessToken).toBe(mockToken);
+        expect(tokenResult.refreshToken).toBeDefined();
+        expect(typeof tokenResult.refreshToken).toBe('string');
+      });
+
+      it('should not issue refresh token without offline_access scope', async () => {
+        const { service, mocks } = await createOidcService({ databaseId });
+        const mockToken = 'mock-jwt-token';
+        mocks.tokenIssuer.issueToken.mockResolvedValue({ token: mockToken });
+
+        const client = await service.registerClient({
+          clientName: 'Test Client',
+          redirectUris: ['https://example.com/callback'],
+        });
+
+        const authSession = await service.createAuthorizationSession({
+          clientId: client.clientId,
+          redirectUri: 'https://example.com/callback',
+          responseType: 'code',
+          scope: 'openid',
+        });
+
+        const authResult = await service.approveAuthorizationSession({
+          sessionId: authSession.id,
+          userEntityRef: 'user:default/test',
+        });
+
+        const code = new URL(authResult.redirectUrl).searchParams.get('code')!;
+
+        const tokenResult = await service.exchangeCodeForToken({
+          code,
+          redirectUri: 'https://example.com/callback',
+          grantType: 'authorization_code',
+          expiresIn: 3600,
+          clientCredentials: {
+            clientId: client.clientId,
+            clientSecret: client.clientSecret,
+          },
+        });
+
+        expect(tokenResult.accessToken).toBe(mockToken);
+        expect(tokenResult.refreshToken).toBeUndefined();
+      });
+
+      it('should refresh access token with valid refresh token', async () => {
+        const { service, mocks } = await createOidcService({ databaseId });
+        const mockToken = 'mock-jwt-token';
+        const mockNewToken = 'mock-new-jwt-token';
+
+        mocks.tokenIssuer.issueToken
+          .mockResolvedValueOnce({ token: mockToken })
+          .mockResolvedValueOnce({ token: mockNewToken });
+
+        const client = await service.registerClient({
+          clientName: 'Test Client',
+          redirectUris: ['https://example.com/callback'],
+        });
+
+        const authSession = await service.createAuthorizationSession({
+          clientId: client.clientId,
+          redirectUri: 'https://example.com/callback',
+          responseType: 'code',
+          scope: 'openid offline_access',
+        });
+
+        const authResult = await service.approveAuthorizationSession({
+          sessionId: authSession.id,
+          userEntityRef: 'user:default/test',
+        });
+
+        const code = new URL(authResult.redirectUrl).searchParams.get('code')!;
+
+        const tokenResult = await service.exchangeCodeForToken({
+          code,
+          redirectUri: 'https://example.com/callback',
+          grantType: 'authorization_code',
+          expiresIn: 3600,
+          clientCredentials: {
+            clientId: client.clientId,
+            clientSecret: client.clientSecret,
+          },
+        });
+
+        // Wait a moment to ensure we're not hitting timing issues with second-precision timestamps
+        await new Promise(resolve => setTimeout(resolve, 100));
+
+        const refreshResult = await service.refreshAccessToken({
+          refreshToken: tokenResult.refreshToken!,
+          clientCredentials: {
+            clientId: client.clientId,
+            clientSecret: client.clientSecret,
+          },
+        });
+
+        expect(refreshResult.accessToken).toBe(mockNewToken);
+        expect(refreshResult.refreshToken).toBeDefined();
+        expect(refreshResult.refreshToken).not.toBe(tokenResult.refreshToken);
+        expect(refreshResult.tokenType).toBe('Bearer');
+        expect(refreshResult.expiresIn).toBe(3600);
+      });
+
+      it('should reject invalid refresh token', async () => {
+        const { service } = await createOidcService({ databaseId });
+
+        const client = await service.registerClient({
+          clientName: 'Test Client',
+          redirectUris: ['https://example.com/callback'],
+        });
+
+        await expect(
+          service.refreshAccessToken({
+            refreshToken: 'invalid-refresh-token',
+            clientCredentials: {
+              clientId: client.clientId,
+              clientSecret: client.clientSecret,
+            },
+          }),
+        ).rejects.toThrow('Invalid refresh token');
+      });
+
+      it('should reject expired refresh token', async () => {
+        const { service, mocks, knex } = await createOidcService({
+          databaseId,
+        });
+        const mockToken = 'mock-jwt-token';
+        mocks.tokenIssuer.issueToken.mockResolvedValue({ token: mockToken });
+
+        const client = await service.registerClient({
+          clientName: 'Test Client',
+          redirectUris: ['https://example.com/callback'],
+        });
+
+        const authSession = await service.createAuthorizationSession({
+          clientId: client.clientId,
+          redirectUri: 'https://example.com/callback',
+          responseType: 'code',
+          scope: 'openid offline_access',
+        });
+
+        const authResult = await service.approveAuthorizationSession({
+          sessionId: authSession.id,
+          userEntityRef: 'user:default/test',
+        });
+
+        const code = new URL(authResult.redirectUrl).searchParams.get('code')!;
+
+        const tokenResult = await service.exchangeCodeForToken({
+          code,
+          redirectUri: 'https://example.com/callback',
+          grantType: 'authorization_code',
+          expiresIn: 3600,
+          clientCredentials: {
+            clientId: client.clientId,
+            clientSecret: client.clientSecret,
+          },
+        });
+
+        // Get session ID from token and mark as expired by updating created_at
+        const sessionId = getRefreshTokenId(tokenResult.refreshToken!);
+
+        await knex('offline_sessions')
+          .where('id', sessionId)
+          .update({
+            created_at: new Date(Date.now() - 2 * 365 * 24 * 60 * 60 * 1000), // 2 years ago
+          });
+
+        await expect(
+          service.refreshAccessToken({
+            refreshToken: tokenResult.refreshToken!,
+            clientCredentials: {
+              clientId: client.clientId,
+              clientSecret: client.clientSecret,
+            },
+          }),
+        ).rejects.toThrow('Refresh token expired');
       });
     });
   });
