@@ -147,36 +147,5 @@ export interface Config {
        */
       tokenExpiration?: HumanDuration | string;
     };
-
-    /**
-     * Configuration for Client ID Metadata Documents (CIMD)
-     *
-     * @see https://datatracker.ietf.org/doc/draft-ietf-oauth-client-id-metadata-document/
-     */
-    experimentalClientIdMetadataDocuments?: {
-      /**
-       * Whether to enable Client ID Metadata Documents support
-       * Defaults to false
-       */
-      enabled?: boolean;
-
-      /**
-       * A list of allowed URI patterns for client_id URLs.
-       * Uses glob-style pattern matching where `*` matches any characters.
-       * Defaults to ['*'] which allows any client_id URL.
-       *
-       * @example ['https://example.com/*', 'https://*.trusted-domain.com/*']
-       */
-      allowedClientIdPatterns?: string[];
-
-      /**
-       * A list of allowed URI patterns for redirect URIs.
-       * Uses glob-style pattern matching where `*` matches any characters.
-       * Defaults to ['*'] which allows any redirect URI.
-       *
-       * @example ['http://localhost:*', 'http://127.0.0.1:*\/callback']
-       */
-      allowedRedirectUriPatterns?: string[];
-    };
   };
 }

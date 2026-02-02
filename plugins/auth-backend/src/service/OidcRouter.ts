@@ -223,12 +223,8 @@ export class OidcRouter {
     const dcrEnabled = this.config.getOptionalBoolean(
       'auth.experimentalDynamicClientRegistration.enabled',
     );
-    const cimdEnabled = this.config.getOptionalBoolean(
-      'auth.experimentalClientIdMetadataDocuments.enabled',
-    );
 
-    // Authorization routes are available when either DCR or CIMD is enabled
-    if (dcrEnabled || cimdEnabled) {
+    if (dcrEnabled) {
       // Authorization endpoint
       // https://openid.net/specs/openid-connect-core-1_0.html#AuthRequest
       // Handles the initial authorization request from the client, validates parameters,
