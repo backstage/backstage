@@ -26,6 +26,7 @@ import crypto from 'node:crypto';
 import { OidcDatabase } from '../database/OidcDatabase';
 import { DateTime } from 'luxon';
 import matcher from 'matcher';
+import { isCimdUrl, fetchCimdMetadata } from './CimdClient';
 import { offlineAccessServiceRef } from './OfflineAccessService';
 import { readDcrTokenExpiration } from './readTokenExpiration';
 
@@ -80,6 +81,9 @@ export class OidcService {
     const dcrEnabled = this.config.getOptionalBoolean(
       'auth.experimentalDynamicClientRegistration.enabled',
     );
+    const cimdEnabled = this.config.getOptionalBoolean(
+      'auth.experimentalClientIdMetadataDocuments.enabled',
+    );
 
     return {
       issuer: this.baseUrl,
@@ -112,6 +116,7 @@ export class OidcService {
       ...(dcrEnabled && {
         registration_endpoint: `${this.baseUrl}/v1/register`,
       }),
+      ...(cimdEnabled && { client_id_metadata_document_supported: true }),
     };
   }
 
@@ -233,6 +238,11 @@ export class OidcService {
   }
 
   private async getClientName(clientId: string): Promise<string> {
+    if (isCimdUrl(clientId)) {
+      const cimdClient = await fetchCimdMetadata(clientId);
+      return cimdClient.clientName;
+    }
+
     const client = await this.oidc.getClient({ clientId });
     if (!client) {
       throw new InputError('Invalid client_id');
@@ -244,6 +254,60 @@ export class OidcService {
     clientId: string,
     redirectUri: string,
   ): Promise<{ clientName: string; redirectUris: string[] }> {
+    const cimdEnabled = this.config.getOptionalBoolean(
+      'auth.experimentalClientIdMetadataDocuments.enabled',
+    );
+
+    // Check if client_id is a CIMD URL
+    if (isCimdUrl(clientId)) {
+      if (!cimdEnabled) {
+        throw new InputError('Client ID metadata documents not enabled');
+      }
+
+      // Validate client_id against allowedClientIdPatterns
+      const allowedClientIdPatterns = this.config.getOptionalStringArray(
+        'auth.experimentalClientIdMetadataDocuments.allowedClientIdPatterns',
+      ) ?? ['*'];
+
+      if (
+        !allowedClientIdPatterns.some(pattern =>
+          matcher.isMatch(clientId, pattern),
+        )
+      ) {
+        throw new InputError('Invalid client_id');
+      }
+
+      const cimdClient = await fetchCimdMetadata(clientId);
+
+      // Validate redirect_uri against CIMD allowedRedirectUriPatterns
+      const allowedRedirectUriPatterns = this.config.getOptionalStringArray(
+        'auth.experimentalClientIdMetadataDocuments.allowedRedirectUriPatterns',
+      ) ?? ['*'];
+
+      if (
+        !allowedRedirectUriPatterns.some(pattern =>
+          matcher.isMatch(redirectUri, pattern),
+        )
+      ) {
+        throw new InputError('Invalid redirect_uri');
+      }
+
+      // Validate redirect_uri matches one of the client's registered URI patterns
+      if (
+        !cimdClient.redirectUris.some(pattern =>
+          matcher.isMatch(redirectUri, pattern),
+        )
+      ) {
+        throw new InputError('Redirect URI not registered');
+      }
+
+      return {
+        clientName: cimdClient.clientName,
+        redirectUris: cimdClient.redirectUris,
+      };
+    }
+
+    // Fall back to database client lookup (DCR or pre-registered clients)
     const client = await this.oidc.getClient({ clientId });
     if (!client) {
       throw new InputError('Invalid client_id');
