@@ -420,6 +420,16 @@ describe('CacheManager store options', () => {
 
   it('warns and ignores numeric keepAlive values', () => {
     const logger = mockServices.logger.mock();
+        socket: expect.objectContaining({ keepAliveInitialDelay: 1234 }),
+      },
+      expect.objectContaining({ keyPrefixSeparator: ':' }),
+    );
+
+    const connection = (KeyvRedis as jest.Mock).mock.calls[0][0];
+    expect(connection.socket.reconnectStrategy).toBeUndefined();
+  });
+
+  it('passes numeric keepAlive to the redis client', () => {
     const manager = CacheManager.fromConfig(
       mockServices.rootConfig({
         data: {
@@ -451,6 +461,16 @@ describe('CacheManager store options', () => {
       'redis://localhost:6379',
       expect.objectContaining({ keyPrefixSeparator: ':' }),
     );
+    expect(KeyvRedis).toHaveBeenCalledWith(
+      {
+        url: 'redis://localhost:6379',
+        socket: expect.objectContaining({ keepAlive: 7000 }),
+      },
+      expect.objectContaining({ keyPrefixSeparator: ':' }),
+    );
+
+    const connection = (KeyvRedis as jest.Mock).mock.calls[0][0];
+    expect(connection.socket.reconnectStrategy).toBeUndefined();
   });
 
   it('ignores keepAliveInitialDelay when keepAlive is false', () => {
@@ -487,6 +507,12 @@ describe('CacheManager store options', () => {
   });
 
   it('passes ping interval and socket timeout to the redis client', () => {
+
+    const connection = (KeyvRedis as jest.Mock).mock.calls[0][0];
+    expect(connection.socket.reconnectStrategy).toBeUndefined();
+  });
+
+  it('passes reconnect strategy options to the redis client', () => {
     const manager = CacheManager.fromConfig(
       mockServices.rootConfig({
         data: {
@@ -499,6 +525,13 @@ describe('CacheManager store options', () => {
                   socket: {
                     pingInterval: 15000,
                     socketTimeout: 20000,
+                    reconnectStrategy: {
+                      baseDelayMs: 100,
+                      maxDelayMs: 2000,
+                      jitterMs: 0,
+                      maxRetries: 20,
+                      stopOnSocketTimeout: true,
+                    },
                   },
                 },
               },
@@ -516,10 +549,21 @@ describe('CacheManager store options', () => {
         socket: expect.objectContaining({
           pingInterval: 15000,
           socketTimeout: 20000,
+          reconnectStrategy: expect.any(Function),
         }),
       },
       expect.objectContaining({ keyPrefixSeparator: ':' }),
     );
+
+    const connection = (KeyvRedis as jest.Mock).mock.calls[0][0];
+    const strategy = connection.socket.reconnectStrategy;
+    const socketTimeoutError = new Error('timeout');
+    socketTimeoutError.name = 'SocketTimeoutError';
+
+    expect(strategy(1, new Error('boom'))).toBe(200);
+    expect(strategy(10, new Error('boom'))).toBe(2000);
+    expect(strategy(21, new Error('boom'))).toBe(false);
+    expect(strategy(1, socketTimeoutError)).toBe(false);
   });
 
   it('merges socket options into redis cluster defaults', () => {
@@ -555,6 +599,11 @@ describe('CacheManager store options', () => {
   });
 
   it('merges ping interval and socket timeout into redis cluster defaults', () => {
+      defaults: { socket: { keepAliveInitialDelay: 4242 } },
+    });
+  });
+
+  it('merges reconnect strategy into redis cluster defaults', () => {
     const manager = CacheManager.fromConfig(
       mockServices.rootConfig({
         data: {
@@ -567,6 +616,9 @@ describe('CacheManager store options', () => {
                   socket: {
                     pingInterval: 10000,
                     socketTimeout: 12000,
+                    reconnectStrategy: {
+                      baseDelayMs: 100,
+                    },
                   },
                 },
                 cluster: {
@@ -587,6 +639,7 @@ describe('CacheManager store options', () => {
         socket: {
           pingInterval: 10000,
           socketTimeout: 12000,
+          reconnectStrategy: expect.any(Function),
         },
       },
     });

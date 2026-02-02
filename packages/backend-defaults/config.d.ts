@@ -789,6 +789,38 @@ export interface Config {
                  * idle before being automatically closed.
                  */
                 socketTimeout?: number;
+                /**
+                 * Optional reconnect strategy configuration. When set, Backstage
+                 * creates a reconnect strategy function and passes it to the Redis
+                 * client. See
+                 * https://keyv.org/docs/storage-adapters/redis/#gracefully-handling-errors-and-timeouts.
+                 */
+                reconnectStrategy?: {
+                  /**
+                   * Base delay in milliseconds for exponential backoff. Defaults to
+                   * 100ms when reconnectStrategy is configured.
+                   */
+                  baseDelayMs?: number;
+                  /**
+                   * Max delay in milliseconds for exponential backoff. Defaults to
+                   * 2000ms when reconnectStrategy is configured.
+                   */
+                  maxDelayMs?: number;
+                  /**
+                   * Random jitter in milliseconds added to each delay (± jitter).
+                   * Defaults to 50ms when reconnectStrategy is configured.
+                   */
+                  jitterMs?: number;
+                  /**
+                   * Maximum number of retries before giving up. When unset, retries
+                   * are unbounded.
+                   */
+                  maxRetries?: number;
+                  /**
+                   * When true, stop reconnecting on socket timeout errors.
+                   */
+                  stopOnSocketTimeout?: boolean;
+                };
               };
             };
             /**

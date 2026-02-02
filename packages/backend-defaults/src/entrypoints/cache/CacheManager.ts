@@ -239,6 +239,7 @@ export class CacheManager {
               : {}),
             ...(pingInterval !== undefined ? { pingInterval } : {}),
             ...(socketTimeout !== undefined ? { socketTimeout } : {}),
+            ...(reconnectStrategy !== undefined ? { reconnectStrategy } : {}),
           }
         : undefined;
 
