@@ -32,6 +32,7 @@ import { ParamsDictionary } from 'express-serve-static-core';
 import { ParsedQs } from 'qs';
 import { PermissionsRegistryService } from '@backstage/backend-plugin-api';
 import { PermissionsService } from '@backstage/backend-plugin-api';
+import { QueueService } from '@backstage/backend-plugin-api';
 import { RootConfigService } from '@backstage/backend-plugin-api';
 import { RootHealthService } from '@backstage/backend-plugin-api';
 import { RootHttpRouterService } from '@backstage/backend-plugin-api';
@@ -306,6 +307,14 @@ export namespace mockServices {
       mock: (
         partialImpl?: Partial<PermissionsRegistryService> | undefined,
       ) => ServiceMock<PermissionsRegistryService>;
+  }
+  export function queue(): QueueService;
+  // (undocumented)
+  export namespace queue {
+    const factory: () => ServiceFactory<QueueService, 'plugin', 'singleton'>;
+    const mock: (
+      partialImpl?: Partial<QueueService> | undefined,
+    ) => ServiceMock<QueueService>;
   }
   // (undocumented)
   export function rootConfig(

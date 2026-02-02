@@ -289,4 +289,17 @@ export namespace coreServices {
     id: 'core.rootInstanceMetadata',
     scope: 'root',
   });
+
+  /**
+   * Service for creating and retrieving queues.
+   *
+   * See {@link QueueService}
+   * and {@link https://backstage.io/docs/backend-system/core-services/queue | the service docs}
+   * for more information.
+   *
+   * @public
+   */
+  export const queue = createServiceRef<import('./QueueService').QueueService>({
+    id: 'core.queue',
+  });
 }
