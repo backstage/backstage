@@ -126,16 +126,17 @@ export function renderInTestApp<TApiPairs extends any[] = any[]>(
 ): RenderResult;
 
 // @public
-export function renderTestApp(
-  options: RenderTestAppOptions,
+export function renderTestApp<TApiPairs extends any[] = any[]>(
+  options: RenderTestAppOptions<TApiPairs>,
 ): RenderResult<testingLibraryDomTypesQueries, HTMLElement, HTMLElement>;
 
 // @public
-export type RenderTestAppOptions = {
+export type RenderTestAppOptions<TApiPairs extends any[] = any[]> = {
   config?: JsonObject;
   extensions?: ExtensionDefinition<any>[];
   features?: FrontendFeature[];
   initialRouteEntries?: string[];
+  apis?: readonly [...TestApiPairs<TApiPairs>];
 };
 
 // @public
