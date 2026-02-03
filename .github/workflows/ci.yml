@@ -130,6 +130,15 @@ jobs:
       - name: build BUI
         run: yarn --cwd packages/ui build
 
+        # Build docs-ui to ensure documentation site builds successfully
+      - name: install docs-ui dependencies
+        working-directory: docs-ui
+        run: yarn install
+
+      - name: build docs-ui
+        working-directory: docs-ui
+        run: yarn build
+
       - name: verify type dependencies
         run: yarn lint:type-deps
 
