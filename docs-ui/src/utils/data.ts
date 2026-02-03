@@ -144,12 +144,4 @@ export const hooks: Page[] = [
     title: 'useBreakpoint',
     slug: 'use-breakpoint',
   },
-  {
-    title: 'useMediaQuery',
-    slug: 'use-media-query',
-  },
-  {
-    title: 'useStyles',
-    slug: 'use-styles',
-  },
 ];
